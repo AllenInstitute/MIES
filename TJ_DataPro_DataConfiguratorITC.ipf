@@ -418,7 +418,7 @@ do
 	ChanTypeWaveName=stringfromlist(i,ChanTypeWaveNameList,";")
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
-	sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p])",ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor
+	sprintf cmd, "ITCDataWave[0,round((numpnts('%s')/(%d))-1)][%d]=(%d*%d)*('%s'[(%d)*p])",ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor
 	execute cmd
 
 	j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 

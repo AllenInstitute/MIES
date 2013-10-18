@@ -110,6 +110,7 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	String ctrlName
 	wave TestPulseITC
 	
+
 	StoreTTLState()
 	TurnOffAllTTLs()
 	
@@ -146,5 +147,4 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	ResetSelectedDACWaves(SelectedDACWaveList)
 	RestoreDAScale(SelectedDACScale)
 	killwaves/f TestPulse
-	
 End

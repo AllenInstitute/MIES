@@ -25,6 +25,8 @@ Function ITCDataAcq()
 			do
 				sprintf cmd, "ITCFIFOAvailableALL/z=0 , ITCFIFOAvailAllConfigWave"
 				Execute cmd	
+				ITCDataWave[0][0]+=0
+				doupdate/w=datapro_itc1600#oscilloscope
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
@@ -132,7 +134,8 @@ Function FIFOMonitor(s)
 	Wave ITCFIFOAvailAllConfigWave, itcdatawave
 	sprintf cmd, "ITCFIFOAvailableALL/z=0 , ITCFIFOAvailAllConfigWave"
 	Execute cmd	
-	
+	ITCDataWave[0][0]+=0//forces on screen update
+	doupdate/w=datapro_itc1600#oscilloscope
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		StopDataAcq()
 		STOPFifoMonitor()
@@ -245,7 +248,7 @@ Function TestPulseFunc(s)
 		if(exists("count")==0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
-				beep
+				beep 
 				STOPTestPulse()
 			endif
 		endif
@@ -259,7 +262,7 @@ Function STOPTestPulse()
 	CtrlNamedBackground TestPulse, stop
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
-	killvariables/z  StopCollectionPoint, ADChannelToMonitor
+	killvariables/z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
 	controlinfo/w=DataPro_ITC1600 check_Settings_ShowScopeWindow
 	if(v_value==0)
 	SmoothResizePanel(-340)
