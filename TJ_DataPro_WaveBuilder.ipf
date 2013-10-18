@@ -55,15 +55,15 @@ Function MakeStimSet()
 	wave  WaveBuilderWave
 	variable i = 1
 	
-	wave wp0, wp1, wp2, wp3, wp4, wp5, wp6, wp7
-	duplicate/free wp0, wp0d// duplicating starting parameter waves so that they can be returned to start parameters at end of wave making
-	duplicate/free wp1, wp1d
-	duplicate/free wp2, wp2d
-	duplicate/free wp3, wp3d
-	duplicate/free wp4, wp4d
-	duplicate/free wp5, wp5d
-	duplicate/free wp6, wp6d
-	duplicate/free wp7, wp7d
+	wave wp//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	duplicate/free wp, wpd// duplicating starting parameter waves so that they can be returned to start parameters at end of wave making
+	//duplicate/free wp1, wp1d//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	//duplicate/free wp2, wp2d
+	//duplicate/free wp3, wp3d
+	//duplicate/free wp4, wp4d
+	//duplicate/free wp5, wp5d
+	//duplicate/free wp6, wp6d
+	//duplicate/free wp7, wp7d
 
 	controlinfo setvar_WaveBuilder_baseName
 	string setbasename=s_value
@@ -88,14 +88,14 @@ Function MakeStimSet()
 		i+=1
 	while(i<=NoOfWavesInSet)
 
-	wp0 = wp0d
-	wp1 = wp1d
-	wp2 = wp2d
-	wp3 = wp3d
-	wp4 = wp4d
-	wp5 = wp5d
-	wp6 = wp6d
-	wp7 = wp7d
+	wp = wpd//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	//wp1 = wp1d
+	//wp2 = wp2d
+	//wp3 = wp3d
+	//wp4 = wp4d
+	//wp5 = wp5d
+	//wp6 = wp6d
+	//wp7 = wp7d
 
 
 End
@@ -103,40 +103,40 @@ End
 
 
 Function AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
-wave wp0, wp1, wp2, wp3, wp4, wp5, wp6, wp7
+wave WP//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 	
 	variable i=0
 	
 	do
 	controlinfo check_WaveBuilder_exp
 	if(v_value==0)
-	wp0[i][]=wp0[(i+1)][q]+wp0[i][q]
-	wp1[i][]=wp1[(i+1)][q]+wp1[i][q]
-	wp2[i][]=wp2[(i+1)][q]+wp2[i][q]
-	wp3[i][]=wp3[(i+1)][q]+wp3[i][q]
-	wp4[i][]=wp4[(i+1)][q]+wp4[i][q]
-	wp5[i][]=wp5[(i+1)][q]+wp5[i][q]
-	wp6[i][]=wp6[(i+1)][q]+wp6[i][q]
-	wp7[i][]=wp7[(i+1)][q]+wp7[i][q]
-
+	wp[i][][0]=wp[(i+1)][q][0]+wp[i][q][0]//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	wp[i][][1]=wp[(i+1)][q][1]+wp[i][q][1]
+	wp[i][][2]=wp[(i+1)][q][2]+wp[i][q][2]
+	wp[i][][3]=wp[(i+1)][q][3]+wp[i][q][3]
+	wp[i][][4]=wp[(i+1)][q][4]+wp[i][q][4]
+	wp[i][][5]=wp[(i+1)][q][5]+wp[i][q][5]
+	wp[i][][6]=wp[(i+1)][q][6]+wp[i][q][6]
+	wp[i][][7]=wp[(i+1)][q][7]+wp[i][q][7]
 	else
-	wp0[i][]=(wp0[(i+1)][q])+wp0[i][q]
-	wp1[i][]=(wp1[(i+1)][q])+wp1[i][q]
-	wp2[i][]=(wp2[(i+1)][q])+wp2[i][q]
-	wp3[i][]=(wp3[(i+1)][q])+wp3[i][q]
-	wp4[i][]=(wp4[(i+1)][q])+wp4[i][q]
-	wp5[i][]=(wp5[(i+1)][q])+wp5[i][q]
-	wp6[i][]=(wp6[(i+1)][q])+wp6[i][q]
-	wp7[i][]=(wp7[(i+1)][q])+wp7[i][q]
+	wp[i][][0]=(wp[(i+1)][q][0])+wp[i][q][0]
+	wp[i][][1]=(wp[(i+1)][q][1])+wp[i][q][1]
+	wp[i][][2]=(wp[(i+1)][q][2])+wp[i][q][2]
+	wp[i][][3]=(wp[(i+1)][q][3])+wp[i][q][3]
+	wp[i][][4]=(wp[(i+1)][q][4])+wp[i][q][4]
+	wp[i][][5]=(wp[(i+1)][q][5])+wp[i][q][5]
+	wp[i][][6]=(wp[(i+1)][q][6])+wp[i][q][6]
+	wp[i][][7]=(wp[(i+1)][q][7])+wp[i][q][7]
+
 	
-	wp0[i+1][]+=(wp0[(i+1)][q])
-	wp1[i+1][]+=(wp1[(i+1)][q])
-	wp2[i+1][]+=(wp2[(i+1)][q])
-	wp3[i+1][]+=(wp3[(i+1)][q])
-	wp4[i+1][]+=(wp4[(i+1)][q])
-	wp5[i+1][]+=(wp5[(i+1)][q])
-	wp6[i+1][]+=(wp6[(i+1)][q])
-	wp7[i+1][]+=(wp7[(i+1)][q])
+	wp[i+1][][0]+=(wp[(i+1)][q][0])
+	wp[i+1][][1]+=(wp[(i+1)][q][1])
+	wp[i+1][][2]+=(wp[(i+1)][q][2])
+	wp[i+1][][3]+=(wp[(i+1)][q][3])
+	wp[i+1][][4]+=(wp[(i+1)][q][4])
+	wp[i+1][][5]+=(wp[(i+1)][q][5])
+	wp[i+1][][6]+=(wp[(i+1)][q][6])
+	wp[i+1][][7]+=(wp[(i+1)][q][7])
 
 	endif
 	
@@ -164,71 +164,71 @@ Variable/g  ParameterHolder
 String/g StringHolder
 do
 	//Load in parameters
-	ParameterWaveName="WP"+num2str(SegmentWaveType[i])
+	//ParameterWaveName="WP"+num2str(SegmentWaveType[i])
+	ParameterWaveName="WP"
 	//Amplitude=$ParameterWaveName[0][i] 
-	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d]" ParameterWaveName, 0, i
+
+	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 0, i, SegmentWaveType[i]
 	Execute cmd
 	Duration=ParameterHolder
-
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 1, i
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 1, i, SegmentWaveType[i]
 	Execute cmd
 	DeltaDur=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d]" ParameterWaveName, 2, i			
+	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 2, i, SegmentWaveType[i]		
 	Execute cmd
 	Amplitude=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d]" ParameterWaveName, 3, i			
+	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 3, i, SegmentWaveType[i]
 	Execute cmd
 	DeltaAmp=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d]" ParameterWaveName, 4, i			
+	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 4, i, SegmentWaveType[i]
 	Execute cmd
 	Offset=ParameterHolder
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 5, i		
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 5, i, SegmentWaveType[i]
 	Execute cmd
 	DeltaOffset=ParameterHolder
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 6, i		
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 6, i, SegmentWaveType[i]
 	Execute cmd
 	Frequency=ParameterHolder
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 7, i	
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 7, i, SegmentWaveType[i]
 	Execute cmd
 	DeltaFreq=ParameterHolder
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 8, i
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 8, i, SegmentWaveType[i]
 	Execute cmd
 	PulseDuration=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d]" ParameterWaveName, 9, i
+	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 9, i, SegmentWaveType[i]
 	Execute cmd
 	DeltaPulsedur=ParameterHolder
 
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 10, i	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 10, i, SegmentWaveType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
 	Execute cmd
 	TauRise=ParameterHolder
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 12, i		
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 12, i, SegmentWaveType[i]
 	Execute cmd
 	TauDecay1=ParameterHolder
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d]" ParameterWaveName, 14, i		
+	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 14, i, SegmentWaveType[i]
 	Execute cmd
 	TauDecay2=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 16, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 16, i, SegmentWaveType[i]
 	Execute cmd
 	TauDecay2Weight=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 18, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 18, i, SegmentWaveType[i]
 	Execute cmd
 	CustomOffset=ParameterHolder
 	
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 19, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 19, i, SegmentWaveType[i]
 	Execute cmd
 	CustumDeltaOffset=ParameterHolder
 	
@@ -236,19 +236,19 @@ do
 	Execute cmd
 	NameOfWaveToBeDuplicated="'"+StringHolder+"'"
 	
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 20, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 20, i, SegmentWaveType[i]
 	Execute cmd
 	LowPassCutOff=ParameterHolder	
 	
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 21, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 21, i, SegmentWaveType[i]
 	Execute cmd
 	LowPassCutOffDelta=ParameterHolder	
 
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 22, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 22, i, SegmentWaveType[i]
 	Execute cmd
 	HighPassCutOff=ParameterHolder
 		
-	sprintf cmd, "ParameterHolder=%s[%d][%d]" ParameterWaveName, 23, i
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 23, i, SegmentWaveType[i]
 	Execute cmd
 	HighPassCutOffDelta=ParameterHolder	
 	
@@ -311,22 +311,23 @@ End
 
 
 Function WaveBuilderParameterWaves()
-Make /O /N =(24,100) WP0
-Make /O /N =(24,100) WP1
-Make /O /N =(24,100) WP2
-Make /O /N =(24,100) WP3
-Make /O /N =(24,100) WP4
-Make /O /N =(24,100) WP5
-Make /O /N =(24,100) WP6
-Make /O /N =(24,100) WP6
-Make /O /N =(24,100) WP7
+Make /O /N =(24,100,8) WP //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+//Make /O /N =(24,100) WP1
+//Make /O /N =(24,100) WP2
+//Make /O /N =(24,100) WP3
+//Make /O /N =(24,100) WP4
+//Make /O /N =(24,100) WP5
+//Make /O /N =(24,100) WP6
+//Make /O /N =(24,100) WP6
+//Make /O /N =(24,100) WP7
 Make /T /O /N =(24,100) WP7T
 
 Make/O/N = 100 SegmentWaveType
 End
 
-Function ParamToPanel(WaveParametersWave)
-wave WaveParametersWave
+Function ParamToPanel(WaveParametersWave)//hhhhhhhhhhhhhhjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+variable WaveParametersWave
+wave WP
 string ControlName ="setvar_WaveBuilder_P"
 variable rowNo=0
 
@@ -335,7 +336,7 @@ variable columnNo=v_value
 
 do
 ControlName="setvar_WaveBuilder_P"+num2str(RowNo)
-variable Parameter=WaveParametersWave[rowNo][ColumnNo]
+variable Parameter=WP[rowNo][ColumnNo][WaveParametersWave]
 SetVariable $ControlName value=_Num:Parameter
 RowNo+=1
 while(RowNo<23)
@@ -403,26 +404,46 @@ Function SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet
 	Variable PulseStartPoint=0
 	Variable EndPoint
 	Variable SegmentDuration
-	Variable NumberOfPulses = Frequency*(Duration/1000)
+	Variable NumberOfPulses = Frequency*(Duration/1000)+1
 	Variable TotalPulseTime=PulseDuration*NumberOfPulses
 	Variable TotalBaselineTime=Duration-TotalPulseTime
 	Variable NumberOfInterPulseIntervals=NumberOfPulses-1
 	Variable InterPulseInterval=TotalBaselineTime/NumberOfInterPulseIntervals
+	//poissonNoise
 	make/o/n=(Duration/0.005) SegmentWave=0
 	SetScale/P x 0,0.005,"ms", SegmentWave
 	
+	controlinfo/w=wavebuilder check_SPT_Poisson
+	Variable Poisson = v_value
 	EndPoint=NumberOfPulses
-	
-	do
-	SegmentWave[(PulseStartPoint/0.005), ((PulseStartPoint/0.005)+(PulseDuration/0.005))]=Amplitude
-	if(i+1==EndPoint)
-	
-	PulseStartPoint+=((InterPulseInterval+PulseDuration))
-	else
-	PulseStartPoint+=((InterPulseInterval+PulseDuration))
+	Variable PoissonInterPulseInterval
+	if (Poisson==0)
+		do
+		SegmentWave[(PulseStartPoint/0.005), ((PulseStartPoint/0.005)+(PulseDuration/0.005))]=Amplitude
+			if(i+1==EndPoint)
+			PulseStartPoint+=((InterPulseInterval+PulseDuration))
+			else
+			PulseStartPoint+=((InterPulseInterval+PulseDuration))
+			endif
+		i+=1
+		while (i<Endpoint)
 	endif
-	i+=1
-	while (i<Endpoint)
+	
+	
+	if (Poisson==1)
+		do
+	
+			PoissonInterPulseInterval=poissonNoise(InterpulseInterval)
+			PulseStartPoint+=((PoissonInterPulseInterval))//+PulseDuration))
+			if(((PulseStartPoint+PulseDuration)/0.005)<numpnts(segmentWave))
+			SegmentWave[(PulseStartPoint/0.005), ((PulseStartPoint/0.005)+(PulseDuration/0.005))]=Amplitude
+			endif
+		while (((PulseStartPoint+PulseDuration)/0.005)<numpnts(segmentWave))
+	endif	
+	
+	
+	
+	
 	SegmentWave+=Offset
 
 End

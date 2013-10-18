@@ -415,8 +415,8 @@ Function WBP_SetVarProc(ctrlName,varNum,varStr,varName) : SetVariableControl
 	ExecuteAdamsTabcontrol(StimulusType)
 
 	
-	string NameOfParamWave="WP"+num2str(StimulusType)
-	ParamToPanel($NameOfParamWave)
+	variable ParamWaveType=StimulusType
+	ParamToPanel(ParamWaveType)
 	
 	MakeStimSet()
 	DisplaySetInPanel()
@@ -495,8 +495,8 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 			controlinfo setvar_WaveBuilder_SegmentEdit
 			segmentwavetype[v_value]=tabnum
 	
-			string NameOfParamWave="WP"+num2str(tabnum)
-			ParamToPanel($NameOfParamWave)
+			variable ParamWaveType=tabnum
+			ParamToPanel(ParamWaveType)
 
 			MakeStimSet()
 			DisplaySetInPanel()
@@ -520,8 +520,8 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 	controlinfo setvar_WaveBuilder_SegmentEdit// Assings wave type to segment
 	segmentwavetype[v_value]=tabnum
 	
-	NameOfParamWave="WP"+num2str(tabnum)
-	ParamToPanel($NameOfParamWave)// passed parameters from appropriate parameter wave to panel
+	ParamWaveType=tabnum
+	ParamToPanel(ParamWaveType)// passed parameters from appropriate parameter wave to panel
 	
 	MakeStimSet()
 	DisplaySetInPanel()
@@ -587,9 +587,9 @@ Function WBP_SetVarProc_5(ctrlName,varNum,varStr,varName) : SetVariableControl//
 	
 	ParameterName="SetVar_WaveBuilder_P"+num2str(ParameterRow)
 	controlinfo parameterName
-	NameOfParamWave="WP"+num2str(StimulusType)
+	NameOfParamWave="WP"//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 	
-	sprintf cmd, "%s[%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, varnum
+	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType,varnum
 	execute cmd
 			
 	MakeStimSet()
@@ -619,9 +619,9 @@ Function WBP_SetVarProc_6(ctrlName,varNum,varStr,varName) : SetVariableControl
 	
 	ParameterName="SetVar_WaveBuilder_P"+num2str(ParameterRow)
 	controlinfo parameterName
-	NameOfParamWave="WP"+num2str(StimulusType)
+	NameOfParamWave="WP"//+num2str(StimulusType)
 	
-	sprintf cmd, "%s[%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, varnum
+	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
 			
 	MakeStimSet()
@@ -650,9 +650,9 @@ Function WBP_SetVarProc_2(ctrlName,varNum,varStr,varName) : SetVariableControl
 	
 	ParameterName="SetVar_WaveBuilder_P"+num2str(ParameterRow)
 	controlinfo parameterName
-	NameOfParamWave="WP"+num2str(StimulusType)
+	NameOfParamWave="WP"
 	
-	sprintf cmd, "%s[%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, varnum
+	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
 	
 	controlinfo WBP_WaveType
@@ -751,9 +751,9 @@ Function WBP_SetVarProc_7(ctrlName,varNum,varStr,varName) : SetVariableControl
 	
 	ParameterName="SetVar_WaveBuilder_P"+num2str(ParameterRow)
 	controlinfo parameterName
-	NameOfParamWave="WP"+num2str(StimulusType)
+	NameOfParamWave="WP"//+num2str(StimulusType)
 	
-	sprintf cmd, "%s[%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, varnum
+	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
 		
 		
@@ -784,9 +784,9 @@ Function WBP_SetVarProc_8(ctrlName,varNum,varStr,varName) : SetVariableControl
 	
 	ParameterName="SetVar_WaveBuilder_P"+num2str(ParameterRow)
 	controlinfo parameterName
-	NameOfParamWave="WP"+num2str(StimulusType)
+	NameOfParamWave="WP"//+num2str(StimulusType)
 	
-	sprintf cmd, "%s[%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, varnum
+	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
 		
 		
@@ -812,18 +812,18 @@ Function WBP_PopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
-	wave segmentwavetype, WP0, WP1, WP2, WP3, WP4, WP5, WP6, WP7
+	wave segmentwavetype, WP//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 if (cmpstr(popstr,"TTL")==0)
 
 	SegmentWaveType=0
-	WP0[1,6][]=0
-	WP1[1,6][]=0
-	WP2[1,6][]=0
-	WP3[1,6][]=0
-	WP4[1,6][]=0
-	WP5[1,6][]=0
-	WP6[1,6][]=0
-	WP7[1,6][]=0
+	WP[1,6][][]=0//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	//WP1[1,6][]=0
+	//WP2[1,6][]=0
+	//WP3[1,6][]=0
+	//WP4[1,6][]=0
+	//WP5[1,6][]=0
+	//WP6[1,6][]=0
+	//WP7[1,6][]=0
 	
 	SetVariable SetVar_WaveBuilder_P2 limits={0,1,1}, value= _NUM:0
 	WBP_SetVarProc_2("SetVar_WaveBuilder_P2",0,"1","")
