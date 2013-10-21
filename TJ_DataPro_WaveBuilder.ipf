@@ -55,15 +55,9 @@ Function MakeStimSet()
 	wave  WaveBuilderWave
 	variable i = 1
 	
-	wave wp//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	wave wp//
 	duplicate/free wp, wpd// duplicating starting parameter waves so that they can be returned to start parameters at end of wave making
-	//duplicate/free wp1, wp1d//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-	//duplicate/free wp2, wp2d
-	//duplicate/free wp3, wp3d
-	//duplicate/free wp4, wp4d
-	//duplicate/free wp5, wp5d
-	//duplicate/free wp6, wp6d
-	//duplicate/free wp7, wp7d
+
 
 	controlinfo setvar_WaveBuilder_baseName
 	string setbasename=s_value
@@ -88,29 +82,21 @@ Function MakeStimSet()
 		i+=1
 	while(i<=NoOfWavesInSet)
 
-	wp = wpd//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-	//wp1 = wp1d
-	//wp2 = wp2d
-	//wp3 = wp3d
-	//wp4 = wp4d
-	//wp5 = wp5d
-	//wp6 = wp6d
-	//wp7 = wp7d
-
+	wp = wpd//
 
 End
 
 
 
 Function AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
-wave WP//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+wave WP//
 	
 	variable i=0
 	
 	do
 	controlinfo check_WaveBuilder_exp
 	if(v_value==0)
-	wp[i][][0]=wp[(i+1)][q][0]+wp[i][q][0]//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+	wp[i][][0]=wp[(i+1)][q][0]+wp[i][q][0]//
 	wp[i][][1]=wp[(i+1)][q][1]+wp[i][q][1]
 	wp[i][][2]=wp[(i+1)][q][2]+wp[i][q][2]
 	wp[i][][3]=wp[(i+1)][q][3]+wp[i][q][3]
@@ -128,7 +114,6 @@ wave WP//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 	wp[i][][6]=(wp[(i+1)][q][6])+wp[i][q][6]
 	wp[i][][7]=(wp[(i+1)][q][7])+wp[i][q][7]
 
-	
 	wp[i+1][][0]+=(wp[(i+1)][q][0])
 	wp[i+1][][1]+=(wp[(i+1)][q][1])
 	wp[i+1][][2]+=(wp[(i+1)][q][2])
@@ -141,14 +126,14 @@ wave WP//WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 	endif
 	
 	i+=2
-	while(i<24)
+	while(i<25)
 End
 
 
 
 Function MakeWaveBuilderWave()
 variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
-variable CustomOffset, CustumDeltaOffset, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta
+variable CustomOffset, CustumDeltaOffset, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta, EndFrequency, EndFrequencyDelta
 wave SegmentWaveType
 make/o/n=0 WaveBuilderWave=0
 make/o/n=0 SegmentWave=0
@@ -164,9 +149,7 @@ Variable/g  ParameterHolder
 String/g StringHolder
 do
 	//Load in parameters
-	//ParameterWaveName="WP"+num2str(SegmentWaveType[i])
 	ParameterWaveName="WP"
-	//Amplitude=$ParameterWaveName[0][i] 
 
 	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 0, i, SegmentWaveType[i]
 	Execute cmd
@@ -232,7 +215,7 @@ do
 	Execute cmd
 	CustumDeltaOffset=ParameterHolder
 	
-	sprintf cmd, "StringHolder=%s[%d][%d]"  "WP7T", 0, i// passes name of custom wave from a text wave
+	sprintf cmd, "StringHolder=%s[%d][%d]"  "WPT", 0, i// passes name of custom wave from a text wave
 	Execute cmd
 	NameOfWaveToBeDuplicated="'"+StringHolder+"'"
 	
@@ -252,7 +235,14 @@ do
 	Execute cmd
 	HighPassCutOffDelta=ParameterHolder	
 	
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 24, i, SegmentWaveType[i]
+	Execute cmd
+	EndFrequency=ParameterHolder	
 		
+	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 25, i, SegmentWaveType[i]
+	Execute cmd
+	EndFrequencyDelta=ParameterHolder	
+	
 	//Make correct wave segment with above parameters
 	switch(SegmentWaveType[i])												// numeric switch
 		case 0:
@@ -268,7 +258,7 @@ do
 			Note WaveBuilderWave, "Segment "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(LowPassCutOffDelta) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(HighPassCutOffDelta)
 			break
 		case 3:
-			SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+			SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta)
 			Note WaveBuilderWave, "Segment "+num2str(i)+"= Sin wave, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
 			break
 		case 4:
@@ -311,21 +301,12 @@ End
 
 
 Function WaveBuilderParameterWaves()
-Make /O /N =(24,100,8) WP //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-//Make /O /N =(24,100) WP1
-//Make /O /N =(24,100) WP2
-//Make /O /N =(24,100) WP3
-//Make /O /N =(24,100) WP4
-//Make /O /N =(24,100) WP5
-//Make /O /N =(24,100) WP6
-//Make /O /N =(24,100) WP6
-//Make /O /N =(24,100) WP7
-Make /T /O /N =(24,100) WP7T
-
+Make /O /N =(30,100,8) WP 
+Make /T /O /N =(30,100) WPT
 Make/O/N = 100 SegmentWaveType
 End
 
-Function ParamToPanel(WaveParametersWave)//hhhhhhhhhhhhhhjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+Function ParamToPanel(WaveParametersWave)//
 variable WaveParametersWave
 wave WP
 string ControlName ="setvar_WaveBuilder_P"
@@ -380,13 +361,25 @@ Function NoiseSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffs
 	SegmentWave+=offset
 End
 
-Function SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+Function SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta)
+	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta
+	variable k0, k1, k2, k3 
+	string cmd
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
-	//DataWave[][0]=1 * 3200 * sin(2 * Pi * 100000 * (5 / 1000000000) * x)
+	controlinfo check_Sin_Chirp
+	if(v_value==0)
 	SegmentWave=1 * Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
 	SegmentWave+=Offset
+	else
+	 k0= ln(frequency/1000)
+	 k1= (ln(endFrequency/1000)-k0)/(duration)
+	 k2=2*pi*e^k0/k1
+	 k3= mod(k2,2*pi)		// LH040117: start on rising edge of sin and don't try to round.
+	SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
+	endif
+
+
 End
 
 Function SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
@@ -401,7 +394,7 @@ Function SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	//Variable InterPulseIntervalDuration
 	Variable i = 1
-	Variable PulseStartPoint=0
+	Variable PulseStartTime=0
 	Variable EndPoint
 	Variable SegmentDuration
 	Variable NumberOfPulses = Frequency*(Duration/1000)+1
@@ -409,6 +402,7 @@ Function SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet
 	Variable TotalBaselineTime=Duration-TotalPulseTime
 	Variable NumberOfInterPulseIntervals=NumberOfPulses-1
 	Variable InterPulseInterval=TotalBaselineTime/NumberOfInterPulseIntervals
+	Variable PoissonIntPulseInt
 	//poissonNoise
 	make/o/n=(Duration/0.005) SegmentWave=0
 	SetScale/P x 0,0.005,"ms", SegmentWave
@@ -416,29 +410,34 @@ Function SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet
 	controlinfo/w=wavebuilder check_SPT_Poisson
 	Variable Poisson = v_value
 	EndPoint=NumberOfPulses
-	Variable PoissonInterPulseInterval
+	
+	
 	if (Poisson==0)
 		do
-		SegmentWave[(PulseStartPoint/0.005), ((PulseStartPoint/0.005)+(PulseDuration/0.005))]=Amplitude
+		SegmentWave[(PulseStartTime/0.005), ((PulseStartTime/0.005)+(PulseDuration/0.005))]=Amplitude
 			if(i+1==EndPoint)
-			PulseStartPoint+=((InterPulseInterval+PulseDuration))
+			PulseStartTime+=((InterPulseInterval+PulseDuration))
 			else
-			PulseStartPoint+=((InterPulseInterval+PulseDuration))
+			PulseStartTime+=((InterPulseInterval+PulseDuration))
 			endif
 		i+=1
 		while (i<Endpoint)
 	endif
 	
-	
+	//print InterpulseInterval
 	if (Poisson==1)
 		do
-	
-			PoissonInterPulseInterval=poissonNoise(InterpulseInterval)
-			PulseStartPoint+=((PoissonInterPulseInterval))//+PulseDuration))
-			if(((PulseStartPoint+PulseDuration)/0.005)<numpnts(segmentWave))
-			SegmentWave[(PulseStartPoint/0.005), ((PulseStartPoint/0.005)+(PulseDuration/0.005))]=Amplitude
+			//print PulseStartTime
+			//PoissonInterPulseInterval=poissonNoise(InterpulseInterval)
+			
+			PoissonIntPulseInt=PoissonNoise(InterpulseInterval)
+			//print PoissonIntPulseInt
+			PulseStartTime+=(PoissonIntPulseInt)//+PulseDuration))
+			//PulseStartTime=poissonNoise(pulsestarttime)
+			if(((PulseStartTime+PulseDuration)/0.005)<numpnts(segmentWave))
+			SegmentWave[(PulseStartTime/0.005), ((PulseStartTime/0.005)+(PulseDuration/0.005))]=Amplitude
 			endif
-		while (((PulseStartPoint+PulseDuration)/0.005)<numpnts(segmentWave))
+		while (((PulseStartTime+PulseDuration)/0.005)<numpnts(segmentWave))
 	endif	
 	
 	
