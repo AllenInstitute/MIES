@@ -427,13 +427,8 @@ Function SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet
 	//print InterpulseInterval
 	if (Poisson==1)
 		do
-			//print PulseStartTime
-			//PoissonInterPulseInterval=poissonNoise(InterpulseInterval)
-			
-			PoissonIntPulseInt=PoissonNoise(InterpulseInterval)
-			//print PoissonIntPulseInt
-			PulseStartTime+=(PoissonIntPulseInt)//+PulseDuration))
-			//PulseStartTime=poissonNoise(pulsestarttime)
+			PoissonIntPulseInt=(-ln(abs(enoise(1)))/Frequency)*1000
+			PulseStartTime+=(PoissonIntPulseInt)
 			if(((PulseStartTime+PulseDuration)/0.005)<numpnts(segmentWave))
 			SegmentWave[(PulseStartTime/0.005), ((PulseStartTime/0.005)+(PulseDuration/0.005))]=Amplitude
 			endif
