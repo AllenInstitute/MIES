@@ -372,9 +372,6 @@ Window wavebuilder() : Panel
 	SetActiveSubwindow ##
 EndMacro
 
-
-
-
 Function WBP_SetVarProc_1(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -422,9 +419,6 @@ Function WBP_SetVarProc(ctrlName,varNum,varStr,varName) : SetVariableControl
 	DisplaySetInPanel()
 End
 
-
-
-
 Function SetVarProc_3(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -434,23 +428,15 @@ Function SetVarProc_3(ctrlName,varNum,varStr,varName) : SetVariableControl
 	DisplaySetInPanel()
 	End
 	
-	Function ButtonProc(ctrlName) : ButtonControl
-		String ctrlName
-		variable i=0
-	string ListOfWavesToKill
+Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
+	String ctrlName
+	string NameOfSetToKill
 	controlinfo popup_WaveBuilder_SetList
-	string SearchString = s_value
-	string WaveNameFromList, cmd
-	ListOfWavesToKill=wavelist("*"+SearchString[2,inf],";","")
+	NameOfSetToKill = s_value
 	
-		do
-			WaveNameFromList=stringfromlist(i,listofwavestokill,";")
-				if(strlen(WaveNameFromList) != 0)
-				sprintf cmd, "killwaves/f/z  %s" "'"+WaveNameFromList+"'"
-				execute cmd
-				endif
-			i+=1
-		while(i<(itemsinlist(listofwavestokill,";")))
+	Killwaves/f/z $NameOfsetToKill
+				//sprintf cmd, "killwaves/f/z  %s" "'"+WaveNameFromList+"'"
+				//execute cmd
 End
 
 Function SetVarProc_4(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -472,12 +458,19 @@ End
 Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
+	//controlinfo 
+	if(cmpstr(ctrlName,"check_Sin_Chirp")==0)
+		if(checked==1)
+		SetVariable SetVar_WaveBuilder_P24 disable=0
+		SetVariable SetVar_WaveBuilder_P25 disable=0
+		else
+		SetVariable SetVar_WaveBuilder_P24 disable=2
+		SetVariable SetVar_WaveBuilder_P25 disable=2
+		endif
+	endif
 	MakeStimSet()
 	DisplaySetInPanel()
 End
-
-
-
 
 Function TabTJHook(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
 	STRUCT WMTabControlAction &tca
@@ -485,7 +478,6 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 	wave segmentwavetype
 	//controlinfo WBP_WaveType
 	tabnum=tca.tab
-
 
 	controlinfo popup_WaveBuilder_OutputType
 	if(cmpstr(s_value,"TTL")==0)
@@ -531,14 +523,11 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 End
 
 
-Function/s DeleteListPopUp()
+Function/s WBP_SetListForPopUp()
 	
-	string ListItemToRemove = stringfromlist(0,tracenamelist("WaveBuilder#WaveBuilderGraph", ";",0+1 ),";")
-	ListItemToRemove= ListItemToRemove[1,(strlen(ListItemToRemove)-2)]
+	string ListString ="- none -;"+WaveList("*_Set_*DAC", ";","" )//+WaveList("1_*TTL_*", ";","" )
 	
-	string ListString ="- none -;"+WaveList("1_*DAC_Set*", ";","" )+WaveList("1_*TTL_Set*", ";","" )
-	
-	ListString=Removefromlist( ListItemToRemove, ListString,";")
+	//ListString=Removefromlist( ListItemToRemove, ListString,";")
 	return liststring
 End
 
@@ -550,15 +539,18 @@ Function ButtonProc_2(ctrlName) : ButtonControl
 	ListOfTracesOnGraph=TraceNameList("WaveBuilder#WaveBuilderGraph", ",",0+1 )
 	variable i=0
 	
-	if(itemsinlist(ListOfTracesOnGraph,",")!=0)
-	do
-
-	removefromgraph/w=WaveBuilder#WaveBuilderGraph $stringfromlist(i,ListOfTracesOnGraph,",")
-	//doupdate
-	i+=1
-	while(i<(itemsinlist(ListOfTracesOnGraph,",")))
-	endif
+	WBP_Save1Das2D(ListOfTracesOnGraph)//takes the waves displayed in the wavebuilder and makes them into a single wave
+	WBP_RemoveAndKillWavesOnGraph("WaveBuilder#WaveBuilderGraph")
+//	if(itemsinlist(ListOfTracesOnGraph,",")!=0)
+//		do
+//		removefromgraph/w=WaveBuilder#WaveBuilderGraph $stringfromlist(i,ListOfTracesOnGraph,",")
+//		//doupdate
+//		i+=1
+//		while(i<(itemsinlist(ListOfTracesOnGraph,",")))
+//	endif
+	
 	SetVariable setvar_WaveBuilder_baseName value= _STR:"Insert Base Name"
+	
 
 End
 
@@ -953,4 +945,60 @@ Function WBP_PopMenuProc_1(ctrlName,popNum,popStr) : PopupMenuControl
 	DisplaySetInPanel()
 End
 
+Function WBP_Save1Das2D(WaveNameList)
+string WaveNameList
+string SetName=WBP_AssembleBaseName()
+string activeWaveName=stringfromlist(0,WaveNameList,",")
+activewavename= activewavename[1,(strlen(ActiveWaveName))-2]
+variable lengthOf1DWaves=numpnts($activeWaveName)
+variable numberOf1DWaves=itemsinlist(WaveNameList,",")+1
+variable i =0
+string cmd
 
+make/o/n=(lengthOf1DWaves,(numberOf1DWaves-1)) $SetName
+
+do
+	activeWaveName=stringfromlist(i,WaveNameList,",")
+	sprintf cmd, "%s[0,%d][%d]=%s[p]" SetName, lengthOf1DWaves-1, i, activeWaveName
+	print cmd
+	execute cmd
+	i+=1
+while(i<numberOf1DWaves-1)
+
+End
+
+Function/t WBP_AssembleBaseName()// This function creates a string that is used to name the 2d output wave of the wavebuilder panel. The naming is based on userinput to the wavebuilder panel
+string AssembledBaseName=""
+
+controlinfo setvar_WaveBuilder_baseName
+AssembledBaseName+=s_value
+AssembledBaseName+="_Set_"
+controlinfo setvar_WaveBuilder_SetNumber
+AssembledBaseName+=num2str(v_value)
+AssembledBaseName+="_"
+controlinfo popup_WaveBuilder_OutputType
+AssembledBaseName+=s_value
+
+return AssembledBaseName
+End
+
+Function WBP_RemoveAndKillWavesOnGraph(GraphName)
+	string GraphName
+	variable i=0
+	string cmd, WaveNameFromList
+	string ListOfTracesOnGraph=TraceNameList(GraphName, ";",0+1)
+	string Tracename
+	variable NoOfTracesOnGraph = itemsinlist(ListOfTracesOnGraph,";")
+	print NoOfTracesOnGraph
+	if(NoOfTracesOnGraph>0)
+		do
+			TraceName = "\"#0\""
+			sprintf cmd, "removefromgraph/w=%s $%s" GraphName, TraceName
+			execute cmd
+			Tracename=stringfromlist(i, ListOfTracesOnGraph,";")
+			Tracename=Tracename[1,(strlen(Tracename))-2]
+			Killwaves  $Tracename
+			i+=1
+		while(i<NoOfTracesOnGraph)
+	endif
+End

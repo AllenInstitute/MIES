@@ -18,7 +18,7 @@ Function DisplaySetInPanel()
 	
 	controlInfo popup_WaveBuilder_OutputType
 	string OutputWaveType=s_value
-	string SearchString = "*" + basename + "*"+OutputWaveType+"_Set*"+num2str(SetNumber)
+	string SearchString = "*" + basename + "*"+OutputWaveType+"_*"+num2str(SetNumber)
 	ListOfWavesToGraph = wavelist(SearchString,";","")
 	
 	variable NoOfWavesInList = itemsinlist(ListOfWavesToGraph,";")
@@ -77,7 +77,7 @@ Function MakeStimSet()
 		controlInfo popup_WaveBuilder_OutputType
 		string OutputWaveType=s_value
 		
-		OutputWaveName=num2str(i)+"_"+setbasename+"_"+OutputWaveType+"_Set_"+num2str(setnumber)
+		OutputWaveName=num2str(i)+"_"+setbasename+"_"+OutputWaveType+"_"+num2str(setnumber)
 		duplicate/o WaveBuilderWave, $OutputWaveName
 		i+=1
 	while(i<=NoOfWavesInSet)
@@ -132,195 +132,195 @@ End
 
 
 Function MakeWaveBuilderWave()
-variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
-variable CustomOffset, CustumDeltaOffset, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta, EndFrequency, EndFrequencyDelta
-wave SegmentWaveType
-make/o/n=0 WaveBuilderWave=0
-make/o/n=0 SegmentWave=0
-
-variable NumberOfSegments
-controlinfo SetVar_WaveBuilder_NoOfSegments
-NumberOfSegments=v_value
-variable i = 0
-string cmd, NameOfWaveToBeDuplicated, NameOfWaveToBeDuplicated_NOQUOT
-String ParameterWaveName
-
-Variable/g  ParameterHolder
-String/g StringHolder
-do
-	//Load in parameters
-	ParameterWaveName="WP"
-
-	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 0, i, SegmentWaveType[i]
-	Execute cmd
-	Duration=ParameterHolder
+	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+	variable CustomOffset, CustumDeltaOffset, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta, EndFrequency, EndFrequencyDelta
+	wave SegmentWaveType
+	make/o/n=0 WaveBuilderWave=0
+	make/o/n=0 SegmentWave=0
 	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 1, i, SegmentWaveType[i]
-	Execute cmd
-	DeltaDur=ParameterHolder
+	variable NumberOfSegments
+	controlinfo SetVar_WaveBuilder_NoOfSegments
+	NumberOfSegments=v_value
+	variable i = 0
+	string cmd, NameOfWaveToBeDuplicated, NameOfWaveToBeDuplicated_NOQUOT
+	String ParameterWaveName
 	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 2, i, SegmentWaveType[i]		
-	Execute cmd
-	Amplitude=ParameterHolder
+	Variable/g  ParameterHolder
+	String/g StringHolder
+	do
+		//Load in parameters
+		ParameterWaveName="WP"
 	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 3, i, SegmentWaveType[i]
-	Execute cmd
-	DeltaAmp=ParameterHolder
-	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 4, i, SegmentWaveType[i]
-	Execute cmd
-	Offset=ParameterHolder
-	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 5, i, SegmentWaveType[i]
-	Execute cmd
-	DeltaOffset=ParameterHolder
-	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 6, i, SegmentWaveType[i]
-	Execute cmd
-	Frequency=ParameterHolder
-	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 7, i, SegmentWaveType[i]
-	Execute cmd
-	DeltaFreq=ParameterHolder
-	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 8, i, SegmentWaveType[i]
-	Execute cmd
-	PulseDuration=ParameterHolder
-	
-	sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 9, i, SegmentWaveType[i]
-	Execute cmd
-	DeltaPulsedur=ParameterHolder
-
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 10, i, SegmentWaveType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
-	Execute cmd
-	TauRise=ParameterHolder
-	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 12, i, SegmentWaveType[i]
-	Execute cmd
-	TauDecay1=ParameterHolder
-	
-	sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 14, i, SegmentWaveType[i]
-	Execute cmd
-	TauDecay2=ParameterHolder
-	
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 16, i, SegmentWaveType[i]
-	Execute cmd
-	TauDecay2Weight=ParameterHolder
-	
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 18, i, SegmentWaveType[i]
-	Execute cmd
-	CustomOffset=ParameterHolder
-	
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 19, i, SegmentWaveType[i]
-	Execute cmd
-	CustumDeltaOffset=ParameterHolder
-	
-	sprintf cmd, "StringHolder=%s[%d][%d]"  "WPT", 0, i// passes name of custom wave from a text wave
-	Execute cmd
-	NameOfWaveToBeDuplicated="'"+StringHolder+"'"
-	
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 20, i, SegmentWaveType[i]
-	Execute cmd
-	LowPassCutOff=ParameterHolder	
-	
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 21, i, SegmentWaveType[i]
-	Execute cmd
-	LowPassCutOffDelta=ParameterHolder	
-
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 22, i, SegmentWaveType[i]
-	Execute cmd
-	HighPassCutOff=ParameterHolder
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 0, i, SegmentWaveType[i]
+		Execute cmd
+		Duration=ParameterHolder
 		
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 23, i, SegmentWaveType[i]
-	Execute cmd
-	HighPassCutOffDelta=ParameterHolder	
-	
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 24, i, SegmentWaveType[i]
-	Execute cmd
-	EndFrequency=ParameterHolder	
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 1, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaDur=ParameterHolder
 		
-	sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 25, i, SegmentWaveType[i]
-	Execute cmd
-	EndFrequencyDelta=ParameterHolder	
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 2, i, SegmentWaveType[i]		
+		Execute cmd
+		Amplitude=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 3, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaAmp=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 4, i, SegmentWaveType[i]
+		Execute cmd
+		Offset=ParameterHolder
+		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 5, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaOffset=ParameterHolder
+		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 6, i, SegmentWaveType[i]
+		Execute cmd
+		Frequency=ParameterHolder
+		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 7, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaFreq=ParameterHolder
+		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 8, i, SegmentWaveType[i]
+		Execute cmd
+		PulseDuration=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 9, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaPulsedur=ParameterHolder
 	
-	//Make correct wave segment with above parameters
-	switch(SegmentWaveType[i])												// numeric switch
-		case 0:
-			SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= Square pulse , properties: Amplitude = "+num2str(Amplitude)+"  Duration = " + num2str(Duration)
-			break
-		case 1:
-			RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Duration = " + num2str(Duration)
-			break
-		case 2:
-			NoiseSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(LowPassCutOffDelta) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(HighPassCutOffDelta)
-			break
-		case 3:
-			SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= Sin wave, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
-			break
-		case 4:
-			SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= Saw tooth, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
-			break
-		case 5:
-			SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= SPT, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)+ "  Pulse duration = " + num2str(PulseDuration) + "  Pulse duration delta = " + num2str(DeltaPulsedur) 
-			break
-		case 6:
-			PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-			Note WaveBuilderWave, "Segment "+num2str(i)+"= PSC, properties: Tau rise = "+num2str(TauRise)+"  Tau Decay 1 = " + num2str(TauDecay1)+ "  Tau Decay 2 = " + num2str(TauDecay2) + "  Tau Decay 2 weight = " + num2str(TauDecay2Weight) 
-			break
-		case 7:
-			if(waveexists($stringholder)==1)
-				CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= Custom wave, properties: Name = "+stringholder  
-			else
-				if(cmpstr(stringholder,"") != 0)// checks if - none - is the "wave" selected in the pull down menu
-					print "Wave currently selected no longer exists. Please select a new wave from the pull down menu"
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 10, i, SegmentWaveType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
+		Execute cmd
+		TauRise=ParameterHolder
+		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 12, i, SegmentWaveType[i]
+		Execute cmd
+		TauDecay1=ParameterHolder
+		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 14, i, SegmentWaveType[i]
+		Execute cmd
+		TauDecay2=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 16, i, SegmentWaveType[i]
+		Execute cmd
+		TauDecay2Weight=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 18, i, SegmentWaveType[i]
+		Execute cmd
+		CustomOffset=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 19, i, SegmentWaveType[i]
+		Execute cmd
+		CustumDeltaOffset=ParameterHolder
+		
+		sprintf cmd, "StringHolder=%s[%d][%d]"  "WPT", 0, i// passes name of custom wave from a text wave
+		Execute cmd
+		NameOfWaveToBeDuplicated="'"+StringHolder+"'"
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 20, i, SegmentWaveType[i]
+		Execute cmd
+		LowPassCutOff=ParameterHolder	
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 21, i, SegmentWaveType[i]
+		Execute cmd
+		LowPassCutOffDelta=ParameterHolder	
+	
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 22, i, SegmentWaveType[i]
+		Execute cmd
+		HighPassCutOff=ParameterHolder
+			
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 23, i, SegmentWaveType[i]
+		Execute cmd
+		HighPassCutOffDelta=ParameterHolder	
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 24, i, SegmentWaveType[i]
+		Execute cmd
+		EndFrequency=ParameterHolder	
+			
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 25, i, SegmentWaveType[i]
+		Execute cmd
+		EndFrequencyDelta=ParameterHolder	
+		
+		//Make correct wave segment with above parameters
+		switch(SegmentWaveType[i])												// numeric switch
+			case 0:
+				SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= Square pulse , properties: Amplitude = "+num2str(Amplitude)+"  Duration = " + num2str(Duration)
+				break
+			case 1:
+				RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Duration = " + num2str(Duration)
+				break
+			case 2:
+				NoiseSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(LowPassCutOffDelta) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(HighPassCutOffDelta)
+				break
+			case 3:
+				SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= Sin wave, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
+				break
+			case 4:
+				SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= Saw tooth, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
+				break
+			case 5:
+				SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= SPT, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)+ "  Pulse duration = " + num2str(PulseDuration) + "  Pulse duration delta = " + num2str(DeltaPulsedur) 
+				break
+			case 6:
+				PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				Note WaveBuilderWave, "Segment "+num2str(i)+"= PSC, properties: Tau rise = "+num2str(TauRise)+"  Tau Decay 1 = " + num2str(TauDecay1)+ "  Tau Decay 2 = " + num2str(TauDecay2) + "  Tau Decay 2 weight = " + num2str(TauDecay2Weight) 
+				break
+			case 7:
+				if(waveexists($stringholder)==1)
+					CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
+					Note WaveBuilderWave, "Segment "+num2str(i)+"= Custom wave, properties: Name = "+stringholder  
+				else
+					if(cmpstr(stringholder,"") != 0)// checks if - none - is the "wave" selected in the pull down menu
+						print "Wave currently selected no longer exists. Please select a new wave from the pull down menu"
+					endif
 				endif
-			endif
-			break
-	endswitch
-	
-	//Add segment to final wave
-	//String WaveToAdd = "SegmentWave"
-	
-	
-	Concatenate/np=0 {SegmentWave}, WaveBuilderWave
-	
-i+=1	
-while(i<NumberOfSegments)
-SetScale/P x 0,0.005,"ms", WaveBuilderWave
-killvariables/z  ParameterHolder
-killstrings/z StringHolder
-killwaves/f/z SegmentWave
+				break
+		endswitch
+		
+		//Add segment to final wave
+		//String WaveToAdd = "SegmentWave"
+		
+		
+		Concatenate/np=0 {SegmentWave}, WaveBuilderWave
+		
+	i+=1	
+	while(i<NumberOfSegments)
+	SetScale/P x 0,0.005,"ms", WaveBuilderWave
+	killvariables/z  ParameterHolder
+	killstrings/z StringHolder
+	killwaves/f/z SegmentWave
 End
 
 
 Function WaveBuilderParameterWaves()
-Make /O /N =(30,100,8) WP 
-Make /T /O /N =(30,100) WPT
-Make/O/N = 100 SegmentWaveType
+	Make /O /N =(30,100,8) WP 
+	Make /T /O /N =(30,100) WPT
+	Make/O/N = 100 SegmentWaveType
 End
 
 Function ParamToPanel(WaveParametersWave)//
-variable WaveParametersWave
-wave WP
-string ControlName ="setvar_WaveBuilder_P"
-variable rowNo=0
-
-controlInfo setvar_WaveBuilder_SegmentEdit
-variable columnNo=v_value
-
-do
-ControlName="setvar_WaveBuilder_P"+num2str(RowNo)
-variable Parameter=WP[rowNo][ColumnNo][WaveParametersWave]
-SetVariable $ControlName value=_Num:Parameter
-RowNo+=1
-while(RowNo<23)
+	variable WaveParametersWave
+	wave WP
+	string ControlName ="setvar_WaveBuilder_P"
+	variable rowNo=0
+	
+	controlInfo setvar_WaveBuilder_SegmentEdit
+	variable columnNo=v_value
+	
+	do
+		ControlName="setvar_WaveBuilder_P"+num2str(RowNo)
+		variable Parameter=WP[rowNo][ColumnNo][WaveParametersWave]
+		SetVariable $ControlName value=_Num:Parameter
+		RowNo+=1
+	while(RowNo<23)
 
 End
 
@@ -369,14 +369,14 @@ Function SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset
 	SetScale/P x 0,0.005,"ms", SegmentWave
 	controlinfo check_Sin_Chirp
 	if(v_value==0)
-	SegmentWave=1 * Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
-	SegmentWave+=Offset
+		SegmentWave=1 * Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
+		SegmentWave+=Offset
 	else
-	 k0= ln(frequency/1000)
-	 k1= (ln(endFrequency/1000)-k0)/(duration)
-	 k2=2*pi*e^k0/k1
-	 k3= mod(k2,2*pi)		// LH040117: start on rising edge of sin and don't try to round.
-	SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
+		 k0= ln(frequency/1000)
+		 k1= (ln(endFrequency/1000)-k0)/(duration)
+		 k2=2*pi*e^k0/k1
+		 k3= mod(k2,2*pi)		// LH040117: start on rising edge of sin and don't try to round.
+		SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
 	endif
 
 
@@ -434,9 +434,6 @@ Function SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet
 			endif
 		while (((PulseStartTime+PulseDuration)/0.005)<numpnts(segmentWave))
 	endif	
-	
-	
-	
 	
 	SegmentWave+=Offset
 
@@ -536,13 +533,12 @@ string cmd
 	make/o/n=1 SegmentWave
 	
 	if(stringmatch(NameOfWaveToBeDuplicated,"''")==1)
-	SegmentWave+=CustomOffSet
-	print "Custom wave needs to be selected from pull down menu"
+		SegmentWave+=CustomOffSet
+		print "Custom wave needs to be selected from pull down menu"
 	else
-	sprintf cmd, "duplicate/o %s SegmentWave" NameOfWaveToBeDuplicated
-	execute cmd
-	SegmentWave+=CustomOffSet
-	
+		sprintf cmd, "duplicate/o %s SegmentWave" NameOfWaveToBeDuplicated
+		execute cmd
+		SegmentWave+=CustomOffSet
 	endif
 End
 
