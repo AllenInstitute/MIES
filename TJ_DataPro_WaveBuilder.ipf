@@ -1,5 +1,15 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Function WB_InitiateWaveBuilder()
+WB_MakeWaveBuilderFolders()
+DFREF saveDFR = GetDataFolderDFR()
+SetDataFolder  root:WaveBuilder:Data
+WB_WaveBuilderParameterWaves()
+String WaveBuilderPanel = "WaveBuilder()"
+execute WavebuilderPanel
+SetDataFolder saveDFR
+End
+
 Function WB_DisplaySetInPanel()
 	variable i=0
 	
@@ -268,7 +278,7 @@ Function WB_MakeWaveBuilderWave()
 				Note WaveBuilderWave, "Segment "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 2:
-				WB_NoiseSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff)
+				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff)
 				Note WaveBuilderWave, "Segment "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(DeltaLowPassCutOff) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(DeltaHighPassCutOff)
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
@@ -320,6 +330,18 @@ Function WB_WaveBuilderParameterWaves()
 	Make/O/N = 102 SegmentWaveType
 End
 
+Function WB_MakeWaveBuilderFolders()
+NewDataFolder /O root:WaveBuilder
+NewDataFolder /O root:WaveBuilder:Data
+NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
+NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:DAC
+NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:TTL
+NewDataFolder /O root:WaveBuilder:SavedStimulusSets
+NewDataFolder /O root:WaveBuilder:SavedStimulusSets:DAC
+NewDataFolder /O root:WaveBuilder:SavedStimulusSets:TTL
+End
+
+
 Function WB_ParamToPanel(WaveParametersWave)//
 	variable WaveParametersWave
 	wave WP=root:wavebuilder:data:wp
@@ -357,20 +379,20 @@ Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOf
 	SegmentWave+=Offset
 End
 	
-Function WB_NoiseSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, LowPassCutOff, LowPassCutOffDelta, HighPassCutOff, HighPassCutOffDelta
+Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff)
+	variable Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
 	SegmentWave=gnoise(Amplitude)
-	
-	If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
-		FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),500}SegmentWave
+	if(duration>0)
+		If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
+			FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),500}SegmentWave
+		endif
+		
+		if(HighPassCutOff > 0 && HighPassCutOff<100000)//  && HighPassCutOffDelta < 100000)
+			FilterFIR/DIM=0/Hi={(HighPassCutOff/200000),(HighPassCutOff/200000),500}SegmentWave
+		endif
 	endif
-	
-	If(HighPassCutOff > 0  && HighPassCutOffDelta < 100000)
-		FilterFIR/DIM=0/Hi={(HighPassCutOff/200000),(HighPassCutOff/200000),500}SegmentWave
-	endif
-	
 	SegmentWave+=offset
 End
 

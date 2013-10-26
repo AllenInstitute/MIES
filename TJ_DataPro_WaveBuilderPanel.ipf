@@ -683,6 +683,7 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	if(v_value==2)
 	WBP_LowPassDeltaLimits()
 	WBP_HighPassDeltaLimits()
+	WBP_CutOffCrossOver()
 	endif
 	
 	WB_MakeStimSet()
@@ -1294,3 +1295,21 @@ Function WBP_ButtonProc_LoadSet(ctrlName) : ButtonControl
 	String ctrlName
 	 WBP_LoadSet()
 End
+
+Function WBP_CutOffCrossOver()
+	variable HighPassCutOff, LowPassCutOff
+	controlinfo SetVar_WaveBuilder_P20//Low pass cut off frequency
+	LowPassCutOff=v_value
+	
+	controlinfo SetVar_WaveBuilder_P22//High pass cut off frequency
+	HighPassCutOff=v_value
+	
+	If(HighPassCutOff>=LowPassCutOff)
+	SetVariable SetVar_WaveBuilder_P20 value= _NUM:HighPassCutOff+1
+	endif
+	
+	If(LowPassCutOff<=HighPassCutOff)
+	SetVariable SetVar_WaveBuilder_P22 value= _NUM:LowPassCutOff-1
+	endif
+End
+
