@@ -1,13 +1,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function WB_InitiateWaveBuilder()
-WB_MakeWaveBuilderFolders()
-DFREF saveDFR = GetDataFolderDFR()
-SetDataFolder  root:WaveBuilder:Data
-WB_WaveBuilderParameterWaves()
-String WaveBuilderPanel = "WaveBuilder()"
-execute WavebuilderPanel
-SetDataFolder saveDFR
+	WB_MakeWaveBuilderFolders()
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder  root:WaveBuilder:Data
+	WB_WaveBuilderParameterWaves()
+	String WaveBuilderPanel = "WaveBuilder()"
+	execute WavebuilderPanel
+	SetDataFolder saveDFR
 End
 
 Function WB_DisplaySetInPanel()
@@ -34,7 +34,6 @@ Function WB_DisplaySetInPanel()
 	variable NoOfWavesInList = itemsinlist(ListOfWavesToGraph,";")
 	
 	do
-	
 		appendtograph/w=WaveBuilder#WaveBuilderGraph $stringfromlist(i,ListOfWavesToGraph,";")
 			if(mod(i,2)==0) // odd numbered waves get made black
 			ModifyGraph/w=WaveBuilder#WaveBuilderGraph rgb($stringfromlist(i,ListOfWavesToGraph,";"))=(13056,13056,13056)
@@ -404,7 +403,7 @@ Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOff
 	SetScale/P x 0,0.005,"ms", SegmentWave
 	controlinfo check_Sin_Chirp
 	if(v_value==0)
-		SegmentWave=1 * Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
+		SegmentWave= Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
 		SegmentWave+=Offset
 	else
 		 k0= ln(frequency/1000)
@@ -413,8 +412,6 @@ Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOff
 		 k3= mod(k2,2*pi)		// LH040117: start on rising edge of sin and don't try to round.
 		SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
 	endif
-
-
 End
 
 Function WB_SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
@@ -483,11 +480,6 @@ variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency
 	variable scale=1.2
 	variable baseline,peak
 	variable i
-	
-	//TauRise*=Scale
-	//TauDecay1*=(1/Scale)
-	//TauDecay2*=(1/Scale)
-	
 	
 	TauRise=1/TauRise
 	TauRise*=0.005
