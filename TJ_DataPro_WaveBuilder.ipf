@@ -429,7 +429,7 @@ Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, Off
 	Variable PulseStartTime=0
 	Variable EndPoint
 	Variable SegmentDuration
-	Variable NumberOfPulses = Frequency*(Duration/1000)+1
+	Variable NumberOfPulses = Frequency*(Duration/1000)//+1
 	Variable TotalPulseTime=PulseDuration*NumberOfPulses
 	Variable TotalBaselineTime=Duration-TotalPulseTime
 	Variable NumberOfInterPulseIntervals=NumberOfPulses-1

@@ -1300,16 +1300,16 @@ Function WBP_ReturnPulseDurationMax()//checks to see if the pulse duration in sq
 	
 	controlinfo SetVar_WaveBuilder_P0//Duration
 	Duration=v_value
-	
+	print duration
 	controlinfo SetVar_WaveBuilder_FD01//Frequency
 	Frequency=v_value
 	controlinfo SetVar_WaveBuilder_P8//Pulse Duration
 	PulseDuration=V_value
 	
-	MinPulseIntTotDuration=((duration/1000)*Frequency)*0.1
+	MinPulseIntTotDuration=((duration/1000)*(Frequency-1))*0.01
 	Duration-=MinPulseIntTotDuration
-	
-	MaxPulseDur=((duration/1000)/Frequency)*1000
-	return MaxPulseDur-0.009
+	print (duration/1000)/Frequency
+	MaxPulseDur=((duration/1000)/Frequency)
+	return (MaxPulseDur*1000)
 	
 End
