@@ -141,6 +141,7 @@ End
 Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
+	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount
 	wave SegmentWaveType
 	make/o/n=0 WaveBuilderWave=0
 	make/o/n=0 SegmentWave=0
@@ -266,6 +267,22 @@ Function WB_MakeWaveBuilderWave()
 		Execute cmd
 		DeltaEndFrequency=ParameterHolder	
 		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 26, i, SegmentWaveType[i]
+		Execute cmd
+		HighPassFiltCoefCount=ParameterHolder	
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 27, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaHighPassFiltCoefCount=ParameterHolder
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 28, i, SegmentWaveType[i]
+		Execute cmd
+		LowPassFiltCoefCount=ParameterHolder	
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 29, i, SegmentWaveType[i]
+		Execute cmd
+		DeltaLowPassFiltCoefCount=ParameterHolder
+				
 		//Make correct wave segment with above parameters
 		switch(SegmentWaveType[i])												// numeric switch
 			case 0:
@@ -277,7 +294,7 @@ Function WB_MakeWaveBuilderWave()
 				Note WaveBuilderWave, "Segment "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 2:
-				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff)
+				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount)
 				Note WaveBuilderWave, "Segment "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(DeltaLowPassCutOff) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(DeltaHighPassCutOff)
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
@@ -323,13 +340,16 @@ Function WB_MakeWaveBuilderWave()
 	killwaves/f/z SegmentWave
 End
 
-Function WB_WaveBuilderParameterWaves()
-	Make /O /N =(30,100,8) WP 
-	Make /T /O /N =(30,100) WPT
-	Make/O/N = 102 SegmentWaveType
+Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run wavebuilder panel
+	Make /O /N =(30,100,8) WP //WP=Wave Parameters
+	Make /T /O /N =(30,100) WPT//WPT=Wave Parameters Text (wave)
+	Make/O/N = 102 SegmentWaveType//Wave that stores the wave type used in each epoch
+	WP[20][][2]=10001//sets low pass filter to off (off value is related to samplling frequency)
+	WP[26][][2]=500//sets coefficent count for low pass filter to a reasonable and legal No
+	WP[28][][2]=500//sets coefficent count for high pass filter to a reasonable and legal No
 End
 
-Function WB_MakeWaveBuilderFolders()
+Function WB_MakeWaveBuilderFolders()//makes folders used by wavebuilder panel
 NewDataFolder /O root:WaveBuilder
 NewDataFolder /O root:WaveBuilder:Data
 NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
@@ -341,7 +361,7 @@ NewDataFolder /O root:WaveBuilder:SavedStimulusSets:TTL
 End
 
 
-Function WB_ParamToPanel(WaveParametersWave)//
+Function WB_ParamToPanel(WaveParametersWave)//passes the data from the WP wave to the panel
 	variable WaveParametersWave
 	wave WP=root:wavebuilder:data:wp
 	string ControlName ="setvar_WaveBuilder_P"
@@ -378,18 +398,18 @@ Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOf
 	SegmentWave+=Offset
 End
 	
-Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff)
-	variable Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff
+Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount HighPassCutOff,HighPassFiltCoefCount)
+	variable Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
 	SegmentWave=gnoise(Amplitude)
 	if(duration>0)
 		If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
-			FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),500}SegmentWave
+			FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),LowPassFiltCoefCount}SegmentWave
 		endif
 		
 		if(HighPassCutOff > 0 && HighPassCutOff<100000)//  && HighPassCutOffDelta < 100000)
-			FilterFIR/DIM=0/Hi={(HighPassCutOff/200000),(HighPassCutOff/200000),500}SegmentWave
+			FilterFIR/DIM=0/Hi={(HighPassCutOff/200000),(HighPassCutOff/200000),HighPassFiltCoefCount}SegmentWave
 		endif
 	endif
 	SegmentWave+=offset
