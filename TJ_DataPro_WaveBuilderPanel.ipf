@@ -678,6 +678,10 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	WBP_CutOffCrossOver()
 	endif
 	
+	if(v_value==5)
+	SetVariable SetVar_WaveBuilder_P8 limits={0,WBP_ReturnPulseDurationMax(),0.1}
+	endif
+	
 	WB_MakeStimSet()
 	WB_DisplaySetInPanel()
 
@@ -1291,3 +1295,21 @@ Function WBP_CutOffCrossOver()
 	endif
 End
 
+Function WBP_ReturnPulseDurationMax()//checks to see if the pulse duration in square pulse stimulus trains is too long
+	variable MaxPulseDur, PulseDuration, Frequency,Duration,MinPulseIntTotDuration
+	
+	controlinfo SetVar_WaveBuilder_P0//Duration
+	Duration=v_value
+	
+	controlinfo SetVar_WaveBuilder_FD01//Frequency
+	Frequency=v_value
+	controlinfo SetVar_WaveBuilder_P8//Pulse Duration
+	PulseDuration=V_value
+	
+	MinPulseIntTotDuration=((duration/1000)*Frequency)*0.1
+	Duration-=MinPulseIntTotDuration
+	
+	MaxPulseDur=((duration/1000)/Frequency)*1000
+	return MaxPulseDur-0.009
+	
+End
