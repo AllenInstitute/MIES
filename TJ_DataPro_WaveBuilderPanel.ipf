@@ -10,7 +10,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(ResizeControlsInfo)= A"!!,Fs!!#=o!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_NoOfSegments,limits={1,100,1},value= _NUM:5
+	SetVariable SetVar_WaveBuilder_NoOfSegments,limits={1,100,1},value= _NUM:3
 	SetVariable SetVar_WaveBuilder_P0,pos={311,34},size={150,16},proc=WBP_SetVarProc_UpdateParam,title="Duration"
 	SetVariable SetVar_WaveBuilder_P0,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo)= A"!!,HVJ,hnA!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -28,7 +28,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo)= A"!!,Fs!!#?!!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_StepCount,limits={1,99,1},value= _NUM:6
+	SetVariable SetVar_WaveBuilder_StepCount,limits={1,99,1},value= _NUM:2
 	SetVariable setvar_WaveBuilder_P10,pos={692,34},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Tau Rise"
 	SetVariable setvar_WaveBuilder_P10,userdata(tabnum)=  "6"
 	SetVariable setvar_WaveBuilder_P10,userdata(tabcontrol)=  "WBP_WaveType"
@@ -63,13 +63,13 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo)= A"!!,HVJ,hoH!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P2,value= _NUM:1
+	SetVariable SetVar_WaveBuilder_P2,value= _NUM:5
 	SetVariable SetVar_WaveBuilder_P3,pos={466,57},size={150,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P3,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo)= A"!!,IO!!#>r!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P3,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P3,value= _NUM:5
 	SetVariable setvar_WaveBuilder_SetNumber,pos={9,78},size={120,16},proc=WBP_SetVarProc_SetNo,title="Set Number"
 	SetVariable setvar_WaveBuilder_SetNumber,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable setvar_WaveBuilder_SetNumber,userdata(ResizeControlsInfo)= A"!!,@s!!#?U!!#@T!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -90,7 +90,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P6,userdata(tabnum)=  "3",value= _NUM:0
 	TabControl WBP_WaveType,pos={303,3},size={600,20},proc=ACL_DisplayTab
 	TabControl WBP_WaveType,userdata(tabcontrol)=  "WBP_WaveType"
-	TabControl WBP_WaveType,userdata(currenttab)=  "2"
+	TabControl WBP_WaveType,userdata(currenttab)=  "0"
 	TabControl WBP_WaveType,userdata(initialhook)=  "TabTJHook"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,HRJ,hi\"!!#D&!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -99,19 +99,19 @@ Window wavebuilder() : Panel
 	TabControl WBP_WaveType,tabLabel(2)="G-Noise",tabLabel(3)="Sin"
 	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
 	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load custom wave"
-	TabControl WBP_WaveType,value= 2
+	TabControl WBP_WaveType,value= 0
 	SetVariable setvar_WaveBuilder_SegmentEdit,pos={167,82},size={125,16},proc=WBP_SetVarProc_EpochToEdit,title="Epoch to edit"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo)= A"!!,G7!!#?]!!#@^!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_WaveBuilder_SegmentEdit,limits={0,99,1},value= _NUM:4
+	SetVariable setvar_WaveBuilder_SegmentEdit,limits={0,2,1},value= _NUM:1
 	SetVariable SetVar_WaveBuilder_P5,pos={466,81},size={150,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P5,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo)= A"!!,IO!!#?[!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P5,userdata(tabnum)=  "1",value= _NUM:10
+	SetVariable SetVar_WaveBuilder_P5,userdata(tabnum)=  "1",value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P7,pos={466,105},size={150,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P7,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P7,userdata(ResizeControlsInfo)= A"!!,IO!!#@6!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -137,7 +137,7 @@ Window wavebuilder() : Panel
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo)= A"!!,@s!!#@,!!#@R!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_WaveBuilder_baseName,fSize=8,value= _STR:"PPCurve"
+	SetVariable setvar_WaveBuilder_baseName,fSize=8,value= _STR:"InsertBaseName"
 	PopupMenu popup_WaveBuilder_SetList,pos={176,436},size={150,21},bodyWidth=150
 	PopupMenu popup_WaveBuilder_SetList,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo)= A"!!,G@!!#C>J,hqP!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -200,14 +200,14 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_DD01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_DD01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_DD01,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_OD00,pos={311,81},size={150,16},proc=WBP_SetVarProc_Offset,title="Offset"
+	SetVariable SetVar_WaveBuilder_OD00,pos={311,81},size={150,16},disable=1,proc=WBP_SetVarProc_Offset,title="Offset"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(ResizeControlsInfo)= A"!!,HVJ,hp1!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_OD00,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_DD02,pos={466,81},size={150,16},proc=WBP_SetVarProc_Delta01,title="Delta"
+	SetVariable SetVar_WaveBuilder_DD02,pos={466,81},size={150,16},disable=1,proc=WBP_SetVarProc_Delta01,title="Delta"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo)= A"!!,IO!!#?[!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -276,7 +276,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P18,userdata(ResizeControlsInfo)= A"!!,HVJ,hp1!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P18,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P18,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P18,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P18,value= _NUM:50
 	SetVariable SetVar_WaveBuilder_P19,pos={466,81},size={150,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P19,userdata(tabnum)=  "7"
 	SetVariable SetVar_WaveBuilder_P19,userdata(tabcontrol)=  "WBP_WaveType"
@@ -299,22 +299,22 @@ Window wavebuilder() : Panel
 	PopupMenu popup_WaveBuilder_ListOfWaves,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_ListOfWaves,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_ListOfWaves,mode=3,popvalue="WaveBuilderWave",value= #"WBP_RemoveGraphTracesFromList()"
-	SetVariable SetVar_WaveBuilder_P20,pos={686,32},size={150,30},proc=WBP_SetVarProc_UpdateParam,title="Low pass cut \roff frequency"
+	SetVariable SetVar_WaveBuilder_P20,pos={686,32},size={150,30},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Low pass cut \roff frequency"
 	SetVariable SetVar_WaveBuilder_P20,help={"Set to 100001 to turn off low pass filter"}
 	SetVariable SetVar_WaveBuilder_P20,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P20,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P20,userdata(ResizeControlsInfo)= A"!!,J<5QF+N!!#A%!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P20,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P20,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P20,limits={1,100001,100},value= _NUM:100001
-	SetVariable SetVar_WaveBuilder_P21,pos={840,32},size={91,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
+	SetVariable SetVar_WaveBuilder_P20,limits={1,100001,100},value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P21,pos={840,32},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P21,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P21,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P21,userdata(ResizeControlsInfo)= A"!!,Jc!!#=c!!#?o!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P21,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P21,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P21,limits={-inf,100000,1},value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P22,pos={684,97},size={152,30},proc=WBP_SetVarProc_UpdateParam,title="High pass cut \roff frequency"
+	SetVariable SetVar_WaveBuilder_P22,pos={684,97},size={152,30},disable=1,proc=WBP_SetVarProc_UpdateParam,title="High pass cut \roff frequency"
 	SetVariable SetVar_WaveBuilder_P22,help={"Set to zero to turn off high pass filter"}
 	SetVariable SetVar_WaveBuilder_P22,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P22,userdata(tabcontrol)=  "WBP_WaveType"
@@ -322,7 +322,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P22,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P22,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P22,limits={0,100000,100},value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P23,pos={841,98},size={91,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
+	SetVariable SetVar_WaveBuilder_P23,pos={841,98},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P23,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P23,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P23,userdata(ResizeControlsInfo)= A"!!,Jc5QF-2!!#?o!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -367,7 +367,7 @@ Window wavebuilder() : Panel
 	CheckBox check_SPT_Poisson,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SPT_Poisson,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_Poisson,userdata(tabnum)=  "5"
-	CheckBox check_SPT_Poisson,userdata(tabcontrol)=  "WBP_WaveType",value= 0
+	CheckBox check_SPT_Poisson,userdata(tabcontrol)=  "WBP_WaveType",value= 1
 	SetVariable SetVar_WaveBuilder_P24,pos={311,129},size={149,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="End Frequency"
 	SetVariable SetVar_WaveBuilder_P24,userdata(ResizeControlsInfo)= A"!!,HVJ,hq;!!#A$!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P24,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -394,23 +394,24 @@ Window wavebuilder() : Panel
 	Button button_WaveBuilder_LoadSet,userdata(ResizeControlsInfo)= A"!!,BY!!#C>J,hqN!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_WaveBuilder_LoadSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_WaveBuilder_LoadSet,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P27,pos={841,65},size={91,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
+	SetVariable SetVar_WaveBuilder_P27,pos={841,65},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P27,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P27,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P27,limits={-inf,99999,1},value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P26,pos={699,65},size={137,30},proc=WBP_SetVarProc_UpdateParam,title="High pass  \rcoef No."
-	SetVariable SetVar_WaveBuilder_P26,help={"A larger number gives better stop-band rejection. A good number to start with is 101."}
+	SetVariable SetVar_WaveBuilder_P26,pos={699,65},size={137,30},disable=1,proc=WBP_SetVarProc_UpdateParam,title="High pass  \rcoef No."
+	SetVariable SetVar_WaveBuilder_P26,help={"A larger number gives better stop-band rejection. A good number to start with is 101. Values can range between 3 and 32767."}
 	SetVariable SetVar_WaveBuilder_P26,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P26,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_P26,limits={1,1000,50},value= _NUM:500
-	SetVariable SetVar_WaveBuilder_P29,pos={842,129},size={91,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
+	SetVariable SetVar_WaveBuilder_P26,limits={3,32767,50},value= _NUM:550
+	SetVariable SetVar_WaveBuilder_P29,pos={842,129},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P29,userdata(tabnum)=  "2"
+	SetVariable SetVar_WaveBuilder_P29,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P29,limits={-inf,99999,1},value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P28,pos={701,129},size={135,30},proc=WBP_SetVarProc_UpdateParam,title="Low pass  \rcoef No."
-	SetVariable SetVar_WaveBuilder_P28,help={"A larger number gives better stop-band rejection. A good number to start with is 101."}
+	SetVariable SetVar_WaveBuilder_P28,pos={701,129},size={135,30},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Low pass  \rcoef No."
+	SetVariable SetVar_WaveBuilder_P28,help={"A larger number gives better stop-band rejection. A good number to start with is 101. Values can range between 3 and 32767."}
 	SetVariable SetVar_WaveBuilder_P28,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P28,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_P28,limits={1,1000,50},value= _NUM:500
+	SetVariable SetVar_WaveBuilder_P28,limits={3,32767,50},value= _NUM:500
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF19J,fQLzzzzzzzzzzzzzzzzzzzz"
@@ -418,14 +419,8 @@ Window wavebuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-*T-G%G-*Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3e2*4<.8OQ!%3^uFt7o`,K75?nc;FO8U:K'ha8P`)B/Mo4E"
-	String fldrSav0= GetDataFolder(1)
-	SetDataFolder root:WaveBuilder:Data:
-	Display/W=(0,172,671,397)/FG=(,,FR,UGH0)/HOST=#  '1_PPCurve_DAC_0','2_PPCurve_DAC_0'
-	AppendToGraph '3_PPCurve_DAC_0','4_PPCurve_DAC_0','5_PPCurve_DAC_0','6_PPCurve_DAC_0'
-	SetDataFolder fldrSav0
+	Display/W=(0,172,671,397)/FG=(,,FR,UGH0)/HOST=# 
 	ModifyGraph frameInset=2
-	ModifyGraph rgb('1_PPCurve_DAC_0')=(13056,13056,13056),rgb('3_PPCurve_DAC_0')=(13056,13056,13056)
-	ModifyGraph rgb('5_PPCurve_DAC_0')=(13056,13056,13056)
 	SetWindow kwTopWin,userdata(tabcontrol)=  "WBP_WaveType"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!,Ct!!#A/!!#E!5QF0#!!!!\"zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -576,7 +571,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleBaseName(), 1, "")// moves 2D wave that contains stimulus set to DAC or TTL folder
 	WBP_SaveSetParam()//Saves set parameters with base name in appropriate ttl of dac folder
 	
-	SetVariable setvar_WaveBuilder_baseName value= _STR:"Insert Base Name"
+	SetVariable setvar_WaveBuilder_baseName value= _STR:"InsertBaseName"
 	SetDataFolder saveDFR
 End
 
@@ -699,6 +694,10 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	
 	if(v_value==5)
 	SetVariable SetVar_WaveBuilder_P8 limits={0,WBP_ReturnPulseDurationMax(),0.1}
+	controlinfo SetVar_WaveBuilder_P8
+		if(v_value>WBP_ReturnPulseDurationMax())
+		SetVariable SetVar_WaveBuilder_P8 value= _NUM:WBP_ReturnPulseDurationMax()
+		endif
 	endif
 	
 	WB_MakeStimSet()

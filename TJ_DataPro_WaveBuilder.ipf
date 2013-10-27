@@ -61,7 +61,7 @@ Function WB_RemoveAndKillTracesOnGraph()
 End
 
 Function WB_MakeStimSet()
-	wave  WaveBuilderWave
+	wave  WaveBuilderWave = root:wavebuilder:data:wavebuilderwave
 	variable i = 1
 	
 	wave wp//
@@ -341,6 +341,7 @@ Function WB_MakeWaveBuilderWave()
 End
 
 Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run wavebuilder panel
+	Make /O /N=100 WaveBuilderWave
 	Make /O /N =(30,100,8) WP //WP=Wave Parameters
 	Make /T /O /N =(30,100) WPT//WPT=Wave Parameters Text (wave)
 	Make/O/N = 102 SegmentWaveType//Wave that stores the wave type used in each epoch
