@@ -444,6 +444,8 @@ End
 Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
 	WBP_DeleteSet()
+	controlupdate /W=wavebuilder popup_WaveBuilder_SetList
+	PopupMenu popup_WaveBuilder_SetList mode=1
 End
 
 Function WBP_SetVarProc_StepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -458,6 +460,7 @@ Function WBP_SetVarProc_StepCount(ctrlName,varNum,varStr,varName) : SetVariableC
 	WB_MakeStimSet()
 	WB_DisplaySetInPanel()
 	SetDataFolder saveDFR
+	
 End
 
 Function WBP_ButtonProc_AutoScale(ctrlName) : ButtonControl
@@ -573,6 +576,8 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	
 	SetVariable setvar_WaveBuilder_baseName value= _STR:"InsertBaseName"
 	SetDataFolder saveDFR
+	
+	controlupdate /W = wavebuilder popup_WaveBuilder_SetList
 End
 
 
@@ -936,14 +941,16 @@ Function WBP_SetVarProc_SetSearchString(ctrlName,varNum,varStr,varName) : SetVar
 	String varName
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	controlinfo group_WaveBuilder_FolderPath
+	string FolderPath = s_value
+
 	
-	String cmd
-	//String SearchString = VarStr
+	SetDataFolder FolderPath
 
-	variable i = 0
+	string ListOfWavesInFolder="\"- none - ;" +Wavelist(WBP_SearchString(),";","TEXT:0,MAXCOLS:1")+"\""
+	PopupMenu popup_WaveBuilder_ListOfWaves value=#ListOfWavesInFolder
 
-	PopupMenu popup_WaveBuilder_ListOfWaves value= WBP_RemoveGraphTracesFromList()
+	//PopupMenu popup_WaveBuilder_ListOfWaves value= WBP_RemoveGraphTracesFromList()
 	SetDataFolder saveDFR
 End
 
@@ -986,9 +993,15 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 	String popStr
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
 	
-	wave/t WPT
+	controlinfo group_WaveBuilder_FolderPath
+	string FolderPath = s_value
+
+	
+	SetDataFolder FolderPath
+	//SetDataFolder root:WaveBuilder:Data
+	
+	wave/t WPT = root:WaveBuilder:Data:WPT
 		//CUSTOM WAVE CODE
 	string cmd
 	variable SegmentNo
@@ -998,19 +1011,20 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 		
 		
 		If(stringmatch(popStr,"- none -")==0)// checks to make sure "- none -" is not selected as a wave type	
-		sprintf cmd, "WPT[%d][%d]= nameofwave('%s')" 0, SegmentNo, popStr
+		sprintf cmd, "root:WaveBuilder:Data:WPT[%d][%d]= nameofwave(%s)" 0, SegmentNo, FolderPath+popStr
+		print cmd
 		execute cmd
 		else
 		WPT[0][SegmentNo]= ""
 			
 		
 		endif
-	
+		SetDataFolder saveDFR
+
 	//END OF CUSTOM WAVE CODE
 	WB_MakeStimSet()
 	WB_DisplaySetInPanel()
 	
-	SetDataFolder saveDFR
 
 End
 
@@ -1324,4 +1338,71 @@ Function WBP_ReturnPulseDurationMax()//checks to see if the pulse duration in sq
 	MaxPulseDur=((duration/1000)/Frequency)
 	return (MaxPulseDur*1000)
 	
+End
+
+Function/t WBP_ReturnFoldersList(ParentFolderPath)
+string ParentFolderPath
+string FolderNameList =""
+string FolderName =""
+DFREF DataFolder = $ParentFolderPath
+variable i = 0
+
+do
+FolderName = GetIndexedObjNameDFR(DataFolder, 4, i)
+if (strlen(FolderName)==0)
+break
+endif
+FolderNameList+=FolderName+";"
+i+=1
+while(1)
+
+return FolderNameList
+End
+
+//have a text wave that contains the path to every folder!! Where do you keep this wave??
+
+Function WBP_ListOfAllFolderNames()
+String FolderNameList
+String MostRecentParentFolderList
+
+
+
+End
+
+Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
+	String ctrlName
+	Variable popNum
+	String popStr
+	
+	string FolderPath
+	string cmd
+	string value 
+	string PopMenuSubProc
+	string ListOfWavesInFolder
+	if (popNum != 1)
+		if (cmpstr(" root:",popstr) !=0 )
+			controlinfo group_WaveBuilder_FolderPath
+			
+			FolderPath = s_value + popstr
+			//FolderPath = "root:" + popstr + ":"
+		else
+			//print "here"
+			FolderPath="root:"
+		endif
+	
+	PopMenuSubProc="\"- none -; root:;\"+WBP_ReturnFoldersList(\""+ FolderPath +"\")"
+	PopupMenu popup_WaveBuilder_FolderList value= #PopMenuSubProc
+	setdatafolder FolderPath
+	GroupBox group_WaveBuilder_FolderPath title=getdatafolder(1)
+	else
+	GroupBox group_WaveBuilder_FolderPath title=getdatafolder(1)
+	endif
+
+PopupMenu popup_WaveBuilder_FolderList mode=1
+PopupMenu popup_WaveBuilder_ListOfWaves mode=1
+ListOfWavesInFolder="\"- none - ;" + Wavelist(WBP_SearchString(),";","TEXT:0,MAXCOLS:1")+"\""
+PopupMenu popup_WaveBuilder_ListOfWaves value=#ListOfWavesInFolder
+controlupdate /A /W = wavebuilder 
+
+setdatafolder root:
 End
