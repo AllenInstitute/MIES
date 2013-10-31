@@ -488,7 +488,6 @@ Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, Off
 	Variable Poisson = v_value
 	EndPoint=NumberOfPulses
 	
-	
 	if (Poisson==0)
 		do
 		SegmentWave[(PulseStartTime/0.005), ((PulseStartTime/0.005)+(PulseDuration/0.005))]=Amplitude
@@ -547,11 +546,13 @@ variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency
 End
 
 Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
-variable CustomOffset
-string NameOfWaveToBeDuplicated
-string cmd
+	variable CustomOffset
+	string NameOfWaveToBeDuplicated
+	string cmd
+	
 	controlinfo group_WaveBuilder_FolderPath
 	NameOfWaveToBeDuplicated=s_value+NameOfWaveToBeDuplicated
+	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	
