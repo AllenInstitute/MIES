@@ -107,8 +107,6 @@ Function WB_MakeStimSet()
 	setdatafolder saveDFR
 End
 
-
-
 Function WB_AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
 wave WP=root:WaveBuilder:Data:WP//
 	
@@ -149,7 +147,6 @@ wave WP=root:WaveBuilder:Data:WP//
 	i+=2
 	while(i<25)
 End
-
 
 Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
@@ -375,14 +372,14 @@ Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run waveb
 End
 
 Function WB_MakeWaveBuilderFolders()//makes folders used by wavebuilder panel
-NewDataFolder /O root:WaveBuilder
-NewDataFolder /O root:WaveBuilder:Data
-NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
-NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:DAC
-NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:TTL
-NewDataFolder /O root:WaveBuilder:SavedStimulusSets
-NewDataFolder /O root:WaveBuilder:SavedStimulusSets:DAC
-NewDataFolder /O root:WaveBuilder:SavedStimulusSets:TTL
+	NewDataFolder /O root:WaveBuilder
+	NewDataFolder /O root:WaveBuilder:Data
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:DAC
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:TTL
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSets
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:DAC
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:TTL
 End
 
 
@@ -571,7 +568,6 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 End
 
 //=====================================================================================
-
 //=====================================================================================
 
 
