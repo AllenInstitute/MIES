@@ -1654,6 +1654,10 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	String SearchString
 	
+	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+	
+	SetDataFolder root:WaveBuilder:SavedStimulusSets:DAC:
+	
 	controlinfo/w=DataPro_ITC1600 Search_DA_00
 	if(strlen(s_value)==0)
 	SearchString="*dac*"
@@ -1661,24 +1665,25 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	SearchString = s_value
 	endif
 	
-	
 	String DAPopUpMenuName// = "Wave_DA_"
 	string IndexEndPopUpMenuName
-	String FirstTwoMenuItems = "\"- none -; TestPulse_DAC;\""
-	SearchString= "\"" + SearchString + "\"" +","+ "\""+";" +"\""+","+"\""+"\""
-	String Cmd
+	String FirstTwoMenuItems = "\"- none -; TestPulse;"
 	variable i = 0
+	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+	print popupvalue
 	
 	do
+	
 	DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-	sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" DAPopUpMenuName,  FirstTwoMenuItems, SearchString
-	execute cmd	
+	PopupMenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+	
 	IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-	sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" IndexEndPopUpMenuName,  FirstTwoMenuItems, SearchString
-	execute cmd	
+	PopupMenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
+
 	
 	i+=1
 	while(i<8)
+	setdatafolder saveDFR
 End
 
 
@@ -1691,43 +1696,46 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 	String TTL_No = ctrlName[11,inf]
 	String TTLPopUpMenuName = "Wave_TTL_" + TTL_No
 	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
-	String FirstTwoMenuItems = "\"- none -;\""
+	String FirstTwoMenuItems = "\"- none -;"
 	String SearchString
-	String Cmd
+	String value
 	variable i=0
 	
 	controlinfo/w=DataPro_ITC1600 SearchUniversal_TTL_00
 	if(v_value==1)
 		controlinfo/w=DataPro_ITC1600 Search_TTL_00
 		If(strlen(s_value)==0)
-		SearchString= "\"" + "*TTL*" + "\"" +","+ "\""+";" +"\""+","+"\""+"\""
+		SearchString= "*TTL*"
 		else
-		SearchString= "\""  +s_value+ "\"" +","+ "\""+";" +"\""+","+"\""+"\""
+		SearchString= s_value
 		endif
+		
+		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
 		
 		do
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" TTLPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd	
+		popupmenu $TTLPopUpMenuName win=datapro_itc1600, value=#value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" TTLIndexEndPopMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd	
+		popupmenu $TTLIndexEndPopMenuName win=datapro_itc1600, value=#value
 		i+=1
 		while(i<8)
 	
 	else
 		If(strlen(varstr)==0)
-		SearchString= "\"" + "*TTL*" + "\"" +","+ "\""+";" +"\""+","+"\""+"\""
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" TTLPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" TTLIndexEndPopMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd
+		SearchString = "*TTL*"
+		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
+		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+		popupmenu $TTLPopUpMenuName win=datapro_itc1600, value=#value
+		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+		popupmenu $TTLIndexEndPopMenuName win=datapro_itc1600, value=#value
+		
 		else
-		SearchString= "\""  +varstr+ "\"" +","+ "\""+";" +"\""+","+"\""+"\""
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" TTLPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" TTLIndexEndPopMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd
+		SearchString= varstr
+		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
+		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+		popupmenu $TTLPopUpMenuName win=datapro_itc1600, value=#value
+		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+		popupmenu $TTLIndexEndPopMenuName win=datapro_itc1600, value=#value
 		endif
 	endif
 End
@@ -1794,45 +1802,50 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	String DA_No = ctrlName[10,inf]
 	String DAPopUpMenuName = "Wave_DA_" + DA_No
 	String IndexEndPopUpMenuName="Popup_DA_IndexEnd_"+ DA_No
-	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
+	String FirstTwoMenuItems = "\"- none -; TestPulse;"
 	String SearchString
-	String Cmd
+	string popupValue
 	variable i=0
 	
-	controlinfo/w=DataPro_ITC1600 SearchUniversal_DA_00
+	DFREF saveDFR = GetDataFolderDFR()
+	setdatafolder root:waveBuilder:savedStimulusSets:DAC
+	controlinfo/w=DataPro_ITC1600 SearchUniversal_DA_00	
+	
+	
 	if(v_value==1)
 		controlinfo/w=DataPro_ITC1600 Search_DA_00
 		If(strlen(s_value)==0)
-		SearchString= "\"" + "*DAC*" + "\"" +","+ "\""+";" +"\""+","+"\""+"\""
+			SearchString= "*DAC*"
 		else
-		SearchString= "\""  +s_value+ "\"" +","+ "\""+";" +"\""+","+"\""+"\""
+			SearchString=s_value
 		endif
 		
 		do
-		DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" DAPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd	
-		IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" IndexEndPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd	
-		i+=1
+			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
+			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+			popupmenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
+			popupmenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
+			i+=1
 		while(i<8)
 	
 	else
 		If(strlen(varstr)==0)
-		SearchString= "\"" + "*DAC*" + "\"" +","+ "\""+";" +"\""+","+"\""+"\""
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" DAPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" IndexEndPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd	
+			SearchString= "*DAC*"
+			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
+			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+			popupmenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
+			popupmenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
 		else
-		SearchString= "\""  +varstr+ "\"" +","+ "\""+";" +"\""+","+"\""+"\""
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" DAPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd
-		sprintf Cmd, 	"PopupMenu %s value =%s + Wavelist(%s)" IndexEndPopUpMenuName,  FirstTwoMenuItems, SearchString
-		execute cmd	
+			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
+			popupValue=FirstTwoMenuItems+wavelist(varstr,";","")+"\""
+			popupmenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
+			popupmenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
 		endif
 	endif
+	setdatafolder saveDFR
 End
 
 Function DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure checks to see that a DAC or TTL wave is selected before turning on the corresponding channel
@@ -2080,6 +2093,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	string ListOfWavesInFolder
 	string folderPath
 	string folder
+	
 	if(stringmatch(ctrlName,"*indexEnd*")!=1)//makes sure it is the index start wave
 		if(popnum==1)//if the user selects "none" the channel is automatically turned off
 		CheckBoxName[0,3]="check"
@@ -2088,17 +2102,15 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	endif
 	
 	if(popnum==2)
-	popupmenu $ctrlname win=DataPro_ITC1600, mode = 3// prevents the user from selecting the testpulse
+		popupmenu $ctrlname win=DataPro_ITC1600, mode = 3// prevents the user from selecting the testpulse
 	endif
-	
-	//Wave_TTL_00
-	//Wave_DA_00
+
 	if(stringmatch(ctrlName,"*DA*")==1)
-	FolderPath= "root:waveBuilder:savedStimulusSets:DAC"
-	folder="*DAC*"
+		FolderPath= "root:waveBuilder:savedStimulusSets:DAC"
+		folder="*DAC*"
 	else
-	FolderPath= "root:waveBuilder:savedStimulusSets:TTL"
-	folder="*TTL*"
+		FolderPath= "root:waveBuilder:savedStimulusSets:TTL"
+		folder="*TTL*"
 	endif
 	
 	setdatafolder FolderPath// sets the wavelist for the DAC popup menu to show all waves in DAC folder
@@ -2163,9 +2175,7 @@ Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd)
 				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
 				break
 				endswitch
-
 			controlinfo/w=datapro_itc1600 $popupMenuName
-
 			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";"))==1 || cmpstr(s_value,"")==0)
 				PopupMenu  $popupMenuName win=datapro_itc1600, mode=v_value-1
 				controlinfo/w=datapro_itc1600 $popupMenuName
