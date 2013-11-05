@@ -474,7 +474,20 @@ End
 	
 Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
+	String DAorTTL
+	controlinfo /W=wavebuilder popup_WaveBuilder_SetList
+	if(cmpstr(s_value,"*DA*")==1)
+	DAorTTL="DA"
+	else
+	DAorTTL="TTL"
+	endif
+	
+	string popupMenuSelectedItmes = ITCP_PopupMenuWaveNameList(DAorTTL)
+	print popupMenuSelectedItmes
 	WBP_DeleteSet()
+	WBP_UpdateITCPanelPopUps()
+	ITCP_RestorePopupMenuSelection(popupMenuSelectedItmes, DAorTTL)
+	
 	controlupdate /W=wavebuilder popup_WaveBuilder_SetList
 	PopupMenu popup_WaveBuilder_SetList mode=1
 End
@@ -605,6 +618,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleBaseName(), 1, "")// moves 2D wave that contains stimulus set to DAC or TTL folder
 	WBP_SaveSetParam()//Saves set parameters with base name in appropriate ttl of dac folder
 	WBP_UpdateITCPanelPopUps()
+	
 	SetVariable setvar_WaveBuilder_baseName value= _STR:"InsertBaseName"
 	SetDataFolder saveDFR
 	
@@ -1259,6 +1273,7 @@ string SetName
 		FolderPath="root:WaveBuilder:SavedStimulusSets:TTL"
 		SetDataFolder $FolderPath
 		Killwaves /F /Z $SetName
+		
 	else
 		FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DAC"
 		SetDataFolder $FolderPath
@@ -1427,7 +1442,7 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 End
 
 Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the DAC or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
-	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d
+	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d, ListOfItemsSelectedInPopup, DAorTTL
 	variable NoOfControls, i
 	controlinfo /W =waveBuilder popup_WaveBuilder_OutputType
 	WB_WaveType=s_value
@@ -1438,13 +1453,16 @@ Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the
 	NoOfControls = TotNoOfControlType("Wave", "DA")
 	setDataFolder root:waveBuilder:savedStimulusSets:DAC
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DAC*",";","")+"\""
+	//ListOfItemsSelectedInPopup =  ITCP_PopupMenuWaveNameList("DA")
+	DAorTTL="DA"
 	else
 	ctrlName0="Wave_TTL_"
 	ctrlName1="Popup_TTL_IndexEnd_"
 	NoOfControls = TotNoOfControlType("Wave", "TTL")
 	setDataFolder root:waveBuilder:savedStimulusSets:DAC
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
-
+	ListOfItemsSelectedInPopup =  ITCP_PopupMenuWaveNameList("TTL")// saves items selected in popupmenu so that they can be restored after list is recreated
+	DAorTTL="TTL"
 	endif
 
 	do
@@ -1464,5 +1482,7 @@ Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the
 
 	i+=1
 	while(i<noOfControls)
+	
+	//ITCP_RestorePopupMenuSelection(ListOfItemsSelectedInPopup, DAorTTL)
 	setdatafolder root:
 End

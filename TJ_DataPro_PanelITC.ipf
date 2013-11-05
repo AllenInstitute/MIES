@@ -2119,3 +2119,40 @@ string ListOfDataWaves=wavelist("Sweep_*",";","MINCOLS:2")
 SetVariable SetVar_Sweep limits={0,itemsinlist(ListOfDataWaves),1}
 	
 End
+
+Function/t ITCP_PopupMenuWaveNameList(DAorTTL)// returns the names of the items in the popmenu controls in a list
+	string DAorTTL
+	string ListOfSelectedWaveNames=""
+	string popupMenuName
+	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL)
+	variable i
+	
+	do
+		popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
+		controlInfo/w=datapro_itc1600 $popupMenuName
+		ListOfSelectedWaveNames+=s_value + ";"
+		i+=1
+	while(i<noOfPopups)
+	
+	return ListOfSelectedWaveNames
+End
+
+Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL)
+	string ListOfSelections, DAorTTL
+	string popupMenuName
+	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL)
+	variable i
+	
+		do
+			popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
+			controlinfo/w=datapro_itc1600 $popupMenuName
+			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";"))==1 || cmpstr(s_value,"")==0)
+				PopupMenu  $popupMenuName win=datapro_itc1600, mode=v_value-1
+				controlinfo/w=datapro_itc1600 $popupMenuName
+				if(cmpstr(s_value,"testpulse")==0)
+				PopupMenu  $popupMenuName win=datapro_itc1600, mode=v_value-1
+				endif
+			endif
+			i+=1
+		while(i<noOfPopups)
+End
