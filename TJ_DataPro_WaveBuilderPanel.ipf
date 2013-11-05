@@ -604,7 +604,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	WBP_RemoveAndKillWavesOnGraph("WaveBuilder#WaveBuilderGraph")//removes waves displayed in wave builder
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleBaseName(), 1, "")// moves 2D wave that contains stimulus set to DAC or TTL folder
 	WBP_SaveSetParam()//Saves set parameters with base name in appropriate ttl of dac folder
-	
+	WBP_UpdateITCPanelPopUps()
 	SetVariable setvar_WaveBuilder_baseName value= _STR:"InsertBaseName"
 	SetDataFolder saveDFR
 	
@@ -1252,7 +1252,7 @@ string SetName
 	WPTName="WPT_"+SetName
 	SegmentWaveTypeName="SegmentWaveType_"+SetName
 	
-	If(stringmatch(SetName, "*TTL*")==1)// are you loading a DAC or TTL set?
+	If(stringmatch(SetName, "*TTL*")==1)// are you deleting a DAC or TTL set?
 		FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
 		SetDataFolder $FolderPath
 		Killwaves /F /Z $WPName, $WPTName, $SegmentWaveTypeName
@@ -1423,5 +1423,46 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 	PopupMenu popup_WaveBuilder_ListOfWaves value=#ListOfWavesInFolder
 	controlupdate /A /W = wavebuilder 
 
+	setdatafolder root:
+End
+
+Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the DAC or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
+	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d
+	variable NoOfControls, i
+	controlinfo /W =waveBuilder popup_WaveBuilder_OutputType
+	WB_WaveType=s_value
+	
+	if(stringmatch(WB_WaveType,"DAC")==1)//if statement determines if the set being saved is a DAC or TTL
+	ctrlName0="Wave_DA_"
+	ctrlName1="Popup_DAC_IndexEnd_"
+	NoOfControls = TotNoOfControlType("Wave", "DA")
+	setDataFolder root:waveBuilder:savedStimulusSets:DAC
+	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DAC*",";","")+"\""
+	else
+	ctrlName0="Wave_TTL_"
+	ctrlName1="Popup_TTL_IndexEnd_"
+	NoOfControls = TotNoOfControlType("Wave", "TTL")
+	setDataFolder root:waveBuilder:savedStimulusSets:DAC
+	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
+
+	endif
+
+	do
+		ctrlName0d=ctrlName0
+		ctrlName1d=ctrlName1
+		if(i<10)// allows for more than 10 controls but no more than 20
+		ctrlName0d+="0"+num2str(i)
+		ctrlName1d+="0"+num2str(i)
+		else
+		ctrlName0d+=num2str(i)
+		ctrlName1d+=num2str(i)
+		endif
+	PopupMenu  $ctrlName0d win=dataPro_ITC1600, value=#ListOfWavesInFolder
+	controlupdate/w=dataPro_ITC1600 $ctrlname0d
+	PopupMenu  $ctrlName1d win=dataPro_ITC1600, value=#ListOfWavesInFolder
+	controlupdate/w=dataPro_ITC1600 $ctrlname1d
+
+	i+=1
+	while(i<noOfControls)
 	setdatafolder root:
 End
