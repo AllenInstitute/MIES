@@ -475,18 +475,22 @@ End
 Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
 	String DAorTTL
+	
 	controlinfo /W=wavebuilder popup_WaveBuilder_SetList
-	if(cmpstr(s_value,"*DA*")==1)
+	print s_value
+	if(stringmatch(s_value,"*DA*")==1)
 	DAorTTL="DA"
 	else
 	DAorTTL="TTL"
 	endif
 	
-	string popupMenuSelectedItmes = ITCP_PopupMenuWaveNameList(DAorTTL)
-	print popupMenuSelectedItmes
+	print daorttl
+	string popupMenuSelectedItemsStart = ITCP_PopupMenuWaveNameList(DAorTTL,0)
+	string popupMenuSelectedItemsEnd = ITCP_PopupMenuWaveNameList(DAorTTL,1)
 	WBP_DeleteSet()
 	WBP_UpdateITCPanelPopUps()
-	ITCP_RestorePopupMenuSelection(popupMenuSelectedItmes, DAorTTL)
+	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0)
+	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1)
 	
 	controlupdate /W=wavebuilder popup_WaveBuilder_SetList
 	PopupMenu popup_WaveBuilder_SetList mode=1
@@ -1449,19 +1453,17 @@ Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the
 	
 	if(stringmatch(WB_WaveType,"DAC")==1)//if statement determines if the set being saved is a DAC or TTL
 	ctrlName0="Wave_DA_"
-	ctrlName1="Popup_DAC_IndexEnd_"
+	ctrlName1="Popup_DA_IndexEnd_"
 	NoOfControls = TotNoOfControlType("Wave", "DA")
 	setDataFolder root:waveBuilder:savedStimulusSets:DAC
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DAC*",";","")+"\""
-	//ListOfItemsSelectedInPopup =  ITCP_PopupMenuWaveNameList("DA")
 	DAorTTL="DA"
 	else
 	ctrlName0="Wave_TTL_"
 	ctrlName1="Popup_TTL_IndexEnd_"
 	NoOfControls = TotNoOfControlType("Wave", "TTL")
-	setDataFolder root:waveBuilder:savedStimulusSets:DAC
+	setDataFolder root:waveBuilder:savedStimulusSets:TTL
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
-	ListOfItemsSelectedInPopup =  ITCP_PopupMenuWaveNameList("TTL")// saves items selected in popupmenu so that they can be restored after list is recreated
 	DAorTTL="TTL"
 	endif
 
@@ -1482,7 +1484,5 @@ Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the
 
 	i+=1
 	while(i<noOfControls)
-	
-	//ITCP_RestorePopupMenuSelection(ListOfItemsSelectedInPopup, DAorTTL)
 	setdatafolder root:
 End

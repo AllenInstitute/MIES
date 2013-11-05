@@ -12,7 +12,7 @@ End
 
 Function StoreStartFinishForIndexing()
 //Wave_DA_00
-//Popup_DAC_IndexEnd_00
+//Popup_DA_IndexEnd_00
 wave DACIndexingStorageWave
 wave TTLIndexingStorageWave
 variable i 
@@ -26,14 +26,14 @@ if(i<10)
 DACPopUpNameIndexStart = "Wave_DA_0"+num2str(i)
 controlInfo/w=DataPro_ITC1600 $DACPopUpNameIndexStart
 DACIndexingStorageWave[0][i]=v_value
-DACPopUpNameIndexEnd = "Popup_DAC_IndexEnd_0"+num2str(i)
+DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_0"+num2str(i)
 controlInfo/w=DataPro_ITC1600 $DACPopUpNameIndexEnd
 DACIndexingStorageWave[1][i]=v_value
 else
 DACPopUpNameIndexStart = "Wave_DA_"+num2str(i)
 controlInfo/w=DataPro_ITC1600 $DACPopUpNameIndexStart
 DACIndexingStorageWave[0][i]=v_value
-DACPopUpNameIndexEnd = "Popup_DAC_IndexEnd_"+num2str(i)
+DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_"+num2str(i)
 controlInfo/w=DataPro_ITC1600 $DACPopUpNameIndexEnd
 DACIndexingStorageWave[1][i]=v_value
 endif
