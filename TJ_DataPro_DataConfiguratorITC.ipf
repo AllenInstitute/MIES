@@ -309,23 +309,31 @@ end
 
 //==========================================================================================
 Function MakeITCConfigAllConfigWave()
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) ITCChanConfigWave
+string ITCChanConfigPath=HSU_DataFullFolderPathString()+":ITCChanConfigWave"
+Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) $ITCChanConfigPath
+wave/z ITCChanConfigWave= $ITCChanConfigPath
 ITCChanConfigWave=0
 End
 //==========================================================================================
 Function MakeITCConfigAllDataWave()
-make/w/o/n=(CalculateITCDataWaveLength(), ChannelCalcForITCChanConfigWave()) ITCDataWave
+string ITCDataWavePath=HSU_DataFullFolderPathString()+":ITCDataWave"
+make/w/o/n=(CalculateITCDataWaveLength(), ChannelCalcForITCChanConfigWave()) $ITCDataWavePath
+wave/z ITCDataWave= $ITCDataWavePath
 ITCDataWave=0
 SetScale/P x 0,(ITCMinSamplingInterval())/1000,"ms", ITCDataWave
 End
 //==========================================================================================
 Function MakeITCFIFOPosAllConfigWave()//MakeITCUpdateFIFOPosAllConfigWave
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) ITCFIFOPositionAllConfigWave
+string ITCFIFOPosAllConfigWavePath=HSU_DataFullFolderPathString()+":ITCFIFOPositionAllConfigWave"
+Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) $ITCFIFOPosAllConfigWavePath
+wave/z ITCFIFOPositionAllConfigWave= $ITCFIFOPosAllConfigWavePath
 ITCFIFOPositionAllConfigWave=0
 End
 //==========================================================================================
 Function MakeITCFIFOAvailAllConfigWave()//MakeITCFIFOAvailAllConfigWave
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) ITCFIFOAvailAllConfigWave
+string ITCFIFOAvailAllConfigWavePath=HSU_DataFullFolderPathString()+":ITCFIFOAvailAllConfigWave"
+Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) $ITCFIFOAvailAllConfigWavePath
+wave/z ITCFIFOAvailAllConfigWave= $ITCFIFOAvailAllConfigWavePath
 ITCFIFOAvailAllConfigWave=0
 End
 //==========================================================================================
@@ -336,7 +344,7 @@ variable i=0//
 variable j=0//used to keep track of row of ITCChanConfigWave which config data is loaded into
 variable ChannelType// = 0 for AD, = 1 for DA, = 3 for TTL
 string ChannelStatus
-wave ITCChanConfigWave
+wave ITCChanConfigWave=$HSU_DataFullFolderPathString()+"ITCChanConfigWave"
 
 MakeITCConfigAllConfigWave()
 
@@ -386,7 +394,6 @@ if(AreTTLsInRackChecked(1)==1)
 endif
 
 ITCChanConfigWave[][2]=ITCMinSamplingInterval()//
-//ITCChanConfigWave[j][2]=ITCMinSamplingInterval()*2
 ITCChanConfigWave[][3]=0
 
 End
@@ -395,7 +402,7 @@ Function PlaceDataInITCDataWave()
 variable i=0// 
 variable j=0//
 string ChannelStatus
-wave ITCDataWave
+wave ITCDataWave = $HSU_DataFullFolderPathString()+"ITCDataWave"
 string ChanTypeWaveNameList, ChanTypeWaveName
 string ResampledWaveName="ResampledWave"
 string cmd
@@ -459,7 +466,7 @@ End
 
 //=========================================================================================
 Function PDInITCFIFOPositionAllCW()//PlaceDataInITCFIFOPositionAllConfigWave()
-wave ITCFIFOPositionAllConfigWave, ITCChanConfigWave
+wave ITCFIFOPositionAllConfigWave = $HSU_DataFullFolderPathString()+"ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $HSU_DataFullFolderPathString()+"ITCChanConfigWave"
 ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOPositionAllConfigWave[][2]=-1
 ITCFIFOPositionAllConfigWave[][3]=0
@@ -467,7 +474,7 @@ End
 //=========================================================================================
 
 Function PDInITCFIFOAvailAllCW()//PlaceDataInITCFIFOAvailAllConfigWave()
-wave ITCFIFOAvailAllConfigWave, ITCChanConfigWave
+wave ITCFIFOAvailAllConfigWave = $HSU_DataFullFolderPathString()+"ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $HSU_DataFullFolderPathString()+"ITCChanConfigWave"
 ITCFIFOAvailAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOAvailAllConfigWave[][2]=0
 ITCFIFOAvailAllConfigWave[][3]=0

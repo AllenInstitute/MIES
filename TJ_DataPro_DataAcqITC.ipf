@@ -1,9 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITCDataAcq()
+Function ITCDataAcq(DeviceType, DeviceNum)
+	variable DeviceType, DeviceNum
 	string cmd
-	variable DeviceType = 2	// ITC-1600
-	variable DeviceNum = 0
 	variable i=0
 	variable StopCollectionPoint = CalculateITCDataWaveLength()/4
 	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
@@ -52,10 +51,9 @@ Function ITCDataAcq()
 END
 
 //======================================================================================
-Function ITCBkrdAcq()
+Function ITCBkrdAcq(DeviceType, DeviceNum)
+	variable DeviceType, DeviceNum
 	string cmd
-	variable DeviceType = 2	// ITC-1600
-	variable DeviceNum = 0
 	variable i=0
 	variable/G StopCollectionPoint = (CalculateITCDataWaveLength()/4)
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
@@ -79,6 +77,7 @@ Function ITCBkrdAcq()
 	End
 //======================================================================================
 Function StopDataAcq()
+variable DeviceType, DeviceNum
 string cmd
 wave itcdatawave
 NVAR StopCollectionPoint, ADChannelToMonitor
@@ -277,10 +276,9 @@ End
 
 //StartBackgroundTestPulse();StartBackgroundTimer(20, "STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
 
-Function StartTestPulse()
+Function StartTestPulse(DeviceType, DeviceNum)
+	variable DeviceType, DeviceNum
 	string cmd
-	variable DeviceType = 2	// ITC-1600
-	variable DeviceNum = 0
 	variable i=0
 	variable StopCollectionPoint = CalculateITCDataWaveLength()/4
 	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
@@ -344,14 +342,15 @@ End
 
 //======================================================================================
 
-Function AD_DataBasedWaveNotes(DataWave)// This function takes about 0.9 seconds to run
-Wave DataWave// this is the wave that the note gets appended to. The note contains the async ad channel value and info
+Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum)
+Wave DataWave
+variable DeviceType, DeviceNum
+// This function takes about 0.9 seconds to run
+// this is the wave that the note gets appended to. The note contains the async ad channel value and info
 //variable starttime=ticks
 string AsyncChannelState = ControlStatusListString("AsyncAD", "check")
 variable i
 variable TotAsyncChannels = itemsinlist(AsyncChannelState,";")
-variable DeviceType = 2	// ITC-1600
-variable DeviceNum = 0
 variable RawChannelValue
 string cmd
 string SetVar_Title, Title

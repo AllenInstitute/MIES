@@ -110,7 +110,13 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	String ctrlName
 	wave TestPulseITC
 	
-
+	AbortOnValue HSU_DeviceLockCheck(),1
+	
+	controlinfo/w=datapro_itc1600 popup_MoreSettings_DeviceType
+	variable DeviceType=v_value-1
+	controlinfo/w=datapro_itc1600 popup_moreSettings_DeviceNo
+	variable DeviceNum=v_value-1
+	
 	StoreTTLState()
 	TurnOffAllTTLs()
 	
@@ -137,7 +143,7 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	if(v_value==1)// runs background TP
 		StartBackgroundTestPulse()
 	else // runs TP
-		StartTestPulse()
+		StartTestPulse(DeviceType,DeviceNum)
 		controlinfo/w=DataPro_ITC1600 check_Settings_ShowScopeWindow
 		if(v_value==0)
 		SmoothResizePanel(-340)

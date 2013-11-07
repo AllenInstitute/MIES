@@ -53,7 +53,8 @@ variable TotTrials
 
 End
 
-Function RepeatedAcquisitionCounter()
+Function RepeatedAcquisitionCounter(DeviceType,DeviceNum)
+variable DeviceType,DeviceNum
 NVAR Count
 variable TotTrials
 variable ITI
@@ -76,7 +77,7 @@ wave ITCDataWave, TestPulseITC
 		
 		ControlInfo/w=DataPro_ITC1600 Check_Settings_BackgrndDataAcq
 		If(v_value==0)//No background aquisition
-			ITCDataAcq()
+			ITCDataAcq(DeviceType,DeviceNum)
 			if(Count<(TotTrials-1)) //prevents test pulse from running after last trial is acquired
 				StoreTTLState()
 				TurnOffAllTTLs()
@@ -116,7 +117,7 @@ wave ITCDataWave, TestPulseITC
 				Killstrings/z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 		else //background aquisition is on
-				ITCBkrdAcq()
+				ITCBkrdAcq(DeviceType,DeviceNum)
 								
 		endif
 	endif

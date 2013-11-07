@@ -372,6 +372,7 @@ Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run waveb
 End
 
 Function WB_MakeWaveBuilderFolders()//makes folders used by wavebuilder panel
+	//DataFolderExists(folderNameStr ) -
 	NewDataFolder /O root:WaveBuilder
 	NewDataFolder /O root:WaveBuilder:Data
 	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
