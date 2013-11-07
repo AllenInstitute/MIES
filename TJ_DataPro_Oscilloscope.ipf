@@ -1,12 +1,14 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITCOscilloscope(WaveToPlot)
+Function ITCOscilloscope(WaveToPlot,panelTitle)
 wave WaveToPlot
+string panelTitle
+string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
 variable i =  0
 wave TestPulseITC, ITCChanConfigWave
 string ADChannelName= "AD"
 string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-RemoveTracesOnGraph("DataPro_ITC1600#Oscilloscope")
+RemoveTracesOnGraph(oscilloscopeSubWindow)
 
 variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
 YaxisSpacing=1/((itemsinlist(ADChannelList)))
@@ -18,18 +20,19 @@ YaxisLow=YaxisHigh-YaxisSpacing+spacer
 for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 
 ADChannelName="AD"+stringfromlist(i, ADChannelList,";")
-appendtograph/w=DataPro_ITC1600#Oscilloscope/L=$ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check"))))]
+appendtograph/w=$oscilloscopeSubWindow/L=$ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
 
-ModifyGraph/w=DataPro_ITC1600#Oscilloscope axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
-Label/w=DataPro_ITC1600#Oscilloscope $ADChannelName, ADChannelName
-ModifyGraph/w=DataPro_ITC1600#Oscilloscope lblPosMode=1
+ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
+Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName
+ModifyGraph/w=$oscilloscopeSubWindow lblPosMode=1
 
 YaxisHigh-=YaxisSpacing
 YaxisLow-=YaxisSpacing
 
 endfor
-ModifyGraph/w=DataPro_ITC1600#Oscilloscope freePos=0
-SetAxis/w=DataPro_ITC1600#Oscilloscope bottom 0, ((CalculateITCDataWaveLength()*(ITCMinSamplingInterval()/1000))/4)
+ModifyGraph/w=$oscilloscopeSubWindow freePos=0
+
+SetAxis/w=$oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle)*(ITCMinSamplingInterval(panelTitle)/1000))/4)
 End
 //=========================================================================================
 

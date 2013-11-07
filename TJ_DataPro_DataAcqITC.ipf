@@ -1,13 +1,15 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITCDataAcq(DeviceType, DeviceNum)
+Function ITCDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
+	string panelTitle
 	string cmd
 	variable i=0
-	variable StopCollectionPoint = CalculateITCDataWaveLength()/4
-	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
+	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	wave ITCFIFOAvailAllConfigWave, ITCDataWave//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
+	string oscilloscopeSubwindow=panelTitle+"#oscilloscope"
 	make /O /I /N = 4 ResultWave 
 	doupdate
 	// open ITC device
@@ -25,7 +27,7 @@ Function ITCDataAcq(DeviceType, DeviceNum)
 				sprintf cmd, "ITCFIFOAvailableALL/z=0 , ITCFIFOAvailAllConfigWave"
 				Execute cmd	
 				ITCDataWave[0][0]+=0
-				doupdate/w=datapro_itc1600#oscilloscope
+				doupdate/w=$oscilloscopeSubwindow
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
@@ -42,21 +44,22 @@ Function ITCDataAcq(DeviceType, DeviceNum)
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 
-	ControlInfo/w=DataPro_ITC1600 Check_Settings_SaveData
+	ControlInfo/w=$panelTitle Check_Settings_SaveData
 	If(v_value==0)
-	SaveITCData()
+	SaveITCData(panelTitle)
 	endif
 	
-	 ScaleITCDataWave()
+	 ScaleITCDataWave(panelTitle)
 END
 
 //======================================================================================
-Function ITCBkrdAcq(DeviceType, DeviceNum)
+Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
+	string panelTitle
 	string cmd
 	variable i=0
-	variable/G StopCollectionPoint = (CalculateITCDataWaveLength()/4)
-	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
+	variable/G StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4)
+	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	//MakeStartParameters()
 	doupdate
 	
@@ -76,7 +79,8 @@ Function ITCBkrdAcq(DeviceType, DeviceNum)
 	
 	End
 //======================================================================================
-Function StopDataAcq()
+Function StopDataAcq(PanelTitle)
+string panelTitle
 variable DeviceType, DeviceNum
 string cmd
 wave itcdatawave
@@ -97,20 +101,20 @@ NVAR StopCollectionPoint, ADChannelToMonitor
 	
 	killvariables/z StopCollectionPoint, ADChannelToMonitor
 	
-	ControlInfo/w=DataPro_ITC1600 Check_Settings_SaveData
+	ControlInfo/w=$panelTitle Check_Settings_SaveData
 	If(v_value==0)
-	SaveITCData()// saving always comes before scaling - there are two independent scaling steps
+	SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
 	endif
 	
-	 ScaleITCDataWave()
+	 ScaleITCDataWave(panelTitle)
 	
 	if(exists("Count")==0)//If the global variable count does not exist, it is the first trial of repeated acquisition
-	controlinfo/w=DataPro_ITC1600 Check_DataAcq1_RepeatAcq
+	controlinfo/w=$panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value==1)//repeated aquisition is selected
-			RepeatedAcquisition()
+			RepeatedAcquisition(PanelTitle)
 		endif
 	else
-		BckgTPwithCallToRptAcqContr()//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		BckgTPwithCallToRptAcqContr(panelTitle)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 END
 //======================================================================================
@@ -126,17 +130,19 @@ Function StartBackgroundFIFOMonitor()
 	CtrlNamedBackground FIFOMonitor, start
 End
 
-Function FIFOMonitor(s)
+Function FIFOMonitor(s, panelTitle)
 	STRUCT WMBackgroundStruct &s
+	string panelTitle
 	NVAR StopCollectionPoint, ADChannelToMonitor
 	String cmd
 	Wave ITCFIFOAvailAllConfigWave, itcdatawave
 	sprintf cmd, "ITCFIFOAvailableALL/z=0 , ITCFIFOAvailAllConfigWave"
 	Execute cmd	
 	ITCDataWave[0][0]+=0//forces on screen update
-	doupdate/w=datapro_itc1600#oscilloscope
+	string OscilloscopeSubWindow=panelTitle+"#oscilloscope"
+	doupdate/w=$OscilloscopeSubWindow
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
-		StopDataAcq()
+		StopDataAcq(PanelTitle)
 		STOPFifoMonitor()
 	endif
 				
@@ -163,8 +169,9 @@ Function StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameB
 	CtrlNamedBackground Timer, start
 End
 
-Function Timer(s)
+Function Timer(s, panelTitle)
 	STRUCT WMBackgroundStruct &s
+	string panelTitle
 	NVAR Start, RunTime
 	variable TimeLeft
 	
@@ -174,7 +181,7 @@ Function Timer(s)
 	if(TimeLeft<0)
 	timeleft=0
 	endif
-	ValDisplay valdisp_DataAcq_ITICountdown win=DataPro_ITC1600, value=_NUM:TimeLeft
+	ValDisplay valdisp_DataAcq_ITICountdown win=$panelTitle, value=_NUM:TimeLeft
 	
 	if(ElapsedTime>=RunTime)
 	StopBackgroundTimerTask()
@@ -196,13 +203,14 @@ Function StopBackgroundTimerTask()
 End
 //======================================================================================
 
-Function StartBackgroundTestPulse()
+Function StartBackgroundTestPulse(panelTitle)
+	string panelTitle
 	string cmd
 	variable DeviceType = 2	// ITC-1600
 	variable DeviceNum = 0
 	variable i=0
-	variable/G StopCollectionPoint = CalculateITCDataWaveLength()/4
-	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
+	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	doupdate
 	wave ITCFIFOAvailAllConfigWave, ITCDataWave//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 
@@ -216,8 +224,9 @@ Function StartBackgroundTestPulse()
 End
 //======================================================================================
 
-Function TestPulseFunc(s)
+Function TestPulseFunc(s, panelTitle)
 	STRUCT WMBackgroundStruct &s
+	string panelTitle
 	NVAR StopCollectionPoint, ADChannelToMonitor
 	String cmd, Keyboard
 	Wave ITCFIFOAvailAllConfigWave, itcdatawave
@@ -240,7 +249,7 @@ Function TestPulseFunc(s)
 		Execute cmd
 		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-		CreateAndScaleTPHoldingWave()
+		CreateAndScaleTPHoldingWave(panelTitle)
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
 		//doupdate	
 
@@ -248,7 +257,7 @@ Function TestPulseFunc(s)
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				beep 
-				STOPTestPulse()
+				STOPTestPulse(panelTitle)
 			endif
 		endif
 	return 0
@@ -256,18 +265,19 @@ Function TestPulseFunc(s)
 End
 //======================================================================================
 
-Function STOPTestPulse()
+Function STOPTestPulse(panelTitle)
+	string panelTitle
 	string cmd
 	CtrlNamedBackground TestPulse, stop
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 	killvariables/z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	controlinfo/w=DataPro_ITC1600 check_Settings_ShowScopeWindow
+	controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 	if(v_value==0)
-	SmoothResizePanel(-340)
+	SmoothResizePanel(-340, panelTitle)
 	endif
 
-	RestoreTTLState()
+	RestoreTTLState(panelTitle)
 
 End
 
@@ -276,12 +286,13 @@ End
 
 //StartBackgroundTestPulse();StartBackgroundTimer(20, "STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
 
-Function StartTestPulse(DeviceType, DeviceNum)
+Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
+	string panelTitle
 	string cmd
 	variable i=0
-	variable StopCollectionPoint = CalculateITCDataWaveLength()/4
-	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check"))
+	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	wave ITCFIFOAvailAllConfigWave, ITCDataWave//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string Keyboard
 
@@ -309,7 +320,7 @@ Function StartTestPulse(DeviceType, DeviceNum)
 		Execute cmd
 		sprintf cmd, "ITCStopAcq/z=0"
 		Execute cmd
-		CreateAndScaleTPHoldingWave()
+		CreateAndScaleTPHoldingWave(panelTitle)
 		doupdate
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
 		//doupdate
@@ -322,7 +333,7 @@ Function StartTestPulse(DeviceType, DeviceNum)
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 
-	RestoreTTLState()
+	RestoreTTLState(panelTitle)
 
 
 END
@@ -342,13 +353,14 @@ End
 
 //======================================================================================
 
-Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum)
+Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 Wave DataWave
 variable DeviceType, DeviceNum
+string panelTitle
 // This function takes about 0.9 seconds to run
 // this is the wave that the note gets appended to. The note contains the async ad channel value and info
 //variable starttime=ticks
-string AsyncChannelState = ControlStatusListString("AsyncAD", "check")
+string AsyncChannelState = ControlStatusListString("AsyncAD", "check", panelTitle)
 variable i
 variable TotAsyncChannels = itemsinlist(AsyncChannelState,";")
 variable RawChannelValue
@@ -374,12 +386,12 @@ RawChannelValue=SingleADReading(i+15)//Async channels start at channel 16 on ITC
 		 SetVar_Unit = "SetVar_Async_Unit_"+num2str(i)
 	endif 
 	
-	controlInfo/w=datapro_ITC1600 $SetVar_title
+	controlInfo/w=$panelTitle $SetVar_title
 	title=s_value
-	controlInfo/w=datapro_ITC1600 $SetVar_gain
+	controlInfo/w=$panelTitle $SetVar_gain
 	Measurement=num2str(v_value*RawChannelValue)
 	SupportSystemAlarm(i, v_value*RawChannelValue, title)
-	controlInfo/w=datapro_ITC1600 $SetVar_Unit
+	controlInfo/w=$panelTitle $SetVar_Unit
 	Unit=s_value
 	WaveNote= title +" "+ Measurement +" " + Unit
 	note DataWave, WaveNote

@@ -2,38 +2,41 @@
 
 
 //=========================================================================================
-Function ConfigureDataForITC()
-MakeITCConfigAllConfigWave()
-MakeITCConfigAllDataWave()
-MakeITCFIFOPosAllConfigWave()
-MakeITCFIFOAvailAllConfigWave()
+Function ConfigureDataForITC(PanelTitle)
+string PanelTitle
+MakeITCConfigAllConfigWave(PanelTitle)
+MakeITCConfigAllDataWave(PanelTitle)
+MakeITCFIFOPosAllConfigWave(PanelTitle)
+MakeITCFIFOAvailAllConfigWave(PanelTitle)
 
-PlaceDataInITCChanConfigWave()
-PlaceDataInITCDataWave()
-PDInITCFIFOPositionAllCW()// PD = Place Data
-PDInITCFIFOAvailAllCW()
+PlaceDataInITCChanConfigWave(PanelTitle)
+PlaceDataInITCDataWave(PanelTitle)
+PDInITCFIFOPositionAllCW(PanelTitle)// PD = Place Data
+PDInITCFIFOAvailAllCW(PanelTitle)
 End
 
 
 //==========================================================================================
 
-Function TotalChannelsSelected() //DA_00 - DA_07 and AD_00-AD_15, 
+Function TotalChannelsSelected(panelTitle) //DA_00 - DA_07 and AD_00-AD_15, 
+string panelTitle
 variable TotalNumOfChanSelected
-TotalNumOfChanSelected=NoOfChannelsSelected("DA", "Check")+ NoOfChannelsSelected("AD", "Check")+NoOfChannelsSelected("TTL", "Check")
+TotalNumOfChanSelected=NoOfChannelsSelected("DA", "Check",panelTitle)+ NoOfChannelsSelected("AD", "Check",panelTitle)+NoOfChannelsSelected("TTL", "Check",panelTitle)
 return TotalNumOfChanSelected
 End
 
 //==========================================================================================
 
-Function ITCMinSamplingInterval()// minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds
+Function ITCMinSamplingInterval(panelTitle)// minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds
+string panelTitle
 //The min sampling interval is determined by the rack with the most channels selected
 variable ITCMinSampInt, Rack0DAMinInt, Rack0ADMinInt, Rack1DAMinInt, Rack1ADMinInt
 
-Rack0DAMinInt=DAMinSampInt(0)
-Rack1DAMinInt=DAMinSampInt(1)
+Rack0DAMinInt=DAMinSampInt(0, panelTitle)
+Rack1DAMinInt=DAMinSampInt(1, panelTitle)
 
-Rack0ADMinInt=ADMinSampInt(0)
-Rack1ADMinInt=ADMinSampInt(1)
+Rack0ADMinInt=ADMinSampInt(0,panelTitle)
+Rack1ADMinInt=ADMinSampInt(1, panelTitle)
 
 ITCMinSampInt=max(max(Rack0DAMinInt,Rack1DAMinInt),max(Rack0ADMinInt,Rack1ADMinInt))
 
@@ -45,9 +48,9 @@ End
 
 
 //==========================================================================================
-Function NoOfChannelsSelected(ChannelType, ControlType)//ChannelType = DA, AD, or TTL; Control Type = check or wave
-string ChannelType, ControlType
-variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType)
+Function NoOfChannelsSelected(ChannelType, ControlType, panelTitle)//ChannelType = DA, AD, or TTL; Control Type = check or wave
+string ChannelType, ControlType,panelTitle
+variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType,panelTitle)
 variable i = 0
 variable NoOfChannelsSelected=0
 string CheckBoxName
@@ -57,13 +60,13 @@ string CheckBoxName
 		
 		if(i<10)
 		CheckBoxName+="0"+num2str(i)
-		ControlInfo/w=DataPro_ITC1600 $CheckBoxName
+		ControlInfo/w=$panelTitle $CheckBoxName
 		NoOfChannelsSelected+=v_value
 		endif
 
 		if(i>=10)
 		CheckBoxName+=num2str(i)
-		ControlInfo/w=DataPro_ITC1600 $CheckBoxName
+		ControlInfo/w=$panelTitle $CheckBoxName
 		NoOfChannelsSelected+=v_value
 		endif
 	
@@ -75,10 +78,10 @@ End
 
 //==========================================================================================
 
-Function/S ControlStatusListString(ChannelType, ControlType)
-String ChannelType
+Function/S ControlStatusListString(ChannelType, ControlType,panelTitle)
+String ChannelType, panelTitle
 string ControlType
-variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType)
+variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType,panelTitle)
 
 String ControlStatusList = ""
 String ControlName
@@ -91,13 +94,13 @@ i=0
 		
 		if(i<10)
 		ControlName+="0"+num2str(i)
-		ControlInfo/w=DataPro_ITC1600 $ControlName
+		ControlInfo/w=$panelTitle $ControlName
 		ControlStatusList+=num2str(v_value)+";"
 		endif
 
 		if(i>=10)
 		ControlName+=num2str(i)
-		ControlInfo/w=DataPro_ITC1600 $ControlName
+		ControlInfo/w=$panelTitle $ControlName
 		ControlStatusList+=num2str(v_value)+";"
 		endif
 	
@@ -110,12 +113,12 @@ End
 
 //==========================================================================================
 
-Function ChannelCalcForITCChanConfigWave()
-
-Variable NoOfDAChannelsSelected = NoOfChannelsSelected("DA", "Check")
-Variable NoOfADChannelsSelected = NoOfChannelsSelected("AD", "Check")
-Variable AreRack0FrontTTLsUsed = AreTTLsInRackChecked(0)
-Variable AreRack1FrontTTLsUsed = AreTTLsInRackChecked(1)
+Function ChannelCalcForITCChanConfigWave(panelTitle)
+string panelTitle
+Variable NoOfDAChannelsSelected = NoOfChannelsSelected("DA", "Check",panelTitle)
+Variable NoOfADChannelsSelected = NoOfChannelsSelected("AD", "Check",panelTitle)
+Variable AreRack0FrontTTLsUsed = AreTTLsInRackChecked(0,panelTitle)
+Variable AreRack1FrontTTLsUsed = AreTTLsInRackChecked(1,panelTitle)
 Variable ChannelCount
 
 ChannelCount=NoOfDAChannelsSelected+NoOfADChannelsSelected+AreRack0FrontTTLsUsed+AreRack1FrontTTLsUsed
@@ -124,11 +127,12 @@ return ChannelCount
 
 END
 //==========================================================================================
-Function AreTTLsInRackChecked(RackNo)
+Function AreTTLsInRackChecked(RackNo, panelTitle)
 variable RackNo
+string panelTitle
 variable a
 variable b
-string TTLsInUse = ControlStatusListString("TTL", "Check")
+string TTLsInUse = ControlStatusListString("TTL", "Check",panelTitle)
 variable RackTTLStatus
 
 if(RackNo==0)
@@ -156,13 +160,13 @@ End
 
 //=========================================================================================
 
-Function TotNoOfControlType(ControlType, ChannelType)// Ex. ChannelType = "DA", ControlType = "Check"
-string  ControlType, ChannelType
+Function TotNoOfControlType(ControlType, ChannelType, panelTitle)// Ex. ChannelType = "DA", ControlType = "Check"
+string  ControlType, ChannelType, panelTitle
 string SearchString = ControlType+"_"+ChannelType+"_*"
 string ListString
 variable CatTot//Category Total
 
-ListString=ControlNameList("DataPro_ITC1600",";",SearchString)
+ListString=ControlNameList(panelTitle,";",SearchString)
 CatTot=ItemsInlist(ListString,";")
 
 return CatTot
@@ -188,10 +192,11 @@ End
 
 
 
-Function TTLCodeCalculation1(RackNo)//
+Function TTLCodeCalculation1(RackNo, panelTitle)//
 variable RackNo
+string panelTitle
 variable a, i, TTLChannelStatus,Code
-string TTLStatusString = ControlStatusListString("TTL", "Check")
+string TTLStatusString = ControlStatusListString("TTL", "Check",panelTitle)
 
 if(RackNo==0)
  a=0
@@ -218,10 +223,10 @@ End
 
 //=========================================================================================
 
-Function/s PopMenuStringList(ChannelType, ControlType)
-string ChannelType, ControlType
+Function/s PopMenuStringList(ChannelType, ControlType, panelTitle)
+string ChannelType, ControlType, panelTitle
 
-variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType)
+variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType, panelTitle)
 
 String ControlWaveList = ""
 String ControlName
@@ -234,13 +239,13 @@ i=0
 		
 		if(i<10)
 		ControlName+="0"+num2str(i)
-		ControlInfo/w=DataPro_ITC1600 $ControlName
+		ControlInfo/w=$panelTitle $ControlName
 		ControlWaveList+=s_value+";"
 		endif
 
 		if(i>=10)
 		ControlName+=num2str(i)
-		ControlInfo/w=DataPro_ITC1600 $ControlName
+		ControlInfo/w=$panelTitle $ControlName
 		ControlWaveList+=s_value+";"
 		endif
 	
@@ -253,18 +258,18 @@ return ControlWaveList
 End
 
 //=========================================================================================
-Function LongestOutputWave(ChannelType)//ttl and da channel types need to be passed into this and compared to determine longest wave
-string ChannelType
+Function LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types need to be passed into this and compared to determine longest wave
+string ChannelType, panelTitle
 
 string ControlType = "Check"
 
-variable TotalPossibleChannels = TotNoOfControlType(ControlType, ChannelType)
+variable TotalPossibleChannels = TotNoOfControlType(ControlType, ChannelType, panelTitle)
 variable wavelength, i
-string ControlTypeStatus = ControlStatusListString(ChannelType, ControlType)
+string ControlTypeStatus = ControlStatusListString(ChannelType, ControlType, panelTitle)
 string WaveNameString
 
 ControlType = "Wave"
-string ChannelTypeWaveList = PopMenuStringList(ChannelType, ControlType)
+string ChannelTypeWaveList = PopMenuStringList(ChannelType, ControlType, panelTitle)
 
 //if da or ttl channels is active, query the wavelength of the active channel
 i=0
@@ -292,65 +297,71 @@ End
 
 
 //==========================================================================================
-Function CalculateITCDataWaveLength()// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).
+Function CalculateITCDataWaveLength(panelTitle)// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).
+string panelTitle
 Variable LongestWaveLength
 //Determine Longest Wave
-if (LongestOutputWave("DA")>=LongestOutputWave("TTL"))
-LongestWaveLength = LongestOutputWave("DA")
+if (LongestOutputWave("DA", panelTitle)>=LongestOutputWave("TTL", panelTitle))
+LongestWaveLength = LongestOutputWave("DA", panelTitle)
 else
-LongestWaveLength = LongestOutputWave("TTL")
+LongestWaveLength = LongestOutputWave("TTL", panelTitle)
 endif
 
-LongestWaveLength/=(ITCMinSamplingInterval()/5)
+LongestWaveLength/=(ITCMinSamplingInterval(panelTitle)/5)
 LongestWaveLength*=4
 
 return round(LongestWaveLength)
 end
 
 //==========================================================================================
-Function MakeITCConfigAllConfigWave()
-string ITCChanConfigPath=HSU_DataFullFolderPathString()+":ITCChanConfigWave"
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) $ITCChanConfigPath
+Function MakeITCConfigAllConfigWave(PanelTitle)
+string PanelTitle
+string ITCChanConfigPath=HSU_DataFullFolderPathString(PanelTitle)+":ITCChanConfigWave"
+Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCChanConfigPath
 wave/z ITCChanConfigWave= $ITCChanConfigPath
 ITCChanConfigWave=0
 End
 //==========================================================================================
-Function MakeITCConfigAllDataWave()
-string ITCDataWavePath=HSU_DataFullFolderPathString()+":ITCDataWave"
-make/w/o/n=(CalculateITCDataWaveLength(), ChannelCalcForITCChanConfigWave()) $ITCDataWavePath
+Function MakeITCConfigAllDataWave(PanelTitle)
+string PanelTitle
+string ITCDataWavePath=HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
+make/w/o/n=(CalculateITCDataWaveLength(panelTitle), ChannelCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
 wave/z ITCDataWave= $ITCDataWavePath
 ITCDataWave=0
-SetScale/P x 0,(ITCMinSamplingInterval())/1000,"ms", ITCDataWave
+SetScale/P x 0,(ITCMinSamplingInterval(panelTitle))/1000,"ms", ITCDataWave
 End
 //==========================================================================================
-Function MakeITCFIFOPosAllConfigWave()//MakeITCUpdateFIFOPosAllConfigWave
-string ITCFIFOPosAllConfigWavePath=HSU_DataFullFolderPathString()+":ITCFIFOPositionAllConfigWave"
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) $ITCFIFOPosAllConfigWavePath
+Function MakeITCFIFOPosAllConfigWave(PanelTitle)//MakeITCUpdateFIFOPosAllConfigWave
+string panelTitle
+string ITCFIFOPosAllConfigWavePath=HSU_DataFullFolderPathString(PanelTitle)+":ITCFIFOPositionAllConfigWave"
+Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOPosAllConfigWavePath
 wave/z ITCFIFOPositionAllConfigWave= $ITCFIFOPosAllConfigWavePath
 ITCFIFOPositionAllConfigWave=0
 End
 //==========================================================================================
-Function MakeITCFIFOAvailAllConfigWave()//MakeITCFIFOAvailAllConfigWave
-string ITCFIFOAvailAllConfigWavePath=HSU_DataFullFolderPathString()+":ITCFIFOAvailAllConfigWave"
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(), 4) $ITCFIFOAvailAllConfigWavePath
+Function MakeITCFIFOAvailAllConfigWave(panelTitle)//MakeITCFIFOAvailAllConfigWave
+string panelTitle
+string ITCFIFOAvailAllConfigWavePath=HSU_DataFullFolderPathString(panelTitle)+":ITCFIFOAvailAllConfigWave"
+Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOAvailAllConfigWavePath
 wave/z ITCFIFOAvailAllConfigWave= $ITCFIFOAvailAllConfigWavePath
 ITCFIFOAvailAllConfigWave=0
 End
 //==========================================================================================
 
 
-Function PlaceDataInITCChanConfigWave()
+Function PlaceDataInITCChanConfigWave(PanelTitle)
+string panelTitle
 variable i=0// 
 variable j=0//used to keep track of row of ITCChanConfigWave which config data is loaded into
 variable ChannelType// = 0 for AD, = 1 for DA, = 3 for TTL
 string ChannelStatus
-wave ITCChanConfigWave=$HSU_DataFullFolderPathString()+"ITCChanConfigWave"
+wave ITCChanConfigWave=$HSU_DataFullFolderPathString(PanelTitle)+"ITCChanConfigWave"
 
-MakeITCConfigAllConfigWave()
+MakeITCConfigAllConfigWave(PanelTitle)
 
 //Place DA config data
 ChannelType = 1
-ChannelStatus=ControlStatusListString("DA", "Check")
+ChannelStatus=ControlStatusListString("DA", "Check", panelTitle)
 do
 	if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
 	ITCChanConfigWave[j][0]=ChannelType
@@ -364,7 +375,7 @@ while(i<(itemsinlist(ChannelStatus,";")))
 
 //Place AD config data
 i=0
-ChannelStatus=ControlStatusListString("AD", "Check")
+ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
 ChannelType = 0
 
 do
@@ -380,29 +391,30 @@ while(i<(itemsinlist(ChannelStatus,";")))
 i=0
 ChannelType = 3
 
-if(AreTTLsInRackChecked(0)==1)
+if(AreTTLsInRackChecked(0, panelTitle)==1)
 	ITCChanConfigWave[j][0]=ChannelType
 	ITCChanConfigWave[j][1]=0
 j+=1
 endif
 
-if(AreTTLsInRackChecked(1)==1)
+if(AreTTLsInRackChecked(1, panelTitle)==1)
 
 	ITCChanConfigWave[j][0]=ChannelType
 	ITCChanConfigWave[j][1]=3
 
 endif
 
-ITCChanConfigWave[][2]=ITCMinSamplingInterval()//
+ITCChanConfigWave[][2]=ITCMinSamplingInterval(panelTitle)//
 ITCChanConfigWave[][3]=0
 
 End
 //==========================================================================================
-Function PlaceDataInITCDataWave()
+Function PlaceDataInITCDataWave(PanelTitle)
+string panelTitle
 variable i=0// 
 variable j=0//
 string ChannelStatus
-wave ITCDataWave = $HSU_DataFullFolderPathString()+"ITCDataWave"
+wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCDataWave"
 string ChanTypeWaveNameList, ChanTypeWaveName
 string ResampledWaveName="ResampledWave"
 string cmd
@@ -410,16 +422,16 @@ string SetvarDAGain, SetVarDAScale
 variable DAGain, DAScale
 
 //Place DA waves into ITCDataWave
-variable DecimationFactor = (ITCMinSamplingInterval()/5)
-ChannelStatus=ControlStatusListString("DA", "Check")
-ChanTypeWaveNameList=PopMenuStringList("DA", "Wave")
+variable DecimationFactor = (ITCMinSamplingInterval(panelTitle)/5)
+ChannelStatus=ControlStatusListString("DA", "Check", panelTitle)
+ChanTypeWaveNameList=PopMenuStringList("DA", "Wave", panelTitle)
 do
 	if(str2num(stringfromlist(i,ChannelStatus,";"))==1)//Checks if DA channel checkbox is checked (ON)
 	SetVarDAGain = "gain_DA_0" + num2str(i)
 	SetVarDAScale = "scale_DA_0" + num2str(i)
-	ControlInfo/w=DataPro_ITC1600 $SetVarDAGain
+	ControlInfo/w=$panelTitle $SetVarDAGain
 	DAGain=(3200/v_value)//3200 = 1V
-	ControlInfo/w=DataPro_ITC1600 $SetVarDAScale
+	ControlInfo/w=$panelTitle $SetVarDAScale
 	DAScale=v_value
 	//get the wave name
 	ChanTypeWaveName=stringfromlist(i,ChanTypeWaveNameList,";")
@@ -437,7 +449,7 @@ while(i<(itemsinlist(ChannelStatus,";")))
 
 //Leave room for AD data 
 i=0
-ChannelStatus=ControlStatusListString("AD", "Check")
+ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
 
 do
 if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
@@ -450,14 +462,14 @@ while(i<(itemsinlist(ChannelStatus,";")))
 i=0
 
 make/o/n=1 TTLwave
-if(AreTTLsInRackChecked(0)==1)
-	MakeITCTTLWave(0)
+if(AreTTLsInRackChecked(0, panelTitle)==1)
+	MakeITCTTLWave(0, panelTitle)
 	ITCDataWave[0,round((numpnts(TTLWave)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
 	j+=1
 endif
 
-if(AreTTLsInRackChecked(1)==1)
-	MakeITCTTLWave(1)
+if(AreTTLsInRackChecked(1, panelTitle)==1)
+	MakeITCTTLWave(1, panelTitle)
 	ITCDataWave[0,round((numpnts(TTLWave)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
 
 endif
@@ -465,27 +477,30 @@ endif
 End
 
 //=========================================================================================
-Function PDInITCFIFOPositionAllCW()//PlaceDataInITCFIFOPositionAllConfigWave()
-wave ITCFIFOPositionAllConfigWave = $HSU_DataFullFolderPathString()+"ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $HSU_DataFullFolderPathString()+"ITCChanConfigWave"
+Function PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
+string panelTitle
+wave ITCFIFOPositionAllConfigWave = $HSU_DataFullFolderPathString(panelTitle)+"ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCChanConfigWave"
 ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOPositionAllConfigWave[][2]=-1
 ITCFIFOPositionAllConfigWave[][3]=0
 End
 //=========================================================================================
 
-Function PDInITCFIFOAvailAllCW()//PlaceDataInITCFIFOAvailAllConfigWave()
-wave ITCFIFOAvailAllConfigWave = $HSU_DataFullFolderPathString()+"ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $HSU_DataFullFolderPathString()+"ITCChanConfigWave"
+Function PDInITCFIFOAvailAllCW(PanelTitle)//PlaceDataInITCFIFOAvailAllConfigWave()
+string panelTitle
+wave ITCFIFOAvailAllConfigWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCChanConfigWave"
 ITCFIFOAvailAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOAvailAllConfigWave[][2]=0
 ITCFIFOAvailAllConfigWave[][3]=0
 End
 
 //=========================================================================================
-Function MakeITCTTLWave(RackNo)//makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
+Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
 variable RackNo
+string panelTitle
 variable a, i, TTLChannelStatus,Code
-string TTLStatusString = ControlStatusListString("TTL", "Check")
-string TTLWaveList = PopMenuStringList("TTL", "Wave")
+string TTLStatusString = ControlStatusListString("TTL", "Check", panelTitle)
+string TTLWaveList = PopMenuStringList("TTL", "Wave", panelTitle)
 string TTLWaveName
 string cmd
 //make/o/n=(CalculateITCDataWaveLength()) TTLWave =0
@@ -525,10 +540,11 @@ End
 
 
 //=========================================================================================
-Function DAMinSampInt(RackNo)
+Function DAMinSampInt(RackNo, panelTitle)
 variable RackNo
+string panelTitle
 variable a, i, DAChannelStatus,SampInt
-string DAStatusString = ControlStatusListString("DA", "Check")
+string DAStatusString = ControlStatusListString("DA", "Check", panelTitle)
 
 
 a=RackNo*4
@@ -558,10 +574,11 @@ while(i<4)
 return SampInt
 End
 //=========================================================================================
-Function ADMinSampInt(RackNo)
+Function ADMinSampInt(RackNo,panelTitle)
 variable RackNo
+string panelTitle
 variable a, i, ADChannelStatus,ADSampInt, Bank1SampInt, Bank2SampInt
-string ADStatusString = ControlStatusListString("AD", "Check")
+string ADStatusString = ControlStatusListString("AD", "Check",panelTitle)
 
 
 a=RackNo*8

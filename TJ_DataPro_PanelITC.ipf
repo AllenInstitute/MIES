@@ -1681,9 +1681,11 @@ Function SetVarProc(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String varName
 	string cmd
 	variable  minsampint
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
 	sprintf cmd, " MinSampInt= ITCMinSamplingInterval()"
 	execute cmd
-	SetVariable SetVar_DownSamp limits={MinSampInt,inf,1}, win=DataPro_ITC1600
+	SetVariable SetVar_DownSamp limits={MinSampInt,inf,1}, win=$panelTitle
 End
 
 
@@ -1693,12 +1695,13 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	String SearchString
-	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:DAC:
 	
-	controlinfo/w=DataPro_ITC1600 Search_DA_00
+	controlinfo/w=$panelTitle Search_DA_00
 	if(strlen(s_value)==0)
 	SearchString="*dac*"
 	else
@@ -1715,10 +1718,10 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	do
 	
 	DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-	PopupMenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
 	
 	IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-	PopupMenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
+	PopupMenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 
 	
 	i+=1
@@ -1741,13 +1744,16 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 	String value
 	variable i=0
 	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:TTL:
 	
 	
-	controlinfo/w=DataPro_ITC1600 SearchUniversal_TTL_00
+	controlinfo/w=$panelTitle SearchUniversal_TTL_00
 	if(v_value==1)
-		controlinfo/w=DataPro_ITC1600 Search_TTL_00
+		controlinfo/w=$panelTitle Search_TTL_00
 		If(strlen(s_value)==0)
 		SearchString= "*TTL*"
 		else
@@ -1758,9 +1764,9 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		
 		do
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=datapro_itc1600, value=#value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $TTLIndexEndPopMenuName win=datapro_itc1600, value=#value
+		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		i+=1
 		while(i<8)
 	
@@ -1769,17 +1775,17 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		SearchString = "*TTL*"
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=datapro_itc1600, value=#value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $TTLIndexEndPopMenuName win=datapro_itc1600, value=#value
+		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		
 		else
 		SearchString= varstr
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=datapro_itc1600, value=#value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $TTLIndexEndPopMenuName win=datapro_itc1600, value=#value
+		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		endif
 	endif
 	
@@ -1792,10 +1798,13 @@ Function CheckProc_UniversalSearchTTL(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	String SearchString
 	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:TTL:
 	
-	controlinfo/w=DataPro_ITC1600 Search_TTL_00
+	controlinfo/w=$panelTitle Search_TTL_00
 	if(strlen(s_value)==0)
 	SearchString="*TTL*"
 	else
@@ -1812,9 +1821,9 @@ Function CheckProc_UniversalSearchTTL(ctrlName,checked) : CheckBoxControl
 	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
 	do
 	TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-	popupmenu $TTLPopUpMenuName win=dataPro_itc1600, value=#popupValue
+	popupmenu $TTLPopUpMenuName win=$panelTitle, value=#popupValue
 	IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-	popupmenu $IndexEndPopUpMenuName win=dataPro_itc1600, value=#popupValue
+	popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 
 	i+=1
 	while(i<8)
@@ -1857,13 +1866,16 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	string popupValue
 	variable i=0
 	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
 	DFREF saveDFR = GetDataFolderDFR()
 	setdatafolder root:waveBuilder:savedStimulusSets:DAC
-	controlinfo/w=DataPro_ITC1600 SearchUniversal_DA_00	
+	controlinfo/w=$panelTitle SearchUniversal_DA_00	
 	
 	
 	if(v_value==1)
-		controlinfo/w=DataPro_ITC1600 Search_DA_00
+		controlinfo/w=$panelTitle Search_DA_00
 		If(strlen(s_value)==0)
 			SearchString= "*DAC*"
 		else
@@ -1873,9 +1885,9 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 		do
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-			popupmenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-			popupmenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
+			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 			i+=1
 		while(i<8)
 	
@@ -1884,15 +1896,15 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 			SearchString= "*DAC*"
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-			popupmenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-			popupmenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
+			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 		else
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(varstr,";","")+"\""
-			popupmenu $DAPopUpMenuName win=datapro_itc1600, value=#popupValue
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-			popupmenu $IndexEndPopUpMenuName win=datapro_itc1600, value=#popupValue
+			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 		endif
 	endif
 	setdatafolder saveDFR
@@ -1904,9 +1916,12 @@ Function DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure ch
 	String DACWave = ctrlName
 	DACwave[0,4] = "wave"
 
-controlinfo/w=DataPro_ITC1600 $DACWave
+getwindow kwTopWin wtitle
+string panelTitle=s_value
+
+controlinfo/w=$panelTitle $DACWave
 if(stringmatch(s_value,"- none -")==1)
-checkbox $ctrlName win=DataPro_ITC1600, value=0
+checkbox $ctrlName win=$panelTitle, value=0
 print "Select " + DACwave[5,7] + " Wave"
 endif
 
@@ -1916,40 +1931,41 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
 	wave ITCDataWave
 	
-
-	AbortOnValue HSU_DeviceLockCheck(),1
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 	
-	controlinfo/w=datapro_itc1600 popup_MoreSettings_DeviceType
+	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType=v_value-1
-	controlinfo/w=datapro_itc1600 popup_moreSettings_DeviceNo
+	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
 	variable DeviceNum=v_value-1
 	
 		//History management
 		controlinfo check_Settings_Overwrite
 		if(v_value==1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
 			
-			if(IsLastSweepGreaterThanNextSweep()==1)//Checks for manual roll back of Next Sweep
+			if(IsLastSweepGreaterThanNextSweep(panelTitle)==1)//Checks for manual roll back of Next Sweep
 				controlinfo SetVar_Sweep
 				variable NextSweep=v_value
 				DeleteSettingsHistoryWaves(NextSweep)
 				DeleteDataWaves(NextSweep)
-				MakeSettingsHistoryWave()// generates new settings history wave
+				MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
 			endif
 		
 		endif
 		
 		//Data collection
-		ConfigureDataForITC()
-		ITCOscilloscope(ITCDataWave)
-		ControlInfo/w=DataPro_ITC1600 Check_Settings_BackgrndDataAcq
+		ConfigureDataForITC(PanelTitle)
+		ITCOscilloscope(ITCDataWave, panelTitle)
+		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value==0)
-		ITCDataAcq(DeviceType,DeviceNum)
-			controlinfo/w=DataPro_ITC1600 Check_DataAcq1_RepeatAcq
+		ITCDataAcq(DeviceType,DeviceNum, panelTitle)
+			controlinfo/w=$panelTitle Check_DataAcq1_RepeatAcq
 			if(v_value==1)//repeated aquisition is selected
-				RepeatedAcquisition()
+				RepeatedAcquisition(PanelTitle)
 			endif
 		else
-		ITCBkrdAcq(DeviceType,DeviceNum)
+		ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)
 		endif
 	
 End
@@ -1959,15 +1975,18 @@ End
 Function CheckProc_1(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
-If(Checked==1)
-Button DataAcquireButton fColor=(52224,0,0), win=datapro_itc1600
-string ButtonText = "\\Z14\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-ButtonText+= "\r\\Z08\\f00 (autosave state is in settings tab)"
-Button DataAcquireButton title=ButtonText
-else
-Button DataAcquireButton fColor=(0,0,0), win=datapro_itc1600
-Button DataAcquireButton title="\\Z14\\f01Acquire\rData"
-endif
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+
+	If(Checked==1)
+	Button DataAcquireButton fColor=(52224,0,0), win=$panelTitle
+	string ButtonText = "\\Z14\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+	ButtonText+= "\r\\Z08\\f00 (autosave state is in settings tab)"
+	Button DataAcquireButton title=ButtonText
+	else
+	Button DataAcquireButton fColor=(0,0,0), win=$panelTitle
+	Button DataAcquireButton title="\\Z14\\f01Acquire\rData"
+	endif
 End
 
 
@@ -1990,8 +2009,8 @@ Function CheckProc_Indexing(ctrlName,checked) : CheckBoxControl
 
 End
 
-Function ChangePopUpState(BaseName, state)
-string BaseName// Popup_DA_IndexEnd_0
+Function ChangePopUpState(BaseName, state, panelTitle)
+string BaseName, panelTitle// Popup_DA_IndexEnd_0
 variable state
 variable i=0
 string CompleteName
@@ -2000,7 +2019,7 @@ string CompleteName
 do
 CompleteName=Basename+num2str(i)
 
-PopupMenu $CompleteName disable=state, win=datapro_itc1600
+PopupMenu $CompleteName disable=state, win=$panelTitle
 i+=1
 while(i<8)
 
@@ -2009,16 +2028,17 @@ End
 
 
 
-Function SmoothResizePanel(RightShift)
+Function SmoothResizePanel(RightShift, panelTitle)
 variable RightShift
+string panelTitle
 variable i
-getwindow datapro_itc1600 wsize
+getwindow $panelTitle wsize
 
 do
 if(rightshift>=0)
-movewindow/w=datapro_itc1600 v_left, v_top, v_right+i, v_bottom
+movewindow/w=$panelTitle v_left, v_top, v_right+i, v_bottom
 else
-movewindow/w=datapro_itc1600 v_left, v_top, v_right-i, v_bottom
+movewindow/w=$panelTitle v_left, v_top, v_right-i, v_bottom
 endif
 
 i+=4
@@ -2026,46 +2046,52 @@ while(i<(abs(rightshift)))
 
 End
 
-display/host=datapro_itc1600/n=Oscilloscope
 
 Function CheckProc_2(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
+	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
 	if(checked==1)
-	smoothresizepanel(340)
+	smoothresizepanel(340, panelTitle)
 	else
-	smoothresizepanel(-340)
+	smoothresizepanel(-340, panelTitle)
 	endif
 End
 
 
-Function TurnOffAllTTLs()
+Function TurnOffAllTTLs(panelTitle)
+	string panelTitle
 	variable i, NoOfTTLs
 	string TTLCheckBoxName
 	
-	NoOfTTLs=TotNoOfControlType("check", "TTL")
+	NoOfTTLs=TotNoOfControlType("check", "TTL", panelTitle)
 	
 	for(i=0;i<NoOfTTLs;i+=1)
 		TTLCheckBoxName="Check_TTL_0"+num2str(i)
-		CheckBox $TTLCheckBoxName win=DataPro_ITC1600, value=0
+		CheckBox $TTLCheckBoxName win=$panelTitle, value=0
 	endfor
 End
 
-Function StoreTTLState()
-string/g StoredTTLState = ControlStatusListString("TTL", "Check")
+Function StoreTTLState(panelTitle)
+string panelTitle
+string/g StoredTTLState = ControlStatusListString("TTL", "Check", panelTitle)
 End
 
-Function RestoreTTLState()
+Function RestoreTTLState(panelTitle)
+string panelTitle
 SVAR StoredTTLState
 variable i, NoOfTTLs, CheckBoxState
 string TTLCheckBoxName
 	
-	NoOfTTLs=TotNoOfControlType("check", "TTL")
+	NoOfTTLs=TotNoOfControlType("check", "TTL", panelTitle)
 	
 	for(i=0;i<NoOfTTLs;i+=1)
 		TTLCheckBoxName="Check_TTL_0"+num2str(i)
 		CheckBoxState=str2num(stringfromlist(i,StoredTTLState,";"))
-		CheckBox $TTLCheckBoxName win=DataPro_ITC1600, value=CheckBoxState
+		CheckBox $TTLCheckBoxName win=$panelTitle, value=CheckBoxState
 	endfor
 
 killstrings StoredTTLState
@@ -2073,59 +2099,71 @@ End
 
 Function ButtonProc_2(ctrlName) : ButtonControl
 	String ctrlName
-	TurnOffAllTTLs()
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
+	TurnOffAllTTLs(panelTitle)
 End
 
 
-Function TurnOffAllDACs()
+Function TurnOffAllDACs(panelTitle)
+	string panelTitle
 	variable i, NoOfDACs
 	string DACCheckBoxName
 	
-	NoOfDACs=TotNoOfControlType("check", "DA")
+	NoOfDACs=TotNoOfControlType("check", "DA", panelTitle)
 	
 	for(i=0;i<NoOfDACs;i+=1)
 		DACCheckBoxName="Check_DA_0"+num2str(i)
-		CheckBox $DACCheckBoxName win=DataPro_ITC1600, value=0
+		CheckBox $DACCheckBoxName win=$panelTitle, value=0
 	endfor
 End
 
 Function ButtonProc_3(ctrlName) : ButtonControl
 	String ctrlName
-	TurnOffAllDACs()
+	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	TurnOffAllDACs(panelTitle)
 End
 
-Function TurnOffAllADCs()
+Function TurnOffAllADCs(panelTitle)
+	string panelTitle
 	variable i, NoOfADCs
 	string ADCCheckBoxName
 	
-	NoOfADCs=TotNoOfControlType("check", "AD")
+	NoOfADCs=TotNoOfControlType("check", "AD", panelTitle)
 	
 	for(i=0;i<NoOfADCs;i+=1)
 		if(i<10)
 		ADCCheckBoxName="Check_AD_0"+num2str(i)
-		CheckBox $ADCCheckBoxName win=DataPro_ITC1600, value=0
+		CheckBox $ADCCheckBoxName win=$panelTitle, value=0
 		else
 		ADCCheckBoxName="Check_AD_"+num2str(i)
-		CheckBox $ADCCheckBoxName win=DataPro_ITC1600, value=0
+		CheckBox $ADCCheckBoxName win=$panelTitle, value=0
 		endif
 	endfor
 End
 
 Function ButtonProc_4(ctrlName) : ButtonControl
 	String ctrlName
-	TurnOffAllADCs()
+	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	TurnOffAllADCs(panelTitle)
 End
 
-Function TurnOffAllHeadstages()
+Function TurnOffAllHeadstages(panelTitle)
+	string panelTitle
 //Check_DataAcq_Cell0
 	variable i, NoOfHeadstages
 	string DACCheckBoxName
 	
-	NoOfHeadstages=TotNoOfControlType("check", "DataAcq")
+	NoOfHeadstages=TotNoOfControlType("check", "DataAcq", panelTitle)
 	
 	for(i=0;i<NoOfHeadstages;i+=1)
 		DACCheckBoxName="Check_DataAcq_0"+num2str(i)
-		CheckBox $DACCheckBoxName win=DataPro_ITC1600, value=0
+		CheckBox $DACCheckBoxName win=$panelTitle, value=0
 	endfor
 
 
@@ -2137,10 +2175,13 @@ End
 
 Function ButtonProc_5(ctrlName) : ButtonControl
 	String ctrlName
-	TurnOffAllHeadstages()
-	TurnOffAllDACs()
-	TurnOffAllADCs()
-	TurnOffAllTTLs()
+	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	TurnOffAllHeadstages(panelTitle)
+	TurnOffAllDACs(panelTitle)
+	TurnOffAllADCs(panelTitle)
+	TurnOffAllTTLs(panelTitle)
 End
 
 Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DAC popupmenu's that show DAC waveslist from wavebuilder
@@ -2152,15 +2193,18 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	string folderPath
 	string folder
 	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
 	if(stringmatch(ctrlName,"*indexEnd*")!=1)//makes sure it is the index start wave
 		if(popnum==1)//if the user selects "none" the channel is automatically turned off
 		CheckBoxName[0,3]="check"
-		Checkbox $Checkboxname win=DataPro_ITC1600, value=0
+		Checkbox $Checkboxname win=$panelTitle, value=0
 		endif
 	endif
 	
 	if(popnum==2)
-		popupmenu $ctrlname win=DataPro_ITC1600, mode = 3// prevents the user from selecting the testpulse
+		popupmenu $ctrlname win=$panelTitle, mode = 3// prevents the user from selecting the testpulse
 	endif
 
 	if(stringmatch(ctrlName,"*DA*")==1)
@@ -2174,7 +2218,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	setdatafolder FolderPath// sets the wavelist for the DAC popup menu to show all waves in DAC folder
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
 	print ListOfWavesInFolder
-	PopupMenu  $ctrlName win=dataPro_ITC1600, value=#ListOfWavesInFolder
+	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder
 	setdatafolder root:
 	
 End
@@ -2191,12 +2235,12 @@ SetVariable SetVar_Sweep limits={0,itemsinlist(ListOfDataWaves),1}
 	
 End
 
-Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd)// returns the names of the items in the popmenu controls in a list
-	string DAorTTL
+Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd, panelTitle)// returns the names of the items in the popmenu controls in a list
+	string DAorTTL, panelTitle
 	variable StartOrEnd// 0 or 1, determines wheterh start or end index popupmenu is updated
 	string ListOfSelectedWaveNames=""
 	string popupMenuName
-	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL)
+	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL, panelTitle)
 	variable i
 	delayupdate
 	do
@@ -2208,7 +2252,7 @@ Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd)// returns the names of
 			popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
 			break
 		endswitch
-		controlInfo/w=datapro_itc1600 $popupMenuName
+		controlInfo/w=$panelTitle $popupMenuName
 		ListOfSelectedWaveNames+=s_value + ";"
 		i+=1
 	while(i<noOfPopups)
@@ -2216,12 +2260,12 @@ Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd)// returns the names of
 	return ListOfSelectedWaveNames
 End
 
-Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd)
-	string ListOfSelections, DAorTTL
+Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, panelTitle)
+	string ListOfSelections, DAorTTL, panelTitle
 	variable StartOrEnd
 	string popupMenuName
 	string CheckBoxName
-	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL)
+	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL, panelTitle)
 	variable i
 	delayupdate
 		do
@@ -2233,17 +2277,17 @@ Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd)
 				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
 				break
 				endswitch
-			controlinfo/w=datapro_itc1600 $popupMenuName
+			controlinfo/w=$panelTitle $popupMenuName
 			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";"))==1 || cmpstr(s_value,"")==0)
-				PopupMenu  $popupMenuName win=datapro_itc1600, mode=v_value-1
-				controlinfo/w=datapro_itc1600 $popupMenuName
+				PopupMenu  $popupMenuName win=$panelTitle, mode=v_value-1
+				controlinfo/w=$panelTitle $popupMenuName
 				if(cmpstr(s_value,"testpulse")==0)
-				PopupMenu  $popupMenuName win=datapro_itc1600, mode=1
+				PopupMenu  $popupMenuName win=$panelTitle, mode=1
 				CheckBoxName="Check_"+DAorTTL+"_0" + num2str(i)
-				CheckBox Check_DA_00 win=datapro_itc1600, value=0
+				CheckBox Check_DA_00 win=$panelTitle, value=0
 				endif
 			endif
 			i+=1
 		while(i<noOfPopups)
-		doupdate /W = datapro_itc1600
+		doupdate /W = $panelTitle
 End

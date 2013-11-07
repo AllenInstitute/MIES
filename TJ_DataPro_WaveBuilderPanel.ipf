@@ -476,6 +476,8 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
 	String DAorTTL
 	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
 	controlinfo /W=wavebuilder popup_WaveBuilder_SetList
 	print s_value
 	if(stringmatch(s_value,"*DA*")==1)
@@ -485,12 +487,12 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	endif
 	
 	print daorttl
-	string popupMenuSelectedItemsStart = ITCP_PopupMenuWaveNameList(DAorTTL,0)
-	string popupMenuSelectedItemsEnd = ITCP_PopupMenuWaveNameList(DAorTTL,1)
+	string popupMenuSelectedItemsStart = ITCP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
+	string popupMenuSelectedItemsEnd = ITCP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
 	WBP_DeleteSet()
-	WBP_UpdateITCPanelPopUps()
-	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0)
-	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1)
+	WBP_UpdateITCPanelPopUps(panelTitle)
+	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
+	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
 	
 	controlupdate /W=wavebuilder popup_WaveBuilder_SetList
 	PopupMenu popup_WaveBuilder_SetList mode=1
@@ -610,6 +612,8 @@ End
 Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
 	
+	
+	string panelTitle
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	
@@ -621,7 +625,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	WBP_RemoveAndKillWavesOnGraph("WaveBuilder#WaveBuilderGraph")//removes waves displayed in wave builder
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleBaseName(), 1, "")// moves 2D wave that contains stimulus set to DAC or TTL folder
 	WBP_SaveSetParam()//Saves set parameters with base name in appropriate ttl of dac folder
-	WBP_UpdateITCPanelPopUps()
+	WBP_UpdateITCPanelPopUps(panelTitle)
 	
 	SetVariable setvar_WaveBuilder_baseName value= _STR:"InsertBaseName"
 	SetDataFolder saveDFR
@@ -1445,7 +1449,8 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 	setdatafolder root:
 End
 
-Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the DAC or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
+Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been saved to the DAC or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
+	string panelTitle
 	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d, ListOfItemsSelectedInPopup, DAorTTL
 	variable NoOfControls, i
 	controlinfo /W =waveBuilder popup_WaveBuilder_OutputType
@@ -1454,14 +1459,14 @@ Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the
 	if(stringmatch(WB_WaveType,"DAC")==1)//if statement determines if the set being saved is a DAC or TTL
 	ctrlName0="Wave_DA_"
 	ctrlName1="Popup_DA_IndexEnd_"
-	NoOfControls = TotNoOfControlType("Wave", "DA")
+	NoOfControls = TotNoOfControlType("Wave", "DA", panelTitle)
 	setDataFolder root:waveBuilder:savedStimulusSets:DAC
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DAC*",";","")+"\""
 	DAorTTL="DA"
 	else
 	ctrlName0="Wave_TTL_"
 	ctrlName1="Popup_TTL_IndexEnd_"
-	NoOfControls = TotNoOfControlType("Wave", "TTL")
+	NoOfControls = TotNoOfControlType("Wave", "TTL", panelTitle)
 	setDataFolder root:waveBuilder:savedStimulusSets:TTL
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
 	DAorTTL="TTL"
@@ -1477,10 +1482,10 @@ Function WBP_UpdateITCPanelPopUps()// Used after a new set has been saved to the
 		ctrlName0d+=num2str(i)
 		ctrlName1d+=num2str(i)
 		endif
-	PopupMenu  $ctrlName0d win=dataPro_ITC1600, value=#ListOfWavesInFolder
-	controlupdate/w=dataPro_ITC1600 $ctrlname0d
-	PopupMenu  $ctrlName1d win=dataPro_ITC1600, value=#ListOfWavesInFolder
-	controlupdate/w=dataPro_ITC1600 $ctrlname1d
+	PopupMenu  $ctrlName0d win=$panelTitle, value=#ListOfWavesInFolder
+	controlupdate/w=$panelTitle $ctrlname0d
+	PopupMenu  $ctrlName1d win=$panelTitle, value=#ListOfWavesInFolder
+	controlupdate/w=$panelTitle $ctrlname1d
 
 	i+=1
 	while(i<noOfControls)

@@ -1,7 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 
-Function RepeatedAcquisition()
+Function RepeatedAcquisition(PanelTitle)
+string PanelTitle
 variable ITI
 variable IndexingState
 variable i = 0
@@ -9,104 +10,105 @@ variable/g Count=0
 wave ITCDataWave, TestPulseITC
 variable TotTrials
 
-	controlinfo/w=DataPro_ITC1600 SetVar_DataAcq_TotTrial
+	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
-	ValDisplay valdisp_DataAcq_TrialsCountdown win=DataPro_ITC1600, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
+	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
 	
-	controlinfo/w=DataPro_ITC1600 SetVar_DataAcq_ITI
+	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
 	
-	controlinfo/w=DataPro_ITC1600 Check_DataAcq1_Indexing
+	controlinfo/w=$panelTitle Check_DataAcq1_Indexing
 	IndexingState=v_value
 	
 
 		
-		StoreTTLState()//preparations for test pulse begin here
-		TurnOffAllTTLs()
+		StoreTTLState(panelTitle)//preparations for test pulse begin here
+		TurnOffAllTTLs(panelTitle)
 		
 		make/o/n=0 TestPulse
 		SetScale/P x 0,0.005,"ms", TestPulse
-		AdjustTestPulseWave(TestPulse)
+		AdjustTestPulseWave(TestPulse,panelTitle)
 		
 		make/free/n=8 SelectedDACWaveList
-		StoreSelectedDACWaves(SelectedDACWaveList)
-		SelectTestPulseWave()
+		StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
+		SelectTestPulseWave(panelTitle)
 	
 		make/free/n=8 SelectedDACScale
-		StoreDAScale(SelectedDACScale)
-		SetDAScaleToOne()
+		StoreDAScale(SelectedDACScale, panelTitle)
+		SetDAScaleToOne(panelTitle)
 		
-		ConfigureDataForITC()
-		ITCOscilloscope(TestPulseITC)
+		ConfigureDataForITC(PanelTitle)
+		ITCOscilloscope(TestPulseITC, panelTitle)
 		
-		controlinfo/w=DataPro_ITC1600 check_Settings_ShowScopeWindow
+		controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 		if(v_value==0)
-		SmoothResizePanel(340)
+		SmoothResizePanel(340, panelTitle)
 		endif
 		
-		StartBackgroundTestPulse()
+		StartBackgroundTestPulse(panelTitle)
 		StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "")
 	
-		ResetSelectedDACWaves(SelectedDACWaveList)
-		RestoreDAScale(SelectedDACScale)
+		ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+		RestoreDAScale(SelectedDACScale,panelTitle)
 		killwaves/f TestPulse
 
 End
 
-Function RepeatedAcquisitionCounter(DeviceType,DeviceNum)
+Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 variable DeviceType,DeviceNum
+string panelTitle
 NVAR Count
 variable TotTrials
 variable ITI
 wave ITCDataWave, TestPulseITC
-	controlinfo/w=DataPro_ITC1600 SetVar_DataAcq_TotTrial
+	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
 	Count+=1
-	controlinfo/w=DataPro_ITC1600 SetVar_DataAcq_ITI
+	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
-	ValDisplay valdisp_DataAcq_TrialsCountdown win=datapro_ITC1600, value=_NUM:(TotTrials-(Count+1))// reports trials remaining
+	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))// reports trials remaining
 	
-	controlinfo/w=DataPro_ITC1600 Check_DataAcq1_Indexing
+	controlinfo/w=$panelTitle Check_DataAcq1_Indexing
 	If(v_value==1)// if indexing is activated, indexing is applied.
-	IndexingDoIt()
+	IndexingDoIt(panelTitle)
 	endif
 	
 	if(Count<TotTrials)
-		ConfigureDataForITC()
-		ITCOscilloscope(ITCDataWave)
+		ConfigureDataForITC(PanelTitle)
+		ITCOscilloscope(ITCDataWave, panelTitle)
 		
-		ControlInfo/w=DataPro_ITC1600 Check_Settings_BackgrndDataAcq
+		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value==0)//No background aquisition
-			ITCDataAcq(DeviceType,DeviceNum)
+			ITCDataAcq(DeviceType,DeviceNum, panelTitle)
 			if(Count<(TotTrials-1)) //prevents test pulse from running after last trial is acquired
-				StoreTTLState()
-				TurnOffAllTTLs()
+				StoreTTLState(panelTitle)
+				TurnOffAllTTLs(panelTitle)
 				
 				make/o/n=0 TestPulse
 				SetScale/P x 0,0.005,"ms", TestPulse
-				AdjustTestPulseWave(TestPulse)
+				AdjustTestPulseWave(TestPulse, panelTitle)
 				
 				make/free/n=8 SelectedDACWaveList
-				StoreSelectedDACWaves(SelectedDACWaveList)
-				SelectTestPulseWave()
+				StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+				SelectTestPulseWave(panelTitle)
 			
 				make/free/n=8 SelectedDACScale
-				StoreDAScale(SelectedDACScale)
-				SetDAScaleToOne()
+				StoreDAScale(SelectedDACScale, panelTitle)
+				SetDAScaleToOne(panelTitle)
 				
-				ConfigureDataForITC()
-				ITCOscilloscope(TestPulseITC)
+				ConfigureDataForITC(PanelTitle)
+				ITCOscilloscope(TestPulseITC,panelTitle)
 				
-				controlinfo/w=DataPro_ITC1600 check_Settings_ShowScopeWindow
+				controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 				if(v_value==0)
-					SmoothResizePanel(340)
+					SmoothResizePanel(340, panelTitle)
 				endif
 				
-				StartBackgroundTestPulse()
+				StartBackgroundTestPulse(panelTitle)
 				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "")
 				
-				ResetSelectedDACWaves(SelectedDACWaveList)
-				RestoreDAScale(SelectedDACScale)
+				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+				RestoreDAScale(SelectedDACScale, panelTitle)
 				
 				killwaves/f TestPulse
 			else
@@ -117,52 +119,53 @@ wave ITCDataWave, TestPulseITC
 				Killstrings/z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 		else //background aquisition is on
-				ITCBkrdAcq(DeviceType,DeviceNum)
+				ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)
 								
 		endif
 	endif
 
 End
 
-Function BckgTPwithCallToRptAcqContr()
+Function BckgTPwithCallToRptAcqContr(PanelTitle)
+	string panelTitle
 	wave TestPulseITC
 	variable ITI
 	variable TotTrials
 	NVAR count	
-	controlinfo/w=DataPro_ITC1600 SetVar_DataAcq_TotTrial
+	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
-	controlinfo/w=DataPro_ITC1600 SetVar_DataAcq_ITI
+	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
 			
 			if(Count<(TotTrials-1))
-				StoreTTLState()
-				TurnOffAllTTLs()
+				StoreTTLState(panelTitle)
+				TurnOffAllTTLs(panelTitle)
 				
 				make/o/n=0 TestPulse
 				SetScale/P x 0,0.005,"ms", TestPulse
-				AdjustTestPulseWave(TestPulse)
+				AdjustTestPulseWave(TestPulse, panelTitle)
 				
 				make/free/n=8 SelectedDACWaveList
-				StoreSelectedDACWaves(SelectedDACWaveList)
-				SelectTestPulseWave()
+				StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+				SelectTestPulseWave(panelTitle)
 			
 				make/free/n=8 SelectedDACScale
-				StoreDAScale(SelectedDACScale)
-				SetDAScaleToOne()
+				StoreDAScale(SelectedDACScale, panelTitle)
+				SetDAScaleToOne(panelTitle)
 				
-				ConfigureDataForITC()
-				ITCOscilloscope(TestPulseITC)
+				ConfigureDataForITC(panelTitle)
+				ITCOscilloscope(TestPulseITC, panelTitle)
 				
-				controlinfo/w=DataPro_ITC1600 check_Settings_ShowScopeWindow
+				controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 				if(v_value==0)
-					SmoothResizePanel(340)
+					SmoothResizePanel(340, panelTitle)
 				endif
 				
-				StartBackgroundTestPulse()
+				StartBackgroundTestPulse(panelTitle)
 				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "")
 				
-				ResetSelectedDACWaves(SelectedDACWaveList)
-				RestoreDAScale(SelectedDACScale)
+				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+				RestoreDAScale(SelectedDACScale, panelTitle)
 				
 				killwaves/f TestPulse
 			else
