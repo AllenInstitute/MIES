@@ -7,8 +7,11 @@ variable ITI
 variable IndexingState
 variable i = 0
 variable/g Count=0
-wave ITCDataWave, TestPulseITC
-variable TotTrials
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	wave TestPulseITC = $WavePath + ":TestPulseITC"
+
+	variable TotTrials
 
 	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
@@ -24,9 +27,11 @@ variable TotTrials
 		
 		StoreTTLState(panelTitle)//preparations for test pulse begin here
 		TurnOffAllTTLs(panelTitle)
-		
-		make/o/n=0 TestPulse
+		string TestPulsePath = WavePath + ":TestPulse"
+		make/o/n=0 $TestPulsePath
+		wave TestPulse = $WavePath + ":TestPulse"
 		SetScale/P x 0,0.005,"ms", TestPulse
+
 		AdjustTestPulseWave(TestPulse,panelTitle)
 		
 		make/free/n=8 SelectedDACWaveList
@@ -46,7 +51,7 @@ variable TotTrials
 		endif
 		
 		StartBackgroundTestPulse(panelTitle)
-		StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "")
+		StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
 	
 		ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		RestoreDAScale(SelectedDACScale,panelTitle)
@@ -60,7 +65,10 @@ string panelTitle
 NVAR Count
 variable TotTrials
 variable ITI
-wave ITCDataWave, TestPulseITC
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	wave TestPulseITC = $WavePath + ":TestPulseITC"
+	wave TestPulse = $WavePath + ":TestPulse"
 	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
 	Count+=1
@@ -105,7 +113,7 @@ wave ITCDataWave, TestPulseITC
 				endif
 				
 				StartBackgroundTestPulse(panelTitle)
-				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "")
+				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
 				
 				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				RestoreDAScale(SelectedDACScale, panelTitle)
@@ -128,7 +136,9 @@ End
 
 Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	string panelTitle
-	wave TestPulseITC
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave TestPulseITC = $WavePath + ":TestPulseITC"
+	wave TestPulse = $WavePath + ":TestPulse"
 	variable ITI
 	variable TotTrials
 	NVAR count	
@@ -162,7 +172,7 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 				endif
 				
 				StartBackgroundTestPulse(panelTitle)
-				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "")
+				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
 				
 				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				RestoreDAScale(SelectedDACScale, panelTitle)

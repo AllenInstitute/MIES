@@ -475,24 +475,28 @@ End
 Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
 	String DAorTTL
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	SVAR ITCPanelTitleList
 	controlinfo /W=wavebuilder popup_WaveBuilder_SetList
-	print s_value
-	if(stringmatch(s_value,"*DA*")==1)
-	DAorTTL="DA"
-	else
-	DAorTTL="TTL"
-	endif
+	string SetWaveToDelete = s_value
+	//getwindow kwTopWin wtitle
+	variable i = 0
 	
-	print daorttl
-	string popupMenuSelectedItemsStart = ITCP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
-	string popupMenuSelectedItemsEnd = ITCP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
-	WBP_DeleteSet()
-	WBP_UpdateITCPanelPopUps(panelTitle)
-	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
-	ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
+	do
+		string panelTitle=stringfromlist(i,ITCPanelTitleList, ";")
+		if(stringmatch(SetWaveToDelete,"*DA*")==1)
+		DAorTTL="DA"
+		else
+		DAorTTL="TTL"
+		endif
+	
+		string popupMenuSelectedItemsStart = ITCP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
+		string popupMenuSelectedItemsEnd = ITCP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
+		WBP_DeleteSet()
+		WBP_UpdateITCPanelPopUps(panelTitle)
+		ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
+		ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
+		i+=1
+	while(i<itemsinlist(ITCPanelTitleList))
 	
 	controlupdate /W=wavebuilder popup_WaveBuilder_SetList
 	PopupMenu popup_WaveBuilder_SetList mode=1
@@ -611,25 +615,28 @@ End
 
 Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
-	
-	
+	variable i = 0
+	SVAR ITCPanelTitleList
 	string panelTitle
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
-	
 	string ListOfTracesOnGraph
 	ListOfTracesOnGraph=TraceNameList("WaveBuilder#WaveBuilderGraph", ",",0+1 )
-	variable i=0
 	
 	WBP_Transfer1DsTo2D(ListOfTracesOnGraph)//takes the waves displayed in the wavebuilder and makes them into a single wave
 	WBP_RemoveAndKillWavesOnGraph("WaveBuilder#WaveBuilderGraph")//removes waves displayed in wave builder
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleBaseName(), 1, "")// moves 2D wave that contains stimulus set to DAC or TTL folder
 	WBP_SaveSetParam()//Saves set parameters with base name in appropriate ttl of dac folder
-	WBP_UpdateITCPanelPopUps(panelTitle)
 	
-	SetVariable setvar_WaveBuilder_baseName value= _STR:"InsertBaseName"
 	SetDataFolder saveDFR
+
+	do
+		paneltitle = stringfromlist(i, ITCPanelTitleList, ";")
+		WBP_UpdateITCPanelPopUps(panelTitle)
+		i+=1
+	while (i<itemsinlist(ITCPanelTitleList, ";"))
 	
+	SetVariable setvar_WaveBuilder_baseName win = wavebuilder, value= _STR:"InsertBaseName"
 	controlupdate /W = wavebuilder popup_WaveBuilder_SetList
 End
 
@@ -938,26 +945,26 @@ if (cmpstr(popstr,"TTL")==0)
 	SegmentWaveType=0
 	WP[1,6][][]=0
 	
-	SetVariable SetVar_WaveBuilder_P2 limits={0,1,1}, value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P2 win = wavebuilder, limits={0,1,1}, value= _NUM:0
 	WBP_SetVarProc_UpdateParam("SetVar_WaveBuilder_P2",0,"1","")
-	SetVariable SetVar_WaveBuilder_P3 disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P3 win = wavebuilder, disable=2,value= _NUM:0
 	WBP_SetVarProc_UpdateParam("SetVar_WaveBuilder_P3",0,"0","")
-	SetVariable SetVar_WaveBuilder_P4 disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P4 win = wavebuilder, disable=2,value= _NUM:0
 	WBP_SetVarProc_UpdateParam("SetVar_WaveBuilder_P4",0,"0","")
-	SetVariable SetVar_WaveBuilder_P5 disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P5 win = wavebuilder, disable=2,value= _NUM:0
 	WBP_SetVarProc_UpdateParam("SetVar_WaveBuilder_P5",0,"0","")
 	
-	SetVariable SetVar_WaveBuilder_OD00 disable=2,value= _NUM:0// i need to run the procedure associated to the particular set variable
-	SetVariable SetVar_WaveBuilder_OD01 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_OD02 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_OD03 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_OD04 disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_OD00 win = wavebuilder, disable=2,value= _NUM:0// i need to run the procedure associated to the particular set variable
+	SetVariable SetVar_WaveBuilder_OD01 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_OD02 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_OD03 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_OD04 win = wavebuilder, disable=2,value= _NUM:0
 	
-	SetVariable SetVar_WaveBuilder_DD02 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_DD03 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_DD04 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_DD05 disable=2,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_DD06 disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_DD02 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_DD03 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_DD04 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_DD05 win = wavebuilder, disable=2,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_DD06 win = wavebuilder, disable=2,value= _NUM:0
 	
 	TabControl WBP_WaveType value=0
 	WBP_ExecuteAdamsTabcontrol(0)
@@ -965,22 +972,22 @@ if (cmpstr(popstr,"TTL")==0)
 endif
 
 if (cmpstr(popstr,"DAC")==0)
-	SetVariable SetVar_WaveBuilder_P2 limits={-inf,inf,1}
-	SetVariable SetVar_WaveBuilder_P3 disable=0
-	SetVariable SetVar_WaveBuilder_P4 disable=0
-	SetVariable SetVar_WaveBuilder_P5 disable=0
+	SetVariable SetVar_WaveBuilder_P2 win = wavebuilder, limits={-inf,inf,1}
+	SetVariable SetVar_WaveBuilder_P3 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_P4 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_P5 win = wavebuilder, disable=0
 	
-	SetVariable SetVar_WaveBuilder_OD00 disable=0
-	SetVariable SetVar_WaveBuilder_OD01 disable=0
-	SetVariable SetVar_WaveBuilder_OD02 disable=0
-	SetVariable SetVar_WaveBuilder_OD03 disable=0
-	SetVariable SetVar_WaveBuilder_OD04 disable=0
+	SetVariable SetVar_WaveBuilder_OD00 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_OD01 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_OD02 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_OD03 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_OD04 win = wavebuilder, disable=0
 	
-	SetVariable SetVar_WaveBuilder_DD02 disable=0
-	SetVariable SetVar_WaveBuilder_DD03 disable=0
-	SetVariable SetVar_WaveBuilder_DD04 disable=0
-	SetVariable SetVar_WaveBuilder_DD05 disable=0
-	SetVariable SetVar_WaveBuilder_DD06 disable=0
+	SetVariable SetVar_WaveBuilder_DD02 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_DD03 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_DD04 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_DD05 win = wavebuilder, disable=0
+	SetVariable SetVar_WaveBuilder_DD06 win = wavebuilder, disable=0
 endif
 
 	SetDataFolder saveDFR

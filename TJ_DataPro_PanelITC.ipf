@@ -1651,7 +1651,6 @@ EndMacro
 
 //=========================================================================================
 
-
 //=========================================================================================
 
 
@@ -1716,14 +1715,11 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	print popupvalue
 	
 	do
-	
 	DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
 	
 	IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 	PopupMenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
-
-	
 	i+=1
 	while(i<8)
 	setdatafolder saveDFR
@@ -1749,7 +1745,6 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:TTL:
-	
 	
 	controlinfo/w=$panelTitle SearchUniversal_TTL_00
 	if(v_value==1)
@@ -1806,28 +1801,25 @@ Function CheckProc_UniversalSearchTTL(ctrlName,checked) : CheckBoxControl
 	
 	controlinfo/w=$panelTitle Search_TTL_00
 	if(strlen(s_value)==0)
-	SearchString="*TTL*"
+		SearchString="*TTL*"
 	else
-	SearchString = s_value
+		SearchString = s_value
 	endif
-	
 	
 	String TTLPopUpMenuName// = "Wave_DA_"
 	String IndexEndPopUpMenuName
 	String FirstTwoMenuItems = "\"- none -;"
 	variable i = 0
 	
-	
 	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
 	do
-	TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-	popupmenu $TTLPopUpMenuName win=$panelTitle, value=#popupValue
-	IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-	popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
-
-	i+=1
+		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#popupValue
+		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+		popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
+		i+=1
 	while(i<8)
-	
+
 	setdatafolder saveDFR
 End
 
@@ -1848,7 +1840,6 @@ Function TabTJHook1(tca)//This is a function that gets run by ACLight's tab cont
 //		ChangePopUpState("Popup_DA_IndexEnd_0",1)
 //		endif
 //	endif
-
 return 0
 End
 
@@ -1929,11 +1920,14 @@ End
 
 Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
-	wave ITCDataWave
 	
 	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = s_value
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
+	
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ITCDataWave = $WavePath + ":ITCDataWave"
+
 	
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType=v_value-1
@@ -1947,7 +1941,7 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 			if(IsLastSweepGreaterThanNextSweep(panelTitle)==1)//Checks for manual roll back of Next Sweep
 				controlinfo SetVar_Sweep
 				variable NextSweep=v_value
-				DeleteSettingsHistoryWaves(NextSweep)
+				DeleteSettingsHistoryWaves(NextSweep, panelTitle)
 				DeleteDataWaves(NextSweep)
 				MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
 			endif
@@ -2235,9 +2229,9 @@ SetVariable SetVar_Sweep limits={0,itemsinlist(ListOfDataWaves),1}
 	
 End
 
-Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd, panelTitle)// returns the names of the items in the popmenu controls in a list
+Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list
 	string DAorTTL, panelTitle
-	variable StartOrEnd// 0 or 1, determines wheterh start or end index popupmenu is updated
+	variable StartOrEnd// 0 or 1, determines whether the start or end index popupmenu is updated
 	string ListOfSelectedWaveNames=""
 	string popupMenuName
 	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL, panelTitle)

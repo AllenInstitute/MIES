@@ -32,14 +32,24 @@ Function HSU_ButtonProc_LockDev(ctrlName) : ButtonControl
 	HSU_LockDevice(s_value)
 End
 
-Function HSU_LockDevice(PanelTitle)
+Function HSU_LockDevice(panelTitle)
 	string PanelTitle
+	string deviceType
+	variable deviceNo
 	PopupMenu popup_MoreSettings_DeviceType win=$PanelTitle, disable=2
 	PopupMenu popup_moreSettings_DeviceNo win=$PanelTitle, disable=2
 	Button button_SettingsPlus_LockDevice win=$PanelTitle, disable=2
 	HSU_DataFolderPathDisplay(PanelTitle)
 	HSU_CreateDataFolderForLockdDev(PanelTitle)
 	Button button_SettingsPlus_unLockDevic win=$PanelTitle, disable=0
+	controlinfo /W = $panelTitle popup_MoreSettings_DeviceType
+	deviceType=s_value
+	controlinfo /W = $panelTitle popup_moreSettings_DeviceNo
+	deviceNo=v_value-1
+	dowindow /W = $panelTitle /C $DeviceType + "_Dev_" + num2str(DeviceNo)
+	GlobalListStrngOfITCPanelTitles()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
+	ListOfITCPanels()
+	
 End
 
 Function HSU_DataFolderPathDisplay(PanelTitle)
@@ -131,7 +141,19 @@ Function HSU_IsDeviceTypeConnected(PanelTitle)
 	endif
 	killwaves localwave
 End
+// below functions are used to create a list of the ITC panels. This list is will be used by functions that need to update items that are common to different panels.
+// for example: DAC popup lists, TTL popup lists
+Function GlobalListStrngOfITCPanelTitles()
+	If(exists("ITCPanelTitleList")==0)
+	String/G ITCPanelTitleList
+	endif
+End
 
+
+Function ListOfITCPanels()
+SVAR ITCPanelTitleList 
+ITCPanelTitleList = winlist("ITC*",";", "WIN:64") 
+End
 //=====================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW
 //=====================================================================================

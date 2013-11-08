@@ -4,8 +4,8 @@
 //=========================================================================================
 Function ConfigureDataForITC(PanelTitle)
 string PanelTitle
-MakeITCConfigAllConfigWave(PanelTitle)
-MakeITCConfigAllDataWave(PanelTitle)
+MakeITCConfigAllConfigWave(PanelTitle)  
+MakeITCConfigAllDataWave(PanelTitle)  
 MakeITCFIFOPosAllConfigWave(PanelTitle)
 MakeITCFIFOAvailAllConfigWave(PanelTitle)
 
@@ -355,9 +355,9 @@ variable i=0//
 variable j=0//used to keep track of row of ITCChanConfigWave which config data is loaded into
 variable ChannelType// = 0 for AD, = 1 for DA, = 3 for TTL
 string ChannelStatus
-wave ITCChanConfigWave=$HSU_DataFullFolderPathString(PanelTitle)+"ITCChanConfigWave"
+wave ITCChanConfigWave=$HSU_DataFullFolderPathString(PanelTitle)+":ITCChanConfigWave"
 
-MakeITCConfigAllConfigWave(PanelTitle)
+//MakeITCConfigAllConfigWave(PanelTitle)
 
 //Place DA config data
 ChannelType = 1
@@ -370,7 +370,6 @@ do
 	endif
 i+=1
 while(i<(itemsinlist(ChannelStatus,";")))
-
 
 
 //Place AD config data
@@ -414,7 +413,8 @@ string panelTitle
 variable i=0// 
 variable j=0//
 string ChannelStatus
-wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCDataWave"
+wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
+string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
 string ChanTypeWaveNameList, ChanTypeWaveName
 string ResampledWaveName="ResampledWave"
 string cmd
@@ -434,18 +434,16 @@ do
 	ControlInfo/w=$panelTitle $SetVarDAScale
 	DAScale=v_value
 	//get the wave name
-	ChanTypeWaveName=stringfromlist(i,ChanTypeWaveNameList,";")
+	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DAC:"+ stringfromlist(i,ChanTypeWaveNameList,";")
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
-	sprintf cmd, "ITCDataWave[0,round((numpnts('%s')/(%d))-1)][%d]=(%d*%d)*('%s'[(%d)*p])",ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor
+	sprintf cmd, "%s[0,round((numpnts(%s)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor
 	execute cmd
 
 	j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
 	endif
 i+=1
 while(i<(itemsinlist(ChannelStatus,";")))
-
-
 
 //Leave room for AD data 
 i=0
@@ -479,7 +477,9 @@ End
 //=========================================================================================
 Function PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
 string panelTitle
-wave ITCFIFOPositionAllConfigWave = $HSU_DataFullFolderPathString(panelTitle)+"ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCChanConfigWave"
+string WavePath=HSU_DataFullFolderPathString(PanelTitle)
+print wavepath
+wave ITCFIFOPositionAllConfigWave = $WavePath+":ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOPositionAllConfigWave[][2]=-1
 ITCFIFOPositionAllConfigWave[][3]=0
@@ -488,7 +488,8 @@ End
 
 Function PDInITCFIFOAvailAllCW(PanelTitle)//PlaceDataInITCFIFOAvailAllConfigWave()
 string panelTitle
-wave ITCFIFOAvailAllConfigWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle)+"ITCChanConfigWave"
+string WavePath=HSU_DataFullFolderPathString(PanelTitle)
+wave ITCFIFOAvailAllConfigWave = $WavePath+":ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 ITCFIFOAvailAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOAvailAllConfigWave[][2]=0
 ITCFIFOAvailAllConfigWave[][3]=0

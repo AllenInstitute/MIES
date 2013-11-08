@@ -115,12 +115,12 @@ End
 
 Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
-	wave TestPulseITC
 	string PanelTitle
 	getwindow kwTopWin wtitle
 	PanelTitle=s_value
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
 	
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType=v_value-1
 	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
@@ -134,7 +134,9 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	SmoothResizePanel(340, panelTitle)
 	endif
 	
-	make/o/n=0 TestPulse
+	string TestPulsePath = wavePath + ":TestPulse"
+	make/o/n=0 $TestPulsePath
+	wave TestPulse = $TestPulsePath
 	SetScale/P x 0,0.005,"ms", TestPulse
 	AdjustTestPulseWave(TestPulse, panelTitle)
 	
@@ -147,6 +149,7 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	SetDAScaleToOne(panelTitle)
 	
 	ConfigureDataForITC(panelTitle)
+	wave TestPulseITC = $WavePath + ":TestPulseITC"
 	ITCOscilloscope(TestPulseITC,panelTitle)
 	controlinfo/w=$panelTitle Check_Settings_BkgTP
 	if(v_value==1)// runs background TP
