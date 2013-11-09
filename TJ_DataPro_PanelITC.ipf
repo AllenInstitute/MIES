@@ -1826,11 +1826,18 @@ End
 
 Function TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
 	STRUCT WMTabControlAction &tca
-	variable tabnum
-
+	variable tabnum , i = 0, MinSampInt
+	SVAR ITCPanelTitleList
+	string panelTitle
 	tabnum=tca.tab
 	if(tabnum==0)
-	controlUpdate ValDisp_DataAcq_SamplingInt
+	do
+	panelTitle = stringfromlist(i, ITCPanelTitleList,";")
+	MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
+	controlUpdate/w=$PanelTitle ValDisp_DataAcq_SamplingInt
+	i+=1
+	while(i<itemsinlist(ITCPanelTitleList,";"))
 	endif
 	
 //	if(tabnum==1)// this does not work because hook function runs prior to adams tab functions (i assume)
@@ -1907,15 +1914,17 @@ Function DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure ch
 	String DACWave = ctrlName
 	DACwave[0,4] = "wave"
 
-getwindow kwTopWin wtitle
-string panelTitle=s_value
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
+	controlinfo/w=$panelTitle $DACWave
+	if(stringmatch(s_value,"- none -")==1)
+	checkbox $ctrlName win=$panelTitle, value=0
+	print "Select " + DACwave[5,7] + " Wave"
+	endif
 
-controlinfo/w=$panelTitle $DACWave
-if(stringmatch(s_value,"- none -")==1)
-checkbox $ctrlName win=$panelTitle, value=0
-print "Select " + DACwave[5,7] + " Wave"
-endif
-
+	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
 End
 
 Function ButtonProc_AcquireData(ctrlName) : ButtonControl
@@ -1923,6 +1932,7 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value
+	print panelTitle
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -1960,11 +1970,8 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 			endif
 		else
 		ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)
-		endif
-	
+		endif	
 End
-
-
 
 Function CheckProc_1(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2178,7 +2185,7 @@ Function ButtonProc_5(ctrlName) : ButtonControl
 	TurnOffAllTTLs(panelTitle)
 End
 
-Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DAC popupmenu's that show DAC waveslist from wavebuilder
+Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DA popupmenu's that show DA waveslist from wavebuilder
 	String ctrlName
 	Variable popNum
 	String popStr
@@ -2202,14 +2209,14 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	endif
 
 	if(stringmatch(ctrlName,"*DA*")==1)
-		FolderPath= "root:waveBuilder:savedStimulusSets:DAC"
-		folder="*DAC*"
+		FolderPath= "root:waveBuilder:savedStimulusSets:DA"
+		folder="*DA*"
 	else
 		FolderPath= "root:waveBuilder:savedStimulusSets:TTL"
 		folder="*TTL*"
 	endif
 	
-	setdatafolder FolderPath// sets the wavelist for the DAC popup menu to show all waves in DAC folder
+	setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
 	print ListOfWavesInFolder
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder
@@ -2284,4 +2291,17 @@ Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, p
 			i+=1
 		while(i<noOfPopups)
 		doupdate /W = $panelTitle
+End
+
+Function UpdateITCMinSampIntDisplay()
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
+End
+
+Function CheckProc_DataAcq_UpdateSampInt(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+	UpdateITCMinSampIntDisplay()
 End

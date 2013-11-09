@@ -117,8 +117,12 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	String ctrlName
 	string PanelTitle
 	getwindow kwTopWin wtitle
+	
 	PanelTitle=s_value
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
+	
+	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType

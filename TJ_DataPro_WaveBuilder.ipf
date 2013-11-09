@@ -23,7 +23,7 @@ Function WB_DisplaySetInPanel()
 	
 	string basename
 	controlinfo setvar_WaveBuilder_baseName
-	basename=s_value
+	basename=s_value[0,15]
 	
 	variable SetNumber
 	controlinfo setvar_WaveBuilder_SetNumber
@@ -81,7 +81,7 @@ Function WB_MakeStimSet()
 	duplicate/free wp, wpd// duplicating starting parameter waves so that they can be returned to start parameters at end of wave making
 
 	controlinfo setvar_WaveBuilder_baseName
-	string setbasename=s_value
+	string setbasename=s_value[0,15]
 	
 	controlinfo setvar_WaveBuilder_SetNumber
 	variable setnumber=v_value
@@ -152,7 +152,7 @@ Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
 	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount
-	wave SegmentWaveType=root:WaveBuilder:Data:SegmentWaveType
+	wave SegWvType=root:WaveBuilder:Data:SegWvType
 	//wave WaveBuilderWave=root:WaveBuilder:Data:WaveBuilderWave
 	//wave SegmentWave=root:WaveBuilder:Data:SegmentWave
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
@@ -173,83 +173,83 @@ Function WB_MakeWaveBuilderWave()
 		//Load in parameters
 		ParameterWaveName="root:WaveBuilder:Data:WP"
 	
-		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 0, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 0, i, SegWvType[i]
 		Execute cmd
 		Duration=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 1, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 1, i, SegWvType[i]
 		Execute cmd
 		DeltaDur=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 2, i, SegmentWaveType[i]		
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 2, i, SegWvType[i]		
 		Execute cmd
 		Amplitude=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 3, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 3, i, SegWvType[i]
 		Execute cmd
 		DeltaAmp=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 4, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 4, i, SegWvType[i]
 		Execute cmd
 		Offset=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 5, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 5, i, SegWvType[i]
 		Execute cmd
 		DeltaOffset=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 6, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 6, i, SegWvType[i]
 		Execute cmd
 		Frequency=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 7, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 7, i, SegWvType[i]
 		Execute cmd
 		DeltaFreq=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 8, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 8, i, SegWvType[i]
 		Execute cmd
 		PulseDuration=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 9, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 9, i, SegWvType[i]
 		Execute cmd
 		DeltaPulsedur=ParameterHolder
 	
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 10, i, SegmentWaveType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 10, i, SegWvType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
 		Execute cmd
 		TauRise=ParameterHolder
 
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 11, i, SegmentWaveType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 11, i, SegWvType[i]	//row spacing changes here to leave room for addition of delta parameters in the future - also allows for universal delta parameter addition		
 		Execute cmd
 		DeltaTauRise=ParameterHolder
 				
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 12, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 12, i, SegWvType[i]
 		Execute cmd
 		TauDecay1=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 13, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 13, i, SegWvType[i]
 		Execute cmd
 		DeltaTauDecay1=ParameterHolder
 		
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 14, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 14, i, SegWvType[i]
 		Execute cmd
 		TauDecay2=ParameterHolder
 
-		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 15, i, SegmentWaveType[i]
+		sprintf cmd, "	ParameterHolder	=%s[%d][%d][%d]" ParameterWaveName, 15, i, SegWvType[i]
 		Execute cmd
 		DeltaTauDecay2=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 16, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 16, i, SegWvType[i]
 		Execute cmd
 		TauDecay2Weight=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 17, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 17, i, SegWvType[i]
 		Execute cmd
 		DeltaTauDecay2Weight=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 18, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 18, i, SegWvType[i]
 		Execute cmd
 		CustomOffset=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 19, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 19, i, SegWvType[i]
 		Execute cmd
 		DeltaCustomOffset = ParameterHolder
 		
@@ -257,48 +257,48 @@ Function WB_MakeWaveBuilderWave()
 		Execute cmd
 		NameOfWaveToBeDuplicated="'"+StringHolder+"'"
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 20, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 20, i, SegWvType[i]
 		Execute cmd
 		LowPassCutOff=ParameterHolder	
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 21, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 21, i, SegWvType[i]
 		Execute cmd
 		DeltaLowPassCutOff=ParameterHolder	
 	
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 22, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 22, i, SegWvType[i]
 		Execute cmd
 		HighPassCutOff=ParameterHolder
 			
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 23, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 23, i, SegWvType[i]
 		Execute cmd
 		DeltaHighPassCutOff=ParameterHolder	
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 24, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 24, i, SegWvType[i]
 		Execute cmd
 		EndFrequency=ParameterHolder	
 			
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 25, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 25, i, SegWvType[i]
 		Execute cmd
 		DeltaEndFrequency=ParameterHolder	
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 26, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 26, i, SegWvType[i]
 		Execute cmd
 		HighPassFiltCoefCount=ParameterHolder	
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 27, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 27, i, SegWvType[i]
 		Execute cmd
 		DeltaHighPassFiltCoefCount=ParameterHolder
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 28, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 28, i, SegWvType[i]
 		Execute cmd
 		LowPassFiltCoefCount=ParameterHolder	
 		
-		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 29, i, SegmentWaveType[i]
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 29, i, SegWvType[i]
 		Execute cmd
 		DeltaLowPassFiltCoefCount=ParameterHolder
 				
 		//Make correct wave segment with above parameters
-		switch(SegmentWaveType[i])												// numeric switch
+		switch(SegWvType[i])												// numeric switch
 			case 0:
 				WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
 				Note WaveBuilderWave, "Segment "+num2str(i)+"= Square pulse , properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
@@ -364,7 +364,7 @@ Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run waveb
 	Make /O /N=100 WaveBuilderWave
 	Make /O /N =(30,100,8) WP //WP=Wave Parameters
 	Make /T /O /N =(30,100) WPT//WPT=Wave Parameters Text (wave)
-	Make/O/N = 102 SegmentWaveType//Wave that stores the wave type used in each epoch
+	Make/O/N = 102 SegWvType//Wave that stores the wave type used in each epoch
 	WP[20][][2]=10001//sets low pass filter to off (off value is related to samplling frequency)
 	WP[26][][2]=500//sets coefficent count for low pass filter to a reasonable and legal No
 	WP[28][][2]=500//sets coefficent count for high pass filter to a reasonable and legal No
@@ -376,10 +376,10 @@ Function WB_MakeWaveBuilderFolders()//makes folders used by wavebuilder panel
 	NewDataFolder /O root:WaveBuilder
 	NewDataFolder /O root:WaveBuilder:Data
 	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:DAC
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:DA
 	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:TTL
 	NewDataFolder /O root:WaveBuilder:SavedStimulusSets
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:DAC
+	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:DA
 	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:TTL
 End
 
@@ -417,7 +417,7 @@ Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOf
 	Variable AmplitudeIncrement=Amplitude/(Duration/0.005)
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
-	SegmentWave=AmplitudeIncrement*p
+	MultiThread SegmentWave=AmplitudeIncrement*p
 	SegmentWave+=Offset
 End
 	
@@ -425,7 +425,7 @@ Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFilt
 	variable Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
-	SegmentWave=gnoise(Amplitude)
+	MultiThread SegmentWave=gnoise(Amplitude)
 	if(duration>0)
 		If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
 			FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),LowPassFiltCoefCount}SegmentWave
@@ -446,14 +446,14 @@ Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOff
 	SetScale/P x 0,0.005,"ms", SegmentWave
 	controlinfo check_Sin_Chirp
 	if(v_value==0)
-		SegmentWave= Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
+		MultiThread SegmentWave= Amplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p)
 		SegmentWave+=Offset
 	else
 		 k0= ln(frequency/1000)
 		 k1= (ln(endFrequency/1000)-k0)/(duration)
 		 k2=2*pi*e^k0/k1
 		 k3= mod(k2,2*pi)		// LH040117: start on rising edge of sin and don't try to round.
-		SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
+		 MultiThread SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
 	endif
 End
 
@@ -530,9 +530,9 @@ variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency
 	TauDecay2=1/TauDecay2
 	TauDecay2*=0.005
 	
-	SegmentWave[]=((1-exp(-TauRise*p)))*amplitude
-	SegmentWave[]+=(exp(-TauDecay1*(p))*(amplitude*(1-TauDecay2Weight)))
-	SegmentWave[]+=(exp(-TauDecay2*(p))*((amplitude*(TauDecay2Weight))))
+	MultiThread SegmentWave[]=((1-exp(-TauRise*p)))*amplitude
+	MultiThread SegmentWave[]+=(exp(-TauDecay1*(p))*(amplitude*(1-TauDecay2Weight)))
+	MultiThread SegmentWave[]+=(exp(-TauDecay2*(p))*((amplitude*(TauDecay2Weight))))
 	
 	baseline=wavemin(SegmentWave)
 	peak=wavemax(SegmentWave)

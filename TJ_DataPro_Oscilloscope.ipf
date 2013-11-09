@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITCOscilloscope(WaveToPlot,panelTitle)
+Function ITCOscilloscope(WaveToPlot, panelTitle)
 wave WaveToPlot
 string panelTitle
 string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
@@ -21,7 +21,7 @@ YaxisLow=YaxisHigh-YaxisSpacing+spacer
 for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 
 ADChannelName="AD"+stringfromlist(i, ADChannelList,";")
-appendtograph/w=$oscilloscopeSubWindow/L=$ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
+appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
 
 ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
 Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName

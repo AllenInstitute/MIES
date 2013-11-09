@@ -224,73 +224,72 @@ End
 //=========================================================================================
 
 Function/s PopMenuStringList(ChannelType, ControlType, panelTitle)
-string ChannelType, ControlType, panelTitle
-
-variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType, panelTitle)
-
-String ControlWaveList = ""
-String ControlName
-variable i
-
-i=0
-
-	do
-		ControlName=ControlType+"_"+ ChannelType +"_"		
-		
-		if(i<10)
-		ControlName+="0"+num2str(i)
-		ControlInfo/w=$panelTitle $ControlName
-		ControlWaveList+=s_value+";"
-		endif
-
-		if(i>=10)
-		ControlName+=num2str(i)
-		ControlInfo/w=$panelTitle $ControlName
-		ControlWaveList+=s_value+";"
-		endif
+	string ChannelType, ControlType, panelTitle
 	
-
-	i+=1
-	while(i<=(TotalPossibleChannels-1))
-
-return ControlWaveList
+	variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType, panelTitle)
+	
+	String ControlWaveList = ""
+	String ControlName
+	variable i
+	
+	i=0
+	
+		do
+			ControlName=ControlType+"_"+ ChannelType +"_"		
+			
+			if(i<10)
+			ControlName+="0"+num2str(i)
+			ControlInfo/w=$panelTitle $ControlName
+			ControlWaveList+=s_value+";"
+			endif
+	
+			if(i>=10)
+			ControlName+=num2str(i)
+			ControlInfo/w=$panelTitle $ControlName
+			ControlWaveList+=s_value+";"
+			endif
+		
+	
+		i+=1
+		while(i<=(TotalPossibleChannels-1))
+	
+	return ControlWaveList
 
 End
 
 //=========================================================================================
 Function LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types need to be passed into this and compared to determine longest wave
-string ChannelType, panelTitle
-
-string ControlType = "Check"
-
-variable TotalPossibleChannels = TotNoOfControlType(ControlType, ChannelType, panelTitle)
-variable wavelength, i
-string ControlTypeStatus = ControlStatusListString(ChannelType, ControlType, panelTitle)
-string WaveNameString
-
-ControlType = "Wave"
-string ChannelTypeWaveList = PopMenuStringList(ChannelType, ControlType, panelTitle)
-
-//if da or ttl channels is active, query the wavelength of the active channel
-i=0
-wavelength = 0
-
-do
-
-if((str2num(stringfromlist(i,ControlTypeStatus,";")))==1)
-WaveNameString = stringfromlist(i,ChannelTypeWaveList,";")
-	if(stringmatch(WaveNameString,"-none-") ==0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
-	wavestats/q $WaveNameString
-		if(v_npnts>WaveLength)
-		WaveLength = v_npnts
+	string ChannelType, panelTitle
+	string ControlType = "Check"
+	
+	variable TotalPossibleChannels = TotNoOfControlType(ControlType, ChannelType, panelTitle)
+	variable wavelength = 0, i = 0
+	string ControlTypeStatus = ControlStatusListString(ChannelType, ControlType, panelTitle)
+	string WaveNameString
+	
+	ControlType = "Wave"
+	string ChannelTypeWaveList = PopMenuStringList(ChannelType, ControlType, panelTitle)
+	
+	//if da or ttl channels is active, query the wavelength of the active channel
+	i=0
+	wavelength = 0
+	
+	do
+	
+	if((str2num(stringfromlist(i,ControlTypeStatus,";")))==1)
+	WaveNameString = stringfromlist(i,ChannelTypeWaveList,";")
+		if(stringmatch(WaveNameString,"-none-") ==0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
+			WaveNameString="root:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
+			if(DimSize($WaveNameString, 0 )>WaveLength)
+			WaveLength = DimSize($WaveNameString, 0 )
+			endif
 		endif
 	endif
-endif
-
-i+=1
-while(i<=(TotalPossibleChannels-1))
-
-return WaveLength
+	
+	i+=1
+	while(i<=(TotalPossibleChannels-1))
+	
+	return WaveLength
 
 End
 
@@ -434,10 +433,10 @@ do
 	ControlInfo/w=$panelTitle $SetVarDAScale
 	DAScale=v_value
 	//get the wave name
-	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DAC:"+ stringfromlist(i,ChanTypeWaveNameList,";")
+	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
-	sprintf cmd, "%s[0,round((numpnts(%s)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor
+	sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor
 	execute cmd
 
 	j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
@@ -504,7 +503,7 @@ string TTLStatusString = ControlStatusListString("TTL", "Check", panelTitle)
 string TTLWaveList = PopMenuStringList("TTL", "Wave", panelTitle)
 string TTLWaveName
 string cmd
-//make/o/n=(CalculateITCDataWaveLength()) TTLWave =0
+string WavePath="root:WaveBuilder:savedStimulusSets:TTL:"
 
 if(RackNo==0)
  a=0
@@ -522,7 +521,8 @@ TTLChannelStatus=str2num(stringfromlist(a,TTLStatusString,";"))
 Code=(((2^i))*TTLChannelStatus)
 TTLWaveName = stringfromlist(a,TTLWaveList,";")
 	if(i==0)
-	make/o/n=(numpnts($TTLWaveName)) TTLWave = 0
+	TTLWaveName=WavePath+TTLWaveName
+	make/o/n=(numpnts($TTLWaveName)) $WavePath+"TTLWave" = 0
 	endif
 	
 	if(TTLChannelStatus==1)
@@ -612,3 +612,6 @@ return ADSampInt
 End
 //=========================================================================================
 
+
+
+root:ITC1600:Device0:ITCDataWave[0,round((dimsize(root:WaveBuilder:SavedStimulusSets:DA:test_DA_1,0)/(1))-1)][0]=(160*30)*(root:WaveBuilder:SavedStimulusSets:DA:test_DA_1[(1)*p])
