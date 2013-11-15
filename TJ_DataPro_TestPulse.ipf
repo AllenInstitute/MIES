@@ -113,11 +113,10 @@ TestPulse[(PulseDuration/2),(Pulseduration + (PulseDuration/2))]=v_value
 End
 
 
-Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pulse
+Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string PanelTitle
 	getwindow kwTopWin wtitle
-	
 	PanelTitle=s_value
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
 	
@@ -138,11 +137,11 @@ Function ButtonProc_1(ctrlName) : ButtonControl// Button that starts the test pu
 	SmoothResizePanel(340, panelTitle)
 	endif
 	
-	string TestPulsePath = wavePath + ":TestPulse"
+	string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 	make/o/n=0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
 	SetScale/P x 0,0.005,"ms", TestPulse
-	AdjustTestPulseWave(TestPulse, panelTitle)
+	AdjustTestPulseWave($TestPulsePath, panelTitle)
 	
 	make/free/n=8 SelectedDACWaveList
 	StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)

@@ -88,13 +88,13 @@ Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
 	
 	End
 //======================================================================================
-Function StopDataAcq(PanelTitle)
-string panelTitle
-variable DeviceType, DeviceNum
-string cmd
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+Function StopDataAcq()
+	variable DeviceType, DeviceNum
+	string cmd
+	NVAR StopCollectionPoint, ADChannelToMonitor
+	SVAR panelTitleG
+	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-NVAR StopCollectionPoint, ADChannelToMonitor, panelTitleG
 
 
 	sprintf cmd, "ITCStopAcq/z=0"
@@ -109,23 +109,25 @@ NVAR StopCollectionPoint, ADChannelToMonitor, panelTitleG
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 	
-	killvariables/z StopCollectionPoint, ADChannelToMonitor, panelTitleG
 	
-	ControlInfo/w=$panelTitle Check_Settings_SaveData
+	ControlInfo/w=$panelTitleG Check_Settings_SaveData
 	If(v_value==0)
-	SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
+	SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
 	endif
 	
-	 ScaleITCDataWave(panelTitle)
+	 ScaleITCDataWave(panelTitleG)
 	
 	if(exists("Count")==0)//If the global variable count does not exist, it is the first trial of repeated acquisition
-	controlinfo/w=$panelTitle Check_DataAcq1_RepeatAcq
+	controlinfo/w=$panelTitleG Check_DataAcq1_RepeatAcq
 		if(v_value==1)//repeated aquisition is selected
-			RepeatedAcquisition(PanelTitle)
+			RepeatedAcquisition(PanelTitleG)
 		endif
 	else
-		BckgTPwithCallToRptAcqContr(panelTitle)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		BckgTPwithCallToRptAcqContr(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
+	
+	killvariables/z StopCollectionPoint, ADChannelToMonitor
+	killstrings/z PanelTitleG
 END
 //======================================================================================
 Function ZeroTheInstrutechDevice()
@@ -153,7 +155,7 @@ Function FIFOMonitor(s)
 	string OscilloscopeSubWindow=panelTitleG+"#oscilloscope"
 	doupdate/w=$OscilloscopeSubWindow
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
-		StopDataAcq(PanelTitleG)
+		StopDataAcq()
 		STOPFifoMonitor()
 	endif
 				
@@ -348,7 +350,8 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
-		sprintf cmd, "ITCGetState /R /O /C /E %S" ResultsWavePath
+		print resultswavepath
+		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
 		sprintf cmd, "ITCStopAcq/z=0"
 		Execute cmd
