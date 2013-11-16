@@ -6,7 +6,7 @@ string panelTitle
 string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
 variable i =  0
 string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":"
-wave TestPulseITC = $WavePath+"TestPulseITC", ITCChanConfigWave =$WavePath+"ITCChanConfigWave"
+wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC, ITCChanConfigWave =$WavePath+"ITCChanConfigWave"
 string ADChannelName= "AD"
 string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 RemoveTracesOnGraph(oscilloscopeSubWindow)

@@ -152,7 +152,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	SetDAScaleToOne(panelTitle)
 	
 	ConfigureDataForITC(panelTitle)
-	wave TestPulseITC = $WavePath + ":TestPulseITC"
+	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	ITCOscilloscope(TestPulseITC,panelTitle)
 	controlinfo/w=$panelTitle Check_Settings_BkgTP
 	if(v_value==1)// runs background TP

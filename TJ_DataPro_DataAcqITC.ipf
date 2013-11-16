@@ -219,6 +219,7 @@ End
 
 Function StartBackgroundTestPulse(panelTitle)
 	string panelTitle
+	string/G PanelTitleG = panelTitle
 	string cmd
 	variable DeviceType = 2	// ITC-1600
 	variable DeviceNum = 0
@@ -239,11 +240,12 @@ Function StartBackgroundTestPulse(panelTitle)
 End
 //======================================================================================
 
-Function TestPulseFunc(s, panelTitle)
+Function TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
-	string panelTitle
 	NVAR StopCollectionPoint, ADChannelToMonitor
+	SVAR panelTitleG
 	String cmd, Keyboard
+	string paneltitle = panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string  ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -290,6 +292,7 @@ Function STOPTestPulse(panelTitle)
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 	killvariables/z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
+	killstrings/z PanelTitleG
 	controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 	if(v_value==0)
 	SmoothResizePanel(-340, panelTitle)
@@ -350,7 +353,6 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
-		print resultswavepath
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
 		sprintf cmd, "ITCStopAcq/z=0"

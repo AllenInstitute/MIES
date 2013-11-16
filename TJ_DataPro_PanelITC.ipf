@@ -2218,7 +2218,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	
 	setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
-	print ListOfWavesInFolder
+//	print ListOfWavesInFolder
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder
 	setdatafolder root:
 	

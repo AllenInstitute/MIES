@@ -279,6 +279,7 @@ Function LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types ne
 	if((str2num(stringfromlist(i,ControlTypeStatus,";")))==1)
 	WaveNameString = stringfromlist(i,ChannelTypeWaveList,";")
 		if(stringmatch(WaveNameString,"-none-") ==0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
+			
 			WaveNameString="root:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
 			if(DimSize($WaveNameString, 0 )>WaveLength)
 			WaveLength = DimSize($WaveNameString, 0 )
@@ -288,7 +289,6 @@ Function LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types ne
 	
 	i+=1
 	while(i<=(TotalPossibleChannels-1))
-	
 	return WaveLength
 
 End
@@ -477,7 +477,6 @@ End
 Function PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
 string panelTitle
 string WavePath=HSU_DataFullFolderPathString(PanelTitle)
-print wavepath
 wave ITCFIFOPositionAllConfigWave = $WavePath+":ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
 ITCFIFOPositionAllConfigWave[][2]=-1

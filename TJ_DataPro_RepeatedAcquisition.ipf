@@ -9,7 +9,7 @@ variable i = 0
 variable/g Count=0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath + ":TestPulseITC"
+	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 
 	variable TotTrials
 
@@ -67,7 +67,7 @@ variable TotTrials
 variable ITI
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath + ":TestPulseITC"
+	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	wave TestPulse = $WavePath + ":TestPulse"
 	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
@@ -137,7 +137,7 @@ End
 Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	wave TestPulseITC = $WavePath + ":TestPulseITC"
+	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	wave TestPulse = $WavePath + ":TestPulse"
 	variable ITI
 	variable TotTrials
