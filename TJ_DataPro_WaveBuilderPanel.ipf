@@ -1242,37 +1242,38 @@ Function WBP_LoadSet()
 	WPTName="WPT_"+SetName
 	SegWvTypeName="SegWvType_"+SetName
 	
-	If(stringmatch(SetName, "*TTL*")==1)// are you loading a DA or TTL set?
-		PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=2
-		WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",2,"TTL")
-		FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
-		DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-		SetDataFolder $FolderPath
-		duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
-		duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
-		duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
-
-	else
-		PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=1
-		WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",1,"DA")
-		FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DA"
-		DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-		SetDataFolder $FolderPath
-		duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
-		duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
-		duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
-		
-	endif
+	if(stringmatch(SetName,"- none -") == 0)
+		If(stringmatch(SetName, "*TTL*")==1)// are you loading a DA or TTL set?
+			PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=2
+			WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",2,"TTL")
+			FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
+			DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+			SetDataFolder $FolderPath
+			duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
+			duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
+			duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
 	
-		wave LocalWave=root:WaveBuilder:Data:SegWvType
-		SetVariable SetVar_WaveBuilder_NoOfSegments value= _NUM:LocalWave[100]
-		SetVariable SetVar_WaveBuilder_StepCount value= _NUM:LocalWave[101]
-		SetVariable setvar_WaveBuilder_SegmentEdit value= _NUM:0
-		TabControl WBP_WaveType value=LocalWave[0]
-		WB_ParamToPanel(LocalWave[0])
-		WBP_SetVarProc_TotEpoch("setvar_wavebuilder_noofsegments",LocalWave[100],num2str(LocalWave[100]),"")
-		SetDataFolder saveDFR
-
+		else
+			PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=1
+			WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",1,"DA")
+			FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DA"
+			DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+			SetDataFolder $FolderPath
+			duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
+			duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
+			duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
+			
+		endif
+		
+			wave LocalWave=root:WaveBuilder:Data:SegWvType
+			SetVariable SetVar_WaveBuilder_NoOfSegments value= _NUM:LocalWave[100]
+			SetVariable SetVar_WaveBuilder_StepCount value= _NUM:LocalWave[101]
+			SetVariable setvar_WaveBuilder_SegmentEdit value= _NUM:0
+			TabControl WBP_WaveType value=LocalWave[0]
+			WB_ParamToPanel(LocalWave[0])
+			WBP_SetVarProc_TotEpoch("setvar_wavebuilder_noofsegments",LocalWave[100],num2str(LocalWave[100]),"")
+			SetDataFolder saveDFR
+	endif
 End
 
 Function WBP_DeleteSet()
@@ -1286,25 +1287,26 @@ string SetName
 	WPName="WP_"+SetName
 	WPTName="WPT_"+SetName
 	SegWvTypeName="SegWvType_"+SetName
-	
-	If(stringmatch(SetName, "*TTL*")==1)// are you deleting a DA or TTL set?
-		FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
-		SetDataFolder $FolderPath
-		Killwaves /F /Z $WPName, $WPTName, $SegWvTypeName
-		FolderPath="root:WaveBuilder:SavedStimulusSets:TTL"
-		SetDataFolder $FolderPath
-		Killwaves /F /Z $SetName
-		
-	else
-		FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DA"
-		SetDataFolder $FolderPath
-		Killwaves /F /Z $WPName, $WPTName, $SegWvTypeName
-		FolderPath="root:WaveBuilder:SavedStimulusSets:DA"
-		SetDataFolder $FolderPath
-		Killwaves /F /Z $SetName
-	endif
 
-SetDataFolder saveDFR
+	if(stringmatch(SetName,"- none -") == 0)	// makes sure that a set is selected
+		If(stringmatch(SetName, "*TTL*")==1)// are you deleting a DA or TTL set?
+			FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
+			SetDataFolder $FolderPath
+			Killwaves /F /Z $WPName, $WPTName, $SegWvTypeName
+			FolderPath="root:WaveBuilder:SavedStimulusSets:TTL"
+			SetDataFolder $FolderPath
+			Killwaves /F /Z $SetName
+			
+		else
+			FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DA"
+			SetDataFolder $FolderPath
+			Killwaves /F /Z $WPName, $WPTName, $SegWvTypeName
+			FolderPath="root:WaveBuilder:SavedStimulusSets:DA"
+			SetDataFolder $FolderPath
+			Killwaves /F /Z $SetName
+		endif
+	endif
+	SetDataFolder saveDFR
 End
 
 Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableControl

@@ -12,7 +12,11 @@ variable/g Count=0
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 
 	variable TotTrials
-
+	
+	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
+	variable DeviceType=v_value-1
+	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
+	variable DeviceNum=v_value-1
 	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
 	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
@@ -50,7 +54,7 @@ variable/g Count=0
 		SmoothResizePanel(340, panelTitle)
 		endif
 		
-		StartBackgroundTestPulse(panelTitle)
+		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 		StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
 	
 		ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
@@ -112,7 +116,7 @@ variable ITI
 					SmoothResizePanel(340, panelTitle)
 				endif
 				
-				StartBackgroundTestPulse(panelTitle)
+				StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
 				
 				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
@@ -142,6 +146,12 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	variable ITI
 	variable TotTrials
 	NVAR count	
+	
+	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
+	variable DeviceType=v_value-1
+	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
+	variable DeviceNum=v_value-1
+	
 	controlinfo/w=$panelTitle SetVar_DataAcq_TotTrial
 	TotTrials=v_value
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
@@ -171,7 +181,7 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 					SmoothResizePanel(340, panelTitle)
 				endif
 				
-				StartBackgroundTestPulse(panelTitle)
+				StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
 				
 				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)

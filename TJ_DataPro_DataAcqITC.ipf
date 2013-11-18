@@ -217,12 +217,11 @@ Function StopBackgroundTimerTask()
 End
 //======================================================================================
 
-Function StartBackgroundTestPulse(panelTitle)
+Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
+	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
 	string/G PanelTitleG = panelTitle
 	string cmd
-	variable DeviceType = 2	// ITC-1600
-	variable DeviceNum = 0
 	variable i=0
 	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
@@ -299,6 +298,8 @@ Function STOPTestPulse(panelTitle)
 	endif
 
 	RestoreTTLState(panelTitle)
+	killwaves/f root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+
 
 End
 

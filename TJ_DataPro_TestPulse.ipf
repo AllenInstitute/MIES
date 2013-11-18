@@ -123,7 +123,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
 	
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType=v_value-1
 	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
@@ -141,7 +141,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	make/o/n=0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
 	SetScale/P x 0,0.005,"ms", TestPulse
-	AdjustTestPulseWave($TestPulsePath, panelTitle)
+	AdjustTestPulseWave(TestPulse, panelTitle)
 	
 	make/free/n=8 SelectedDACWaveList
 	StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
@@ -156,16 +156,16 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	ITCOscilloscope(TestPulseITC,panelTitle)
 	controlinfo/w=$panelTitle Check_Settings_BkgTP
 	if(v_value==1)// runs background TP
-		StartBackgroundTestPulse(panelTitle)
+		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	else // runs TP
 		StartTestPulse(DeviceType,DeviceNum, panelTitle)
 		controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 		if(v_value==0)
 		SmoothResizePanel(-340, panelTitle)
 		endif
+		killwaves/f TestPulse
 	endif
 	
 	ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
 	RestoreDAScale(SelectedDACScale,panelTitle)
-	killwaves/f TestPulse
 End
