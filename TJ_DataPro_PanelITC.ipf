@@ -2229,10 +2229,14 @@ Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableContr
 	Variable varNum
 	String varStr
 	String varName
-	
-string ListOfDataWaves=wavelist("Sweep_*",";","MINCOLS:2")
-
-SetVariable SetVar_Sweep limits={0,itemsinlist(ListOfDataWaves),1}
+	getwindow kwTopWin wtitle
+	string PanelTitle=s_value
+	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
+	DFREF saveDFR = GetDataFolderDFR()
+	setDataFolder $WavePath+":data"
+	string ListOfDataWaves=wavelist("Sweep_*",";","MINCOLS:2")
+	setDataFolder saveDFR
+	SetVariable SetVar_Sweep win=$panelTitle, limits={0,itemsinlist(ListOfDataWaves),1}
 	
 End
 

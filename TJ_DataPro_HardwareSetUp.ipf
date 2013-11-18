@@ -63,6 +63,7 @@ Function HSU_CreateDataFolderForLockdDev(PanelTitle)
 	string BaseFolderPath=HSU_BaseFolderPathString(PanelTitle)
 	Newdatafolder/o $BaseFolderPath
 	Newdatafolder/o $FullFolderPath
+	Newdatafolder/o $FullFolderPath+":Data"
 End
 
 Function/t HSU_BaseFolderPathString(PanelTitle)
