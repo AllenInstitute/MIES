@@ -1467,6 +1467,7 @@ End
 Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been saved to the DA or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
 	string panelTitle
 	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d, ListOfItemsSelectedInPopup, DAorTTL
+	string ListOfWaves
 	variable NoOfControls, i
 	controlinfo /W =waveBuilder popup_WaveBuilder_OutputType
 	WB_WaveType=s_value
@@ -1477,6 +1478,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	NoOfControls = TotNoOfControlType("Wave", "DA", panelTitle)
 	setDataFolder root:waveBuilder:savedStimulusSets:DA
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DA*",";","")+"\""
+	ListOfWaves = Wavelist("*DA*",";","")
 	DAorTTL="DA"
 	else
 	ctrlName0="Wave_TTL_"
@@ -1484,6 +1486,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	NoOfControls = TotNoOfControlType("Wave", "TTL", panelTitle)
 	setDataFolder root:waveBuilder:savedStimulusSets:TTL
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
+	ListOfWaves = Wavelist("*TTL*",";","")
 	DAorTTL="TTL"
 	endif
 
@@ -1497,9 +1500,9 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 		ctrlName0d+=num2str(i)
 		ctrlName1d+=num2str(i)
 		endif
-	PopupMenu  $ctrlName0d win=$panelTitle, value=#ListOfWavesInFolder
+	PopupMenu  $ctrlName0d win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
 	controlupdate/w=$panelTitle $ctrlname0d
-	PopupMenu  $ctrlName1d win=$panelTitle, value=#ListOfWavesInFolder
+	PopupMenu  $ctrlName1d win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
 	controlupdate/w=$panelTitle $ctrlname1d
 
 	i+=1

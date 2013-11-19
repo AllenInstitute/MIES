@@ -158,24 +158,72 @@ End
 //===================================================================================
 //NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
 //===================================================================================
-Function ChannelWithMaxNoOfTrials()
+Function Index_MaxNoOfTrials(PanelTitle)
+	string panelTitle
+	variable MaxNoOfTrials = 0
+	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	variable i = 0
 	
+	do
+		if(str2num(stringfromlist(i,DAChannelStatusList,";"))==1)
+		MaxNoOfTrials=max(MaxNoOfTrials, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0))
+		endif
+	
+	i+=1
+	while(i<itemsinlist(DAChannelStatusList,";"))
+	
+	do
+		if(str2num(stringfromlist(i,TTLChannelStatusList,";"))==1)
+		MaxNoOfTrials=max(MaxNoOfTrials, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1))
+		endif
+	
+	i+=1
+	while(i<itemsinlist(TTLChannelStatusList,";"))
+	
+	return MaxNoOfTrials
 End
 
-Function NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuName, DAorTTL)
-	string PanelTitle, PopUpMenuName
-	variable DAorTTL//DA = 0, TTL = 1	
+Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL)// determines the number of trials for a DA or TTL channel
+	string PanelTitle
+	variable PopUpMenuNumber, DAorTTL//DA = 0, TTL = 1	
 	variable NumberOfTrialsAcrossSets
 	variable IndexStart, IndexEnd
-	string setList = getuserdata(PanelTitle, PopUpMenuName, "menuexp")
+	string DAorTTL_cntrlName = "", DAorTTL_indexEndName = "", setname = ""
 	
+	if(DAorTTL==0)// determine control names based on DA or TTL 
+		DAorTTL_cntrlName = "Wave_DA_0" + num2str(PopUpMenuNumber)
+		DAorTTL_indexEndName = "Popup_DA_IndexEnd_0" + num2str(PopUpMenuNumber)
+	endif
+
+	if(DAorTTL==1)
+		DAorTTL_cntrlName = "Wave_TTL_0" + num2str(PopUpMenuNumber)
+		DAorTTL_indexEndName = "Popup_TTL_IndexEnd_0" + num2str(PopUpMenuNumber)
+	endif
+	controlinfo/w=$panelTitle $DAorTTL_cntrlName// check if indexing is activated
+	IndexStart=v_value
 	
+	controlinfo/w=$panelTitle Check_DataAcq1_Indexing
+	if(v_value==0)
+		IndexEnd=indexStart
+	else
+		controlinfo/w=$panelTitle $DAorTTL_indexEndName
+		IndexEnd=v_value 
+	endif
+	
+	string setList = getuserdata(PanelTitle, DAorTTL_cntrlName, "menuexp")
+	variable i = (min(indexstart, indexend)-3)
+	do
+		Setname=stringfromlist(i, setList,";")
+		NumberOfTrialsAcrossSets+=Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
+		i+=1
+	while(i<(max(indexstart, indexend)-2))
 	return NumberOfTrialsAcrossSets
 
 End
 
-Function NumberOfTrialsInSet(PanelTitle, PopUpMenuName, DAorTTL)
-	string PanelTitle, PopUpMenuName
+Function Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
+	string PanelTitle, SetName
 	variable DAorTTL//DA = 0, TTL = 1
 	string WavePath 
 	
@@ -187,8 +235,7 @@ Function NumberOfTrialsInSet(PanelTitle, PopUpMenuName, DAorTTL)
 	WavePath="root:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
-	controlinfo/w=$panelTitle $PopUpMenuName
-	string NameOfWaveSelectedInPopUP = WavePath + s_value
+	string NameOfWaveSelectedInPopUP = WavePath + setName
 	variable NumberOfTrialsInSet= DimSize($NameOfWaveSelectedInPopUP, 1 )
 	return NumberOfTrialsInSet
 End

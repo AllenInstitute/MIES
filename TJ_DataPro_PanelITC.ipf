@@ -1671,8 +1671,6 @@ Function CheckProc(cba) : CheckBoxControl
 End
 
 
-
-
 Function SetVarProc(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -1686,8 +1684,6 @@ Function SetVarProc(ctrlName,varNum,varStr,varName) : SetVariableControl
 	execute cmd
 	SetVariable SetVar_DownSamp limits={MinSampInt,inf,1}, win=$panelTitle
 End
-
-
 
 
 Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
@@ -1712,11 +1708,10 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	String FirstTwoMenuItems = "\"- none -; TestPulse;"
 	variable i = 0
 	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-	print popupvalue
-	
+	string ListOfWaves = 	wavelist(searchstring,";","")
 	do
 	DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userData(menuExp) = popupValue
+	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userData(menuExp) = ListOfWaves
 	
 	IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 	PopupMenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
@@ -1737,7 +1732,7 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
 	String FirstTwoMenuItems = "\"- none -;"
 	String SearchString
-	String value
+	String value, ListOfWaves
 	variable i=0
 	
 	getwindow kwTopWin wtitle
@@ -1756,10 +1751,11 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		endif
 		
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
-		
+		listOfWaves = wavelist(searchstring,";","")
+
 		do
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=Value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=ListOfWaves
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		i+=1
@@ -1769,16 +1765,18 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		If(strlen(varstr)==0)
 		SearchString = "*TTL*"
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
+		listOfWaves = wavelist(searchstring,";","")
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=Value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=ListOfWaves
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		
 		else
 		SearchString= varstr
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
+		listOfWaves = wavelist(searchstring,";","")
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=Value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=ListOfWaves
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		endif
@@ -1812,9 +1810,10 @@ Function CheckProc_UniversalSearchTTL(ctrlName,checked) : CheckBoxControl
 	variable i = 0
 	
 	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+	string listOfWaves = wavelist(searchstring,";","")
 	do
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#popupValue
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=ListOfWaves
 		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 		i+=1
@@ -1861,7 +1860,7 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	String IndexEndPopUpMenuName="Popup_DA_IndexEnd_"+ DA_No
 	String FirstTwoMenuItems = "\"- none -; TestPulse;"
 	String SearchString
-	string popupValue
+	string popupValue, ListOfWaves
 	variable i=0
 	
 	getwindow kwTopWin wtitle
@@ -1875,7 +1874,7 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	if(v_value==1)
 		controlinfo/w=$panelTitle Search_DA_00
 		If(strlen(s_value)==0)
-			SearchString= "*DAC*"
+			SearchString= "*DA*"
 		else
 			SearchString=s_value
 		endif
@@ -1883,7 +1882,8 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 		do
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=popupValue
+			listOfWaves = wavelist(searchstring,";","")
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=ListOfWaves
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 			i+=1
@@ -1891,10 +1891,11 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	
 	else
 		If(strlen(varstr)==0)
-			SearchString= "*DAC*"
+			SearchString= "*DA*"
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=popupValue
+			listOfWaves = wavelist(searchstring,";","")
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=ListOfWaves
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 		else
