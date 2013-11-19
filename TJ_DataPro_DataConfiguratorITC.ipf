@@ -2,7 +2,7 @@
 
 
 //=========================================================================================
-Function ConfigureDataForITC(PanelTitle)
+Function ConfigureDataForITC(PanelTitle)// pass column into this function?
 string PanelTitle
 MakeITCConfigAllConfigWave(PanelTitle)  
 MakeITCConfigAllDataWave(PanelTitle)  

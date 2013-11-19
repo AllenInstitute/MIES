@@ -1698,11 +1698,11 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	string panelTitle=s_value
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	
-	SetDataFolder root:WaveBuilder:SavedStimulusSets:DAC:
+	SetDataFolder root:WaveBuilder:SavedStimulusSets:DA:
 	
 	controlinfo/w=$panelTitle Search_DA_00
 	if(strlen(s_value)==0)
-	SearchString="*dac*"
+	SearchString="*da*"
 	else
 	SearchString = s_value
 	endif
@@ -1716,7 +1716,7 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	
 	do
 	DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
+	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userData(menuExp) = popupValue
 	
 	IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 	PopupMenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
@@ -1759,7 +1759,7 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		
 		do
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=Value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		i+=1
@@ -1770,7 +1770,7 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		SearchString = "*TTL*"
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=Value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		
@@ -1778,7 +1778,7 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 		SearchString= varstr
 		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value
+		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=Value
 		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
 		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
 		endif
@@ -1868,7 +1868,7 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	string panelTitle=s_value
 	
 	DFREF saveDFR = GetDataFolderDFR()
-	setdatafolder root:waveBuilder:savedStimulusSets:DAC
+	setdatafolder root:waveBuilder:savedStimulusSets:DA
 	controlinfo/w=$panelTitle SearchUniversal_DA_00	
 	
 	
@@ -1883,7 +1883,7 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 		do
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=popupValue
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 			i+=1
@@ -1894,13 +1894,13 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 			SearchString= "*DAC*"
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=popupValue
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 		else
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
 			popupValue=FirstTwoMenuItems+wavelist(varstr,";","")+"\""
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue
+			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=popupValue
 			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
 			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
 		endif
@@ -1959,6 +1959,10 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 		endif
 		
 		//Data collection
+		//Function that assess how many 1d waves in set??
+		//Function that passes column to configdataForITCfunction?
+		//If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
+		//
 		ConfigureDataForITC(PanelTitle)
 		ITCOscilloscope(ITCDataWave, panelTitle)
 		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
@@ -2208,7 +2212,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 		popupmenu $ctrlname win=$panelTitle, mode = 3// prevents the user from selecting the testpulse
 	endif
 
-	if(stringmatch(ctrlName,"*DA*")==1)
+	if(stringmatch(ctrlName,"*DA*")==1)// determines wether to a DA or TTL popup menu needs to be populated
 		FolderPath= "root:waveBuilder:savedStimulusSets:DA"
 		folder="*DA*"
 	else
@@ -2219,7 +2223,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
 //	print ListOfWavesInFolder
-	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder
+	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
 	setdatafolder root:
 	
 End
