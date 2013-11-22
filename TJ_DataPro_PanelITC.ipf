@@ -1926,6 +1926,9 @@ Function DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure ch
 
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
+	
+	valdisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle)
+
 End
 
 Function ButtonProc_AcquireData(ctrlName) : ButtonControl
@@ -2226,7 +2229,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 //	print ListOfWavesInFolder
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
 	setdatafolder root:
-	
+	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle)
 End
 
 Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -2313,4 +2316,20 @@ Function CheckProc_DataAcq_UpdateSampInt(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	UpdateITCMinSampIntDisplay()
+End
+
+Function ITCP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
+	String ctrlName
+	Variable varNum
+	String varStr
+	String varName
+	
+	getwindow kwTopWin wtitle
+	string panelTitle=s_value
+	
+	//if(varNum>
+	
+	//Index_MaxNoOfSweeps(PanelTitle)
+	
+	//setvariable $cntrlname value=
 End

@@ -158,16 +158,16 @@ End
 //===================================================================================
 //NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
 //===================================================================================
-Function Index_MaxNoOfTrials(PanelTitle)
+Function Index_MaxNoOfSweeps(PanelTitle)
 	string panelTitle
-	variable MaxNoOfTrials = 0
+	variable MaxNoOfSweeps = 0
 	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
 	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
 	
 	do
 		if(str2num(stringfromlist(i,DAChannelStatusList,";"))==1)
-		MaxNoOfTrials=max(MaxNoOfTrials, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0))
+		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0))
 		endif
 	
 	i+=1
@@ -175,30 +175,32 @@ Function Index_MaxNoOfTrials(PanelTitle)
 	
 	do
 		if(str2num(stringfromlist(i,TTLChannelStatusList,";"))==1)
-		MaxNoOfTrials=max(MaxNoOfTrials, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1))
+		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1))
 		endif
 	
 	i+=1
 	while(i<itemsinlist(TTLChannelStatusList,";"))
 	
-	return MaxNoOfTrials
+	return MaxNoOfSweeps
 End
 
 Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL)// determines the number of trials for a DA or TTL channel
 	string PanelTitle
 	variable PopUpMenuNumber, DAorTTL//DA = 0, TTL = 1	
 	variable NumberOfTrialsAcrossSets
-	variable IndexStart, IndexEnd
+	variable IndexStart, IndexEnd, ListOffset
 	string DAorTTL_cntrlName = "", DAorTTL_indexEndName = "", setname = ""
 	
 	if(DAorTTL==0)// determine control names based on DA or TTL 
 		DAorTTL_cntrlName = "Wave_DA_0" + num2str(PopUpMenuNumber)
 		DAorTTL_indexEndName = "Popup_DA_IndexEnd_0" + num2str(PopUpMenuNumber)
+		ListOffset=3
 	endif
 
 	if(DAorTTL==1)
 		DAorTTL_cntrlName = "Wave_TTL_0" + num2str(PopUpMenuNumber)
 		DAorTTL_indexEndName = "Popup_TTL_IndexEnd_0" + num2str(PopUpMenuNumber)
+		ListOffset=2
 	endif
 	controlinfo/w=$panelTitle $DAorTTL_cntrlName// check if indexing is activated
 	IndexStart=v_value
@@ -212,12 +214,12 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL)// 
 	endif
 	
 	string setList = getuserdata(PanelTitle, DAorTTL_cntrlName, "menuexp")
-	variable i = (min(indexstart, indexend)-3)
+	variable i = (min(indexstart, indexend)-ListOffset)
 	do
 		Setname=stringfromlist(i, setList,";")
 		NumberOfTrialsAcrossSets+=Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
 		i+=1
-	while(i<(max(indexstart, indexend)-2))
+	while(i<(max(indexstart, indexend)-(ListOffset+1)))
 	return NumberOfTrialsAcrossSets
 
 End
