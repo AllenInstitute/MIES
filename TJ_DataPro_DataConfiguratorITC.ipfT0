@@ -426,7 +426,6 @@ if(exists("count")==2)
 	column=count-1
 else
 	column = 0
-	print "count does not exist"
 endif
 
 //Place DA waves into ITCDataWave
@@ -441,10 +440,15 @@ do
 	DAGain=(3200/v_value)//3200 = 1V
 	ControlInfo/w=$panelTitle $SetVarDAScale
 	DAScale=v_value
+
 	//get the wave name
 	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
+	//check to see if it is a test pulse or da wave
 	if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
 	column=0
+	else
+	//determine column number in cases where a set is being cycled through multiple times
+	column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
 	endif
 	print "column"
 	print column
@@ -628,3 +632,22 @@ End
 
 
 root:ITC1600:Device0:ITCDataWave[0,round((dimsize(root:WaveBuilder:SavedStimulusSets:DA:test_DA_1,0)/(1))-1)][0]=(160*30)*(root:WaveBuilder:SavedStimulusSets:DA:test_DA_1[(1)*p])
+
+// returns column number, independent of the times the set is being run
+Function CalculateDAColumnNo(panelTitle, SetName)
+	string panelTitle, SetName
+	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
+	variable column
+	if(exists("count")==2)
+		NVAR count
+		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
+		column=count-1
+		else
+		column=mod((count-1), columnsInSet)
+		endif
+	else
+		column = 0
+	endif
+	return column
+end
+
