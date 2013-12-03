@@ -1098,12 +1098,24 @@ Function WBP_Transfer1DsTo2D(WaveNameList)
 	activewavename= activewavename[1,(strlen(ActiveWaveName))-2]
 	variable lengthOf1DWaves=numpnts($activeWaveName)
 	variable numberOf1DWaves=itemsinlist(WaveNameList,",")+1
-	variable i =0
+	variable i =1
 	string cmd
+	
+	//print lengthOf1DWaves
+	do // sets the number of rows in the 2d wave to be equal to the number of rows in the longest 1d wave
+	activeWaveName=stringfromlist(i,WaveNameList,",")
+	activewavename= activewavename[1,(strlen(ActiveWaveName))-2]
+	lengthOf1Dwaves=max(lengthOf1DWaves, numpnts($activeWaveName))
+	i+=1
+	while(i<numberOf1DWaves-1)
 	
 	make/o/n=(lengthOf1DWaves,(numberOf1DWaves-1)) $SetName
 	
+	i=0
 	do
+		activeWaveName=stringfromlist(i,WaveNameList,",")
+		activewavename= activewavename[1,(strlen(ActiveWaveName))-2]// numpnts needs the wavename without the quotes
+		lengthOf1DWaves=numpnts($activeWaveName)// sprintf needs the name with the quotes
 		activeWaveName=stringfromlist(i,WaveNameList,",")
 		sprintf cmd, "%s[0,%d][%d]=%s[p]" SetName, lengthOf1DWaves-1, i, activeWaveName
 		execute cmd
