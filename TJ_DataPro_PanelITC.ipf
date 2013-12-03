@@ -1936,7 +1936,6 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value
-	print panelTitle
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -1969,10 +1968,10 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 		//
 		ConfigureDataForITC(PanelTitle)
 		ITCOscilloscope(ITCDataWave, panelTitle)
-		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
+		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
 		If(v_value==0)
 		ITCDataAcq(DeviceType,DeviceNum, panelTitle)
-			controlinfo/w=$panelTitle Check_DataAcq1_RepeatAcq
+			controlinfo/w=$panelTitle Check_DataAcq1_RepeatAcq// checks for repeated acquisition
 			if(v_value==1)//repeated aquisition is selected
 				RepeatedAcquisition(PanelTitle)
 			endif
@@ -2226,7 +2225,6 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	
 	setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
-//	print ListOfWavesInFolder
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
 	setdatafolder root:
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle)

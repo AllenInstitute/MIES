@@ -210,7 +210,7 @@ Function StopBackgroundTimerTask()
 	//SVAR FunctionNameC
 	CtrlNamedBackground Timer, stop
 	Execute FunctionNameA
-	Execute FunctionNameB
+ 
 	//Execute FunctionNameC
 	//killvariables/z Start, RunTime
 	//Killstrings/z FunctionNameA, FunctionNameB, FunctionNameC
@@ -298,7 +298,7 @@ Function STOPTestPulse(panelTitle)
 	endif
 
 	RestoreTTLState(panelTitle)
-	killwaves/f root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+	//killwaves/z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 
 
 End
