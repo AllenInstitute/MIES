@@ -23,7 +23,6 @@ variable/g Count=0
 	TotTrials=v_value
 	controlinfo/w=$panelTitle SetVar_DataAcq_Repeats
 	TotTrials=TotTrials*v_value
-	print tottrials
 	Count+=1
 	
 	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
@@ -58,10 +57,9 @@ variable/g Count=0
 		if(v_value==0)
 		SmoothResizePanel(340, panelTitle)
 		endif
-		
 		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
 		StartBackgroundTimer(ITI, "STOPTestPulse("+"\""+panelTitle+"\""+")", "RepeatedAcquisitionCounter("+num2str(DeviceType)+","+num2str(DeviceNum)+",\""+panelTitle+"\")", "", panelTitle)
-	
+		
 		ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		RestoreDAScale(SelectedDACScale,panelTitle)
 		//killwaves/f TestPulse
@@ -69,22 +67,20 @@ variable/g Count=0
 End
 
 Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
-variable DeviceType,DeviceNum
-string panelTitle
-NVAR Count
-variable TotTrials
-variable ITI
+	variable DeviceType,DeviceNum
+	string panelTitle
+	NVAR Count
+	variable TotTrials
+	variable ITI
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	
+
 	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 	TotTrials=v_value
 	controlinfo/w=$panelTitle SetVar_DataAcq_Repeats
-	TotTrials=TotTrials*v_value
-	print  " tot trials"
-	print tottrials 
+	TotTrials=(TotTrials*v_value)+1
 	Count+=1
 	
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
@@ -136,7 +132,7 @@ variable ITI
 				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				RestoreDAScale(SelectedDACScale, panelTitle)
 				
-				killwaves/f TestPulse
+				//killwaves/f TestPulse
 			else
 				//ValDisplay valdisp_DataAcq_TrialsCountdown value=_NUM:0
 				print "Repeated acquisition is complete"
@@ -211,5 +207,6 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 				Killstrings/z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 End
+
 
 

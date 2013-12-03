@@ -1074,7 +1074,6 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 		
 		If(stringmatch(popStr,"- none -")==0)// checks to make sure "- none -" is not selected as a wave type	
 		sprintf cmd, "root:WaveBuilder:Data:WPT[%d][%d]= nameofwave(%s)" 0, SegmentNo, FolderPath+popStr
-		print cmd
 		execute cmd
 		else
 		WPT[0][SegmentNo]= ""

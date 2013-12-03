@@ -423,9 +423,10 @@ variable DAGain, DAScale,column
 
 if(exists("count")==2)
 	NVAR count
-	column=count
+	column=count-1
 else
 	column = 0
+	print "count does not exist"
 endif
 
 //Place DA waves into ITCDataWave
@@ -442,11 +443,11 @@ do
 	DAScale=v_value
 	//get the wave name
 	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
-	
-	if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse)")==0)
+	if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
 	column=0
 	endif
-	
+	print "column"
+	print column
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
 	sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column

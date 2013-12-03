@@ -109,7 +109,6 @@ Function HSU_DeviceLockCheck(PanelTitle)
 	string PanelTitle
 	variable DeviceLockStatus
 	controlinfo /W = $PanelTitle button_SettingsPlus_LockDevice
-	print v_disable
 	if(V_disable==1)
 	DoAlert/t="Hardware Status"  0, "A ITC device must be locked (see Hardware tab) to proceed"
 	DeviceLockStatus=1

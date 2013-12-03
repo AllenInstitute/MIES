@@ -210,7 +210,7 @@ Function StopBackgroundTimerTask()
 	//SVAR FunctionNameC
 	CtrlNamedBackground Timer, stop
 	Execute FunctionNameA
- 
+ 	Execute FunctionNameB
 	//Execute FunctionNameC
 	//killvariables/z Start, RunTime
 	//Killstrings/z FunctionNameA, FunctionNameB, FunctionNameC
