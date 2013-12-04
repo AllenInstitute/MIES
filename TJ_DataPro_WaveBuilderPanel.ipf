@@ -1098,6 +1098,8 @@ Function WBP_Transfer1DsTo2D(WaveNameList)
 	activewavename= activewavename[1,(strlen(ActiveWaveName))-2]
 	variable lengthOf1DWaves=numpnts($activeWaveName)
 	variable numberOf1DWaves=itemsinlist(WaveNameList,",")+1
+	print "number of 1d waves:"
+	print numberof1dwaves
 	variable i =1
 	string cmd
 	
@@ -1114,7 +1116,9 @@ Function WBP_Transfer1DsTo2D(WaveNameList)
 	i=0
 	do
 		activeWaveName=stringfromlist(i,WaveNameList,",")
-		activewavename= activewavename[1,(strlen(ActiveWaveName))-2]// numpnts needs the wavename without the quotes
+		print wavenamelist
+		print activewavename
+		activewavename= activewavename[1,(strlen(ActiveWaveName))-2]// numpnts (used on next line) needs the wavename without the quotes
 		lengthOf1DWaves=numpnts($activeWaveName)// sprintf needs the name with the quotes
 		activeWaveName=stringfromlist(i,WaveNameList,",")
 		sprintf cmd, "%s[0,%d][%d]=%s[p]" SetName, lengthOf1DWaves-1, i, activeWaveName

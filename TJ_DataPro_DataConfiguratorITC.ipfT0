@@ -473,17 +473,17 @@ while(i<(itemsinlist(ChannelStatus,";")))
 
 //Place DA waves into ITCDataWave
 i=0
-
-make/o/n=1 TTLwave
+//make/o/n=1 TTLwave
+wave TTLwave = root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
 if(AreTTLsInRackChecked(0, panelTitle)==1)
 	MakeITCTTLWave(0, panelTitle)
-	ITCDataWave[0,round((numpnts(TTLWave)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
+	ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
 	j+=1
 endif
 
 if(AreTTLsInRackChecked(1, panelTitle)==1)
 	MakeITCTTLWave(1, panelTitle)
-	ITCDataWave[0,round((numpnts(TTLWave)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
+	ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
 
 endif
 
@@ -518,7 +518,7 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 	string TTLWaveList = PopMenuStringList("TTL", "Wave", panelTitle)
 	string TTLWaveName
 	string cmd
-	string WavePath="root:WaveBuilder:savedStimulusSets:TTL:"
+	string WavePath="root:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
 	
 	if(RackNo==0)
 	 a=0
@@ -541,9 +541,9 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 		endif
 		
 		if(TTLChannelStatus==1)
-		TTLWaveName+="[]["+num2str(CalculateTTLColumnNo(panelTitle, TTLWaveName))+"]"
-		print ttlwavename
-		sprintf cmd, "TTLWave+=(%d*%s)", code, TTLWaveName
+		//TTLWaveName+="[]["+num2str(CalculateTTLColumnNo(panelTitle, TTLWaveName))+"]"
+		sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
+		print cmd
 		execute cmd
 		endif
 	a+=1
@@ -657,9 +657,11 @@ Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that co
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
 	variable column
+	
 	if(exists("count")==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 						//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		NVAR count
+		print count
 		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
 		column=count-1
 		else

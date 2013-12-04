@@ -118,6 +118,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	string PanelTitle
 	getwindow kwTopWin wtitle
 	PanelTitle=s_value
+	print paneltitle
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
 	
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)

@@ -3,6 +3,7 @@
 Function ITCOscilloscope(WaveToPlot, panelTitle)
 wave WaveToPlot
 string panelTitle
+//panelTitle="itc1600_dev_0"
 string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
 variable i =  0
 string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":"
