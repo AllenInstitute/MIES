@@ -2174,11 +2174,6 @@ Function TurnOffAllHeadstages(panelTitle)
 		CheckBox $DACCheckBoxName win=$panelTitle, value=0
 	endfor
 
-
-
-
-
-
 End
 
 Function ButtonProc_5(ctrlName) : ButtonControl
@@ -2218,13 +2213,16 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	if(stringmatch(ctrlName,"*DA*")==1)// determines wether to a DA or TTL popup menu needs to be populated
 		FolderPath= "root:waveBuilder:savedStimulusSets:DA"
 		folder="*DA*"
+		setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
+		ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""// DA popups have testpulse listed as option
 	else
 		FolderPath= "root:waveBuilder:savedStimulusSets:TTL"
 		folder="*TTL*"
+		setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
+		ListOfWavesInFolder="\"- none -;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
 	endif
 	
-	setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
-	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
+
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
 	setdatafolder root:
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle)
