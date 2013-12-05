@@ -443,12 +443,18 @@ do
 
 	//get the wave name
 	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
-		//check to see if it is a test pulse or da wave
+		//check to see if it is a test pulse or user specified da wave
 		if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
 		column=0
 		else
 		//determine column number in cases where a set is being cycled through multiple times
-		column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			controlinfo/w=$panelTitle check_DataAcq_Random//checks to see if radom intra set sequencing is selected
+			if(v_value==0)
+			column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			else
+			column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			endif
+		
 		endif
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
@@ -457,35 +463,35 @@ do
 
 	j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
 	endif
-i+=1
-while(i<(itemsinlist(ChannelStatus,";")))
-
-//Leave room for AD data 
-i=0
-ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
-
-do
-if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
-	j+=1
+	i+=1
+	while(i<(itemsinlist(ChannelStatus,";")))
+	
+	//Leave room for AD data 
+	i=0
+	ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
+	
+	do
+	if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
+		j+=1
+		endif
+	i+=1
+	while(i<(itemsinlist(ChannelStatus,";")))
+	
+	//Place DA waves into ITCDataWave
+	i=0
+	//make/o/n=1 TTLwave
+	wave TTLwave = root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
+	if(AreTTLsInRackChecked(0, panelTitle)==1)
+		MakeITCTTLWave(0, panelTitle)
+		ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
+		j+=1
 	endif
-i+=1
-while(i<(itemsinlist(ChannelStatus,";")))
-
-//Place DA waves into ITCDataWave
-i=0
-//make/o/n=1 TTLwave
-wave TTLwave = root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
-if(AreTTLsInRackChecked(0, panelTitle)==1)
-	MakeITCTTLWave(0, panelTitle)
-	ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
-	j+=1
-endif
-
-if(AreTTLsInRackChecked(1, panelTitle)==1)
-	MakeITCTTLWave(1, panelTitle)
-	ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
-
-endif
+	
+	if(AreTTLsInRackChecked(1, panelTitle)==1)
+		MakeITCTTLWave(1, panelTitle)
+		ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
+	
+	endif
 
 End
 
@@ -543,7 +549,6 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 		if(TTLChannelStatus==1)
 		//TTLWaveName+="[]["+num2str(CalculateTTLColumnNo(panelTitle, TTLWaveName))+"]"
 		sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
-		print cmd
 		execute cmd
 		endif
 	a+=1
@@ -554,8 +559,6 @@ End
 
 
 CalculateTTLColumnNo(panelTitle, SetName)
-
-
 
 //=========================================================================================
 Function DAMinSampInt(RackNo, panelTitle)
@@ -630,9 +633,6 @@ End
 //=========================================================================================
 
 
-
-root:ITC1600:Device0:ITCDataWave[0,round((dimsize(root:WaveBuilder:SavedStimulusSets:DA:test_DA_1,0)/(1))-1)][0]=(160*30)*(root:WaveBuilder:SavedStimulusSets:DA:test_DA_1[(1)*p])
-
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_Repeats)
 Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
 	string panelTitle, SetName
@@ -661,7 +661,6 @@ Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that co
 	if(exists("count")==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 						//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		NVAR count
-		print count
 		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
 		column=count-1
 		else
@@ -673,3 +672,47 @@ Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that co
 	return column
 end
 
+
+Function CalculateShuffledDAColumnNo(panelTitle, SetName)
+	string panelTitle, SetName
+	variable column
+	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
+	string SequenceWaveName=SetName+"_Seq"
+	wave/z WorkingSequenceWave=$SequenceWaveName
+
+	if(exists("count")==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+						//thus the vairable "count" is used to determine if acquisition is on the first cycle
+		NVAR count
+		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
+		column=WorkingSequenceWave[count-1]
+		else
+		column=WorkingSequenceWave[mod((count-1), columnsInSet)]// set has been cyled through once or more, uses remainder to determine correc column
+		endif
+	else
+		make/o/n=(ColumnsInSet) $SequenceWaveName
+		wave WorkingSequenceWave = $SequenceWaveName
+		WorkingSequenceWave=x
+		Shuffle(WorkingSequenceWave)
+		column = WorkingSequenceWave[0]
+	endif
+	print column
+	return column
+	
+end
+
+
+//below function was taken from: http://www.igorexchange.com/node/1614
+//author s.r.chinn
+Function shuffle(inwave)	//	in-place random permutation of input wave elements
+	wave inwave
+	variable N	=	numpnts(inwave)
+	variable i, j, emax, temp
+	for(i = N; i>1; i-=1)
+		emax = i / 2
+		j =  floor(emax + enoise(emax))		//	random index
+// 		emax + enoise(emax) ranges in random value from 0 to 2*emax = i
+		temp		= inwave[j]
+		inwave[j]		= inwave[i-1]
+		inwave[i-1]	= temp
+	endfor
+end
