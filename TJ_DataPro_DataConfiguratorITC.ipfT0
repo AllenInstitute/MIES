@@ -420,9 +420,10 @@ string ResampledWaveName="ResampledWave"
 string cmd
 string SetvarDAGain, SetVarDAScale
 variable DAGain, DAScale,column
+string CountPath=HSU_DataFullFolderPathString(PanelTitle)+"count"
 
-if(exists("count")==2)
-	NVAR count
+if(exists(CountPath)==2)
+	NVAR count=$CountPath
 	column=count-1
 else
 	column = 0
@@ -454,7 +455,6 @@ do
 			else
 			column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
 			endif
-		
 		endif
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
@@ -547,8 +547,12 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 		endif
 		
 		if(TTLChannelStatus==1)
-		//TTLWaveName+="[]["+num2str(CalculateTTLColumnNo(panelTitle, TTLWaveName))+"]"
-		sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
+		controlinfo/w=$panelTitle check_DataAcq_Random//checks to see if radom intra set sequencing is selected
+			if(v_value==0)
+			sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
+			else
+			sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateShuffledTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
+			endif
 		execute cmd
 		endif
 	a+=1
@@ -558,8 +562,12 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 End
 
 
-CalculateTTLColumnNo(panelTitle, SetName)
-
+			controlinfo/w=$panelTitle check_DataAcq_Random//checks to see if radom intra set sequencing is selected
+			if(v_value==0)
+			column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			else
+			column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			endif
 //=========================================================================================
 Function DAMinSampInt(RackNo, panelTitle)
 variable RackNo
@@ -638,9 +646,11 @@ Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that con
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 	variable column
-	if(exists("count")==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string CountPath=WavePath+"Count"
+	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 						//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		NVAR count
+		NVAR count=$CountPath
 		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
 		column=count-1
 		else
@@ -657,10 +667,11 @@ Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that co
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
 	variable column
-	
-	if(exists("count")==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string CountPath=WavePath+"Count"	
+	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 						//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		NVAR count
+		NVAR count=$countPath
 		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
 		column=count-1
 		else
@@ -677,18 +688,53 @@ Function CalculateShuffledDAColumnNo(panelTitle, SetName)
 	string panelTitle, SetName
 	variable column
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
-	string SequenceWaveName=SetName+"_Seq"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string SequenceWaveName=WavePath+SetName+"_Seq"
 	wave/z WorkingSequenceWave=$SequenceWaveName
-
-	if(exists("count")==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+	string CountPath=WavePath+"Count"
+	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 						//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		NVAR count
+		NVAR count=$CountPath
 		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
 		column=WorkingSequenceWave[count-1]
 		else
 		column=WorkingSequenceWave[mod((count-1), columnsInSet)]// set has been cyled through once or more, uses remainder to determine correc column
+			if(mod((count-1), columnsInSet)==0)// reshuffles column sequence at beginning of set repeat
+			Shuffle(WorkingSequenceWave)
+			column = WorkingSequenceWave[0]
+			endif
 		endif
-	else
+	else//end up here when count does not exist - aka first trial of first set repeat
+		make/o/n=(ColumnsInSet) $SequenceWaveName
+		wave WorkingSequenceWave = $SequenceWaveName
+		WorkingSequenceWave=x
+		Shuffle(WorkingSequenceWave)
+		column = WorkingSequenceWave[0]
+	endif
+	return column
+End
+
+Function CalculateShuffledTTLColumnNo(panelTitle, SetName)
+	string panelTitle, SetName
+	variable column
+	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string SequenceWaveName=WavePath+SetName+"_Seq"
+	wave/z WorkingSequenceWave=$SequenceWaveName
+	string CountPath=WavePath+"Count"
+	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+						//thus the vairable "count" is used to determine if acquisition is on the first cycle
+		NVAR count=$CountPath
+		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
+		column=WorkingSequenceWave[count-1]
+		else
+		column=WorkingSequenceWave[mod((count-1), columnsInSet)]// set has been cyled through once or more, uses remainder to determine correc column
+			if(mod((count-1), columnsInSet)==0)// reshuffles column sequence at beginning of set repeat
+			Shuffle(WorkingSequenceWave)
+			column = WorkingSequenceWave[0]
+			endif
+		endif
+	else//end up here when count does not exist - aka first trial of first set repeat
 		make/o/n=(ColumnsInSet) $SequenceWaveName
 		wave WorkingSequenceWave = $SequenceWaveName
 		WorkingSequenceWave=x
@@ -697,9 +743,7 @@ Function CalculateShuffledDAColumnNo(panelTitle, SetName)
 	endif
 	print column
 	return column
-	
-end
-
+End
 
 //below function was taken from: http://www.igorexchange.com/node/1614
 //author s.r.chinn

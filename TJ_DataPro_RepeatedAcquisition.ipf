@@ -7,11 +7,12 @@ string PanelTitle
 variable ITI
 variable IndexingState
 variable i = 0
-variable/g Count=0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
-
+	string CountPath=WavePath+"Count"
+	variable/g $CountPath=0
+	NVAR Count=$CountPath
 	variable TotTrials
 	
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
@@ -69,13 +70,14 @@ End
 Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	variable DeviceType,DeviceNum
 	string panelTitle
-	NVAR Count
 	variable TotTrials
 	variable ITI
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+	string CountPath=WavePath+"Count"
+	NVAR Count=$CountPath
 
 	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 	TotTrials=v_value
@@ -155,8 +157,9 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
-	NVAR count	
-	
+	string CountPath=WavePath+"Count"
+	NVAR Count=$CountPath
+		
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType=v_value-1
 	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo

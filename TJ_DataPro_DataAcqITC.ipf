@@ -95,7 +95,7 @@ Function StopDataAcq()
 	SVAR panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-
+	string CountPath=WavePath+"count"
 
 	sprintf cmd, "ITCStopAcq/z=0"
 	Execute cmd
@@ -117,7 +117,7 @@ Function StopDataAcq()
 	
 	 ScaleITCDataWave(panelTitleG)
 	
-	if(exists("Count")==0)//If the global variable count does not exist, it is the first trial of repeated acquisition
+	if(exists(CountPath)==0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo/w=$panelTitleG Check_DataAcq1_RepeatAcq
 		if(v_value==1)//repeated aquisition is selected
 			RepeatedAcquisition(PanelTitleG)
@@ -250,6 +250,7 @@ Function TestPulseFunc(s)
 	string  ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ResultsWavePath = WavePath + ":ResultsWave"
+	string CountPath=WavePath+"count"
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
 		sprintf cmd, "ITCStartAcq"
@@ -272,7 +273,7 @@ Function TestPulseFunc(s)
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
 		//doupdate	
 
-		if(exists("count")==0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
+		if(exists(countPath)==0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				beep 
