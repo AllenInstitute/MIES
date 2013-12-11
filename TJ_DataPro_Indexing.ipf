@@ -3,18 +3,18 @@
 
 Function MakeIndexingStorageWaves(panelTitle)
 	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	variable NoOfTTLs = TotNoOfControlType("check", "TTL",panelTitle)
 	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
-	make/o/n=(4,NoOfTTLs) TTLIndexingStorageWave
-	make/o/n=(4,NoOfDACs) DACIndexingStorageWave
+	make/o/n=(4,NoOfTTLs) $WavePath+":TTLIndexingStorageWave"
+	make/o/n=(4,NoOfDACs) $WavePath+":DACIndexingStorageWave"
 End
 
 Function StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
-	//Wave_DA_00
-	//Popup_DA_IndexEnd_00
-	wave DACIndexingStorageWave
-	wave TTLIndexingStorageWave
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	variable i 
 	variable NoOfTTLs = TotNoOfControlType("check", "TTL",panelTitle)
 	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
@@ -59,13 +59,14 @@ End
 
 Function IndexingDoIt(panelTitle)
 string panelTitle
-wave DACIndexingStorageWave
-wave TTLIndexingStorageWave
-variable i 
-variable NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
-variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
-variable CurrentPopUpMenuNo
-string DACPopUpName, TTLPopUpName
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	variable i 
+	variable NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
+	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
+	variable CurrentPopUpMenuNo
+	string DACPopUpName, TTLPopUpName
 
 
 for(i=0;i<NoOfDACS;i+=1)

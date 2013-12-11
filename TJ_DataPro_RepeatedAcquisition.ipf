@@ -20,10 +20,18 @@ variable i = 0
 	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
 	variable DeviceNum=v_value-1
 	
-	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-	TotTrials=v_value
+	controlinfo/w=$panelTitle Check_DataAcq_Indexing
+	if(v_value==0)
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+		TotTrials=v_value
+	else
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
+		TotTrials=v_value
+	endif
+	
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	TotTrials=TotTrials*v_value
+	TotTrials=(TotTrials*v_value)+1
+	
 	Count+=1
 	
 	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
@@ -79,11 +87,19 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	string CountPath=WavePath+"Count"
 	NVAR Count=$CountPath
 
-	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-	TotTrials=v_value
+	Count+=1
+	
+	controlinfo/w=$panelTitle Check_DataAcq_Indexing
+	if(v_value==0)
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+		TotTrials=v_value
+	else
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
+		TotTrials=v_value
+	endif
+	
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	TotTrials=(TotTrials*v_value)+1
-	Count+=1
 	
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
@@ -91,8 +107,13 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	
 	controlinfo/w=$panelTitle Check_DataAcq_Indexing
 	If(v_value==1)// if indexing is activated, indexing is applied.
+		MakeIndexingStorageWaves(panelTitle)
+		StoreStartFinishForIndexing(panelTitle)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
-		if(Count==v_value)
+		print "indexing on"
+		print mod(Count,v_value)
+		if(mod(Count,v_value)==0)
+		print "here"
 		IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 		endif
 	endif
@@ -168,8 +189,15 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
 	variable DeviceNum=v_value-1
 	
-	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet//SetVar_DataAcq_TotTrial
-	TotTrials=v_value
+	controlinfo/w=$panelTitle Check_DataAcq_Indexing
+	if(v_value==0)
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+		TotTrials=v_value
+	else
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
+		TotTrials=v_value
+	endif
+	
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	TotTrials=(TotTrials*v_value)+1
 	
