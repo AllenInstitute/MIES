@@ -2288,7 +2288,7 @@ Function DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure ch
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
 	
-	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
 	valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 End
@@ -2367,7 +2367,7 @@ Function CheckProc_Indexing(ctrlName,checked) : CheckBoxControl
 	getwindow kwTopWin wtitle
 	string panelTitle=s_value
 	// updates sweeps in cycle value - when indexing is off, only the start set is counted, whend indexing is on all sets between start and end set are counted
-	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
 	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 
@@ -2582,7 +2582,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
 	setdatafolder root:// makes sure data acq starts in the correct folder!!
 	
-	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
 	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 
