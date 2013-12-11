@@ -449,7 +449,7 @@ do
 		column=0
 		else
 		//determine column number in cases where a set is being cycled through multiple times
-			controlinfo/w=$panelTitle check_DataAcq_Random//checks to see if radom intra set sequencing is selected
+			controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
 			if(v_value==0)
 			column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
 			else
@@ -547,7 +547,7 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 		endif
 		
 		if(TTLChannelStatus==1)
-		controlinfo/w=$panelTitle check_DataAcq_Random//checks to see if radom intra set sequencing is selected
+		controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
 			if(v_value==0)
 			sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
 			else
@@ -562,7 +562,7 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 End
 
 
-			controlinfo/w=$panelTitle check_DataAcq_Random//checks to see if radom intra set sequencing is selected
+			controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
 			if(v_value==0)
 			column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
 			else
@@ -641,7 +641,7 @@ End
 //=========================================================================================
 
 
-// returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_Repeats)
+// returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
 Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
@@ -662,7 +662,7 @@ Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that con
 	return column
 end
 
-// returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_Repeats)
+// returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
 Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)

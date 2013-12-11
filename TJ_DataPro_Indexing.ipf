@@ -158,8 +158,10 @@ End
 //===================================================================================
 //NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
 //===================================================================================
-Function Index_MaxNoOfSweeps(PanelTitle)
+
+Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
 	string panelTitle
+	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
 	variable MaxNoOfSweeps = 0
 	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
 	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
@@ -167,7 +169,7 @@ Function Index_MaxNoOfSweeps(PanelTitle)
 	
 	do
 		if(str2num(stringfromlist(i,DAChannelStatusList,";"))==1)
-		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0))
+		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0, IndexOverRide))
 		endif
 	
 	i+=1
@@ -176,7 +178,7 @@ Function Index_MaxNoOfSweeps(PanelTitle)
 	i=0
 	do
 		if(str2num(stringfromlist(i,TTLChannelStatusList,";"))==1)
-		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1))
+		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1, IndexOverRide))
 		endif
 	
 	i+=1
@@ -185,9 +187,9 @@ Function Index_MaxNoOfSweeps(PanelTitle)
 	return MaxNoOfSweeps
 End
 
-Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL)// determines the number of trials for a DA or TTL channel
+Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, IndexOverRide)// determines the number of trials for a DA or TTL channel
 	string PanelTitle
-	variable PopUpMenuNumber, DAorTTL//DA = 0, TTL = 1	
+	variable PopUpMenuNumber, DAorTTL, IndexOverRide//DA = 0, TTL = 1	
 	variable NumberOfTrialsAcrossSets
 	variable IndexStart, IndexEnd, ListOffset
 	string DAorTTL_cntrlName = "", DAorTTL_indexEndName = "", setname = ""
@@ -203,16 +205,21 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL)// 
 		DAorTTL_indexEndName = "Popup_TTL_IndexEnd_0" + num2str(PopUpMenuNumber)
 		ListOffset=2//SHOULD BE TWO BUT TEST PULSE IS PRESENTLY POPULATING THE TTL POPUP MENU LIST
 	endif
+	
 	controlinfo/w=$panelTitle $DAorTTL_cntrlName// check if indexing is activated
 	IndexStart=v_value
 	
-	controlinfo/w=$panelTitle Check_DataAcq1_Indexing
+	controlinfo/w=$panelTitle Check_DataAcq_Indexing// checks to if indexing is activated
 	if(v_value==0)
 		IndexEnd=indexStart
 	else
 		controlinfo/w=$panelTitle $DAorTTL_indexEndName
 		IndexEnd=v_value 
 	endif
+	
+	If(IndexOverRide==1)
+		IndexEnd=indexStart
+	endIF
 	
 	string setList = getuserdata(PanelTitle, DAorTTL_cntrlName, "menuexp")
 	variable i = (min(indexstart, indexend)-ListOffset)
@@ -221,7 +228,7 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL)// 
 		Setname=stringfromlist(i, setList,";")
 		NumberOfTrialsAcrossSets+=Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
 		i+=1
-	while(i<(max(indexstart, indexend)-(ListOffset+1)))
+	while(i<(max(indexstart, indexend)-(ListOffset-1)))
 	return NumberOfTrialsAcrossSets
 
 End
