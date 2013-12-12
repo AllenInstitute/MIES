@@ -10,9 +10,13 @@ variable i = 0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
-	string CountPath=WavePath+"Count"
+	string CountPath=WavePath+":Count"
 	variable/g $CountPath=0
 	NVAR Count=$CountPath
+	string ActiveSetCountPath=WavePath+":ActiveSetCount"
+	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+	variable/g $ActiveSetCountPath=v_value
+	NVAR ActiveSetCount = $ActiveSetCountPath
 	variable TotTrials
 	
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
@@ -32,8 +36,8 @@ variable i = 0
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	TotTrials=(TotTrials*v_value)+1
 	
-	Count+=1
-	
+	//Count+=1
+	//ActiveSetCount-=1
 	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
 	
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
@@ -84,10 +88,13 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	string CountPath=WavePath+"Count"
+	string CountPath=WavePath+":Count"//THERE SHOULD BE A COLON BEFORE "COUNT" WILL TROUBLE SHOOT LATER!!!!!!
 	NVAR Count=$CountPath
-
+	string ActiveSetCountPath=WavePath+":ActiveSetCount"
+	NVAR ActiveSetCount=$ActiveSetCountPath
+	
 	Count+=1
+	ActiveSetCount-=1
 	
 	controlinfo/w=$panelTitle Check_DataAcq_Indexing
 	if(v_value==0)
@@ -109,23 +116,23 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	If(v_value==1)// if indexing is activated, indexing is applied.
 		MakeIndexingStorageWaves(panelTitle)
 		StoreStartFinishForIndexing(panelTitle)
-		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
-		print "indexing on"
-		print mod(Count,v_value)
-		if(mod(Count,v_value)==0)
-		print "here"
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+		if(activeSetcount==0)//mod(Count,v_value)==0)
 		IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+		valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+		activeSetCount=v_value
 		endif
 	endif
 	
-	if(Count<TotTrials)
+	if(Count<TotTrials-1)
 		ConfigureDataForITC(PanelTitle)
 		ITCOscilloscope(ITCDataWave, panelTitle)
 		
 		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value==0)//No background aquisition
 			ITCDataAcq(DeviceType,DeviceNum, panelTitle)
-			if(Count<(TotTrials-1)) //prevents test pulse from running after last trial is acquired
+			if(Count<(TotTrials-2)) //prevents test pulse from running after last trial is acquired
 				StoreTTLState(panelTitle)
 				TurnOffAllTTLs(panelTitle)
 				
@@ -181,7 +188,7 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
-	string CountPath=WavePath+"Count"
+	string CountPath=WavePath+":Count"
 	NVAR Count=$CountPath
 		
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType

@@ -646,19 +646,38 @@ Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that con
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 	variable column
+	variable localCount
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string CountPath=WavePath+"Count"
-	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
-						//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		NVAR count=$CountPath
-		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
-		column=count-1
+	string CountPath=WavePath+":Count"
+	string AcitveSetCountPath=WavePath+":ActiveSetCount"
+//	controlinfo/w=$panelTitle Check_DataAcq_Indexing
+//	if(v_value==1)
+//	
+//	
+//	else
+		if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+							//thus the vairable "count" is used to determine if acquisition is on the first cycle
+			NVAR count=$CountPath
+			controlinfo/w=$panelTitle Check_DataAcq_Indexing
+			if(v_value==0)
+				localCount = count
+			else
+				NVAR ActiveSetCount=$AcitveSetCountPath
+				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+				localCount = v_value-ActiveSetCount
+				print "activesetcount_"+num2str(activesetcount)
+			endif
+			
+			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
+				column=localCount
+			else
+				column=mod((localCount), columnsInSet)// set has been cyled through once or more, uses remainder to determine correc column
+			endif
 		else
-		column=mod((count-1), columnsInSet)// set has been cyled through once or more, uses remainder to determine correc column
+			column = 0
 		endif
-	else
-		column = 0
-	endif
+//	endif
+	print "column "+ num2str(column)
 	return column
 end
 
