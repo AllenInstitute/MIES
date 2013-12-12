@@ -664,8 +664,11 @@ Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that con
 			else
 				NVAR ActiveSetCount=$AcitveSetCountPath
 				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-				localCount = v_value-ActiveSetCount
-				print "activesetcount_"+num2str(activesetcount)
+				localCount = v_value//-ActiveSetCount
+				controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+				localCount*=v_value
+				localCount-=ActiveSetCount
+				//print "activesetcount = "+num2str(activesetcount)
 			endif
 			
 			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
@@ -677,7 +680,7 @@ Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that con
 			column = 0
 		endif
 //	endif
-	print "column "+ num2str(column)
+	print "column = "+ num2str(column)
 	return column
 end
 

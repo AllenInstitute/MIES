@@ -17,6 +17,8 @@ variable i = 0
 	controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable/g $ActiveSetCountPath=v_value
 	NVAR ActiveSetCount = $ActiveSetCountPath
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
+	ActiveSetCount*=v_value
 	variable TotTrials
 	
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
@@ -28,17 +30,19 @@ variable i = 0
 	if(v_value==0)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
+		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+		TotTrials=(TotTrials*v_value)+1
 	else
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials=v_value
 	endif
 	
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	TotTrials=(TotTrials*v_value)+1
+	//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	//TotTrials=(TotTrials*v_value)+1
 	
 	//Count+=1
 	//ActiveSetCount-=1
-	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))//updates trials remaining in panel
+	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count))//updates trials remaining in panel
 	
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
@@ -100,24 +104,30 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	if(v_value==0)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
+		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+		TotTrials=(TotTrials*v_value)+1
 	else
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials=v_value
 	endif
-	
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	TotTrials=(TotTrials*v_value)+1
+	//print "TotTrials = "+num2str(tottrials)
+	print "count = "+num2str(count)
+	//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	//TotTrials=(TotTrials*v_value)+1
 	
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
-	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count+1))// reports trials remaining
+	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count))// reports trials remaining
 	
 	controlinfo/w=$panelTitle Check_DataAcq_Indexing
 	If(v_value==1)// if indexing is activated, indexing is applied.
+		if(count==1)
 		MakeIndexingStorageWaves(panelTitle)
 		StoreStartFinishForIndexing(panelTitle)
+		endif
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		if(activeSetcount==0)//mod(Count,v_value)==0)
+		print "Index Step taken"
 		IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 		valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -125,14 +135,14 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		endif
 	endif
 	
-	if(Count<TotTrials-1)
+	if(Count<TotTrials)
 		ConfigureDataForITC(PanelTitle)
 		ITCOscilloscope(ITCDataWave, panelTitle)
 		
 		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value==0)//No background aquisition
 			ITCDataAcq(DeviceType,DeviceNum, panelTitle)
-			if(Count<(TotTrials-2)) //prevents test pulse from running after last trial is acquired
+			if(Count<(TotTrials-1)) //prevents test pulse from running after last trial is acquired
 				StoreTTLState(panelTitle)
 				TurnOffAllTTLs(panelTitle)
 				
@@ -200,18 +210,20 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	if(v_value==0)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
+		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+		TotTrials=(TotTrials*v_value)+1
 	else
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials=v_value
 	endif
 	
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	TotTrials=(TotTrials*v_value)+1
+	//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	//TotTrials=(TotTrials*v_value)+1
 	
 	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
 	ITI=v_value
 			
-			if(Count<(TotTrials-1))
+			if(Count<(TotTrials))
 				StoreTTLState(panelTitle)
 				TurnOffAllTTLs(panelTitle)
 				
