@@ -19,7 +19,6 @@ variable i = 0
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
 	ActiveSetCount*=v_value
-	//ActiveSetCount-=1
 	variable TotTrials
 	
 	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
@@ -32,7 +31,7 @@ variable i = 0
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
 		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials=(TotTrials*v_value)//+1
+		TotTrials=(TotTrials*v_value)+1
 	else
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials=v_value
@@ -106,7 +105,7 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
 		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials=(TotTrials*v_value)//+1
+		TotTrials=(TotTrials*v_value)+1
 	else
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials=v_value
@@ -126,16 +125,13 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		MakeIndexingStorageWaves(panelTitle)
 		StoreStartFinishForIndexing(panelTitle)
 		endif
-		//controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-		print "active set count "+num2str(activesetcount)
+		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		if(activeSetcount==0)//mod(Count,v_value)==0)
 		print "Index Step taken"
 		IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 		valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		activeSetCount=v_value
-		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-		ActiveSetCount*=v_value
 		endif
 	endif
 	
@@ -215,7 +211,7 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
 		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials=(TotTrials*v_value)//+1
+		TotTrials=(TotTrials*v_value)+1
 	else
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials=v_value

@@ -451,11 +451,21 @@ do
 		//determine column number in cases where a set is being cycled through multiple times
 			controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
 			if(v_value==0)
-			column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			column = real(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";")))// CalculateDAColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
 			else
 			column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
 			endif
 		endif
+	// checks if user wants to set scaling to 0 on sets that have already cycled.	
+	ControlInfo/w=$panelTitle check_Settings_ScalingZero 
+	print "v_value = "+ num2str(v_value)
+	if(v_value==1)
+		if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)
+			if(imag(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";")))==1)
+			DAScale=0
+			endif
+		endif
+	endif
 	//resample the wave to min samp interval and place in ITCDataWave
 	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
 	sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column
@@ -642,47 +652,50 @@ End
 
 
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
-Function CalculateDAColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
+Function/c CalculateDAColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
 	string panelTitle, SetName
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 	variable column
+	variable CycleCount// when cycleCount = 1 the set has already cycled once.
+	variable/c column_CycleCount
 	variable localCount
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string CountPath=WavePath+":Count"
 	string AcitveSetCountPath=WavePath+":ActiveSetCount"
-//	controlinfo/w=$panelTitle Check_DataAcq_Indexing
-//	if(v_value==1)
-//	
-//	
-//	else
+
 		if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 							//thus the vairable "count" is used to determine if acquisition is on the first cycle
 			NVAR count=$CountPath
 			controlinfo/w=$panelTitle Check_DataAcq_Indexing
-			if(v_value==0)
+			if(v_value==0)// if indexing is off...
 				localCount = count
-			else
+				cycleCount = 0
+			else // else is used when indexing is on. The local count is now set length dependent
 				NVAR ActiveSetCount=$AcitveSetCountPath
 				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-				localCount = v_value//-ActiveSetCount
+				localCount = v_value
 				controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 				localCount*=v_value
 				localCount-=ActiveSetCount
-				//print "activesetcount = "+num2str(activesetcount)
 			endif
 			
 			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
 				column=localCount
+				cycleCount=0
 			else
-				column=mod((localCount), columnsInSet)// set has been cyled through once or more, uses remainder to determine correc column
+				column=mod((localCount), columnsInSet)// set has been cyled through once or more, uses remainder to determine correct column
+				cycleCount=1
+				print "set has be cycled"
 			endif
 		else
 			column = 0
 		endif
-//	endif
-	print "column = "+ num2str(column)
-	return column
+	
+	column_CycleCount = cmplx(column, cycleCount)
+	return column_CycleCount
 end
+
+
 
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
 Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
