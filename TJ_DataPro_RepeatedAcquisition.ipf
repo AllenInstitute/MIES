@@ -93,7 +93,7 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	string CountPath=WavePath+":Count"//THERE SHOULD BE A COLON BEFORE "COUNT" WILL TROUBLE SHOOT LATER!!!!!!
+	string CountPath=WavePath+":Count"
 	NVAR Count=$CountPath
 	string ActiveSetCountPath=WavePath+":ActiveSetCount"
 	NVAR ActiveSetCount=$ActiveSetCountPath
@@ -123,19 +123,36 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	controlinfo/w=$panelTitle Check_DataAcq_Indexing
 	If(v_value==1)// if indexing is activated, indexing is applied.
 		if(count==1)
-		MakeIndexingStorageWaves(panelTitle)
-		StoreStartFinishForIndexing(panelTitle)
+			MakeIndexingStorageWaves(panelTitle)
+			StoreStartFinishForIndexing(panelTitle)
 		endif
-		//controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		print "active set count "+num2str(activesetcount)
 		if(activeSetcount==0)//mod(Count,v_value)==0)
-		print "Index Step taken"
-		IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-		valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
-		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-		activeSetCount=v_value
-		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-		ActiveSetCount*=v_value
+			controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+			if(v_value==1)//indexing is locked
+				print "Index Step taken"
+				IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+			endif
+			
+			if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
+				print "should have indexed independently"
+				variable localCount// is how many steps have been taken on a index cycle (max steps in a index cycle is determined by the longest set on all the active channelss)
+				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+				localCount = v_value
+				//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+				//localCount*=v_value
+				localCount-=ActiveSetCount
+				//what da and ttl channels are active
+				IndexChannelsWithCompleteSets(PanelTitle, 0, localCount)
+				//IndexChannelsWithCompleteSets(PanelTitle, 1, localCount)
+				//what set on active da and ttl channels have been stepped through completely once
+				
+			endif
+			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+			controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+			activeSetCount=v_value
+			controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
+			ActiveSetCount*=v_value
 		endif
 	endif
 	
@@ -188,11 +205,9 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 				Killstrings/z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 		else //background aquisition is on
-				ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)
-								
+				ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)					
 		endif
 	endif
-
 End
 
 Function BckgTPwithCallToRptAcqContr(PanelTitle)
@@ -268,5 +283,79 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 			endif
 End
 
+Function IndexChannelsWithCompleteSets(PanelTitle, DAorTTL, localCount)
+	string panelTitle
+	variable DAorTTL, localCount
+	string ListOfSetStatus = RetrnListOfChanWithCompletSets(PanelTitle, DAorTTL, localCount)
+	string channelTypeWaveName, ChannelTypeName
+	string ChannelPopUpMenuName
+	variable ChannelNumber
+	
+	if(DAorTTL==0)
+	ChannelTypeName="DA"
+	endif
+	
+	if(DAorTTL==1)
+	ChannelTypeName="TTL"
+	endif
+	
+	do
+		if(str2num(stringfromlist(ChannelNumber,ListOfSetStatus,";"))==1)
+			ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+			IndexSingleChannel(panelTitle, DAorTTL, ChannelNumber)
+		endif
+	channelNumber+=1
+	while(ChannelNumber<itemsinlist(ListOfSetStatus,";"))
+End
 
+Function/T RetrnListOfChanWithCompletSets(PanelTitle, DAorTTL, localCount)
+	string panelTitle
+	variable DAorTTL, localcount
+	string ListOfChanWithCompleteSets=""
+	string ChannelTypeName
+	string ChannelPopUpMenuName
+	string setName
+	variable columnsInSet
+	string WavePath
+	
+	if(DAorTTL==0)
+	ChannelTypeName="DA"
+	WavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==1)
+	ChannelTypeName="TTL"
+	WavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+	
+	string ActivechannelList = ControlStatusListString(ChannelTypeName,"check",panelTitle)
+	
+	variable ChannelNumber = 0
+	
+	do
+		if(str2num(stringfromlist(ChannelNumber,ActiveChannelList,";"))==1)
+		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+		controlinfo/w=$panelTitle $ChannelPopUpMenuName
+		setName=WavePath+s_value
+		columnsInSet=dimsize($setName, 1)
+			if(LocalCount >= columnsInSet)
+			ListOfChanWithCompleteSets+="1;"
+			else
+			ListOfChanWithCompleteSets+="0;"
+			endif
+		else
+		ListOfChanWithCompleteSets+="0;"
+		endif
+	
+	
+	ChannelNumber+=1
+	While (ChannelNumber<itemsinlist(ActiveChannelList,";"))
+	
+	return ListOfChanWithCompleteSets
+End
 
+active channels
+
+channels with complete sets
+
+ControlStatusListString(ChannelType, ControlType,panelTitle)

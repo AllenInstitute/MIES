@@ -409,79 +409,81 @@ ITCChanConfigWave[][3]=0
 End
 //==========================================================================================
 Function PlaceDataInITCDataWave(PanelTitle)
-string panelTitle
-variable i=0// 
-variable j=0//
-string ChannelStatus
-wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
-string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
-string ChanTypeWaveNameList, ChanTypeWaveName
-string ResampledWaveName="ResampledWave"
-string cmd
-string SetvarDAGain, SetVarDAScale
-variable DAGain, DAScale,column
-string CountPath=HSU_DataFullFolderPathString(PanelTitle)+"count"
-
-if(exists(CountPath)==2)
-	NVAR count=$CountPath
-	column=count-1
-else
-	column = 0
-endif
-
-//Place DA waves into ITCDataWave
-variable DecimationFactor = (ITCMinSamplingInterval(panelTitle)/5)
-ChannelStatus=ControlStatusListString("DA", "Check", panelTitle)
-ChanTypeWaveNameList=PopMenuStringList("DA", "Wave", panelTitle)
-do
-	if(str2num(stringfromlist(i,ChannelStatus,";"))==1)//Checks if DA channel checkbox is checked (ON)
-	SetVarDAGain = "gain_DA_0" + num2str(i)
-	SetVarDAScale = "scale_DA_0" + num2str(i)
-	ControlInfo/w=$panelTitle $SetVarDAGain
-	DAGain=(3200/v_value)//3200 = 1V
-	ControlInfo/w=$panelTitle $SetVarDAScale
-	DAScale=v_value
-
-	//get the wave name
-	ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
-		//check to see if it is a test pulse or user specified da wave
-		if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
-		column=0
-		else
-		//determine column number in cases where a set is being cycled through multiple times
-			controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
-			if(v_value==0)
-			column = real(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";")))// CalculateDAColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
-			else
-			column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
-			endif
-		endif
-	// checks if user wants to set scaling to 0 on sets that have already cycled.	
-	ControlInfo/w=$panelTitle check_Settings_ScalingZero 
-	print "v_value = "+ num2str(v_value)
-	if(v_value==1)
-		if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)
-			if(imag(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";")))==1)
-			DAScale=0
-			endif
-		endif
-	endif
-	//resample the wave to min samp interval and place in ITCDataWave
-	//sprintf cmd, "ITCDataWave[0,round((numpnts(%s)/(%d))-1)][%d]=%s[(%d)*p]",ChanTypeWaveName,DecimationFactor, j, ChanTypeWaveName, DecimationFactor
-	sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column
-	execute cmd
-
-	j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
-	endif
-	i+=1
-	while(i<(itemsinlist(ChannelStatus,";")))
+	string panelTitle
+	variable i=0// 
+	variable j=0//
+	string ChannelStatus
+	wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
+	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
+	string ChanTypeWaveNameList, ChanTypeWaveName
+	string ResampledWaveName="ResampledWave"
+	string cmd
+	string SetvarDAGain, SetVarDAScale
+	variable DAGain, DAScale,column
+	string CountPath=HSU_DataFullFolderPathString(PanelTitle)+"count"
 	
+	if(exists(CountPath)==2)
+		NVAR count=$CountPath
+		column=count-1
+	else
+		column = 0
+	endif
+	
+	//Place DA waves into ITCDataWave
+	variable DecimationFactor = (ITCMinSamplingInterval(panelTitle)/5)
+	ChannelStatus=ControlStatusListString("DA", "Check", panelTitle)
+	ChanTypeWaveNameList=PopMenuStringList("DA", "Wave", panelTitle)
+	do
+		if(str2num(stringfromlist(i,ChannelStatus,";"))==1)//Checks if DA channel checkbox is checked (ON)
+		SetVarDAGain = "gain_DA_0" + num2str(i)
+		SetVarDAScale = "scale_DA_0" + num2str(i)
+		ControlInfo/w=$panelTitle $SetVarDAGain
+		DAGain=(3200/v_value)//3200 = 1V
+		ControlInfo/w=$panelTitle $SetVarDAScale
+		DAScale=v_value
+	
+		//get the wave name
+		ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
+			//check to see if it is a test pulse or user specified da wave
+			if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
+			column=0
+			else
+			//determine column number in cases where a set is being cycled through multiple times
+				controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
+				if(v_value==0)
+				column = real(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i))// CalculateDAColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
+				else
+				column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+				endif
+			endif
+		// checks if user wants to set scaling to 0 on sets that have already cycled once
+		ControlInfo/w=$panelTitle check_Settings_ScalingZero 
+		//print "v_value = "+ num2str(v_value)
+		if(v_value==1)
+			ControlInfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+			if(v_value==1)// shutting off DA by setting scaling to zero is only required when indexing is locked
+				if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)// makes sure test pulse wave scaling is maintained
+					if(imag(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i))==1)
+					DAScale=0
+					endif
+				endif
+			endif
+		endif
+		//resample the wave to min samp interval and place in ITCDataWave
+		sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column
+		execute cmd
+	
+		j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
+		endif
+		i+=1
+	while(i<(itemsinlist(ChannelStatus,";")))
+		
 	//Leave room for AD data 
 	i=0
 	ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
 	
 	do
-	if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
+		if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
 		j+=1
 		endif
 	i+=1
@@ -489,7 +491,6 @@ do
 	
 	//Place DA waves into ITCDataWave
 	i=0
-	//make/o/n=1 TTLwave
 	wave TTLwave = root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
 	if(AreTTLsInRackChecked(0, panelTitle)==1)
 		MakeITCTTLWave(0, panelTitle)
@@ -502,8 +503,8 @@ do
 		ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
 	
 	endif
-
-End
+	
+	End
 
 //=========================================================================================
 Function PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
@@ -652,8 +653,9 @@ End
 
 
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
-Function/c CalculateDAColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
+Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a string that contains the full wave path
 	string panelTitle, SetName
+	variable ChannelNo
 	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 	variable column
 	variable CycleCount// when cycleCount = 1 the set has already cycled once.
