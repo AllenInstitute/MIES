@@ -683,15 +683,12 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 				localCount-=ActiveSetCount
 				else //indexing is unlocked
 				// calculate where in list global count is
-				localCount = UnlockedIndexingStepNo(panelTitle,setName, channelNo, 0, count)
+				localCount = UnlockedIndexingStepNo(panelTitle, channelNo, 0, count)
 				endif
 			endif
-			
 			if(channelno==1)
-			//print "channel 1 local count = "+num2str(localCount)
-			//print "columns in set = "+num2str(columnsInset)
+			print "columns in set = "+num2str(columnsinset)
 			endif
-			
 			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
 				column=localCount
 				cycleCount=0

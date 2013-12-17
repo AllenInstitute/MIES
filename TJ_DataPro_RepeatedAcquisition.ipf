@@ -336,17 +336,17 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		TotalListSteps=TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		
 	do
-		if(count>=TotalListSteps)
+		if(count>TotalListSteps)
 		count-=totalListsteps
 		endif
-	while(count>=totalListSteps)
+	while(count>totalListSteps)
 		
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				//print stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
+				print stringfromlist((DAIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
 				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(StepsInSummedSets)
+				print "steps in summed sets = "+num2str(StepsInSummedSets)
 				
 				if(StepsInSummedSets==Count)
 					//print "At a Set Border"
@@ -354,7 +354,7 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 					return AtSetBorder
 				endif
 			i+=1
-			while(StepsInSummedSets<Count)
+			while(StepsInSummedSets<=Count)
 		endif
 		
 		if(DAorTTL==1)// TTL channel
@@ -367,7 +367,7 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 					return AtSetBorder
 				endif
 			i+=1
-			while(StepsInSummedSets<Count)
+			while(StepsInSummedSets<=Count)
 		endif
 
 		return AtSetBorder
@@ -417,8 +417,8 @@ Function TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	return TotalListSteps
 End
 
-Function UnlockedIndexingStepNo(panelTitle,setName, channelNo, DAorTTL, count)
-	string paneltitle, setname
+Function UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
+	string paneltitle
 	variable channelNo, DAorTTL, count
 	variable column, i, StepsInSummedSets, listOffSet, totalListSteps
 	string ChannelTypeName, DAorTTLWavePath, ChannelPopUpMenuName,PopUpMenuList
