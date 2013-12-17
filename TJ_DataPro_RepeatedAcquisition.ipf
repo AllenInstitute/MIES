@@ -126,7 +126,7 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 			MakeIndexingStorageWaves(panelTitle)
 			StoreStartFinishForIndexing(panelTitle)
 		endif
-		print "active set count "+num2str(activesetcount)
+		//print "active set count "+num2str(activesetcount)
 		if(activeSetcount==0)//mod(Count,v_value)==0)
 			controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value==1)//indexing is locked
@@ -143,9 +143,8 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		
 		controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 		if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
-			print "should have indexed independently"
-			 ApplyUnLockedIndexing(panelTitle, count)
-
+			//print "should have indexed independently"
+			ApplyUnLockedIndexing(panelTitle, count)
 		endif
 	endif
 	
@@ -281,12 +280,22 @@ Function ApplyUnLockedIndexing(panelTitle, count)
 	variable count
 	variable i=0
 	string ActivechannelList = ControlStatusListString("DA","check",panelTitle)
+//	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+//	string ActiveSetCountPath=WavePath+":ActiveSetCount"
+//	NVAR ActiveSetCount=$ActiveSetCountPath
 
 	do
 		if(str2num(stringfromlist(i,ActiveChannelList,";"))==1)
-			print DetIfCountIsAtSetBorder(panelTitle, count, i, 0)
+			//print DetIfCountIsAtSetBorder(panelTitle, count, i, 0)
 			if(DetIfCountIsAtSetBorder(panelTitle, count, i, 0)==1)
 			IndexSingleChannel(panelTitle, 0, i)
+			
+			//valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+			//controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+			//activeSetCount=v_value
+			//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
+			//ActiveSetCount*=v_value
+			
 			endif
 		
 		endif
@@ -300,12 +309,12 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	variable count, channelNumber, DAorTTL
 	variable AtSetBorder=0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
-	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
-	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath
+	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
 	variable NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
 	variable NoOfDAs = TotNoOfControlType("check", "DA",panelTitle)
-	variable i, StepsInSummedSets, ListOffset
+	variable i, StepsInSummedSets, ListOffset, TotalListSteps
 	
 	if(DAorTTL==0)
 	ChannelTypeName="DA"
@@ -313,33 +322,161 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
-	if(DAorTTL==2)
+	if(DAorTTL==1)
 	ChannelTypeName="TTL"
 	ListOffset=0
 	DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
-	do// this do-while loop adjust count based on the number of times the list of sets has cycled
-		if(Count>Index_NumberOfTrialsAcrossSets(PanelTitle, channelNumber, DAorTTL, 0))
-		count-=Index_NumberOfTrialsAcrossSets(PanelTitle, channelNumber, DAorTTL, 0)
-		endif
-	while(count>Index_NumberOfTrialsAcrossSets(PanelTitle, channelNumber, DAorTTL, 0))
-	
+
+
 		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
 		PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
-		do
-			//print stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
-			StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";"),1)
-			//print "steps in summed sets = "+num2str(StepsInSummedSets)
-			if(StepsInSummedSets==Count)
-			print "At a Set Border"
-			AtSetBorder=1
-			return AtSetBorder
-			endif
-		i+=1
-		while(StepsInSummedSets<Count)
+
+		TotalListSteps=TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+		
+	do
+		if(count>=TotalListSteps)
+		count-=totalListsteps
+		endif
+	while(count>=totalListSteps)
+		
+		i=0
+		if(DAorTTL==0)//DA channel
+			do
+				//print stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";"),1)
+				//print "steps in summed sets = "+num2str(StepsInSummedSets)
+				
+				if(StepsInSummedSets==Count)
+					//print "At a Set Border"
+					AtSetBorder=1
+					return AtSetBorder
+				endif
+			i+=1
+			while(StepsInSummedSets<Count)
+		endif
+		
+		if(DAorTTL==1)// TTL channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";"),1)
+				
+				if(StepsInSummedSets==Count)
+					//print "At a Set Border"
+					AtSetBorder=1
+					return AtSetBorder
+				endif
+			i+=1
+			while(StepsInSummedSets<Count)
+		endif
+
 		return AtSetBorder
 End
+
+Function TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+	string panelTitle
+	variable ChannelNumber, DAorTTL
+	variable TotalListSteps
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	string PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName, ChannelTypeName
+	variable i, ListOffset
+	
+	if(DAorTTL==0)
+		ChannelTypeName="DA"
+		ListOffset=3
+		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==1)
+		ChannelTypeName="TTL"
+		ListOffset=0
+		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+
+	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+	
+	if(DAorTTL==0)
+		do // this do-while loop adjust count based on the number of times the list of sets has cycled
+			DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
+			TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
+			i+=1
+		while( (i + DAIndexingStorageWave[ChannelNumber][0]) <= DAIndexingStorageWave[ChannelNumber][1] )
+	endif
+	
+	if(DAorTTL==1)
+		do // this do-while loop adjust count based on the number of times the list of sets has cycled
+			DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
+			TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
+			i+=1
+		while( (i + TTLIndexingStorageWave[ChannelNumber][0]) <= TTLIndexingStorageWave[ChannelNumber][1] )
+	endif
+	
+	return TotalListSteps
+End
+
+Function UnlockedIndexingStepNo(panelTitle,setName, channelNo, DAorTTL, count)
+	string paneltitle, setname
+	variable channelNo, DAorTTL, count
+	variable column, i, StepsInSummedSets, listOffSet, totalListSteps
+	string ChannelTypeName, DAorTTLWavePath, ChannelPopUpMenuName,PopUpMenuList
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	
+	if(DAorTTL==0)
+	ChannelTypeName="DA"
+	ListOffset=3
+	DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==1)
+	ChannelTypeName="TTL"
+	ListOffset=0
+	DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+	
+	TotalListSteps=TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)
+	do
+		if(count>=TotalListSteps)
+		count-=totalListsteps
+		endif
+	while(count>=totalListSteps)
+	//print "totalListSteps = "+num2str(totalListSteps)
+	
+		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(channelNo)
+		PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+		i=0
+		
+		if(DAorTTL==0)//DA channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[channelNo][0]+i-ListOffset),PopUpMenuList,";"),1)
+				
+			i+=1
+			while(StepsInSummedSets<=Count)
+			i-=1
+			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[channelNo][0]+i-ListOffset),PopUpMenuList,";"),1)
+			//print "steps in summed sets = "+num2str(stepsinsummedsets)
+		endif
+	
+		if(DAorTTL==1)//TTL channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[channelNo][0]+i-ListOffset),PopUpMenuList,";"),1)
+				
+			i+=1
+			while(StepsInSummedSets<=Count)
+			i-=1
+			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[channelNo][0]+i-ListOffset),PopUpMenuList,";"),1)
+			//print "steps in summed sets = "+num2str(stepsinsummedsets)
+		endif
+		
+		column=count-StepsInSummedSets
+	
+	
+	return column
+end
 //====================================================================================================
 Function IndexChannelsWithCompleteSets(PanelTitle, DAorTTL, localCount)
 	string panelTitle

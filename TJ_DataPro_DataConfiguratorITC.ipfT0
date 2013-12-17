@@ -673,12 +673,23 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 				localCount = count
 				cycleCount = 0
 			else // else is used when indexing is on. The local count is now set length dependent
+				controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+				if(v_value==1)// indexing is locked
 				NVAR ActiveSetCount=$AcitveSetCountPath
 				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 				localCount = v_value
 				controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 				localCount*=v_value
 				localCount-=ActiveSetCount
+				else //indexing is unlocked
+				// calculate where in list global count is
+				localCount = UnlockedIndexingStepNo(panelTitle,setName, channelNo, 0, count)
+				endif
+			endif
+			
+			if(channelno==1)
+			//print "channel 1 local count = "+num2str(localCount)
+			//print "columns in set = "+num2str(columnsInset)
 			endif
 			
 			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
@@ -687,12 +698,13 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 			else
 				column=mod((localCount), columnsInSet)// set has been cyled through once or more, uses remainder to determine correct column
 				cycleCount=1
-				print "set has be cycled"
 			endif
 		else
 			column = 0
 		endif
-	
+	if(channelNo==1)
+	print "DA channel 1 column = "+num2str(column)
+	endif
 	column_CycleCount = cmplx(column, cycleCount)
 	return column_CycleCount
 end
