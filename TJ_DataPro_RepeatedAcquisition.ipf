@@ -132,27 +132,29 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 			if(v_value==1)//indexing is locked
 				print "Index Step taken"
 				IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-			endif
-			
-			if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
-				print "should have indexed independently"
-				variable localCount// is how many steps have been taken on a index cycle (max steps in a index cycle is determined by the longest set on all the active channelss)
-				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-				localCount = v_value
-				//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-				//localCount*=v_value
-				localCount-=ActiveSetCount
-				//what da and ttl channels are active
-				IndexChannelsWithCompleteSets(PanelTitle, 0, localCount)
-				//IndexChannelsWithCompleteSets(PanelTitle, 1, localCount)
-				//what set on active da and ttl channels have been stepped through completely once
-				
-			endif
+			endif	
+
 			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 			controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 			activeSetCount=v_value
 			controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
 			ActiveSetCount*=v_value
+		endif
+		
+		controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+		if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
+			print "should have indexed independently"
+			variable localCount// is how many steps have been taken on a index cycle (max steps in a index cycle is determined by the longest set on all the active channelss)
+			controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
+			localCount = v_value
+			//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+			//localCount*=v_value
+			localCount-=ActiveSetCount
+			print "local count = " +num2str(localcount)
+			//what da and ttl channels are active
+			IndexChannelsWithCompleteSets(PanelTitle, 0, localCount)
+			//IndexChannelsWithCompleteSets(PanelTitle, 1, localCount)
+
 		endif
 	endif
 	
@@ -282,7 +284,52 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 				Killstrings/z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 End
-
+//====================================================================================================
+Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
+	string panelTitle
+	variable count, channelNumber, DAorTTL
+	variable AtSetBorder=0
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath
+	variable NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
+	variable NoOfDAs = TotNoOfControlType("check", "DA",panelTitle)
+	variable i, StepsInSummedSets, ListOffset
+	
+	if(DAorTTL==0)
+	ChannelTypeName="DA"
+	ListOffset=3
+	DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==2)
+	ChannelTypeName="TTL"
+	ListOffset=0
+	DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+	
+	do// this do-while loop adjust count based on the number of times the list of sets has cycled
+		if(Count>Index_NumberOfTrialsAcrossSets(PanelTitle, channelNumber, DAorTTL, 0))
+		count-=Index_NumberOfTrialsAcrossSets(PanelTitle, channelNumber, DAorTTL, 0)
+		endif
+	while(count>Index_NumberOfTrialsAcrossSets(PanelTitle, channelNumber, DAorTTL, 0))
+	
+		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+		PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+		do
+			print stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
+			StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";"),1)
+			print "steps in summed sets = "+num2str(StepsInSummedSets)
+			if(StepsInSummedSets==Count)
+			AtSetBorder=1
+			return AtSetBorder
+			endif
+		i+=1
+		while(StepsInSummedSets<Count)
+		return AtSetBorder
+End
+//====================================================================================================
 Function IndexChannelsWithCompleteSets(PanelTitle, DAorTTL, localCount)
 	string panelTitle
 	variable DAorTTL, localCount
