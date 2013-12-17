@@ -144,16 +144,7 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 		if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
 			print "should have indexed independently"
-			variable localCount// is how many steps have been taken on a index cycle (max steps in a index cycle is determined by the longest set on all the active channelss)
-			controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-			localCount = v_value
-			//controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-			//localCount*=v_value
-			localCount-=ActiveSetCount
-			print "local count = " +num2str(localcount)
-			//what da and ttl channels are active
-			IndexChannelsWithCompleteSets(PanelTitle, 0, localCount)
-			//IndexChannelsWithCompleteSets(PanelTitle, 1, localCount)
+			 ApplyUnLockedIndexing(panelTitle, count)
 
 		endif
 	endif
@@ -285,6 +276,25 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 			endif
 End
 //====================================================================================================
+Function ApplyUnLockedIndexing(panelTitle, count)
+	string panelTitle
+	variable count
+	variable i=0
+	string ActivechannelList = ControlStatusListString("DA","check",panelTitle)
+
+	do
+		if(str2num(stringfromlist(i,ActiveChannelList,";"))==1)
+			print DetIfCountIsAtSetBorder(panelTitle, count, i, 0)
+			if(DetIfCountIsAtSetBorder(panelTitle, count, i, 0)==1)
+			IndexSingleChannel(panelTitle, 0, i)
+			endif
+		
+		endif
+	
+	i+=1
+	while(i<itemsinlist(ActiveChannelList,";"))
+End
+
 Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
 	variable count, channelNumber, DAorTTL
@@ -318,10 +328,11 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
 		PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 		do
-			print stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
+			//print stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";")
 			StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DACIndexingStorageWave[ChannelNumber][0]+i-ListOffset),PopUpMenuList,";"),1)
-			print "steps in summed sets = "+num2str(StepsInSummedSets)
+			//print "steps in summed sets = "+num2str(StepsInSummedSets)
 			if(StepsInSummedSets==Count)
+			print "At a Set Border"
 			AtSetBorder=1
 			return AtSetBorder
 			endif
