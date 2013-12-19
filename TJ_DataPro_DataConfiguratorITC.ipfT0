@@ -668,27 +668,29 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 		if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 							//thus the vairable "count" is used to determine if acquisition is on the first cycle
 			NVAR count=$CountPath
-			controlinfo/w=$panelTitle Check_DataAcq_Indexing
+			controlinfo/w=$panelTitle Check_DataAcq_Indexing// check indexing status
 			if(v_value==0)// if indexing is off...
 				localCount = count
 				cycleCount = 0
 			else // else is used when indexing is on. The local count is now set length dependent
-				controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+				controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked// check locked status. locked = popup menus on channels idex in lock - step
 				if(v_value==1)// indexing is locked
-				NVAR ActiveSetCount=$AcitveSetCountPath
-				controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-				localCount = v_value
-				controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-				localCount*=v_value
-				localCount-=ActiveSetCount
+					NVAR ActiveSetCount=$AcitveSetCountPath
+					controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet// how many columns in the largest currently selected set on all active channels
+					localCount = v_value
+					controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// how many times does the user want the sets to repeat
+					localCount*=v_value
+					localCount-=ActiveSetCount// active set count keeps track of how many steps of the largest currently selected set on all active channels has been taken
 				else //indexing is unlocked
-				// calculate where in list global count is
+					// calculate where in list global count is
 				localCount = UnlockedIndexingStepNo(panelTitle, channelNo, 0, count)
 				endif
 			endif
+			
 			if(channelno==1)
-			print "columns in set = "+num2str(columnsinset)
+				//print "columns in set = "+num2str(columnsinset)
 			endif
+			
 			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
 				column=localCount
 				cycleCount=0
@@ -699,9 +701,16 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 		else
 			column = 0
 		endif
+	
 	if(channelNo==1)
-	print "DA channel 1 column = "+num2str(column)
+		print "DA channel 1 column = "+num2str(column)
+		print setname
 	endif
+	if(channelNo==0)
+		print "DA channel 0 column = "+num2str(column)
+		print setname
+	endif
+	
 	column_CycleCount = cmplx(column, cycleCount)
 	return column_CycleCount
 end
@@ -729,7 +738,6 @@ Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that co
 	return column
 end
 
-
 Function CalculateShuffledDAColumnNo(panelTitle, SetName)
 	string panelTitle, SetName
 	variable column
@@ -750,7 +758,7 @@ Function CalculateShuffledDAColumnNo(panelTitle, SetName)
 			column = WorkingSequenceWave[0]
 			endif
 		endif
-	else//end up here when count does not exist - aka first trial of first set repeat
+	else //end up here when count does not exist - aka first trial of first set repeat
 		make/o/n=(ColumnsInSet) $SequenceWaveName
 		wave WorkingSequenceWave = $SequenceWaveName
 		WorkingSequenceWave=x

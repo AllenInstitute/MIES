@@ -57,7 +57,7 @@ Function StoreStartFinishForIndexing(panelTitle)
 	endfor
 End
 
-Function IndexingDoIt(panelTitle)
+Function IndexingDoIt(panelTitle)// for locked indexing, indexes all active channels at once
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
@@ -321,6 +321,7 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, In
 		NumberOfTrialsAcrossSets+=Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
 		i+=1
 	while(i<(max(indexstart, indexend)-(ListOffset-1)))
+	
 	return NumberOfTrialsAcrossSets
 
 End
