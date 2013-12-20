@@ -194,30 +194,30 @@ End
 
 
 Function TTLCodeCalculation1(RackNo, panelTitle)//
-variable RackNo
-string panelTitle
-variable a, i, TTLChannelStatus,Code
-string TTLStatusString = ControlStatusListString("TTL", "Check",panelTitle)
-
-if(RackNo==0)
- a=0
-endif
-
-if(RackNo==1)
- a=4
-endif
-
-code=0
-i=0
-
-do 
-TTLChannelStatus=str2num(stringfromlist(a,TTLStatusString,";"))
-Code+=(((2^i))*TTLChannelStatus)
-a+=1
-i+=1
-while(i<4)
-
-return Code
+	variable RackNo
+	string panelTitle
+	variable a, i, TTLChannelStatus,Code
+	string TTLStatusString = ControlStatusListString("TTL", "Check",panelTitle)
+	
+	if(RackNo==0)
+	 a=0
+	endif
+	
+	if(RackNo==1)
+	 a=4
+	endif
+	
+	code=0
+	i=0
+	
+	do 
+	TTLChannelStatus=str2num(stringfromlist(a,TTLStatusString,";"))
+	Code+=(((2^i))*TTLChannelStatus)
+	a+=1
+	i+=1
+	while(i<4)
+	
+	return Code
 
 End
 
@@ -435,25 +435,25 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	ChanTypeWaveNameList=PopMenuStringList("DA", "Wave", panelTitle)
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";"))==1)//Checks if DA channel checkbox is checked (ON)
-		SetVarDAGain = "gain_DA_0" + num2str(i)
-		SetVarDAScale = "scale_DA_0" + num2str(i)
-		ControlInfo/w=$panelTitle $SetVarDAGain
-		DAGain=(3200/v_value)//3200 = 1V
-		ControlInfo/w=$panelTitle $SetVarDAScale
-		DAScale=v_value
+			SetVarDAGain = "gain_DA_0" + num2str(i)
+			SetVarDAScale = "scale_DA_0" + num2str(i)
+			ControlInfo/w=$panelTitle $SetVarDAGain
+			DAGain=(3200/v_value)//3200 = 1V
+			ControlInfo/w=$panelTitle $SetVarDAScale
+			DAScale=v_value
 	
-		//get the wave name
-		ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
+			//get the wave name
+			ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
 			//check to see if it is a test pulse or user specified da wave
 			if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
-			column=0
+				column=0
 			else
 			//determine column number in cases where a set is being cycled through multiple times
 				controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
 				if(v_value==0)
-				column = real(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i))// CalculateDAColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
+					column = real(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i))// CalculateDAColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
 				else
-				column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+					column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
 				endif
 			endif
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
@@ -464,29 +464,29 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			if(v_value==1)// shutting off DA by setting scaling to zero is only required when indexing is locked
 				if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)// makes sure test pulse wave scaling is maintained
 					if(imag(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i))==1)
-					DAScale=0
+						DAScale=0
 					endif
 				endif
 			endif
 		endif
-		//resample the wave to min samp interval and place in ITCDataWave
-		sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column
-		execute cmd
+			//resample the wave to min samp interval and place in ITCDataWave
+			sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column
+			execute cmd
 	
-		j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
+			j+=1// j determines what column of the ITCData wave the DAC wave is inserted into 
 		endif
 		i+=1
 	while(i<(itemsinlist(ChannelStatus,";")))
 		
 	//Leave room for AD data 
-	i=0
-	ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
+		i=0
+		ChannelStatus=ControlStatusListString("AD", "Check", panelTitle)
 	
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";"))==1)
-		j+=1
+			j+=1
 		endif
-	i+=1
+		i+=1
 	while(i<(itemsinlist(ChannelStatus,";")))
 	
 	//Place DA waves into ITCDataWave
@@ -501,10 +501,8 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	if(AreTTLsInRackChecked(1, panelTitle)==1)
 		MakeITCTTLWave(1, panelTitle)
 		ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
-	
 	endif
-	
-	End
+End
 
 //=========================================================================================
 Function PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
@@ -516,7 +514,6 @@ Function PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConf
 	ITCFIFOPositionAllConfigWave[][3]=0
 End
 //=========================================================================================
-
 Function PDInITCFIFOAvailAllCW(PanelTitle)//PlaceDataInITCFIFOAvailAllConfigWave()
 	string panelTitle
 	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
@@ -525,7 +522,6 @@ Function PDInITCFIFOAvailAllCW(PanelTitle)//PlaceDataInITCFIFOAvailAllConfigWave
 	ITCFIFOAvailAllConfigWave[][2]=0
 	ITCFIFOAvailAllConfigWave[][3]=0
 End
-
 //=========================================================================================
 Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
 	variable RackNo
@@ -553,16 +549,16 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 	Code=(((2^i))*TTLChannelStatus)
 	TTLWaveName = stringfromlist(a,TTLWaveList,";")
 		if(i==0)
-		TTLWaveName=WavePath+TTLWaveName// add column info here!!
-		make/o/n=(dimsize($TTLWaveName,0)) $WavePath+"TTLWave" = 0// shold use dimsize
+			TTLWaveName=WavePath+TTLWaveName// add column info here!!
+			make/o/n=(dimsize($TTLWaveName,0)) $WavePath+"TTLWave" = 0// shold use dimsize
 		endif
 		
 		if(TTLChannelStatus==1)
 		controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
 			if(v_value==0)
-			sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
+				sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
 			else
-			sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateShuffledTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
+				sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",CalculateShuffledTTLColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";")),"]"
 			endif
 		execute cmd
 		endif
@@ -571,83 +567,58 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 	while(i<4)
 
 End
-
-
-			controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
-			if(v_value==0)
-			column = CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
-			else
-			column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
-			endif
 //=========================================================================================
 Function DAMinSampInt(RackNo, panelTitle)
-variable RackNo
-string panelTitle
-variable a, i, DAChannelStatus,SampInt
-string DAStatusString = ControlStatusListString("DA", "Check", panelTitle)
-
-
-a=RackNo*4
-
-SampInt=0
-i=0
-
-do 
-DAChannelStatus=str2num(stringfromlist(a,DAStatusString,";"))
-SampInt+=5*DAChannelStatus
-a+=1
-i+=1
-while(i<4)
-
-//SampInt += ((AreTTLsInRackChecked(RackNo))*5)//DO channels always add a sample interval!!!!!!!!!!!!!!!!!!!
-
-//if(RackNo==0)
-//	if(AreTTLsInRackChecked(1)==1)
-//	SampInt*=2
-//	endif
-//else
-//	if(AreTTLsInRackChecked(0)==1)
-//	SampInt*=2
-//	endif
-//endif
-
-return SampInt
+	variable RackNo
+	string panelTitle
+	variable a, i, DAChannelStatus,SampInt
+	string DAStatusString = ControlStatusListString("DA", "Check", panelTitle)
+	
+	a=RackNo*4
+	
+	SampInt=0
+	i=0
+	
+	do 
+		DAChannelStatus=str2num(stringfromlist(a,DAStatusString,";"))
+		SampInt+=5*DAChannelStatus
+		a+=1
+		i+=1
+	while(i<4)
+	
+	return SampInt
 End
 //=========================================================================================
 Function ADMinSampInt(RackNo,panelTitle)
-variable RackNo
-string panelTitle
-variable a, i, ADChannelStatus,ADSampInt, Bank1SampInt, Bank2SampInt
-string ADStatusString = ControlStatusListString("AD", "Check",panelTitle)
-
-
-a=RackNo*8
-
-Bank1SampInt=0
-Bank2SampInt=0
-ADSampInt=0
-i=0
-
-do 
-ADChannelStatus=str2num(stringfromlist(a,ADStatusString,";"))
-Bank1SampInt+=5*ADChannelStatus
-a+=1
-i+=1
-while(i<4)
-
-
-i=0
-do 
-ADChannelStatus=str2num(stringfromlist(a,ADStatusString,";"))
-Bank2SampInt+=5*ADChannelStatus
-a+=1
-i+=1
-while(i<4)
-
-ADSampInt=max(Bank1SampInt,Bank2SampInt)
-return ADSampInt
-
-
+	variable RackNo
+	string panelTitle
+	variable a, i, ADChannelStatus,ADSampInt, Bank1SampInt, Bank2SampInt
+	string ADStatusString = ControlStatusListString("AD", "Check",panelTitle)
+	
+	a=RackNo*8
+	
+	Bank1SampInt=0
+	Bank2SampInt=0
+	ADSampInt=0
+	i=0
+	
+	do 
+		ADChannelStatus=str2num(stringfromlist(a,ADStatusString,";"))
+		Bank1SampInt+=5*ADChannelStatus
+		a+=1
+		i+=1
+	while(i<4)
+	
+	i=0
+	do 
+		ADChannelStatus=str2num(stringfromlist(a,ADStatusString,";"))
+		Bank2SampInt+=5*ADChannelStatus
+		a+=1
+		i+=1
+	while(i<4)
+	
+	ADSampInt=max(Bank1SampInt,Bank2SampInt)
+	return ADSampInt
 End
 //=========================================================================================
 
@@ -780,12 +751,12 @@ Function CalculateShuffledTTLColumnNo(panelTitle, SetName)
 						//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		NVAR count=$CountPath
 		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
-		column=WorkingSequenceWave[count-1]
+			column=WorkingSequenceWave[count-1]
 		else
 		column=WorkingSequenceWave[mod((count-1), columnsInSet)]// set has been cyled through once or more, uses remainder to determine correc column
 			if(mod((count-1), columnsInSet)==0)// reshuffles column sequence at beginning of set repeat
-			Shuffle(WorkingSequenceWave)
-			column = WorkingSequenceWave[0]
+				Shuffle(WorkingSequenceWave)
+				column = WorkingSequenceWave[0]
 			endif
 		endif
 	else//end up here when count does not exist - aka first trial of first set repeat
