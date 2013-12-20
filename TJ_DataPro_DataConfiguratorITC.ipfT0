@@ -449,12 +449,12 @@ Function PlaceDataInITCDataWave(PanelTitle)
 				column=0
 			else
 			//determine column number in cases where a set is being cycled through multiple times
-				controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
-				if(v_value==0)
-					column = real(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i))// CalculateDAColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
-				else
-					column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
-				endif
+				//controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
+			//	if(v_value==0)
+					column = real(CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
+			//	else
+			//		column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
+			//	endif
 			endif
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		ControlInfo/w=$panelTitle check_Settings_ScalingZero 
@@ -463,7 +463,7 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			ControlInfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value==1)// shutting off DA by setting scaling to zero is only required when indexing is locked
 				if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)// makes sure test pulse wave scaling is maintained
-					if(imag(CalculateDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i))==1)
+					if(imag(CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0))==1)
 						DAScale=0
 					endif
 				endif
@@ -622,12 +622,11 @@ Function ADMinSampInt(RackNo,panelTitle)
 End
 //=========================================================================================
 
-
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
-Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a string that contains the full wave path
+Function/c CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// setname is a string that contains the full wave path
 	string panelTitle, SetName
-	variable ChannelNo
-	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
+	variable ChannelNo, DAorTTL
+	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
 	variable column
 	variable CycleCount// when cycleCount = 1 the set has already cycled once.
 	variable/c column_CycleCount
@@ -635,14 +634,17 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string CountPath=WavePath+":Count"
 	string AcitveSetCountPath=WavePath+":ActiveSetCount"
-
+	//following string and wave apply when random set sequence is selected
+	string SequenceWaveName=WavePath+":"+SetName+"_S"+num2str(daorttl)+num2str(channelNo)//s is for sequence
+	wave/z WorkingSequenceWave=$SequenceWaveName	
+	
 		if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 							//thus the vairable "count" is used to determine if acquisition is on the first cycle
 			NVAR count=$CountPath
 			controlinfo/w=$panelTitle Check_DataAcq_Indexing// check indexing status
 			if(v_value==0)// if indexing is off...
-				localCount = count
-				cycleCount = 0
+					localCount = count
+					cycleCount = 0
 			else // else is used when indexing is on. The local count is now set length dependent
 				controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked// check locked status. locked = popup menus on channels idex in lock - step
 				if(v_value==1)// indexing is locked
@@ -663,29 +665,49 @@ Function/c CalculateDAColumnNo(panelTitle, SetName, channelNo)// setname is a st
 			endif
 			
 			if(((localCount)/ColumnsInSet)<1 || (localCount)==0)// if remainder is less than 1, count is on 1st cycle
-				column=localCount
-				cycleCount=0
+				controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom
+				if(v_value==0) // set step sequence is not random
+					column=localCount
+					cycleCount=0
+				else // set step sequence is random
+					column=WorkingSequenceWave[localcount]
+					cycleCount=0
+				endif	
 			else
-				column=mod((localCount), columnsInSet)// set has been cyled through once or more, uses remainder to determine correct column
-				cycleCount=1
+				controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom
+				if(v_value==0) // set step sequence is not random
+					column=mod((localCount), columnsInSet)// set has been cyled through once or more, uses remainder to determine correct column
+					cycleCount=1
+				else
+					column=WorkingSequenceWave[mod((localCount), columnsInSet)]
+					cycleCount=1
+				endif
 			endif
 		else
-			column = 0
+			controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom
+			if(v_value==0) // set step sequence is not random
+				column = 0
+			else
+				make/o/n=(ColumnsInSet) $SequenceWaveName
+				wave WorkingSequenceWave = $SequenceWaveName
+				WorkingSequenceWave=x
+				Shuffle(WorkingSequenceWave)
+				column=WorkingSequenceWave[0]
+			endif
 		endif
 	
 	if(channelNo==1)
 		print "DA channel 1 column = "+num2str(column)
-		print setname
+		//print setname
 	endif
 	if(channelNo==0)
 		print "DA channel 0 column = "+num2str(column)
-		print setname
+		//print setname
 	endif
 	
 	column_CycleCount = cmplx(column, cycleCount)
 	return column_CycleCount
 end
-
 
 
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
