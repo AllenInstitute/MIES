@@ -144,7 +144,8 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 		if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
 			//print "should have indexed independently"
-			ApplyUnLockedIndexing(panelTitle, count)
+			ApplyUnLockedIndexing(panelTitle, count, 0)
+			ApplyUnLockedIndexing(panelTitle, count, 1)
 		endif
 	endif
 	
@@ -275,16 +276,24 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 			endif
 End
 //====================================================================================================
-Function ApplyUnLockedIndexing(panelTitle, count)
+Function ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	string panelTitle
-	variable count
+	variable count, DAorTTL
 	variable i=0
-	string ActivechannelList = ControlStatusListString("DA","check",panelTitle)
-
+	string ActivechannelList 
+	
+	if(DAorTTL==0)
+		ActiveChannelList = ControlStatusListString("DA","check",panelTitle)
+	endif
+	
+	if(DAorTTL==1)
+		ActiveChannelList = ControlStatusListString("TTL","check",panelTitle)
+	endif
+	
 	do
 		if(str2num(stringfromlist(i,ActiveChannelList,";"))==1)
-			if(DetIfCountIsAtSetBorder(panelTitle, count, i, 0)==1)
-				IndexSingleChannel(panelTitle, 0, i)
+			if(DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL)==1)
+				IndexSingleChannel(panelTitle, DAorTTL, i)
 			endif
 		endif
 	
@@ -342,6 +351,9 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 				while(StepsInSummedSets<=Count)
 			endif
 			i=0
+		endif
+		
+		if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
 			if(DAorTTL==1)// TTL channel
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
@@ -375,6 +387,9 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 				while(StepsInSummedSets<=Count)
 			endif
 			i=0
+		endif
+		
+		if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
 			if(DAorTTL==1)// TTL channel
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)

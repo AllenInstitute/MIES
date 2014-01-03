@@ -252,6 +252,7 @@ End
 //===================================================================================
 
 Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
+// works for unlocked (independent) indexing
 	string panelTitle
 	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
 	variable MaxNoOfSweeps = 0

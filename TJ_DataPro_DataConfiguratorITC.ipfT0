@@ -224,7 +224,7 @@ End
 
 //=========================================================================================
 
-Function/s PopMenuStringList(ChannelType, ControlType, panelTitle)
+Function/s PopMenuStringList(ChannelType, ControlType, panelTitle)// returns the list of selected waves in pop up menus
 	string ChannelType, ControlType, panelTitle
 	
 	variable TotalPossibleChannels=TotNoOfControlType(ControlType, ChannelType, panelTitle)
@@ -491,7 +491,7 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	
 	//Place DA waves into ITCDataWave
 	i=0
-	wave TTLwave = root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
+	wave/z TTLwave = $HSU_DataFullFolderPathString(PanelTitle)+":TTLwave"//= root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
 	if(AreTTLsInRackChecked(0, panelTitle)==1)
 		MakeITCTTLWave(0, panelTitle)
 		ITCDataWave[0,round((dimsize(TTLWave,0)/DecimationFactor))-1][j]=TTLWave[(DecimationFactor)*p]
@@ -531,8 +531,8 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 	string TTLWaveList = PopMenuStringList("TTL", "Wave", panelTitle)
 	string TTLWaveName
 	string cmd
-	string WavePath="root:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
-	
+	string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":"//"root:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
+	string TTLWavePath="root:WaveBuilder:savedStimulusSets:TTL:"
 	if(RackNo==0)
 	 a=0
 	endif
@@ -549,8 +549,8 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 	Code=(((2^i))*TTLChannelStatus)
 	TTLWaveName = stringfromlist(a,TTLWaveList,";")
 		if(i==0)
-			TTLWaveName=WavePath+TTLWaveName// add column info here!!
-			make/o/n=(dimsize($TTLWaveName,0)) $WavePath+"TTLWave" = 0// shold use dimsize
+			TTLWaveName=TTLWavePath+TTLWaveName// 
+			make/o/n=(dimsize($TTLWaveName,0)) $WavePath+"TTLWave" = 0// 
 		endif
 		
 		if(TTLChannelStatus==1)
@@ -567,7 +567,6 @@ Function MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack
 	a+=1
 	i+=1
 	while(i<4)
-
 End
 //=========================================================================================
 Function DAMinSampInt(RackNo, panelTitle)
@@ -658,7 +657,7 @@ Function/c CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// s
 					localCount-=ActiveSetCount// active set count keeps track of how many steps of the largest currently selected set on all active channels has been taken
 				else //indexing is unlocked
 					// calculate where in list global count is
-				localCount = UnlockedIndexingStepNo(panelTitle, channelNo, 0, count)
+				localCount = UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 				endif
 			endif
 
@@ -699,11 +698,19 @@ Function/c CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// s
 		endif
 	
 	if(channelNo==1)
+		if(DAorTTL==0)
 		print "DA channel 1 column = "+num2str(column)
+		else
+		print "TTL channel 1 column = "+num2str(column)
+		endif
 		//print setname
 	endif
 	if(channelNo==0)
+		if(DAorTTL==0)
 		print "DA channel 0 column = "+num2str(column)
+		else
+		print "TTL channel 0 column = "+num2str(column)
+		endif
 		//print setname
 	endif
 	
@@ -713,25 +720,25 @@ end
 
 
 // returns column number, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
-Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
-	string panelTitle, SetName
-	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
-	variable column
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string CountPath=WavePath+"Count"	
-	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
-						//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		NVAR count=$countPath
-		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
-		column=count-1
-		else
-		column=mod((count-1), columnsInSet)// set has been cyled through once or more, uses remainder to determine correc column
-		endif
-	else
-		column = 0
-	endif
-	return column
-end
+//Function CalculateTTLColumnNo(panelTitle, SetName)// setname is a string that contains the full wave path
+//	string panelTitle, SetName
+//	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
+//	variable column
+//	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+//	string CountPath=WavePath+"Count"	
+//	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+//						//thus the vairable "count" is used to determine if acquisition is on the first cycle
+//		NVAR count=$countPath
+//		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
+//		column=count-1
+//		else
+//		column=mod((count-1), columnsInSet)// set has been cyled through once or more, uses remainder to determine correc column
+//		endif
+//	else
+//		column = 0
+//	endif
+//	return column
+//end
 
 //Function CalculateShuffledDAColumnNo(panelTitle, SetName)
 //	string panelTitle, SetName
@@ -763,36 +770,36 @@ end
 //	return column
 //End
 
-Function CalculateShuffledTTLColumnNo(panelTitle, SetName)
-	string panelTitle, SetName
-	variable column
-	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string SequenceWaveName=WavePath+SetName+"_Seq"
-	wave/z WorkingSequenceWave=$SequenceWaveName
-	string CountPath=WavePath+"Count"
-	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
-						//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		NVAR count=$CountPath
-		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
-			column=WorkingSequenceWave[count-1]
-		else
-		column=WorkingSequenceWave[mod((count-1), columnsInSet)]// set has been cyled through once or more, uses remainder to determine correc column
-			if(mod((count-1), columnsInSet)==0)// reshuffles column sequence at beginning of set repeat
-				Shuffle(WorkingSequenceWave)
-				column = WorkingSequenceWave[0]
-			endif
-		endif
-	else//end up here when count does not exist - aka first trial of first set repeat
-		make/o/n=(ColumnsInSet) $SequenceWaveName
-		wave WorkingSequenceWave = $SequenceWaveName
-		WorkingSequenceWave=x
-		Shuffle(WorkingSequenceWave)
-		column = WorkingSequenceWave[0]
-	endif
-	print column
-	return column
-End
+//Function CalculateShuffledTTLColumnNo(panelTitle, SetName)
+//	string panelTitle, SetName
+//	variable column
+//	variable ColumnsInSet = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
+//	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+//	string SequenceWaveName=WavePath+SetName+"_Seq"
+//	wave/z WorkingSequenceWave=$SequenceWaveName
+//	string CountPath=WavePath+"Count"
+//	if(exists(CountPath)==2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
+//						//thus the vairable "count" is used to determine if acquisition is on the first cycle
+//		NVAR count=$CountPath
+//		if(((count-1)/ColumnsInSet)<1 || (count-1)==0)// if remainder is less than 1, count is on 1st cycle
+//			column=WorkingSequenceWave[count-1]
+//		else
+//		column=WorkingSequenceWave[mod((count-1), columnsInSet)]// set has been cyled through once or more, uses remainder to determine correc column
+//			if(mod((count-1), columnsInSet)==0)// reshuffles column sequence at beginning of set repeat
+//				Shuffle(WorkingSequenceWave)
+//				column = WorkingSequenceWave[0]
+//			endif
+//		endif
+//	else//end up here when count does not exist - aka first trial of first set repeat
+//		make/o/n=(ColumnsInSet) $SequenceWaveName
+//		wave WorkingSequenceWave = $SequenceWaveName
+//		WorkingSequenceWave=x
+//		Shuffle(WorkingSequenceWave)
+//		column = WorkingSequenceWave[0]
+//	endif
+//	print column
+//	return column
+//End
 
 //below function was taken from: http://www.igorexchange.com/node/1614
 //author s.r.chinn
