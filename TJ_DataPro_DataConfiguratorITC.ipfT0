@@ -298,53 +298,53 @@ End
 
 //==========================================================================================
 Function CalculateITCDataWaveLength(panelTitle)// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).
-string panelTitle
-Variable LongestWaveLength
-//Determine Longest Wave
-if (LongestOutputWave("DA", panelTitle)>=LongestOutputWave("TTL", panelTitle))
-LongestWaveLength = LongestOutputWave("DA", panelTitle)
-else
-LongestWaveLength = LongestOutputWave("TTL", panelTitle)
-endif
-
-LongestWaveLength/=(ITCMinSamplingInterval(panelTitle)/5)
-LongestWaveLength*=4
-
-return round(LongestWaveLength)
+	string panelTitle
+	Variable LongestWaveLength
+	//Determine Longest Wave
+	if (LongestOutputWave("DA", panelTitle)>=LongestOutputWave("TTL", panelTitle))
+	LongestWaveLength = LongestOutputWave("DA", panelTitle)
+	else
+	LongestWaveLength = LongestOutputWave("TTL", panelTitle)
+	endif
+	
+	LongestWaveLength/=(ITCMinSamplingInterval(panelTitle)/5)
+	LongestWaveLength*=4
+	
+	return round(LongestWaveLength)
 end
 
 //==========================================================================================
 Function MakeITCConfigAllConfigWave(PanelTitle)
-string PanelTitle
-string ITCChanConfigPath=HSU_DataFullFolderPathString(PanelTitle)+":ITCChanConfigWave"
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCChanConfigPath
-wave/z ITCChanConfigWave= $ITCChanConfigPath
-ITCChanConfigWave=0
+	string PanelTitle
+	string ITCChanConfigPath=HSU_DataFullFolderPathString(PanelTitle)+":ITCChanConfigWave"
+	Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCChanConfigPath
+	wave/z ITCChanConfigWave= $ITCChanConfigPath
+	ITCChanConfigWave=0
 End
 //==========================================================================================
 Function MakeITCConfigAllDataWave(PanelTitle)
-string PanelTitle
-string ITCDataWavePath=HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
-make/w/o/n=(CalculateITCDataWaveLength(panelTitle), ChannelCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
-wave/z ITCDataWave= $ITCDataWavePath
-ITCDataWave=0
-SetScale/P x 0,(ITCMinSamplingInterval(panelTitle))/1000,"ms", ITCDataWave
+	string PanelTitle
+	string ITCDataWavePath=HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
+	make/w/o/n=(CalculateITCDataWaveLength(panelTitle), ChannelCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
+	wave/z ITCDataWave= $ITCDataWavePath
+	ITCDataWave=0
+	SetScale/P x 0,(ITCMinSamplingInterval(panelTitle))/1000,"ms", ITCDataWave
 End
 //==========================================================================================
 Function MakeITCFIFOPosAllConfigWave(PanelTitle)//MakeITCUpdateFIFOPosAllConfigWave
-string panelTitle
-string ITCFIFOPosAllConfigWavePath=HSU_DataFullFolderPathString(PanelTitle)+":ITCFIFOPositionAllConfigWave"
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOPosAllConfigWavePath
-wave/z ITCFIFOPositionAllConfigWave= $ITCFIFOPosAllConfigWavePath
-ITCFIFOPositionAllConfigWave=0
+	string panelTitle
+	string ITCFIFOPosAllConfigWavePath=HSU_DataFullFolderPathString(PanelTitle)+":ITCFIFOPositionAllConfigWave"
+	Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOPosAllConfigWavePath
+	wave/z ITCFIFOPositionAllConfigWave= $ITCFIFOPosAllConfigWavePath
+	ITCFIFOPositionAllConfigWave=0
 End
 //==========================================================================================
 Function MakeITCFIFOAvailAllConfigWave(panelTitle)//MakeITCFIFOAvailAllConfigWave
-string panelTitle
-string ITCFIFOAvailAllConfigWavePath=HSU_DataFullFolderPathString(panelTitle)+":ITCFIFOAvailAllConfigWave"
-Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOAvailAllConfigWavePath
-wave/z ITCFIFOAvailAllConfigWave= $ITCFIFOAvailAllConfigWavePath
-ITCFIFOAvailAllConfigWave=0
+	string panelTitle
+	string ITCFIFOAvailAllConfigWavePath=HSU_DataFullFolderPathString(panelTitle)+":ITCFIFOAvailAllConfigWave"
+	Make/I/o/n=(ChannelCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOAvailAllConfigWavePath
+	wave/z ITCFIFOAvailAllConfigWave= $ITCFIFOAvailAllConfigWavePath
+	ITCFIFOAvailAllConfigWave=0
 End
 //==========================================================================================
 
