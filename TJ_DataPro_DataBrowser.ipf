@@ -269,3 +269,77 @@ Function DB_CheckProc_3(ctrlName,checked) : CheckBoxControl
 End
 //==============================================================================================================================
 
+Window DataBrowser() : Panel
+	PauseUpdate; Silent 1		// building window...
+	NewPanel /W=(9,267,1150,890)
+	ShowTools/A
+	ValDisplay valdisp_DataBrowser_Sweep,pos={471,524},size={41,30},fSize=24
+	ValDisplay valdisp_DataBrowser_Sweep,fStyle=1,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_DataBrowser_Sweep,value= _NUM:0
+	Button button_DataBrowser_NextSweep,pos={592,518},size={450,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
+	Button button_DataBrowser_NextSweep,fSize=20
+	Button button_DataBrowser_Previous,pos={17,516},size={450,43},proc=DB_ButtonProc_7,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_Previous,fSize=20
+	ValDisplay valdisp_DataBrowser_LastSweep,pos={517,524},size={70,30},title="of"
+	ValDisplay valdisp_DataBrowser_LastSweep,fSize=24,fStyle=1
+	ValDisplay valdisp_DataBrowser_LastSweep,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_DataBrowser_LastSweep,value= _NUM:5
+	CheckBox check_DataBrowser_DisplayDAchan,pos={20,6},size={116,14},proc=DB_CheckProc_3,title="Display DA channels"
+	CheckBox check_DataBrowser_DisplayDAchan,value= 1
+	CheckBox check_DataBrowser_Overlay,pos={429,6},size={101,14},title="Overlay Channels"
+	CheckBox check_DataBrowser_Overlay,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataBrowser_ChanBaseline,pos={451,22},size={87,14},title="Baseline offset"
+	CheckBox check_DataBrowser_ChanBaseline,value= 0
+	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1053,71},size={61,13},title="10:48:22 AM"
+	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(65535,65535,65535),fSize=8
+	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
+	CheckBox check_DataBrowser_SweepOverlay,pos={205,6},size={95,14},title="Overlay Sweeps"
+	CheckBox check_DataBrowser_SweepOverlay,value= 0
+	SetVariable setvar_DataBrowser_OverlaySkip,pos={223,22},size={87,30},title="Every\rsweeps"
+	SetVariable setvar_DataBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
+	CheckBox check_DataBrowser_AutoUpdate,pos={602,6},size={149,14},title="Display last sweep acquired"
+	CheckBox check_DataBrowser_AutoUpdate,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataBrowser_SweepBaseline,pos={222,53},size={87,14},title="Baseline offset"
+	CheckBox check_DataBrowser_SweepBaseline,fColor=(65280,43520,0),value= 0
+	CheckBox Check_DataBrowser_StimulusWaves,pos={795,8},size={186,14},title="Display DAC or TTL stimulus waves"
+	CheckBox Check_DataBrowser_StimulusWaves,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataBrowser_Scroll,pos={997,9},size={137,14},title="Scrolling during aquisition"
+	CheckBox check_DataBrowser_Scroll,fColor=(65280,43520,0),value= 0
+	PopupMenu popup_DB_lockedDevices,pos={54,575},size={268,21},title="Data browser device assingment:"
+	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="ITC1600_Dev_0",value= #"\" - none -;\"+root:ITCPanelTitleList"
+	Button Button_dataBrowser_lockBrowser,pos={329,576},size={65,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
+	DefineGuide UGV0={FR,-171},UGV1={FR,-148}
+	SetWindow kwTopWin,userdata(DataFolderPath)=  "root:ITC1600:Device0"
+	String fldrSav0= GetDataFolder(1)
+	SetDataFolder root:ITC1600:Device0:Data:
+	Display/W=(18,73,1038,494)/FG=(,,UGV0,)/HOST=# /L=DA0 Sweep_0_DA0
+	AppendToGraph/L=AD0 Sweep_0_AD0
+	AppendToGraph/L=DA1 Sweep_0_DA1
+	AppendToGraph/L=AD1 Sweep_0_AD1
+	AppendToGraph/L=DA3 Sweep_0_DA3
+	AppendToGraph/L=AD4 Sweep_0_AD4
+	SetDataFolder fldrSav0
+	ModifyGraph standoff(DA0)=0,standoff(AD0)=0,standoff(DA1)=0,standoff(AD1)=0,standoff(DA3)=0
+	ModifyGraph standoff(AD4)=0
+	ModifyGraph lblPosMode=1
+	ModifyGraph freePos(DA0)=0
+	ModifyGraph freePos(AD0)=0
+	ModifyGraph freePos(DA1)=0
+	ModifyGraph freePos(AD1)=0
+	ModifyGraph freePos(DA3)=0
+	ModifyGraph freePos(AD4)=0
+	ModifyGraph axisEnab(DA0)={0.9633,1}
+	ModifyGraph axisEnab(AD0)={0.6967,0.9333}
+	ModifyGraph axisEnab(DA1)={0.63,0.6667}
+	ModifyGraph axisEnab(AD1)={0.3633,0.6}
+	ModifyGraph axisEnab(DA3)={0.2967,0.3333}
+	ModifyGraph axisEnab(AD4)={0.03,0.2667}
+	Label DA0 "DA0"
+	Label AD0 "AD0"
+	Label DA1 "DA1"
+	Label AD1 "AD1"
+	Label DA3 "DA3"
+	Label AD4 "AD4"
+	RenameWindow #,DataBrowserGraph
+	SetActiveSubwindow ##
+EndMacro
