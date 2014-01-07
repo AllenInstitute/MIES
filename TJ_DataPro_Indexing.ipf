@@ -251,6 +251,98 @@ End
 //NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
 //===================================================================================
 //**************NEED TO ADD FUNCTION TO CALCULATE CYCLE STEPS FOR LOCKED INDEXING!! NEED TO TEST WITH 3 OR MORE SETS!!!!*************
+
+Function Index_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for each indexing step
+	string panelTitle
+	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	variable i = 0
+
+End
+
+Function Index_SetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
+	string panelTitle
+	variable IndexNo
+	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	variable MaxSteps = 0, SetSteps
+	variable ListStartNo, ListEndNo, ListLength, Index
+	string setName
+	string SetList
+	variable i=0
+	variable ListOffset=3
+	string popMenuIndexStartName, popMenuIndexEndName
+	do
+		if((str2num(stringfromlist(i,DAChannelStatusList,";")))==1)
+		popMenuIndexStartName="Wave_DA_0" + num2str(i)
+		controlinfo/w=$panelTitle $popMenuIndexStartName
+		ListStartNo=v_value
+		popMenuIndexEndName="Popup_DA_IndexEnd_0" + num2str(i)
+		controlinfo/w=$panelTitle $popMenuIndexEndName
+		ListEndNo=v_value
+		ListLength=abs(ListStartNo-ListEndNo)
+			index=indexNo
+			if(listLength<IndexNo)
+				Index=mod(IndexNo, ListLength)
+				print "index = ", index
+				index-=1
+			endif
+			
+			if((ListStartNo-ListEndNo)>0)
+				index*=-1
+			endif
+		SetList=	getuserdata(PanelTitle, "Wave_DA_0" + num2str(i), "menuexp")
+		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
+		print setname
+		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
+		MaxSteps = max(MaxSteps, SetSteps)
+		endif
+		i+=1
+	while(i<(itemsinlist(DAChannelStatusList,";")))
+	ListOffset=2
+	return MaxSteps
+End
+
+Function Index_MaxSets(panelTitle)// returns the number of sets on the active channel with the most sets.
+	string panelTitle
+	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	variable MaxSets = 0
+	variable ChannelSets
+	string popMenuIndexStartName, popMenuIndexEndName
+	variable i=0
+	do
+		if((str2num(stringfromlist(i,DAChannelStatusList,";")))==1)
+			popMenuIndexStartName="Wave_DA_0" + num2str(i)
+			controlinfo/w=$panelTitle $popMenuIndexStartName
+			ChannelSets=v_value
+			popMenuIndexEndName="Popup_DA_IndexEnd_0" + num2str(i)
+			controlinfo/w=$panelTitle $popMenuIndexEndName
+			ChannelSets-=v_value
+			ChannelSets = abs(ChannelSets)
+			MaxSets=max(MaxSets,ChannelSets)
+		endif	
+		i+=1
+	while(i<(itemsinlist(DAChannelStatusList,";")))
+	
+	i=0
+	do
+		if((str2num(stringfromlist(i,TTLChannelStatusList,";")))==1)
+			popMenuIndexStartName="Wave_TTL_0" + num2str(i)
+			controlinfo/w=$panelTitle $popMenuIndexStartName
+			ChannelSets=v_value
+			popMenuIndexEndName="Popup_TTL_IndexEnd_0" + num2str(i)
+			controlinfo/w=$panelTitle $popMenuIndexEndName
+			ChannelSets-=v_value
+			ChannelSets = abs(ChannelSets)
+			MaxSets=max(MaxSets,ChannelSets)
+		endif	
+		i+=1
+	while(i<(itemsinlist(DAChannelStatusList,";")))
+	
+	return MaxSets
+End
+
 Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
 // works for unlocked (independent) indexing
 	string panelTitle
