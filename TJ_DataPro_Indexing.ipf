@@ -260,7 +260,7 @@ Function Index_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets f
 
 End
 
-Function Index_SetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
+Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
 	string panelTitle
 	variable IndexNo
 	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
@@ -272,7 +272,8 @@ Function Index_SetWithMaxSweeps(panelTitle,IndexNo)// returns the number of step
 	variable i=0
 	variable ListOffset=3
 	string popMenuIndexStartName, popMenuIndexEndName
-	do
+	
+	do // for DAs
 		if((str2num(stringfromlist(i,DAChannelStatusList,";")))==1)
 		popMenuIndexStartName="Wave_DA_0" + num2str(i)
 		controlinfo/w=$panelTitle $popMenuIndexStartName
@@ -280,12 +281,12 @@ Function Index_SetWithMaxSweeps(panelTitle,IndexNo)// returns the number of step
 		popMenuIndexEndName="Popup_DA_IndexEnd_0" + num2str(i)
 		controlinfo/w=$panelTitle $popMenuIndexEndName
 		ListEndNo=v_value
-		ListLength=abs(ListStartNo-ListEndNo)
+		ListLength=abs(ListStartNo-ListEndNo)+1
 			index=indexNo
-			if(listLength<IndexNo)
+			if(listLength<=IndexNo)
 				Index=mod(IndexNo, ListLength)
 				print "index = ", index
-				index-=1
+				//index-=1
 			endif
 			
 			if((ListStartNo-ListEndNo)>0)
@@ -294,12 +295,47 @@ Function Index_SetWithMaxSweeps(panelTitle,IndexNo)// returns the number of step
 		SetList=	getuserdata(PanelTitle, "Wave_DA_0" + num2str(i), "menuexp")
 		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
 		print setname
+		print "index = ", index
 		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 		MaxSteps = max(MaxSteps, SetSteps)
 		endif
 		i+=1
 	while(i<(itemsinlist(DAChannelStatusList,";")))
-	ListOffset=2
+	
+	ListOffset = 2
+	i = 0
+	
+	do // for TTLs
+		if((str2num(stringfromlist(i,TTLChannelStatusList,";")))==1)
+		popMenuIndexStartName="Wave_TTL_0" + num2str(i)
+		controlinfo/w=$panelTitle $popMenuIndexStartName
+		ListStartNo=v_value
+		popMenuIndexEndName="Popup_TTL_IndexEnd_0" + num2str(i)
+		controlinfo/w=$panelTitle $popMenuIndexEndName
+		ListEndNo=v_value
+		ListLength=abs(ListStartNo-ListEndNo)+1
+		index=indexNo
+		
+			if(listLength<=IndexNo)
+				Index=mod(IndexNo, ListLength)
+				print "index = ", index
+				//index-=1
+			endif
+			
+			if((ListStartNo-ListEndNo)>0)
+				index*=-1
+			endif
+			
+		SetList=	getuserdata(PanelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
+		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
+		print setname
+		print "index = ", index
+		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
+		MaxSteps = max(MaxSteps, SetSteps)
+		endif
+		i+=1
+	while(i<(itemsinlist(TTLChannelStatusList,";")))	
+	
 	return MaxSteps
 End
 
