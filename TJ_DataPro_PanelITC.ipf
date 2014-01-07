@@ -2317,7 +2317,7 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 				controlinfo SetVar_Sweep
 				variable NextSweep=v_value
 				DeleteSettingsHistoryWaves(NextSweep, panelTitle)
-				DeleteDataWaves(NextSweep)
+				DeleteDataWaves(panelTitle, NextSweep)
 				MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
 			endif
 		

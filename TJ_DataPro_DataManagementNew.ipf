@@ -113,10 +113,10 @@ ADScaling(ITCDataWave,panelTitle)
 end
 
 Function DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting history waves "older" than SweepNo
-variable SweepNo
-string panelTitle
+	variable SweepNo
+	string panelTitle
 	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
-variable i = 0
+	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder $WavePath
@@ -138,13 +138,21 @@ variable i = 0
 
 End
 //=============================================================================================================	
-Function ReturnLastSweepAcquired()
-//LastSweep
-		string AcquiredWaveList
-		AcquiredWaveList=wavelist("Sweep_*",";","MINCOLS:2")
-		variable LastSweep
-		LastSweep=itemsinlist(AcquiredWaveList,";")-1
-		return LastSweep
+Function ReturnLastSweepAcquired(panelTitle)
+	//LastSweep
+	string panelTitle
+	string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":data"
+	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+	SetDataFolder $WavePath
+	
+	string AcquiredWaveList
+	AcquiredWaveList=wavelist("Sweep_*",";","MINCOLS:2")
+	variable LastSweep
+	LastSweep=itemsinlist(AcquiredWaveList,";")-1
+	return LastSweep
+	
+	SetDataFolder saveDFR
+
 End
 //=============================================================================================================
 Function IsLastSweepGreaterThanNextSweep(panelTitle)
@@ -153,19 +161,38 @@ Function IsLastSweepGreaterThanNextSweep(panelTitle)
 	controlinfo/w=$panelTitle SetVar_Sweep
 	NextSweep=v_value
 	
-	if(NextSweep>ReturnLastSweepAcquired())
+	if(NextSweep>ReturnLastSweepAcquired(panelTitle))
 	return 0
 	else
 	return 1
 	endif
 End
 //=============================================================================================================
-Function DeleteDataWaves(SweepNo)
-variable SweepNo
-variable i=SweepNo
+Function DeleteDataWaves(panelTitle, SweepNo)
+	string panelTitle
+	variable SweepNo
+	variable i=SweepNo
+	string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":data"
+	
+	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+	SetDataFolder $WavePath
 
-string ListOfDataWaves=wavelist("Sweep_*",";","MINCOLS:2")
-string WaveNameUnderConsideration
+	
+	
+	string ListOfDataWaves=wavelist("Sweep_*",";","MINCOLS:2")
+	string WaveNameUnderConsideration
+		do
+			WaveNameUnderConsideration=stringfromlist(i, ListOfDataWaves, ";")
+			if(itemsinlist(ListOfDataWaves)>0)
+	
+					killwaves/z/f $WaveNameUnderConsideration
+	
+			endif
+			i+=1
+		while(i<itemsinlist(ListOfDataWaves))
+	
+	i=SweepNo
+	ListOfDataWaves=wavelist("Config_Sweep_*",";","MINCOLS:2")
 	do
 		WaveNameUnderConsideration=stringfromlist(i, ListOfDataWaves, ";")
 		if(itemsinlist(ListOfDataWaves)>0)
@@ -175,19 +202,7 @@ string WaveNameUnderConsideration
 		endif
 		i+=1
 	while(i<itemsinlist(ListOfDataWaves))
-
-i=SweepNo
-ListOfDataWaves=wavelist("Config_Sweep_*",";","MINCOLS:2")
-	do
-		WaveNameUnderConsideration=stringfromlist(i, ListOfDataWaves, ";")
-		if(itemsinlist(ListOfDataWaves)>0)
-
-				killwaves/z/f $WaveNameUnderConsideration
-
-		endif
-		i+=1
-	while(i<itemsinlist(ListOfDataWaves))
-
+SetDataFolder saveDFR
 
 End
 
