@@ -116,7 +116,7 @@ Function DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting histor
 variable SweepNo
 string panelTitle
 	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
-variable i
+variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder $WavePath
@@ -124,10 +124,12 @@ variable i
 	string WaveNameUnderConsideration
 	do
 		WaveNameUnderConsideration=WavePath+":"+stringfromlist(i, ListOf_ChanAmpAssign_Sweep_x_Wv, ";")
+		print WaveNameUnderConsideration
 		if(itemsinlist(ListOf_ChanAmpAssign_Sweep_x_Wv)>0)
 		duplicate/free $WaveNameUnderConsideration WorkingWave
+			print WaveNameUnderConsideration
 			if(WorkingWave[11][0]>SweepNo)
-				killwaves/z/f $WaveNameUnderConsideration
+				killwaves /f /z $WaveNameUnderConsideration
 			endif	
 		endif
 		i+=1

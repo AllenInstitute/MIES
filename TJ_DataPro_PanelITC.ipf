@@ -2187,7 +2187,7 @@ End
 Function TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
 	STRUCT WMTabControlAction &tca
 	variable tabnum , i = 0, MinSampInt
-	SVAR ITCPanelTitleList
+	SVAR ITCPanelTitleList=root:ITCPanelTitleList
 	string panelTitle
 	tabnum=tca.tab
 	if(tabnum==0)
@@ -2367,9 +2367,16 @@ Function CheckProc_Indexing(ctrlName,checked) : CheckBoxControl
 	getwindow kwTopWin wtitle
 	string panelTitle=s_value
 	// updates sweeps in cycle value - when indexing is off, only the start set is counted, whend indexing is on all sets between start and end set are counted
+	controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+	if(v_value==0)
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
 	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+	else
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxSweepsLockedIndexing(panelTitle)*v_value)
+	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
+	endif
 
 End
 
@@ -2578,14 +2585,22 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 		ListOfWavesInFolder="\"- none -;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
 	endif
 	
-
+	
 	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
 	setdatafolder root:// makes sure data acq starts in the correct folder!!
 	
+	controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+	if(v_value==0)
 	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
 	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
-
+	else
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxSweepsLockedIndexing(panelTitle)*v_value)
+	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
+	endif
+	
+	
 End
 
 Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -2683,6 +2698,15 @@ Function ITCP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVari
 	getwindow kwTopWin wtitle
 	string panelTitle=s_value
 
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*varNum)
-
+	controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
+	if(v_value==0)
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
+	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+	else
+	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
+	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxSweepsLockedIndexing(panelTitle)*v_value)
+	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
+	endif
 End
+SetVar_DataAcq_ListRepeats

@@ -145,13 +145,13 @@ End
 // for example: DAC popup lists, TTL popup lists
 Function GlobalListStrngOfITCPanelTitles()
 	If(exists("ITCPanelTitleList")==0)
-	String/G ITCPanelTitleList
+	String/G root:ITCPanelTitleList
 	endif
 End
 
 
 Function ListOfITCPanels()
-SVAR ITCPanelTitleList 
+SVAR ITCPanelTitleList = root:ITCPanelTitleList
 ITCPanelTitleList = winlist("ITC*",";", "WIN:64") 
 End
 //=====================================================================================

@@ -257,7 +257,15 @@ Function Index_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets f
 	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
 	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
-
+	variable MaxCycleIndexSteps= (Index_MaxSets(panelTitle)+1)
+	variable MaxSteps
+	
+	do
+	MaxSteps+= Index_StepsInSetWithMaxSweeps(panelTitle,i)
+	i+=1
+	while(i<MaxCycleIndexSteps)
+	
+	return MaxSteps
 End
 
 Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
@@ -285,8 +293,7 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 			index=indexNo
 			if(listLength<=IndexNo)
 				Index=mod(IndexNo, ListLength)
-				print "index = ", index
-				//index-=1
+
 			endif
 			
 			if((ListStartNo-ListEndNo)>0)
@@ -294,8 +301,6 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 			endif
 		SetList=	getuserdata(PanelTitle, "Wave_DA_0" + num2str(i), "menuexp")
 		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
-		print setname
-		print "index = ", index
 		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 		MaxSteps = max(MaxSteps, SetSteps)
 		endif
@@ -318,8 +323,6 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 		
 			if(listLength<=IndexNo)
 				Index=mod(IndexNo, ListLength)
-				print "index = ", index
-				//index-=1
 			endif
 			
 			if((ListStartNo-ListEndNo)>0)
