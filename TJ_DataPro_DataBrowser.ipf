@@ -20,12 +20,6 @@ Function DB_LockDBPanel(panelTitle)
 End
 
 
-	getwindow kwTopWin wtitle
-	dowindow /W = $panelTitle /C $DeviceType + "_Dev_" + num2str(DeviceNo)
-	popup_DB_lockedDevices
-	HSU_DataFolderPathDisplay(PanelTitle)
-	getuserdata
-	SetWindwo winName, userdata(DataFolderPath) = HSU_DataFolderPathDisplay(PanelTitle)
 //==============================================================================================================================
 Function DB_LastSweepAcquired(PanelTitle)// returns last sweep acquired 
 	string PanelTitle
@@ -134,18 +128,26 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" standoff($AxisName) = 0, freePos($AxisName) = 0
 		endif
 		
-		if(i < NumberOfDAchannels)			
+		if(i >= NumberOfDAchannels)
+			DAYaxisSpacing = 0
+			//ADYaxisSpacing += DAYaxisSpacing
+		endif	
+		
+		if(i >= NumberOfADchannels)
+			ADYaxisSpacing = 0
+			//DAYaxisSpacing +=DAYaxisSpacing
+		endif
+				
 			if(DisplayDAChan == 1)
 				DAYAxisHigh -= (ADYaxisSpacing+DAYaxisSpacing)
 				DAYaxisLow -= (ADYaxisSpacing+DAYaxisSpacing)
 			endif
-		endif
+
 		//print i, numberofadchannels
 		
-		if(i < NumberOfADchannels)
 			ADYAxisHigh -= (ADYaxisSpacing+DAYaxisSpacing)
 			ADYaxisLow -= (ADYaxisSpacing+DAYaxisSpacing)
-		endif
+
 		i+=1
 	while(i < max(NumberOfDAchannels,NumberOfADchannels))
 End
