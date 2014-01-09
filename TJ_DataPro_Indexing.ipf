@@ -331,8 +331,6 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 			
 		SetList=	getuserdata(PanelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
 		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
-		print setname
-		print "index = ", index
 		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
 		MaxSteps = max(MaxSteps, SetSteps)
 		endif
@@ -472,7 +470,7 @@ Function Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is t
 	endif
 	
 	string NameOfWaveSelectedInPopUP = WavePath + setName
-	variable NumberOfTrialsInSet= DimSize($NameOfWaveSelectedInPopUP, 1 )
+	variable NumberOfTrialsInSet= DimSize($NameOfWaveSelectedInPopUP, 1)
 	return NumberOfTrialsInSet
 End
 
