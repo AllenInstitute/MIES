@@ -2661,39 +2661,6 @@ Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableContr
 End
 
 
-
-Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, panelTitle)
-	string ListOfSelections, DAorTTL, panelTitle
-	variable StartOrEnd
-	string popupMenuName
-	string CheckBoxName
-	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL, panelTitle)
-	variable i
-	delayupdate
-		do
-			switch(StartOrEnd)
-				case 0:
-				popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
-				break
-				case 1:
-				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
-				break
-				endswitch
-			controlinfo/w=$panelTitle $popupMenuName
-			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";"))==1 || cmpstr(s_value,"")==0)
-				PopupMenu  $popupMenuName win=$panelTitle, mode=v_value-1
-				controlinfo/w=$panelTitle $popupMenuName
-				if(cmpstr(s_value,"testpulse")==0)
-				PopupMenu  $popupMenuName win=$panelTitle, mode=1
-				CheckBoxName="Check_"+DAorTTL+"_0" + num2str(i)
-				CheckBox Check_DA_00 win=$panelTitle, value=0
-				endif
-			endif
-			i+=1
-		while(i<noOfPopups)
-		doupdate /W = $panelTitle
-End
-
 Function UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
 	string panelTitle=s_value

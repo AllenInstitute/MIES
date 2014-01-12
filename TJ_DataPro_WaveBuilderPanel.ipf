@@ -491,12 +491,12 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 		DAorTTL="TTL"
 		endif
 	
-		string popupMenuSelectedItemsStart = ITCP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
-		string popupMenuSelectedItemsEnd = ITCP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
+		string popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
+		string popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
 		WBP_DeleteSet()
 		WBP_UpdateITCPanelPopUps(panelTitle)
-		ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
-		ITCP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
+		WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
+		WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
 		i+=1
 	while(i<itemsinlist(ITCPanelTitleList))
 	
@@ -1521,7 +1521,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	setdatafolder root:
 End
 
-Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list
+Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list
 	string DAorTTL, panelTitle
 	variable StartOrEnd// 0 or 1, determines whether the start or end index popupmenu is updated
 	string ListOfSelectedWaveNames=""
@@ -1544,4 +1544,48 @@ Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns t
 	while(i<noOfPopups)
 	
 	return ListOfSelectedWaveNames
+End
+
+Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, panelTitle)
+	string ListOfSelections, DAorTTL, panelTitle
+	variable StartOrEnd
+	string popupMenuName
+	string CheckBoxName
+	variable noOfPopups = WBP_TotNoOfControlType("Wave",DAorTTL, panelTitle)
+	variable i
+	delayupdate
+		do
+			switch(StartOrEnd)
+				case 0:
+				popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
+				break
+				case 1:
+				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
+				break
+				endswitch
+			controlinfo/w=$panelTitle $popupMenuName
+			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";"))==1 || cmpstr(s_value,"")==0)
+				PopupMenu  $popupMenuName win=$panelTitle, mode=v_value-1
+				controlinfo/w=$panelTitle $popupMenuName
+				if(cmpstr(s_value,"testpulse")==0)
+				PopupMenu  $popupMenuName win=$panelTitle, mode=1
+				CheckBoxName="Check_"+DAorTTL+"_0" + num2str(i)
+				CheckBox Check_DA_00 win=$panelTitle, value=0
+				endif
+			endif
+			i+=1
+		while(i<noOfPopups)
+		doupdate /W = $panelTitle
+End
+
+Function WBP_TotNoOfControlType(ControlType, ChannelType, panelTitle)// Ex. ChannelType = "DA", ControlType = "Check"
+string  ControlType, ChannelType, panelTitle
+string SearchString = ControlType+"_"+ChannelType+"_*"
+string ListString
+variable CatTot//Category Total
+
+ListString=ControlNameList(panelTitle,";",SearchString)
+CatTot=ItemsInlist(ListString,";")
+
+return CatTot
 End
