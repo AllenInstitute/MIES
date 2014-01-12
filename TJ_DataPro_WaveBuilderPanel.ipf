@@ -618,8 +618,11 @@ End
 Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
 	variable i = 0
-	SVAR ITCPanelTitleList
+	SVAR /z ITCPanelTitleList
 	string panelTitle
+
+	
+	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	string ListOfTracesOnGraph
@@ -632,14 +635,16 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	
 	SetDataFolder saveDFR
 
-	do
-		paneltitle = stringfromlist(i, ITCPanelTitleList, ";")
-		WBP_UpdateITCPanelPopUps(panelTitle)
-		i+=1
-	while (i<itemsinlist(ITCPanelTitleList, ";"))
-	
-	SetVariable setvar_WaveBuilder_baseName win = wavebuilder, value= _STR:"InsertBaseName"
-	controlupdate /W = wavebuilder popup_WaveBuilder_SetList
+	if(exists("ITCPanelTitleList") == 2)// allows wavebuilder to work without rest of itc procedures
+		do
+			paneltitle = stringfromlist(i, ITCPanelTitleList, ";")
+			WBP_UpdateITCPanelPopUps(panelTitle)
+			i+=1
+		while (i<itemsinlist(ITCPanelTitleList, ";"))
+		
+		SetVariable setvar_WaveBuilder_baseName win = wavebuilder, value= _STR:"InsertBaseName"
+		controlupdate /W = wavebuilder popup_WaveBuilder_SetList
+	endif
 End
 
 
