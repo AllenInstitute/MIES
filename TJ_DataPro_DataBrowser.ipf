@@ -12,8 +12,8 @@ Function DB_LockDBPanel(panelTitle)
 	string panelTitle
 	controlinfo /w=$panelTitle popup_DB_lockedDevices
 	if(v_value>1)// makes sure "- none -" isn't selected
-		dowindow /W = $panelTitle /C $s_value+"_DB"
-		SetWindow $s_value+"_DB", userdata(DataFolderPath) = HSU_DataFullFolderPathString(s_value)
+		dowindow /W = $panelTitle /C $"DB_"+s_value
+		SetWindow $"DB_"+s_value, userdata(DataFolderPath) = HSU_DataFullFolderPathString(s_value)
 	else
 		print "Please choose a device assingment for the data browser"
 	endif

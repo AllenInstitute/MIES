@@ -2660,30 +2660,7 @@ Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableContr
 	
 End
 
-Function/t ITCP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list
-	string DAorTTL, panelTitle
-	variable StartOrEnd// 0 or 1, determines whether the start or end index popupmenu is updated
-	string ListOfSelectedWaveNames=""
-	string popupMenuName
-	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL, panelTitle)
-	variable i
-	delayupdate
-	do
-		switch(StartOrEnd)
-			case 0:
-			popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
-			break
-			case 1:
-			popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
-			break
-		endswitch
-		controlInfo/w=$panelTitle $popupMenuName
-		ListOfSelectedWaveNames+=s_value + ";"
-		i+=1
-	while(i<noOfPopups)
-	
-	return ListOfSelectedWaveNames
-End
+
 
 Function ITCP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, panelTitle)
 	string ListOfSelections, DAorTTL, panelTitle
