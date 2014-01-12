@@ -1486,7 +1486,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	if(stringmatch(WB_WaveType,"DA")==1)//if statement determines if the set being saved is a DA or TTL
 	ctrlName0="Wave_DA_"
 	ctrlName1="Popup_DA_IndexEnd_"
-	NoOfControls = TotNoOfControlType("Wave", "DA", panelTitle)
+	NoOfControls = WBP_TotNoOfControlType("Wave", "DA", panelTitle)
 	setDataFolder root:waveBuilder:savedStimulusSets:DA
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DA*",";","")+"\""
 	ListOfWaves = Wavelist("*DA*",";","")
@@ -1494,7 +1494,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	else
 	ctrlName0="Wave_TTL_"
 	ctrlName1="Popup_TTL_IndexEnd_"
-	NoOfControls = TotNoOfControlType("Wave", "TTL", panelTitle)
+	NoOfControls = WBP_TotNoOfControlType("Wave", "TTL", panelTitle)
 	setDataFolder root:waveBuilder:savedStimulusSets:TTL
 	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
 	ListOfWaves = Wavelist("*TTL*",";","")
@@ -1526,7 +1526,7 @@ Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns th
 	variable StartOrEnd// 0 or 1, determines whether the start or end index popupmenu is updated
 	string ListOfSelectedWaveNames=""
 	string popupMenuName
-	variable noOfPopups = TotNoOfControlType("Wave",DAorTTL, panelTitle)
+	variable noOfPopups = WBP_TotNoOfControlType("Wave",DAorTTL, panelTitle)
 	variable i
 	delayupdate
 	do
