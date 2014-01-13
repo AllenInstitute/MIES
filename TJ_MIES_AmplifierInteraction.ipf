@@ -11,7 +11,7 @@ String ChannelList=""
 String Value
 //make/o/n=0 W_TelegraphServers
 //AxonTelegraphFindServers
-wave W_TelegraphServers
+wave/z W_TelegraphServers
 TotalNoChannels = DimSize(W_TelegraphServers, 0 )// 0 is for rows, 1 for columns, 2 for layers, 3 for chunks
 	
 	If(TotalNoChannels>0)
@@ -21,14 +21,28 @@ TotalNoChannels = DimSize(W_TelegraphServers, 0 )// 0 is for rows, 1 for columns
 		i+=1
 		while(i<TotalNoChannels)
 	endif
+
+if(cmpstr(ChannelList,"")==0)
+	ChannelList = "MC not available;"
+	print "Activate Multiclamp Commander software to populate list of available amplifiers"
+endif
+
 return ChannelList
+
 End
 
 
 Function ButtonProc(ctrlName) : ButtonControl
 	String ctrlName
+
 make/o/n=0 W_TelegraphServers
 AxonTelegraphFindServers
+
+getwindow kwTopWin wtitle
+string PopUpList = "\" - none - ;" 
+PopUpList += ReturnListOf700BChannels(s_value)+"\""
+popupmenu  popup_Settings_Amplifier win = $s_value, value = #PopUpList
+
 End
 
 Function UpdateChanAmpAssignStorageWave(panelTitle)
