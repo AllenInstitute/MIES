@@ -282,9 +282,9 @@ Function DB_CheckProc_DADisplay(ctrlName,checked) : CheckBoxControl
 End
 //==============================================================================================================================
 
-Window DataBrowser() : Panel
+Window databrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(164,673,1307,1367)
+	NewPanel /W=(18,576,1161,1270)
 	ValDisplay valdisp_DataBrowser_Sweep,pos={471,604},size={41,30}
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo)= A"!!,IQJ,ht>5QF+r!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -360,11 +360,11 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_Scroll,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_Scroll,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_Scroll,fColor=(65280,43520,0),value= 0
-	PopupMenu popup_DB_lockedDevices,pos={54,655},size={268,21},title="Data browser device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={54,655},size={231,21},title="Data browser device assingment:"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,Dg!!#Cu!!#B@!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="ITC1600_Dev_0",value= #"\" - none - ;\" + root:ITCPanelTitleList"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue=" - none - ",value= #"\" - none - ;\" + root:ITCPanelTitleList"
 	Button Button_dataBrowser_lockBrowser,pos={329,656},size={65,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,H_J,htK5QF-&!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -382,12 +382,7 @@ Window DataBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGV1;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cq16p`t7=\\qOJ<HD_l4%N.F8Qnnb<'a2=0KW*,;b9q[:JNr22_mHb<CoSI0fhd%4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\<'F0fo"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)= A":-hTC3`S[N0frH.:-(sG6SUJQ0OI4ZG$cq16p`t7=\\qOJ<HD_l4%N.F8Qnnb<'a2=0KW*,;b9q[:JNr23Ailg<CoSI0fhd%4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\<'C3'."
-	Display/W=(18,73,1038,494)/FG=(,,UGV0,UGH0)/HOST=# /L=AD0 Sweep_0_AD0
-	ModifyGraph standoff(AD0)=0
-	ModifyGraph lblPosMode=1
-	ModifyGraph freePos(AD0)=0
-	ModifyGraph axisEnab(AD0)={0.03,1}
-	Label AD0 "AD0"
+	Display/W=(18,73,1038,494)/FG=(,,UGV0,UGH0)/HOST=# 
 	RenameWindow #,DataBrowserGraph
 	SetActiveSubwindow ##
 EndMacro

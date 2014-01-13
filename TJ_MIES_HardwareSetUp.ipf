@@ -12,8 +12,8 @@ Function HSU_QueryITCDevice(PanelTitle)
 	
 	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
 	Execute cmd
-	sprintf cmd, "ITCGetState /E=1 ResultWave"
-	Execute cmd
+	//sprintf cmd, "ITCGetState /E=1 ResultWave"
+	//Execute cmd
 	DoAlert/t="Ready light check"  0, "Click \"OK\" when finished checking device"
 	
 	sprintf cmd, "ITCCloseDevice" 
