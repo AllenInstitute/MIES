@@ -188,6 +188,7 @@ Function DB_ButtonProc_6(ctrlName) : ButtonControl
 	variable SweepToPlot
 	string SweepToPlotName
 	string panelTitle
+	
 	getwindow kwTopWin wtitle
 	panelTitle = s_value
 	variable LastSweep = DB_LastSweepAcquired(panelTitle)
@@ -283,38 +284,36 @@ End
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W = (28,267,1171,882)
-	ShowTools /A
-	SetDrawLayer UserBack
-	ValDisplay valdisp_DataBrowser_Sweep,pos={471,525},size={41,30}
+	NewPanel /W=(164,673,1307,1367)
+	ValDisplay valdisp_DataBrowser_Sweep,pos={471,604},size={41,30}
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo)= A"!!,IQJ,ht>5QF+r!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataBrowser_Sweep,fSize=24,fStyle=1
 	ValDisplay valdisp_DataBrowser_Sweep,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataBrowser_Sweep,value= _NUM:3
-	Button button_DataBrowser_NextSweep,pos={592,519},size={450,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
+	ValDisplay valdisp_DataBrowser_Sweep,value= _NUM:0
+	Button button_DataBrowser_NextSweep,pos={592,598},size={450,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J%!!#Cf^]6a\\!!#>:z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_NextSweep,fSize=20
-	Button button_DataBrowser_Previous,pos={17,517},size={450,43},proc=DB_ButtonProc_7,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_Previous,pos={17,596},size={450,43},proc=DB_ButtonProc_PrevSweep,title="\\W646 Previous Sweep"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo)= A"!!,BA!!#Cf5QF11!!#>:z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_Previous,fSize=20
-	ValDisplay valdisp_DataBrowser_LastSweep,pos={517,525},size={70,30},title="of"
+	ValDisplay valdisp_DataBrowser_LastSweep,pos={517,604},size={70,30},title="of"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo)= A"!!,Ig5QF1S5QF-0!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataBrowser_LastSweep,fSize=24,fStyle=1
 	ValDisplay valdisp_DataBrowser_LastSweep,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataBrowser_LastSweep,value= _NUM:5
-	CheckBox check_DataBrowser_DisplayDAchan,pos={20,6},size={116,14},proc=DB_CheckProc_3,title="Display DA channels"
+	ValDisplay valdisp_DataBrowser_LastSweep,value= _NUM:0
+	CheckBox check_DataBrowser_DisplayDAchan,pos={20,6},size={116,14},proc=DB_CheckProc_DADisplay,title="Display DA channels"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo)= A"!!,BY!!#:\"!!#@L!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_DisplayDAchan,value= 1
+	CheckBox check_DataBrowser_DisplayDAchan,value= 0
 	CheckBox check_DataBrowser_Overlay,pos={429,6},size={101,14},title="Overlay Channels"
 	CheckBox check_DataBrowser_Overlay,userdata(ResizeControlsInfo)= A"!!,I<J,hjM!!#@.!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_Overlay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -325,7 +324,7 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_ChanBaseline,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_ChanBaseline,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_ChanBaseline,value= 0
-	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1053,71},size={61,13},title="10:48:35 AM"
+	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1053,71},size={55,13}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,K?TE%<=!!#?-!!#;]z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -361,15 +360,19 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_Scroll,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_Scroll,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_Scroll,fColor=(65280,43520,0),value= 0
-	PopupMenu popup_DB_lockedDevices,pos={54,576},size={268,21},title="Data browser device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={54,655},size={268,21},title="Data browser device assingment:"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,Dg!!#Cu!!#B@!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="ITC1600_Dev_0",value= #"\" - none -;\"+root:ITCPanelTitleList"
-	Button Button_dataBrowser_lockBrowser,pos={329,577},size={65,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
+	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="ITC1600_Dev_0",value= #"\" - none - ;\" + root:ITCPanelTitleList"
+	Button Button_dataBrowser_lockBrowser,pos={329,656},size={65,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,H_J,htK5QF-&!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DB_DispTTLChan,pos={21,30},size={122,14},title="Display TTL Channels"
+	CheckBox check_DB_DispTTLChan,fColor=(65280,43520,0),value= 0
+	CheckBox check_DB_DispADChan,pos={21,52},size={117,14},title="Display AD Channels"
+	CheckBox check_DB_DispADChan,fColor=(65280,43520,0),value= 0
 	DefineGuide UGV0={FR,-171},UGV1={FR,-148},UGH0={FB,-121}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(DataFolderPath)=  "root:ITC1600:Device0"
@@ -379,36 +382,12 @@ Window DataBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGV1;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cq16p`t7=\\qOJ<HD_l4%N.F8Qnnb<'a2=0KW*,;b9q[:JNr22_mHb<CoSI0fhd%4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\<'F0fo"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)= A":-hTC3`S[N0frH.:-(sG6SUJQ0OI4ZG$cq16p`t7=\\qOJ<HD_l4%N.F8Qnnb<'a2=0KW*,;b9q[:JNr23Ailg<CoSI0fhd%4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\<'C3'."
-	String fldrSav0= GetDataFolder(1)
-	SetDataFolder root:ITC1600:Device0:Data:
-	Display/W=(18,73,1038,494)/FG=(,,UGV0,UGH0)/HOST=# /L=DA0 Sweep_3_DA0
-	AppendToGraph/L=AD0 Sweep_3_AD0
-	AppendToGraph/L=DA1 Sweep_3_DA1
-	AppendToGraph/L=AD1 Sweep_3_AD1
-	AppendToGraph/L=DA3 Sweep_3_DA3
-	AppendToGraph/L=AD4 Sweep_3_AD4
-	SetDataFolder fldrSav0
-	ModifyGraph standoff(DA0)=0,standoff(AD0)=0,standoff(DA1)=0,standoff(AD1)=0,standoff(DA3)=0
-	ModifyGraph standoff(AD4)=0
+	Display/W=(18,73,1038,494)/FG=(,,UGV0,UGH0)/HOST=# /L=AD0 Sweep_0_AD0
+	ModifyGraph standoff(AD0)=0
 	ModifyGraph lblPosMode=1
-	ModifyGraph freePos(DA0)=0
 	ModifyGraph freePos(AD0)=0
-	ModifyGraph freePos(DA1)=0
-	ModifyGraph freePos(AD1)=0
-	ModifyGraph freePos(DA3)=0
-	ModifyGraph freePos(AD4)=0
-	ModifyGraph axisEnab(DA0)={0.9633,1}
-	ModifyGraph axisEnab(AD0)={0.6967,0.9333}
-	ModifyGraph axisEnab(DA1)={0.63,0.6667}
-	ModifyGraph axisEnab(AD1)={0.3633,0.6}
-	ModifyGraph axisEnab(DA3)={0.2967,0.3333}
-	ModifyGraph axisEnab(AD4)={0.03,0.2667}
-	Label DA0 "DA0"
+	ModifyGraph axisEnab(AD0)={0.03,1}
 	Label AD0 "AD0"
-	Label DA1 "DA1"
-	Label AD1 "AD1"
-	Label DA3 "DA3"
-	Label AD4 "AD4"
 	RenameWindow #,DataBrowserGraph
 	SetActiveSubwindow ##
 EndMacro
