@@ -2,7 +2,7 @@
 
 Window ITC_Ephys_panel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(1434,754,1915,1273)
+	NewPanel /W=(1383,686,1866,1252)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -1121,28 +1121,28 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo)= A"!!,G%!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_IC_AD,mode=5,popvalue="4",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_IC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
 	SetVariable setvar_Settings_VC_DAgain,pos={94,275},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo)= A"!!,F!!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_DAgain,value= _NUM:20
+	SetVariable setvar_Settings_VC_DAgain,value= _NUM:0
 	SetVariable setvar_Settings_VC_ADgain_0,pos={94,298},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo)= A"!!,F!!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_ADgain_0,value= _NUM:0.5
-	SetVariable setvar_Settings_IC_ADgain,pos={208,298},size={50,16},disable=1,proc=SetVarProc_CAA
+	SetVariable setvar_Settings_VC_ADgain_0,value= _NUM:0
+	SetVariable setvar_Settings_IC_ADgain,pos={208,299},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_IC_ADgain,value= _NUM:nan
+	SetVariable setvar_Settings_IC_ADgain,value= _NUM:0
 	PopupMenu Popup_Settings_HeadStage,pos={35,228},size={95,21},disable=1,proc=PopMenuProc_Headstage,title="Head Stage"
 	PopupMenu Popup_Settings_HeadStage,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_HeadStage,userdata(tabcontrol)=  "ADC"
@@ -1163,14 +1163,14 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo)= A"!!,G%!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_IC_DA,mode=4,popvalue="3",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_IC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
 	SetVariable setvar_Settings_IC_DAgain,pos={208,275},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_IC_DAgain,value= _NUM:nan
+	SetVariable setvar_Settings_IC_DAgain,value= _NUM:0
 	TitleBox Title_settings_ChanlAssign_VC,pos={75,253},size={39,13},disable=1,title="V-Clamp"
 	TitleBox Title_settings_ChanlAssign_VC,userdata(tabnum)=  "6"
 	TitleBox Title_settings_ChanlAssign_VC,userdata(tabcontrol)=  "ADC"
@@ -1821,15 +1821,15 @@ Window ITC_Ephys_panel() : Panel
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_03,frame=0
-	PopupMenu popup_MoreSettings_DeviceType,pos={61,89},size={160,21},bodyWidth=100,disable=3,proc=PopMenuProc_Hrdwr_DevTypeCheck,title="Device type"
+	PopupMenu popup_MoreSettings_DeviceType,pos={61,89},size={160,21},bodyWidth=100,disable=1,proc=PopMenuProc_Hrdwr_DevTypeCheck,title="Device type"
 	PopupMenu popup_MoreSettings_DeviceType,help={"Step 1. Select device type. Open device button will be enabled if device type is attached."}
 	PopupMenu popup_MoreSettings_DeviceType,userdata(tabnum)=  "6"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo)= A"!!,E.!!#?k!!#A/!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_MoreSettings_DeviceType,mode=3,popvalue="ITC1600",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
-	PopupMenu popup_moreSettings_DeviceNo,pos={88,116},size={133,21},bodyWidth=58,disable=3,title="Device number"
+	PopupMenu popup_MoreSettings_DeviceType,mode=1,popvalue="ITC16",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
+	PopupMenu popup_moreSettings_DeviceNo,pos={88,116},size={133,21},bodyWidth=58,disable=1,title="Device number"
 	PopupMenu popup_moreSettings_DeviceNo,help={"Step 2. Guess a device number. 0 is a good initial guess. Device number is determined in hardware. Unfortunately, it cannot be predetermined. "}
 	PopupMenu popup_moreSettings_DeviceNo,userdata(tabnum)=  "6"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(tabcontrol)=  "ADC"
@@ -1857,13 +1857,13 @@ Window ITC_Ephys_panel() : Panel
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo)= A"!!,If^]6\\,!!#B@J,hq8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_SettingsPlus_FolderPath,pos={23,65},size={333,122},disable=1,title="Data folder path = root:ITC1600:Device0"
+	GroupBox group_SettingsPlus_FolderPath,pos={23,65},size={333,122},disable=1,title="Lock device to set data folder path"
 	GroupBox group_SettingsPlus_FolderPath,userdata(tabnum)=  "6"
 	GroupBox group_SettingsPlus_FolderPath,userdata(tabcontrol)=  "ADC"
 	GroupBox group_SettingsPlus_FolderPath,userdata(ResizeControlsInfo)= A"!!,Bq!!#?;!!#B`J,hq.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_SettingsPlus_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_SettingsPlus_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_PingDevice,pos={128,142},size={93,28},disable=1,proc=HSU_ButtonProc_Settings_OpenDev,title="Open device"
+	Button button_SettingsPlus_PingDevice,pos={128,142},size={93,28},disable=3,proc=HSU_ButtonProc_Settings_OpenDev,title="Open device"
 	Button button_SettingsPlus_PingDevice,help={"Step 3. Use to determine device number for connected device. Look for device with Ready light ON. Device numbers are determined in hardware and do not change over time. "}
 	Button button_SettingsPlus_PingDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_PingDevice,userdata(tabcontrol)=  "ADC"
@@ -1882,14 +1882,14 @@ Window ITC_Ephys_panel() : Panel
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo)= A"!!,HH!!#CAJ,hp'!!#>Bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_LockDevice,pos={233,87},size={85,46},disable=3,proc=HSU_ButtonProc_LockDev,title="Lock device\r selection"
+	Button button_SettingsPlus_LockDevice,pos={233,87},size={85,46},disable=1,proc=HSU_ButtonProc_LockDev,title="Lock device\r selection"
 	Button button_SettingsPlus_LockDevice,help={"Device must be locked to acquire data."}
 	Button button_SettingsPlus_LockDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_LockDevice,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo)= A"!!,H$!!#?g!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_unLockDevic,pos={233,134},size={85,46},disable=1,proc=HSU_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
+	Button button_SettingsPlus_unLockDevic,pos={233,134},size={85,46},disable=3,proc=HSU_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
 	Button button_SettingsPlus_unLockDevic,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_unLockDevic,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo)= A"!!,H$!!#@j!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2022,7 +2022,8 @@ Window ITC_Ephys_panel() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B3&r`U7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^2*1"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
-	Display/W=(471,34,481,492)/FG=(UGV1,,UGV0,UGH0)/HOST=# 
+	Display/W=(473,34,483,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# 
+	ModifyGraph gbRGB=(60928,60928,60928)
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!,I?!!#=k!!#Bd!!#C5J,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -2205,19 +2206,29 @@ End
 Function TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
 	STRUCT WMTabControlAction &tca
 	variable tabnum , i = 0, MinSampInt
-	SVAR ITCPanelTitleList=root:ITCPanelTitleList
+	SVAR /z ITCPanelTitleList=root:ITCPanelTitleList
 	string panelTitle
 	tabnum=tca.tab
-	if(tabnum==0)
-	do
-	panelTitle = stringfromlist(i, ITCPanelTitleList,";")
-	MinSampInt = ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
-	controlUpdate/w=$PanelTitle ValDisp_DataAcq_SamplingInt
-	i+=1
-	while(i<itemsinlist(ITCPanelTitleList,";"))
-	endif
 	
+	// Is the panel that is being interacted with locked?
+	if(stringmatch(WinList("ITC_Ephys_panel", ";", "WIN:" ),"ITC_Ephys_panel;")==0)// checks to see if panel has been assigned to a ITC device by checking if the panel name is the default name
+		// Does the global string that contains the list of locked panels exist?
+		if(exists("root:ITCPanelTitleList")==2)
+			if(tabnum==0)
+				do
+					panelTitle = stringfromlist(i, ITCPanelTitleList,";")
+					MinSampInt = ITCMinSamplingInterval(PanelTitle)
+					ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
+					controlUpdate/w=$PanelTitle ValDisp_DataAcq_SamplingInt
+					i+=1
+				while(i<itemsinlist(ITCPanelTitleList,";"))
+			endif
+		else
+		print "Please lock the panel to a ITC device in the Hardware tab"
+		endif
+	else
+	print "Please lock the panel to a ITC device in the Hardware tab"
+	endif
 //	if(tabnum==1)// this does not work because hook function runs prior to adams tab functions (i assume)
 //	controlinfo/w=datapro_itc1600 Check_DataAcq_Indexing
 //		if(v_value==0)
