@@ -32,7 +32,7 @@ Function SaveITCData(panelTitle)
 	DAScaling($SavedDataWaveName, panelTitle)
 End
 
-Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is hte TP (test pulse) holding wave.
+Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
 	variable RowsToCopy = CalculateITCDataWaveLength(panelTitle)/4
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)

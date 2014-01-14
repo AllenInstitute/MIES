@@ -1237,14 +1237,14 @@ Function WBP_SaveSetParam()
 	WBP_MoveWaveTOFolder( WBP_WPFolderAssignment(), "WPT", 0, "_"+WBP_AssembleBaseName())
 End
 
-Function/t WBP_ReturnListSavedSets(SetType)
+Function/t WBP_ReturnListSavedSets(SetType)// returns a list of waves from the wave builder folder savedStimulusSets
 	string SetType
 	string FolderPath="root:WaveBuilder:SavedStimulusSets:"+SetType
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder $FolderPath
-	string TTLSetList = wavelist("*",";","")
+	string SetList = wavelist("*"+SetType+"*",";","")
 	SetDataFolder saveDFR
-	return TTLSetList
+	return SetList
 end
 
 Function WBP_LoadSet()

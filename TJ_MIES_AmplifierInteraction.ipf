@@ -236,9 +236,6 @@ Function RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 
 End
 
-
-
-
 Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked

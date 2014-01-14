@@ -120,6 +120,11 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	PanelTitle=s_value
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
 	
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
+	if(v_value==0)
+		abort "Give test pulse a duration greater than 0 ms"
+	endif
+	
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
 	
@@ -142,7 +147,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	wave TestPulse = $TestPulsePath
 	SetScale/P x 0,0.005,"ms", TestPulse
 	AdjustTestPulseWave(TestPulse, panelTitle)
-	
+	CreateAndScaleTPHoldingWave(panelTitle)
 	make/free/n=8 SelectedDACWaveList
 	StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	SelectTestPulseWave(panelTitle)

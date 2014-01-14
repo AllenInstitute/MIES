@@ -49,7 +49,7 @@ Function HSU_LockDevice(panelTitle)
 	dowindow /W = $panelTitle /C $DeviceType + "_Dev_" + num2str(DeviceNo)
 	GlobalListStrngOfITCPanelTitles()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
 	ListOfITCPanels()
-	
+	MakeGlobalsAndWaves(DeviceType + "_Dev_" + num2str(DeviceNo))
 End
 
 Function HSU_DataFolderPathDisplay(PanelTitle)
@@ -153,6 +153,13 @@ End
 Function ListOfITCPanels()
 SVAR ITCPanelTitleList = root:ITCPanelTitleList
 ITCPanelTitleList = winlist("ITC*",";", "WIN:64") 
+End
+
+Function MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
+	string panelTitle
+	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
+	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
+	make/n=(12,8) $ChanAmpAssignPath
 End
 //=====================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW
