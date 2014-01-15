@@ -37,7 +37,7 @@ Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test 
 	variable RowsToCopy = CalculateITCDataWaveLength(panelTitle)/4
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	string TestPulseITCPath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC"
+	string TestPulseITCPath = WavePath+":TestPulse:TestPulseITC"
 	Duplicate/o/r=[0,RowsToCopy][] ITCDataWave $TestPulseITCPath
 	wave TestPulseITC = $TestPulseITCPath
 	redimension/d TestPulseITC

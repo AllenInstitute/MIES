@@ -3,13 +3,13 @@
 //this proc gets activated after first trial is already acquired if repeated acquisition is on.
 // it looks like the test pulse is always run in the ITI!!! it should be user selectable
 Function RepeatedAcquisition(PanelTitle)
-string PanelTitle
-variable ITI
-variable IndexingState
-variable i = 0
+	string PanelTitle
+	variable ITI
+	variable IndexingState
+	variable i = 0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
+	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	string CountPath=WavePath+":Count"
 	variable/g $CountPath=0
 	NVAR Count=$CountPath
@@ -56,7 +56,7 @@ variable i = 0
 		TurnOffAllTTLs(panelTitle)
 		string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 		make/o/n=0 $TestPulsePath
-		wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+		wave TestPulse = $TestPulsePath
 		SetScale/P x 0,0.005,"ms", TestPulse
 		AdjustTestPulseWave(TestPulse,panelTitle)
 
@@ -91,7 +91,7 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	variable ITI
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
+	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	string CountPath=WavePath+":Count"
 	NVAR Count=$CountPath
@@ -206,7 +206,7 @@ End
 Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC
+	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials

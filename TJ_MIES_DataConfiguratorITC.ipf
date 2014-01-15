@@ -282,6 +282,11 @@ Function LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types ne
 		if(stringmatch(WaveNameString,"-none-") ==0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
 			
 			WaveNameString="root:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
+			
+//			if(cmpstr(WaveNameString, "root:WaveBuilder:savedStimulusSets:DA:TestPulse") == 0)// checks to see if test pulse is the wave being run, if yes, changes path
+//			WaveNameString = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
+//			endif
+			
 			if(DimSize($WaveNameString, 0 )>WaveLength)
 			WaveLength = DimSize($WaveNameString, 0 )
 			endif
@@ -410,43 +415,45 @@ End
 //==========================================================================================
 Function PlaceDataInITCDataWave(PanelTitle)
 	string panelTitle
-	variable i=0// 
-	variable j=0//
+	variable i = 0// 
+	variable j = 0//
 	string ChannelStatus
-	wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
-	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle)+":ITCDataWave"
+	wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
+	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
+	//string testPulsePath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
 	string ChanTypeWaveNameList, ChanTypeWaveName
-	string ResampledWaveName="ResampledWave"
+	string ResampledWaveName = "ResampledWave"
 	string cmd
 	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column
-	string CountPath=HSU_DataFullFolderPathString(PanelTitle)+"count"
+	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+"count"
 	
-	if(exists(CountPath)==2)
-		NVAR count=$CountPath
-		column=count-1
+	if(exists(CountPath) == 2)
+		NVAR count = $CountPath
+		column = count-1
 	else
 		column = 0
 	endif
 	
 	//Place DA waves into ITCDataWave
 	variable DecimationFactor = (ITCMinSamplingInterval(panelTitle)/5)
-	ChannelStatus=ControlStatusListString("DA", "Check", panelTitle)
-	ChanTypeWaveNameList=PopMenuStringList("DA", "Wave", panelTitle)
+	ChannelStatus = ControlStatusListString("DA", "Check", panelTitle)
+	ChanTypeWaveNameList = PopMenuStringList("DA", "Wave", panelTitle)
 	do
-		if(str2num(stringfromlist(i,ChannelStatus,";"))==1)//Checks if DA channel checkbox is checked (ON)
+		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
 			SetVarDAGain = "gain_DA_0" + num2str(i)
 			SetVarDAScale = "scale_DA_0" + num2str(i)
-			ControlInfo/w=$panelTitle $SetVarDAGain
-			DAGain=(3200/v_value)//3200 = 1V
-			ControlInfo/w=$panelTitle $SetVarDAScale
-			DAScale=v_value
+			ControlInfo /w = $panelTitle $SetVarDAGain
+			DAGain = (3200 / v_value)//3200 = 1V
+			ControlInfo /w = $panelTitle $SetVarDAScale
+			DAScale = v_value
 	
 			//get the wave name
 			ChanTypeWaveName="root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
 			//check to see if it is a test pulse or user specified da wave
 			if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")==0)
 				column=0
+				//ChanTypeWaveName = TestPulsePath
 			else
 			//determine column number in cases where a set is being cycled through multiple times
 				//controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected

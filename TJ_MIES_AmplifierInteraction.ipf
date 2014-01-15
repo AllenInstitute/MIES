@@ -30,7 +30,7 @@ End
 
 Function ButtonProc(ctrlName) : ButtonControl
 	String ctrlName
-	make/o/n=0 W_TelegraphServers
+	make /o /n = 0 W_TelegraphServers
 	AxonTelegraphFindServers
 	getwindow kwTopWin wtitle
 	string PopUpList = "\" - none - ;" 
@@ -42,59 +42,59 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	string panelTitle
 	Variable HeadStageNo, SweepNo, i
 	wave W_telegraphServers
-	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
-	wave/z ChanAmpAssign=$WavePath + ":ChanAmpAssign"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 
 	controlinfo/w=$panelTitle Popup_Settings_HeadStage
 	HeadStageNo = str2num(s_value)
 	
-	If (waveexists(ChanAmpAssign)==0)// checks to see if data storage wave exists, makes it if it doesn't
+	If (waveexists(ChanAmpAssign) == 0)// checks to see if data storage wave exists, makes it if it doesn't
 	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-	make/n=(12,8) $ChanAmpAssignPath
-	wave ChanAmpAssign=$ChanAmpAssignPath
+	make /n = (12,8) $ChanAmpAssignPath
+	wave ChanAmpAssign = $ChanAmpAssignPath
 	endif
 
 	duplicate/free ChanAmpAssign ChanAmpAssignOrig
 
 	// Assigns V-clamp settings for a particular headstage
-	ControlInfo/w=$panelTitle Popup_Settings_VC_DA
-	ChanAmpAssign[0][HeadStageNo]=str2num(s_value)
-	ControlInfo/w=$panelTitle setvar_Settings_VC_DAgain
-	ChanAmpAssign[1][HeadStageNo]=v_value
-	ControlInfo/w=$panelTitle Popup_Settings_VC_AD
-	ChanAmpAssign[2][HeadStageNo]=str2num(s_value)
-	ControlInfo/w=$panelTitle setvar_Settings_VC_ADgain_0
-	ChanAmpAssign[3][HeadStageNo]=v_value
+	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
+	ChanAmpAssign[0][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_VC_DAgain
+	ChanAmpAssign[1][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle Popup_Settings_VC_AD
+	ChanAmpAssign[2][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain_0
+	ChanAmpAssign[3][HeadStageNo] = v_value
 	
 	//Assigns I-clamp settings for a particular headstage
-	ControlInfo/w=$panelTitle Popup_Settings_IC_DA
-	ChanAmpAssign[4][HeadStageNo]=str2num(s_value)
-	ControlInfo/w=$panelTitle setvar_Settings_IC_DAgain
-	ChanAmpAssign[5][HeadStageNo]=v_value
-	ControlInfo/w=$panelTitle Popup_Settings_IC_AD
-	ChanAmpAssign[6][HeadStageNo]=str2num(s_value)
-	ControlInfo/w=$panelTitle setvar_Settings_IC_ADgain
-	ChanAmpAssign[7][HeadStageNo]=v_value
+	ControlInfo /w = $panelTitle Popup_Settings_IC_DA
+	ChanAmpAssign[4][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_IC_DAgain
+	ChanAmpAssign[5][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle Popup_Settings_IC_AD
+	ChanAmpAssign[6][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_IC_ADgain
+	ChanAmpAssign[7][HeadStageNo] = v_value
 	
 	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
-	if(waveexists(W_telegraphServers)==1)
-	ControlInfo/w=$panelTitle popup_Settings_Amplifier
-		if(v_value>1)
-		ChanAmpAssign[8][HeadStageNo]=W_TelegraphServers[v_value-2][0]
-		ChanAmpAssign[9][HeadStageNo]=W_TelegraphServers[v_value-2][1]
+	if(waveexists(W_telegraphServers) == 1)
+	ControlInfo /w = $panelTitle popup_Settings_Amplifier
+		if(v_value > 1)
+		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0]
+		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1]
 		else
-		ChanAmpAssign[8][HeadStageNo]=nan
-		ChanAmpAssign[9][HeadStageNo]=nan
+		ChanAmpAssign[8][HeadStageNo] = nan
+		ChanAmpAssign[9][HeadStageNo] = nan
 		endif
-		ChanAmpAssign[10][HeadStageNo]=v_value
+		ChanAmpAssign[10][HeadStageNo] = v_value
 
 	endif
 	//Duplicate ChanampAssign wave and add sweep number if the wave is changed
 	controlinfo SetVar_Sweep
-	SweepNo=v_value
+	SweepNo = v_value
 	
-	if(SweepNo>0)
-		ChanAmpAssignOrig-=ChanAmpAssign//used to see if settings have changed
+	if(SweepNo > 0)
+		ChanAmpAssignOrig -= ChanAmpAssign//used to see if settings have changed
 		if((wavemax(ChanAmpAssignOrig)) != 0 || (wavemin(ChanAmpAssignOrig)) != 0)
 		MakeSettingsHistoryWave(panelTitle)
 		endif
@@ -105,23 +105,23 @@ End
 Function UpdateChanAmpAssignPanel(PanelTitle)
 	string panelTitle
 	Variable HeadStageNo
-	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
-	wave ChanAmpAssign=$WavePath + ":ChanAmpAssign"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	
-	controlinfo/w=$panelTitle Popup_Settings_HeadStage
-	HeadStageNo=str2num(s_value)
+	controlinfo /w =$panelTitle Popup_Settings_HeadStage
+	HeadStageNo = str2num(s_value)
 	
-	Popupmenu Popup_Settings_VC_DA win=$panelTitle, mode=(ChanAmpAssign[0][HeadStageNo]+1)
-	Setvariable setvar_Settings_VC_DAgain win=$panelTitle, value=_num:ChanAmpAssign[1][HeadStageNo]
-	Popupmenu Popup_Settings_VC_AD win=$panelTitle, mode=(ChanAmpAssign[2][HeadStageNo]+1)
-	Setvariable setvar_Settings_VC_ADgain_0 win=$panelTitle, value=_num:ChanAmpAssign[3][HeadStageNo]
+	Popupmenu Popup_Settings_VC_DA win = $panelTitle, mode = (ChanAmpAssign[0][HeadStageNo] + 1)
+	Setvariable setvar_Settings_VC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
+	Popupmenu Popup_Settings_VC_AD win = $panelTitle, mode = (ChanAmpAssign[2][HeadStageNo] + 1)
+	Setvariable setvar_Settings_VC_ADgain_0 win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
 	
-	Popupmenu Popup_Settings_IC_DA win=$panelTitle, mode=(ChanAmpAssign[4][HeadStageNo]+1)
-	Setvariable setvar_Settings_IC_DAgain win=$panelTitle, value=_num:ChanAmpAssign[5][HeadStageNo]
-	Popupmenu  Popup_Settings_IC_AD win=$panelTitle, mode=(ChanAmpAssign[6][HeadStageNo]+1)
-	Setvariable setvar_Settings_IC_ADgain win=$panelTitle, value=_num:ChanAmpAssign[7][HeadStageNo]
+	Popupmenu Popup_Settings_IC_DA win = $panelTitle, mode = (ChanAmpAssign[4][HeadStageNo] + 1)
+	Setvariable setvar_Settings_IC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
+	Popupmenu  Popup_Settings_IC_AD win = $panelTitle, mode = (ChanAmpAssign[6][HeadStageNo] + 1)
+	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
 	
-	Popupmenu popup_Settings_Amplifier win=$panelTitle, mode=ChanAmpAssign[10][HeadStageNo]
+	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo]
 End
 
 Function PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
