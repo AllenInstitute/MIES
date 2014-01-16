@@ -257,14 +257,12 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		if(v_value == 1)//checks to see if headstage is "ON"
 		RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
 		ApplyClampModeSavedSettings((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
-		print "here"
 		endif
 		
 	else
 		PairedRadioButton += (num2str(RadioButtonNo - 1))
 		checkbox $PairedRadioButton value = 0
 		HeadStageCheckBox += num2str(((RadioButtonNo - 1) / 2))
-		print headstagecheckbox
 		controlinfo/w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
