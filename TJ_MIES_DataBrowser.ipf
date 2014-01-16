@@ -105,7 +105,7 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 				YaxisLow = DAYaxisLow
 				
 				AxisName = "DA"+stringfromlist(i, DAChannelList,";")
-				NewTraceName = nameofwave(sweepName)+ "_"+AxisName
+				NewTraceName = DataPath +":"+nameofwave(sweepName)+ "_"+AxisName
 				duplicate /o /r = (0,inf)(i) SweepName $NewTraceName
 				appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
 				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
@@ -119,7 +119,7 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 			YaxisLow = ADYaxisLow
 		if(i<NumberOfADchannels)
 			AxisName = "AD"+stringfromlist(i, ADChannelList,";")
-			NewTraceName = nameofwave(sweepName)+ "_"+AxisName
+			NewTraceName = DataPath +":"+nameofwave(sweepName)+ "_"+AxisName
 			duplicate /o /r = (0,inf)(i+NumberOfDAchannels) SweepName $NewTraceName
 			appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
 			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
@@ -166,6 +166,7 @@ Function DB_RemoveAndKillWavesOnGraph(PanelTitle, GraphName)
 	string cmd, WaveNameFromList
 	string ListOfTracesOnGraph
 	string Tracename
+	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data:"
 	
 	ListOfTracesOnGraph = TraceNameList(GraphName, ";",0+1)
 	if(itemsinlist(ListOfTracesOnGraph,";") > 0)
@@ -174,7 +175,7 @@ Function DB_RemoveAndKillWavesOnGraph(PanelTitle, GraphName)
 			sprintf cmd, "removefromgraph/w=%s $%s" GraphName, TraceName
 			execute cmd
 			Tracename=stringfromlist(i, ListOfTracesOnGraph,";")
-			Killwaves/z  $Tracename
+			Killwaves/z  $DataPath+Tracename
 			i+=1
 		while(i<(itemsinlist(ListOfTracesOnGraph,";")))
 	endif
