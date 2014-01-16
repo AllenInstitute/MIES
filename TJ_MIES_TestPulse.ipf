@@ -196,15 +196,43 @@ End
 	TestPulse[(PulseDuration / 2),(Pulseduration + (PulseDuration / 2))] = v_value
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 
-//Function TPParameters
+//The function TPDelta is called by the TP dataaquistion functions
+//It updates a wave in the Test pulse folder for the device
+//The wave contains the steady state difference between the baseline and the TP response
 
-ThreadSafe Function CalculateResistance(panelTitle, TestPulsePath, BaseLineStartPoint, PulseStartPoint, PulseEndPoint)
+ThreadSafe Function TPDelta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
-				wave TestPulsePath
-				variable BaseLineStartPoint, PulseStartPoint, PulseEndPoint
+				string InputDataPath
+				NVAR Duration = $InputDataPath + ":Duration"
+				NVAR Amplitude = $InputDataPath + ":Amplitude"			
+				wave TPWave = $InputDataPath + ":TestPulseITC"
+				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
+				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
+				variable TPSSEndTime = (0.95*((Duration * 0.0075)))
+				variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)) - ((BaselineSteadyStateStartTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
+				variable BaselineSSStartPoint = (BaselineSteadyStateStartTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)
+				variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod	
+				variable TPSSEndPoint = (TPSSEndTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)
+				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
 				
-	
+//				Print "BaselineSteadyStateStartTime = ", BaselineSteadyStateStartTime
+//				Print "BaselineSteadyStateEndTime = ", BaselineSteadyStateEndTime
+//				Print "BaselineSSStartPoint = ",  BaselineSSStartPoint
+//				Print "BaslineSSEndPoint = ", BaslineSSEndPoint
+//				Print "TPSSEndTime = ", TPSSEndTime
+//				Print "TPSSStartPoint = ", TPSSStartPoint
+//				Print "TPSSEndPoint = ", TPSSEndPoint
+				
+				duplicate /o /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, $InputDataPath + ":BaselineSS"
+				wave BaselineSS = $InputDataPath + ":BaselineSS"
+				duplicate /o /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, $InputDataPath + ":DeltaSS"
+				wave DeltaSS = $InputDataPath + ":DeltaSS"
+				DeltaSS -= BaselineSS
+				DeltaSS = abs(DeltaSS)	
 			End
 			
-// multithread 
-// Threadsafe
+			Function CalculateIR(panelTitle, ClampMode)
+				string panelTitle
+				variable ClampMode
+				
+			End

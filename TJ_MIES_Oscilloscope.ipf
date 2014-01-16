@@ -12,7 +12,7 @@ wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$Wave
 string ADChannelName= "AD"
 string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 RemoveTracesOnGraph(oscilloscopeSubWindow)
-
+ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
 YaxisSpacing=1/((itemsinlist(ADChannelList)))
 Spacer=0.015
@@ -28,15 +28,19 @@ appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((
 ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
 Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName
 ModifyGraph/w=$oscilloscopeSubWindow lblPosMode=1
-
 YaxisHigh-=YaxisSpacing
 YaxisLow-=YaxisSpacing
 
 endfor
 ModifyGraph/w=$oscilloscopeSubWindow freePos=0
+ModifyGraph /w = $oscilloscopeSubWindow Live =1// prevents autoscaling!! may want to add this as a user feature!!
 
 SetAxis/w=$oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle)*(ITCMinSamplingInterval(panelTitle)/1000))/4)
 End
+
+TextBox/W=$graphName/C/N=RunText "Run "+num2istr(runNumber)
+prompt
+extract
 //=========================================================================================
 
 Function/s FindValueInColumnof2Dwave(Value, Column, TwoDWave)//DA = 1, AD = 0, DO = 3
