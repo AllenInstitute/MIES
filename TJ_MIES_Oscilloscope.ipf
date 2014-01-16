@@ -5,6 +5,7 @@ wave WaveToPlot
 string panelTitle
 //panelTitle="itc1600_dev_0"
 string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
+ModifyGraph /w = $oscilloscopeSubWindow Live =0
 variable i =  0
 string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":"
 wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath+"ITCChanConfigWave"
@@ -12,7 +13,7 @@ wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$Wave
 string ADChannelName= "AD"
 string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 RemoveTracesOnGraph(oscilloscopeSubWindow)
-ModifyGraph /w = $oscilloscopeSubWindow Live = 0
+
 variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
 YaxisSpacing=1/((itemsinlist(ADChannelList)))
 Spacer=0.015
@@ -24,16 +25,16 @@ for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 
 ADChannelName="AD"+stringfromlist(i, ADChannelList,";")
 appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
-
 ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
 Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName
 ModifyGraph/w=$oscilloscopeSubWindow lblPosMode=1
 YaxisHigh-=YaxisSpacing
 YaxisLow-=YaxisSpacing
+//ModifyGraph /w = $oscilloscopeSubWindow Live =0// prevents autoscaling!! may want to add this as a user feature!!
 
 endfor
 ModifyGraph/w=$oscilloscopeSubWindow freePos=0
-ModifyGraph /w = $oscilloscopeSubWindow Live =1// prevents autoscaling!! may want to add this as a user feature!!
+//ModifyGraph /w = $oscilloscopeSubWindow Live =1// prevents autoscaling!! may want to add this as a user feature!!
 
 SetAxis/w=$oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle)*(ITCMinSamplingInterval(panelTitle)/1000))/4)
 End
@@ -50,7 +51,6 @@ variable i=0, a=2
 string RowsThatContainValue = ""
 
 //duplicate/free/r=[][Column] TwoDwave, F
-
 	do
 	
 		if(TwoDWave[i][Column]==Value)

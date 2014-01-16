@@ -52,6 +52,7 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
 	make /n = (12,8) $ChanAmpAssignPath
 	wave ChanAmpAssign = $ChanAmpAssignPath
+	ChanAmpAssign = nan
 	endif
 
 	duplicate/free ChanAmpAssign ChanAmpAssignOrig

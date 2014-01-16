@@ -160,7 +160,7 @@ Function MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for th
 	string panelTitle
 	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
 	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-	make /o /n = (12,8) $ChanAmpAssignPath
+	make /o /n = (12,8) $ChanAmpAssignPath = nan
 End
 //=====================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW

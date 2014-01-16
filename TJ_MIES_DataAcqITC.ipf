@@ -220,13 +220,14 @@ End
 Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string/G PanelTitleG = panelTitle
 	string cmd
 	variable i=0
 	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable/G BackgroundTPCount = 0
 	doupdate
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	// open ITC device
@@ -236,12 +237,14 @@ Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	execute cmd
 	CtrlNamedBackground TestPulse, period=2, proc=TestPulseFunc
 	CtrlNamedBackground TestPulse, start
+
+
 End
 //======================================================================================
 
 Function TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
-	NVAR StopCollectionPoint, ADChannelToMonitor
+	NVAR StopCollectionPoint, ADChannelToMonitor, BackgroundTPCount
 	SVAR panelTitleG
 	String cmd, Keyboard
 	string paneltitle = panelTitleG
@@ -251,6 +254,7 @@ Function TestPulseFunc(s)
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	string CountPath=WavePath+"count"
+	string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
 		sprintf cmd, "ITCStartAcq"
@@ -270,10 +274,14 @@ Function TestPulseFunc(s)
 		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 		CreateAndScaleTPHoldingWave(panelTitle)
-		TPDelta(panelTitle, WavePath + ":TestPulse") 
+		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
 		//doupdate	
-
+		BackgroundTPCount +=1
+		if(mod(BackgroundTPCount,30)==0 || BackgroundTPCount == 1)
+			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
+			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
+		endif
 		if(exists(countPath)==0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
@@ -314,10 +322,13 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
 	string cmd
-	variable i=0
+	variable i = 0
 	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
 	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
-	
+	string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
+	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
+	//doupdate /w = $oscilloscopeSubWindow
+	//ModifyGraph /w = $oscilloscopeSubWindow Live =1
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	
 	//wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
@@ -361,13 +372,17 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		sprintf cmd, "ITCStopAcq/z=0"
 		Execute cmd
 		CreateAndScaleTPHoldingWave(panelTitle)
-		TPDelta(panelTitle, WavePath + ":TestPulse") 
+		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		doupdate
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
 		//doupdate
 		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-		
+	if(mod(i,50) == 0)
+		ModifyGraph /w = $oscilloscopeSubWindow Live =0
+		ModifyGraph /w = $oscilloscopeSubWindow Live =1
+	endif
+	i += 1	
 	Keyboard = KeyboardState("")
 	while (cmpstr(Keyboard[9], " ") != 0)// 
 	
