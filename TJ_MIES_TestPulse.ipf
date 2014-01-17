@@ -1,15 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 
-// The test pulse is a specia DA wave. As such it isn't stored with the other DA waves in the wavebuilder folders.
-//This allows different ITC devices to have TestPulse waves with different parameters.
-//Unfortunately it also creates special cases in the code where a different path needs to be provided when a test pulse is being used.
-//The logic of having different TP waves is slightly flawed given that channels on a DAC are already limited to a single TP wave
-//The workaround would be a different scaling factor on each channel but this would scaling would need to be applied to the TP holding wave.
-//For now I am leaving this limitation
-//having panel specific Test pulse waves was initiated with resistance calculations in mind. I wanted to create globals that stored the 
-// TP parameters and use these as input parameters for resistance calculation
-
 Function SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
 	string panelTitle
 	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
@@ -66,7 +57,7 @@ Function StoreDAScale(SelectedDACScale, panelTitle)
 	variable i
 	
 	do
-		if((str2num(stringfromlist(i,ListOfCheckedDA,";")))==1)
+		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
 			DAPopUpMenu = "Scale_DA_0"+num2str(i)
 			controlinfo /w = $panelTitle $DAPopUpMenu 
 			SelectedDACScale[i] = v_value
@@ -102,7 +93,7 @@ Function SetDAScaleToOne(panelTitle)
 			setvariable $DASetVariable value = _num:ScalingFactor, win = $panelTitle
 		endif
 	i+=1
-	while(i<itemsinlist(ListOfCheckedDA))
+	while(i < itemsinlist(ListOfCheckedDA))
 end
 
 Function RestoreDAScale(SelectedDACScale, panelTitle)
@@ -194,7 +185,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	else // runs TP
 		StartTestPulse(DeviceType,DeviceNum, panelTitle)
-		controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
+		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 		if(v_value == 0)
 			SmoothResizePanel(-340, panelTitle)
 		endif
@@ -267,8 +258,6 @@ Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)
 	variable NoOfADChannels = itemsinlist(ADchannelList)
 	wave Resistance = $InputDataPath + ":Resistance"
 	NVAR Amplitude = $InputDataPath + ":Amplitude"
-	
-	
 End
 
 //  function that creates string of clamp modes based on the ad channel associated with the headstage	
@@ -282,10 +271,9 @@ Function TP_ClampModeString(panelTitle)
 	ClampModeString = ""
 	
 	do
-	ClampModeString += (num2str(TP_HeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
-	i += 1
+		ClampModeString += (num2str(TP_HeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
+		i += 1
 	while(i < itemsinlist(ADChannelList))
-	print clampmodestring
 End
 
 Function TP_ChanClampModeWaveUpdate(panelTitle) // populates a 2 column wave. column 1 is DA, column 2 is AD. 
@@ -321,7 +309,7 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 		if(ChanAmpAssign[4][i] == AD)
 		 	break
 		endif
-	i+=1
+	i += 1
 	while(i<7)	
 	
 	if(ChanAmpAssign[4][i] == AD)
