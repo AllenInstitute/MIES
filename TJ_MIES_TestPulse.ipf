@@ -79,12 +79,27 @@ Function SetDAScaleToOne(panelTitle)
 	string panelTitle
 	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
 	string DASetVariable
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	variable ScalingFactor
 	variable i
 	
 	do
 		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
 			DASetVariable = "Scale_DA_0"+num2str(i)
-			setvariable $DASetVariable value = _num:1, win = $panelTitle
+			if(ChannelClampMode[i][0] == 0)
+				ScalingFactor = 1
+			endif
+			
+			if(ChannelClampMode[i][0] == 1)
+				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
+				ScalingFactor = v_value
+				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+				ScalingFactor /= v_value
+				print scalingfactor
+			endif
+			
+			setvariable $DASetVariable value = _num:ScalingFactor, win = $panelTitle
 		endif
 	i+=1
 	while(i<itemsinlist(ListOfCheckedDA))
