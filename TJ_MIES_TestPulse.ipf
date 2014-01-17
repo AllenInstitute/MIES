@@ -252,8 +252,11 @@ Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)
 	variable NoOfADChannels = itemsinlist(ADchannelList)
 	wave Resistance = $InputDataPath + ":Resistance"
 	NVAR Amplitude = $InputDataPath + ":Amplitude"
+	
+	
 End
-	// make function that creates string of clamp modes		
+
+//  function that creates string of clamp modes based on the ad channel associated with the headstage	
 Function TP_ClampModeString(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -267,6 +270,29 @@ Function TP_ClampModeString(panelTitle)
 	ClampModeString += (num2str(TP_HeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
 	i += 1
 	while(i < itemsinlist(ADChannelList))
+	print clampmodestring
+End
+
+Function TP_ChanClampModeWaveUpdate(panelTitle) // populates a 2 column wave. column 1 is DA, column 2 is AD. 
+// the values 0, 1, or 2 are used to indicate channel is off, channel is in vClamp mode, channel is in IClamp mode.
+	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string ChannelClampModeString = WavePath + ":ChannelClampMode"
+	
+	if(waveexists($ChannelClampModeString) == 0)// makes the storage wave if it does not exist
+		make /o /n = (16, 2) $ChannelClampModeString
+		wave /z ChannelClampMode = $ChannelClampModeString
+	endif
+	
+	variable i = 0
+	
+	do
+	
+	
+	
+		i =+ 1
+	while(i < 8)
+
 End
 
 Function TP_HeadstageUsingADC(panelTitle, AD)
@@ -277,12 +303,17 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 	variable i = 0
 	
 	do
-		if(ChanAmpAssign[4][i]==AD)
+		if(ChanAmpAssign[4][i] == AD)
 		 	break
 		endif
 	i+=1
 	while(i<7)	
-	return i
+	
+	if(ChanAmpAssign[4][i] == AD)
+		return i
+	else
+		return Nan
+	endif
 End
 
 Function TP_HeadstageMode(panelTitle, HeadStage)

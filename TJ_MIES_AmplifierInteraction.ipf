@@ -48,11 +48,16 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	controlinfo/w=$panelTitle Popup_Settings_HeadStage
 	HeadStageNo = str2num(s_value)
 	
-	If (waveexists(ChanAmpAssign) == 0)// checks to see if data storage wave exists, makes it if it doesn't
+	If (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
 	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
 	make /n = (12,8) $ChanAmpAssignPath
 	wave ChanAmpAssign = $ChanAmpAssignPath
 	ChanAmpAssign = nan
+	endif
+	
+	string ChannelClampModeString = WavePath + ":ChannelClampMode"
+		if(waveexists($ChannelClampModeString) == 0) // makes the storage wave if it does not exist. This wave stores the active clamp mode of AD channels. It is populated in a different procedure
+		make /o /n = (16, 2) $ChannelClampModeString = nan
 	endif
 
 	duplicate/free ChanAmpAssign ChanAmpAssignOrig
@@ -156,6 +161,8 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string DACheck, DAGain, ADCheck, ADGain
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck win = $panelTitle, value = 1
@@ -163,16 +170,22 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
 		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
 		
+		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode
+		
 		If(ChanAmpAssign[2][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
-		
+
+		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+
 		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
 		else
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
-		
+			
+		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+			
 		ADGain = "Gain_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]	
 		endif
@@ -184,10 +197,14 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 		
 		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
-		
+
+		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = ClampMode
+
 		If(ChanAmpAssign[6][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
+		
+		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
 		
 		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[6][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
@@ -195,10 +212,13 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
 		
+		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+		
 		ADGain = "Gain_AD_"+num2str(ChanAmpAssign[6][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]	
 		endif
 	endIf
+	
 End
 
 Function RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
@@ -207,17 +227,24 @@ Function RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string DACheck, DAGain, ADCheck, ADGain
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck value = 0
 		
+		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = nan
+		
 		If(ChanAmpAssign[2][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck value = 0
+		
+		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
 		else
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck value = 0
+		
+		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
 		endif
 	endIf
 
@@ -225,13 +252,18 @@ Function RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		CheckBox $DACheck value = 0
 		
+		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = nan
+		
 		If(ChanAmpAssign[6][HeadStageNo]<10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck value = 0
-	
+		
+		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
 		else
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck value = 0
+		
+		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
 		endif
 	endIf
 
@@ -247,7 +279,7 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value
 
-	if(mod(RadioButtonNo,2) == 0)//even numbers
+	if(mod(RadioButtonNo,2) == 0)//even numbers = VC
 		PairedRadioButton += (num2str(RadioButtonNo + 1))
 		checkbox $PairedRadioButton value=0
 		
