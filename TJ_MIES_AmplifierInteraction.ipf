@@ -170,7 +170,7 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
 		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
 		
-		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode
+		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode // this line of code updates the clamp mode status a channel
 		
 		If(ChanAmpAssign[2][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])

@@ -418,8 +418,9 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	variable i = 0// 
 	variable j = 0//
 	string ChannelStatus
-	wave ITCDataWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
-	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	string ITCDataWavePath = WavePath + ":ITCDataWave"
 	//string testPulsePath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
 	string ChanTypeWaveNameList, ChanTypeWaveName
 	string ResampledWaveName = "ResampledWave"
@@ -427,7 +428,8 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column
 	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+"count"
-	
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+
 	if(exists(CountPath) == 2)
 		NVAR count = $CountPath
 		column = count-1
@@ -444,7 +446,14 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			SetVarDAGain = "gain_DA_0" + num2str(i)
 			SetVarDAScale = "scale_DA_0" + num2str(i)
 			ControlInfo /w = $panelTitle $SetVarDAGain
-			DAGain = (3200 / v_value)//3200 = 1V
+			if(ChannelClampMode[i][0] == 0) // V-clamp
+				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per mv
+			endif
+			
+			if(ChannelClampMode[i][0] == 1) // I-clamp
+				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per pA
+			endif		
+			
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
 	

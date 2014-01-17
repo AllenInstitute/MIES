@@ -54,13 +54,14 @@ End
 Function ADScaling(WaveToScale, panelTitle)
 wave WaveToScale
 string panelTitle
-wave ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle) +":ITCChanConfigWave"
+string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+wave ITCChanConfigWave = $WavePath +":ITCChanConfigWave"
 string ADChannelList  =  RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 variable NoOfADColumns = NoOfChannelsSelected("ad", "check", panelTitle)
 variable StartOfADColumns =NoOfChannelsSelected("da", "check", panelTitle)
 string ADGainControlName
 variable gain, i
-
+wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 //Gain_AD_00
 	if(str2num(stringfromlist(i,ADChannelList,";"))<10)
@@ -70,24 +71,34 @@ for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 	endif
 	controlinfo/w=$panelTitle $ADGainControlName
 	gain=v_value
+	
+	if(ChannelClampMode[str2num(stringfromlist(i,ADChannelList,";"))][1] == 0) // V-clamp
 	gain*=3200// itc output will be multiplied by 1000 to convert to pA then divided by the gain
-
 	WaveToScale[][(StartOfADColumns+i)]/=gain
 	WaveToScale[][(StartOfADColumns+i)]*=1000
+	endif
+	
+	if(ChannelClampMode[str2num(stringfromlist(i,ADChannelList,";"))][1] == 1) // I-clamp
+	gain*=3200// 
+	WaveToScale[][(StartOfADColumns+i)]/=gain
+	//WaveToScale[][(StartOfADColumns+i)]*=1000
+	endif
+	
 endfor
 
 end
 
 Function DAScaling(WaveToScale, panelTitle)
-wave WaveToScale
-string panelTitle
+	wave WaveToScale
+	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-variable NoOfDAColumns = NoOfChannelsSelected("da", "check", panelTitle)
-string DAChannelList  =  RefToPullDatafrom2DWave(1,0, 1, ITCChanConfigWave)
-string DAGainControlName
-variable gain, i
+	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	variable NoOfDAColumns = NoOfChannelsSelected("da", "check", panelTitle)
+	string DAChannelList  =  RefToPullDatafrom2DWave(1,0, 1, ITCChanConfigWave)
+	string DAGainControlName
+	variable gain, i
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
 for(i=0;i<(itemsinlist(DAChannelList));i+=1)
 	if(str2num(stringfromlist(i,DAChannelList,";"))<10)
@@ -98,8 +109,15 @@ for(i=0;i<(itemsinlist(DAChannelList));i+=1)
 	controlinfo/w=$panelTitle $DAGainControlName
 	gain=v_value
 	
+	if(ChannelClampMode[str2num(stringfromlist(i,DAChannelList,";"))][0] == 0) // V-clamp
 	WaveToScale[][i]/=3200
 	WaveToScale[][i]*=gain
+	endif
+	
+	if(ChannelClampMode[str2num(stringfromlist(i,DAChannelList,";"))][0] == 1) // I-clamp
+	WaveToScale[][i]/=3200
+	WaveToScale[][i]*=gain
+	endif	
 endfor
 
 end
