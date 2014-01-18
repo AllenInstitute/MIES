@@ -75,7 +75,7 @@ for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 	if(ChannelClampMode[str2num(stringfromlist(i,ADChannelList,";"))][1] == 0) // V-clamp
 	gain*=3200// itc output will be multiplied by 1000 to convert to pA then divided by the gain
 	WaveToScale[][(StartOfADColumns+i)]/=gain
-	WaveToScale[][(StartOfADColumns+i)]*=1000
+	//WaveToScale[][(StartOfADColumns+i)]*=1000
 	endif
 	
 	if(ChannelClampMode[str2num(stringfromlist(i,ADChannelList,";"))][1] == 1) // I-clamp

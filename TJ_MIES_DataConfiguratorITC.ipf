@@ -155,15 +155,15 @@ End
 //=========================================================================================
 
 Function TotNoOfControlType(ControlType, ChannelType, panelTitle) // Ex. ChannelType = "DA", ControlType = "Check"
-string  ControlType, ChannelType, panelTitle
-string SearchString = ControlType + "_" + ChannelType + "_*"
-string ListString
-variable CatTot //Category Total
-
-ListString = ControlNameList(panelTitle,";",SearchString)
-CatTot = ItemsInlist(ListString,";")
-
-return CatTot
+	string  ControlType, ChannelType, panelTitle
+	string SearchString = ControlType + "_" + ChannelType + "_*"
+	string ListString
+	variable CatTot //Category Total
+	
+	ListString = ControlNameList(panelTitle,";",SearchString)
+	CatTot = ItemsInlist(ListString,";")
+	
+	return CatTot
 End
 
 
@@ -340,15 +340,22 @@ Function PlaceDataInITCChanConfigWave(PanelTitle)
 	variable j = 0//used to keep track of row of ITCChanConfigWave which config data is loaded into
 	variable ChannelType // = 0 for AD, = 1 for DA, = 3 for TTL
 	string ChannelStatus
-	wave ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle) 
+	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+	string UnitString = ""
 	
-	//Place DA config data
+	string UnitSetVarName = "Unit_DA_0"
 	ChannelType = 1
 	ChannelStatus = ControlStatusListString("DA", "Check", panelTitle)
+	
+	//Place DA config data
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
 			ITCChanConfigWave[j][0] = ChannelType
 			ITCChanConfigWave[j][1] = i
+			controlinfo /w = $panelTitle $UnitSetVarName + num2str(i)
+			UnitString += s_value + ";"
 			j += 1
 		endif
 		i += 1
@@ -358,16 +365,19 @@ Function PlaceDataInITCChanConfigWave(PanelTitle)
 	i = 0
 	ChannelStatus = ControlStatusListString("AD", "Check", panelTitle)
 	ChannelType = 0
-	
+	UnitSetVarName = "Unit_AD_0"
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
 			ITCChanConfigWave[j][0] = ChannelType
 			ITCChanConfigWave[j][1] = i
+			controlinfo /w = $panelTitle $UnitSetVarName + num2str(i)
+			UnitString += s_value + ";"
 			j += 1
 		endif
 		i+=1
 	while(i<(itemsinlist(ChannelStatus,";")))
 	
+	note ITCChanConfigWave, UnitString
 	//Place TTL config data
 	i = 0
 	ChannelType = 3
@@ -423,11 +433,11 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			SetVarDAScale = "scale_DA_0" + num2str(i)
 			ControlInfo /w = $panelTitle $SetVarDAGain
 			if(ChannelClampMode[i][0] == 0) // V-clamp
-				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per mv
+				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
 			endif
 			
 			if(ChannelClampMode[i][0] == 1) // I-clamp
-				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per pA
+				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
 			endif		
 			
 			ControlInfo /w = $panelTitle $SetVarDAScale
