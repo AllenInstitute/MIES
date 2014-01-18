@@ -76,7 +76,6 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	ChanAmpAssign[1][HeadStageNo] = v_value
 	ControlInfo /w = $panelTitle SetVar_Hardware_VC_DA_Unit	
 	ChanAmpAssignUnit[0][HeadStageNo] = s_value
-	print s_value
 	ControlInfo /w = $panelTitle Popup_Settings_VC_AD
 	ChanAmpAssign[2][HeadStageNo] = str2num(s_value)
 	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain_0
@@ -129,19 +128,26 @@ Function UpdateChanAmpAssignPanel(PanelTitle)
 	Variable HeadStageNo
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
-	
+	wave / T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
 	controlinfo /w =$panelTitle Popup_Settings_HeadStage
 	HeadStageNo = str2num(s_value)
 	
+	// VC DA settings
 	Popupmenu Popup_Settings_VC_DA win = $panelTitle, mode = (ChanAmpAssign[0][HeadStageNo] + 1)
 	Setvariable setvar_Settings_VC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
+	// VC AD settings
 	Popupmenu Popup_Settings_VC_AD win = $panelTitle, mode = (ChanAmpAssign[2][HeadStageNo] + 1)
 	Setvariable setvar_Settings_VC_ADgain_0 win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
-	
+	Setvariable SetVar_Hardware_VC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
+	// IC DA settings
 	Popupmenu Popup_Settings_IC_DA win = $panelTitle, mode = (ChanAmpAssign[4][HeadStageNo] + 1)
 	Setvariable setvar_Settings_IC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[2][HeadStageNo]
+	// IC AD settings
 	Popupmenu  Popup_Settings_IC_AD win = $panelTitle, mode = (ChanAmpAssign[6][HeadStageNo] + 1)
 	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
 	
 	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo]
 End
@@ -176,8 +182,9 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
-	string DACheck, DAGain, ADCheck, ADGain
+	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
 	
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
@@ -186,24 +193,35 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
 		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
 		
-		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode // this line of code updates the clamp mode status a channel
+		DAUnit = "Unit_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
+		SetVariable $DAUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
+		
+		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode // this line of code updates the wave that stores the clamp mode status a channel
 		
 		If(ChanAmpAssign[2][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
 
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
-
 		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
+
+		ADUnit = "Unit_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
+		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
+			
+		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+
 		else
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
 			
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
-			
 		ADGain = "Gain_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]	
+
+		ADUnit = "Unit_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
+		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]	
+				
+		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+
 		endif
 	endIf
 	
@@ -214,24 +232,35 @@ Function ApplyClampModeSavedSettings(HeadStageNo, ClampMode, panelTitle)
 		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
 
+		DAUnit = "Unit_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
+		SetVariable $DAUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[2][HeadStageNo]
+		
 		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = ClampMode
 
 		If(ChanAmpAssign[6][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
-		
+				
 		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[6][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+
+		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
+		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
+		
+		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+
 		else
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
-		
+				
 		ADGain = "Gain_AD_"+num2str(ChanAmpAssign[6][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]	
+
+		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
+		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
+		
+		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+
 		endif
 	endIf
 	
