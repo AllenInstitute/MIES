@@ -44,15 +44,22 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	wave W_telegraphServers
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
+	wave /z /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
 
 	controlinfo/w=$panelTitle Popup_Settings_HeadStage
 	HeadStageNo = str2num(s_value)
 	
 	If (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
-	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-	make /n = (12,8) $ChanAmpAssignPath
-	wave ChanAmpAssign = $ChanAmpAssignPath
-	ChanAmpAssign = nan
+		string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
+		make /n = (12,8) $ChanAmpAssignPath
+		wave ChanAmpAssign = $ChanAmpAssignPath
+		ChanAmpAssign = nan
+	endif
+	
+	If (waveexists($WavePath + ":ChanAmpAssignUnit") == 0)// if the wave doesn't exist, it makes the wave that channel unit info is stored in
+		make /T  /n = (4,8)  $ChanAmpAssignUnitPath
+		wave /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
 	endif
 	
 	string ChannelClampModeString = WavePath + ":ChannelClampMode"
@@ -67,20 +74,29 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	ChanAmpAssign[0][HeadStageNo] = str2num(s_value)
 	ControlInfo /w = $panelTitle setvar_Settings_VC_DAgain
 	ChanAmpAssign[1][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_VC_DA_Unit	
+	ChanAmpAssignUnit[0][HeadStageNo] = s_value
+	print s_value
 	ControlInfo /w = $panelTitle Popup_Settings_VC_AD
 	ChanAmpAssign[2][HeadStageNo] = str2num(s_value)
 	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain_0
 	ChanAmpAssign[3][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_VC_AD_Unit
+	ChanAmpAssignUnit[1][HeadStageNo] = s_value
 	
 	//Assigns I-clamp settings for a particular headstage
 	ControlInfo /w = $panelTitle Popup_Settings_IC_DA
 	ChanAmpAssign[4][HeadStageNo] = str2num(s_value)
 	ControlInfo /w = $panelTitle setvar_Settings_IC_DAgain
 	ChanAmpAssign[5][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_IC_DA_Unit	
+	ChanAmpAssignUnit[2][HeadStageNo] = s_value
 	ControlInfo /w = $panelTitle Popup_Settings_IC_AD
 	ChanAmpAssign[6][HeadStageNo] = str2num(s_value)
 	ControlInfo /w = $panelTitle setvar_Settings_IC_ADgain
 	ChanAmpAssign[7][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_IC_AD_Unit	
+	ChanAmpAssignUnit[3][HeadStageNo] = s_value
 	
 	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
 	if(waveexists(W_telegraphServers) == 1)
