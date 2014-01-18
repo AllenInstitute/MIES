@@ -68,7 +68,9 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 	variable DisplayDAChan
 	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, Spacer,DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
 	string AxisName, NewTraceName
-	
+	string WavePath = getuserdata(panelTitle, "", "DataFolderPath")
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+
 	controlinfo check_DataBrowser_SweepOverlay
 	if(v_value == 0)
 		DB_RemoveAndKillWavesOnGraph(panelTitle, panelTitle+"#DataBrowserGraph")
@@ -109,7 +111,15 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 				duplicate /o /r = (0,inf)(i) SweepName $NewTraceName
 				appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
 				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
-				Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName
+				
+				if(ChannelClampMode[i][0] == 0) // V-Clamp
+				Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName + "(pA)"
+				endif
+				
+				if(ChannelClampMode[i][0] == 1) // V-Clamp
+				Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName + "(mV)"
+				endif
+				
 				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" lblPosMode = 1
 				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" standoff($AxisName) = 0,freePos($AxisName) = 0
 			endif
@@ -123,7 +133,14 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 			duplicate /o /r = (0,inf)(i+NumberOfDAchannels) SweepName $NewTraceName
 			appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
 			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
-			Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName
+			if(ChannelClampMode[i][1] == 0) // V-Clamp
+			Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName + "(pA)"
+			endif
+			
+			if(ChannelClampMode[i][1] == 1) // V-Clamp
+			Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName + "(mV)"
+			endif		
+			
 			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" lblPosMode = 1
 			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" standoff($AxisName) = 0, freePos($AxisName) = 0
 		endif

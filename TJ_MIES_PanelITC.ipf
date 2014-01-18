@@ -1,8 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Window ITC_Ephys_panel() : Panel
+Window itc_ephys_panel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(1383,686,1866,1252)
+	NewPanel /W=(81,933,561,1475)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -52,415 +52,408 @@ Window ITC_Ephys_panel() : Panel
 	TabControl ADC,userdata(ResizeControlsInfo)= A"!!,>Mz!!#CTJ,hm&z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl ADC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl ADC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TabControl ADC,tabLabel(0)="Data Acquisition",tabLabel(1)="DAC"
-	TabControl ADC,tabLabel(2)="ADC",tabLabel(3)="TTL",tabLabel(4)="Asynchronous"
+	TabControl ADC,tabLabel(0)="Data Acquisition",tabLabel(1)="DA",tabLabel(2)="AD"
+	TabControl ADC,tabLabel(3)="TTL",tabLabel(4)="Asynchronous"
 	TabControl ADC,tabLabel(5)="Settings",tabLabel(6)="Hardware",value= 0
-	CheckBox Check_AD_00,pos={15,46},size={42,14},disable=1,proc=CheckProc_DataAcq_UpdateSampInt,title="AD 0"
+	CheckBox Check_AD_00,pos={20,60},size={24,14},disable=1,proc=CheckProc_DataAcq_UpdateSampInt,title="0"
 	CheckBox Check_AD_00,help={"hello!"},userdata(tabnum)=  "2"
 	CheckBox Check_AD_00,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo)= A"!!,B)!!#>F!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_00,value= 0
-	CheckBox Check_AD_01,pos={15,92},size={42,14},disable=1,title="AD 1"
+	CheckBox Check_AD_00,value= 1,side= 1
+	CheckBox Check_AD_01,pos={20,107},size={24,14},disable=1,title="1"
 	CheckBox Check_AD_01,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo)= A"!!,B)!!#?q!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_01,value= 0
-	CheckBox Check_AD_02,pos={15,139},size={42,14},disable=1,title="AD 2"
+	CheckBox Check_AD_01,value= 0,side= 1
+	CheckBox Check_AD_02,pos={20,154},size={24,14},disable=1,title="2"
 	CheckBox Check_AD_02,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo)= A"!!,B)!!#@o!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_02,value= 0
-	CheckBox Check_AD_03,pos={15,186},size={42,14},disable=1,title="AD 3"
+	CheckBox Check_AD_02,value= 0,side= 1
+	CheckBox Check_AD_03,pos={20,201},size={24,14},disable=1,title="3"
 	CheckBox Check_AD_03,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_03,userdata(ResizeControlsInfo)= A"!!,B)!!#AI!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_03,value= 0
-	CheckBox Check_AD_04,pos={15,233},size={42,14},disable=1,title="AD 4"
+	CheckBox Check_AD_03,value= 0,side= 1
+	CheckBox Check_AD_04,pos={20,248},size={24,14},disable=1,title="4"
 	CheckBox Check_AD_04,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_04,userdata(ResizeControlsInfo)= A"!!,B)!!#B#!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_04,value= 0
-	CheckBox Check_AD_05,pos={15,280},size={42,14},disable=1,title="AD 5"
+	CheckBox Check_AD_04,value= 0,side= 1
+	CheckBox Check_AD_05,pos={20,295},size={24,14},disable=1,title="5"
 	CheckBox Check_AD_05,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_05,userdata(ResizeControlsInfo)= A"!!,B)!!#BF!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_05,value= 0
-	CheckBox Check_AD_06,pos={15,327},size={42,14},disable=1,title="AD 6"
+	CheckBox Check_AD_05,value= 0,side= 1
+	CheckBox Check_AD_06,pos={20,342},size={24,14},disable=1,title="6"
 	CheckBox Check_AD_06,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_06,userdata(ResizeControlsInfo)= A"!!,B)!!#B]J,hna!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_06,value= 0
-	CheckBox Check_AD_07,pos={15,374},size={42,14},disable=1,title="AD 7"
+	CheckBox Check_AD_06,value= 0,side= 1
+	CheckBox Check_AD_07,pos={20,390},size={24,14},disable=1,title="7"
 	CheckBox Check_AD_07,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_07,userdata(ResizeControlsInfo)= A"!!,B)!!#Bu!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_07,value= 0
-	CheckBox Check_AD_08,pos={169,46},size={42,14},disable=1,title="AD 8"
+	CheckBox Check_AD_07,value= 0,side= 1
+	CheckBox Check_AD_08,pos={190,60},size={24,14},disable=1,title="8"
 	CheckBox Check_AD_08,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_08,userdata(ResizeControlsInfo)= A"!!,G9!!#>F!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_08,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_08,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_08,value= 0
-	CheckBox Check_AD_09,pos={169,93},size={42,14},disable=1,title="AD 9"
+	CheckBox Check_AD_08,value= 0,side= 1
+	CheckBox Check_AD_09,pos={190,107},size={24,14},disable=1,title="9"
 	CheckBox Check_AD_09,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_09,userdata(ResizeControlsInfo)= A"!!,G9!!#?s!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_09,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_09,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_09,value= 0
-	CheckBox Check_AD_10,pos={169,140},size={48,14},disable=1,title="AD 10"
+	CheckBox Check_AD_09,value= 0,side= 1
+	CheckBox Check_AD_10,pos={184,154},size={30,14},disable=1,title="10"
 	CheckBox Check_AD_10,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_10,userdata(ResizeControlsInfo)= A"!!,G9!!#@p!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_10,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_10,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_10,value= 0
-	CheckBox Check_AD_12,pos={169,234},size={48,14},disable=1,title="AD 12"
+	CheckBox Check_AD_10,value= 0,side= 1
+	CheckBox Check_AD_12,pos={184,248},size={30,14},disable=1,title="12"
 	CheckBox Check_AD_12,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_12,userdata(ResizeControlsInfo)= A"!!,G9!!#B$!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_12,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_12,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_12,value= 0
-	CheckBox Check_AD_11,pos={169,187},size={48,14},disable=1,title="AD 11"
+	CheckBox Check_AD_12,value= 0,side= 1
+	CheckBox Check_AD_11,pos={184,202},size={30,14},disable=1,title="11"
 	CheckBox Check_AD_11,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo)= A"!!,G9!!#AJ!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_11,value= 0
-	SetVariable Gain_AD_00,pos={70,44},size={75,16},disable=1,title="gain"
-	SetVariable Gain_AD_00,help={"hello"},userdata(tabnum)=  "2"
-	SetVariable Gain_AD_00,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_AD_11,value= 0,side= 1
+	SetVariable Gain_AD_00,pos={49,59},size={50,16},disable=1,help={"hello"}
+	SetVariable Gain_AD_00,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo)= A"!!,EF!!#>>!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_00,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_01,pos={70,91},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_00,limits={0,inf,1},value= _NUM:0.0199999995529652
+	SetVariable Gain_AD_01,pos={49,106},size={50,16},disable=1
 	SetVariable Gain_AD_01,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_01,userdata(ResizeControlsInfo)= A"!!,EF!!#?o!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_01,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_02,pos={70,138},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_01,limits={0,inf,1},value= _NUM:2
+	SetVariable Gain_AD_02,pos={49,153},size={50,16},disable=1
 	SetVariable Gain_AD_02,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_02,userdata(ResizeControlsInfo)= A"!!,EF!!#@n!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_02,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_03,pos={70,185},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_02,limits={0,inf,1},value= _NUM:5
+	SetVariable Gain_AD_03,pos={49,200},size={50,16},disable=1
 	SetVariable Gain_AD_03,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_03,userdata(ResizeControlsInfo)= A"!!,EF!!#AH!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_03,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_04,pos={70,232},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_04,pos={49,247},size={50,16},disable=1
 	SetVariable Gain_AD_04,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_04,userdata(ResizeControlsInfo)= A"!!,EF!!#B\"!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_04,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_05,pos={70,279},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_05,pos={49,294},size={50,16},disable=1
 	SetVariable Gain_AD_05,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_05,userdata(ResizeControlsInfo)= A"!!,EF!!#BEJ,hp%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_05,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_06,pos={70,326},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_06,pos={49,341},size={50,16},disable=1
 	SetVariable Gain_AD_06,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_06,userdata(ResizeControlsInfo)= A"!!,EF!!#B]!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_06,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_07,pos={70,373},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_07,pos={49,388},size={50,16},disable=1
 	SetVariable Gain_AD_07,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_07,userdata(ResizeControlsInfo)= A"!!,EF!!#BtJ,hp%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_07,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_08,pos={224,45},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_08,pos={218,59},size={50,16},disable=1
 	SetVariable Gain_AD_08,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_08,userdata(ResizeControlsInfo)= A"!!,Gp!!#>B!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_08,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_08,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_08,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_09,pos={224,92},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_09,pos={218,106},size={50,16},disable=1
 	SetVariable Gain_AD_09,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_09,userdata(ResizeControlsInfo)= A"!!,Gp!!#?q!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_09,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_09,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_09,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_10,pos={224,139},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_10,pos={218,153},size={50,16},disable=1
 	SetVariable Gain_AD_10,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_10,userdata(ResizeControlsInfo)= A"!!,Gp!!#@o!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_10,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_10,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_10,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_11,pos={224,186},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_11,pos={218,200},size={50,16},disable=1
 	SetVariable Gain_AD_11,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_11,userdata(ResizeControlsInfo)= A"!!,Gp!!#AI!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_11,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_11,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_11,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_12,pos={224,233},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_12,pos={218,247},size={50,16},disable=1
 	SetVariable Gain_AD_12,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_12,userdata(ResizeControlsInfo)= A"!!,Gp!!#B#!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_12,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_12,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_12,limits={0,inf,1},value= _NUM:0
-	CheckBox Check_AD_13,pos={169,281},size={48,14},disable=1,title="AD 13"
+	CheckBox Check_AD_13,pos={184,295},size={30,14},disable=1,title="13"
 	CheckBox Check_AD_13,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_13,userdata(ResizeControlsInfo)= A"!!,G9!!#BFJ,ho$!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_13,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_13,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_13,value= 0
-	CheckBox Check_AD_14,pos={169,328},size={48,14},disable=1,title="AD 14"
+	CheckBox Check_AD_13,value= 0,side= 1
+	CheckBox Check_AD_14,pos={184,342},size={30,14},disable=1,title="14"
 	CheckBox Check_AD_14,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_14,userdata(ResizeControlsInfo)= A"!!,G9!!#B^!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_14,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_14,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_14,value= 0
-	CheckBox Check_AD_15,pos={169,375},size={48,14},disable=1,title="AD 15"
+	CheckBox Check_AD_14,value= 0,side= 1
+	CheckBox Check_AD_15,pos={184,390},size={30,14},disable=1,title="15"
 	CheckBox Check_AD_15,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_15,userdata(ResizeControlsInfo)= A"!!,G9!!#BuJ,ho$!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_15,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_15,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_15,value= 0
-	SetVariable Gain_AD_13,pos={224,280},size={75,16},disable=1,title="gain"
+	CheckBox Check_AD_15,value= 0,side= 1
+	SetVariable Gain_AD_13,pos={218,294},size={50,16},disable=1
 	SetVariable Gain_AD_13,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_13,userdata(ResizeControlsInfo)= A"!!,Gp!!#BF!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_13,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_13,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_13,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_14,pos={224,327},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_14,pos={218,341},size={50,16},disable=1
 	SetVariable Gain_AD_14,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_14,userdata(ResizeControlsInfo)= A"!!,Gp!!#B]J,hp%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_14,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_14,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_14,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_AD_15,pos={224,374},size={75,16},disable=1,title="gain"
+	SetVariable Gain_AD_14,limits={0,inf,1},value= _NUM:3
+	SetVariable Gain_AD_15,pos={218,388},size={50,16},disable=1
 	SetVariable Gain_AD_15,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_15,userdata(ResizeControlsInfo)= A"!!,Gp!!#Bu!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_15,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_15,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_15,limits={0,inf,1},value= _NUM:0
-	CheckBox Check_DA_00,pos={15,74},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 0"
+	SetVariable Gain_AD_15,limits={0,inf,1},value= _NUM:5
+	CheckBox Check_DA_00,pos={15,74},size={24,14},disable=1,proc=DAorTTLCheckProc,title="0"
 	CheckBox Check_DA_00,help={"hello!"},userdata(tabnum)=  "1"
 	CheckBox Check_DA_00,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo)= A"!!,B)!!#?M!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_00,value= 0
-	CheckBox Check_DA_01,pos={15,120},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 1"
+	CheckBox Check_DA_00,value= 1,side= 1
+	CheckBox Check_DA_01,pos={15,120},size={24,14},disable=1,proc=DAorTTLCheckProc,title="1"
 	CheckBox Check_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo)= A"!!,B)!!#@T!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_01,value= 0
-	CheckBox Check_DA_02,pos={15,167},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 2"
+	CheckBox Check_DA_01,value= 0,side= 1
+	CheckBox Check_DA_02,pos={15,167},size={24,14},disable=1,proc=DAorTTLCheckProc,title="2"
 	CheckBox Check_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_02,userdata(ResizeControlsInfo)= A"!!,B)!!#A6!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_02,value= 0
-	CheckBox Check_DA_03,pos={15,214},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 3"
+	CheckBox Check_DA_02,value= 0,side= 1
+	CheckBox Check_DA_03,pos={15,214},size={24,14},disable=1,proc=DAorTTLCheckProc,title="3"
 	CheckBox Check_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_03,userdata(ResizeControlsInfo)= A"!!,B)!!#Ae!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_03,value= 0
-	CheckBox Check_DA_04,pos={15,260},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 4"
+	CheckBox Check_DA_03,value= 0,side= 1
+	CheckBox Check_DA_04,pos={15,260},size={24,14},disable=1,proc=DAorTTLCheckProc,title="4"
 	CheckBox Check_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_04,userdata(ResizeControlsInfo)= A"!!,B)!!#B<!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_04,value= 0
-	CheckBox Check_DA_05,pos={15,307},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 5"
+	CheckBox Check_DA_04,value= 0,side= 1
+	CheckBox Check_DA_05,pos={15,307},size={24,14},disable=1,proc=DAorTTLCheckProc,title="5"
 	CheckBox Check_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_05,userdata(ResizeControlsInfo)= A"!!,B)!!#BSJ,hna!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_05,value= 0
-	CheckBox Check_DA_06,pos={15,354},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 6"
+	CheckBox Check_DA_05,value= 0,side= 1
+	CheckBox Check_DA_06,pos={15,354},size={24,14},disable=1,proc=DAorTTLCheckProc,title="6"
 	CheckBox Check_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_06,userdata(ResizeControlsInfo)= A"!!,B)!!#Bk!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_06,value= 0
-	CheckBox Check_DA_07,pos={15,401},size={42,14},disable=1,proc=DAorTTLCheckProc,title="DA 7"
+	CheckBox Check_DA_06,value= 0,side= 1
+	CheckBox Check_DA_07,pos={15,401},size={24,14},disable=1,proc=DAorTTLCheckProc,title="7"
 	CheckBox Check_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_07,userdata(ResizeControlsInfo)= A"!!,B)!!#C-J,hna!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_07,value= 0
-	SetVariable Gain_DA_00,pos={70,74},size={40,16},disable=1,help={"hello"}
+	CheckBox Check_DA_07,value= 0,side= 1
+	SetVariable Gain_DA_00,pos={48,74},size={40,16},disable=1,help={"hello"}
 	SetVariable Gain_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo)= A"!!,EF!!#?M!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_00,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_01,pos={70,120},size={40,16},disable=1
+	SetVariable Gain_DA_00,limits={0,inf,1},value= _NUM:400
+	SetVariable Gain_DA_01,pos={48,120},size={40,16},disable=1
 	SetVariable Gain_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_01,userdata(ResizeControlsInfo)= A"!!,EF!!#@T!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_01,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_02,pos={70,167},size={40,16},disable=1
+	SetVariable Gain_DA_01,limits={0,inf,1},value= _NUM:1
+	SetVariable Gain_DA_02,pos={48,167},size={40,16},disable=1
 	SetVariable Gain_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_02,userdata(ResizeControlsInfo)= A"!!,EF!!#A6!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_DA_02,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_03,pos={70,214},size={40,16},disable=1
+	SetVariable Gain_DA_03,pos={48,214},size={40,16},disable=1
 	SetVariable Gain_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_03,userdata(ResizeControlsInfo)= A"!!,EF!!#Ae!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_DA_03,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_04,pos={70,260},size={40,16},disable=1
+	SetVariable Gain_DA_04,pos={48,260},size={40,16},disable=1
 	SetVariable Gain_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_04,userdata(ResizeControlsInfo)= A"!!,EF!!#B<!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_DA_04,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_05,pos={70,307},size={40,16},disable=1
+	SetVariable Gain_DA_05,pos={48,307},size={40,16},disable=1
 	SetVariable Gain_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_05,userdata(ResizeControlsInfo)= A"!!,EF!!#BSJ,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_DA_05,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_06,pos={70,354},size={40,16},disable=1
+	SetVariable Gain_DA_06,pos={48,354},size={40,16},disable=1
 	SetVariable Gain_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_06,userdata(ResizeControlsInfo)= A"!!,EF!!#Bk!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_06,limits={0,inf,1},value= _NUM:0
-	SetVariable Gain_DA_07,pos={70,401},size={40,16},disable=1
+	SetVariable Gain_DA_06,limits={0,inf,1},value= _NUM:4
+	SetVariable Gain_DA_07,pos={48,401},size={40,16},disable=1
 	SetVariable Gain_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_07,userdata(ResizeControlsInfo)= A"!!,EF!!#C-J,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_07,limits={0,inf,1},value= _NUM:0
-	PopupMenu Wave_DA_00,pos={114,72},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	SetVariable Gain_DA_07,limits={0,inf,1},value= _NUM:2
+	PopupMenu Wave_DA_00,pos={124,72},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo)= A"!!,FI!!#?I!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Wave_DA_00,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_00,fSize=7
-	PopupMenu Wave_DA_00,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_01,pos={114,118},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj,Bm+&dFCfDu6pY064!F"
+	PopupMenu Wave_DA_00,userdata(MenuExp)=  "FiveStep_DA_0;",fSize=7
+	PopupMenu Wave_DA_00,mode=3,popvalue="FiveStep_DA_0",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_01,pos={124,118},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo)= A"!!,FI!!#@P!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_01,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_01,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Wave_DA_01,fSize=7
-	PopupMenu Wave_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_02,pos={114,165},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_01,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_01,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]",fSize=7
+	PopupMenu Wave_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_02,pos={124,165},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo)= A"!!,FI!!#A4!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_02,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_02,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
+	PopupMenu Wave_DA_02,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_02,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj,Bm+&dFCfDu6pY064!F"
 	PopupMenu Wave_DA_02,fSize=7
-	PopupMenu Wave_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_03,pos={114,212},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_02,mode=2,popvalue="TestPulse",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_03,pos={124,212},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo)= A"!!,FI!!#Ac!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_03,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_03,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Wave_DA_03,fSize=7
-	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_04,pos={114,258},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_03,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_03,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]",fSize=7
+	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_04,pos={124,258},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo)= A"!!,FI!!#B;!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_04,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
+	PopupMenu Wave_DA_04,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj,Bm+&dFCfDu6pY064!F"
 	PopupMenu Wave_DA_04,fSize=7
-	PopupMenu Wave_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_05,pos={114,305},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_04,mode=2,popvalue="TestPulse",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_05,pos={124,305},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo)= A"!!,FI!!#BRJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_05,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Wave_DA_05,fSize=7
-	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_06,pos={114,352},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_05,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]",fSize=7
+	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_06,pos={124,352},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo)= A"!!,FI!!#Bj!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_06,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KUH"
-	PopupMenu Wave_DA_06,fSize=7
-	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Wave_DA_07,pos={114,399},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Wave_DA_06,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]",fSize=7
+	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Wave_DA_07,pos={124,399},size={143,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC,title="/V "
 	PopupMenu Wave_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo)= A"!!,FI!!#C,J,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_07,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Wave_DA_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZATMs#6pY074&fd/8:\"W26!l<-B5)0h6pY064'$*=D/_Hg?UR1e0KW]QATM3H6!l<-FD5T';flSi?UR1e0KUH"
-	PopupMenu Wave_DA_07,fSize=7
-	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	SetVariable Scale_DA_00,pos={245,74},size={40,16},disable=1
+	PopupMenu Wave_DA_07,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Wave_DA_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]",fSize=7
+	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	SetVariable Scale_DA_00,pos={273,74},size={40,16},disable=1
 	SetVariable Scale_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo)= A"!!,H0!!#?M!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_00,value= _NUM:1
-	SetVariable Scale_DA_01,pos={245,120},size={40,16},disable=1
+	SetVariable Scale_DA_00,value= _NUM:40
+	SetVariable Scale_DA_01,pos={273,120},size={40,16},disable=1
 	SetVariable Scale_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo)= A"!!,H0!!#@T!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_01,value= _NUM:0
-	SetVariable Scale_DA_02,pos={245,167},size={40,16},disable=1
+	SetVariable Scale_DA_02,pos={273,167},size={40,16},disable=1
 	SetVariable Scale_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo)= A"!!,H0!!#A6!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_02,value= _NUM:0
-	SetVariable Scale_DA_03,pos={245,214},size={40,16},disable=1
+	SetVariable Scale_DA_02,value= _NUM:1
+	SetVariable Scale_DA_03,pos={273,214},size={40,16},disable=1
 	SetVariable Scale_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo)= A"!!,H0!!#Ae!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_03,value= _NUM:0
-	SetVariable Scale_DA_04,pos={245,260},size={40,16},disable=1
+	SetVariable Scale_DA_04,pos={273,260},size={40,16},disable=1
 	SetVariable Scale_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo)= A"!!,H0!!#B<!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_04,value= _NUM:0
-	SetVariable Scale_DA_05,pos={245,307},size={40,16},disable=1
+	SetVariable Scale_DA_04,value= _NUM:1
+	SetVariable Scale_DA_05,pos={273,307},size={40,16},disable=1
 	SetVariable Scale_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo)= A"!!,H0!!#BSJ,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_05,value= _NUM:0
-	SetVariable Scale_DA_06,pos={245,354},size={40,16},disable=1
+	SetVariable Scale_DA_06,pos={273,354},size={40,16},disable=1
 	SetVariable Scale_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo)= A"!!,H0!!#Bk!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_06,value= _NUM:0
-	SetVariable Scale_DA_07,pos={245,401},size={40,16},disable=1
+	SetVariable Scale_DA_07,pos={273,401},size={40,16},disable=1
 	SetVariable Scale_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo)= A"!!,H0!!#C-J,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -494,7 +487,7 @@ Window ITC_Ephys_panel() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:2
 	Button StartTestPulseButton,pos={37,170},size={384,48},proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -505,21 +498,21 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox Check_DataAcq_00,userdata(ResizeControlsInfo)= A"!!,G$!!#?e!!#=#!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq_00,value= 0
+	CheckBox Check_DataAcq_00,value= 1
 	SetVariable SetVar_DataAcq_TPDuration,pos={100,147},size={110,16},title="Duration (ms)"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo)= A"!!,F)!!#Aq!!#@@!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_TPDuration,value= _NUM:0
-	SetVariable SetVar_DataAcq_TPAmplitude,pos={215,147},size={110,16},title="Amplitude"
+	SetVariable SetVar_DataAcq_TPDuration,value= _NUM:10
+	SetVariable SetVar_DataAcq_TPAmplitude,pos={215,147},size={100,16},title="Amplitude VC"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(ResizeControlsInfo)= A"!!,Ge!!#Aq!!#@@!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_TPAmplitude,value= _NUM:0
+	SetVariable SetVar_DataAcq_TPAmplitude,value= _NUM:10
 	CheckBox Check_TTL_00,pos={24,72},size={47,14},disable=1,proc=DAorTTLCheckProc,title="TTL 0"
 	CheckBox Check_TTL_00,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_TTL_00,userdata(ResizeControlsInfo)= A"!!,C$!!#?I!!#>J!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -573,59 +566,66 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Wave_TTL_00,userdata(ResizeControlsInfo)= A"!!,F3!!#?C!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_00,userdata(MenExp)= A"+tXpTDf0,//NY.,,'7O9?W9uu?SFQ;DIlagAT2!U<(pXQ4(`DRE`7'kE*lRD9OBJ8+o"
+	PopupMenu Wave_TTL_00,userdata(MenExp)=  "\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_00,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_01,pos={103,115},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_01,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_01,userdata(ResizeControlsInfo)= A"!!,F3!!#@J!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_01,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_01,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_02,pos={103,161},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_02,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_02,userdata(ResizeControlsInfo)= A"!!,F3!!#A0!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_02,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_02,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_03,pos={103,207},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_03,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_03,userdata(ResizeControlsInfo)= A"!!,F3!!#A^!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_03,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_03,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_04,pos={103,253},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_04,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_04,userdata(ResizeControlsInfo)= A"!!,F3!!#B7!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_04,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_04,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_05,pos={103,299},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_05,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_05,userdata(ResizeControlsInfo)= A"!!,F3!!#BOJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_05,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_05,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_06,pos={103,345},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_06,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_06,userdata(ResizeControlsInfo)= A"!!,F3!!#BfJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_06,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Wave_TTL_06,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Wave_TTL_07,pos={103,392},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Wave_TTL_07,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo)= A"!!,F3!!#C)!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_07,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Wave_TTL_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
-	CheckBox Check_TP_TrigOut,pos={332,148},size={56,14},title="\\JCTrig Out"
+	PopupMenu Wave_TTL_07,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Wave_TTL_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
+	CheckBox Check_TP_TrigOut,pos={426,172},size={56,14},title="\\JCTrig Out"
 	CheckBox Check_TP_TrigOut,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_TP_TrigOut,userdata(ResizeControlsInfo)= A"!!,H`!!#Ar!!#>n!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_TP_TrigOut,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -665,7 +665,7 @@ Window ITC_Ephys_panel() : Panel
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueColor=(65535,65535,65535)
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueBackColor=(0,0,0)
 	ValDisplay ValDisp_DataAcq_SamplingInt,limits={0,0,0},barmisc={0,1000}
-	ValDisplay ValDisp_DataAcq_SamplingInt,value= _NUM:0
+	ValDisplay ValDisp_DataAcq_SamplingInt,value= _NUM:5
 	CheckBox Check_Settings_DownSamp,pos={33,56},size={53,26},disable=1,proc=CheckProc,title="Down\rSample"
 	CheckBox Check_Settings_DownSamp,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_DownSamp,userdata(tabcontrol)=  "ADC"
@@ -927,7 +927,7 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo)= A"!!,Gn!!#?o!!#@e!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_BkgTP,value= 0
+	CheckBox Check_Settings_BkgTP,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq,pos={33,89},size={156,14},disable=1,title="Background Data Acquisition"
 	CheckBox Check_Settings_BackgrndDataAcq,help={"You may notice that onscreen update isn't as smooth with background data acquisition. This is normal and unavoidable."}
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabnum)=  "5"
@@ -941,7 +941,7 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox Radio_ClampMode_0,userdata(ResizeControlsInfo)= A"!!,G$!!#?1!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_0,value= 1,mode=1
+	CheckBox Radio_ClampMode_0,value= 0,mode=1
 	TitleBox Title_DataAcq_VC,pos={57,65},size={68,13},title="Voltage Clamp"
 	TitleBox Title_DataAcq_VC,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	TitleBox Title_DataAcq_VC,userdata(ResizeControlsInfo)= A"!!,Ds!!#?;!!#?A!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1002,13 +1002,13 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox Check_DataAcq_07,userdata(ResizeControlsInfo)= A"!!,I&J,hp9!!#=#!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq_07,value= 0
+	CheckBox Check_DataAcq_07,value= 1
 	CheckBox Radio_ClampMode_1,pos={148,111},size={16,14},proc=CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_1,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_1,userdata(ResizeControlsInfo)= A"!!,G$!!#@B!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_1,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_1,value= 0,mode=1
+	CheckBox Radio_ClampMode_1,value= 1,mode=1
 	CheckBox Radio_ClampMode_2,pos={181,62},size={16,14},proc=CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_2,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_2,userdata(ResizeControlsInfo)= A"!!,GE!!#?1!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1093,7 +1093,7 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Radio_ClampMode_15,value= 0,mode=1
-	TitleBox Title_settings_ChanlAssign,pos={15,200},size={390,135},disable=1,title="Channel and Amplifier Assignments"
+	TitleBox Title_settings_ChanlAssign,pos={15,200},size={389,172},disable=1,title="Channel and Amplifier Assignments"
 	TitleBox Title_settings_ChanlAssign,userdata(tabnum)=  "6"
 	TitleBox Title_settings_ChanlAssign,userdata(tabcontrol)=  "ADC"
 	TitleBox Title_settings_ChanlAssign,userdata(ResizeControlsInfo)= A"!!,B)!!#AW!!#C(!!#@kz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1101,48 +1101,48 @@ Window ITC_Ephys_panel() : Panel
 	TitleBox Title_settings_ChanlAssign,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_ChanlAssign,font="Trebuchet MS",frame=4,fStyle=0
 	TitleBox Title_settings_ChanlAssign,fixedSize=1
-	PopupMenu Popup_Settings_VC_DA,pos={35,272},size={53,21},disable=1,proc=PopMenuProc,title="DA"
+	PopupMenu Popup_Settings_VC_DA,pos={35,320},size={53,21},disable=1,proc=PopMenuProc,title="DA"
 	PopupMenu Popup_Settings_VC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_DA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo)= A"!!,Cp!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_VC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu Popup_Settings_VC_AD,pos={35,295},size={53,21},disable=1,proc=PopMenuProc,title="AD"
+	PopupMenu Popup_Settings_VC_AD,pos={35,345},size={53,21},disable=1,proc=PopMenuProc,title="AD"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo)= A"!!,Cp!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_VC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_IC_AD,pos={149,295},size={53,21},disable=1,proc=PopMenuProc,title="AD"
+	PopupMenu Popup_Settings_IC_AD,pos={218,345},size={53,21},disable=1,proc=PopMenuProc,title="AD"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo)= A"!!,G%!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_IC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	SetVariable setvar_Settings_VC_DAgain,pos={94,275},size={50,16},disable=1,proc=SetVarProc_CAA
+	SetVariable setvar_Settings_VC_DAgain,pos={97,323},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo)= A"!!,F!!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_DAgain,value= _NUM:0
-	SetVariable setvar_Settings_VC_ADgain_0,pos={94,298},size={50,16},disable=1,proc=SetVarProc_CAA
+	SetVariable setvar_Settings_VC_DAgain,value= _NUM:20
+	SetVariable setvar_Settings_VC_ADgain_0,pos={97,348},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo)= A"!!,F!!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_ADgain_0,value= _NUM:0
-	SetVariable setvar_Settings_IC_ADgain,pos={208,299},size={50,16},disable=1,proc=SetVarProc_CAA
+	SetVariable setvar_Settings_VC_ADgain_0,value= _NUM:0.5
+	SetVariable setvar_Settings_IC_ADgain,pos={280,348},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_IC_ADgain,value= _NUM:0
+	SetVariable setvar_Settings_IC_ADgain,value= _NUM:0.02
 	PopupMenu Popup_Settings_HeadStage,pos={35,228},size={95,21},disable=1,proc=PopMenuProc_Headstage,title="Head Stage"
 	PopupMenu Popup_Settings_HeadStage,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_HeadStage,userdata(tabcontrol)=  "ADC"
@@ -1150,35 +1150,35 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_HeadStage,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu popup_Settings_Amplifier,pos={168,228},size={224,21},bodyWidth=150,disable=1,proc=PopMenuProc,title="Amplfier (700B)"
+	PopupMenu popup_Settings_Amplifier,pos={169,228},size={224,21},bodyWidth=150,disable=1,proc=PopMenuProc,title="Amplfier (700B)"
 	PopupMenu popup_Settings_Amplifier,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,G8!!#As!!#Ao!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=2,popvalue="AmpNo 834001 Chan 1",value= #"\"- none -;\"+ ReturnListOf700BChannels()"
-	PopupMenu Popup_Settings_IC_DA,pos={149,272},size={53,21},disable=1,proc=PopMenuProc,title="DA"
+	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834001 Chan 1;AmpNo 834001 Chan 2;\""
+	PopupMenu Popup_Settings_IC_DA,pos={218,320},size={53,21},disable=1,proc=PopMenuProc,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo)= A"!!,G%!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_IC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	SetVariable setvar_Settings_IC_DAgain,pos={208,275},size={50,16},disable=1,proc=SetVarProc_CAA
+	SetVariable setvar_Settings_IC_DAgain,pos={281,323},size={50,16},disable=1,proc=SetVarProc_CAA
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_IC_DAgain,value= _NUM:0
-	TitleBox Title_settings_ChanlAssign_VC,pos={75,253},size={39,13},disable=1,title="V-Clamp"
-	TitleBox Title_settings_ChanlAssign_VC,userdata(tabnum)=  "6"
-	TitleBox Title_settings_ChanlAssign_VC,userdata(tabcontrol)=  "ADC"
-	TitleBox Title_settings_ChanlAssign_VC,userdata(ResizeControlsInfo)= A"!!,EP!!#B7!!#>*!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_settings_ChanlAssign_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_settings_ChanlAssign_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_settings_ChanlAssign_VC,frame=0
-	TitleBox Title_settings_ChanlAssign_IC,pos={182,253},size={35,13},disable=1,title="I-Clamp"
+	SetVariable setvar_Settings_IC_DAgain,value= _NUM:400
+	TitleBox Title_settings_Hardware_VC,pos={46,304},size={39,13},disable=1,title="V-Clamp"
+	TitleBox Title_settings_Hardware_VC,userdata(tabnum)=  "6"
+	TitleBox Title_settings_Hardware_VC,userdata(tabcontrol)=  "ADC"
+	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo)= A"!!,EP!!#B7!!#>*!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_settings_Hardware_VC,frame=0
+	TitleBox Title_settings_ChanlAssign_IC,pos={231,304},size={35,13},disable=1,title="I-Clamp"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(tabnum)=  "6"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(tabcontrol)=  "ADC"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo)= A"!!,GF!!#B7!!#=o!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1191,55 +1191,55 @@ Window ITC_Ephys_panel() : Panel
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HL!!#B8!!#@,!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Search_DA_00,pos={114,97},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_00,pos={142,97},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo)= A"!!,FI!!#@&!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_00,value= _STR:""
-	SetVariable Search_DA_01,pos={114,144},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_01,pos={142,144},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_01,userdata(ResizeControlsInfo)= A"!!,FI!!#@t!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_01,value= _STR:""
-	SetVariable Search_DA_02,pos={114,191},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_02,pos={142,191},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_02,userdata(ResizeControlsInfo)= A"!!,FI!!#AN!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_02,value= _STR:""
-	SetVariable Search_DA_03,pos={114,238},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_03,pos={142,238},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_03,userdata(ResizeControlsInfo)= A"!!,FI!!#B(!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_03,value= _STR:""
-	SetVariable Search_DA_04,pos={114,284},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_04,pos={142,284},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_04,userdata(ResizeControlsInfo)= A"!!,FI!!#BH!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_04,value= _STR:""
-	SetVariable Search_DA_05,pos={114,331},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_05,pos={142,331},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_05,userdata(ResizeControlsInfo)= A"!!,FI!!#B_J,hq2!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_05,value= _STR:""
-	SetVariable Search_DA_06,pos={114,378},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_06,pos={142,378},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_06,userdata(ResizeControlsInfo)= A"!!,FI!!#C\"!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_06,value= _STR:""
-	SetVariable Search_DA_07,pos={114,426},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_07,pos={142,426},size={124,16},disable=1,proc=SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_07,userdata(ResizeControlsInfo)= A"!!,FI!!#C:!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_07,value= _STR:""
-	CheckBox SearchUniversal_DA_00,pos={246,98},size={69,14},disable=1,proc=CheckProc_UniversalSearchString,title="Apply to all"
+	CheckBox SearchUniversal_DA_00,pos={274,98},size={69,14},disable=1,proc=CheckProc_UniversalSearchString,title="Apply to all"
 	CheckBox SearchUniversal_DA_00,userdata(tabnum)=  "1"
 	CheckBox SearchUniversal_DA_00,userdata(tabcontrol)=  "ADC"
 	CheckBox SearchUniversal_DA_00,userdata(ResizeControlsInfo)= A"!!,H1!!#@(!!#?C!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1301,7 +1301,7 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox SearchUniversal_TTL_00,value= 0
-	TitleBox Sensitivity_DA_00,pos={246,428},size={172,13},disable=1,title="V-Clamp: mV/V  I-Clamp: pA/V"
+	TitleBox Sensitivity_DA_00,pos={274,428},size={172,13},disable=1,title="V-Clamp: mV/V  I-Clamp: pA/V"
 	TitleBox Sensitivity_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	TitleBox Sensitivity_DA_00,userdata(ResizeControlsInfo)= A"!!,H1!!#C;!!#A;!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox Sensitivity_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1315,119 +1315,119 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox Check_DataAcq_Indexing,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq_Indexing,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq_Indexing,value= 0
-	TitleBox Title_DAC_IndexStartEnd,pos={292,53},size={111,13},disable=1,title="\\JCIndexing End Wave"
-	TitleBox Title_DAC_IndexStartEnd,userdata(tabnum)=  "1"
-	TitleBox Title_DAC_IndexStartEnd,userdata(tabcontrol)=  "ADC"
-	TitleBox Title_DAC_IndexStartEnd,userdata(ResizeControlsInfo)= A"!!,HM!!#>b!!#@B!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_DAC_IndexStartEnd,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_DAC_IndexStartEnd,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_DAC_IndexStartEnd,frame=0,fStyle=1,anchor= LC
-	TitleBox Title_DAC_Gain,pos={74,52},size={26,13},disable=1,title="Gain"
-	TitleBox Title_DAC_Gain,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
-	TitleBox Title_DAC_Gain,userdata(ResizeControlsInfo)= A"!!,EN!!#>^!!#=3!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_DAC_Gain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_DAC_Gain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_DAC_Gain,frame=0,fStyle=1
-	TitleBox Title_DAC_DAWaveSelect,pos={114,52},size={127,13},disable=1,title="(first) DA Wave Select"
-	TitleBox Title_DAC_DAWaveSelect,userdata(tabnum)=  "1"
-	TitleBox Title_DAC_DAWaveSelect,userdata(tabcontrol)=  "ADC"
-	TitleBox Title_DAC_DAWaveSelect,userdata(ResizeControlsInfo)= A"!!,FI!!#>^!!#@b!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_DAC_DAWaveSelect,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_DAC_DAWaveSelect,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_DAC_DAWaveSelect,frame=0,fStyle=1
-	TitleBox Title_DAC_Scale,pos={245,53},size={32,13},disable=1,title="Scale"
-	TitleBox Title_DAC_Scale,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
-	TitleBox Title_DAC_Scale,userdata(ResizeControlsInfo)= A"!!,H0!!#>b!!#=c!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_DAC_Scale,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_DAC_Scale,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_DAC_Scale,frame=0,fStyle=1
-	TitleBox Title_DAC_Channel,pos={20,52},size={29,13},disable=1,title="Chan"
-	TitleBox Title_DAC_Channel,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
-	TitleBox Title_DAC_Channel,userdata(ResizeControlsInfo)= A"!!,BY!!#>^!!#=K!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_DAC_Channel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_DAC_Channel,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_DAC_Channel,frame=0,fStyle=1
-	PopupMenu Popup_DA_IndexEnd_00,pos={289,72},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	TitleBox Title_DA_IndexStartEnd,pos={320,53},size={111,13},disable=1,title="\\JCIndexing End Wave"
+	TitleBox Title_DA_IndexStartEnd,userdata(tabnum)=  "1"
+	TitleBox Title_DA_IndexStartEnd,userdata(tabcontrol)=  "ADC"
+	TitleBox Title_DA_IndexStartEnd,userdata(ResizeControlsInfo)= A"!!,HM!!#>b!!#@B!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox Title_DA_IndexStartEnd,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TitleBox Title_DA_IndexStartEnd,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_DA_IndexStartEnd,frame=0,fStyle=1,anchor= LC
+	TitleBox Title_DA_Gain,pos={52,52},size={26,13},disable=1,title="Gain"
+	TitleBox Title_DA_Gain,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_DA_Gain,userdata(ResizeControlsInfo)= A"!!,EN!!#>^!!#=3!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox Title_DA_Gain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TitleBox Title_DA_Gain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_DA_Gain,frame=0,fStyle=1
+	TitleBox Title_DA_DAWaveSelect,pos={142,52},size={127,13},disable=1,title="(first) DA Wave Select"
+	TitleBox Title_DA_DAWaveSelect,userdata(tabnum)=  "1"
+	TitleBox Title_DA_DAWaveSelect,userdata(tabcontrol)=  "ADC"
+	TitleBox Title_DA_DAWaveSelect,userdata(ResizeControlsInfo)= A"!!,FI!!#>^!!#@b!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox Title_DA_DAWaveSelect,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TitleBox Title_DA_DAWaveSelect,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_DA_DAWaveSelect,frame=0,fStyle=1
+	TitleBox Title_DA_Scale,pos={273,53},size={32,13},disable=1,title="Scale"
+	TitleBox Title_DA_Scale,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_DA_Scale,userdata(ResizeControlsInfo)= A"!!,H0!!#>b!!#=c!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox Title_DA_Scale,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TitleBox Title_DA_Scale,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_DA_Scale,frame=0,fStyle=1
+	TitleBox Title_DA_Channel,pos={14,52},size={17,13},disable=1,title="DA"
+	TitleBox Title_DA_Channel,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_DA_Channel,userdata(ResizeControlsInfo)= A"!!,BY!!#>^!!#=K!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox Title_DA_Channel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TitleBox Title_DA_Channel,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_DA_Channel,frame=0,fStyle=1
+	PopupMenu Popup_DA_IndexEnd_00,pos={317,72},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_00,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo)= A"!!,HKJ,hot!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Popup_DA_IndexEnd_00,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_01,pos={289,118},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj,Bm+&dFCfDu6pY064!F"
+	PopupMenu Popup_DA_IndexEnd_00,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_00,mode=3,popvalue="FiveStep_DA_0",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_01,pos={317,118},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_01,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo)= A"!!,HKJ,hq&!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_01,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Popup_DA_IndexEnd_01,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_02,pos={289,165},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_01,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_01,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_02,pos={317,165},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_02,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo)= A"!!,HKJ,hq_!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_02,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Popup_DA_IndexEnd_02,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_03,pos={289,212},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_02,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_02,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_03,pos={317,212},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_03,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo)= A"!!,HKJ,hr9!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_03,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Popup_DA_IndexEnd_03,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_04,pos={289,258},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_03,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_03,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_04,pos={317,258},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_04,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo)= A"!!,HKJ,hrf!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZBl.E[FCfDu6pY064&]j<;flSi?UR1e0KW6IEb/f\\FCfDu6pY064)]\"J;flSi?UR1e0KW6XDc:ahE*l\"!?SFQM@qB^g6pY064!F"
-	PopupMenu Popup_DA_IndexEnd_04,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_05,pos={289,305},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_04,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_05,pos={317,305},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo)= A"!!,HKJ,hs(J,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZATMs#6pY074&fd/8:\"W26!l<-B5)0h6pY064'$*=D/_Hg?UR1e0KW]QATM3H6!l<-FD5T';flSi?UR1e0KUH"
-	PopupMenu Popup_DA_IndexEnd_05,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_06,pos={289,352},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_05,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_06,pos={317,352},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo)= A"!!,HKJ,hs@!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZATMs#6pY074&fd/8:\"W26!l<-B5)0h6pY064'$*=D/_Hg?UR1e0KW]QATM3H6!l<-FD5T';flSi?UR1e0KUH"
-	PopupMenu Popup_DA_IndexEnd_06,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
-	PopupMenu Popup_DA_IndexEnd_07,pos={289,399},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
+	PopupMenu Popup_DA_IndexEnd_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_06,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_07,pos={317,399},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo)= A"!!,HKJ,hsWJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFjZATMs#6pY074&fd/8:\"W26!l<-B5)0h6pY064'$*=D/_Hg?UR1e0KW]QATM3H6!l<-FD5T';flSi?UR1e0KUH"
-	PopupMenu Popup_DA_IndexEnd_07,userdata(MenuExp)= A"FD5T';flSi?UR1e0KW3IGZ/]qE*l\"!?SFQ@BQ@Zq;flSi?UR1e0KX2jAQ*\\^E*l\"!?SFQ@GAgE%AT2!E6!l<-@:Nki?UR1e0KT"
-	PopupMenu Popup_DA_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"timeStep_DA_0;SixStep_DA_0;ThreeStep_DA_0;oneStep_DA_0;TwoStep_DA_0;aces_DA_0;\""
+	PopupMenu Popup_DA_IndexEnd_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
+	PopupMenu Popup_DA_IndexEnd_07,userdata(MenuExp)=  "FiveStep_DA_0;"
+	PopupMenu Popup_DA_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"FiveStep_DA_0;\""
 	PopupMenu Popup_TTL_IndexEnd_00,pos={242,69},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(ResizeControlsInfo)= A"!!,H-!!#?C!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_00,userdata(MenExp)= A"+tXpTDf0,//NY.,,'7O9?W9uu?SFQ;DIlagAT2!U<(pXQ4(`DRE`7'kE*lRD9OBJ8+o"
+	PopupMenu Popup_TTL_IndexEnd_00,userdata(MenExp)=  "\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_01,pos={242,115},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(tabcontrol)=  "ADC"
@@ -1435,7 +1435,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_01,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_02,pos={242,161},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(tabcontrol)=  "ADC"
@@ -1443,7 +1444,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_02,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_03,pos={242,207},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(tabcontrol)=  "ADC"
@@ -1451,7 +1453,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_03,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_04,pos={242,253},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(tabcontrol)=  "ADC"
@@ -1459,7 +1462,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_04,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_05,pos={242,299},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(tabcontrol)=  "ADC"
@@ -1467,7 +1471,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_05,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_06,pos={242,345},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(tabcontrol)=  "ADC"
@@ -1475,7 +1480,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_06,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_07,pos={242,392},size={125,21},bodyWidth=125,disable=1,proc=ITCP_PopMenuCheckProc_DAC
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(tabcontrol)=  "ADC"
@@ -1483,7 +1489,8 @@ Window ITC_Ephys_panel() : Panel
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(MenuExp)= A"FD5T!<)cOu0KW'JAQ*\\^E*lRD9OBJ8AoDg4;flSi?W9uu?SFP"
-	PopupMenu Popup_TTL_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+\"tim_TTL_0;OneStep_TTL_0;fourStep_TTL_0;\""
+	PopupMenu Popup_TTL_IndexEnd_07,userdata(MenExp)=  "\"- none -;\"+\"\""
+	PopupMenu Popup_TTL_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+\"\""
 	CheckBox check_Settings_ShowScopeWindow,pos={27,443},size={121,14},disable=1,proc=CheckProc_2,title="Show Scope Window"
 	CheckBox check_Settings_ShowScopeWindow,help={"Enable the scope window to view ongoing acquistion"}
 	CheckBox check_Settings_ShowScopeWindow,userdata(tabnum)=  "5"
@@ -1491,8 +1498,8 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo)= A"!!,C<!!#CBJ,hq,!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_ShowScopeWindow,value= 1
-	TitleBox Title_ADC_Sensitivity,pos={85,414},size={168,13},disable=1,title="V-Clamp: V/nA  I-Clamp:V/mV"
+	CheckBox check_Settings_ShowScopeWindow,value= 0
+	TitleBox Title_ADC_Sensitivity,pos={98,429},size={168,13},disable=1,title="V-Clamp: V/nA  I-Clamp:V/mV"
 	TitleBox Title_ADC_Sensitivity,userdata(tabnum)=  "2"
 	TitleBox Title_ADC_Sensitivity,userdata(tabcontrol)=  "ADC"
 	TitleBox Title_ADC_Sensitivity,userdata(ResizeControlsInfo)= A"!!,Ed!!#C4!!#A7!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1505,13 +1512,13 @@ Window ITC_Ephys_panel() : Panel
 	Button Button_TTL_TurnOffAllTTLs,userdata(ResizeControlsInfo)= A"!!,Ba!!#C8!!#??!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button Button_TTL_TurnOffAllTTLs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button Button_TTL_TurnOffAllTTLs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button Button_DAC_TurnOFFDACs,pos={16,426},size={73,37},disable=1,proc=ButtonProc_3,title="Turn Off\rAll DACs"
+	Button Button_DAC_TurnOFFDACs,pos={16,460},size={73,37},disable=1,proc=ButtonProc_3,title="Turn Off\rAll DACs"
 	Button Button_DAC_TurnOFFDACs,userdata(tabnum)=  "1"
 	Button Button_DAC_TurnOFFDACs,userdata(tabcontrol)=  "ADC"
 	Button Button_DAC_TurnOFFDACs,userdata(ResizeControlsInfo)= A"!!,B9!!#C:!!#?K!!#>\"z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button Button_DAC_TurnOFFDACs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button Button_DAC_TurnOFFDACs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button Button_ADC_TurnOffAllADCs,pos={12,403},size={59,41},disable=1,proc=ButtonProc_4,title="Turn Off\rAll ADCs"
+	Button Button_ADC_TurnOffAllADCs,pos={12,418},size={59,41},disable=1,proc=ButtonProc_4,title="Turn Off\rAll ADCs"
 	Button Button_ADC_TurnOffAllADCs,userdata(tabnum)=  "2"
 	Button Button_ADC_TurnOffAllADCs,userdata(tabcontrol)=  "ADC"
 	Button Button_ADC_TurnOffAllADCs,userdata(ResizeControlsInfo)= A"!!,AN!!#C.J,hoP!!#>2z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1529,7 +1536,7 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo)= A"!!,Ch!!#@F!!#A,!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_ITITP,value= 0
+	CheckBox check_Settings_ITITP,value= 1
 	ValDisplay valdisp_DataAcq_ITICountdown,pos={85,303},size={126,14},bodyWidth=30,title="ITI remaining (s)"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabcontrol)=  "ADC"
@@ -1540,7 +1547,7 @@ Window ITC_Ephys_panel() : Panel
 	ValDisplay valdisp_DataAcq_ITICountdown,valueColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_ITICountdown,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_ITICountdown,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataAcq_ITICountdown,value= _NUM:0.0666666666666667
+	ValDisplay valdisp_DataAcq_ITICountdown,value= _NUM:0
 	ValDisplay valdisp_DataAcq_TrialsCountdown,pos={75,284},size={136,14},bodyWidth=30,title="Sweeps remaining"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(tabcontrol)=  "ADC"
@@ -1559,7 +1566,7 @@ Window ITC_Ephys_panel() : Panel
 	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo)= A"!!,Ch!!#@l!!#BM!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_Overwrite,value= 0
+	CheckBox check_Settings_Overwrite,value= 1
 	SetVariable setvar_Async_min_00,pos={113,66},size={71,16},disable=1,title="min"
 	SetVariable setvar_Async_min_00,userdata(tabnum)=  "4"
 	SetVariable setvar_Async_min_00,userdata(tabcontrol)=  "ADC"
@@ -1821,15 +1828,15 @@ Window ITC_Ephys_panel() : Panel
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_03,frame=0
-	PopupMenu popup_MoreSettings_DeviceType,pos={61,89},size={160,21},bodyWidth=100,disable=1,proc=PopMenuProc_Hrdwr_DevTypeCheck,title="Device type"
+	PopupMenu popup_MoreSettings_DeviceType,pos={61,89},size={160,21},bodyWidth=100,disable=3,proc=PopMenuProc_Hrdwr_DevTypeCheck,title="Device type"
 	PopupMenu popup_MoreSettings_DeviceType,help={"Step 1. Select device type. Open device button will be enabled if device type is attached."}
 	PopupMenu popup_MoreSettings_DeviceType,userdata(tabnum)=  "6"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo)= A"!!,E.!!#?k!!#A/!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_MoreSettings_DeviceType,mode=1,popvalue="ITC16",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
-	PopupMenu popup_moreSettings_DeviceNo,pos={88,116},size={133,21},bodyWidth=58,disable=1,title="Device number"
+	PopupMenu popup_MoreSettings_DeviceType,mode=3,popvalue="ITC1600",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
+	PopupMenu popup_moreSettings_DeviceNo,pos={88,116},size={133,21},bodyWidth=58,disable=3,title="Device number"
 	PopupMenu popup_moreSettings_DeviceNo,help={"Step 2. Guess a device number. 0 is a good initial guess. Device number is determined in hardware. Unfortunately, it cannot be predetermined. "}
 	PopupMenu popup_moreSettings_DeviceNo,userdata(tabnum)=  "6"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(tabcontrol)=  "ADC"
@@ -1843,7 +1850,7 @@ Window ITC_Ephys_panel() : Panel
 	SetVariable setvar_DataAcq_StimDelay,userdata(ResizeControlsInfo)= A"!!,D/!!#C#!!#A>!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_StimDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_StimDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_StimDelay,fColor=(65280,43520,0),value= _NUM:0
+	SetVariable setvar_DataAcq_StimDelay,fColor=(65280,43520,0),value= _NUM:1
 	SetVariable setvar_DataAcq_StimulusTail,pos={334,375},size={110,30},title="Sweep end\rdelay (ms)"
 	SetVariable setvar_DataAcq_StimulusTail,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_StimulusTail,userdata(tabcontrol)=  "ADC"
@@ -1857,13 +1864,13 @@ Window ITC_Ephys_panel() : Panel
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo)= A"!!,If^]6\\,!!#B@J,hq8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_SettingsPlus_FolderPath,pos={23,65},size={333,122},disable=1,title="Lock device to set data folder path"
+	GroupBox group_SettingsPlus_FolderPath,pos={23,65},size={333,122},disable=1,title="Data folder path = root:ITC1600:Device0"
 	GroupBox group_SettingsPlus_FolderPath,userdata(tabnum)=  "6"
 	GroupBox group_SettingsPlus_FolderPath,userdata(tabcontrol)=  "ADC"
 	GroupBox group_SettingsPlus_FolderPath,userdata(ResizeControlsInfo)= A"!!,Bq!!#?;!!#B`J,hq.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_SettingsPlus_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_SettingsPlus_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_PingDevice,pos={128,142},size={93,28},disable=3,proc=HSU_ButtonProc_Settings_OpenDev,title="Open device"
+	Button button_SettingsPlus_PingDevice,pos={128,142},size={93,28},disable=1,proc=HSU_ButtonProc_Settings_OpenDev,title="Open device"
 	Button button_SettingsPlus_PingDevice,help={"Step 3. Use to determine device number for connected device. Look for device with Ready light ON. Device numbers are determined in hardware and do not change over time. "}
 	Button button_SettingsPlus_PingDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_PingDevice,userdata(tabcontrol)=  "ADC"
@@ -1882,14 +1889,14 @@ Window ITC_Ephys_panel() : Panel
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo)= A"!!,HH!!#CAJ,hp'!!#>Bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_LockDevice,pos={233,87},size={85,46},disable=1,proc=HSU_ButtonProc_LockDev,title="Lock device\r selection"
+	Button button_SettingsPlus_LockDevice,pos={233,87},size={85,46},disable=3,proc=HSU_ButtonProc_LockDev,title="Lock device\r selection"
 	Button button_SettingsPlus_LockDevice,help={"Device must be locked to acquire data."}
 	Button button_SettingsPlus_LockDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_LockDevice,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo)= A"!!,H$!!#?g!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_unLockDevic,pos={233,134},size={85,46},disable=3,proc=HSU_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
+	Button button_SettingsPlus_unLockDevic,pos={233,134},size={85,46},disable=1,proc=HSU_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
 	Button button_SettingsPlus_unLockDevic,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_unLockDevic,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo)= A"!!,H$!!#@j!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1982,7 +1989,7 @@ Window ITC_Ephys_panel() : Panel
 	ValDisplay valdisp_DataAcq_SweepsInSet,valueColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_SweepsInSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsInSet,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataAcq_SweepsInSet,value= _NUM:0
+	ValDisplay valdisp_DataAcq_SweepsInSet,value= _NUM:5
 	CheckBox Check_DataAcq1_IndexingLocked,pos={240,388},size={54,14},proc=CheckProc_Indexing,title="Locked"
 	CheckBox Check_DataAcq1_IndexingLocked,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabnum)=  "0"
@@ -2014,7 +2021,150 @@ Window ITC_Ephys_panel() : Panel
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,valueColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataAcq_SweepsActiveSet,value= _NUM:0
+	ValDisplay valdisp_DataAcq_SweepsActiveSet,value= _NUM:5
+	ValDisplay valdisp0,pos={689,8},size={50,14},limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp0,value= #"0"
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={322,147},size={105,16},title="Amplitude IC"
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)=  "0"
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,value= _NUM:400
+	SetVariable SetVar_Hardware_VC_DA_Unit,pos={158,323},size={30,16},disable=1
+	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabnum)=  "6"
+	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_Hardware_VC_DA_Unit,value= _STR:"mV"
+	SetVariable SetVar_Hardware_IC_DA_Unit,pos={341,323},size={30,16},disable=1
+	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabnum)=  "6"
+	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_Hardware_IC_DA_Unit,value= _STR:"pA"
+	SetVariable SetVar_Hardware_VC_AD_Unit,pos={158,348},size={30,16},disable=1
+	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabnum)=  "6"
+	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_Hardware_VC_AD_Unit,value= _STR:"pA"
+	SetVariable SetVar_Hardware_IC_AD_Unit,pos={341,348},size={30,16},disable=1
+	SetVariable SetVar_Hardware_IC_AD_Unit,userdata(tabnum)=  "6"
+	SetVariable SetVar_Hardware_IC_AD_Unit,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_Hardware_IC_AD_Unit,value= _STR:"mV"
+	TitleBox Title_Hardware_VC_gain,pos={97,304},size={20,13},disable=1,title="gain"
+	TitleBox Title_Hardware_VC_gain,userdata(tabnum)=  "6"
+	TitleBox Title_Hardware_VC_gain,userdata(tabcontrol)=  "ADC",frame=0
+	TitleBox Title_Hardware_VC_unit,pos={160,304},size={17,13},disable=1,title="unit"
+	TitleBox Title_Hardware_VC_unit,userdata(tabnum)=  "6"
+	TitleBox Title_Hardware_VC_unit,userdata(tabcontrol)=  "ADC",frame=0
+	TitleBox Title_Hardware_IC_gain,pos={282,304},size={20,13},disable=1,title="gain"
+	TitleBox Title_Hardware_IC_gain,userdata(tabnum)=  "6"
+	TitleBox Title_Hardware_IC_gain,userdata(tabcontrol)=  "ADC",frame=0
+	TitleBox Title_Hardware_IC_unit,pos={342,304},size={17,13},disable=1,title="unit"
+	TitleBox Title_Hardware_IC_unit,userdata(tabnum)=  "6"
+	TitleBox Title_Hardware_IC_unit,userdata(tabcontrol)=  "ADC",frame=0
+	SetVariable Unit_DA_00,pos={93,74},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_00,limits={0,inf,1},value= _STR:""
+	TitleBox Title_DA_Unit,pos={96,52},size={23,13},disable=1,title="Unit"
+	TitleBox Title_DA_Unit,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_DA_Unit,frame=0,fStyle=1
+	SetVariable Unit_DA_01,pos={92,120},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_01,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_02,pos={92,167},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_02,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_03,pos={92,215},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_03,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_04,pos={92,260},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_04,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_05,pos={92,307},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_05,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_06,pos={92,354},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_06,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_07,pos={92,401},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_DA_07,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_00,pos={106,59},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_00,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_00,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_00,limits={0,inf,1},value= _STR:"mV"
+	SetVariable Unit_AD_01,pos={106,106},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_01,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_01,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_01,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_02,pos={106,153},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_02,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_02,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_02,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_03,pos={106,200},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_03,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_03,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_03,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_04,pos={106,247},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_04,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_04,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_04,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_05,pos={106,294},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_05,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_05,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_05,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_06,pos={106,341},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_06,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_06,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_06,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_07,pos={106,388},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_07,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_07,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_07,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_08,pos={278,59},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_08,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_08,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_08,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_09,pos={278,106},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_09,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_09,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_09,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_10,pos={278,153},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_10,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_10,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_10,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_11,pos={278,200},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_11,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_11,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_11,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_12,pos={278,247},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_12,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_12,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_12,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_13,pos={278,294},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_13,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_13,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_13,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_14,pos={278,341},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_14,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_14,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_14,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_15,pos={278,388},size={40,16},disable=1,title="V/"
+	SetVariable Unit_AD_15,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_15,userdata(tabcontrol)=  "ADC"
+	SetVariable Unit_AD_15,limits={0,inf,1},value= _STR:""
+	TitleBox Title_AD_Unit,pos={122,42},size={23,13},disable=1,title="Unit"
+	TitleBox Title_AD_Unit,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_AD_Unit,frame=0,fStyle=1
+	TitleBox Title_AD_Gain,pos={61,42},size={26,13},disable=1,title="Gain"
+	TitleBox Title_AD_Gain,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_AD_Gain,frame=0,fStyle=1
+	TitleBox Title_AD_Channel,pos={23,42},size={17,13},disable=1,title="AD"
+	TitleBox Title_AD_Channel,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_AD_Channel,frame=0,fStyle=1
+	TitleBox Title_AD_Channel1,pos={195,42},size={17,13},disable=1,title="AD"
+	TitleBox Title_AD_Channel1,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_AD_Channel1,frame=0,fStyle=1
+	TitleBox Title_AD_Gain1,pos={233,42},size={26,13},disable=1,title="Gain"
+	TitleBox Title_AD_Gain1,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_AD_Gain1,frame=0,fStyle=1
+	TitleBox Title_AD_Unit1,pos={294,42},size={23,13},disable=1,title="Unit"
+	TitleBox Title_AD_Unit1,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	TitleBox Title_AD_Unit1,frame=0,fStyle=1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -2022,8 +2172,17 @@ Window ITC_Ephys_panel() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B3&r`U7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^2*1"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
-	Display/W=(473,34,483,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# 
-	ModifyGraph gbRGB=(60928,60928,60928)
+	String fldrSav0= GetDataFolder(1)
+	SetDataFolder root:ITC1600:Device0:TestPulse:
+	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /L=AD0 TestPulseITC[*][1]
+	SetDataFolder fldrSav0
+	ModifyGraph wbRGB=(60928,60928,60928),gbRGB=(61184,61184,61184)
+	ModifyGraph live=1
+	ModifyGraph lblPosMode=1
+	ModifyGraph freePos(AD0)=0
+	ModifyGraph axisEnab(AD0)={0.015,1}
+	Label AD0 "AD0 (mV)"
+	SetAxis bottom 0,20
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!,I?!!#=k!!#Bd!!#C5J,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -2325,8 +2484,14 @@ End
 Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
 	
-	getwindow kwTopWin wtitle
-	string panelTitle = s_value
+	getwindow kwTopWin activesw
+	string PanelTitle = s_value
+	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
+	
+	if(SearchResult != -1)
+	PanelTitle = PanelTitle[0,SearchResult-2]//SearchResult+1]
+	endif
+	
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)

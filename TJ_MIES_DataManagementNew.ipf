@@ -5,7 +5,7 @@ Function SaveITCData(panelTitle)
 	variable DeviceType, DeviceNum
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	Wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	Variable SweepNo
 	ControlInfo/w=$panelTitle SetVar_Sweep
 	SweepNo=v_value
@@ -81,7 +81,6 @@ for(i=0;i<(itemsinlist(ADChannelList));i+=1)
 	if(ChannelClampMode[str2num(stringfromlist(i,ADChannelList,";"))][1] == 1) // I-clamp
 	gain*=3200// 
 	WaveToScale[][(StartOfADColumns+i)]/=gain
-	//WaveToScale[][(StartOfADColumns+i)]*=1000
 	endif
 	
 endfor

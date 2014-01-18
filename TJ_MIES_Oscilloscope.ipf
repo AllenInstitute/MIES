@@ -4,37 +4,42 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 wave WaveToPlot
 string panelTitle
 //panelTitle="itc1600_dev_0"
-string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
-ModifyGraph /w = $oscilloscopeSubWindow Live =0
+string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
+ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 variable i =  0
-string WavePath=HSU_DataFullFolderPathString(PanelTitle)+":"
-wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath+"ITCChanConfigWave"
+string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
+wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
+wave ChannelClampMode = $WavePath + "ChannelClampMode"
 //wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC, ITCChanConfigWave =$WavePath+"ITCChanConfigWave"
 string ADChannelName= "AD"
 string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 RemoveTracesOnGraph(oscilloscopeSubWindow)
 
 variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
-YaxisSpacing=1/((itemsinlist(ADChannelList)))
-Spacer=0.015
+YaxisSpacing = 1 / ((itemsinlist(ADChannelList)))
+Spacer = 0.015
 
-YaxisHigh=1
-YaxisLow=YaxisHigh-YaxisSpacing+spacer
+YaxisHigh = 1
+YaxisLow = YaxisHigh-YaxisSpacing + spacer
 
-for(i=0;i<(itemsinlist(ADChannelList));i+=1)
+for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 
-ADChannelName="AD"+stringfromlist(i, ADChannelList,";")
+ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
 appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
 ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
-Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName
+if(ChannelClampMode[i][1] == 0)
+	Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName + " (pA)"
+endif
+
+if(ChannelClampMode[i][1] == 1)
+	Label/w=$oscilloscopeSubWindow $ADChannelName, ADChannelName + " (mV)"
+endif
 ModifyGraph/w=$oscilloscopeSubWindow lblPosMode=1
 YaxisHigh-=YaxisSpacing
 YaxisLow-=YaxisSpacing
-//ModifyGraph /w = $oscilloscopeSubWindow Live =0// prevents autoscaling!! may want to add this as a user feature!!
 
 endfor
 ModifyGraph/w=$oscilloscopeSubWindow freePos=0
-//ModifyGraph /w = $oscilloscopeSubWindow Live =1// prevents autoscaling!! may want to add this as a user feature!!
 
 SetAxis/w=$oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle)*(ITCMinSamplingInterval(panelTitle)/1000))/4)
 End
