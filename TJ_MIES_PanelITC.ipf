@@ -2,9 +2,7 @@
 
 Window itc_ephys_panel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(91,253,577,795)
-	ShowTools/A
-	SetDrawLayer UserBack
+	NewPanel /W=(91,253,574,795)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -425,7 +423,7 @@ Window itc_ephys_panel() : Panel
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_07,value= _NUM:0
-	SetVariable SetVar_DataAcq_Comment,pos={40,469},size={384,16},title="Comment"
+	SetVariable SetVar_DataAcq_Comment,pos={48,464},size={384,16},title="Comment"
 	SetVariable SetVar_DataAcq_Comment,help={"Appends a comment to wave note of next sweep"}
 	SetVariable SetVar_DataAcq_Comment,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_Comment,userdata(tabcontrol)=  "ADC"
@@ -433,13 +431,13 @@ Window itc_ephys_panel() : Panel
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
-	Button DataAcquireButton,pos={37,488},size={389,49},proc=ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
+	Button DataAcquireButton,pos={44,484},size={389,40},proc=ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,Ch!!#C6J,hsRJ,ho(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Button DataAcquireButton,labelBack=(60928,60928,60928)
-	CheckBox Check_DataAcq1_RepeatAcq,pos={38,380},size={119,14},title="Repeated Acquisition"
+	CheckBox Check_DataAcq1_RepeatAcq,pos={38,375},size={119,14},title="Repeated Acquisition"
 	CheckBox Check_DataAcq1_RepeatAcq,help={"Determines number of times a set is repeated, or if indexing is on, the number of times a group of sets in repeated"}
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(tabcontrol)=  "ADC"
@@ -447,14 +445,14 @@ Window itc_ephys_panel() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 1
-	SetVariable SetVar_DataAcq_ITI,pos={52,452},size={105,16},title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,431},size={77,16},bodyWidth=35,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:2
-	Button StartTestPulseButton,pos={49,177},size={384,48},proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
+	Button StartTestPulseButton,pos={49,177},size={384,40},proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -607,7 +605,7 @@ Window itc_ephys_panel() : Panel
 	CheckBox Check_Settings_TrigIn,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_TrigIn,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_TrigIn,fColor=(65280,43520,0),value= 0
-	SetVariable SetVar_DataAcq_SetRepeats,pos={55,431},size={100,16},proc=ITCP_SetVarProc_TotSweepCount,title="Repeat Set(s)"
+	SetVariable SetVar_DataAcq_SetRepeats,pos={60,411},size={104,16},bodyWidth=35,proc=ITCP_SetVarProc_TotSweepCount,title="Repeat Set(s)"
 	SetVariable SetVar_DataAcq_SetRepeats,help={"This number is set automatically at based on the number of 1d waves contained in the largest set on active DA/TTL channels"}
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(tabcontrol)=  "ADC"
@@ -615,7 +613,7 @@ Window itc_ephys_panel() : Panel
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_SetRepeats,limits={1,inf,1},value= _NUM:1
-	ValDisplay ValDisp_DataAcq_SamplingInt,pos={218,315},size={30,17},bodyWidth=30
+	ValDisplay ValDisp_DataAcq_SamplingInt,pos={218,310},size={30,17},bodyWidth=30
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(tabnum)=  "0"
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(tabcontrol)=  "ADC"
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(ResizeControlsInfo)= A"!!,H>J,hqh!!#@,!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -640,7 +638,7 @@ Window itc_ephys_panel() : Panel
 	SetVariable SetVar_DownSamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DownSamp,fColor=(65280,43520,0)
 	SetVariable SetVar_DownSamp,limits={5,inf,1},value= _NUM:5
-	SetVariable SetVar_Sweep,pos={211,273},size={54,32},bodyWidth=54,proc=SetVarProc_NextSweep
+	SetVariable SetVar_Sweep,pos={211,268},size={54,32},bodyWidth=54,proc=SetVarProc_NextSweep
 	SetVariable SetVar_Sweep,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo)= A"!!,DW!!#A<!!#AO!!#=Cz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1253,7 +1251,7 @@ Window itc_ephys_panel() : Panel
 	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox SearchUniversal_TTL_00,value= 0
-	CheckBox Check_DataAcq_Indexing,pos={214,380},size={58,14},proc=CheckProc_Indexing,title="Indexing"
+	CheckBox Check_DataAcq_Indexing,pos={178,391},size={58,14},proc=CheckProc_Indexing,title="Indexing"
 	CheckBox Check_DataAcq_Indexing,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq_Indexing,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_Indexing,userdata(tabcontrol)=  "ADC"
@@ -1477,7 +1475,7 @@ Window itc_ephys_panel() : Panel
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_ITITP,value= 1
-	ValDisplay valdisp_DataAcq_ITICountdown,pos={60,307},size={129,17},bodyWidth=30,title="ITI remaining (s)"
+	ValDisplay valdisp_DataAcq_ITICountdown,pos={60,302},size={129,17},bodyWidth=30,title="ITI remaining (s)"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabcontrol)=  "ADC"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(ResizeControlsInfo)= A"!!,HVJ,hs5!!#@,!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1488,7 +1486,7 @@ Window itc_ephys_panel() : Panel
 	ValDisplay valdisp_DataAcq_ITICountdown,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_ITICountdown,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_ITICountdown,value= _NUM:0.0166666666666667
-	ValDisplay valdisp_DataAcq_TrialsCountdown,pos={45,280},size={145,17},bodyWidth=30,title="Sweeps remaining"
+	ValDisplay valdisp_DataAcq_TrialsCountdown,pos={45,275},size={145,17},bodyWidth=30,title="Sweeps remaining"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(tabcontrol)=  "ADC"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(ResizeControlsInfo)= A"!!,HVJ,hsAJ,hpk!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1695,7 +1693,7 @@ Window itc_ephys_panel() : Panel
 	TitleBox Title_TTL_Channel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_TTL_Channel,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_TTL_Channel,frame=0,fStyle=1
-	CheckBox check_DataAcq_RepAcqRandom,pos={72,396},size={58,14},title="Random"
+	CheckBox check_DataAcq_RepAcqRandom,pos={72,391},size={58,14},title="Random"
 	CheckBox check_DataAcq_RepAcqRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
 	CheckBox check_DataAcq_RepAcqRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(tabcontrol)=  "ADC"
@@ -1784,14 +1782,14 @@ Window itc_ephys_panel() : Panel
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_moreSettings_DeviceNo,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
-	SetVariable setvar_DataAcq_StimDelay,pos={326,369},size={118,30},title="Sweep onset\rdelay (ms)"
+	SetVariable setvar_DataAcq_StimDelay,pos={289,377},size={151,16},bodyWidth=35,title="Sweep onset delay (ms)"
 	SetVariable setvar_DataAcq_StimDelay,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_StimDelay,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_DataAcq_StimDelay,userdata(ResizeControlsInfo)= A"!!,D/!!#C#!!#A>!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_StimDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_StimDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_StimDelay,fColor=(65280,43520,0),value= _NUM:1
-	SetVariable setvar_DataAcq_StimulusTail,pos={334,401},size={110,30},title="Sweep end\rdelay (ms)"
+	SetVariable setvar_DataAcq_StimulusTail,pos={300,398},size={140,16},bodyWidth=35,title="Sweep en rdelay (ms)"
 	SetVariable setvar_DataAcq_StimulusTail,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_StimulusTail,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_DataAcq_StimulusTail,userdata(ResizeControlsInfo)= A"!!,Go!!#C#!!#A>!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1920,7 +1918,7 @@ Window itc_ephys_panel() : Panel
 	TitleBox title_Settings_SetCondition2,userdata(ResizeControlsInfo)= A"!!,Fe!!#A_!!#@*!!#=kz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	ValDisplay valdisp_DataAcq_SweepsInSet,pos={287,280},size={30,17},bodyWidth=30
+	ValDisplay valdisp_DataAcq_SweepsInSet,pos={287,275},size={30,17},bodyWidth=30
 	ValDisplay valdisp_DataAcq_SweepsInSet,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_SweepsInSet,userdata(tabcontrol)=  "ADC"
 	ValDisplay valdisp_DataAcq_SweepsInSet,userdata(ResizeControlsInfo)= A"!!,GL!!#BdJ,hpk!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1931,30 +1929,30 @@ Window itc_ephys_panel() : Panel
 	ValDisplay valdisp_DataAcq_SweepsInSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsInSet,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_SweepsInSet,value= _NUM:5
-	CheckBox Check_DataAcq1_IndexingLocked,pos={240,414},size={54,14},proc=CheckProc_Indexing,title="Locked"
+	CheckBox Check_DataAcq1_IndexingLocked,pos={204,425},size={54,14},proc=CheckProc_Indexing,title="Locked"
 	CheckBox Check_DataAcq1_IndexingLocked,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabcontrol)=  "ADC",value= 0
-	SetVariable SetVar_DataAcq_ListRepeats,pos={215,429},size={100,16},proc=ITCP_SetVarProc_TotSweepCount,title="Repeat List(s)"
+	SetVariable SetVar_DataAcq_ListRepeats,pos={178,441},size={104,16},bodyWidth=35,proc=ITCP_SetVarProc_TotSweepCount,title="Repeat List(s)"
 	SetVariable SetVar_DataAcq_ListRepeats,help={"This number is set automatically at based on the number of 1d waves contained in the largest set on active DA/TTL channels"}
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ListRepeats,fColor=(65280,43520,0)
 	SetVariable SetVar_DataAcq_ListRepeats,limits={1,inf,1},value= _NUM:1
-	CheckBox check_DataAcq_IndexRandom,pos={240,397},size={58,14},title="Random"
+	CheckBox check_DataAcq_IndexRandom,pos={204,408},size={58,14},title="Random"
 	CheckBox check_DataAcq_IndexRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
 	CheckBox check_DataAcq_IndexRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_IndexRandom,userdata(tabcontrol)=  "ADC"
 	CheckBox check_DataAcq_IndexRandom,fColor=(65280,43520,0),value= 0
-	SetVariable setvar_DataAcq_FirstStepOveride,pos={352,433},size={90,16},title="First Step"
+	SetVariable setvar_DataAcq_FirstStepOveride,pos={357,419},size={83,16},bodyWidth=35,title="First Step"
 	SetVariable setvar_DataAcq_FirstStepOveride,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_FirstStepOveride,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_DataAcq_FirstStepOveride,fColor=(65280,43520,0),value= _NUM:0
-	SetVariable setvar_DataAcq_TotalStepOveride,pos={340,451},size={100,16},title="Total Steps"
+	SetVariable setvar_DataAcq_TotalStepOveride,pos={347,441},size={93,16},bodyWidth=35,title="Total Steps"
 	SetVariable setvar_DataAcq_TotalStepOveride,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_TotalStepOveride,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_DataAcq_TotalStepOveride,fColor=(65280,43520,0),value= _NUM:0
-	ValDisplay valdisp_DataAcq_SweepsActiveSet,pos={287,307},size={30,17},bodyWidth=30
+	ValDisplay valdisp_DataAcq_SweepsActiveSet,pos={287,302},size={30,17},bodyWidth=30
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,help={"Displays the number of steps in the set with the most steps on active DA and TTL channels"}
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,userdata(tabcontrol)=  "ADC",fSize=14
@@ -2135,28 +2133,29 @@ Window itc_ephys_panel() : Panel
 	GroupBox group_DataAcq_ClampMode,pos={30,39},size={422,96},title="Clamp Mode"
 	GroupBox group_DataAcq_ClampMode,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_ClampMode,userdata(tabcontrol)=  "ADC"
-	GroupBox group_DataAcq_ClampMode1,pos={30,138},size={422,96},title="Test Pulse"
+	GroupBox group_DataAcq_ClampMode1,pos={30,138},size={422,90},title="Test Pulse"
 	GroupBox group_DataAcq_ClampMode1,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_ClampMode1,userdata(tabcontrol)=  "ADC"
-	GroupBox group_DataAcq_ClampMode2,pos={30,239},size={422,115},title="Status Information"
+	GroupBox group_DataAcq_ClampMode2,pos={30,234},size={422,115},title="Status Information"
 	GroupBox group_DataAcq_ClampMode2,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_ClampMode2,userdata(tabcontrol)=  "ADC"
-	TitleBox title_DataAcq_NextSweep,pos={203,254},size={72,16},title="Next Sweep"
+	TitleBox title_DataAcq_NextSweep,pos={203,249},size={72,16},title="Next Sweep"
 	TitleBox title_DataAcq_NextSweep,userdata(tabnum)=  "0"
 	TitleBox title_DataAcq_NextSweep,userdata(tabcontrol)=  "ADC",fSize=14,frame=0
 	TitleBox title_DataAcq_NextSweep,fStyle=0
-	TitleBox title_DataAcq_NextSweep1,pos={324,281},size={83,16},title="Total Sweeps"
+	TitleBox title_DataAcq_NextSweep1,pos={324,276},size={83,16},title="Total Sweeps"
 	TitleBox title_DataAcq_NextSweep1,userdata(tabnum)=  "0"
 	TitleBox title_DataAcq_NextSweep1,userdata(tabcontrol)=  "ADC",fSize=14,frame=0
 	TitleBox title_DataAcq_NextSweep1,fStyle=0
-	TitleBox title_DataAcq_NextSweep2,pos={324,308},size={100,16},title="Max Sweeps Set"
+	TitleBox title_DataAcq_NextSweep2,pos={324,303},size={100,16},title="Max Sweeps Set"
 	TitleBox title_DataAcq_NextSweep2,userdata(tabnum)=  "0"
 	TitleBox title_DataAcq_NextSweep2,userdata(tabcontrol)=  "ADC",fSize=14,frame=0
 	TitleBox title_DataAcq_NextSweep2,fStyle=0
-	TitleBox title_DataAcq_NextSweep3,pos={171,333},size={128,16},title="Sampling Interval (µs)"
-	TitleBox title_DataAcq_NextSweep3,userdata(tabnum)=  "0",fSize=14,frame=0
+	TitleBox title_DataAcq_NextSweep3,pos={171,328},size={128,16},title="Sampling Interval (µs)"
+	TitleBox title_DataAcq_NextSweep3,userdata(tabnum)=  "0"
+	TitleBox title_DataAcq_NextSweep3,userdata(tabcontrol)=  "ADC",fSize=14,frame=0
 	TitleBox title_DataAcq_NextSweep3,fStyle=0
-	GroupBox group_DataAcq_DataAcq,pos={30,362},size={422,167},title="Data Acquisition"
+	GroupBox group_DataAcq_DataAcq,pos={30,357},size={422,175},title="Data Acquisition"
 	GroupBox group_DataAcq_DataAcq,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_DataAcq,userdata(tabcontrol)=  "ADC"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
