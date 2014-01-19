@@ -2196,7 +2196,6 @@ EndMacro
 //=========================================================================================
 
 
-
 Function CheckProc(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
@@ -2205,7 +2204,7 @@ Function CheckProc(cba) : CheckBoxControl
 			Variable checked = cba.checked
 			break
 		case -1: // control being killed
-			checked=0
+			checked = 0
 			break
 	endswitch
 
@@ -2218,44 +2217,42 @@ Function SetVarProc(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String varStr
 	String varName
 	string cmd
-	variable  minsampint
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	variable minsampint
+	string panelTitle = ReturnPanelName()
 	MinSampInt = ITCMinSamplingInterval(panelTitle)
-	SetVariable SetVar_DownSamp limits={MinSampInt,inf,1}, win=$panelTitle
+	SetVariable SetVar_DownSamp limits = {MinSampInt,inf,1}, win = $panelTitle
 End
 
 Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	String SearchString
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = ReturnPanelName()
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:DA:
 	
-	controlinfo/w=$panelTitle Search_DA_00
-	if(strlen(s_value)==0)
-	SearchString="*da*"
+	controlinfo /w = $panelTitle Search_DA_00
+	if(strlen(s_value) == 0)
+		SearchString="*da*"
 	else
-	SearchString = s_value
+		SearchString = s_value
 	endif
 	
 	String DAPopUpMenuName// = "Wave_DA_"
 	string IndexEndPopUpMenuName
 	String FirstTwoMenuItems = "\"- none -; TestPulse;"
 	variable i = 0
-	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+	string popupValue = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""
 	string ListOfWaves = 	wavelist(searchstring,";","")
 	do
-	DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-	PopupMenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userData(menuExp) = ListOfWaves
+		DAPopUpMenuName = "Wave_DA_0" + num2str(i)
+		PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 	
-	IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-	PopupMenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
-	i+=1
-	while(i<8)
+		IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+		PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+		i += 1
+	while(i < 8)
 	setdatafolder saveDFR
 End
 
@@ -2265,62 +2262,57 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 	Variable varNum
 	String varStr
 	String varName
-
 	String TTL_No = ctrlName[11,inf]
 	String TTLPopUpMenuName = "Wave_TTL_" + TTL_No
 	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
 	String FirstTwoMenuItems = "\"- none -;"
 	String SearchString
 	String value, ListOfWaves
-	variable i=0
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	variable i = 0
+	string panelTitle = ReturnPanelName()
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:TTL:
 	
-	controlinfo/w=$panelTitle SearchUniversal_TTL_00
-	if(v_value==1)
-		controlinfo/w=$panelTitle Search_TTL_00
-		If(strlen(s_value)==0)
-		SearchString= "*TTL*"
+	controlinfo /w = $panelTitle SearchUniversal_TTL_00
+	if(v_value == 1)
+		controlinfo /w = $panelTitle Search_TTL_00
+		If(strlen(s_value) == 0)
+			SearchString = "*TTL*"
 		else
-		SearchString= s_value
+			SearchString = s_value
 		endif
 		
-		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
+		value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
 		listOfWaves = wavelist(searchstring,";","")
 
 		do
-		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=ListOfWaves
-		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
-		i+=1
-		while(i<8)
+			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
+			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+			i += 1
+		while(i < 8)
 	
 	else
-		If(strlen(varstr)==0)
-		SearchString = "*TTL*"
-		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
-		listOfWaves = wavelist(searchstring,";","")
-		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=ListOfWaves
-		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
-		
+		If(strlen(varstr) == 0)
+			SearchString = "*TTL*"
+			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
+			listOfWaves = wavelist(searchstring,";","")
+			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
+			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
 		else
-		SearchString= varstr
-		value=FirstTwoMenuItems+wavelist(SearchString,";","")+"\""
-		listOfWaves = wavelist(searchstring,";","")
-		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#value, userdata(MenuExp)=ListOfWaves
-		TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $TTLIndexEndPopMenuName win=$panelTitle, value=#value
+			SearchString = varstr
+			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
+			listOfWaves = wavelist(searchstring,";","")
+			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
+			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
 		endif
 	endif
-	
 	setdatafolder saveDFR
 End
 
@@ -2329,34 +2321,32 @@ Function CheckProc_UniversalSearchTTL(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	String SearchString
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:SavedStimulusSets:TTL:
 	
-	controlinfo/w=$panelTitle Search_TTL_00
-	if(strlen(s_value)==0)
-		SearchString="*TTL*"
+	controlinfo /w = $panelTitle Search_TTL_00
+	if(strlen(s_value) == 0)
+		SearchString = "*TTL*"
 	else
 		SearchString = s_value
 	endif
 	
-	String TTLPopUpMenuName// = "Wave_DA_"
+	String TTLPopUpMenuName // = "Wave_DA_"
 	String IndexEndPopUpMenuName
 	String FirstTwoMenuItems = "\"- none -;"
 	variable i = 0
 	
-	string popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+	string popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
 	string listOfWaves = wavelist(searchstring,";","")
 	do
 		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=ListOfWaves
+		popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
-		i+=1
-	while(i<8)
+		popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+		i += 1
+	while(i < 8)
 
 	setdatafolder saveDFR
 End
@@ -2365,25 +2355,25 @@ End
 Function TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
 	STRUCT WMTabControlAction &tca
 	variable tabnum , i = 0, MinSampInt
-	SVAR /z ITCPanelTitleList=root:ITCPanelTitleList
+	SVAR /z ITCPanelTitleList = root:ITCPanelTitleList
 	string panelTitle
-	tabnum=tca.tab
+	tabnum = tca.tab
 	
 	// Is the panel that is being interacted with locked?
-	if(stringmatch(WinList("ITC_Ephys_panel", ";", "WIN:" ),"ITC_Ephys_panel;")==0)// checks to see if panel has been assigned to a ITC device by checking if the panel name is the default name
+	if(stringmatch(WinList("ITC_Ephys_panel", ";", "WIN:" ),"ITC_Ephys_panel;") == 0)// checks to see if panel has been assigned to a ITC device by checking if the panel name is the default name
 		// Does the global string that contains the list of locked panels exist?
-		if(exists("root:ITCPanelTitleList")==2)
-			if(tabnum==0)
+		if(exists("root:ITCPanelTitleList") == 2)
+			if(tabnum == 0)
 				do
 					panelTitle = stringfromlist(i, ITCPanelTitleList,";")
 					MinSampInt = ITCMinSamplingInterval(PanelTitle)
 					ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
-					controlUpdate/w=$PanelTitle ValDisp_DataAcq_SamplingInt
-					i+=1
-				while(i<itemsinlist(ITCPanelTitleList,";"))
+					controlUpdate /w = $PanelTitle ValDisp_DataAcq_SamplingInt
+					i += 1
+				while(i < itemsinlist(ITCPanelTitleList,";"))
 			endif
 		else
-		print "Please lock the panel to a ITC device in the Hardware tab"
+			print "Please lock the panel to a ITC device in the Hardware tab"
 		endif
 	else
 	print "Please lock the panel to a ITC device in the Hardware tab"
@@ -2403,56 +2393,54 @@ Function SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableContro
 	Variable varNum
 	String varStr
 	String varName
-
 	String DA_No = ctrlName[10,inf]
 	String DAPopUpMenuName = "Wave_DA_" + DA_No
-	String IndexEndPopUpMenuName="Popup_DA_IndexEnd_"+ DA_No
+	String IndexEndPopUpMenuName = "Popup_DA_IndexEnd_" + DA_No
 	String FirstTwoMenuItems = "\"- none -; TestPulse;"
 	String SearchString
 	string popupValue, ListOfWaves
-	variable i=0
+	variable i = 0
 	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = ReturnPanelName()
 	
 	DFREF saveDFR = GetDataFolderDFR()
 	setdatafolder root:waveBuilder:savedStimulusSets:DA
-	controlinfo/w=$panelTitle SearchUniversal_DA_00	
+	controlinfo /w = $panelTitle SearchUniversal_DA_00	
 	
 	
-	if(v_value==1)
-		controlinfo/w=$panelTitle Search_DA_00
-		If(strlen(s_value)==0)
-			SearchString= "*DA*"
+	if(v_value == 1)
+		controlinfo /w = $panelTitle Search_DA_00
+		If(strlen(s_value) == 0)
+			SearchString = "*DA*"
 		else
-			SearchString=s_value
+			SearchString = s_value
 		endif
 		
 		do
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+			popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
 			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=ListOfWaves
-			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
-			i+=1
-		while(i<8)
+			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+			IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			i += 1
+		while(i < 8)
 	
 	else
-		If(strlen(varstr)==0)
-			SearchString= "*DA*"
+		If(strlen(varstr) == 0)
+			SearchString = "*DA*"
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-			popupValue=FirstTwoMenuItems+wavelist(searchstring,";","")+"\""
+			popupValue = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""
 			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=ListOfWaves
-			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
+			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+			IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 		else
 			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-			popupValue=FirstTwoMenuItems+wavelist(varstr,";","")+"\""
-			popupmenu $DAPopUpMenuName win=$panelTitle, value=#popupValue, userdata(MenuExp)=popupValue
-			IndexEndPopUpMenuName="Popup_DA_IndexEnd_0"+num2str(i)
-			popupmenu $IndexEndPopUpMenuName win=$panelTitle, value=#popupValue
+			popupValue = FirstTwoMenuItems + wavelist(varstr,";","") + "\""
+			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
+			IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 		endif
 	endif
 	setdatafolder saveDFR
@@ -2464,52 +2452,44 @@ Function DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure ch
 	String DACWave = ctrlName
 	DACwave[0,4] = "wave"
 
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = ReturnPanelName()
 	
-	controlinfo/w=$panelTitle $DACWave
-	if(stringmatch(s_value,"- none -")==1)
-	checkbox $ctrlName win=$panelTitle, value=0
+	controlinfo /w = $panelTitle $DACWave
+	if(stringmatch(s_value,"- none -") == 1)
+	checkbox $ctrlName win = $panelTitle, value = 0
 	print "Select " + DACwave[5,7] + " Wave"
 	endif
 
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value= _NUM:MinSampInt
 	
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
-	valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxNoOfSweeps(PanelTitle,0) * v_value)
+	valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 End
 
 Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
 	
-	getwindow kwTopWin activesw
-	string PanelTitle = s_value
-	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
-	
-	if(SearchResult != -1)
-	PanelTitle = PanelTitle[0,SearchResult-2]//SearchResult+1]
-	endif
-	
+	string PanelTitle = ReturnPanelName()
+
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-
 	
-	controlinfo/w=$panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType=v_value-1
-	controlinfo/w=$panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum=v_value-1
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+	variable DeviceType = v_value - 1
+	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+	variable DeviceNum = v_value - 1
 	
 		//History management
 		controlinfo check_Settings_Overwrite
-		if(v_value==1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
+		if(v_value == 1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
 			
-			if(IsLastSweepGreaterThanNextSweep(panelTitle)==1)//Checks for manual roll back of Next Sweep
+			if(IsLastSweepGreaterThanNextSweep(panelTitle) == 1)//Checks for manual roll back of Next Sweep
 				controlinfo SetVar_Sweep
-				variable NextSweep=v_value
+				variable NextSweep = v_value
 				DeleteSettingsHistoryWaves(NextSweep, panelTitle)
 				DeleteDataWaves(panelTitle, NextSweep)
 				MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
@@ -2524,11 +2504,11 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 		//
 		ConfigureDataForITC(PanelTitle)
 		ITCOscilloscope(ITCDataWave, panelTitle)
-		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
-		If(v_value==0)
+		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
+		If(v_value == 0)
 		ITCDataAcq(DeviceType,DeviceNum, panelTitle)
-			controlinfo/w=$panelTitle Check_DataAcq1_RepeatAcq// checks for repeated acquisition
-			if(v_value==1)//repeated aquisition is selected
+			controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq// checks for repeated acquisition
+			if(v_value == 1)//repeated aquisition is selected
 				RepeatedAcquisition(PanelTitle)
 			endif
 		else
@@ -2539,85 +2519,73 @@ End
 Function CheckProc_1(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = ReturnPanelName()
 
-	If(Checked==1)
-	Button DataAcquireButton fColor=(52224,0,0), win=$panelTitle
-	string ButtonText = "\\Z14\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-	ButtonText+= "\r\\Z08\\f00 (autosave state is in settings tab)"
-	Button DataAcquireButton title=ButtonText
+	If(Checked == 1)
+		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
+		string ButtonText = "\\Z14\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
+		Button DataAcquireButton title=ButtonText
 	else
-	Button DataAcquireButton fColor=(0,0,0), win=$panelTitle
-	Button DataAcquireButton title="\\Z14\\f01Acquire\rData"
+		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
+		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
 	endif
 End
-
-
 
 Function CheckProc_Indexing(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = ReturnPanelName()
 	// updates sweeps in cycle value - when indexing is off, only the start set is counted, whend indexing is on all sets between start and end set are counted
-	controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value==0)
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
-	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
+	if(v_value == 0)
+		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxNoOfSweeps(PanelTitle,0) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value = _NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 	else
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxSweepsLockedIndexing(panelTitle)*v_value)
-	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
+		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxSweepsLockedIndexing(panelTitle) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
 	endif
 
 End
 
 Function ChangePopUpState(BaseName, state, panelTitle)
-string BaseName, panelTitle// Popup_DA_IndexEnd_0
-variable state
-variable i=0
-string CompleteName
-
-
-do
-CompleteName=Basename+num2str(i)
-
-PopupMenu $CompleteName disable=state, win=$panelTitle
-i+=1
-while(i<8)
+	string BaseName, panelTitle// Popup_DA_IndexEnd_0
+	variable state
+	variable i = 0
+	string CompleteName
+	
+	do
+		CompleteName = Basename + num2str(i)
+		PopupMenu $CompleteName disable = state, win = $panelTitle
+		i += 1
+	while(i < 8)
 
 End
-
-
-
 
 Function SmoothResizePanel(RightShift, panelTitle)
-variable RightShift
-string panelTitle
-variable i
-getwindow $panelTitle wsize
-
-do
-if(rightshift>=0)
-movewindow/w=$panelTitle v_left, v_top, v_right+i, v_bottom
-else
-movewindow/w=$panelTitle v_left, v_top, v_right-i, v_bottom
-endif
-
-i+=4
-while(i<(abs(rightshift)))
+	variable RightShift
+	string panelTitle
+	variable i
+	getwindow $panelTitle wsize
+	
+	do
+		if(rightshift>=0)
+			movewindow/w=$panelTitle v_left, v_top, v_right+i, v_bottom
+		else
+			movewindow/w=$panelTitle v_left, v_top, v_right-i, v_bottom
+		endif
+		
+		i+=4
+	while(i<(abs(rightshift)))
 
 End
-
 
 Function CheckProc_2(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	
 	if(checked==1)
 	smoothresizepanel(340, panelTitle)
@@ -2625,7 +2593,6 @@ Function CheckProc_2(ctrlName,checked) : CheckBoxControl
 	smoothresizepanel(-340, panelTitle)
 	endif
 End
-
 
 Function TurnOffAllTTLs(panelTitle)
 	string panelTitle
@@ -2664,12 +2631,10 @@ End
 
 Function ButtonProc_2(ctrlName) : ButtonControl
 	String ctrlName
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	
 	TurnOffAllTTLs(panelTitle)
 End
-
 
 Function TurnOffAllDACs(panelTitle)
 	string panelTitle
@@ -2686,9 +2651,7 @@ End
 
 Function ButtonProc_3(ctrlName) : ButtonControl
 	String ctrlName
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	TurnOffAllDACs(panelTitle)
 End
 
@@ -2712,9 +2675,7 @@ End
 
 Function ButtonProc_4(ctrlName) : ButtonControl
 	String ctrlName
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	TurnOffAllADCs(panelTitle)
 End
 
@@ -2735,9 +2696,7 @@ End
 
 Function ButtonProc_5(ctrlName) : ButtonControl
 	String ctrlName
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	TurnOffAllHeadstages(panelTitle)
 	TurnOffAllDACs(panelTitle)
 	TurnOffAllADCs(panelTitle)
@@ -2752,9 +2711,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	string ListOfWavesInFolder
 	string folderPath
 	string folder
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	
 	if(stringmatch(ctrlName,"*indexEnd*")!=1)//makes sure it is the index start wave
 		if(popnum==1)//if the user selects "none" the channel is automatically turned off
@@ -2794,7 +2751,6 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
 	endif
 	
-	
 End
 
 Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -2802,8 +2758,7 @@ Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableContr
 	Variable varNum
 	String varStr
 	String varName
-	getwindow kwTopWin wtitle
-	string PanelTitle=s_value
+	string PanelTitle=ReturnPanelName()
 	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
 	DFREF saveDFR = GetDataFolderDFR()
 	setDataFolder $WavePath+":data"
@@ -2813,10 +2768,9 @@ Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableContr
 	
 End
 
-
 Function UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle=ReturnPanelName()
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
 End
@@ -2832,19 +2786,29 @@ Function ITCP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVari
 	Variable varNum
 	String varStr
 	String varName
-	
-	getwindow kwTopWin wtitle
-	string panelTitle=s_value
+	string panelTitle = ReturnPanelName()	
 
-	controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value==0)
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
-	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
+	if(v_value == 0)
+		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxNoOfSweeps(PanelTitle,0) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 	else
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxSweepsLockedIndexing(panelTitle)*v_value)
-	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
+		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxSweepsLockedIndexing(panelTitle) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
 	endif
 End
-SetVar_DataAcq_ListRepeats
+
+Function /T ReturnPanelName()	
+	string panelTitle
+	getwindow kwTopWin activesw
+	PanelTitle = s_value
+	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
+	
+	if(SearchResult != -1)
+		PanelTitle = PanelTitle[0,SearchResult-2]//SearchResult+1]
+	endif
+	
+	return PanelTitle
+End
