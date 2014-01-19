@@ -74,7 +74,7 @@ Function RepeatedAcquisition(PanelTitle)
 		controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 		if(v_value==0)
 		SmoothResizePanel(340, panelTitle)
-		setwindow $panelTitle +"#oscilloscope", hide =1
+		setwindow $panelTitle +"#oscilloscope", hide = 0
 		endif
 		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
 		StartBackgroundTimer(ITI, "STOPTestPulse("+"\""+panelTitle+"\""+")", "RepeatedAcquisitionCounter("+num2str(DeviceType)+","+num2str(DeviceNum)+",\""+panelTitle+"\")", "", panelTitle)
@@ -181,7 +181,7 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 				controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 				if(v_value==0)
 					SmoothResizePanel(340, panelTitle)
-					setwindow $panelTitle +"#oscilloscope", hide =1
+					setwindow $panelTitle +"#oscilloscope", hide = 0
 				endif
 				
 				StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
@@ -261,7 +261,7 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 				controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 				if(v_value==0)
 					SmoothResizePanel(340, panelTitle)
-					setwindow $panelTitle +"#oscilloscope", hide =1
+					setwindow $panelTitle +"#oscilloscope", hide = 0
 				endif
 				
 				StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)

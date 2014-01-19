@@ -168,7 +168,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
 	SmoothResizePanel(340, panelTitle)
-	setwindow $panelTitle +"#oscilloscope", hide =1
+	setwindow $panelTitle +"#oscilloscope", hide = 0
 	endif
 	
 	string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
@@ -196,7 +196,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 		if(v_value == 0)
 			SmoothResizePanel(-340, panelTitle)
-			setwindow $panelTitle +"#oscilloscope", hide =1
+			setwindow $panelTitle +"#oscilloscope", hide = 1
 		endif
 		killwaves /f TestPulse
 	endif
@@ -255,8 +255,13 @@ Function TP_CalculateResistance(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-	variable NoOfActiveDA = NoOfChannelsSelected("da", "check", panelTitle)
+	variable NoOfActiveDA = NoOfChannelsSelected("DA", "check", panelTitle)
+	variable NoOfActiveAD = NoOfChannelsSelected("AD", "check", panelTitle)
 	variable i = 0
+	make /o /n = (NoOfActiveAD) Resistance
+	variable AmplitudeVC
+	variable AmplitudeIC
+
 End
 
 Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)

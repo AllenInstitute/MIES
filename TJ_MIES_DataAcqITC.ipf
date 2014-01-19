@@ -305,6 +305,7 @@ Function STOPTestPulse(panelTitle)
 	controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 	if(v_value==0)
 	SmoothResizePanel(-340, panelTitle)
+	setwindow $panelTitle +"#oscilloscope", hide = 1
 	endif
 
 	RestoreTTLState(panelTitle)
