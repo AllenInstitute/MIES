@@ -54,7 +54,7 @@ End
 
 Function HSU_DataFolderPathDisplay(PanelTitle)
 	string PanelTitle
-	groupbox group_SettingsPlus_FolderPath win=$PanelTitle, title="Data folder path = "+HSU_DataFullFolderPathString(PanelTitle)
+	groupbox group_Hardware_FolderPath win=$PanelTitle, title="Data folder path = "+HSU_DataFullFolderPathString(PanelTitle)
 End
 
 Function HSU_CreateDataFolderForLockdDev(PanelTitle)
@@ -103,7 +103,7 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	PopupMenu popup_moreSettings_DeviceNo win=$PanelTitle, disable=0
 	Button button_SettingsPlus_LockDevice win=$PanelTitle, disable=0
 	Button button_SettingsPlus_unLockDevic win=$PanelTitle, disable=2
-	GroupBox group_SettingsPlus_FolderPath win=$PanelTitle, title="Lock device to set data folder path"
+	GroupBox group_Hardware_FolderPath win=$PanelTitle, title="Lock device to set data folder path"
 End
 
 Function HSU_DeviceLockCheck(PanelTitle)

@@ -168,6 +168,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
 	SmoothResizePanel(340, panelTitle)
+	setwindow $panelTitle +"#oscilloscope", hide =1
 	endif
 	
 	string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
@@ -195,6 +196,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 		if(v_value == 0)
 			SmoothResizePanel(-340, panelTitle)
+			setwindow $panelTitle +"#oscilloscope", hide =1
 		endif
 		killwaves /f TestPulse
 	endif

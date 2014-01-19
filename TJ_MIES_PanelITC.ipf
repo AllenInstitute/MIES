@@ -2582,8 +2582,10 @@ Function CheckProc_2(ctrlName,checked) : CheckBoxControl
 	
 	if(checked==1)
 	smoothresizepanel(340, panelTitle)
+	setwindow $panelTitle +"#oscilloscope", hide =0
 	else
 	smoothresizepanel(-340, panelTitle)
+	setwindow $panelTitle +"#oscilloscope", hide =1
 	endif
 End
 
