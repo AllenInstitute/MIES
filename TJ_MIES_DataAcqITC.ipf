@@ -311,7 +311,10 @@ Function STOPTestPulse(panelTitle)
 
 	RestoreTTLState(panelTitle)
 	//killwaves/z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
-
+	ControlInfo /w = $panelTitle StartTestPulseButton
+	if(V_disable == 1)
+		Button StartTestPulseButton, win = $panelTitle, disable = 0
+	endif
 
 End
 
@@ -393,7 +396,11 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	execute cmd
 
 	RestoreTTLState(panelTitle)
-
+	
+	ControlInfo /w = $panelTitle StartTestPulseButton
+	if(V_disable == 1)
+		Button StartTestPulseButton, win = $panelTitle, disable = 0
+	endif
 
 END
 //======================================================================================

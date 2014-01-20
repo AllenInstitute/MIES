@@ -87,7 +87,6 @@ Function SetDAScaleToOne(panelTitle)
 				ScalingFactor = v_value
 				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 				ScalingFactor /= v_value
-				print scalingfactor
 			endif
 			
 			setvariable $DASetVariable value = _num:ScalingFactor, win = $panelTitle
@@ -152,9 +151,15 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
 	
+	
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	if(v_value == 0)
 		abort "Give test pulse a duration greater than 0 ms"
+	endif
+	
+	ControlInfo /w = $panelTitle $ctrlName
+	if(V_disable == 0)
+		Button $ctrlName, win = $panelTitle, disable = 1
 	endif
 	
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
@@ -254,7 +259,6 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				i += NoOfActiveDA
 
 				do
-					print i
 					duplicate /Free /r = [][i] DeltaSS, TPWaveColumn
 					DeltaSSAvg[0][i - NoOfActiveDA] = mean(TPWaveColumn)
 					i += 1
