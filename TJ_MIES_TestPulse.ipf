@@ -118,19 +118,23 @@ Function AdjustTestPulseWave(TestPulse, panelTitle)// full path name
 	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
 	variable /g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $TPGlobalPath + ":Duration"
-	variable /g $TPGlobalPath + ":Amplitude"
-	NVAR GlobalTPAmplitudeVariable = $TPGlobalPath + ":Amplitude"
+	variable /g $TPGlobalPath + ":AmplitudeVC"
+	NVAR GlobalTPAmplitudeVariableVC = $TPGlobalPath + ":AmplitudeVC"
+	variable /g $TPGlobalPath + ":AmplitudeIC"
+	NVAR GlobalTPAmplitudeVariableIC = $TPGlobalPath + ":AmplitudeIC"	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave"
-	string /g $TPGlobalPath + ":ADChannelList" = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	string /g $TPGlobalPath + ":ADChannelList" = RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $TPGlobalPath + ":NoOfActiveDA" = NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	PulseDuration = (v_value / 0.005)
 	GlobalTPDurationVariable = PulseDuration
 	redimension /n = (2 * PulseDuration) TestPulse
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-	TestPulse[(PulseDuration / 2),(Pulseduration + (PulseDuration / 2))] = v_value
-	GlobalTPAmplitudeVariable = v_value
+	TestPulse[(PulseDuration / 2), (Pulseduration + (PulseDuration / 2))] = v_value
+	GlobalTPAmplitudeVariableVC = v_value
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
+	GlobalTPAmplitudeVariableIC = v_value
 End
 
 
@@ -223,7 +227,8 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				string panelTitle
 				string InputDataPath
 				NVAR Duration = $InputDataPath + ":Duration"
-				NVAR Amplitude = $InputDataPath + ":Amplitude"			
+				NVAR AmplitudeIC = $InputDataPath + ":AmplitudeIC"	
+				NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"	
 				wave TPWave = $InputDataPath + ":TestPulseITC"
 				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
 				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
@@ -233,21 +238,40 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod	
 				variable TPSSEndPoint = (TPSSEndTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)
 				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-				
-//				Print "BaselineSteadyStateStartTime = ", BaselineSteadyStateStartTime
-//				Print "BaselineSteadyStateEndTime = ", BaselineSteadyStateEndTime
-//				Print "BaselineSSStartPoint = ",  BaselineSSStartPoint
-//				Print "BaslineSSEndPoint = ", BaslineSSEndPoint
-//				Print "TPSSEndTime = ", TPSSEndTime
-//				Print "TPSSStartPoint = ", TPSSStartPoint
-//				Print "TPSSEndPoint = ", TPSSEndPoint
-				
 				duplicate /o /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, $InputDataPath + ":BaselineSS"
 				wave BaselineSS = $InputDataPath + ":BaselineSS"
 				duplicate /o /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, $InputDataPath + ":DeltaSS"
 				wave DeltaSS = $InputDataPath + ":DeltaSS"
 				DeltaSS -= BaselineSS
-				DeltaSS = abs(DeltaSS)	
+				DeltaSS = abs(DeltaSS)
+				
+				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
+				variable columns =  (dimsize(DeltaSS,1) - NoOfActiveDA)-1
+				duplicate /o /r = [0][0, columns] DeltaSS $InputDataPath + ":DeltaSSAvg"
+				wave DeltaSSAvg = $InputDataPath + ":DeltaSSAvg"
+				
+				variable i = 0
+				i += NoOfActiveDA
+
+				do
+					print i
+					duplicate /Free /r = [][i] DeltaSS, TPWaveColumn
+					DeltaSSAvg[0][i - NoOfActiveDA] = mean(TPWaveColumn)
+					i += 1
+				while(i < dimsize(DeltaSS, 1))
+				
+				duplicate /o DeltaSSAvg $InputDataPath + ":Resistance"
+				wave Resistance = $InputDataPath + ":Resistance"
+				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
+				i = 0
+				do
+					if(str2num(stringfromlist(i, ClampModeString, ";"))==1)
+						Resistance[0][i] = DeltaSSAvg / AmplitudeIC    // R = V / I
+					else
+						Resistance[0][i] = AmplitudeVC / DeltaSSAvg    // R = V / I
+					endif
+					i += 1
+				while(i < dimsize(DeltaSSAvg, 1))
 			End
 			
 Function TP_CalculateResistance(panelTitle)
@@ -290,27 +314,7 @@ Function TP_ClampModeString(panelTitle)
 	while(i < itemsinlist(ADChannelList))
 End
 
-Function TP_ChanClampModeWaveUpdate(panelTitle) // populates a 2 column wave. column 1 is DA, column 2 is AD. 
-// the values 0, 1, or 2 are used to indicate channel is off, channel is in vClamp mode, channel is in IClamp mode.
-	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string ChannelClampModeString = WavePath + ":ChannelClampMode"
-	
-	if(waveexists($ChannelClampModeString) == 0)// makes the storage wave if it does not exist
-		make /o /n = (16, 2) $ChannelClampModeString
-		wave /z ChannelClampMode = $ChannelClampModeString
-	endif
-	
-	variable i = 0
-	
-	do
-	
-	
-	
-		i =+ 1
-	while(i < 8)
 
-End
 
 Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
@@ -337,6 +341,8 @@ Function TP_HeadstageMode(panelTitle, HeadStage)
 	string panelTitle
 	variable Headstage
 	variable ClampMode
+	Headstage*=2
+
 	string ControlName = "Radio_ClampMode_" + num2str(HeadStage)
 	
 	controlinfo /w = $panelTitle $ControlName

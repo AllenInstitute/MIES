@@ -274,6 +274,7 @@ Function TestPulseFunc(s)
 		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 		CreateAndScaleTPHoldingWave(panelTitle)
+		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
 		//doupdate	
@@ -373,6 +374,7 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		sprintf cmd, "ITCStopAcq/z=0"
 		Execute cmd
 		CreateAndScaleTPHoldingWave(panelTitle)
+		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		doupdate
 		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
