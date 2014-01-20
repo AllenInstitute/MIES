@@ -290,7 +290,7 @@ Function /T DB_ReturnDBPanelName()
 	
 	return PanelTitle
 End
-Window DataBrowser() : Panel
+Window databrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(522,119,1665,661)
 	ValDisplay valdisp_DataBrowser_Sweep,pos={471,450},size={41,30}
