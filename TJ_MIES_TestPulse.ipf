@@ -150,8 +150,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	endif
 	
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
-	
-	
+		
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	if(v_value == 0)
 		abort "Give test pulse a duration greater than 0 ms"
@@ -159,7 +158,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	
 	ControlInfo /w = $panelTitle $ctrlName
 	if(V_disable == 0)
-		Button $ctrlName, win = $panelTitle, disable = 1
+		Button $ctrlName, win = $panelTitle, disable = 2
 	endif
 	
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)

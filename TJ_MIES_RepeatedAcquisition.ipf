@@ -73,11 +73,11 @@ Function RepeatedAcquisition(PanelTitle)
 		
 		controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 		if(v_value==0)
-		SmoothResizePanel(340, panelTitle)
-		setwindow $panelTitle +"#oscilloscope", hide = 0
+			SmoothResizePanel(340, panelTitle)
+			setwindow $panelTitle +"#oscilloscope", hide = 0
 		endif
 		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
-		StartBackgroundTimer(ITI, "STOPTestPulse("+"\""+panelTitle+"\""+")", "RepeatedAcquisitionCounter("+num2str(DeviceType)+","+num2str(DeviceNum)+",\""+panelTitle+"\")", "", panelTitle)
+		StartBackgroundTimer(ITI, "STOPTestPulse(\""+panelTitle+"\")", "RepeatedAcquisitionCounter("+num2str(DeviceType)+","+num2str(DeviceNum)+",\""+panelTitle+"\")", "", panelTitle)
 		
 		ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		RestoreDAScale(SelectedDACScale,panelTitle)
@@ -265,17 +265,18 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 				endif
 				
 				StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
-				StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
+				StartBackgroundTimer(ITI, "STOPTestPulse(\""+ panelTitle + "\")", "RepeatedAcquisitionCounter("+num2str(DeviceType)+","+num2str(DeviceNum)+",\""+panelTitle+"\")", "", panelTitle)
 				
 				ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				RestoreDAScale(SelectedDACScale, panelTitle)
 				
-				killwaves/f TestPulse
+				//killwaves/f TestPulse
 			else
 				print "Repeated acquisition is complete"
 				Killvariables Count
 				killvariables/z Start, RunTime
 				Killstrings/z FunctionNameA, FunctionNameB//, FunctionNameC
+				killwaves/f TestPulse
 			endif
 End
 //====================================================================================================

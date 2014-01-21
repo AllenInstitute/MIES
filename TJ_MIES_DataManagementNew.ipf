@@ -136,6 +136,7 @@ Function DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting histor
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+	
 	SetDataFolder $WavePath
 	string ListOf_ChanAmpAssign_Sweep_x_Wv=wavelist("ChanAmpAssign_Sweep_*", ";","")
 	string WaveNameUnderConsideration

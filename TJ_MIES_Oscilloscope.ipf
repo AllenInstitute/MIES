@@ -29,7 +29,7 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
 		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
 		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
-		
+		SetAxis /w = $oscilloscopeSubWindow /A =2 $ADchannelName // this line should autoscale only the visible data
 		Unit = stringfromlist(str2num(stringfromlist(i, ADChannelList,";")) + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 
@@ -40,7 +40,7 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	ModifyGraph /w = $oscilloscopeSubWindow freePos=0
 	SetAxis /w = $oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4)
 End
-
+SetAxis/A=2 AD0
 TextBox /W = $graphName /C /N = RunText "Run "+num2istr(runNumber)
 prompt
 extract

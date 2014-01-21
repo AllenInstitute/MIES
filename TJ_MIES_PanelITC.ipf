@@ -2454,6 +2454,11 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	
+	string CountPath = WavePath + ":count"
+	if(exists(CountPath) == 2)
+		killvariables $CountPath
+	endif
+	
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType = v_value - 1
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
@@ -2488,7 +2493,7 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 				RepeatedAcquisition(PanelTitle)
 			endif
 		else
-		ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)
+			ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)
 		endif	
 End
 

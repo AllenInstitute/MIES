@@ -95,7 +95,7 @@ Function StopDataAcq()
 	SVAR panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	string CountPath=WavePath+"count"
+	string CountPath=WavePath+":count"
 
 	sprintf cmd, "ITCStopAcq/z=0"
 	Execute cmd
@@ -112,7 +112,7 @@ Function StopDataAcq()
 	
 	ControlInfo/w=$panelTitleG Check_Settings_SaveData
 	If(v_value==0)
-	SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+		SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
 	endif
 	
 	 ScaleITCDataWave(panelTitleG)
@@ -123,11 +123,13 @@ Function StopDataAcq()
 			RepeatedAcquisition(PanelTitleG)
 		endif
 	else
+		
 		BckgTPwithCallToRptAcqContr(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 	
-	killvariables/z StopCollectionPoint, ADChannelToMonitor
-	killstrings/z PanelTitleG
+	//killvariables/z StopCollectionPoint, ADChannelToMonitor
+	//killvariables/z  ADChannelToMonitor
+	//killstrings/z PanelTitleG
 END
 //======================================================================================
 Function ZeroTheInstrutechDevice()
@@ -207,7 +209,7 @@ End
 Function StopBackgroundTimerTask()
 	SVAR FunctionNameA
 	SVAR FunctionNameB
-	//SVAR FunctionNameC
+	SVAR FunctionNameC
 	CtrlNamedBackground Timer, stop
 	Execute FunctionNameA
  	Execute FunctionNameB
@@ -225,6 +227,7 @@ Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	string cmd
 	variable i=0
 	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	NVAR stopcollectionpoint
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	variable/G BackgroundTPCount = 0
 	doupdate
@@ -237,7 +240,6 @@ Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	execute cmd
 	CtrlNamedBackground TestPulse, period=2, proc=TestPulseFunc
 	CtrlNamedBackground TestPulse, start
-
 
 End
 //======================================================================================
@@ -253,7 +255,7 @@ Function TestPulseFunc(s)
 	string  ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ResultsWavePath = WavePath + ":ResultsWave"
-	string CountPath=WavePath+"count"
+	string CountPath=WavePath+":count"
 	string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
@@ -276,7 +278,7 @@ Function TestPulseFunc(s)
 		CreateAndScaleTPHoldingWave(panelTitle)
 		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
-		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
+		//itcdatawave[0][0]+=0// runs arithmatic on data wave to force onscreen update 
 		//doupdate	
 		BackgroundTPCount +=1
 		if(mod(BackgroundTPCount,30)==0 || BackgroundTPCount == 1)
@@ -301,8 +303,7 @@ Function STOPTestPulse(panelTitle)
 	CtrlNamedBackground TestPulse, stop
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
-	killvariables/z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	killstrings/z PanelTitleG
+
 	controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 	if(v_value==0)
 	SmoothResizePanel(-340, panelTitle)
@@ -312,10 +313,12 @@ Function STOPTestPulse(panelTitle)
 	RestoreTTLState(panelTitle)
 	//killwaves/z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 1)
+	if(V_disable == 2)
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
 	endif
-
+	
+	killvariables/z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
+	killstrings/z PanelTitleG
 End
 
 //======================================================================================
@@ -398,7 +401,7 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	RestoreTTLState(panelTitle)
 	
 	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 1)
+	if(V_disable == 2)
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
 	endif
 

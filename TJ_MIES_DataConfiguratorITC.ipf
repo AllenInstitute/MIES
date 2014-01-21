@@ -413,7 +413,7 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	string cmd
 	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column
-	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+"count"
+	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+":count" //%%
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
 	if(exists(CountPath) == 2)
