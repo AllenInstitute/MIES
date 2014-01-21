@@ -161,10 +161,15 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		Button $ctrlName, win = $panelTitle, disable = 2
 	endif
 	
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string CountPath = WavePath + ":count"
+	if(exists(CountPath) == 2)
+		killvariables $CountPath
+	endif
+	
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 	
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType = v_value - 1
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo

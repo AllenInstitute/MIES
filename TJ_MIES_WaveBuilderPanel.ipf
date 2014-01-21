@@ -526,7 +526,7 @@ End
 
 Function WBP_ButtonProc_AutoScale(ctrlName) : ButtonControl
 	String ctrlName
-SetAxis/A/w=wavebuilder#wavebuildergraph
+SetAxis /A /w = wavebuilder#wavebuildergraph
 End
 
 Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
