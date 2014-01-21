@@ -3,18 +3,20 @@
 Function ITCOscilloscope(WaveToPlot, panelTitle)
 	wave WaveToPlot
 	string panelTitle
-	//panelTitle="itc1600_dev_0"
+	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
+	print NameOfWaveBeingPlotted
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 	variable i =  0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
 	wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
 	wave ChannelClampMode = $WavePath + "ChannelClampMode"
-	//wave TestPulseITC = root:WaveBuilder:SavedStimulusSets:DA:TestPulseITC, ITCChanConfigWave =$WavePath+"ITCChanConfigWave"
+	wave ResistanceWave = $WavePath + "TestPulse:Resistance"
 	string ADChannelName= "AD"
 	string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 	string UnitWaveNote = note(ITCChanConfigWave)
 	string Unit
+	string ResistanceTraceName = "Resistance"
 	RemoveTracesOnGraph(oscilloscopeSubWindow)
 	
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
@@ -32,8 +34,20 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 		SetAxis /w = $oscilloscopeSubWindow /A =2 $ADchannelName // this line should autoscale only the visible data
 		Unit = stringfromlist(str2num(stringfromlist(i, ADChannelList,";")) + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
-
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
+		
+		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
+			appendtograph /W = $oscilloscopeSubWindow /R = $"Resistance"+num2str(i) ResistanceWave[][i]
+			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"Resistance"+num2str(i))=2,axThick($"Resistance"+num2str(i))=0
+			ModifyGraph /W =$oscilloscopeSubWindow axisEnab($"Resistance"+num2str(i))={YaxisLow,YaxisHigh}
+			if(i > 0)
+				ResistanceTraceName = "Resistance#"+num2str(i)
+			endif
+			print resistancetracename
+			Tag/W = $oscilloscopeSubWindow/C/N=$"R"+num2str(i)/F=0/X=-15/Y=0/B=1/L=0 $ResistanceTraceName, 0,"\\OY \\Z10(Mohm)"
+
+		endif
+
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
 	endfor
