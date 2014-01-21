@@ -487,26 +487,28 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	string SetWaveToDelete = s_value
 	//getwindow kwTopWin wtitle
 	variable i = 0
-	
-	do
-		string panelTitle=stringfromlist(i,ITCPanelTitleList, ";")
-		if(stringmatch(SetWaveToDelete,"*DA*")==1)
-		DAorTTL="DA"
-		else
-		DAorTTL="TTL"
-		endif
-	
-		string popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
-		string popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
-		WBP_DeleteSet()
-		WBP_UpdateITCPanelPopUps(panelTitle)
-		WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
-		WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
-		i+=1
-	while(i<itemsinlist(ITCPanelTitleList))
-	
-	controlupdate /W=wavebuilder popup_WaveBuilder_SetList
-	PopupMenu popup_WaveBuilder_SetList mode=1
+	if(stringmatch(SetWaveToDelete, "- none -") == 0)
+		do
+			string panelTitle=stringfromlist(i,ITCPanelTitleList, ";")
+			if(stringmatch(SetWaveToDelete,"*DA*") == 1)
+				DAorTTL="DA"
+			else
+				DAorTTL="TTL"
+			endif
+		
+			string popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
+			string popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
+			WBP_DeleteSet()
+			WBP_UpdateITCPanelPopUps(panelTitle)
+			WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL,0, panelTitle)
+			WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL,1, panelTitle)
+			i += 1
+		while(i < itemsinlist(ITCPanelTitleList))
+	else
+		print "Select a set to delete from popup menu."
+	endif
+	controlupdate /W = wavebuilder popup_WaveBuilder_SetList
+	PopupMenu popup_WaveBuilder_SetList mode = 1
 End
 
 Function WBP_SetVarProc_StepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -1258,42 +1260,46 @@ Function WBP_LoadSet()
 	
 	controlinfo popup_WaveBuilder_SetList
 	SetName=s_value
-	
-	WPName="WP_"+SetName
-	WPTName="WPT_"+SetName
-	SegWvTypeName="SegWvType_"+SetName
-	
-	if(stringmatch(SetName,"- none -") == 0)
-		If(stringmatch(SetName, "*TTL*")==1)// are you loading a DA or TTL set?
-			PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=2
-			WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",2,"TTL")
-			FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
-			DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-			SetDataFolder $FolderPath
-			duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
-			duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
-			duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
-	
-		else
-			PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=1
-			WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",1,"DA")
-			FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DA"
-			DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-			SetDataFolder $FolderPath
-			duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
-			duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
-			duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
-			
-		endif
+	if(stringmatch(SetName, "- none -") == 0)
 		
-			wave LocalWave=root:WaveBuilder:Data:SegWvType
-			SetVariable SetVar_WaveBuilder_NoOfSegments value= _NUM:LocalWave[100]
-			SetVariable SetVar_WaveBuilder_StepCount value= _NUM:LocalWave[101]
-			SetVariable setvar_WaveBuilder_SegmentEdit value= _NUM:0
-			TabControl WBP_WaveType value=LocalWave[0]
-			WB_ParamToPanel(LocalWave[0])
-			WBP_SetVarProc_TotEpoch("setvar_wavebuilder_noofsegments",LocalWave[100],num2str(LocalWave[100]),"")
-			SetDataFolder saveDFR
+		WPName="WP_"+SetName
+		WPTName="WPT_"+SetName
+		SegWvTypeName="SegWvType_"+SetName
+		
+		if(stringmatch(SetName,"- none -") == 0)
+			If(stringmatch(SetName, "*TTL*")==1)// are you loading a DA or TTL set?
+				PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=2
+				WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",2,"TTL")
+				FolderPath="root:WaveBuilder:SavedStimulusSetParameters:TTL"
+				DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+				SetDataFolder $FolderPath
+				duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
+				duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
+				duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
+		
+			else
+				PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode=1
+				WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType",1,"DA")
+				FolderPath="root:WaveBuilder:SavedStimulusSetParameters:DA"
+				DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+				SetDataFolder $FolderPath
+				duplicate/o $WPName, $"root:WaveBuilder:Data:WP"
+				duplicate/o $WPTName, $"root:WaveBuilder:Data:WPT"
+				duplicate/o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
+				
+			endif
+			
+				wave LocalWave=root:WaveBuilder:Data:SegWvType
+				SetVariable SetVar_WaveBuilder_NoOfSegments value= _NUM:LocalWave[100]
+				SetVariable SetVar_WaveBuilder_StepCount value= _NUM:LocalWave[101]
+				SetVariable setvar_WaveBuilder_SegmentEdit value= _NUM:0
+				TabControl WBP_WaveType value=LocalWave[0]
+				WB_ParamToPanel(LocalWave[0])
+				WBP_SetVarProc_TotEpoch("setvar_wavebuilder_noofsegments",LocalWave[100],num2str(LocalWave[100]),"")
+				SetDataFolder saveDFR
+		endif
+	else
+	Print "Select set to load from popup menu."
 	endif
 End
 
