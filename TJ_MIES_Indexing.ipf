@@ -6,8 +6,8 @@ Function MakeIndexingStorageWaves(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	variable NoOfTTLs = TotNoOfControlType("check", "TTL",panelTitle)
 	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
-	make/o/n=(4,NoOfTTLs) $WavePath+":TTLIndexingStorageWave"
-	make/o/n=(4,NoOfDACs) $WavePath+":DACIndexingStorageWave"
+	make /o /n = (4,NoOfTTLs) $WavePath + ":TTLIndexingStorageWave"
+	make /o /n = (4,NoOfDACs) $WavePath + ":DACIndexingStorageWave"
 End
 
 Function StoreStartFinishForIndexing(panelTitle)
@@ -20,39 +20,39 @@ Function StoreStartFinishForIndexing(panelTitle)
 	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
 	string TTLPopUpNameIndexStart, DACPopUpNameIndexStart, TTLPopUpNameIndexEnd, DACPopUpNameIndexEnd
 	
-	For(i=0;i<NoOfDACS;i+=1)
-		if(i<10)
+	For(i = 0; i < NoOfDACS; i += 1)
+		if(i < 10)
 			DACPopUpNameIndexStart = "Wave_DA_0"+num2str(i)
-			controlInfo/w=$panelTitle $DACPopUpNameIndexStart
-			DACIndexingStorageWave[0][i]=v_value
-			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_0"+num2str(i)
-			controlInfo/w=$panelTitle $DACPopUpNameIndexEnd
-			DACIndexingStorageWave[1][i]=v_value
+			controlInfo /w = $panelTitle $DACPopUpNameIndexStart
+			DACIndexingStorageWave[0][i] = v_value
+			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_0" + num2str(i)
+			controlInfo/w = $panelTitle $DACPopUpNameIndexEnd
+			DACIndexingStorageWave[1][i] = v_value
 		else
 			DACPopUpNameIndexStart = "Wave_DA_"+num2str(i)
-			controlInfo/w=$panelTitle $DACPopUpNameIndexStart
-			DACIndexingStorageWave[0][i]=v_value
+			controlInfo /w = $panelTitle $DACPopUpNameIndexStart
+			DACIndexingStorageWave[0][i] = v_value
 			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_"+num2str(i)
-			controlInfo/w=$panelTitle $DACPopUpNameIndexEnd
-			DACIndexingStorageWave[1][i]=v_value
+			controlInfo /w =$panelTitle $DACPopUpNameIndexEnd
+			DACIndexingStorageWave[1][i] = v_value
 		endif
 	endfor 
 		
-	For(i=0;i<NoOfTTLs;i+=1)
-		if(i<10)
+	For(i = 0; i < NoOfTTLs; i += 1)
+		if(i < 10)
 			TTLPopUpNameIndexStart = "Wave_TTL_0"+num2str(i)
-			controlInfo/w=$panelTitle $TTLPopUpNameIndexStart
-			TTLIndexingStorageWave[0][i]=v_value
-			TTLPopUpNameIndexEnd = "Popup_TTL_IndexEnd_0"+num2str(i)
-			controlInfo/w=$panelTitle $TTLPopUpNameIndexEnd
-			TTLIndexingStorageWave[1][i]=v_value
+			controlInfo /w = $panelTitle $TTLPopUpNameIndexStart
+			TTLIndexingStorageWave[0][i] = v_value
+			TTLPopUpNameIndexEnd = "Popup_TTL_IndexEnd_0" + num2str(i)
+			controlInfo /w = $panelTitle $TTLPopUpNameIndexEnd
+			TTLIndexingStorageWave[1][i] = v_value
 		else
 			TTLPopUpNameIndexStart = "Wave_TTL_"+num2str(i)
-			controlInfo/w=$panelTitle $TTLPopUpNameIndexStart
-			TTLIndexingStorageWave[0][i]=v_value
-			TTLPopUpNameIndexEnd = "Popup_TTL_IndexEnd_"+num2str(i)
-			controlInfo/w=$panelTitle $TTLPopUpNameIndexEnd
-			TTLIndexingStorageWave[1][i]=v_value
+			controlInfo /w = $panelTitle $TTLPopUpNameIndexStart
+			TTLIndexingStorageWave[0][i] = v_value
+			TTLPopUpNameIndexEnd = "Popup_TTL_IndexEnd_" + num2str(i)
+			controlInfo /w = $panelTitle $TTLPopUpNameIndexEnd
+			TTLIndexingStorageWave[1][i] = v_value
 		endif
 	endfor
 End
@@ -69,85 +69,85 @@ Function IndexingDoIt(panelTitle)// for locked indexing, indexes all active chan
 	string DACPopUpName, TTLPopUpName
 
 
-	for(i=0;i<NoOfDACS;i+=1)
-		if(DACIndexingStorageWave[1][i]>DACIndexingStorageWave[0][i])
-			if(i<10)
-			DACPopUpName="Wave_DA_0"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value<DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value+1)
+	for(i = 0; i < NoOfDACS; i += 1)
+		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
+			if(i < 10)
+				DACPopUpName = "Wave_DA_0" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value < DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			else
-			DACPopUpName="Wave_DA_"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value<DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value+1)
+				DACPopUpName = "Wave_DA_" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value < DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
 		
-		if(DACIndexingStorageWave[1][i]<DACIndexingStorageWave[0][i])
-			if(i<10)
-			DACPopUpName="Wave_DA_0"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value>DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value-1)
+		if(DACIndexingStorageWave[1][i] < DACIndexingStorageWave[0][i])
+			if(i < 10)
+				DACPopUpName = "Wave_DA_0" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value > DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			else
-			DACPopUpName="Wave_DA_"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value>DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value-1)
+				DACPopUpName = "Wave_DA_" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value > DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
 	endfor
 	
-	for(i=0;i<NoOfTTLS;i+=1)
-		if(TTLIndexingStorageWave[1][i]>TTLIndexingStorageWave[0][i])
-			if(i<10)
-			TTLPopUpName="Wave_TTL_0"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value<TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value+1)
+	for(i = 0; i < NoOfTTLS; i += 1)
+		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
+			if(i < 10)
+				TTLPopUpName = "Wave_TTL_0"+num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value < TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			else
-			TTLPopUpName="Wave_TTL_"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value<TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value+1)
+				TTLPopUpName = "Wave_TTL_" + num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value < TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
 		
-		if(TTLIndexingStorageWave[1][i]<TTLIndexingStorageWave[0][i])
-			if(i<10)
-			TTLPopUpName="Wave_TTL_0"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value>TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value-1)
+		if(TTLIndexingStorageWave[1][i] < TTLIndexingStorageWave[0][i])
+			if(i < 10)
+				TTLPopUpName = "Wave_TTL_0" + num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value > TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			else
-			TTLPopUpName="Wave_TTL_"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value>TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value-1)
+			TTLPopUpName = "Wave_TTL_" + num2str(i)
+			controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value > TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
@@ -159,89 +159,89 @@ Function IndexSingleChannel(panelTitle, DAorTTL, ChannelNo)// indexes a single c
 	variable DAorTTL, ChannelNo
 	variable i = ChannelNo
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
-	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave DACIndexingStorageWave = $wavePath + ":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	string DACPopUpName, TTLPopUpName
 	
-	if(DAorTTL==0)
-		if(DACIndexingStorageWave[1][i]>DACIndexingStorageWave[0][i])
-			if(i<10)
-			DACPopUpName="Wave_DA_0"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value<DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value+1)
+	if(DAorTTL == 0)
+		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
+			if(i < 10)
+				DACPopUpName = "Wave_DA_0" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value < DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			else
-			DACPopUpName="Wave_DA_"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value<DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value+1)
+				DACPopUpName = "Wave_DA_" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value < DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
 		
-		if(DACIndexingStorageWave[1][i]<DACIndexingStorageWave[0][i])
-			if(i<10)
-			DACPopUpName="Wave_DA_0"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
+		if(DACIndexingStorageWave[1][i] < DACIndexingStorageWave[0][i])
+			if(i < 10)
+				DACPopUpName = "Wave_DA_0" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
 				if(v_value>DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value-1)
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			else
-			DACPopUpName="Wave_DA_"+num2str(i)
-			controlinfo/w=$panelTitle $DACPopUpName
-				if(v_value>DACIndexingStorageWave[1][i])
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=(v_value-1)
+				DACPopUpName = "Wave_DA_" + num2str(i)
+				controlinfo /w = $panelTitle $DACPopUpName
+				if(v_value > DACIndexingStorageWave[1][i])
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $DACPopUpName win=$panelTitle, mode=DACIndexingStorageWave[0][i]
+					PopUpMenu $DACPopUpName win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
 	endif
 	
-	if(DAorTTL==1)
-		if(TTLIndexingStorageWave[1][i]>TTLIndexingStorageWave[0][i])
-			if(i<10)
-			TTLPopUpName="Wave_TTL_0"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value<TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value+1)
+	if(DAorTTL == 1)
+		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
+			if(i < 10)
+				TTLPopUpName = "Wave_TTL_0" + num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value < TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			else
-			TTLPopUpName="Wave_TTL_"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value<TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value+1)
+				TTLPopUpName = "Wave_TTL_" + num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value < TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value + 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
 		
-		if(TTLIndexingStorageWave[1][i]<TTLIndexingStorageWave[0][i])
-			if(i<10)
-			TTLPopUpName="Wave_TTL_0"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value>TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value-1)
+		if(TTLIndexingStorageWave[1][i] < TTLIndexingStorageWave[0][i])
+			if(i < 10)
+				TTLPopUpName = "Wave_TTL_0" + num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value > TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			else
-			TTLPopUpName="Wave_TTL_"+num2str(i)
-			controlinfo/w=$panelTitle $TTLPopUpName
-				if(v_value>TTLIndexingStorageWave[1][i])
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=(v_value-1)
+				TTLPopUpName = "Wave_TTL_" + num2str(i)
+				controlinfo /w = $panelTitle $TTLPopUpName
+				if(v_value > TTLIndexingStorageWave[1][i])
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = (v_value - 1)
 				else
-				PopUpMenu $TTLPopUpName win=$panelTitle, mode=TTLIndexingStorageWave[0][i]
+					PopUpMenu $TTLPopUpName win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 				endif
 			endif
 		endif
@@ -261,9 +261,9 @@ Function Index_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets f
 	variable MaxSteps
 	
 	do
-	MaxSteps+= Index_StepsInSetWithMaxSweeps(panelTitle,i)
-	i+=1
-	while(i<MaxCycleIndexSteps)
+		MaxSteps+= Index_StepsInSetWithMaxSweeps(panelTitle,i)
+		i += 1
+	while(i < MaxCycleIndexSteps)
 	
 	return MaxSteps
 End
@@ -271,71 +271,70 @@ End
 Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
 	string panelTitle
 	variable IndexNo
-	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
+	string DAChannelStatusList = ControlStatusListString("DA", "check", panelTitle)
 	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
 	variable MaxSteps = 0, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
 	string setName
 	string SetList
-	variable i=0
-	variable ListOffset=3
+	variable i = 0
+	variable ListOffset = 3
 	string popMenuIndexStartName, popMenuIndexEndName
 	
 	do // for DAs
-		if((str2num(stringfromlist(i,DAChannelStatusList,";")))==1)
-		popMenuIndexStartName="Wave_DA_0" + num2str(i)
-		controlinfo/w=$panelTitle $popMenuIndexStartName
-		ListStartNo=v_value
-		popMenuIndexEndName="Popup_DA_IndexEnd_0" + num2str(i)
-		controlinfo/w=$panelTitle $popMenuIndexEndName
-		ListEndNo=v_value
-		ListLength=abs(ListStartNo-ListEndNo)+1
-			index=indexNo
-			if(listLength<=IndexNo)
-				Index=mod(IndexNo, ListLength)
-
+		if((str2num(stringfromlist(i, DAChannelStatusList,";"))) == 1)
+			popMenuIndexStartName = "Wave_DA_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexStartName
+			ListStartNo = v_value
+			popMenuIndexEndName = "Popup_DA_IndexEnd_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexEndName
+			ListEndNo = v_value
+			ListLength = abs(ListStartNo - ListEndNo) + 1
+			index = indexNo
+			if(listLength <= IndexNo)
+				Index = mod(IndexNo, ListLength)
 			endif
 			
-			if((ListStartNo-ListEndNo)>0)
-				index*=-1
+			if((ListStartNo - ListEndNo) > 0)
+				index *= -1
 			endif
-		SetList=	getuserdata(PanelTitle, "Wave_DA_0" + num2str(i), "menuexp")
-		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
-		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
-		MaxSteps = max(MaxSteps, SetSteps)
+			SetList = getuserdata(PanelTitle, "Wave_DA_0" + num2str(i), "menuexp")
+			SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
+			SetSteps = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
+			MaxSteps = max(MaxSteps, SetSteps)
 		endif
-		i+=1
-	while(i<(itemsinlist(DAChannelStatusList,";")))
+		i += 1
+	while(i < (itemsinlist(DAChannelStatusList, ";")))
 	
 	ListOffset = 2
 	i = 0
 	
 	do // for TTLs
-		if((str2num(stringfromlist(i,TTLChannelStatusList,";")))==1)
-		popMenuIndexStartName="Wave_TTL_0" + num2str(i)
-		controlinfo/w=$panelTitle $popMenuIndexStartName
-		ListStartNo=v_value
-		popMenuIndexEndName="Popup_TTL_IndexEnd_0" + num2str(i)
-		controlinfo/w=$panelTitle $popMenuIndexEndName
-		ListEndNo=v_value
-		ListLength=abs(ListStartNo-ListEndNo)+1
-		index=indexNo
+		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
+			popMenuIndexStartName = "Wave_TTL_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexStartName
+			ListStartNo = v_value
+			popMenuIndexEndName = "Popup_TTL_IndexEnd_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexEndName
+			ListEndNo = v_value
+			ListLength = abs(ListStartNo - ListEndNo) + 1
+			index = indexNo
 		
-			if(listLength<=IndexNo)
-				Index=mod(IndexNo, ListLength)
+			if(listLength <= IndexNo)
+				Index = mod(IndexNo, ListLength)
 			endif
 			
-			if((ListStartNo-ListEndNo)>0)
-				index*=-1
+			if((ListStartNo - ListEndNo) > 0)
+				index *= -1
 			endif
 			
-		SetList=	getuserdata(PanelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
-		SetName=stringfromlist((ListStartNo+index-listoffset), SetList,";")
-		SetSteps=Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
+		SetList = getuserdata(PanelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
+		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
+		SetSteps = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
 		MaxSteps = max(MaxSteps, SetSteps)
 		endif
-		i+=1
-	while(i<(itemsinlist(TTLChannelStatusList,";")))	
+		i += 1
+	while(i < (itemsinlist(TTLChannelStatusList, ";")))	
 	
 	return MaxSteps
 End
@@ -347,35 +346,35 @@ Function Index_MaxSets(panelTitle)// returns the number of sets on the active ch
 	variable MaxSets = 0
 	variable ChannelSets
 	string popMenuIndexStartName, popMenuIndexEndName
-	variable i=0
+	variable i = 0
 	do
-		if((str2num(stringfromlist(i,DAChannelStatusList,";")))==1)
-			popMenuIndexStartName="Wave_DA_0" + num2str(i)
-			controlinfo/w=$panelTitle $popMenuIndexStartName
-			ChannelSets=v_value
-			popMenuIndexEndName="Popup_DA_IndexEnd_0" + num2str(i)
-			controlinfo/w=$panelTitle $popMenuIndexEndName
-			ChannelSets-=v_value
+		if((str2num(stringfromlist(i, DAChannelStatusList, ";"))) == 1)
+			popMenuIndexStartName = "Wave_DA_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexStartName
+			ChannelSets = v_value
+			popMenuIndexEndName = "Popup_DA_IndexEnd_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexEndName
+			ChannelSets -= v_value
 			ChannelSets = abs(ChannelSets)
-			MaxSets=max(MaxSets,ChannelSets)
+			MaxSets = max(MaxSets,ChannelSets)
 		endif	
-		i+=1
-	while(i<(itemsinlist(DAChannelStatusList,";")))
+		i += 1
+	while(i < (itemsinlist(DAChannelStatusList, ";")))
 	
-	i=0
+	i = 0
 	do
-		if((str2num(stringfromlist(i,TTLChannelStatusList,";")))==1)
+		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
 			popMenuIndexStartName="Wave_TTL_0" + num2str(i)
-			controlinfo/w=$panelTitle $popMenuIndexStartName
-			ChannelSets=v_value
-			popMenuIndexEndName="Popup_TTL_IndexEnd_0" + num2str(i)
+			controlinfo /w = $panelTitle $popMenuIndexStartName
+			ChannelSets = v_value
+			popMenuIndexEndName = "Popup_TTL_IndexEnd_0" + num2str(i)
 			controlinfo/w=$panelTitle $popMenuIndexEndName
-			ChannelSets-=v_value
+			ChannelSets -= v_value
 			ChannelSets = abs(ChannelSets)
-			MaxSets=max(MaxSets,ChannelSets)
+			MaxSets = max(MaxSets,ChannelSets)
 		endif	
-		i+=1
-	while(i<(itemsinlist(DAChannelStatusList,";")))
+		i += 1
+	while(i < (itemsinlist(DAChannelStatusList,";")))
 	
 	return MaxSets
 End
@@ -390,21 +389,21 @@ Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max numb
 	variable i = 0
 	
 	do
-		if(str2num(stringfromlist(i,DAChannelStatusList,";"))==1)
-		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0, IndexOverRide))
+		if(str2num(stringfromlist(i, DAChannelStatusList, ";")) == 1)
+			MaxNoOfSweeps = max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0, IndexOverRide))
 		endif
 	
-	i+=1
-	while(i<itemsinlist(DAChannelStatusList,";"))
+		i += 1
+	while(i < itemsinlist(DAChannelStatusList,";"))
 	
-	i=0
+	i = 0
 	do
-		if(str2num(stringfromlist(i,TTLChannelStatusList,";"))==1)
-		MaxNoOfSweeps=max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1, IndexOverRide))
+		if(str2num(stringfromlist(i, TTLChannelStatusList, ";")) == 1)
+			MaxNoOfSweeps = max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1, IndexOverRide))
 		endif
 	
-	i+=1
-	while(i<itemsinlist(TTLChannelStatusList,";"))
+		i += 1
+	while(i < itemsinlist(TTLChannelStatusList, ";"))
 	
 	return MaxNoOfSweeps
 End
@@ -416,41 +415,41 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, In
 	variable IndexStart, IndexEnd, ListOffset
 	string DAorTTL_cntrlName = "", DAorTTL_indexEndName = "", setname = ""
 	
-	if(DAorTTL==0)// determine control names based on DA or TTL 
+	if(DAorTTL == 0)// determine control names based on DA or TTL 
 		DAorTTL_cntrlName = "Wave_DA_0" + num2str(PopUpMenuNumber)
 		DAorTTL_indexEndName = "Popup_DA_IndexEnd_0" + num2str(PopUpMenuNumber)
-		ListOffset=3// accounts for first two options in DA popup menu list
+		ListOffset = 3// accounts for first two options in DA popup menu list
 	endif
 
-	if(DAorTTL==1)
+	if(DAorTTL == 1)
 		DAorTTL_cntrlName = "Wave_TTL_0" + num2str(PopUpMenuNumber)
 		DAorTTL_indexEndName = "Popup_TTL_IndexEnd_0" + num2str(PopUpMenuNumber)
-		ListOffset=2//SHOULD BE TWO BUT TEST PULSE IS PRESENTLY POPULATING THE TTL POPUP MENU LIST
+		ListOffset = 2
 	endif
 	
-	controlinfo/w=$panelTitle $DAorTTL_cntrlName// check if indexing is activated
-	IndexStart=v_value
+	controlinfo /w = $panelTitle $DAorTTL_cntrlName// check if indexing is activated
+	IndexStart = v_value
 	
-	controlinfo/w=$panelTitle Check_DataAcq_Indexing// checks to if indexing is activated
-	if(v_value==0)
-		IndexEnd=indexStart
+	controlinfo /w = $panelTitle Check_DataAcq_Indexing// checks to if indexing is activated
+	if(v_value == 0)
+		IndexEnd = indexStart
 	else
-		controlinfo/w=$panelTitle $DAorTTL_indexEndName
-		IndexEnd=v_value 
+		controlinfo /w = $panelTitle $DAorTTL_indexEndName
+		IndexEnd = v_value 
 	endif
 	
-	If(IndexOverRide==1)
-		IndexEnd=indexStart
+	If(IndexOverRide == 1)
+		IndexEnd = indexStart
 	endIF
 	
 	string setList = getuserdata(PanelTitle, DAorTTL_cntrlName, "menuexp")
-	variable i = (min(indexstart, indexend)-ListOffset)
+	variable i = (min(indexstart, indexend) - ListOffset)
 	
 	do
-		Setname=stringfromlist(i, setList,";")
-		NumberOfTrialsAcrossSets+=Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
-		i+=1
-	while(i<(max(indexstart, indexend)-(ListOffset-1)))
+		Setname = stringfromlist(i, setList, ";")
+		NumberOfTrialsAcrossSets += Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
+		i += 1
+	while(i < (max(indexstart, indexend) - (ListOffset - 1)))
 	
 	return NumberOfTrialsAcrossSets
 
@@ -461,16 +460,16 @@ Function Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is t
 	variable DAorTTL//DA = 0, TTL = 1
 	string WavePath 
 	
-	if(DAorTTL==0)// to determine location
-	WavePath="root:WaveBuilder:SavedStimulusSets:DA:"
+	if(DAorTTL == 0)// to determine location
+		WavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
-	if(DAorTTL==1)
-	WavePath="root:WaveBuilder:SavedStimulusSets:TTL:"
+	if(DAorTTL == 1)
+		WavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
 	string NameOfWaveSelectedInPopUP = WavePath + setName
-	variable NumberOfTrialsInSet= DimSize($NameOfWaveSelectedInPopUP, 1)
+	variable NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
 	return NumberOfTrialsInSet
 End
 

@@ -47,7 +47,7 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
 	wave /z /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
 
-	controlinfo/w=$panelTitle Popup_Settings_HeadStage
+	controlinfo /w = $panelTitle Popup_Settings_HeadStage
 	HeadStageNo = str2num(s_value)
 	
 	If (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
@@ -67,7 +67,7 @@ Function UpdateChanAmpAssignStorageWave(panelTitle)
 		make /o /n = (16, 2) $ChannelClampModeString = nan
 	endif
 
-	duplicate/free ChanAmpAssign ChanAmpAssignOrig
+	duplicate /free ChanAmpAssign ChanAmpAssignOrig
 
 	// Assigns V-clamp settings for a particular headstage
 	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
@@ -299,7 +299,7 @@ Function RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 		
 		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = nan
 		
-		If(ChanAmpAssign[6][HeadStageNo]<10)
+		If(ChanAmpAssign[6][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck value = 0
 		
@@ -340,7 +340,7 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		PairedRadioButton += (num2str(RadioButtonNo - 1))
 		checkbox $PairedRadioButton value = 0
 		HeadStageCheckBox += num2str(((RadioButtonNo - 1) / 2))
-		controlinfo/w = $panelTitle $HeadStageCheckBox
+		controlinfo /w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
 		RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
@@ -358,7 +358,7 @@ Function CheckProc_HeadstageCheck(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	
 	string RadioButtonName = "Radio_ClampMode_"
-	Variable HeadStageNo =str2num(ctrlname[15])
+	Variable HeadStageNo = str2num(ctrlname[15])
 	Variable ClampMode//
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value

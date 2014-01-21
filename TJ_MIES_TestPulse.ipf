@@ -146,7 +146,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	
 	if(SearchResult != -1)
-	PanelTitle = PanelTitle[0,SearchResult-2]//SearchResult+1]
+	PanelTitle = PanelTitle[0,SearchResult - 2]//SearchResult+1]
 	endif
 	
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1

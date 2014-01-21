@@ -4,8 +4,8 @@
 
 
 Function SteadyStateDifference(NameOfWaveToBeAnalyzed, ColumnOfWaveToBeAnalyzed, BaselineStartPoint, BaselineEndPoint, TestStartPoint, TestEndPoint)
-wave NameOfWaveToBeAnalyzed, ColumnOfWaveToBeAnalyzed
-variable BaselineStartPoint, BaselineEndPoint, TestStartPoint, TestEndPoint
+	wave NameOfWaveToBeAnalyzed, ColumnOfWaveToBeAnalyzed
+	variable BaselineStartPoint, BaselineEndPoint, TestStartPoint, TestEndPoint
 
 
 End

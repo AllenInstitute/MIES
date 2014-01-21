@@ -2210,7 +2210,7 @@ Function CheckProc_UniversalSearchString(ctrlName,checked) : CheckBoxControl
 	
 	controlinfo /w = $panelTitle Search_DA_00
 	if(strlen(s_value) == 0)
-		SearchString="*da*"
+		SearchString = "*da*"
 	else
 		SearchString = s_value
 	endif
@@ -2281,7 +2281,7 @@ Function SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableContr
 			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
 		else
 			SearchString = varstr
-			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
+			value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
 			listOfWaves = wavelist(searchstring,";","")
 			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
 			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
@@ -2554,12 +2554,12 @@ Function SmoothResizePanel(RightShift, panelTitle)
 	
 	do
 		if(rightshift>=0)
-			movewindow/w=$panelTitle v_left, v_top, v_right+i, v_bottom
+			movewindow /w = $panelTitle v_left, v_top, v_right+i, v_bottom
 		else
-			movewindow/w=$panelTitle v_left, v_top, v_right-i, v_bottom
+			movewindow /w = $panelTitle v_left, v_top, v_right-i, v_bottom
 		endif
 		
-		i+=3
+		i += 3
 	while(i < resizeLimit)
 
 End
@@ -2567,14 +2567,14 @@ End
 Function CheckProc_2(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	
-	if(checked==1)
-	smoothresizepanel(340, panelTitle)
-	setwindow $panelTitle +"#oscilloscope", hide =0
+	if(checked == 1)
+		smoothresizepanel(340, panelTitle)
+		setwindow $panelTitle + "#oscilloscope", hide =0
 	else
-	smoothresizepanel(-340, panelTitle)
-	setwindow $panelTitle +"#oscilloscope", hide =1
+		smoothresizepanel(-340, panelTitle)
+		setwindow $panelTitle + "#oscilloscope", hide =1
 	endif
 End
 
@@ -2585,9 +2585,9 @@ Function TurnOffAllTTLs(panelTitle)
 	
 	NoOfTTLs=TotNoOfControlType("check", "TTL", panelTitle)
 	
-	for(i=0;i<NoOfTTLs;i+=1)
-		TTLCheckBoxName="Check_TTL_0"+num2str(i)
-		CheckBox $TTLCheckBoxName win=$panelTitle, value=0
+	for(i = 0; i < NoOfTTLs; i += 1)
+		TTLCheckBoxName = "Check_TTL_0"+num2str(i)
+		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
 
@@ -2602,12 +2602,12 @@ SVAR StoredTTLState
 variable i, NoOfTTLs, CheckBoxState
 string TTLCheckBoxName
 	
-	NoOfTTLs=TotNoOfControlType("check", "TTL", panelTitle)
+	NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
 	
-	for(i=0;i<NoOfTTLs;i+=1)
-		TTLCheckBoxName="Check_TTL_0"+num2str(i)
-		CheckBoxState=str2num(stringfromlist(i,StoredTTLState,";"))
-		CheckBox $TTLCheckBoxName win=$panelTitle, value=CheckBoxState
+	for(i = 0; i < NoOfTTLs; i += 1)
+		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
+		CheckBoxState = str2num(stringfromlist(i , StoredTTLState,";"))
+		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
 
 killstrings StoredTTLState
@@ -2615,7 +2615,7 @@ End
 
 Function ButtonProc_2(ctrlName) : ButtonControl
 	String ctrlName
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	
 	TurnOffAllTTLs(panelTitle)
 End
@@ -2625,17 +2625,17 @@ Function TurnOffAllDACs(panelTitle)
 	variable i, NoOfDACs
 	string DACCheckBoxName
 	
-	NoOfDACs=TotNoOfControlType("check", "DA", panelTitle)
+	NoOfDACs = TotNoOfControlType("check", "DA", panelTitle)
 	
-	for(i=0;i<NoOfDACs;i+=1)
-		DACCheckBoxName="Check_DA_0"+num2str(i)
-		CheckBox $DACCheckBoxName win=$panelTitle, value=0
+	for(i = 0; i < NoOfDACs; i += 1)
+		DACCheckBoxName = "Check_DA_0" + num2str(i)
+		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
 
 Function ButtonProc_3(ctrlName) : ButtonControl
 	String ctrlName
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	TurnOffAllDACs(panelTitle)
 End
 
@@ -2644,14 +2644,14 @@ Function TurnOffAllADCs(panelTitle)
 	variable i, NoOfADCs
 	string ADCCheckBoxName
 	
-	NoOfADCs=TotNoOfControlType("check", "AD", panelTitle)
+	NoOfADCs = TotNoOfControlType("check", "AD", panelTitle)
 	
-	for(i=0;i<NoOfADCs;i+=1)
-		if(i<10)
-		ADCCheckBoxName="Check_AD_0"+num2str(i)
-		CheckBox $ADCCheckBoxName win=$panelTitle, value=0
+	for(i = 0; i < NoOfADCs;i += 1)
+		if(i < 10)
+		ADCCheckBoxName = "Check_AD_0" + num2str(i)
+		CheckBox $ADCCheckBoxName win = $panelTitle, value = 0
 		else
-		ADCCheckBoxName="Check_AD_"+num2str(i)
+		ADCCheckBoxName = "Check_AD_" + num2str(i)
 		CheckBox $ADCCheckBoxName win=$panelTitle, value=0
 		endif
 	endfor
@@ -2659,7 +2659,7 @@ End
 
 Function ButtonProc_4(ctrlName) : ButtonControl
 	String ctrlName
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	TurnOffAllADCs(panelTitle)
 End
 
@@ -2669,18 +2669,18 @@ Function TurnOffAllHeadstages(panelTitle)
 	variable i, NoOfHeadstages
 	string DACCheckBoxName
 	
-	NoOfHeadstages=TotNoOfControlType("check", "DataAcq", panelTitle)
+	NoOfHeadstages = TotNoOfControlType("check", "DataAcq", panelTitle)
 	
-	for(i=0;i<NoOfHeadstages;i+=1)
-		DACCheckBoxName="Check_DataAcq_0"+num2str(i)
-		CheckBox $DACCheckBoxName win=$panelTitle, value=0
+	for(i = 0; i < NoOfHeadstages; i += 1)
+		DACCheckBoxName = "Check_DataAcq_0"+num2str(i)
+		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
 	endfor
 
 End
 
 Function ButtonProc_5(ctrlName) : ButtonControl
 	String ctrlName
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	TurnOffAllHeadstages(panelTitle)
 	TurnOffAllDACs(panelTitle)
 	TurnOffAllADCs(panelTitle)
@@ -2691,48 +2691,48 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	String ctrlName
 	Variable popNum
 	String popStr
-	string CheckBoxName=ctrlName
+	string CheckBoxName = ctrlName
 	string ListOfWavesInFolder
 	string folderPath
 	string folder
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	
-	if(stringmatch(ctrlName,"*indexEnd*")!=1)//makes sure it is the index start wave
-		if(popnum==1)//if the user selects "none" the channel is automatically turned off
-		CheckBoxName[0,3]="check"
-		Checkbox $Checkboxname win=$panelTitle, value=0
+	if(stringmatch(ctrlName,"*indexEnd*") != 1)//makes sure it is the index start wave
+		if(popnum == 1)//if the user selects "none" the channel is automatically turned off
+		CheckBoxName[0,3] = "check"
+		Checkbox $Checkboxname win = $panelTitle, value = 0
 		endif
 	endif
 	
-	if(popnum==2)
-		popupmenu $ctrlname win=$panelTitle, mode = 3// prevents the user from selecting the testpulse
+	if(popnum == 2)
+		popupmenu $ctrlname win = $panelTitle, mode = 3// prevents the user from selecting the testpulse
 	endif
 
-	if(stringmatch(ctrlName,"*DA*")==1)// determines wether to a DA or TTL popup menu needs to be populated
-		FolderPath= "root:waveBuilder:savedStimulusSets:DA"
-		folder="*DA*"
+	if(stringmatch(ctrlName, "*DA*") == 1)// determines wether to a DA or TTL popup menu needs to be populated
+		FolderPath = "root:waveBuilder:savedStimulusSets:DA"
+		folder = "*DA*"
 		setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
-		ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""// DA popups have testpulse listed as option
+		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""// DA popups have testpulse listed as option
 	else
-		FolderPath= "root:waveBuilder:savedStimulusSets:TTL"
-		folder="*TTL*"
+		FolderPath = "root:waveBuilder:savedStimulusSets:TTL"
+		folder = "*TTL*"
 		setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
-		ListOfWavesInFolder="\"- none -;\"" +"+"+"\""+ Wavelist(Folder,";","")+"\""
+		ListOfWavesInFolder = "\"- none -;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""
 	endif
 	
 	
-	PopupMenu  $ctrlName win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenExp)=ListOfWavesInFolder
+	PopupMenu  $ctrlName win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenExp) = ListOfWavesInFolder
 	setdatafolder root:// makes sure data acq starts in the correct folder!!
 	
-	controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value==0)
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxNoOfSweeps(PanelTitle,0)*v_value)
-	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
+	if(v_value == 0)
+		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxNoOfSweeps(PanelTitle,0) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
 	else
-	controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win=$panelTitle, value=_NUM:(Index_MaxSweepsLockedIndexing(panelTitle)*v_value)
-	valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
+		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(Index_MaxSweepsLockedIndexing(panelTitle) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:Index_MaxNoOfSweeps(PanelTitle,1)	
 	endif
 	
 End
@@ -2742,21 +2742,21 @@ Function SetVarProc_NextSweep(ctrlName,varNum,varStr,varName) : SetVariableContr
 	Variable varNum
 	String varStr
 	String varName
-	string PanelTitle=ReturnPanelName()
-	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
+	string PanelTitle = ReturnPanelName()
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	DFREF saveDFR = GetDataFolderDFR()
-	setDataFolder $WavePath+":data"
-	string ListOfDataWaves=wavelist("Sweep_*",";","MINCOLS:2")
+	setDataFolder $WavePath + ":data"
+	string ListOfDataWaves = wavelist("Sweep_*",";","MINCOLS:2")
 	setDataFolder saveDFR
-	SetVariable SetVar_Sweep win=$panelTitle, limits={0,itemsinlist(ListOfDataWaves),1}
+	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
 	
 End
 
 Function UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
-	string panelTitle=ReturnPanelName()
+	string panelTitle = ReturnPanelName()
 	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End
 
 Function CheckProc_DataAcq_UpdateSampInt(ctrlName,checked) : CheckBoxControl
@@ -2791,7 +2791,7 @@ Function /T ReturnPanelName()
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	
 	if(SearchResult != -1)
-		PanelTitle = PanelTitle[0,SearchResult-2]//SearchResult+1]
+		PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
 	endif
 	
 	return PanelTitle

@@ -25,7 +25,7 @@ Function DB_LastSweepAcquired(PanelTitle)// returns last sweep acquired
 	string ListOfAcquiredWaves
 	variable LastSweepAcquired
 	
-	string DataPath = getuserdata(panelTitle, "", "DataFolderPath")+":Data"
+	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	DFREF saveDFR = GetDataFolderDFR()
 	setDataFolder $DataPath
 	
@@ -80,8 +80,8 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 	ControlInfo check_DataBrowser_DisplayDAchan// Check to see if user wants DA channels displayed in DataBrowser graph
 	DisplayDAChan = v_value
 	if(DisplayDAChan == 1 )
-		ADYaxisSpacing = (0.8 / (max(NumberOfADchannels,NumberOfDAchannels)))// the max allows for uneven number of AD and DA channels
-		DAYaxisSpacing = (0.2 / (max(NumberOfADchannels,NumberOfDAchannels)))
+		ADYaxisSpacing = (0.8 / (max(NumberOfADchannels, NumberOfDAchannels)))// the max allows for uneven number of AD and DA channels
+		DAYaxisSpacing = (0.2 / (max(NumberOfADchannels, NumberOfDAchannels)))
 	else
 		ADYaxisSpacing = 1 / (NumberOfADchannels)
 	endif
@@ -108,7 +108,7 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 				YaxisLow = DAYaxisLow
 				
 				AxisName = "DA"+stringfromlist(i, DAChannelList,";")
-				NewTraceName = DataPath +":"+nameofwave(sweepName)+ "_"+AxisName
+				NewTraceName = DataPath + ":" + nameofwave(sweepName) + "_" + AxisName
 				duplicate /o /r = (0,inf)(i) SweepName $NewTraceName
 				appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
 				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
@@ -122,8 +122,8 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 			YaxisHigh = ADYaxisHigh
 			YaxisLow = ADYaxisLow
 		if(i < NumberOfADchannels)
-			AxisName = "AD"+stringfromlist(i, ADChannelList,";")
-			NewTraceName = DataPath +":"+nameofwave(sweepName)+ "_"+AxisName
+			AxisName = "AD" + stringfromlist(i, ADChannelList,";")
+			NewTraceName = DataPath + ":" + nameofwave(sweepName) + "_" + AxisName
 			duplicate /o /r = (0, inf)(i + NumberOfDAchannels) SweepName $NewTraceName
 			appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
 			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
@@ -153,7 +153,7 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 			ADYAxisHigh -= (ADYaxisSpacing+DAYaxisSpacing)
 			ADYaxisLow -= (ADYaxisSpacing+DAYaxisSpacing)
 
-		i+=1
+		i += 1
 	while(i < max(NumberOfDAchannels,NumberOfADchannels))
 End
 
@@ -173,16 +173,16 @@ Function DB_RemoveAndKillWavesOnGraph(PanelTitle, GraphName)
 	string Tracename
 	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data:"
 	
-	ListOfTracesOnGraph = TraceNameList(GraphName, ";",0+1)
+	ListOfTracesOnGraph = TraceNameList(GraphName, ";", 0 + 1)
 	if(itemsinlist(ListOfTracesOnGraph,";") > 0)
 		do
 			TraceName = "\"#0\""
-			sprintf cmd, "removefromgraph/w=%s $%s" GraphName, TraceName
+			sprintf cmd, "removefromgraph /w = %s $%s" GraphName, TraceName
 			execute cmd
-			Tracename=stringfromlist(i, ListOfTracesOnGraph,";")
-			Killwaves/z  $DataPath+Tracename
-			i+=1
-		while(i<(itemsinlist(ListOfTracesOnGraph,";")))
+			Tracename = stringfromlist(i, ListOfTracesOnGraph,";")
+			Killwaves /z  $DataPath + Tracename
+			i += 1
+		while(i < (itemsinlist(ListOfTracesOnGraph,";")))
 	endif
 End
 //==============================================================================================================================
@@ -194,7 +194,7 @@ Function DB_ButtonProc_6(ctrlName) : ButtonControl
 	string SweepToPlotName
 	string panelTitle = DB_ReturnDBPanelName()	
 	variable LastSweep = DB_LastSweepAcquired(panelTitle)
-	string DataPath = getuserdata(panelTitle, "", "DataFolderPath")+":Data"
+	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	
 	controlinfo check_DataBrowser_SweepOverlay
 	if(v_value == 1)
@@ -202,22 +202,19 @@ Function DB_ButtonProc_6(ctrlName) : ButtonControl
 		controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
 		SweepNo = V_value
 		controlinfo /w = $panelTitle setvar_DataBrowser_OverlaySkip
-		SweepToPlot = SweepNo+v_value
+		SweepToPlot = SweepNo + v_value
 	else
 		Button button_DataBrowser_Previous disable = 0
 		controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
 		SweepNo = V_value
-		SweepToPlot = SweepNo+1
+		SweepToPlot = SweepNo + 1
 	endif
 	
-	
 	if(SweepToPlot <= LastSweep)
-		SweepToPlotName = DataPath+":Sweep_"+num2str(SweepToPlot)
+		SweepToPlotName = DataPath + ":Sweep_" + num2str(SweepToPlot)
 		valdisplay valdisp_DataBrowser_Sweep win = $panelTitle, value = _num:SweepToPlot
 		DB_PlotDataBrowserWave(panelTitle, $SweepToPlotName)
 	endif
-	
-	
 
 End
 //==============================================================================================================================
@@ -244,7 +241,7 @@ Function DB_ButtonProc_PrevSweep(ctrlName) : ButtonControl
 	variable SweepToPlot
 	string SweepToPlotName
 	string panelTitle = DB_ReturnDBPanelName()	
-	string DataPath = getuserdata(panelTitle, "", "DataFolderPath")+":Data"
+	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	
 	controlinfo check_DataBrowser_SweepOverlay
 	if(v_value == 1)
@@ -268,8 +265,6 @@ Function DB_ButtonProc_PrevSweep(ctrlName) : ButtonControl
 		DB_LastSweepAcquired(panelTitle)
 	endif
 	
-
-
 End
 //==============================================================================================================================
 
@@ -281,15 +276,14 @@ Function DB_CheckProc_DADisplay(ctrlName,checked) : CheckBoxControl
 	string SweepToPlotName
 	string panelTitle
 	panelTitle = DB_ReturnDBPanelName()	
-	string DataPath = getuserdata(panelTitle, "", "DataFolderPath")+":Data"
+	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	
 	variable LastSweep = DB_LastSweepAcquired(panelTitle)
 	controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
 	SweepNo = v_value
-	print sweepno
 	SweepToPlot = SweepNo
 	if(SweepToPlot <= LastSweep)
-		SweepToPlotName = DataPath + ":Sweep_"+num2str(SweepToPlot)
+		SweepToPlotName = DataPath + ":Sweep_" + num2str(SweepToPlot)
 		valdisplay valdisp_DataBrowser_Sweep win = $panelTitle, value = _num:SweepToPlot
 		DB_PlotDataBrowserWave(panelTitle, $SweepToPlotName)
 	endif
@@ -301,7 +295,7 @@ Function /T DB_ReturnDBPanelName()
 	PanelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "DataBrowserGraph", 2)
 	if(SearchResult != -1)
-		PanelTitle = PanelTitle[0,SearchResult-2]//SearchResult+1]
+		PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
 	endif
 	
 	return PanelTitle

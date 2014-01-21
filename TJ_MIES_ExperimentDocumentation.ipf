@@ -3,27 +3,27 @@
 //=============================================================================================================
 Function MakeSettingsHistoryWave(panelTitle)
 	string panelTitle
-	string WavePath=HSU_DataFullFolderPathString(PanelTitle)
-	wave ChanAmpAssign=$WavePath + ":ChanAmpAssign"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	variable NextSweep
-	controlinfo/w=$panelTitle SetVar_Sweep
-	NextSweep=v_value
-	string NewWaveName =WavePath+ ":ChanAmpAssign_Sweep_"+num2str(NextSweep)//sweep name has these new settings
+	controlinfo /w = $panelTitle SetVar_Sweep
+	NextSweep = v_value
+	string NewWaveName = WavePath + ":ChanAmpAssign_Sweep_" + num2str(NextSweep)//sweep name has these new settings
 	string cmd
-	duplicate/o ChanAmpAssign $NewWaveName
+	duplicate /o ChanAmpAssign $NewWaveName
 	wave SettingsHistoryWave = $NewWaveName
-	SettingsHistoryWave[11][]=NextSweep
-	note SettingsHistoryWave,time()
+	SettingsHistoryWave[11][] = NextSweep
+	note SettingsHistoryWave, time()
 End
 
 //=============================================================================================================
 Function AppendCommentToDataWave(DataWaveName, panelTitle)
 	wave DataWaveName
 	string panelTitle
-	controlinfo/w=$panelTitle SetVar_DataAcq_Comment
+	controlinfo /w = $panelTitle SetVar_DataAcq_Comment
 	if(strlen(s_value) != 0)
 		Note DataWaveName, s_value
-		SetVariable SetVar_DataAcq_Comment value= _STR:""
+		SetVariable SetVar_DataAcq_Comment value = _STR:""
 	endif
 End
 
