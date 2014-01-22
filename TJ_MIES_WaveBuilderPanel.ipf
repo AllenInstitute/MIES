@@ -483,6 +483,7 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
 	String DAorTTL
 	SVAR ITCPanelTitleList
+	setdatafolder root:
 	controlinfo /W=wavebuilder popup_WaveBuilder_SetList
 	string SetWaveToDelete = s_value
 	//getwindow kwTopWin wtitle
@@ -627,9 +628,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	variable i = 0
 	SVAR /z ITCPanelTitleList
 	string panelTitle
-
-	
-	
+	SetDataFolder root:
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	string ListOfTracesOnGraph
@@ -1017,7 +1016,6 @@ Function WBP_SetVarProc_SetSearchString(ctrlName,varNum,varStr,varName) : SetVar
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	controlinfo group_WaveBuilder_FolderPath
 	string FolderPath = s_value
-
 	
 	SetDataFolder FolderPath
 
@@ -1070,7 +1068,6 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 	
 	controlinfo group_WaveBuilder_FolderPath
 	string FolderPath = s_value
-
 	
 	SetDataFolder FolderPath
 	//SetDataFolder root:WaveBuilder:Data
@@ -1210,7 +1207,6 @@ SetDataFolder root:someFolder
 String listOfWaves = WaveList("*", ";", "")
 SetDataFolder saveDFR
 
-
 //if you don't create a wave reference, when you use a wave name that wave must either be in the current DF or you must provide the full path to the wave
 //and in either of those cases, Igor has to parse the name and look at all waves in the data folder to find the one you want
 
@@ -1223,10 +1219,6 @@ Function WBP_MoveWaveTOFolder(FolderPath, NameOfWaveToBeMoved, Kill, BaseName)//
 	killwaves $NameOfWaveToBeMoved
 	endif
 End
-	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
-	SetDataFolder saveDFR
 	
 Function WBP_PassNoteOneWaveToAnother(WaveNoteSource, WaveNoteSink)
 	wave WaveNoteSource, WaveNoteSink
@@ -1397,6 +1389,7 @@ End
 
 Function WBP_ButtonProc_LoadSet(ctrlName) : ButtonControl
 	String ctrlName
+	setdatafolder root:
 	 WBP_LoadSet()
 End
 
@@ -1457,12 +1450,13 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
-	
 	string FolderPath
 	string cmd
 	string value 
 	string PopMenuSubProc
 	string ListOfWavesInFolder
+	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+
 	if (popNum != 1)
 		if (cmpstr(" root:",popstr) !=0 )
 			controlinfo group_WaveBuilder_FolderPath
@@ -1488,7 +1482,7 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 	PopupMenu popup_WaveBuilder_ListOfWaves value=#ListOfWavesInFolder
 	controlupdate /A /W = wavebuilder 
 
-	setdatafolder root:
+	setdatafolder saveDFR
 End
 
 Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been saved to the DA or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
@@ -1496,6 +1490,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d, ListOfItemsSelectedInPopup, DAorTTL
 	string ListOfWaves
 	variable NoOfControls, i
+	DFREF saveDFR = GetDataFolderDFR()
 	controlinfo /W =waveBuilder popup_WaveBuilder_OutputType
 	WB_WaveType=s_value
 	
@@ -1534,7 +1529,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 
 	i+=1
 	while(i<noOfControls)
-	setdatafolder root:
+	setdatafolder saveDFR
 End
 
 Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list

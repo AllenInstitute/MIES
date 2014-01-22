@@ -32,19 +32,18 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
 		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
 		SetAxis /w = $oscilloscopeSubWindow /A =2 $ADchannelName // this line should autoscale only the visible data
-		Unit = stringfromlist(str2num(stringfromlist(i, ADChannelList,";")) + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")
+		Unit = stringfromlist(i + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
 		
 		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
-			appendtograph /W = $oscilloscopeSubWindow /R = $"Resistance"+num2str(i) ResistanceWave[][i]
-			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"Resistance"+num2str(i))=2,axThick($"Resistance"+num2str(i))=0
-			ModifyGraph /W =$oscilloscopeSubWindow axisEnab($"Resistance"+num2str(i))={YaxisLow,YaxisHigh}
+			appendtograph /W = $oscilloscopeSubWindow /R = $"Resistance" + num2str(i) ResistanceWave[][i]
+			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"Resistance" + num2str(i)) = 2, axThick($"Resistance" + num2str(i)) = 0
+			ModifyGraph /W =$oscilloscopeSubWindow axisEnab($"Resistance" + num2str(i)) = {YaxisLow,YaxisHigh}
 			if(i > 0)
 				ResistanceTraceName = "Resistance#"+num2str(i)
 			endif
-			print resistancetracename
-			Tag/W = $oscilloscopeSubWindow/C/N=$"R"+num2str(i)/F=0/X=-15/Y=0/B=1/L=0 $ResistanceTraceName, 0,"\\OY \\Z10(Mohm)"
+			Tag /W = $oscilloscopeSubWindow /C /N = $"R" + num2str(i) /F = 0 /X = -15 /Y = -10 /B = 1 /L = 0 $ResistanceTraceName, 0,"\\OY \\Z10(Mohm)"
 
 		endif
 

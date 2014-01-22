@@ -2446,7 +2446,7 @@ End
 
 Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
-	
+	setdatafolder root:
 	string PanelTitle = ReturnPanelName()
 
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
@@ -2696,6 +2696,7 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 	string folderPath
 	string folder
 	string panelTitle = ReturnPanelName()
+	DFREF saveDFR = GetDataFolderDFR()
 	
 	if(stringmatch(ctrlName,"*indexEnd*") != 1)//makes sure it is the index start wave
 		if(popnum == 1)//if the user selects "none" the channel is automatically turned off
@@ -2720,9 +2721,8 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 		ListOfWavesInFolder = "\"- none -;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""
 	endif
 	
-	
 	PopupMenu  $ctrlName win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenExp) = ListOfWavesInFolder
-	setdatafolder root:// makes sure data acq starts in the correct folder!!
+	setdatafolder saveDFR// makes sure data acq starts in the correct folder!!
 	
 	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)

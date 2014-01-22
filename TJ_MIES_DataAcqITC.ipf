@@ -304,21 +304,26 @@ Function STOPTestPulse(panelTitle)
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 
-	controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
-	if(v_value==0)
-	SmoothResizePanel(-340, panelTitle)
-	setwindow $panelTitle +"#oscilloscope", hide = 1
+	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
+	if(v_value == 0)
+		SmoothResizePanel(-340, panelTitle)
+		setwindow $panelTitle +"#oscilloscope", hide = 1
 	endif
 
 	RestoreTTLState(panelTitle)
 	//killwaves/z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 2)
+	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
 	endif
-	
-	killvariables/z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	killstrings/z PanelTitleG
+	print v_disable
+	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
+		print "here"
+		V_disable = V_disable & ~0x2
+		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
+	endif
+	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
+	killstrings /z PanelTitleG
 End
 
 //======================================================================================

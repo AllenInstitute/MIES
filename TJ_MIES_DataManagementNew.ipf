@@ -150,7 +150,8 @@ Function DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting histor
 		endif
 		i += 1
 	while(i < itemsinlist(ListOf_ChanAmpAssign_Sweep_x_Wv))
-		SetDataFolder saveDFR
+	
+	SetDataFolder saveDFR
 
 End
 //=============================================================================================================	

@@ -1,6 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-
 Function SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
 	string panelTitle
 	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
@@ -129,6 +128,7 @@ Function AdjustTestPulseWave(TestPulse, panelTitle)// full path name
 	PulseDuration = (v_value / 0.005)
 	GlobalTPDurationVariable = PulseDuration
 	redimension /n = (2 * PulseDuration) TestPulse
+	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	TestPulse[(PulseDuration / 2), (Pulseduration + (PulseDuration / 2))] = v_value
 	GlobalTPAmplitudeVariableVC = v_value
@@ -136,11 +136,11 @@ Function AdjustTestPulseWave(TestPulse, panelTitle)// full path name
 	GlobalTPAmplitudeVariableIC = v_value
 End
 
-
+mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string PanelTitle
-	
+	setdatafolder root:
 	getwindow kwTopWin activesw
 	PanelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
