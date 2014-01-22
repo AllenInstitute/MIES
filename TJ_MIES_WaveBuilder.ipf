@@ -454,6 +454,7 @@ Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOff
 		 k2=2*pi*e^k0/k1
 		 k3= mod(k2,2*pi)		// LH040117: start on rising edge of sin and don't try to round.
 		 MultiThread SegmentWave=Amplitude*sin(k2*e^(k1*x) - k3)
+		 SegmentWave+=Offset
 	endif
 End
 
