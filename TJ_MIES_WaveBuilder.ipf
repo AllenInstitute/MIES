@@ -73,7 +73,8 @@ End
 Function WB_MakeStimSet()
 	wave  WaveBuilderWave = root:wavebuilder:data:wavebuilderwave
 	variable i = 1
-	
+	Variable start = stopmstimer(-2)
+
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	
@@ -105,6 +106,8 @@ Function WB_MakeStimSet()
 
 	wp = wpd//
 	setdatafolder saveDFR
+		print "multithread took (ms):", (stopmstimer(-2) - start)/1000
+
 End
 
 Function WB_AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
@@ -148,13 +151,25 @@ wave WP=root:WaveBuilder:Data:WP//
 	while(i<25)
 End
 
+Function test()
+
+Make/O/N=2e7/FREE bigWave
+
+Variable start = stopmstimer(-2)
+bigWave = gnoise(10)
+print "single thread took (ms):", (stopmstimer(-2) - start)/1000
+
+start = stopmstimer(-2)
+MultiThread bigWave = gnoise(10)
+print "multithread took (ms):", (stopmstimer(-2) - start)/1000
+end
+
 Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
 	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount
 	wave SegWvType=root:WaveBuilder:Data:SegWvType
 	//wave WaveBuilderWave=root:WaveBuilder:Data:WaveBuilderWave
-	//wave SegmentWave=root:WaveBuilder:Data:SegmentWave
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	make/o/n=0 WaveBuilderWave=0
@@ -301,34 +316,34 @@ Function WB_MakeWaveBuilderWave()
 		switch(SegWvType[i])												// numeric switch
 			case 0:
 				WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= Square pulse , properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= Square pulse , properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 1:
 				WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 2:
 				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(DeltaLowPassCutOff) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(DeltaHighPassCutOff)
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(DeltaLowPassCutOff) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(DeltaHighPassCutOff)
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 3:
 				WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, DeltaEndFrequency)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= Sin wave, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)+ "EndFrequency = "+num2str(EndFrequency)+"  EndFrequency Delta = " + num2str(DeltaEndFrequency)
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= Sin wave, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)+ "EndFrequency = "+num2str(EndFrequency)+"  EndFrequency Delta = " + num2str(DeltaEndFrequency)
 				break
 			case 4:
 				WB_SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= Saw tooth, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= Saw tooth, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 5:
 				WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= SPT, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)+ "  Pulse duration = " + num2str(PulseDuration) + "  Pulse duration delta = " + num2str(DeltaPulsedur) 
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= SPT, properties: Frequency = "+num2str(Frequency)+"  Frequency Delta = " + num2str(DeltaFreq)+ "  Pulse duration = " + num2str(PulseDuration) + "  Pulse duration delta = " + num2str(DeltaPulsedur) 
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 6:
 				WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-				Note WaveBuilderWave, "Segment "+num2str(i)+"= PSC, properties: Tau rise = "+num2str(TauRise)+"  Tau Decay 1 = " + num2str(TauDecay1)+ "  Tau Decay 2 = " + num2str(TauDecay2) + "  Tau Decay 2 weight = " + num2str(TauDecay2Weight) 
+				Note WaveBuilderWave, "Epoch "+num2str(i)+"= PSC, properties: Tau rise = "+num2str(TauRise)+"  Tau Decay 1 = " + num2str(TauDecay1)+ "  Tau Decay 2 = " + num2str(TauDecay2) + "  Tau Decay 2 weight = " + num2str(TauDecay2Weight) 
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 7:
@@ -337,7 +352,7 @@ Function WB_MakeWaveBuilderWave()
 				
 				if(waveexists($customWaveName)==1)
 					WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
-					Note WaveBuilderWave, "Segment "+num2str(i)+"= Custom wave, properties: Name = "+stringholder  
+					Note WaveBuilderWave, "Epoch "+num2str(i)+"= Custom wave, properties: Name = "+stringholder  
 					Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				else
 					if(cmpstr(stringholder,"") != 0)// checks if - none - is the "wave" selected in the pull down menu
@@ -407,12 +422,12 @@ End
 //=====================================================================================
 Function WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
-	make/o/n=(Duration/0.005) SegmentWave=0
-	SetScale/P x 0,0.005,"ms", SegmentWave
-	SegmentWave=Amplitude
+	make /o /n = (Duration / 0.005) SegmentWave = 0
+	SetScale /P x 0,0.005,"ms", SegmentWave
+	SegmentWave = Amplitude
 End
 
-Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+Threadsafe Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	Variable AmplitudeIncrement=Amplitude/(Duration/0.005)
 	make/o/n=(Duration/0.005) SegmentWave
@@ -425,7 +440,7 @@ Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFilt
 	variable Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
-	MultiThread SegmentWave=gnoise(Amplitude)
+	SegmentWave = gnoise(Amplitude)// MultiThread didn't impact processing time for gnoise
 	if(duration>0)
 		If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
 			FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),LowPassFiltCoefCount}SegmentWave
@@ -516,32 +531,32 @@ End
 
 Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
 variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
-	make/o/n=(Duration/0.005) SegmentWave=0
+	make /o /n = (Duration / 0.005) SegmentWave = 0
 	//doupdate
 	SetScale /P x 0,0.005,"ms", SegmentWave
 	variable first, last
-	variable scale=1.2
-	variable baseline,peak
+	variable scale = 1.2
+	variable baseline, peak
 	variable i
 	
-	TauRise=1/TauRise
-	TauRise*=0.005
-	TauDecay1=1/TauDecay1
-	TauDecay1*=0.005
-	TauDecay2=1/TauDecay2
-	TauDecay2*=0.005
+	TauRise = 1 / TauRise
+	TauRise *= 0.005
+	TauDecay1 = 1 / TauDecay1
+	TauDecay1 *= 0.005
+	TauDecay2 = 1 / TauDecay2
+	TauDecay2 *= 0.005
 	
-	MultiThread SegmentWave[]=((1-exp(-TauRise*p)))*amplitude
-	MultiThread SegmentWave[]+=(exp(-TauDecay1*(p))*(amplitude*(1-TauDecay2Weight)))
-	MultiThread SegmentWave[]+=(exp(-TauDecay2*(p))*((amplitude*(TauDecay2Weight))))
+	MultiThread SegmentWave[] = ((1 - exp( - TauRise * p))) * amplitude
+	MultiThread SegmentWave[] += (exp( - TauDecay1 * (p)) * (amplitude * (1 - TauDecay2Weight)))
+	MultiThread SegmentWave[] += (exp( - TauDecay2 * (p)) * ((amplitude * (TauDecay2Weight))))
 	
-	baseline=wavemin(SegmentWave)
-	peak=wavemax(SegmentWave)
-	SegmentWave*=Amplitude/(Peak-Baseline)
+	baseline = wavemin(SegmentWave)
+	peak = wavemax(SegmentWave)
+	SegmentWave *= Amplitude/(Peak-Baseline)
 	
-	baseline=wavemin(SegmentWave)
-	SegmentWave-=baseline
-	SegmentWave+=OffSet
+	baseline = wavemin(SegmentWave)
+	SegmentWave -= baseline
+	SegmentWave += OffSet
 End
 
 Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
@@ -550,21 +565,21 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 	string cmd
 	
 	controlinfo group_WaveBuilder_FolderPath
-	NameOfWaveToBeDuplicated=s_value+NameOfWaveToBeDuplicated
+	NameOfWaveToBeDuplicated = s_value+NameOfWaveToBeDuplicated
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	
-	make/o/n=1 SegmentWave
+	make /o /n = 1 SegmentWave
 	
-	if(stringmatch(NameOfWaveToBeDuplicated,"''")==1)
-		SegmentWave+=CustomOffSet
+	if(stringmatch(NameOfWaveToBeDuplicated, "''") == 1)
+		SegmentWave += CustomOffSet
 		print "Custom wave needs to be selected from pull down menu"
 	else
 		
 		sprintf cmd, "duplicate/o %s SegmentWave" NameOfWaveToBeDuplicated
 		execute cmd
-		SegmentWave+=CustomOffSet
+		SegmentWave += CustomOffSet
 	endif
 	setDataFolder saveDFR
 End
@@ -573,3 +588,43 @@ End
 //=====================================================================================
 
 
+Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, FrequencyIncrement)
+		variable Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, frequencyIncrement
+	Variable start = stopmstimer(-2)
+
+		variable phase = (abs(enoise(2)) * Pi)
+		variable NumberOfBuildWaves = ((HighPassCutOff - LowPassCutOff) / FrequencyIncrement)
+		make /free /n = (Duration / 0.005, NumberOfBuildWaves) BuildWave
+		SetScale /P x 0,0.005,"ms", BuildWave
+		variable Frequency = LowPassCutOff
+		variable i = 0
+		variable PinkOrBrown = 0
+		variable localAmplitude
+		do
+			
+			phase = ((abs(enoise(2))) * Pi)
+			if(PinkOrBrown == 0)
+				localAmplitude = 1 / Frequency
+			else
+				localAmplitude = 1 / (Frequency ^ .5)
+			endif
+			
+			MultiThread BuildWave[][i] = localAmplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p + phase)
+			Frequency += FrequencyIncrement
+			i += 1
+		while (i < NumberOfBuildWaves)
+	
+		//make /o /n = (Duration / 0.005) OutputWave
+		//SetScale /P x 0,0.005,"ms", OutputWave
+		
+		MatrixOp /o /NTHR = 0   OutputWave = sumRows(BuildWave)
+		
+		SetScale /P x 0,0.005,"ms", OutputWave
+		OutputWave /= NumberOfBuildWaves
+		
+		Wavestats/q Outputwave
+		variable scalefactor = Amplitude/(V_max - V_min)
+		OutputWave *= ScaleFactor
+				print "multithread took (ms):", (stopmstimer(-2) - start)/1000
+
+End
