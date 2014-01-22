@@ -304,26 +304,27 @@ End
 
 Window databrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(1215,228,2358,782)
+	NewPanel /W=(384,200,1527,754)
+	ShowTools/A
 	SetDrawLayer UserBack
-	ValDisplay valdisp_DataBrowser_Sweep,pos={471,465},size={41,30}
+	ValDisplay valdisp_DataBrowser_Sweep,pos={444,465},size={60,30}
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo)= A"!!,IQJ,ht#J,hn]!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataBrowser_Sweep,fSize=24,fStyle=1
 	ValDisplay valdisp_DataBrowser_Sweep,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataBrowser_Sweep,value= _NUM:0
-	Button button_DataBrowser_NextSweep,pos={592,459},size={450,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
+	Button button_DataBrowser_NextSweep,pos={592,459},size={425,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J%!!#CJJ,hsq!!#>:z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_NextSweep,fSize=20
-	Button button_DataBrowser_Previous,pos={17,457},size={450,43},proc=DB_ButtonProc_PrevSweep,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_Previous,pos={17,457},size={425,43},proc=DB_ButtonProc_PrevSweep,title="\\W646 Previous Sweep"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo)= A"!!,BA!!#CIJ,hsq!!#>:z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_Previous,fSize=20
-	ValDisplay valdisp_DataBrowser_LastSweep,pos={517,465},size={70,30},title="of"
+	ValDisplay valdisp_DataBrowser_LastSweep,pos={501,465},size={86,30},bodyWidth=60,title="of"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo)= A"!!,Ig5QF18J,hop!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
