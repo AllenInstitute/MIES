@@ -611,7 +611,7 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 End
 
 
-Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)
+Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)// Pink = 0, Brown = 1
 		variable Amplitude, Duration, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
 		variable phase = (abs(enoise(2)) * Pi)
 		variable NumberOfBuildWaves = floor((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
@@ -639,7 +639,7 @@ Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, Hig
 		SegmentWave /= NumberOfBuildWaves
 		
 		Wavestats /q SegmentWave
-		variable scalefactor = Amplitude/(V_max - V_min)
+		variable scalefactor = Amplitude / (V_max - V_min)
 		SegmentWave *= ScaleFactor
 End
 

@@ -304,27 +304,25 @@ End
 
 Window databrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(384,200,1527,754)
-	ShowTools/A
-	SetDrawLayer UserBack
-	ValDisplay valdisp_DataBrowser_Sweep,pos={444,465},size={60,30}
+	NewPanel /W=(29,243,1172,905)
+	ValDisplay valdisp_DataBrowser_Sweep,pos={443,573},size={60,30}
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo)= A"!!,IQJ,ht#J,hn]!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataBrowser_Sweep,fSize=24,fStyle=1
 	ValDisplay valdisp_DataBrowser_Sweep,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataBrowser_Sweep,value= _NUM:0
-	Button button_DataBrowser_NextSweep,pos={592,459},size={425,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
+	Button button_DataBrowser_NextSweep,pos={592,567},size={425,43},proc=DB_ButtonProc_6,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J%!!#CJJ,hsq!!#>:z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_NextSweep,fSize=20
-	Button button_DataBrowser_Previous,pos={17,457},size={425,43},proc=DB_ButtonProc_PrevSweep,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_Previous,pos={17,565},size={425,43},proc=DB_ButtonProc_PrevSweep,title="\\W646 Previous Sweep"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo)= A"!!,BA!!#CIJ,hsq!!#>:z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_Previous,fSize=20
-	ValDisplay valdisp_DataBrowser_LastSweep,pos={501,465},size={86,30},bodyWidth=60,title="of"
+	ValDisplay valdisp_DataBrowser_LastSweep,pos={504,573},size={86,30},bodyWidth=60,title="of"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo)= A"!!,Ig5QF18J,hop!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -382,12 +380,12 @@ Window databrowser() : Panel
 	CheckBox check_DataBrowser_Scroll,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_Scroll,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_Scroll,fColor=(65280,43520,0),value= 0
-	PopupMenu popup_DB_lockedDevices,pos={636,515},size={330,21},bodyWidth=170,title="Data browser device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={636,623},size={330,21},bodyWidth=170,title="Data browser device assingment:"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0!!#Ce^]6`u!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue=" - none - ",value= #"\" - none - ;\" + root:ITCPanelTitleList"
-	Button Button_dataBrowser_lockBrowser,pos={971,515},size={70,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
+	Button Button_dataBrowser_lockBrowser,pos={971,623},size={70,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K.^]6b&^]6][!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -401,7 +399,7 @@ Window databrowser() : Panel
 	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DB_DispADChan,fColor=(65280,43520,0),value= 0
-	Button button_DataBrowser_setaxis,pos={19,512},size={150,23},proc=DB_ButtonProc_AutoScale,title="Autoscale"
+	Button button_DataBrowser_setaxis,pos={19,620},size={150,23},proc=DB_ButtonProc_AutoScale,title="Autoscale"
 	Button button_DataBrowser_setaxis,userdata(tabcontrol)=  "WBP_WaveType"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BQ!!#Ce!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
