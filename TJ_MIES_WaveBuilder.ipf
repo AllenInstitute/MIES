@@ -167,7 +167,7 @@ end
 Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
-	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount
+	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount, FIncrement
 	wave SegWvType=root:WaveBuilder:Data:SegWvType
 	//wave WaveBuilderWave=root:WaveBuilder:Data:WaveBuilderWave
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
@@ -311,7 +311,11 @@ Function WB_MakeWaveBuilderWave()
 		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 29, i, SegWvType[i]
 		Execute cmd
 		DeltaLowPassFiltCoefCount=ParameterHolder
-				
+		
+		sprintf cmd, "ParameterHolder=%s[%d][%d][%d]" ParameterWaveName, 30, i, SegWvType[i]
+		Execute cmd
+		FIncrement = ParameterHolder	
+		
 		//Make correct wave segment with above parameters
 		switch(SegWvType[i])												// numeric switch
 			case 0:
@@ -377,12 +381,12 @@ Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run waveb
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	Make /O /N=100 WaveBuilderWave
-	Make /O /N =(30,100,8) WP //WP=Wave Parameters
-	Make /T /O /N =(30,100) WPT//WPT=Wave Parameters Text (wave)
+	Make /O /N =(31,100,8) WP //WP=Wave Parameters
+	Make /T /O /N =(31,100) WPT//WPT=Wave Parameters Text (wave)
 	Make/O/N = 102 SegWvType//Wave that stores the wave type used in each epoch
 	WP[20][][2]=10001//sets low pass filter to off (off value is related to samplling frequency)
-	WP[26][][2]=500//sets coefficent count for low pass filter to a reasonable and legal No
-	WP[28][][2]=500//sets coefficent count for high pass filter to a reasonable and legal No
+	WP[26][][2]=500//sets coefficent count for low pass filter to a reasonable and legal Number
+	WP[28][][2]=500//sets coefficent count for high pass filter to a reasonable and legal Number
 	SetDataFolder saveDFR
 End
 
@@ -588,20 +592,18 @@ End
 //=====================================================================================
 
 
-Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, FrequencyIncrement)
-		variable Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, frequencyIncrement
-	Variable start = stopmstimer(-2)
-
+Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)
+		variable Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
+		Variable start = stopmstimer(-2)
 		variable phase = (abs(enoise(2)) * Pi)
-		variable NumberOfBuildWaves = ((HighPassCutOff - LowPassCutOff) / FrequencyIncrement)
+		variable NumberOfBuildWaves = ((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
 		make /free /n = (Duration / 0.005, NumberOfBuildWaves) BuildWave
 		SetScale /P x 0,0.005,"ms", BuildWave
 		variable Frequency = LowPassCutOff
 		variable i = 0
-		variable PinkOrBrown = 0
 		variable localAmplitude
+
 		do
-			
 			phase = ((abs(enoise(2))) * Pi)
 			if(PinkOrBrown == 0)
 				localAmplitude = 1 / Frequency
@@ -609,7 +611,7 @@ Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff
 				localAmplitude = 1 / (Frequency ^ .5)
 			endif
 			
-			MultiThread BuildWave[][i] = localAmplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p + phase)
+			MultiThread BuildWave[][i] = localAmplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p + phase) // Multithread of sin funciton is the BOMB!!
 			Frequency += FrequencyIncrement
 			i += 1
 		while (i < NumberOfBuildWaves)
@@ -625,6 +627,6 @@ Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff
 		Wavestats/q Outputwave
 		variable scalefactor = Amplitude/(V_max - V_min)
 		OutputWave *= ScaleFactor
-				print "multithread took (ms):", (stopmstimer(-2) - start)/1000
-
+		print "multithread took (ms):", (stopmstimer(-2) - start)/1000
+		OutputWave += Offset
 End

@@ -529,7 +529,7 @@ End
 
 Function WBP_ButtonProc_AutoScale(ctrlName) : ButtonControl
 	String ctrlName
-SetAxis /A /w = wavebuilder#wavebuildergraph
+	SetAxis /A /w = wavebuilder#wavebuildergraph
 End
 
 Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
@@ -539,14 +539,35 @@ Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 	SetDataFolder root:WaveBuilder:Data
 	//controlinfo 
 	if(cmpstr(ctrlName,"check_Sin_Chirp")==0)
-		if(checked==1)
-		SetVariable SetVar_WaveBuilder_P24 disable=0
-		SetVariable SetVar_WaveBuilder_P25 disable=0
+		if(checked == 1)
+			SetVariable SetVar_WaveBuilder_P24 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P25 win = wavebuilder, disable = 0
 		else
-		SetVariable SetVar_WaveBuilder_P24 disable=2
-		SetVariable SetVar_WaveBuilder_P25 disable=2
+			SetVariable SetVar_WaveBuilder_P24 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P25 win = wavebuilder, disable = 2
 		endif
 	endif
+	
+	if(cmpstr(ctrlName,"check_Noise_Pink")==0)
+		if(checked == 1)
+			Checkbox Check_Noise_Brown win = wavebuilder, value = 0, disable = 2
+			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 0
+		else
+			Checkbox Check_Noise_Brown win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 2
+		endif
+	endif
+	print ctrlname
+	if(cmpstr(ctrlName,"check_Noise_Brown")==0)
+		if(checked == 1)
+			Checkbox check_Noise_Pink win = wavebuilder, value = 0, disable = 2
+			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 0
+		else
+			Checkbox check_Noise_Pink win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 2
+		endif
+	endif
+	
 	WB_MakeStimSet()
 	WB_DisplaySetInPanel()
 	SetDataFolder saveDFR
@@ -864,14 +885,14 @@ Function WBP_SetVarProc_Offset(ctrlName,varNum,varStr,varName) : SetVariableCont
 		
 	variable StimulusType
 	controlinfo WBP_WaveType
-	StimulusType=v_value
+	StimulusType = v_value
 	
 	variable SegmentNo
 	controlinfo setvar_WaveBuilder_SegmentEdit
-	SegmentNo=v_value
+	SegmentNo = v_value
 	
 	string parameterName
-	variable ParameterRow=str2num("SetVar_WaveBuilder_P4"[(strsearch("SetVar_WaveBuilder_P4", "P",0)+1),inf])
+	variable ParameterRow = str2num("SetVar_WaveBuilder_P4"[(strsearch("SetVar_WaveBuilder_P4", "P",0)+1),inf])
 	
 	string NameOfParamWave
 	string cmd
@@ -902,14 +923,14 @@ Function WBP_SetVarProc_Delta01(ctrlName,varNum,varStr,varName) : SetVariableCon
 		
 	variable StimulusType
 	controlinfo WBP_WaveType
-	StimulusType=v_value
+	StimulusType = v_value
 	
 	variable SegmentNo
 	controlinfo setvar_WaveBuilder_SegmentEdit
-	SegmentNo=v_value
+	SegmentNo = v_value
 	
 	string parameterName
-	variable ParameterRow=str2num("SetVar_WaveBuilder_P5"[(strsearch("SetVar_WaveBuilder_P5", "P",0)+1),inf])
+	variable ParameterRow = str2num("SetVar_WaveBuilder_P5"[(strsearch("SetVar_WaveBuilder_P5", "P",0)+1),inf])
 	
 	string NameOfParamWave
 	string cmd
@@ -953,10 +974,10 @@ Function WBP_PopMenuProc_WaveType(ctrlName,popNum,popStr) : PopupMenuControl
 	SetDataFolder root:WaveBuilder:Data
 	
 	wave SegWvType, WP
-if (cmpstr(popstr,"TTL")==0)
+if (cmpstr(popstr,"TTL") == 0)
 
-	SegWvType=0
-	WP[1,6][][]=0
+	SegWvType = 0
+	WP[1,6][][] = 0
 	
 	SetVariable SetVar_WaveBuilder_P2 win = wavebuilder, limits={0,1,1}, value= _NUM:0
 	WBP_SetVarProc_UpdateParam("SetVar_WaveBuilder_P2",0,"1","")
@@ -1032,7 +1053,7 @@ Function/t WBP_SearchString()
 	
 		If (strlen(s_value)==0)
 			str="*"
-			else
+		else
 			str = s_value
 		endif
 	
@@ -1082,10 +1103,10 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 		
 		
 		If(stringmatch(popStr,"- none -")==0)// checks to make sure "- none -" is not selected as a wave type	
-		sprintf cmd, "root:WaveBuilder:Data:WPT[%d][%d]= nameofwave(%s)" 0, SegmentNo, FolderPath+popStr
-		execute cmd
+			sprintf cmd, "root:WaveBuilder:Data:WPT[%d][%d]= nameofwave(%s)" 0, SegmentNo, FolderPath+popStr
+			execute cmd
 		else
-		WPT[0][SegmentNo]= ""
+			WPT[0][SegmentNo]= ""
 		endif
 		SetDataFolder saveDFR
 
@@ -1599,4 +1620,17 @@ ListString=ControlNameList(panelTitle,";",SearchString)
 CatTot=ItemsInlist(ListString,";")
 
 return CatTot
+End
+
+
+Function WBP_CheckProc_Pink(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+
+End
+
+Function WBP_CheckProc_Brown(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+
 End
