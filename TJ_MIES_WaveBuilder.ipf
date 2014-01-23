@@ -148,7 +148,7 @@ wave WP=root:WaveBuilder:Data:WP//
 	endif
 	
 	i+=2
-	while(i<25)
+	while(i<30)
 End
 
 Function test()
@@ -327,7 +327,7 @@ Function WB_MakeWaveBuilderWave()
 				Note WaveBuilderWave, "Epoch "+num2str(i)+"= Ramp, properties: Amplitude = "+num2str(Amplitude)+"  Delta amplitude = " + num2str(DeltaAmp)+"  Duration = " + num2str(Duration)+"  Delta duration = " + num2str(DeltaDur)+"  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
 			case 2:
-				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount)
+				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount, FIncrement)
 				Note WaveBuilderWave, "Epoch "+num2str(i)+"= G-noise, properties:  SD = " + num2str(Amplitude)+ "  SD delta = "+num2str(DeltaAmp)+"  Low pass cut off = " + num2str(LowPassCutOff)+ "  Low pass cut off delta = " + num2str(DeltaLowPassCutOff) + "  High pass cut off = " + num2str(HighPassCutOff)+ "  High pass cut off delta = " + num2str(DeltaHighPassCutOff)
 				Note/NOCR WaveBuilderWave, "  Offset = " + num2str(Offset)+"  Delta offset = " + num2str(DeltaOffset)
 				break
@@ -440,20 +440,45 @@ Threadsafe Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffS
 	SegmentWave+=Offset
 End
 	
-Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount HighPassCutOff,HighPassFiltCoefCount)
-	variable Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount
+Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount HighPassCutOff,HighPassFiltCoefCount, FIncrement)
+	variable Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount, FIncrement
 	make/o/n=(Duration/0.005) SegmentWave
 	SetScale/P x 0,0.005,"ms", SegmentWave
-	SegmentWave = gnoise(Amplitude)// MultiThread didn't impact processing time for gnoise
-	if(duration>0)
-		If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
-			FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),LowPassFiltCoefCount}SegmentWave
-		endif
-		
-		if(HighPassCutOff > 0 && HighPassCutOff<100000)//  && HighPassCutOffDelta < 100000)
-			FilterFIR/DIM=0/Hi={(HighPassCutOff/200000),(HighPassCutOff/200000),HighPassFiltCoefCount}SegmentWave
+	variable brownCheck, pinkCheck
+	
+	controlinfo /w = wavebuilder check_Noise_Pink
+	pinkCheck = v_value
+	
+	controlinfo /w = wavebuilder check_Noise_Brown
+	brownCheck = v_value	
+	
+	if(brownCheck == 0 && pinkCheck == 0)
+		make/o/n=(Duration/0.005) SegmentWave
+		SetScale/P x 0,0.005,"ms", SegmentWave
+		SegmentWave = gnoise(Amplitude)// MultiThread didn't impact processing time for gnoise
+		if(duration>0)
+			If(LowPassCutOff <= 100000 && LowPassCutOff != 0)	
+				 FilterFIR/DIM=0/LO={(LowPassCutOff/200000),(LowPassCutOff/200000),LowPassFiltCoefCount}SegmentWave
+			endif
+			
+			if(HighPassCutOff > 0 && HighPassCutOff<100000)//  && HighPassCutOffDelta < 100000)
+				FilterFIR/DIM=0/Hi={(HighPassCutOff/200000),(HighPassCutOff/200000),HighPassFiltCoefCount}SegmentWave
+			endif
 		endif
 	endif
+	
+	variable PinkOrBrown
+	if(pinkCheck == 1)
+		PinkOrBrown = 0
+		WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, Fincrement, PinkOrBrown)
+	endif
+	
+	if(brownCheck == 1)
+		print "here"
+		PinkOrBrown = 1
+		WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, Fincrement, PinkOrBrown)
+	endif
+		
 	SegmentWave+=offset
 End
 
@@ -592,19 +617,19 @@ End
 //=====================================================================================
 
 
-Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)
-		variable Amplitude, Duration, OffSet, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
-		Variable start = stopmstimer(-2)
+Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)
+		variable Amplitude, Duration, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
 		variable phase = (abs(enoise(2)) * Pi)
-		variable NumberOfBuildWaves = ((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
+		variable NumberOfBuildWaves = floor((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
 		make /free /n = (Duration / 0.005, NumberOfBuildWaves) BuildWave
 		SetScale /P x 0,0.005,"ms", BuildWave
-		variable Frequency = LowPassCutOff
+		variable Frequency = HighPassCutOff
 		variable i = 0
 		variable localAmplitude
-
+		print "buildWaveNumber = ",numberofbuildwaves
+		print "frequency = ", frequency
 		do
-			phase = ((abs(enoise(2))) * Pi)
+			phase = ((abs(enoise(2))) * Pi) // random phase generator
 			if(PinkOrBrown == 0)
 				localAmplitude = 1 / Frequency
 			else
@@ -615,18 +640,16 @@ Threadsafe Function PinkAndBrownNoise(Amplitude, Duration, OffSet, LowPassCutOff
 			Frequency += FrequencyIncrement
 			i += 1
 		while (i < NumberOfBuildWaves)
-	
+		print frequency
 		//make /o /n = (Duration / 0.005) OutputWave
 		//SetScale /P x 0,0.005,"ms", OutputWave
 		
-		MatrixOp /o /NTHR = 0   OutputWave = sumRows(BuildWave)
+		MatrixOp /o /NTHR = 0   SegmentWave = sumRows(BuildWave)
 		
-		SetScale /P x 0,0.005,"ms", OutputWave
-		OutputWave /= NumberOfBuildWaves
+		SetScale /P x 0, 0.005,"ms", SegmentWave
+		SegmentWave /= NumberOfBuildWaves
 		
-		Wavestats/q Outputwave
+		Wavestats/q SegmentWave
 		variable scalefactor = Amplitude/(V_max - V_min)
-		OutputWave *= ScaleFactor
-		print "multithread took (ms):", (stopmstimer(-2) - start)/1000
-		OutputWave += Offset
+		SegmentWave *= ScaleFactor
 End
