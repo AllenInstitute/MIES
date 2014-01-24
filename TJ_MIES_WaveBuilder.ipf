@@ -95,7 +95,6 @@ Function WB_MakeStimSet()
 	do
 		WB_MakeWaveBuilderWave()
 		WB_AddDelta()
-		
 		controlInfo popup_WaveBuilder_OutputType
 		string OutputWaveType = s_value
 		
@@ -107,7 +106,6 @@ Function WB_MakeStimSet()
 	wp = wpd//
 	setdatafolder saveDFR
 	print "multithread took (ms):", (stopmstimer(-2) - start) / 1000
-
 End
 
 Function WB_AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
@@ -620,6 +618,8 @@ Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, Hig
 		variable Frequency = HighPassCutOff
 		variable i = 0
 		variable localAmplitude
+		//make /free /n = (NumberOfBuildWaves) PhaseWave
+		//Multithread PhaseWave[] = ((abs(enoise(2))) * Pi)
 		do
 			phase = ((abs(enoise(2))) * Pi) // random phase generator
 			if(PinkOrBrown == 0)
@@ -628,7 +628,8 @@ Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, Hig
 				localAmplitude = 1 / (Frequency ^ .5)
 			endif
 			
-			MultiThread BuildWave[][i] = localAmplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p + phase) // Multithread of sin funciton is the BOMB!!
+			MultiThread BuildWave[][i] = localAmplitude * sin( Pi * Frequency * 1e-05 * p + phase) //  factoring out Pi * 1e-05 actually makes it a tiny bit slower
+			//MultiThread BuildWave[][i] = localAmplitude * sin(2 * Pi * (Frequency*1000) * (5 / 1000000000) * p + phase) // Multithread of sin funciton is the BOMB!!
 			Frequency += FrequencyIncrement
 			i += 1
 		while (i < NumberOfBuildWaves)
@@ -636,7 +637,7 @@ Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, Hig
 		MatrixOp /o /NTHR = 0   SegmentWave = sumRows(BuildWave)
 		
 		SetScale /P x 0, 0.005,"ms", SegmentWave
-		SegmentWave /= NumberOfBuildWaves
+		//SegmentWave /= NumberOfBuildWaves
 		
 		Wavestats /q SegmentWave
 		variable scalefactor = Amplitude / (V_max - V_min)

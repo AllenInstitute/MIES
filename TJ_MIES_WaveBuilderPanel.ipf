@@ -4,7 +4,7 @@
 
 Window wavebuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(82,669,1099,1143)
+	NewPanel /W=(86,155,1103,629)
 	SetVariable SetVar_WaveBuilder_NoOfSegments,pos={23,61},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(ResizeControlsInfo)= A"!!,Bq!!#?-!!#@\\!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -82,7 +82,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P4,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P4,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P4,userdata(tabnum)=  "1",value= _NUM:-30
+	SetVariable SetVar_WaveBuilder_P4,userdata(tabnum)=  "1",value= _NUM:10
 	SetVariable SetVar_WaveBuilder_P6,pos={194,105},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Start Freq"
 	SetVariable SetVar_WaveBuilder_P6,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P6,userdata(ResizeControlsInfo)= A"!!,GR!!#@6!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -106,7 +106,7 @@ Window wavebuilder() : Panel
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo)= A"!!,C,!!#@>!!#@X!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_WaveBuilder_SegmentEdit,fSize=14,limits={0,1,1},value= _NUM:0
+	SetVariable setvar_WaveBuilder_SegmentEdit,fSize=14,limits={0,2,1},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P5,pos={300,81},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P5,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo)= A"!!,HQ!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -217,7 +217,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo)= A"!!,HQJ,hp1!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_DD02,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_DD02,value= _NUM:100
 	SetVariable SetVar_WaveBuilder_DD03,pos={301,81},size={100,16},disable=1,proc=WBP_SetVarProc_Delta01,title="Delta"
 	SetVariable SetVar_WaveBuilder_DD03,userdata(tabnum)=  "3"
 	SetVariable SetVar_WaveBuilder_DD03,userdata(tabcontrol)=  "WBP_WaveType"
@@ -407,7 +407,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P26,userdata(ResizeControlsInfo)= A"!!,J&^]6]Q!!#@m!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P26,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P26,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P26,limits={3,32767,50},value= _NUM:550
+	SetVariable SetVar_WaveBuilder_P26,limits={3,32767,50},value= _NUM:200
 	SetVariable SetVar_WaveBuilder_P29,pos={741,129},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P29,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P29,userdata(tabcontrol)=  "WBP_WaveType"
@@ -459,6 +459,8 @@ Window wavebuilder() : Panel
 	CheckBox check_Noise_Brown,pos={413,126},size={48,14},disable=3,proc=WBP_CheckProc,title="Brown"
 	CheckBox check_Noise_Brown,userdata(tabnum)=  "2"
 	CheckBox check_Noise_Brown,userdata(tabcontrol)=  "WBP_WaveType",value= 0
+	CheckBox check_PreventUpdate,pos={189,447},size={91,14},proc=CheckProc_PreventUpdate,title="Prevent update"
+	CheckBox check_PreventUpdate,value= 0
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF1=zzzzzzzzzzzzzzzzzzzzz"
@@ -487,8 +489,11 @@ Function WBP_SetVarProc_SetNo(ctrlName,varNum,varStr,varName) : SetVariableContr
 	String varName
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+	//	WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 End
 	
@@ -534,8 +539,11 @@ Function WBP_SetVarProc_StepCount(ctrlName,varNum,varStr,varName) : SetVariableC
 	SetDataFolder root:WaveBuilder:Data
 	WBP_LowPassDeltaLimits()
 	WBP_HighPassDeltaLimits()
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 	
 End
@@ -581,8 +589,11 @@ Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 		endif
 	endif
 	
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 End
 
@@ -595,23 +606,25 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 	variable tabnum
 	wave SegWvType
 
-	tabnum=tca.tab
+	tabnum = tca.tab
 
 	controlinfo popup_WaveBuilder_OutputType
-	if(cmpstr(s_value,"TTL")==0)
-		if(tabnum==1 || tabnum==2|| tabnum==3|| tabnum==4|| tabnum==6)
+	if(cmpstr(s_value,"TTL") == 0)
+		if(tabnum == 1 || tabnum == 2|| tabnum == 3|| tabnum == 4|| tabnum == 6)
 			SetDataFolder saveDFR
 			return 1
 		else
 			controlinfo setvar_WaveBuilder_SegmentEdit
-			SegWvType[v_value]=tabnum
+			SegWvType[v_value] = tabnum
 	
-			variable ParamWaveType=tabnum
+			variable ParamWaveType = tabnum
 			WB_ParamToPanel(ParamWaveType)
 
-			WB_MakeStimSet()
-			WB_DisplaySetInPanel()
-			
+			controlinfo /w = WaveBuilder check_PreventUpdate
+			if(v_value == 0)
+				//WB_MakeStimSet()
+				WB_DisplaySetInPanel()
+			endif		
 			SetDataFolder saveDFR
 
 			return 0
@@ -619,15 +632,15 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 	else
 			
 	if(tabnum==7)
-		SetVariable SetVar_WaveBuilder_P0 disable=2,value= _NUM:0
-		SetVariable SetVar_WaveBuilder_P1 disable=2,value= _NUM:0
-		SetVariable SetVar_WaveBuilder_P2 disable=2,value= _NUM:0
-		SetVariable SetVar_WaveBuilder_P3 disable=2,value= _NUM:0
+		SetVariable SetVar_WaveBuilder_P0 disable = 2,value = _NUM:0
+		SetVariable SetVar_WaveBuilder_P1 disable = 2,value = _NUM:0
+		SetVariable SetVar_WaveBuilder_P2 disable = 2,value = _NUM:0
+		SetVariable SetVar_WaveBuilder_P3 disable = 2,value = _NUM:0
 	else
-		SetVariable SetVar_WaveBuilder_P0 disable=0
-		SetVariable SetVar_WaveBuilder_P1 disable=0
-		SetVariable SetVar_WaveBuilder_P2 disable=0
-		SetVariable SetVar_WaveBuilder_P3 disable=0
+		SetVariable SetVar_WaveBuilder_P0 disable = 0
+		SetVariable SetVar_WaveBuilder_P1 disable = 0
+		SetVariable SetVar_WaveBuilder_P2 disable = 0
+		SetVariable SetVar_WaveBuilder_P3 disable = 0
 	endif
 	
 	controlinfo setvar_WaveBuilder_SegmentEdit// Assings wave type to segment
@@ -635,9 +648,11 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 	
 	ParamWaveType=tabnum
 	WB_ParamToPanel(ParamWaveType)// passed parameters from appropriate parameter wave to panel
-	
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 
 	return 0
@@ -719,10 +734,11 @@ Function WBP_SetVarProc_Frequency(ctrlName,varNum,varStr,varName) : SetVariableC
 	
 	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType,varnum
 	execute cmd
-			
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
-	
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)	
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 
 End
@@ -758,10 +774,12 @@ Function WBP_SetVarProc_Delta00(ctrlName,varNum,varStr,varName) : SetVariableCon
 	
 	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
-			
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
 	
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)		
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 
 End
@@ -812,8 +830,11 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 		endif
 	endif
 	
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 
 	SetDataFolder saveDFR
 
@@ -821,7 +842,6 @@ End
 
 Function WBP_LowPassDeltaLimits()
 variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
-
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	
@@ -854,7 +874,7 @@ End
 
 Function WBP_HighPassDeltaLimits()
 variable HighPassCutOff, StepCount, HighPassDelta, DeltaLimit
-
+	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data
 	
@@ -916,10 +936,12 @@ Function WBP_SetVarProc_Offset(ctrlName,varNum,varStr,varName) : SetVariableCont
 	
 	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
-		
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
 	
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)	
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 End
 
@@ -954,10 +976,12 @@ Function WBP_SetVarProc_Delta01(ctrlName,varNum,varStr,varName) : SetVariableCon
 	
 	sprintf cmd, "%s[%d][%d][%d]=%g" nameOfParamWave, ParameterRow, segmentNo, stimulusType, varnum
 	execute cmd
-			
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
 	
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)		
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 End
 
@@ -1124,9 +1148,11 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 		SetDataFolder saveDFR
 
 	//END OF CUSTOM WAVE CODE
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
-	
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 
 End
 
@@ -1386,9 +1412,11 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 		WBP_ExecuteAdamsTabcontrol(SegWvType[SegmentNo-1])
 	endif
 	
-	WB_MakeStimSet()
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+	//WB_MakeStimSet()
 	WB_DisplaySetInPanel()
-	
+	endif
 	SetDataFolder saveDFR
 
 End
@@ -1415,9 +1443,11 @@ Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariabl
 	variable ParamWaveType=StimulusType
 	WB_ParamToPanel(ParamWaveType)
 	
-	WB_MakeStimSet()
-	WB_DisplaySetInPanel()
-	
+	controlinfo /w = WaveBuilder check_PreventUpdate
+	if(v_value == 0)
+		//WB_MakeStimSet()
+		WB_DisplaySetInPanel()
+	endif
 	SetDataFolder saveDFR
 End
 
@@ -1429,6 +1459,8 @@ End
 
 Function WBP_CutOffCrossOver()
 	variable HighPassCutOff, LowPassCutOff
+	delayupdate
+	
 	controlinfo SetVar_WaveBuilder_P20//Low pass cut off frequency
 	LowPassCutOff=v_value
 	
@@ -1646,4 +1678,39 @@ Function WBP_CheckProc_Brown(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 
+End
+
+Function CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+	if(checked == 0)
+		DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+		SetDataFolder root:WaveBuilder:Data
+		
+
+
+		
+		controlinfo WBP_WaveType
+		if(v_value==2)
+		WBP_LowPassDeltaLimits()
+		WBP_HighPassDeltaLimits()
+		WBP_CutOffCrossOver()
+		endif
+		
+		if(v_value==5)
+		SetVariable SetVar_WaveBuilder_P8 limits={0,WBP_ReturnPulseDurationMax(),0.1}
+		controlinfo SetVar_WaveBuilder_P8
+			if(v_value>WBP_ReturnPulseDurationMax())
+			SetVariable SetVar_WaveBuilder_P8 value= _NUM:WBP_ReturnPulseDurationMax()
+			endif
+		endif
+		
+		controlinfo /w = WaveBuilder check_PreventUpdate
+		if(v_value == 0)
+			//WB_MakeStimSet()
+			WB_DisplaySetInPanel()
+		endif
+	
+		SetDataFolder saveDFR
+	endif
 End
