@@ -573,9 +573,17 @@ Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 		if(checked == 1)
 			Checkbox Check_Noise_Brown win = wavebuilder, value = 0, disable = 2
 			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P26 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P23 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P28 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P29 win = wavebuilder, disable = 2
 		else
 			Checkbox Check_Noise_Brown win = wavebuilder, disable = 0
 			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P26 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P23 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P28 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P29 win = wavebuilder, disable = 0
 		endif
 	endif
 	print ctrlname
@@ -583,9 +591,17 @@ Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 		if(checked == 1)
 			Checkbox check_Noise_Pink win = wavebuilder, value = 0, disable = 2
 			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P26 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P23 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P28 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P29 win = wavebuilder, disable = 2
 		else
 			Checkbox check_Noise_Pink win = wavebuilder, disable = 0
 			SetVariable SetVar_WaveBuilder_P30 win = wavebuilder, disable = 2
+			SetVariable SetVar_WaveBuilder_P26 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P23 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P28 win = wavebuilder, disable = 0
+			SetVariable SetVar_WaveBuilder_P29 win = wavebuilder, disable = 0
 		endif
 	endif
 	
@@ -1668,28 +1684,14 @@ return CatTot
 End
 
 
-Function WBP_CheckProc_Pink(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
 
-End
-
-Function WBP_CheckProc_Brown(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-
-End
-
-Function CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
+Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	if(checked == 0)
 		DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 		SetDataFolder root:WaveBuilder:Data
-		
 
-
-		
 		controlinfo WBP_WaveType
 		if(v_value==2)
 		WBP_LowPassDeltaLimits()
