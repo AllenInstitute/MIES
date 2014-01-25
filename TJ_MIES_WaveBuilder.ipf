@@ -187,7 +187,10 @@ Function WB_MakeWaveBuilderWave()
 		sprintf cmd, "ParameterHolder	= %s[%d][%d][%d]" ParameterWaveName, 0, i, SegWvType[i]
 		Execute cmd
 		Duration = ParameterHolder
-		
+		if(Duration <= 0)
+			Print "User input has generated a negative epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
+			Duration = 1
+		endif
 		sprintf cmd, "	ParameterHolder	= %s[%d][%d][%d]" ParameterWaveName, 1, i, SegWvType[i]
 		Execute cmd
 		DeltaDur = ParameterHolder

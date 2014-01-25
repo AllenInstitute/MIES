@@ -21,13 +21,12 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
 	YaxisSpacing = 1 / ((itemsinlist(ADChannelList)))
-	Spacer = 0.015
+	Spacer = 0.025
 	
 	YaxisHigh = 1
 	YaxisLow = YaxisHigh-YaxisSpacing + spacer
-	
+	pauseupdate
 	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
-		
 		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
 		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
 		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
@@ -35,23 +34,24 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 		Unit = stringfromlist(i + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
-		
+		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
 		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
 			appendtograph /W = $oscilloscopeSubWindow /R = $"Resistance" + num2str(i) ResistanceWave[][i]
 			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"Resistance" + num2str(i)) = 2, axThick($"Resistance" + num2str(i)) = 0
-			ModifyGraph /W =$oscilloscopeSubWindow axisEnab($"Resistance" + num2str(i)) = {YaxisLow,YaxisHigh}
+			ModifyGraph /W = $oscilloscopeSubWindow axisEnab($"Resistance" + num2str(i)) = {YaxisLow,YaxisHigh}
+			ModifyGraph  /W = $oscilloscopeSubWindow mode($"Resistance") = 2, lsize($"Resistance") = 0
 			if(i > 0)
 				ResistanceTraceName = "Resistance#"+num2str(i)
+				ModifyGraph  /W = $oscilloscopeSubWindow mode($"Resistance#" + num2str(i)) = 2, lsize($"Resistance#" + num2str(i)) = 0
 			endif
-			Tag /W = $oscilloscopeSubWindow /C /N = $"R" + num2str(i) /F = 0 /X = -15 /Y = -10 /B = 1 /L = 0 $ResistanceTraceName, 0,"\\OY \\Z10(Mohm)"
-
+			Tag /W = $oscilloscopeSubWindow /C /N = $"R" + num2str(i) /F = 0 /X = -15 /Y = -10 /B = 1 /L = 0 /Z = 0 /I = 1 $ResistanceTraceName, 0,"\\OY \\Z10(Mohm)"
 		endif
-
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
 	endfor
 	ModifyGraph /w = $oscilloscopeSubWindow freePos=0
 	SetAxis /w = $oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4)
+	doupdate
 End
 SetAxis/A=2 AD0
 TextBox /W = $graphName /C /N = RunText "Run "+num2istr(runNumber)

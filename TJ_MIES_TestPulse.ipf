@@ -140,11 +140,11 @@ mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string PanelTitle
+	pauseupdate
 	setdatafolder root:
 	getwindow kwTopWin activesw
 	PanelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
-	
 	if(SearchResult != -1)
 	PanelTitle = PanelTitle[0,SearchResult - 2]//SearchResult+1]
 	endif
@@ -202,6 +202,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	ITCOscilloscope(TestPulseITC,panelTitle)
 	controlinfo /w = $panelTitle Check_Settings_BkgTP
+	
 	if(v_value == 1)// runs background TP
 		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	else // runs TP
