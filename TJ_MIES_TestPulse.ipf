@@ -243,44 +243,55 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
 				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
 				variable TPSSEndTime = (0.95*((Duration * 0.0075)))
-				variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)) - ((BaselineSteadyStateStartTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
-				variable BaselineSSStartPoint = (BaselineSteadyStateStartTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)
+				variable TPInstantaneouseOnsetTime = (Duration / 400) + 0.01 // starts a tenth of a second after pulse to exclude cap transients - this should probably not be hard coded
+				variable DimOffsetVar = DimOffset(TPWave, 0) 
+				variable DimDeltaVar = DimDelta(TPWave, 0)
+				variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
+				variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
 				variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod	
-				variable TPSSEndPoint = (TPSSEndTime - DimOffset(TPWave, 0))/DimDelta(TPWave,0)
+				variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
 				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-				duplicate /o /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, $InputDataPath + ":BaselineSS"
-				wave BaselineSS = $InputDataPath + ":BaselineSS"
-				duplicate /o /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, $InputDataPath + ":DeltaSS"
-				wave DeltaSS = $InputDataPath + ":DeltaSS"
+				variable TPInstantaneouseOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
+				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, DeltaSS
 				DeltaSS -= BaselineSS
 				DeltaSS = abs(DeltaSS)
 				
+				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(DeltaSS)
+				AvgBaselineSS /= dimsize(DeltaSS, 0)
+				
+				MatrixOp /free /NTHR = 0   AvgDeltaSS = sumCols(BaselineSS)
+				AvgDeltaSS  /= dimsize(BaselineSS, 0)			
+				
+				duplicate /free /r = [TPInstantaneouseOnsetPoint, (TPInstantaneouseOnsetPoint + 5)][] TPWave Instantaneous
+				MatrixOp /free /NTHR = 0   AvgInstantaneousDelta = sumCols(Instantaneous)
+				AvgInstantaneousDelta /= dimsize(Instantaneous, 0) // now there is wave with one row where each cell has the average instaneous response of the TP
+				AvgInstantaneousDelta -= AvgBaselineSS
+				AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
+				
 				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
-				variable columns =  (dimsize(DeltaSS,1) - NoOfActiveDA)-1
-				duplicate /o /r = [0][0, columns] DeltaSS $InputDataPath + ":DeltaSSAvg"
-				wave DeltaSSAvg = $InputDataPath + ":DeltaSSAvg"
+				variable columns =  (dimsize(DeltaSS,1) - NoOfActiveDA) - 1
+
+				
+				duplicate /o /r = [][NoOfActiveDA, Columns] AvgDeltaSS $InputDataPath + ":SSResistance"
+				wave SSResistance = $InputDataPath + ":SSResistance"
+				
+				duplicate /o /r = [][NoOfActiveDA, Columns] AvgDeltaSS $InputDataPath + ":InstResistance"
+				wave InstResistance = $InputDataPath + ":InstResistance"
+				
+				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
 				
 				variable i = 0
-				i += NoOfActiveDA
-
 				do
-					duplicate /Free /r = [][i] DeltaSS, TPWaveColumn
-					DeltaSSAvg[0][i - NoOfActiveDA] = mean(TPWaveColumn)
-					i += 1
-				while(i < dimsize(DeltaSS, 1))
-				
-				duplicate /o DeltaSSAvg $InputDataPath + ":Resistance"
-				wave Resistance = $InputDataPath + ":Resistance"
-				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
-				i = 0
-				do
-					if(str2num(stringfromlist(i, ClampModeString, ";"))==1)
-						Resistance[0][i] = DeltaSSAvg / AmplitudeIC    // R = V / I
+					if(str2num(stringfromlist(i, ClampModeString, ";")) == 1)
+						SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / AmplitudeIC    // R = V / I
+						InstResistance[0][i] = AvgInstantaneousDelta[0][i + NoOfActiveDA] / AmplitudeIC 
 					else
-						Resistance[0][i] = AmplitudeVC / DeltaSSAvg    // R = V / I
-					endif
+						SSResistance[0][i] = AmplitudeVC / AvgDeltaSS[0][i + NoOfActiveDA] 
+						InstResistance[0][i] = AmplitudeVC / AvgInstantaneousDelta[0][i + NoOfActiveDA]
+ 					endif
 					i += 1
-				while(i < dimsize(DeltaSSAvg, 1))
+				while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
 			End
 			
 Function TP_CalculateResistance(panelTitle)
