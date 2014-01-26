@@ -253,45 +253,59 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
 				variable TPInstantaneouseOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
 				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
-				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, DeltaSS
-				DeltaSS -= BaselineSS
-				DeltaSS = abs(DeltaSS)
-				
-				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(DeltaSS)
-				AvgBaselineSS /= dimsize(DeltaSS, 0)
-				
-				MatrixOp /free /NTHR = 0   AvgDeltaSS = sumCols(BaselineSS)
-				AvgDeltaSS  /= dimsize(BaselineSS, 0)			
-				
+				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
 				duplicate /free /r = [TPInstantaneouseOnsetPoint, (TPInstantaneouseOnsetPoint + 5)][] TPWave Instantaneous
+				
+				MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
+				avgTPSS /= dimsize(TPSS, 0)
+				
+				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
+				AvgBaselineSS /= dimsize(BaselineSS, 0)
+				
+				duplicate /free AvgTPSS, AvgDeltaSS
+				AvgDeltaSS -= AvgBaselineSS
+
 				MatrixOp /free /NTHR = 0   AvgInstantaneousDelta = sumCols(Instantaneous)
 				AvgInstantaneousDelta /= dimsize(Instantaneous, 0) // now there is wave with one row where each cell has the average instaneous response of the TP
 				AvgInstantaneousDelta -= AvgBaselineSS
-				AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
+				Multithread AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
 				
 				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
-				variable columns =  (dimsize(DeltaSS,1) - NoOfActiveDA) - 1
-
-				
-				duplicate /o /r = [][NoOfActiveDA, Columns] AvgDeltaSS $InputDataPath + ":SSResistance"
+				//variable columns =  (dimsize(DeltaSS,1)// - NoOfActiveDA) //- 1
+				//print "columns " ,columns
+				duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1 ] AvgDeltaSS $InputDataPath + ":SSResistance"
 				wave SSResistance = $InputDataPath + ":SSResistance"
+				SetScale/P x TPSSEndTime,1,"ms", SSResistance
 				
-				duplicate /o /r = [][NoOfActiveDA, Columns] AvgDeltaSS $InputDataPath + ":InstResistance"
+				duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) -1) ] AvgInstantaneousDelta $InputDataPath + ":InstResistance"
 				wave InstResistance = $InputDataPath + ":InstResistance"
-				
+				SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
+
 				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
-				
+				string decimalAdjustment
 				variable i = 0
 				do
 					if(str2num(stringfromlist(i, ClampModeString, ";")) == 1)
-						SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / AmplitudeIC    // R = V / I
-						InstResistance[0][i] = AvgInstantaneousDelta[0][i + NoOfActiveDA] / AmplitudeIC 
+						Multithread SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / AmplitudeIC // R = V / I
+						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
+						SSResistance[0][i] = str2num(decimalAdjustment)
+						
+						Multithread InstResistance[0][i] =  AvgInstantaneousDelta[0][i + NoOfActiveDA] / AmplitudeIC
+						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
+						InstResistance[0][i] = str2num(decimalAdjustment)						
 					else
-						SSResistance[0][i] = AmplitudeVC / AvgDeltaSS[0][i + NoOfActiveDA] 
-						InstResistance[0][i] = AmplitudeVC / AvgInstantaneousDelta[0][i + NoOfActiveDA]
- 					endif
+ 						Multithread SSResistance[0][i] = AmplitudeVC / AvgDeltaSS[0][i + NoOfActiveDA]
+ 						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
+						SSResistance[0][i] = str2num(decimalAdjustment)
+ 						
+ 						Multithread InstResistance[0][i] = AmplitudeVC / AvgInstantaneousDelta[0][i + NoOfActiveDA]
+ 						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
+						InstResistance[0][i] = str2num(decimalAdjustment)						
+					endif
 					i += 1
 				while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
+				print  (dimsize(AvgDeltaSS, 1) - NoOfActiveDA)
+				print "active da ",NoOfActiveDA
 			End
 			
 Function TP_CalculateResistance(panelTitle)
