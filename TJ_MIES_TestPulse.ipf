@@ -304,8 +304,6 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 					endif
 					i += 1
 				while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
-				print  (dimsize(AvgDeltaSS, 1) - NoOfActiveDA)
-				print "active da ",NoOfActiveDA
 			End
 			
 Function TP_CalculateResistance(panelTitle)

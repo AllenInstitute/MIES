@@ -6,7 +6,7 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
 	print NameOfWaveBeingPlotted
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
-	ModifyGraph /w = $oscilloscopeSubWindow Live = 0
+	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 	variable i =  0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
 	wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
@@ -20,18 +20,20 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	string SSResistanceTraceName = "SSResistance"
 	string InstResistanceTraceName = "InstResistance"
 	RemoveTracesOnGraph(oscilloscopeSubWindow)
-	
+	variable Yoffset = 40/(itemsinlist(ADChannelList))
+	string cmd
+	ModifyGraph /w = $oscilloscopeSubWindow freePos=0
+
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
 	YaxisSpacing = 1 / ((itemsinlist(ADChannelList)))
 	Spacer = 0.025
 	
 	YaxisHigh = 1
 	YaxisLow = YaxisHigh-YaxisSpacing + spacer
-	pauseupdate
 	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
 		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
-		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName)={YaxisLow,YaxisHigh}
+		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName) = {YaxisLow,YaxisHigh}, freepos($ADChannelName) = {0, kwFraction}
 		SetAxis /w = $oscilloscopeSubWindow /A =2 /N =2 $ADchannelName // this line should autoscale only the visible data; /N makes the autoscaling range larger
 		Unit = stringfromlist(i + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
@@ -39,23 +41,24 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
 		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
 			appendtograph /W = $oscilloscopeSubWindow /R = $"SSResistance" + num2str(i) SSResistanceWave[][i] , InstResistanceWave[][i]
-			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"SSResistance" + num2str(i)) = 2, axThick($"SSResistance" + num2str(i)) = 0
-			ModifyGraph /W = $oscilloscopeSubWindow axisEnab($"SSResistance" + num2str(i)) = {YaxisLow,YaxisHigh}, freepos($"SSResistance" + num2str(i)) ={0.9,kwFraction}
+			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"SSResistance" + num2str(i)) = 2, axThick($"SSResistance" + num2str(i)) = 0, width = 25
+			ModifyGraph /W = $oscilloscopeSubWindow axisEnab($"SSResistance" + num2str(i)) = {YaxisLow,YaxisHigh}, freepos($"SSResistance" + num2str(i)) = {1, kwFraction}
 			ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance") = 2, lsize($"SSResistance") = 0
 			SetAxis /W = $oscilloscopeSubWindow /A = 2 /N = 2 /E = 2 $"SSResistance" + num2str(i) -20, 20
 			if(i > 0)
 				SSResistanceTraceName = "SSResistance#"+num2str(i)
 				InstResistanceTraceName = "InstResistance#"+num2str(i)
-				ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance#" + num2str(i)) = 2, lsize($"SSResistance#" + num2str(i)) = 0, freepos($"SSResistance" + num2str(i)) ={0.9,kwFraction}
+				ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance#" + num2str(i)) = 2, lsize($"SSResistance#" + num2str(i)) = 0
 			endif
-			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = 0 /Y = -17 /B = 1 /L = 0 /Z = 0 /A = RC /I = 1 $SSResistanceTraceName, 0,"\\OY \\Z10 (Mohm)"
-			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = -15 /L = 0 $InstResistanceTraceName, 5.01,"\\OY"// \\Z10\r(Mohm)"
+			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = 0 /Y = (-Yoffset) /B = 1 /L = 0 /Z = 0 /A = MC /I = 1 $SSResistanceTraceName, 0,"\\OY \\Z10 (Mohm)"
+			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = (-Yoffset) /L = 0 $InstResistanceTraceName, 5.01,"\\OY"// \\Z10\r(Mohm)"
 			// dynamic tag can call a function that returns a string
+
 		endif
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
+
 	endfor
-	ModifyGraph /w = $oscilloscopeSubWindow freePos=0
 	SetAxis /w = $oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4)
 	doupdate
 End
