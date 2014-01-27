@@ -64,12 +64,13 @@ Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i=0
-	variable/G StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4) + ReturnTotalLengthIncrease(PanelTitle)
+	//variable/G StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4) + ReturnTotalLengthIncrease(PanelTitle)
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	string/G panelTitleG = panelTitle
 	doupdate
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
+	variable/G StopCollectionPoint = dimsize(ITCDataWave, 0)/4
 	wave ITCFIFOAvailAllConfigWave =  $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
