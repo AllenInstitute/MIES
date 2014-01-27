@@ -5,10 +5,12 @@ Function ITCDataAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i=0
-	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	//variable StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4 // + ReturnTotalLengthIncrease(PanelTitle)/4)
+	//print "stop collection point = ", stopcollectionpoint
 	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+	variable stopCollectionPoint = dimsize(ITCDataWave, 0)/4
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -62,7 +64,7 @@ Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i=0
-	variable/G StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4)
+	variable/G StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4) + ReturnTotalLengthIncrease(PanelTitle)
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	string/G panelTitleG = panelTitle
 	doupdate

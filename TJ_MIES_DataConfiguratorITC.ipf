@@ -355,7 +355,7 @@ Function PlaceDataInITCChanConfigWave(PanelTitle)
 			ITCChanConfigWave[j][0] = ChannelType
 			ITCChanConfigWave[j][1] = i
 			controlinfo /w = $panelTitle $UnitSetVarName + num2str(i)
-			UnitString += s_value + ";"
+			UnitString += s_value + ";"// a string with a unit for each column
 			j += 1
 		endif
 		i += 1
@@ -412,7 +412,7 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	string ResampledWaveName = "ResampledWave"
 	string cmd
 	string SetvarDAGain, SetVarDAScale
-	variable DAGain, DAScale,column
+	variable DAGain, DAScale,column, insertStart, insertEnd
 	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+":count" //%%
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
@@ -448,15 +448,13 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			//check to see if it is a test pulse or user specified da wave
 			if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0)
 				column = 0
-				//ChanTypeWaveName = TestPulsePath
+				insertStart = 0
+				insertEnd = 0
 			else
-			//determine column number in cases where a set is being cycled through multiple times
-				//controlinfo/w=$panelTitle check_DataAcq_RepAcqRandom//checks to see if radom intra set sequencing is selected
-			//	if(v_value==0)
-					column = real(CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
-			//	else
-			//		column = CalculateShuffledDAColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"))
-			//	endif
+				column = real(CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
+				InsertStart = GlobalChangesToITCDataWave(panelTitle) 
+				InsertEnd = InsertStart 
+				print insertstart
 			endif
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		ControlInfo /w = $panelTitle check_Settings_ScalingZero 
@@ -472,7 +470,8 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			endif
 		endif
 			//resample the wave to min samp interval and place in ITCDataWave
-			sprintf cmd, "%s[0,round((dimsize(%s,0)/(%d))-1)][%d]=(%d*%d)*(%s[(%d)*p][%d])" ITCDataWavePath, ChanTypeWaveName,DecimationFactor, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, Column
+			sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
+			print cmd
 			execute cmd
 	
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
@@ -735,3 +734,28 @@ Function shuffle(inwave)	//	in-place random permutation of input wave elements
 		inwave[i-1]	= temp
 	endfor
 end
+
+Function GlobalChangesToITCDataWave(panelTitle) // adjust the length of the ITCdataWave according to the global changes on the data acquisition tab - should only get called for not TP data acquisition cycles
+	string panelTitle
+	controlinfo /w = $panelTitle setvar_DataAcq_OnsetDelay
+	variable OnsetDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
+	controlinfo /w = $panelTitle setvar_DataAcq_TerminationDelay
+	variable TerminationDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
+	variable NewRows = round((OnsetDelay + TerminationDelay) * 4)
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
+	wave ITCDataWave = $WavePath + "ITCDataWave"
+	variable ITCDataWaveRows = dimsize(ITCDataWave, 0)
+	redimension /N = (ITCDataWaveRows + NewRows, -1, -1, -1) ITCDataWave
+	return OnsetDelay
+End
+
+Function ReturnTotalLengthIncrease(PanelTitle)
+	string panelTitle
+	controlinfo /w = $panelTitle setvar_DataAcq_OnsetDelay
+	variable OnsetDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
+	controlinfo /w = $panelTitle setvar_DataAcq_TerminationDelay
+	variable TerminationDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
+	variable NewRows = round((OnsetDelay + TerminationDelay) * 4)
+	return OnsetDelay + TerminationDelay
+end
+	

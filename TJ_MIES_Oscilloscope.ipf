@@ -9,6 +9,7 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 	variable i =  0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
+	wave ITCDataWave = $WavePath + "ITCDataWave"
 	wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
 	wave ChannelClampMode = $WavePath + "ChannelClampMode"
 	wave SSResistanceWave = $WavePath + "TestPulse:SSResistance"
@@ -39,6 +40,7 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
 		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
+		
 		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
 			appendtograph /W = $oscilloscopeSubWindow /R = $"SSResistance" + num2str(i) SSResistanceWave[][i] , InstResistanceWave[][i]
 			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"SSResistance" + num2str(i)) = 2, axThick($"SSResistance" + num2str(i)) = 0, width = 25
@@ -53,13 +55,14 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = 0 /Y = (-Yoffset) /B = 1 /L = 0 /Z = 0 /A = MC /I = 1 $SSResistanceTraceName, 0,"\\OY \\Z10 (Mohm)"
 			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = (-Yoffset) /L = 0 $InstResistanceTraceName, 5.01,"\\OY"// \\Z10\r(Mohm)"
 			// dynamic tag can call a function that returns a string
-
+		//	SetAxis /w = $oscilloscopeSubWindow bottom 0, ( ( (CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4) 
 		endif
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
 
 	endfor
-	SetAxis /w = $oscilloscopeSubWindow bottom 0, ((CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4)
+	SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) /4) * (ITCMinSamplingInterval(panelTitle) / 1000) //( (CalculateITCDataWaveLength(panelTitle) + ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+
 	doupdate
 End
 

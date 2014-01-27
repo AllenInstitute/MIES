@@ -17,7 +17,7 @@ Function SaveITCData(panelTitle)
 	
 	string SavedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(SweepNo)
 	string SavedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(SweepNo)
-	variable RowsToCopy = CalculateITCDataWaveLength(panelTitle)/4
+	variable RowsToCopy = dimsize(ITCDataWave, 0) /4
 	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $SavedDataWaveName
 	Duplicate /o ITCChanConfigWave $SavedSetUpWaveName
 	note $savedDataWaveName, Time()// adds time stamp to wave note
