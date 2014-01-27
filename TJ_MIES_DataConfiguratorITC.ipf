@@ -412,7 +412,7 @@ Function PlaceDataInITCDataWave(PanelTitle)
 	string ResampledWaveName = "ResampledWave"
 	string cmd
 	string SetvarDAGain, SetVarDAScale
-	variable DAGain, DAScale,column, insertStart, insertEnd
+	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
 	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+":count" //%%
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
@@ -454,7 +454,6 @@ Function PlaceDataInITCDataWave(PanelTitle)
 				column = real(CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
 				InsertStart = GlobalChangesToITCDataWave(panelTitle) 
 				InsertEnd = InsertStart 
-				print insertstart
 			endif
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		ControlInfo /w = $panelTitle check_Settings_ScalingZero 
@@ -470,8 +469,9 @@ Function PlaceDataInITCDataWave(PanelTitle)
 			endif
 		endif
 			//resample the wave to min samp interval and place in ITCDataWave
-			sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
-			print cmd
+			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
+			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
+			sprintf cmd,  "%s[%d, %d][%d] = (%d*%d) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
 			execute cmd
 	
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
