@@ -452,8 +452,10 @@ Function PlaceDataInITCDataWave(PanelTitle)
 				insertEnd = 0
 			else
 				column = real(CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
-				InsertStart = GlobalChangesToITCDataWave(panelTitle) 
-				InsertEnd = InsertStart 
+				if(i == 0)
+					InsertStart = GlobalChangesToITCDataWave(panelTitle) 
+					InsertEnd = InsertStart 
+				endif
 			endif
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		ControlInfo /w = $panelTitle check_Settings_ScalingZero 

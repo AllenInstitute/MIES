@@ -252,55 +252,80 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
 				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
 				variable TPInstantaneouseOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
+				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
 				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
 				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
-				duplicate /free /r = [TPInstantaneouseOnsetPoint, (TPInstantaneouseOnsetPoint + 5)][] TPWave Instantaneous
+				duplicate /free /r = [TPInstantaneouseOnsetPoint, (TPInstantaneouseOnsetPoint + 50)][] TPWave Instantaneous
 				
 				MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 				avgTPSS /= dimsize(TPSS, 0)
-				
+ 				avgTPSS = abs(avgTPSS)
+ 				
 				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 				AvgBaselineSS /= dimsize(BaselineSS, 0)
+				AvgBaselineSS = abs(AvgBaselineSS)
 				
 				duplicate /free AvgTPSS, AvgDeltaSS
 				AvgDeltaSS -= AvgBaselineSS
-
-				MatrixOp /free /NTHR = 0   AvgInstantaneousDelta = sumCols(Instantaneous)
-				AvgInstantaneousDelta /= dimsize(Instantaneous, 0) // now there is wave with one row where each cell has the average instaneous response of the TP
-				AvgInstantaneousDelta -= AvgBaselineSS
-				Multithread AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
 				
-				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
+				wavestats Instantaneous
+				variable i = 0 
+				variable columnsInWave = dimsize(Instantaneous, 1)
+				make /FREE /n = (1, columnsInWave) InstAvg
+				variable OneDInstMax
+				variable OndDBaseline
+
+				do
+					matrixOp /Free Instantaneous1d = col(Instantaneous, i + NoOfActiveDA)
+					wavestats Instantaneous1d
+					OneDInstMax = v_max
+					OndDBaseline = AvgBaselineSS[0][i + NoOfActiveDA]	
+
+					if(OneDInstMax > OndDBaseline)
+						Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
+					else
+						Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
+					endif
+					//print InstAvg[0][i + NoOfActiveDA]
+					i += 1
+				while(i < (columnsInWave - NoOfActiveDA))
+
+				Multithread InstAvg = abs(InstAvg)
+				Multithread InstAvg -= AvgBaselineSS
+				Multithread InstAvg = abs(InstAvg)
+				//Multithread AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
+				
 				//variable columns =  (dimsize(DeltaSS,1)// - NoOfActiveDA) //- 1
 				//print "columns " ,columns
-				duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1 ] AvgDeltaSS $InputDataPath + ":SSResistance"
+				duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS $InputDataPath + ":SSResistance"
 				wave SSResistance = $InputDataPath + ":SSResistance"
 				SetScale/P x TPSSEndTime,1,"ms", SSResistance
 				
-				duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) -1) ] AvgInstantaneousDelta $InputDataPath + ":InstResistance"
+				duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg $InputDataPath + ":InstResistance"
 				wave InstResistance = $InputDataPath + ":InstResistance"
 				SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
 
 				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
 				string decimalAdjustment
-				variable i = 0
+			 	i = 0
 				do
-					if(str2num(stringfromlist(i, ClampModeString, ";")) == 1)
-						Multithread SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / AmplitudeIC // R = V / I
+					if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
+						Multithread SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / abs(AmplitudeIC) // R = V / I
 						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
 						SSResistance[0][i] = str2num(decimalAdjustment)
-						
-						Multithread InstResistance[0][i] =  AvgInstantaneousDelta[0][i + NoOfActiveDA] / AmplitudeIC
+
+						Multithread InstResistance[0][i] =  InstAvg[0][i + NoOfActiveDA] / abs(AmplitudeIC)
 						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
-						InstResistance[0][i] = str2num(decimalAdjustment)						
+						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					else
- 						Multithread SSResistance[0][i] = AmplitudeVC / AvgDeltaSS[0][i + NoOfActiveDA]
+ 						Multithread SSResistance[0][i] = abs(AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]
  						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
-						SSResistance[0][i] = str2num(decimalAdjustment)
+						Multithread SSResistance[0][i] = str2num(decimalAdjustment)
  						
- 						Multithread InstResistance[0][i] = AmplitudeVC / AvgInstantaneousDelta[0][i + NoOfActiveDA]
+ 						Multithread InstResistance[0][i] = abs(AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]
  						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
-						InstResistance[0][i] = str2num(decimalAdjustment)						
+						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					endif
 					i += 1
 				while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
@@ -330,7 +355,7 @@ Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)
 	NVAR Amplitude = $InputDataPath + ":Amplitude"
 End
 
-//  function that creates string of clamp modes based on the ad channel associated with the headstage	
+//  function that creates string of clamp modes based on the ad channel associated with the headstage	- in the sequence of ADchannels in ITCDataWave - i.e. numerical order
 Function TP_ClampModeString(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -348,7 +373,7 @@ End
 
 
 
-Function TP_HeadstageUsingADC(panelTitle, AD)
+Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a particular AD
 	string panelTitle
 	variable AD
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -356,20 +381,20 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 	variable i = 0
 	
 	do
-		if(ChanAmpAssign[4][i] == AD)
+		if(ChanAmpAssign[2][i] == AD)
 		 	break
 		endif
-	i += 1
+		i += 1
 	while(i<7)	
 	
-	if(ChanAmpAssign[4][i] == AD)
+	if(ChanAmpAssign[2][i] == AD)
 		return i
 	else
 		return Nan
 	endif
 End
 
-Function TP_HeadstageMode(panelTitle, HeadStage)
+Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a "headstage"
 	string panelTitle
 	variable Headstage
 	variable ClampMode

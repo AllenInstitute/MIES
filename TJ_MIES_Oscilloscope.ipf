@@ -46,7 +46,7 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"SSResistance" + num2str(i)) = 2, axThick($"SSResistance" + num2str(i)) = 0, width = 25
 			ModifyGraph /W = $oscilloscopeSubWindow axisEnab($"SSResistance" + num2str(i)) = {YaxisLow,YaxisHigh}, freepos($"SSResistance" + num2str(i)) = {1, kwFraction}
 			ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance") = 2, lsize($"SSResistance") = 0
-			SetAxis /W = $oscilloscopeSubWindow /A = 2 /N = 2 /E = 2 $"SSResistance" + num2str(i) -20, 20
+			SetAxis /W = $oscilloscopeSubWindow /A = 2 /N = 2 /E = 2 $"SSResistance" + num2str(i) -2000, 2000
 			if(i > 0)
 				SSResistanceTraceName = "SSResistance#"+num2str(i)
 				InstResistanceTraceName = "InstResistance#"+num2str(i)
