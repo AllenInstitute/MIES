@@ -239,6 +239,8 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				NVAR Duration = $InputDataPath + ":Duration"
 				NVAR AmplitudeIC = $InputDataPath + ":AmplitudeIC"	
 				NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"	
+				AmplitudeIC = abs(AmplitudeIC)
+				AmplitudeVC =  abs(AmplitudeVC)
 				wave TPWave = $InputDataPath + ":TestPulseITC"
 				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
 				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
@@ -311,19 +313,19 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 			 	i = 0
 				do
 					if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
-						Multithread SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / abs(AmplitudeIC) // R = V / I
+						Multithread SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC) // R = V / I
 						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
 						SSResistance[0][i] = str2num(decimalAdjustment)
 
-						Multithread InstResistance[0][i] =  InstAvg[0][i + NoOfActiveDA] / abs(AmplitudeIC)
+						Multithread InstResistance[0][i] =  InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)
 						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
 						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					else
- 						Multithread SSResistance[0][i] = abs(AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]
+ 						Multithread SSResistance[0][i] = (AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]
  						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
 						Multithread SSResistance[0][i] = str2num(decimalAdjustment)
  						
- 						Multithread InstResistance[0][i] = abs(AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]
+ 						Multithread InstResistance[0][i] = (AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]
  						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
 						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					endif

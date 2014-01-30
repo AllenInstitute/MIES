@@ -293,7 +293,7 @@ Function CalculateITCDataWaveLength(panelTitle)// determines the longest output 
 	endif
 	
 	LongestWaveLength /= (ITCMinSamplingInterval(panelTitle) / 5)
-	LongestWaveLength *= 4
+	LongestWaveLength *= 5
 	
 	return round(LongestWaveLength)
 end
@@ -307,7 +307,7 @@ Function MakeITCConfigAllConfigWave(PanelTitle)
 	ITCChanConfigWave = 0
 End
 //==========================================================================================
-Function MakeITCConfigAllDataWave(PanelTitle)
+Function MakeITCConfigAllDataWave(PanelTitle)// config all refers to configuring all the channels at once
 	string PanelTitle
 	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
 	make /w /o /n = (CalculateITCDataWaveLength(panelTitle), ChannelCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
@@ -665,12 +665,16 @@ Function/c CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// s
 			endif
 
 	//Below code uses local count to determine  what step to use from the set based on the sweeps in cycle and sweeps in active set
+			wave/z WorkingSequenceWave = $SequenceWaveName
 			if(((localCount) / ColumnsInSet) < 1 || (localCount) == 0)// if remainder is less than 1, count is on 1st cycle
 				controlinfo /w = $panelTitle check_DataAcq_RepAcqRandom
 				if(v_value == 0) // set step sequence is not random
 					column = localCount
 					cycleCount = 0
 				else // set step sequence is random
+					if(localCount == 0)
+						Shuffle(WorkingSequenceWave)
+					endif
 					column = WorkingSequenceWave[localcount]
 					cycleCount = 0
 				endif	
@@ -681,7 +685,7 @@ Function/c CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// s
 					cycleCount = 1
 				else
 					if(mod((localCount), columnsInSet) == 0)
-						Shuffle(WorkingSequenceWave)
+						Shuffle(WorkingSequenceWave) // added to handle 1 channel, unlocked indexing
 					endif
 					column = WorkingSequenceWave[mod((localCount), columnsInSet)]
 					cycleCount = 1
@@ -743,7 +747,7 @@ Function GlobalChangesToITCDataWave(panelTitle) // adjust the length of the ITCd
 	variable OnsetDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
 	controlinfo /w = $panelTitle setvar_DataAcq_TerminationDelay
 	variable TerminationDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
-	variable NewRows = round((OnsetDelay + TerminationDelay) * 4)
+	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
 	wave ITCDataWave = $WavePath + "ITCDataWave"
 	variable ITCDataWaveRows = dimsize(ITCDataWave, 0)
@@ -757,7 +761,7 @@ Function ReturnTotalLengthIncrease(PanelTitle)
 	variable OnsetDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
 	controlinfo /w = $panelTitle setvar_DataAcq_TerminationDelay
 	variable TerminationDelay = v_value / (ITCMinSamplingInterval(panelTitle) / 1000)
-	variable NewRows = round((OnsetDelay + TerminationDelay) * 4)
+	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
 	return OnsetDelay + TerminationDelay
 end
 	

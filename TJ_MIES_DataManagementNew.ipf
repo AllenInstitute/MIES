@@ -17,10 +17,12 @@ Function SaveITCData(panelTitle)
 	
 	string SavedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(SweepNo)
 	string SavedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(SweepNo)
-	variable RowsToCopy = dimsize(ITCDataWave, 0) /4
+	variable RowsToCopy = dimsize(ITCDataWave, 0) /5
 	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $SavedDataWaveName
 	Duplicate /o ITCChanConfigWave $SavedSetUpWaveName
 	note $savedDataWaveName, Time()// adds time stamp to wave note
+	getwindow kwFrameOuter wtitle 
+	note $savedDataWaveName, s_value
 	AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
 	controlinfo Check_Settings_Append
 	if(v_value == 1)// if option is checked, wave note containing single readings from (async) ADs is made
@@ -34,7 +36,7 @@ End
 
 Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
-	variable RowsToCopy = CalculateITCDataWaveLength(panelTitle)/4
+	variable RowsToCopy = CalculateITCDataWaveLength(panelTitle)/5
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"

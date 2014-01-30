@@ -6,7 +6,6 @@ Function ITCDataAcq(DeviceType, DeviceNum, panelTitle)
 	string cmd
 	variable i=0
 	//variable StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4 // + ReturnTotalLengthIncrease(PanelTitle)/4)
-	//print "stop collection point = ", stopcollectionpoint
 	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
@@ -229,7 +228,7 @@ Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	string/G PanelTitleG = panelTitle
 	string cmd
 	variable i=0
-	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/5
 	NVAR stopcollectionpoint
 	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	variable/G BackgroundTPCount = 0
@@ -319,9 +318,7 @@ Function STOPTestPulse(panelTitle)
 	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
 	endif
-	print v_disable
 	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
-		print "here"
 		V_disable = V_disable & ~0x2
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
@@ -339,7 +336,7 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/4
+	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/5
 	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
 	string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
@@ -395,12 +392,12 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		//doupdate
 		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-	if(mod(i,50) == 0)
-		ModifyGraph /w = $oscilloscopeSubWindow Live =0
-		ModifyGraph /w = $oscilloscopeSubWindow Live =1
-	endif
-	i += 1	
-	Keyboard = KeyboardState("")
+		if(mod(i,50) == 0)
+			ModifyGraph /w = $oscilloscopeSubWindow Live =0
+			ModifyGraph /w = $oscilloscopeSubWindow Live =1
+		endif
+		i += 1	
+		Keyboard = KeyboardState("")
 	while (cmpstr(Keyboard[9], " ") != 0)// 
 	
 	sprintf cmd, "ITCCloseAll" 

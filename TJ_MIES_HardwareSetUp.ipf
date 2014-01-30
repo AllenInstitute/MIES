@@ -158,9 +158,10 @@ End
 
 Function MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-	make /o /n = (12,8) $ChanAmpAssignPath = nan
+	//string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	//string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
+	//make /o /n = (12,8) $ChanAmpAssignPath = nan
+	UpdateChanAmpAssignStorageWave(panelTitle)
 End
 //=====================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW

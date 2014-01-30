@@ -474,7 +474,6 @@ Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFilt
 	endif
 	
 	if(brownCheck == 1)
-		print "here"
 		PinkOrBrown = 1
 		WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, Fincrement, PinkOrBrown)
 	endif

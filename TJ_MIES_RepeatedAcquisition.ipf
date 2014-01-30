@@ -193,7 +193,6 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 				
 				//killwaves/f TestPulse
 			else
-				//ValDisplay valdisp_DataAcq_TrialsCountdown value=_NUM:0
 				print "Repeated acquisition is complete"
 				Killvariables Count
 				killvariables/z Start, RunTime
