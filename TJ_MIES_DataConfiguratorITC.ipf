@@ -492,18 +492,20 @@ Function PlaceDataInITCDataWave(PanelTitle)
 		i += 1
 	while(i < (itemsinlist(ChannelStatus,";")))
 	
-	//Place DA waves into ITCDataWave
+	//Place TTL waves into ITCDataWave
 	i = 0
 	wave /z TTLwave = $HSU_DataFullFolderPathString(PanelTitle) + ":TTLwave"//= root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
 	if(AreTTLsInRackChecked(0, panelTitle) == 1)
 		MakeITCTTLWave(0, panelTitle)
-		ITCDataWave[0,round((dimsize(TTLWave,0) / DecimationFactor)) - 1][j] = TTLWave[(DecimationFactor) * p]
+		ITCDataWave[InsertStart, round((dimsize(TTLWave,0) / DecimationFactor)) - 1 + InsertEnd][j] = TTLWave[(DecimationFactor) * (p - InsertStart)]		
+		//ITCDataWave[0,round((dimsize(TTLWave,0) / DecimationFactor)) - 1][j] = TTLWave[(DecimationFactor) * p]
 		j += 1
 	endif
 	
 	if(AreTTLsInRackChecked(1, panelTitle) == 1)
 		MakeITCTTLWave(1, panelTitle)
-		ITCDataWave[0,round((dimsize(TTLWave,0) / DecimationFactor)) - 1][j]=TTLWave[(DecimationFactor) * p]
+		ITCDataWave[InsertStart,round((dimsize(TTLWave,0) / DecimationFactor)) - 1 + InsertEnd][j]=TTLWave[(DecimationFactor) * (p - insertStart)]
+		//ITCDataWave[0,round((dimsize(TTLWave,0) / DecimationFactor)) - 1][j]=TTLWave[(DecimationFactor) * p]
 	endif
 End
 

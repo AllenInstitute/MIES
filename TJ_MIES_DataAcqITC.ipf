@@ -337,8 +337,8 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	string cmd
 	variable i = 0
 	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/5
-	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
-	string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
+	variable ADChannelToMonitor = (NoOfChannelsSelected("DA", "Check", panelTitle))
+	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
 	//doupdate /w = $oscilloscopeSubWindow
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =1
@@ -392,9 +392,9 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		//doupdate
 		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-		if(mod(i,50) == 0)
-			ModifyGraph /w = $oscilloscopeSubWindow Live =0
-			ModifyGraph /w = $oscilloscopeSubWindow Live =1
+		if(mod(i, 50) == 0)
+			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
+			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
 		endif
 		i += 1	
 		Keyboard = KeyboardState("")
@@ -414,72 +414,82 @@ END
 //======================================================================================
 
 Function SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
-variable Channel
-string panelTitle
-variable ChannelValue
-string cmd
-string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-make/o/n=1 $WavePath+":AsyncChannelData"
-string AsyncChannelDataPath = WavePath+":AsyncChannelData"
-wave AsyncChannelData = $AsyncChannelDataPath
-sprintf cmd, "ITCReadADC %d, %s" Channel, AsyncChannelDataPath
-execute cmd
-ChannelValue = AsyncChannelData[0]
-killwaves/f AsyncChannelData
-return ChannelValue
+	variable Channel
+	string panelTitle
+	variable ChannelValue
+	string cmd
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	make /o /n = 1 $WavePath + ":AsyncChannelData"
+	string AsyncChannelDataPath = WavePath+":AsyncChannelData"
+	wave AsyncChannelData = $AsyncChannelDataPath
+	sprintf cmd, "ITCReadADC %d, %s" Channel, AsyncChannelDataPath
+	execute cmd
+	ChannelValue = AsyncChannelData[0]
+	killwaves /f AsyncChannelData
+	return ChannelValue
 End 
 
 //======================================================================================
 
 Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
-Wave DataWave
-variable DeviceType, DeviceNum
-string panelTitle
-// This function takes about 0.9 seconds to run
-// this is the wave that the note gets appended to. The note contains the async ad channel value and info
-//variable starttime=ticks
-string AsyncChannelState = ControlStatusListString("AsyncAD", "check", panelTitle)
-variable i
-variable TotAsyncChannels = itemsinlist(AsyncChannelState,";")
-variable RawChannelValue
-string cmd
-string SetVar_Title, Title
-string SetVar_gain, Measurement
-string SetVar_Unit, Unit
-string WaveNote = ""
-sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-Execute cmd	
-
-do
-if(str2num(stringfromlist(i,AsyncChannelState,";"))==1)
-RawChannelValue=SingleADReading(i+15, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
-
-	if(i<10)
-		 SetVar_title = "SetVar_Async_Title_0"+num2str(i)
-		 SetVar_gain = "SetVar_AsyncAD_Gain_0"+num2str(i)
-		 SetVar_Unit = "SetVar_Async_Unit_0"+num2str(i)
-	else
-		 SetVar_title = "SetVar_Async_Title_"+num2str(i)
-		 SetVar_gain = "SetVar_AsyncAD_Gain_"+num2str(i)
-		 SetVar_Unit = "SetVar_Async_Unit_"+num2str(i)
-	endif 
+	Wave DataWave
+	variable DeviceType, DeviceNum
+	string panelTitle
+	// This function takes about 0.9 seconds to run
+	// this is the wave that the note gets appended to. The note contains the async ad channel value and info
+	//variable starttime=ticks
+	string AsyncChannelState = ControlStatusListString("AsyncAD", "check", panelTitle)
+	variable i
+	variable TotAsyncChannels = itemsinlist(AsyncChannelState,";")
+	variable RawChannelValue
+	string cmd
+	string SetVar_Title, Title
+	string SetVar_gain, Measurement
+	string SetVar_Unit, Unit
+	string WaveNote = ""
 	
-	controlInfo/w=$panelTitle $SetVar_title
-	title=s_value
-	controlInfo/w=$panelTitle $SetVar_gain
-	Measurement=num2str(v_value*RawChannelValue)
-	SupportSystemAlarm(i, v_value*RawChannelValue, title, panelTitle)
-	controlInfo/w=$panelTitle $SetVar_Unit
-	Unit=s_value
-	WaveNote= title +" "+ Measurement +" " + Unit
-	note DataWave, WaveNote
-endif
-i+=1
-while(i<TotAsyncChannels)
-
-sprintf cmd, "ITCCloseAll" 
-execute cmd
-//print (ticks-starttime)/60
+	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
+	DeviceType = v_value - 1
+	variable DeviceChannelOffset // used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
+	If(DeviceType == 2)
+		DeviceChannelOffset = 15
+	else
+		DeviceChannelOffset = 0
+	endif
+	
+	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	Execute cmd	
+	
+	do
+		if(str2num(stringfromlist(i, AsyncChannelState,";")) == 1)
+		RawChannelValue=SingleADReading(i +DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+		
+			if(i < 10)
+				 SetVar_title = "SetVar_Async_Title_0" + num2str(i)
+				 SetVar_gain = "SetVar_AsyncAD_Gain_0" + num2str(i)
+				 SetVar_Unit = "SetVar_Async_Unit_0" + num2str(i)
+			else
+				 SetVar_title = "SetVar_Async_Title_" + num2str(i)
+				 SetVar_gain = "SetVar_AsyncAD_Gain_" + num2str(i)
+				 SetVar_Unit = "SetVar_Async_Unit_" + num2str(i)
+			endif 
+			
+			controlInfo /w = $panelTitle $SetVar_title
+			title = s_value
+			controlInfo /w = $panelTitle $SetVar_gain
+			Measurement = num2str(v_value * RawChannelValue)
+			SupportSystemAlarm(i, v_value * RawChannelValue, title, panelTitle)
+			controlInfo /w = $panelTitle $SetVar_Unit
+			Unit = s_value
+			WaveNote = title + " " + Measurement + " " + Unit
+			note DataWave, WaveNote
+		endif
+		i += 1
+	while(i < TotAsyncChannels)
+	
+	sprintf cmd, "ITCCloseAll" 
+	execute cmd
+	//print (ticks-starttime)/60
 
 End
 //======================================================================================
@@ -489,26 +499,26 @@ string MeasurementTitle, panelTitle
 String CheckAlarm, SetVarTitle, SetVarMin, SetVarMax, Title
 variable ParamMin, ParamMax
 
-if(channel<10)
-	CheckAlarm="check_Async_Alarm_0"+num2str(channel)
-	SetVarMin="setvar_Async_min_0"+num2str(channel)	
-	SetVarMax="setvar_Async_max_0"+num2str(channel)	
+if(channel < 10)
+	CheckAlarm = "check_Async_Alarm_0" + num2str(channel)
+	SetVarMin = "setvar_Async_min_0" + num2str(channel)	
+	SetVarMax = "setvar_Async_max_0" + num2str(channel)	
 else
-	CheckAlarm="check_Async_Alarm_"+num2str(channel)
-	SetVarMin="setvar_Async_min_"+num2str(channel)				
-	SetVarMax="setvar_Async_max_"+num2str(channel)
+	CheckAlarm = "check_Async_Alarm_" + num2str(channel)
+	SetVarMin = "setvar_Async_min_" + num2str(channel)				
+	SetVarMax = "setvar_Async_max_" + num2str(channel)
 endif
 
-ControlInfo /W=$panelTitle $CheckAlarm
-if(v_value==1)
-	ControlInfo /W=$panelTitle $SetVarMin
-	ParamMin=v_value
-	ControlInfo /W=$panelTitle $SetVarMax
-	ParamMax=v_value
+ControlInfo /W = $panelTitle $CheckAlarm
+if(v_value == 1)
+	ControlInfo /W = $panelTitle $SetVarMin
+	ParamMin = v_value
+	ControlInfo /W = $panelTitle $SetVarMax
+	ParamMax = v_value
 	print measurement
-	if(Measurement>= ParamMax || Measurement<= ParamMin)
+	if(Measurement >= ParamMax || Measurement <= ParamMin)
 		beep
-		print time() +" !!!!!!!!!!!!! "+ MeasurementTitle +" has exceeded max/min settings"+" !!!!!!!!!!!!!"
+		print time() +" !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 		beep
 	endif
 endif

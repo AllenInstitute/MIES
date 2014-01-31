@@ -1547,23 +1547,22 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 			//FolderPath = "root:" + popstr + ":"
 		else
 			//print "here"
-			FolderPath="root:"
+			FolderPath = "root:"
 		endif
 	
-	PopMenuSubProc="\"- none -; root:;\"+WBP_ReturnFoldersList(\""+ FolderPath +"\")"
-	PopupMenu popup_WaveBuilder_FolderList value= #PopMenuSubProc
-	setdatafolder FolderPath
-	GroupBox group_WaveBuilder_FolderPath title=getdatafolder(1)
+		PopMenuSubProc = "\"- none -; root:;\" + WBP_ReturnFoldersList(\"" + FolderPath + "\")"
+		PopupMenu popup_WaveBuilder_FolderList value = #PopMenuSubProc
+		setdatafolder FolderPath
+		GroupBox group_WaveBuilder_FolderPath title = getdatafolder(1)
 	else
-	GroupBox group_WaveBuilder_FolderPath title=getdatafolder(1)
+		GroupBox group_WaveBuilder_FolderPath title = getdatafolder(1)
 	endif
 
-	PopupMenu popup_WaveBuilder_FolderList mode=1
-	PopupMenu popup_WaveBuilder_ListOfWaves mode=1
-	ListOfWavesInFolder="\"- none - ;" + Wavelist(WBP_SearchString(),";","TEXT:0,MAXCOLS:1")+"\""
-	PopupMenu popup_WaveBuilder_ListOfWaves value=#ListOfWavesInFolder
+	PopupMenu popup_WaveBuilder_FolderList mode = 1
+	PopupMenu popup_WaveBuilder_ListOfWaves mode = 1
+	ListOfWavesInFolder = "\"- none - ;" + Wavelist(WBP_SearchString(),";", "TEXT:0,MAXCOLS:1") + "\""
+	PopupMenu popup_WaveBuilder_ListOfWaves value = #ListOfWavesInFolder
 	controlupdate /A /W = wavebuilder 
-
 	setdatafolder saveDFR
 End
 
@@ -1573,51 +1572,51 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 	string ListOfWaves
 	variable NoOfControls, i
 	DFREF saveDFR = GetDataFolderDFR()
-	controlinfo /W =waveBuilder popup_WaveBuilder_OutputType
-	WB_WaveType=s_value
+	controlinfo /W = waveBuilder popup_WaveBuilder_OutputType
+	WB_WaveType = s_value
 	
-	if(stringmatch(WB_WaveType,"DA")==1)//if statement determines if the set being saved is a DA or TTL
-	ctrlName0="Wave_DA_"
-	ctrlName1="Popup_DA_IndexEnd_"
-	NoOfControls = WBP_TotNoOfControlType("Wave", "DA", panelTitle)
-	setDataFolder root:waveBuilder:savedStimulusSets:DA
-	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*DA*",";","")+"\""
-	ListOfWaves = Wavelist("*DA*",";","")
-	DAorTTL="DA"
+	if(stringmatch(WB_WaveType,"DA") == 1)//if statement determines if the set being saved is a DA or TTL
+		ctrlName0 = "Wave_DA_"
+		ctrlName1 = "Popup_DA_IndexEnd_"
+		NoOfControls = WBP_TotNoOfControlType("Wave", "DA", panelTitle)
+		setDataFolder root:waveBuilder:savedStimulusSets:DA
+		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist("*DA*",";","") + "\""
+		ListOfWaves = Wavelist("*DA*",";","")
+		DAorTTL = "DA"
 	else
-	ctrlName0="Wave_TTL_"
-	ctrlName1="Popup_TTL_IndexEnd_"
-	NoOfControls = WBP_TotNoOfControlType("Wave", "TTL", panelTitle)
-	setDataFolder root:waveBuilder:savedStimulusSets:TTL
-	ListOfWavesInFolder="\"- none -;TestPulse;\"" +"+"+"\""+ Wavelist("*TTL*",";","")+"\""
-	ListOfWaves = Wavelist("*TTL*",";","")
-	DAorTTL="TTL"
+		ctrlName0 = "Wave_TTL_"
+		ctrlName1 = "Popup_TTL_IndexEnd_"
+		NoOfControls = WBP_TotNoOfControlType("Wave", "TTL", panelTitle)
+		setDataFolder root:waveBuilder:savedStimulusSets:TTL
+		ListOfWavesInFolder = "\"- none -;\""  + "+" + "\"" + Wavelist("*TTL*" , ";", "") + "\""
+		ListOfWaves = Wavelist("*TTL*" , ";", "")
+		DAorTTL = "TTL"
 	endif
 
 	do
-		ctrlName0d=ctrlName0
-		ctrlName1d=ctrlName1
-		if(i<10)// allows for more than 10 controls but no more than 20
-		ctrlName0d+="0"+num2str(i)
-		ctrlName1d+="0"+num2str(i)
+		ctrlName0d = ctrlName0
+		ctrlName1d = ctrlName1
+		if(i < 10)// allows for more than 10 controls but no more than 20
+			ctrlName0d += "0" + num2str(i)
+			ctrlName1d += "0" + num2str(i)
 		else
-		ctrlName0d+=num2str(i)
-		ctrlName1d+=num2str(i)
+			ctrlName0d += num2str(i)
+			ctrlName1d += num2str(i)
 		endif
-	PopupMenu  $ctrlName0d win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
-	controlupdate/w=$panelTitle $ctrlname0d
-	PopupMenu  $ctrlName1d win=$panelTitle, value=#ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
-	controlupdate/w=$panelTitle $ctrlname1d
+	PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+	controlupdate /w = $panelTitle $ctrlname0d
+	PopupMenu  $ctrlName1d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+	controlupdate/w = $panelTitle $ctrlname1d
 
-	i+=1
-	while(i<noOfControls)
+	i += 1
+	while(i < noOfControls)
 	setdatafolder saveDFR
 End
 
 Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list
 	string DAorTTL, panelTitle
 	variable StartOrEnd// 0 or 1, determines whether the start or end index popupmenu is updated
-	string ListOfSelectedWaveNames=""
+	string ListOfSelectedWaveNames = ""
 	string popupMenuName
 	variable noOfPopups = WBP_TotNoOfControlType("Wave",DAorTTL, panelTitle)
 	variable i
@@ -1625,16 +1624,16 @@ Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns th
 	do
 		switch(StartOrEnd)
 			case 0:
-			popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
+			popupMenuName = "Wave_" + DAorTTL + "_0" + num2str(i)
 			break
 			case 1:
-			popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
+			popupMenuName = "Popup_" + DAorTTL + "_IndexEnd_0" + num2str(i)
 			break
 		endswitch
-		controlInfo/w=$panelTitle $popupMenuName
-		ListOfSelectedWaveNames+=s_value + ";"
-		i+=1
-	while(i<noOfPopups)
+		controlInfo /w = $panelTitle $popupMenuName
+		ListOfSelectedWaveNames += s_value + ";"
+		i += 1
+	while(i < noOfPopups)
 	
 	return ListOfSelectedWaveNames
 End

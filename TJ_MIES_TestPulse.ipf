@@ -262,14 +262,15 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				
 				MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 				avgTPSS /= dimsize(TPSS, 0)
- 				avgTPSS = abs(avgTPSS)
+ 				//avgTPSS = abs(avgTPSS)
  				
 				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 				AvgBaselineSS /= dimsize(BaselineSS, 0)
-				AvgBaselineSS = abs(AvgBaselineSS)
+				//AvgBaselineSS = abs(AvgBaselineSS)
 				
 				duplicate /free AvgTPSS, AvgDeltaSS
 				AvgDeltaSS -= AvgBaselineSS
+				AvgDeltaSS = abs(AvgDeltaSS)
 				
 				wavestats Instantaneous
 				variable i = 0 
@@ -293,7 +294,7 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 					i += 1
 				while(i < (columnsInWave - NoOfActiveDA))
 
-				Multithread InstAvg = abs(InstAvg)
+				//Multithread InstAvg = abs(InstAvg)
 				Multithread InstAvg -= AvgBaselineSS
 				Multithread InstAvg = abs(InstAvg)
 				//Multithread AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
@@ -313,19 +314,19 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 			 	i = 0
 				do
 					if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
-						Multithread SSResistance[0][i] = AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC) // R = V / I
+						Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC))*1000 // R = V / I
 						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
 						SSResistance[0][i] = str2num(decimalAdjustment)
 
-						Multithread InstResistance[0][i] =  InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)
+						Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC))*1000
 						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
 						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					else
- 						Multithread SSResistance[0][i] = (AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]
+ 						Multithread SSResistance[0][i] = ((AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]) * 1000
  						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
 						Multithread SSResistance[0][i] = str2num(decimalAdjustment)
  						
- 						Multithread InstResistance[0][i] = (AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]
+ 						Multithread InstResistance[0][i] = ((AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]) * 1000
  						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
 						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					endif

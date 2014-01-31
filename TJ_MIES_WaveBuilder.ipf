@@ -644,7 +644,7 @@ Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, Hig
 		//SegmentWave /= NumberOfBuildWaves
 		
 		Wavestats /q SegmentWave
-		variable scalefactor = Amplitude / (V_max - V_min)
+		variable scalefactor = Amplitude / V_sdev // (V_max - V_min)
 		SegmentWave *= ScaleFactor
 End
 

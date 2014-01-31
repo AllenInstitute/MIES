@@ -2713,11 +2713,12 @@ Function ITCP_PopMenuCheckProc_DAC(ctrlName,popNum,popStr) : PopupMenuControl//P
 		endif
 	endif
 	
-	if(popnum == 2)
-		popupmenu $ctrlname win = $panelTitle, mode = 3// prevents the user from selecting the testpulse
+	if(stringmatch(ctrlname,"*_DA_*") == 1)
+		if(popnum == 2)
+			popupmenu $ctrlname win = $panelTitle, mode = 3// prevents the user from selecting the testpulse
+		endif
 	endif
-
-	if(stringmatch(ctrlName, "*DA*") == 1)// determines wether to a DA or TTL popup menu needs to be populated
+	if(stringmatch(ctrlName, "*_DA_*") == 1)// determines wether to a DA or TTL popup menu needs to be populated
 		FolderPath = "root:waveBuilder:savedStimulusSets:DA"
 		folder = "*DA*"
 		setdatafolder FolderPath// sets the wavelist for the DA popup menu to show all waves in DAC folder
