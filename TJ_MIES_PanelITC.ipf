@@ -2677,10 +2677,10 @@ Function TurnOffAllHeadstages(panelTitle)
 	variable i, NoOfHeadstages
 	string DACCheckBoxName
 	
-	NoOfHeadstages = TotNoOfControlType("check", "DataAcq", panelTitle)
+	NoOfHeadstages = TotNoOfControlType("check", "DataAcq_HS", panelTitle)
 	
 	for(i = 0; i < NoOfHeadstages; i += 1)
-		DACCheckBoxName = "Check_DataAcq_0"+num2str(i)
+		DACCheckBoxName = "Check_DataAcq_HS_0"+num2str(i)
 		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
 	endfor
 

@@ -161,7 +161,8 @@ Function TotNoOfControlType(ControlType, ChannelType, panelTitle) // Ex. Channel
 	variable CatTot //Category Total
 	
 	ListString = ControlNameList(panelTitle,";",SearchString)
-	CatTot = ItemsInlist(ListString,";")
+	//print liststring
+	CatTot = ItemsInlist(ListString,";")// - 1
 	
 	return CatTot
 End

@@ -358,7 +358,7 @@ Function CheckProc_HeadstageCheck(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	
 	string RadioButtonName = "Radio_ClampMode_"
-	Variable HeadStageNo = str2num(ctrlname[15])
+	Variable HeadStageNo = str2num(ctrlname[18])
 	Variable ClampMode//
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value
