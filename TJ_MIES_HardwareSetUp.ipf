@@ -39,7 +39,7 @@ Function HSU_LockDevice(panelTitle)
 	PopupMenu popup_MoreSettings_DeviceType win = $PanelTitle, disable = 2
 	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 2
 	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 2
-	HSU_DataFolderPathDisplay(PanelTitle)
+	HSU_DataFolderPathDisplay(PanelTitle, 1)
 	HSU_CreateDataFolderForLockdDev(PanelTitle)
 	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 0
 	controlinfo /W = $panelTitle popup_MoreSettings_DeviceType
@@ -52,9 +52,16 @@ Function HSU_LockDevice(panelTitle)
 	MakeGlobalsAndWaves(DeviceType + "_Dev_" + num2str(DeviceNo))
 End
 
-Function HSU_DataFolderPathDisplay(PanelTitle)
+Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
 	string PanelTitle
-	groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Data folder path = " + HSU_DataFullFolderPathString(PanelTitle)
+	variable LockStatus // = 0; unlocked  = 1; locked
+	if(LockStatus == 1)
+		groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Data folder path = " + HSU_DataFullFolderPathString(PanelTitle)
+	endif
+	
+	if(LockStatus == 0)
+		groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Lock a device to generate device folder structure"
+	endif
 End
 
 Function HSU_CreateDataFolderForLockdDev(PanelTitle)
@@ -103,7 +110,10 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 0
 	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 0
 	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 2
-	GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
+	//GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
+	HSU_DataFolderPathDisplay(PanelTitle, 0)
+	dowindow /W = $panelTitle /C $"ITC_Ephys_Panel"
+	// ########## ADD CODE HERE TO REMOVE PANEL TITLE FROM GLOBAL LIST OF PANEL TITLES ##########
 End
 
 Function HSU_DeviceLockCheck(PanelTitle)
