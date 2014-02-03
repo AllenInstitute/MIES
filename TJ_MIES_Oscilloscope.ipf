@@ -3,6 +3,7 @@
 Function ITCOscilloscope(WaveToPlot, panelTitle)
 	wave WaveToPlot
 	string panelTitle
+	print panelTitle
 	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
@@ -11,8 +12,8 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	wave ITCDataWave = $WavePath + "ITCDataWave"
 	wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
 	wave ChannelClampMode = $WavePath + "ChannelClampMode"
-	wave SSResistanceWave = $WavePath + "TestPulse:SSResistance"
-	wave InstResistanceWave = $WavePath + "TestPulse:InstResistance"
+	wave /z SSResistanceWave = $WavePath + "TestPulse:SSResistance"
+	wave /z InstResistanceWave = $WavePath + "TestPulse:InstResistance"
 	string ADChannelName= "AD"
 	string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 	string UnitWaveNote = note(ITCChanConfigWave)

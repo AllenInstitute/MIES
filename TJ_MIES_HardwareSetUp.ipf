@@ -47,9 +47,13 @@ Function HSU_LockDevice(panelTitle)
 	controlinfo /W = $panelTitle popup_moreSettings_DeviceNo
 	deviceNo = v_value - 1
 	dowindow /W = $panelTitle /C $DeviceType + "_Dev_" + num2str(DeviceNo)
+	PanelTitle = DeviceType + "_Dev_" + num2str(DeviceNo)
+	MakeGlobalsAndWaves(PanelTitle)
 	GlobalListStrngOfITCPanelTitles()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
 	ListOfITCPanels()
-	MakeGlobalsAndWaves(DeviceType + "_Dev_" + num2str(DeviceNo))
+	
+
+	
 End
 
 Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
@@ -168,10 +172,20 @@ End
 
 Function MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
 	string panelTitle
-	//string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	//string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
 	//make /o /n = (12,8) $ChanAmpAssignPath = nan
 	UpdateChanAmpAssignStorageWave(panelTitle)
+	ButtonProc("button_Settings_UpdateAmpStatus")
+	make /o /n= (1,8) $WavePath + ":" + "ITCDataWave"
+	make /o /n= (2,4) $WavePath + ":" + "ITCChanConfigWave"
+	make /o /n= (2,4) $WavePath + ":" + "ITCFIFOAvailAllConfigWave"
+	make /o /n= (2,4) $WavePath + ":" + "ITCFIFOPositionAllConfigWave"
+	make /o /n= (1,8) $WavePath + ":TestPulse:" + "TestPulseITC"
+	make /o /n= (1,8) $WavePath + ":TestPulse:" + "InstResistance"
+	make /o /n= (1,8) $WavePath + ":TestPulse:" + "Resistance"
+	make /o /n= (1,8) $WavePath + ":TestPulse:" + "SSResistance"
+
 End
 //=====================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW

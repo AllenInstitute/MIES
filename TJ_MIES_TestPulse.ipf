@@ -121,7 +121,7 @@ Function AdjustTestPulseWave(TestPulse, panelTitle)// full path name
 	variable /g $TPGlobalPath + ":AmplitudeIC"
 	NVAR GlobalTPAmplitudeVariableIC = $TPGlobalPath + ":AmplitudeIC"	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
-	wave ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave"
+	wave /z ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave"
 	string /g $TPGlobalPath + ":ADChannelList" = RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $TPGlobalPath + ":NoOfActiveDA" = NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration

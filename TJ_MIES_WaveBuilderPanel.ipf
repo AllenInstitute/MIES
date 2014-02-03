@@ -470,7 +470,7 @@ Window wavebuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-*T-G%G-*Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3f1-8!+8OQ!%3^uFt7o`,K75?nc;FO8U:K'ha8P`)B/Mo4E"
 	String fldrSav0= GetDataFolder(1)
 	SetDataFolder root:WaveBuilder:Data:
-	Display/W=(0,172,671,397)/FG=(,,FR,UGH0)/HOST=#  '1_InsertBaseName_DA_0'
+	Display/W=(0,172,671,397)/FG=(,,FR,UGH0)/HOST=#  
 	SetDataFolder fldrSav0
 	ModifyGraph frameInset=2
 	ModifyGraph rgb=(13056,13056,13056)

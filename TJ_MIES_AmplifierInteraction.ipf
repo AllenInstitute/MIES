@@ -41,7 +41,7 @@ End
 Function UpdateChanAmpAssignStorageWave(panelTitle)
 	string panelTitle
 	Variable HeadStageNo, SweepNo, i
-	wave W_telegraphServers
+	wave /z W_telegraphServers
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
@@ -319,7 +319,7 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	String PairedRadioButton = "Radio_ClampMode_"
 	Variable RadioButtonNo = str2num(ctrlName[16,inf])
-	string HeadStageCheckBox = "Check_DataAcq_0"
+	string HeadStageCheckBox = "Check_DataAcq_HS_0"
 	
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value
@@ -329,6 +329,7 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		checkbox $PairedRadioButton value=0
 		
 		HeadStageCheckBox += num2str((RadioButtonNo / 2))
+		print headstagecheckbox
 		controlinfo/w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
@@ -337,6 +338,7 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		endif
 		
 	else
+		HeadStageCheckBox = "Check_DataAcq_HS_0"
 		PairedRadioButton += (num2str(RadioButtonNo - 1))
 		checkbox $PairedRadioButton value = 0
 		HeadStageCheckBox += num2str(((RadioButtonNo - 1) / 2))

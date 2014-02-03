@@ -1,8 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Window itc_ephys_panel() : Panel
+Window ITC_Ephys_Panel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(45,83,521,636)
+	NewPanel /W=(266,720,742,1273)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -1112,7 +1112,7 @@ Window itc_ephys_panel() : Panel
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,G8!!#As!!#Ao!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834001 Chan 1;AmpNo 834000 Chan 2;AmpNo 834001 Chan 2;\""
+	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834001 Chan 1;AmpNo 834001 Chan 2;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
 	PopupMenu Popup_Settings_IC_DA,pos={215,294},size={53,21},disable=1,proc=PopMenuProc,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
@@ -1934,7 +1934,7 @@ Window itc_ephys_panel() : Panel
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,value= _NUM:0
-	SetVariable SetVar_Hardware_VC_DA_Unit,pos={156,296},size={30,16},disable=1
+	SetVariable SetVar_Hardware_VC_DA_Unit,pos={156,296},size={30,16},disable=1,proc=SetVarProc_CAA
 	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_VC_DA_Unit,value= _STR:""
@@ -1942,7 +1942,7 @@ Window itc_ephys_panel() : Panel
 	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_IC_DA_Unit,value= _STR:""
-	SetVariable SetVar_Hardware_VC_AD_Unit,pos={177,321},size={30,16},disable=1
+	SetVariable SetVar_Hardware_VC_AD_Unit,pos={177,321},size={30,16},disable=1,proc=SetVarProc_CAA
 	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_VC_AD_Unit,value= _STR:""
@@ -2427,7 +2427,7 @@ Function ButtonProc_AcquireData(ctrlName) : ButtonControl
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 	
 	string CountPath = WavePath + ":count"
 	if(exists(CountPath) == 2)
