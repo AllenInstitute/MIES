@@ -502,19 +502,19 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String DAorTTL
 	SVAR ITCPanelTitleList
 	setdatafolder root:
-	controlinfo /W=wavebuilder popup_WaveBuilder_SetList
+	controlinfo /W = wavebuilder popup_WaveBuilder_SetList
 	string SetWaveToDelete = s_value
 	//getwindow kwTopWin wtitle
 	variable i = 0
 	if(stringmatch(SetWaveToDelete, "- none -") == 0)
 		do
-			string panelTitle=stringfromlist(i,ITCPanelTitleList, ";")
+			string panelTitle = stringfromlist(i,ITCPanelTitleList, ";")
 			if(stringmatch(SetWaveToDelete,"*DA*") == 1)
-				DAorTTL="DA"
+				DAorTTL = "DA"
 			else
-				DAorTTL="TTL"
+				DAorTTL = "TTL"
 			endif
-		
+			// #############Need to add code here to prevent panel update when no ITC panels are associated with a device##############
 			string popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL,0, panelTitle)
 			string popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL,1, panelTitle)
 			WBP_DeleteSet()
