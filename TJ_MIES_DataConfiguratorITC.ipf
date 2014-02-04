@@ -643,7 +643,11 @@ Function/c CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// s
 	string AcitveSetCountPath = WavePath +":ActiveSetCount"
 	//following string and wave apply when random set sequence is selected
 	string SequenceWaveName = WavePath + ":" + SetName + num2str(daorttl) + num2str(channelNo) + "_S"//s is for sequence
-	wave/z WorkingSequenceWave = $SequenceWaveName	
+	if(waveexists($SequenceWaveName) == 0)
+		make /o /n = (ColumnsInSet) $SequenceWaveName = 0
+		shuffle( $SequenceWaveName)
+	endif
+	wave /z WorkingSequenceWave = $SequenceWaveName	
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
 		if(exists(CountPath) == 2)// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion, 
 							//thus the vairable "count" is used to determine if acquisition is on the first cycle

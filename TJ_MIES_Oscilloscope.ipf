@@ -3,7 +3,6 @@
 Function ITCOscilloscope(WaveToPlot, panelTitle)
 	wave WaveToPlot
 	string panelTitle
-	print panelTitle
 	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
