@@ -10,7 +10,7 @@ Function RepeatedAcquisition(PanelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	string CountPath=WavePath+":Count"
+	string CountPath = WavePath+":Count"
 	variable/g $CountPath=0
 	NVAR Count=$CountPath
 	string ActiveSetCountPath=WavePath+":ActiveSetCount"
@@ -52,8 +52,8 @@ Function RepeatedAcquisition(PanelTitle)
 	IndexingState=v_value
 	
 
-		StoreTTLState(panelTitle)//preparations for test pulse begin here
-		TurnOffAllTTLs(panelTitle)
+		DAP_StoreTTLState(panelTitle)//preparations for test pulse begin here
+		DAP_TurnOffAllTTLs(panelTitle)
 		string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 		make/o/n=0 $TestPulsePath
 		wave TestPulse = $TestPulsePath
@@ -68,12 +68,12 @@ Function RepeatedAcquisition(PanelTitle)
 		StoreDAScale(SelectedDACScale, panelTitle)
 		SetDAScaleToOne(panelTitle)
 		
-		ConfigureDataForITC(PanelTitle)
-		ITCOscilloscope(TestPulseITC, panelTitle)
+		DC_ConfigureDataForITC(PanelTitle)
+		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 		
 		controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 		if(v_value==0)
-			SmoothResizePanel(340, panelTitle)
+			DAP_SmoothResizePanel(340, panelTitle)
 			setwindow $panelTitle +"#oscilloscope", hide = 0
 		endif
 		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
@@ -99,10 +99,10 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	string ActiveSetCountPath=WavePath+":ActiveSetCount"
 	NVAR ActiveSetCount=$ActiveSetCountPath
 	
-	Count+=1
-	ActiveSetCount-=1
+	Count += 1
+	ActiveSetCount -= 1
 	
-	controlinfo/w=$panelTitle Check_DataAcq_Indexing
+	controlinfo/w = $panelTitle Check_DataAcq_Indexing
 	if(v_value==0)
 		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials=v_value
@@ -124,18 +124,18 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 	controlinfo/w=$panelTitle Check_DataAcq_Indexing
 	If(v_value==1)// if indexing is activated, indexing is applied.
 		if(count==1)
-			MakeIndexingStorageWaves(panelTitle)
-			StoreStartFinishForIndexing(panelTitle)
+			IDX_MakeIndexingStorageWaves(panelTitle)
+			IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
 		//print "active set count "+num2str(activesetcount)
 		if(activeSetcount==0)//mod(Count,v_value)==0)
 			controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value==1)//indexing is locked
 				print "Index Step taken"
-				IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+				IDX_IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 			endif	
 
-			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:Index_MaxNoOfSweeps(PanelTitle,1)
+			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
 			controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
 			activeSetCount=v_value
 			controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
@@ -145,21 +145,21 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 		controlinfo/w=$panelTitle Check_DataAcq1_IndexingLocked
 		if(v_value==0)// indexing is not locked = channel indexes when set has completed all its steps
 			//print "should have indexed independently"
-			ApplyUnLockedIndexing(panelTitle, count, 0)
-			ApplyUnLockedIndexing(panelTitle, count, 1)
+			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
+			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
 		endif
 	endif
 	
 	if(Count<TotTrials)
-		ConfigureDataForITC(PanelTitle)
-		ITCOscilloscope(ITCDataWave, panelTitle)
+		DC_ConfigureDataForITC(PanelTitle)
+		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 		
 		ControlInfo/w=$panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value==0)//No background aquisition
 			ITCDataAcq(DeviceType,DeviceNum, panelTitle)
 			if(Count<(TotTrials-1)) //prevents test pulse from running after last trial is acquired
-				StoreTTLState(panelTitle)
-				TurnOffAllTTLs(panelTitle)
+				DAP_StoreTTLState(panelTitle)
+				DAP_TurnOffAllTTLs(panelTitle)
 				
 				string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 				make/o/n=0 $TestPulsePath
@@ -175,12 +175,12 @@ Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
 				StoreDAScale(SelectedDACScale, panelTitle)
 				SetDAScaleToOne(panelTitle)
 				
-				ConfigureDataForITC(PanelTitle)
-				ITCOscilloscope(TestPulseITC,panelTitle)
+				DC_ConfigureDataForITC(PanelTitle)
+				SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 				
 				controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 				if(v_value==0)
-					SmoothResizePanel(340, panelTitle)
+					DAP_SmoothResizePanel(340, panelTitle)
 					setwindow $panelTitle +"#oscilloscope", hide = 0
 				endif
 				
@@ -237,8 +237,8 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 	ITI=v_value
 			
 			if(Count<(TotTrials))
-				StoreTTLState(panelTitle)
-				TurnOffAllTTLs(panelTitle)
+				DAP_StoreTTLState(panelTitle)
+				DAP_TurnOffAllTTLs(panelTitle)
 				
 				string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 				make/o/n=0 $TestPulsePath
@@ -254,12 +254,12 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 				StoreDAScale(SelectedDACScale, panelTitle)
 				SetDAScaleToOne(panelTitle)
 				
-				ConfigureDataForITC(panelTitle)
-				ITCOscilloscope(TestPulseITC, panelTitle)
+				DC_ConfigureDataForITC(panelTitle)
+				SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 				
 				controlinfo/w=$panelTitle check_Settings_ShowScopeWindow
 				if(v_value==0)
-					SmoothResizePanel(340, panelTitle)
+					DAP_SmoothResizePanel(340, panelTitle)
 					setwindow $panelTitle +"#oscilloscope", hide = 0
 				endif
 				
@@ -279,24 +279,24 @@ Function BckgTPwithCallToRptAcqContr(PanelTitle)
 			endif
 End
 //====================================================================================================
-Function ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
+Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	string panelTitle
 	variable count, DAorTTL
 	variable i=0
 	string ActivechannelList 
 	
 	if(DAorTTL==0)
-		ActiveChannelList = ControlStatusListString("DA","check",panelTitle)
+		ActiveChannelList = DC_ControlStatusListString("DA","check",panelTitle)
 	endif
 	
 	if(DAorTTL==1)
-		ActiveChannelList = ControlStatusListString("TTL","check",panelTitle)
+		ActiveChannelList = DC_ControlStatusListString("TTL","check",panelTitle)
 	endif
 	
 	do
 		if(str2num(stringfromlist(i,ActiveChannelList,";"))==1)
 			if(DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL)==1)
-				IndexSingleChannel(panelTitle, DAorTTL, i)
+				IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
 			endif
 		endif
 	
@@ -312,8 +312,8 @@ Function DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
-	variable NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
-	variable NoOfDAs = TotNoOfControlType("check", "DA",panelTitle)
+	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
+	variable NoOfDAs = DC_TotNoOfControlType("check", "DA",panelTitle)
 	variable i, StepsInSummedSets, ListOffset, TotalListSteps
 	
 	if(DAorTTL==0)
@@ -587,7 +587,7 @@ Function IndexChannelsWithCompleteSets(PanelTitle, DAorTTL, localCount)
 	do
 		if(str2num(stringfromlist(ChannelNumber,ListOfSetStatus,";"))==1)
 			ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
-			IndexSingleChannel(panelTitle, DAorTTL, ChannelNumber)
+			IDX_IndexSingleChannel(panelTitle, DAorTTL, ChannelNumber)
 		endif
 	channelNumber+=1
 	while(ChannelNumber<itemsinlist(ListOfSetStatus,";"))
@@ -613,7 +613,7 @@ Function/T RetrnListOfChanWithCompletSets(PanelTitle, DAorTTL, localCount)
 	WavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
-	string ActivechannelList = ControlStatusListString(ChannelTypeName,"check",panelTitle)
+	string ActivechannelList = DC_ControlStatusListString(ChannelTypeName,"check",panelTitle)
 	
 	variable ChannelNumber = 0
 	

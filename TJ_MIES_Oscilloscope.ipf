@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITCOscilloscope(WaveToPlot, panelTitle)
+Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	wave WaveToPlot
 	string panelTitle
 	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
@@ -14,12 +14,12 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	wave /z SSResistanceWave = $WavePath + "TestPulse:SSResistance"
 	wave /z InstResistanceWave = $WavePath + "TestPulse:InstResistance"
 	string ADChannelName= "AD"
-	string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 	string UnitWaveNote = note(ITCChanConfigWave)
 	string Unit
 	string SSResistanceTraceName = "SSResistance"
 	string InstResistanceTraceName = "InstResistance"
-	RemoveTracesOnGraph(oscilloscopeSubWindow)
+	SCOPE_RemoveTracesOnGraph(oscilloscopeSubWindow)
 	variable Yoffset = 40/(itemsinlist(ADChannelList))
 	string cmd
 	ModifyGraph /w = $oscilloscopeSubWindow freePos=0
@@ -32,10 +32,10 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 	YaxisLow = YaxisHigh-YaxisSpacing + spacer
 	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
-		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((NoOfChannelsSelected("da", "check", panelTitle))))]
+		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((DC_NoOfChannelsSelected("da", "check", panelTitle))))]
 		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName) = {YaxisLow,YaxisHigh}, freepos($ADChannelName) = {0, kwFraction}
 		SetAxis /w = $oscilloscopeSubWindow /A =2 /N =2 $ADchannelName // this line should autoscale only the visible data; /N makes the autoscaling range larger
-		Unit = stringfromlist(i + NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+		Unit = stringfromlist(i + DC_NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
 		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
@@ -54,18 +54,18 @@ Function ITCOscilloscope(WaveToPlot, panelTitle)
 			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = -5 /Y = (-Yoffset) /B = 1 /L = 0 /Z = 0 /A = MC /I = 1 $SSResistanceTraceName, 0,"R\Bss\M\\OY \\Z10(M\\F'Symbol'W\M)"
 			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = (-Yoffset) /L = 0 $InstResistanceTraceName, 5.01,"R\Bpeak\M \\OY \Z10(M\\F'Symbol'W\M)"// \\Z10\r(Mohm)"
 			// dynamic tag can call a function that returns a string
-		//	SetAxis /w = $oscilloscopeSubWindow bottom 0, ( ( (CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4) 
+		//	SetAxis /w = $oscilloscopeSubWindow bottom 0, ( ( (DC_CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4) 
 		endif
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
 
 	endfor
-	SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) /5) * (ITCMinSamplingInterval(panelTitle) / 1000) //( (CalculateITCDataWaveLength(panelTitle) + ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+	SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) /5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 
 	doupdate
 End
 
-Function/t ReturnStringforTag(panelTitle, waveToconvert, column)
+Function/t ReturnStringforTag(panelTitle, waveToconvert, column) // ####DOES NOT APPEAR TO BE IN USE
 	string panelTitle
 	wave waveToConvert
 	variable column
@@ -75,7 +75,7 @@ Function/t ReturnStringforTag(panelTitle, waveToconvert, column)
 End
 //=========================================================================================
 
-Function/s FindValueInColumnof2Dwave(Value, Column, TwoDWave)//DA = 1, AD = 0, DO = 3
+Function/s SCOPE_FindValueInColumnof2Dwave(Value, Column, TwoDWave)//DA = 1, AD = 0, DO = 3
 	variable Value, Column
 	wave TwoDwave
 	variable i = 0, a = 2
@@ -94,12 +94,12 @@ Function/s FindValueInColumnof2Dwave(Value, Column, TwoDWave)//DA = 1, AD = 0, D
 End
 
 //=========================================================================================
-Function/s RefToPullDatafrom2DWave(Value,RefColumn, DataColumn, TwoDWave)// Returns the data from the data column based on matched values in the ref column
+Function/s SCOPE_RefToPullDatafrom2DWave(Value,RefColumn, DataColumn, TwoDWave)// Returns the data from the data column based on matched values in the ref column
 	wave TwoDWave// For ITCDataWave 0 (value) in Ref column = AD channel, 1 = DA channel,
 	variable Value,RefColumn, DataColumn
 	variable i = 0
 	string Values = ""
-	string RowList = FindValueInColumnof2Dwave(Value, RefColumn, TwoDWave)
+	string RowList = SCOPE_FindValueInColumnof2Dwave(Value, RefColumn, TwoDWave)
 	
 	do
 		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
@@ -110,7 +110,7 @@ Function/s RefToPullDatafrom2DWave(Value,RefColumn, DataColumn, TwoDWave)// Retu
 End
 //=========================================================================================
 
-Function RemoveTracesOnGraph(GraphName)
+Function SCOPE_RemoveTracesOnGraph(GraphName)
 	string GraphName
 	variable i = 0
 	string cmd, WaveNameFromList

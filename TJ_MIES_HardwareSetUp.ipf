@@ -116,7 +116,7 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 2
 	//GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
 	HSU_DataFolderPathDisplay(PanelTitle, 0)
-	dowindow /W = $panelTitle /C $"ITC_Ephys_Panel"
+	dowindow /W = $panelTitle /C $"DA_Ephys"
 	// ########## ADD CODE HERE TO REMOVE PANEL TITLE FROM GLOBAL LIST OF PANEL TITLES ##########
 End
 

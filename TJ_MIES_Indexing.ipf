@@ -1,23 +1,23 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 
-Function MakeIndexingStorageWaves(panelTitle)
+Function IDX_MakeIndexingStorageWaves(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
-	variable NoOfTTLs = TotNoOfControlType("check", "TTL",panelTitle)
-	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
+	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL",panelTitle)
+	variable NoOfDACs = DC_TotNoOfControlType("check", "DA",panelTitle)
 	make /o /n = (4,NoOfTTLs) $WavePath + ":TTLIndexingStorageWave"
 	make /o /n = (4,NoOfDACs) $WavePath + ":DACIndexingStorageWave"
 End
 
-Function StoreStartFinishForIndexing(panelTitle)
+Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	variable i 
-	variable NoOfTTLs = TotNoOfControlType("check", "TTL",panelTitle)
-	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
+	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL",panelTitle)
+	variable NoOfDACs = DC_TotNoOfControlType("check", "DA",panelTitle)
 	string TTLPopUpNameIndexStart, DACPopUpNameIndexStart, TTLPopUpNameIndexEnd, DACPopUpNameIndexEnd
 	
 	For(i = 0; i < NoOfDACS; i += 1)
@@ -57,14 +57,14 @@ Function StoreStartFinishForIndexing(panelTitle)
 	endfor
 End
 
-Function IndexingDoIt(panelTitle)// for locked indexing, indexes all active channels at once
+Function IDX_IndexingDoIt(panelTitle)// for locked indexing, indexes all active channels at once
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
 	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	variable i 
-	variable NoOfTTLs = TotNoOfControlType("check", "TTL", panelTitle)
-	variable NoOfDACs = TotNoOfControlType("check", "DA",panelTitle)
+	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
+	variable NoOfDACs = DC_TotNoOfControlType("check", "DA",panelTitle)
 	variable CurrentPopUpMenuNo
 	string DACPopUpName, TTLPopUpName
 
@@ -154,7 +154,7 @@ Function IndexingDoIt(panelTitle)// for locked indexing, indexes all active chan
 	endfor
 End
 
-Function IndexSingleChannel(panelTitle, DAorTTL, ChannelNo)// indexes a single channel - used when indexing is unlocked
+Function IDX_IndexSingleChannel(panelTitle, DAorTTL, ChannelNo)// indexes a single channel - used when indexing is unlocked
 	string panelTitle
 	variable DAorTTL, ChannelNo
 	variable i = ChannelNo
@@ -252,27 +252,27 @@ End
 //===================================================================================
 //**************NEED TO ADD FUNCTION TO CALCULATE CYCLE STEPS FOR LOCKED INDEXING!! NEED TO TEST WITH 3 OR MORE SETS!!!!*************
 
-Function Index_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for each indexing step
+Function IDX_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for each indexing step
 	string panelTitle
-	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
-	variable MaxCycleIndexSteps= (Index_MaxSets(panelTitle)+1)
+	variable MaxCycleIndexSteps= (IDX_MaxSets(panelTitle)+1)
 	variable MaxSteps
 	
 	do
-		MaxSteps+= Index_StepsInSetWithMaxSweeps(panelTitle,i)
+		MaxSteps+= IDX_StepsInSetWithMaxSweeps(panelTitle,i)
 		i += 1
 	while(i < MaxCycleIndexSteps)
 	
 	return MaxSteps
 End
 
-Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
+Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
 	string panelTitle
 	variable IndexNo
-	string DAChannelStatusList = ControlStatusListString("DA", "check", panelTitle)
-	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = DC_ControlStatusListString("DA", "check", panelTitle)
+	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
 	variable MaxSteps = 0, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
 	string setName
@@ -300,7 +300,7 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 			endif
 			SetList = getuserdata(PanelTitle, "Wave_DA_0" + num2str(i), "menuexp")
 			SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
-			SetSteps = Index_NumberOfTrialsInSet(PanelTitle, SetName, 0)
+			SetSteps = IDX_NumberOfTrialsInSet(PanelTitle, SetName, 0)
 			MaxSteps = max(MaxSteps, SetSteps)
 		endif
 		i += 1
@@ -330,7 +330,7 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 			
 		SetList = getuserdata(PanelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
-		SetSteps = Index_NumberOfTrialsInSet(PanelTitle, SetName, 1)
+		SetSteps = IDX_NumberOfTrialsInSet(PanelTitle, SetName, 1)
 		MaxSteps = max(MaxSteps, SetSteps)
 		endif
 		i += 1
@@ -339,10 +339,10 @@ Function Index_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number 
 	return MaxSteps
 End
 
-Function Index_MaxSets(panelTitle)// returns the number of sets on the active channel with the most sets.
+Function IDX_MaxSets(panelTitle)// returns the number of sets on the active channel with the most sets.
 	string panelTitle
-	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
 	variable MaxSets = 0
 	variable ChannelSets
 	string popMenuIndexStartName, popMenuIndexEndName
@@ -379,18 +379,18 @@ Function Index_MaxSets(panelTitle)// returns the number of sets on the active ch
 	return MaxSets
 End
 
-Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
+Function IDX_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
 // works for unlocked (independent) indexing
 	string panelTitle
 	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
 	variable MaxNoOfSweeps = 0
-	string DAChannelStatusList = ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
 	
 	do
 		if(str2num(stringfromlist(i, DAChannelStatusList, ";")) == 1)
-			MaxNoOfSweeps = max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 0, IndexOverRide))
+			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(PanelTitle, i, 0, IndexOverRide))
 		endif
 	
 		i += 1
@@ -399,7 +399,7 @@ Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max numb
 	i = 0
 	do
 		if(str2num(stringfromlist(i, TTLChannelStatusList, ";")) == 1)
-			MaxNoOfSweeps = max(MaxNoOfSweeps, Index_NumberOfTrialsAcrossSets(PanelTitle, i, 1, IndexOverRide))
+			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(PanelTitle, i, 1, IndexOverRide))
 		endif
 	
 		i += 1
@@ -408,7 +408,7 @@ Function Index_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max numb
 	return MaxNoOfSweeps
 End
 
-Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, IndexOverRide)// determines the number of trials for a DA or TTL channel
+Function IDX_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, IndexOverRide)// determines the number of trials for a DA or TTL channel
 	string PanelTitle
 	variable PopUpMenuNumber, DAorTTL, IndexOverRide//DA = 0, TTL = 1	
 	variable NumberOfTrialsAcrossSets
@@ -447,7 +447,7 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, In
 	
 	do
 		Setname = stringfromlist(i, setList, ";")
-		NumberOfTrialsAcrossSets += Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
+		NumberOfTrialsAcrossSets += IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
 		i += 1
 	while(i < (max(indexstart, indexend) - (ListOffset - 1)))
 	
@@ -455,7 +455,7 @@ Function Index_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, In
 
 End
 
-Function Index_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the wave name, does not include wave path
+Function IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the wave name, does not include wave path
 	string PanelTitle, SetName
 	variable DAorTTL//DA = 0, TTL = 1
 	string WavePath 

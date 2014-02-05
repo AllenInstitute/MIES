@@ -59,8 +59,8 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 	wave Sweepname
 	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	wave ConfigWaveName = $DataPath + ":Config_" + nameofwave(SweepName)
-	string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ConfigWaveName)
-	string DAChannelList = RefToPullDatafrom2DWave(1,0, 1, ConfigWaveName)
+	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0,0, 1, ConfigWaveName)
+	string DAChannelList = SCOPE_RefToPullDatafrom2DWave(1,0, 1, ConfigWaveName)
 	variable NumberOfDAchannels = itemsinlist(DAChannelList)
 	variable NumberOfADchannels = itemsinlist(ADChannelList)
 	variable DACounter, ADCounter, i

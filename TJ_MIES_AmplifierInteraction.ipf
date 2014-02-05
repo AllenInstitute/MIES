@@ -351,7 +351,7 @@ Function CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 
 	endif
 	
-	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End
 
@@ -374,6 +374,6 @@ Function CheckProc_HeadstageCheck(ctrlName,checked) : CheckBoxControl
 		ApplyClampModeSavedSettings(HeadStageNo, ClampMode,panelTitle)
 	endif
  
-	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End

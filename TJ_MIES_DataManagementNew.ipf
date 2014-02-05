@@ -36,7 +36,7 @@ End
 
 Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
-	variable RowsToCopy = CalculateITCDataWaveLength(panelTitle)/5
+	variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle)/5
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"
@@ -58,9 +58,9 @@ wave WaveToScale
 string panelTitle
 string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-string ADChannelList  =  RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-variable NoOfADColumns = NoOfChannelsSelected("ad", "check", panelTitle)
-variable StartOfADColumns = NoOfChannelsSelected("da", "check", panelTitle)
+string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+variable NoOfADColumns = DC_NoOfChannelsSelected("ad", "check", panelTitle)
+variable StartOfADColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
 string ADGainControlName
 variable gain, i
 wave ChannelClampMode = $WavePath + ":ChannelClampMode"
@@ -95,8 +95,8 @@ Function DAScaling(WaveToScale, panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	variable NoOfDAColumns = NoOfChannelsSelected("da", "check", panelTitle)
-	string DAChannelList  =  RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
+	variable NoOfDAColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
+	string DAChannelList  =  SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
 	string DAGainControlName
 	variable gain, i
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"

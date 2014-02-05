@@ -2,7 +2,7 @@
 
 Function SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
 	string panelTitle
-	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
+	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DAPopUpMenu
 	variable i
 	
@@ -18,7 +18,7 @@ End
 Function StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave SelectedDACWaveList
 	string panelTitle
-	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
+	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DAPopUpMenu
 	variable i
 	
@@ -35,7 +35,7 @@ end
 Function ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave SelectedDACWaveList
 	string panelTitle
-	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
+	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DAPopUpMenu
 	variable i = 0
 	do
@@ -51,7 +51,7 @@ End
 Function StoreDAScale(SelectedDACScale, panelTitle)
 	wave SelectedDACScale
 	string panelTitle
-	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
+	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DAPopUpMenu
 	variable i
 	
@@ -67,7 +67,7 @@ end
 
 Function SetDAScaleToOne(panelTitle)
 	string panelTitle
-	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
+	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DASetVariable
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
@@ -97,7 +97,7 @@ end
 Function RestoreDAScale(SelectedDACScale, panelTitle)
 	wave SelectedDACScale
 	string panelTitle
-	string ListOfCheckedDA = ControlStatusListString("DA", "Check", panelTitle)
+	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DASetVariable
 	variable i = 0
 	do
@@ -122,8 +122,8 @@ Function AdjustTestPulseWave(TestPulse, panelTitle)// full path name
 	NVAR GlobalTPAmplitudeVariableIC = $TPGlobalPath + ":AmplitudeIC"	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z ITCChanConfigWave = $HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave"
-	string /g $TPGlobalPath + ":ADChannelList" = RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
-	variable /g $TPGlobalPath + ":NoOfActiveDA" = NoOfChannelsSelected("da", "check", panelTitle)
+	string /g $TPGlobalPath + ":ADChannelList" = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	variable /g $TPGlobalPath + ":NoOfActiveDA" = DC_NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	PulseDuration = (v_value / 0.005)
 	GlobalTPDurationVariable = PulseDuration
@@ -167,7 +167,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		killvariables $CountPath
 	endif
 	
-	variable MinSampInt = ITCMinSamplingInterval(PanelTitle)
+	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 	
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
@@ -175,12 +175,12 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	variable DeviceNum = v_value - 1
 	
-	StoreTTLState(panelTitle)
-	TurnOffAllTTLs(panelTitle)
+	DAP_StoreTTLState(panelTitle)
+	DAP_TurnOffAllTTLs(panelTitle)
 	
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
-	SmoothResizePanel(340, panelTitle)
+	DAP_SmoothResizePanel(340, panelTitle)
 	setwindow $panelTitle +"#oscilloscope", hide = 0
 	endif
 	
@@ -198,9 +198,9 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	StoreDAScale(SelectedDACScale,panelTitle)
 	SetDAScaleToOne(panelTitle)
 	
-	ConfigureDataForITC(panelTitle)
+	DC_ConfigureDataForITC(panelTitle)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	ITCOscilloscope(TestPulseITC,panelTitle)
+	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 	controlinfo /w = $panelTitle Check_Settings_BkgTP
 	
 	if(v_value == 1)// runs background TP
@@ -209,7 +209,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		StartTestPulse(DeviceType,DeviceNum, panelTitle)
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 		if(v_value == 0)
-			SmoothResizePanel(-340, panelTitle)
+			DAP_SmoothResizePanel(-340, panelTitle)
 			setwindow $panelTitle +"#oscilloscope", hide = 1
 		endif
 		killwaves /f TestPulse
@@ -338,9 +338,9 @@ Function TP_CalculateResistance(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	string ADChannelList = RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-	variable NoOfActiveDA = NoOfChannelsSelected("DA", "check", panelTitle)
-	variable NoOfActiveAD = NoOfChannelsSelected("AD", "check", panelTitle)
+	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	variable NoOfActiveDA = DC_NoOfChannelsSelected("DA", "check", panelTitle)
+	variable NoOfActiveAD = DC_NoOfChannelsSelected("AD", "check", panelTitle)
 	variable i = 0
 	make /o /n = (NoOfActiveAD) Resistance
 	variable AmplitudeVC

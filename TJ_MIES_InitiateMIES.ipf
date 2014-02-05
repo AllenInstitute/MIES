@@ -2,6 +2,6 @@
 
 Function InitiateMIES()
 	WB_InitiateWaveBuilder()
-	execute "ITC_Ephys_panel()"
+	execute "DA_Ephys()"
 	execute "DataBrowser()"
 End

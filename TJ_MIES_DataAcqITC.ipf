@@ -5,8 +5,8 @@ Function ITCDataAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i=0
-	//variable StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4 // + ReturnTotalLengthIncrease(PanelTitle)/4)
-	variable ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
+	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(PanelTitle)/4)
+	variable ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	variable stopCollectionPoint = dimsize(ITCDataWave, 0)/4
@@ -63,8 +63,8 @@ Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i=0
-	//variable/G StopCollectionPoint = (CalculateITCDataWaveLength(panelTitle)/4) + ReturnTotalLengthIncrease(PanelTitle)
-	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
+	//variable/G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
+	variable/G ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string/G panelTitleG = panelTitle
 	doupdate
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -228,9 +228,9 @@ Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	string/G PanelTitleG = panelTitle
 	string cmd
 	variable i=0
-	variable/G StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/5
+	variable/G StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle)/5
 	NVAR stopcollectionpoint
-	variable/G ADChannelToMonitor=(NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable/G ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	variable/G BackgroundTPCount = 0
 	doupdate
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
@@ -308,11 +308,11 @@ Function STOPTestPulse(panelTitle)
 
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
-		SmoothResizePanel(-340, panelTitle)
+		DAP_SmoothResizePanel(-340, panelTitle)
 		setwindow $panelTitle +"#oscilloscope", hide = 1
 	endif
 
-	RestoreTTLState(panelTitle)
+	DAP_RestoreTTLState(panelTitle)
 	//killwaves/z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
@@ -336,8 +336,8 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	variable StopCollectionPoint = CalculateITCDataWaveLength(panelTitle)/5
-	variable ADChannelToMonitor = (NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle)/5
+	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
 	//doupdate /w = $oscilloscopeSubWindow
@@ -403,7 +403,7 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 
-	RestoreTTLState(panelTitle)
+	DAP_RestoreTTLState(panelTitle)
 	
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2)
@@ -438,7 +438,7 @@ Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	// This function takes about 0.9 seconds to run
 	// this is the wave that the note gets appended to. The note contains the async ad channel value and info
 	//variable starttime=ticks
-	string AsyncChannelState = ControlStatusListString("AsyncAD", "check", panelTitle)
+	string AsyncChannelState = DC_ControlStatusListString("AsyncAD", "check", panelTitle)
 	variable i
 	variable TotAsyncChannels = itemsinlist(AsyncChannelState,";")
 	variable RawChannelValue
