@@ -29,8 +29,8 @@ Function DB_LastSweepAcquired(PanelTitle)// returns last sweep acquired
 	DFREF saveDFR = GetDataFolderDFR()
 	setDataFolder $DataPath
 	
-	ListOfAcquiredWaves = wavelist("sweep_*",";","MINCOLS:2")
-	LastSweepAcquired = (itemsinlist(ListOfAcquiredWaves,";")) - 1
+	ListOfAcquiredWaves = wavelist("sweep_*", ";", "MINCOLS:2")
+	LastSweepAcquired = (itemsinlist(ListOfAcquiredWaves, ";")) - 1
 	valdisplay valdisp_DataBrowser_LastSweep win = $PanelTitle, value = _num:LastSweepAcquired
 	
 	SetDataFolder saveDFR

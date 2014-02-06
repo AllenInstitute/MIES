@@ -1,6 +1,6 @@
  #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function SaveITCData(panelTitle)
+Function DM_SaveITCData(panelTitle)
 	string panelTitle
 	variable DeviceType, DeviceNum
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -14,7 +14,6 @@ Function SaveITCData(panelTitle)
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNum = v_value - 1
 	
-	
 	string SavedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(SweepNo)
 	string SavedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(SweepNo)
 	variable RowsToCopy = dimsize(ITCDataWave, 0) /5
@@ -23,18 +22,18 @@ Function SaveITCData(panelTitle)
 	note $savedDataWaveName, Time()// adds time stamp to wave note
 	getwindow kwFrameOuter wtitle 
 	note $savedDataWaveName, s_value
-	AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
+	ED_AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
 	controlinfo Check_Settings_Append
 	if(v_value == 1)// if option is checked, wave note containing single readings from (async) ADs is made
-		AD_DataBasedWaveNotes($SavedDataWaveName, DeviceType,DeviceNum, panelTitle)
+		ITC_ADDataBasedWaveNotes($SavedDataWaveName, DeviceType,DeviceNum, panelTitle)
 	endif	
 	SetVariable SetVar_Sweep, Value = _NUM:(SweepNo+1), limits={0, SweepNo + 1,1},win = $panelTitle
 	redimension/d $SavedDataWaveName
-	ADScaling($SavedDataWaveName, panelTitle)
-	DAScaling($SavedDataWaveName, panelTitle)
+	DM_ADScaling($SavedDataWaveName, panelTitle)
+	DM_DAScaling($SavedDataWaveName, panelTitle)
 End
 
-Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
+Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
 	variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle)/5
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -43,17 +42,17 @@ Function CreateAndScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test 
 	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $TestPulseITCPath
 	wave TestPulseITC = $TestPulseITCPath
 	redimension /d TestPulseITC
-	ADScaling(TestPulseITC, panelTitle)
+	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
-Function MakeFloatingPointWave(WaveBeingPassed)
-wave WaveBeingPassed
+//Function MakeFloatingPointWave(WaveBeingPassed)
+//wave WaveBeingPassed
 
-redimension/d WaveBeingPassed
+//redimension/d WaveBeingPassed
 
-End
+//End
 
-Function ADScaling(WaveToScale, panelTitle)
+Function DM_ADScaling(WaveToScale, panelTitle)
 wave WaveToScale
 string panelTitle
 string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -89,7 +88,7 @@ endfor
 
 end
 
-Function DAScaling(WaveToScale, panelTitle)
+Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -123,15 +122,15 @@ endfor
 
 end
 
-Function ScaleITCDataWave(panelTitle)// used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
+Function DM_ScaleITCDataWave(panelTitle)// used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
 string panelTitle
 string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 wave ITCDataWave = $WavePath + ":ITCDataWave"
 redimension/d ITCDataWave
-ADScaling(ITCDataWave,panelTitle)
+DM_ADScaling(ITCDataWave,panelTitle)
 end
 
-Function DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting history waves "older" than SweepNo
+Function DM_DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting history waves "older" than SweepNo
 	variable SweepNo
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -157,7 +156,7 @@ Function DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting histor
 
 End
 //=============================================================================================================	
-Function ReturnLastSweepAcquired(panelTitle)
+Function DM_ReturnLastSweepAcquired(panelTitle)
 	//LastSweep
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":data"
@@ -174,20 +173,20 @@ Function ReturnLastSweepAcquired(panelTitle)
 
 End
 //=============================================================================================================
-Function IsLastSweepGreaterThanNextSweep(panelTitle)
+Function DM_IsLastSwpGreatrThnNxtSwp(panelTitle)
 	string panelTitle
 	variable NextSweep
 	controlinfo /w = $panelTitle SetVar_Sweep
 	NextSweep = v_value
 	
-	if(NextSweep > ReturnLastSweepAcquired(panelTitle))
+	if(NextSweep > DM_ReturnLastSweepAcquired(panelTitle))
 		return 0
 	else
 		return 1
 	endif
 End
 //=============================================================================================================
-Function DeleteDataWaves(panelTitle, SweepNo)
+Function DM_DeleteDataWaves(panelTitle, SweepNo)
 	string panelTitle
 	variable SweepNo
 	variable i = SweepNo

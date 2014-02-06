@@ -473,4 +473,362 @@ Function IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the
 	return NumberOfTrialsInSet
 End
 
+Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
+	string panelTitle
+	variable count, DAorTTL
+	variable i=0
+	string ActivechannelList 
+	
+	if(DAorTTL==0)
+		ActiveChannelList = DC_ControlStatusListString("DA","check",panelTitle)
+	endif
+	
+	if(DAorTTL==1)
+		ActiveChannelList = DC_ControlStatusListString("TTL","check",panelTitle)
+	endif
+	
+	do
+		if(str2num(stringfromlist(i,ActiveChannelList,";"))==1)
+			if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL)==1)
+				IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
+			endif
+		endif
+	
+	i+=1
+	while(i<itemsinlist(ActiveChannelList,";"))
+End
+
+Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+	string panelTitle
+	variable ChannelNumber, DAorTTL
+	variable TotalListSteps
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	string PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName, ChannelTypeName
+	variable i, ListOffset
+	
+	if(DAorTTL==0)
+		ChannelTypeName="DA"
+		ListOffset=3
+		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==1)
+		ChannelTypeName="TTL"
+		ListOffset=2
+		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+
+	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+	
+	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
+		if(DAorTTL==0)
+			do // this do-while loop adjust count based on the number of times the list of sets has cycled
+				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
+				i+=1
+			while( (i + DAIndexingStorageWave[0][ChannelNumber]) <= DAIndexingStorageWave[1][ChannelNumber] )
+		endif
+		
+		if(DAorTTL==1)
+			do // this do-while loop adjust count based on the number of times the list of sets has cycled
+				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
+				i+=1
+			while( (i + TTLIndexingStorageWave[0][ChannelNumber]) <= TTLIndexingStorageWave[1][ChannelNumber] )
+		endif
+	endif
+	i=0
+	
+	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])// end index wave is before start index wave in wave list of popup menu
+		if(DAorTTL==0)
+			do // this do-while loop adjust count based on the number of times the list of sets has cycled
+				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[1][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
+				i+=1
+			while( (i + DAIndexingStorageWave[1][ChannelNumber]) <= DAIndexingStorageWave[0][ChannelNumber] )
+		endif
+
+		if(DAorTTL==1)
+			do // this do-while loop adjust count based on the number of times the list of sets has cycled
+				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[1][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
+				i+=1
+			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
+		endif
+	endif
+	if(channelnumber==0)
+	//print "Chan0 total list steps = "+num2str(totalliststeps)
+	endif
+	
+	if(channelnumber==1)
+	//print "Chan1 total list steps = "+num2str(totalliststeps)
+	endif
+	return TotalListSteps
+End
+
+Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
+	string paneltitle
+	variable channelNo, DAorTTL, count
+	variable column, i, StepsInSummedSets, listOffSet, totalListSteps
+	string ChannelTypeName, DAorTTLWavePath, ChannelPopUpMenuName,PopUpMenuList
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	
+	if(DAorTTL == 0)
+	ChannelTypeName = "DA"
+	ListOffset = 3
+	DAorTTLWavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL == 1)
+	ChannelTypeName = "TTL"
+	ListOffset = 2
+	DAorTTLWavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+	
+	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)// Total List steps is all the columns in all the waves defined by the start index and end index waves
+	do // do loop resets count if the the count has cycled through the total list steps
+		if(count >= TotalListSteps)
+		count -= totalListsteps
+		endif
+	while(count >= totalListSteps)
+	//print "totalListSteps = "+num2str(totalListSteps)
+	
+		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(channelNo)
+		PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+		i = 0
+		
+		if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
+			if(DAorTTL == 0)//DA channel
+				do
+					StepsInSummedSets += dimsize($DAorTTLWavePath + stringfromlist((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";"),1)
+					//print (DAIndexingStorageWave[1][channelNo]+i-ListOffset)
+					//print stringfromlist((DAIndexingStorageWave[1][channelNo]+i-ListOffset),PopUpMenuList,";")
+					//print "columns in set = " + num2str(dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1))
+					i += 1
+				while(StepsInSummedSets<=Count)
+				i-=1
+				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				//print "steps in summed sets = "+num2str(stepsinsummedsets)
+			endif
+		
+			if(DAorTTL==1)//TTL channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+					i+=1
+				while(StepsInSummedSets<=Count)
+				i-=1
+				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				//print "steps in summed sets = "+num2str(stepsinsummedsets)
+			endif
+		endif
+		
+		i=0
+		if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
+			if(DAorTTL==0)//DA channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				//	print (DAIndexingStorageWave[0][channelNo]+i-ListOffset)
+				//	print stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+				//	print "columns in set = " + num2str(dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1))			
+					i-=1
+				while(StepsInSummedSets<=Count)
+				i+=1
+				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+			//	print "steps in summed sets = "+num2str(stepsinsummedsets)
+			endif
+		
+			if(DAorTTL==1)//TTL channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+					i-=1
+				while(StepsInSummedSets<=Count)
+				i+=1
+				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				//print "steps in summed sets = "+num2str(stepsinsummedsets)
+			endif
+		endif
+		
+		column=count-StepsInSummedSets
+		return column
+end
+//====================================================================================================
+Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
+	string panelTitle
+	variable count, channelNumber, DAorTTL
+	variable AtSetBorder=0
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)// determines ITC device 
+	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
+	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
+	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
+	variable NoOfDAs = DC_TotNoOfControlType("check", "DA",panelTitle)
+	variable i, StepsInSummedSets, ListOffset, TotalListSteps
+	
+	if(DAorTTL==0)
+		ChannelTypeName="DA"
+		ListOffset=3
+		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==1)
+		ChannelTypeName="TTL"
+		ListOffset=2
+		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+	
+		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+		PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+		TotalListSteps=IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+		
+	do
+		if(count>TotalListSteps)
+			count-=totalListsteps
+		endif
+	while(count>totalListSteps)
+		
+		
+		if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
+			i=0
+			if(DAorTTL==0)//DA channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+					//print "steps in summed sets = "+num2str(stepsinsummedsets)
+					if(StepsInSummedSets==Count)
+						//print "At a Set Border"
+						AtSetBorder=1
+						return AtSetBorder
+					endif
+				i+=1
+				while(StepsInSummedSets<=Count)
+			endif
+			i=0
+		endif
+		
+		if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
+			if(DAorTTL==1)// TTL channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+					
+					if(StepsInSummedSets==Count)
+						//print "At a Set Border"
+						AtSetBorder=1
+						return AtSetBorder
+					endif
+				i+=1
+				while(StepsInSummedSets<=Count)
+			endif
+		endif
+		
+		if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])// handles end index that is in front of start index in the popup menu list
+			i=0
+			if(DAorTTL==0)//DA channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+					if(ChannelNumber==0)
+					print PopUpMenuList
+					print DAIndexingStorageWave[1][ChannelNumber]
+					//print "steps in summed sets = "+num2str(stepsinsummedsets)
+					endif
+					if(StepsInSummedSets==Count)
+						print "At a Set Border"
+						AtSetBorder=1
+						return AtSetBorder
+					endif
+				i-=1
+				while(StepsInSummedSets<=Count)
+			endif
+			i=0
+		endif
+		
+		if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
+			if(DAorTTL==1)// TTL channel
+				do
+					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+					
+					if(StepsInSummedSets==Count)
+						//print "At a Set Border"
+						AtSetBorder=1
+						return AtSetBorder
+					endif
+				i-=1
+				while(StepsInSummedSets<=Count)
+			endif
+		endif
+	return AtSetBorder
+End
+
+Function IDX_IndxChannWithCompleteSets(PanelTitle, DAorTTL, localCount) // #####FUNCTION NOT IN USE
+	string panelTitle
+	variable DAorTTL, localCount
+	string ListOfSetStatus = IDX_RetrnLstOfChanWthComplSets(PanelTitle, DAorTTL, localCount)
+	string channelTypeWaveName, ChannelTypeName
+	string ChannelPopUpMenuName
+	variable ChannelNumber
+	
+	if(DAorTTL==0)
+	ChannelTypeName="DA"
+	endif
+	
+	if(DAorTTL==1)
+	ChannelTypeName="TTL"
+	endif
+	
+	do
+		if(str2num(stringfromlist(ChannelNumber,ListOfSetStatus,";"))==1)
+			ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+			IDX_IndexSingleChannel(panelTitle, DAorTTL, ChannelNumber)
+		endif
+	channelNumber+=1
+	while(ChannelNumber<itemsinlist(ListOfSetStatus,";"))
+End
+
+Function/T IDX_RetrnLstOfChanWthComplSets(PanelTitle, DAorTTL, localCount) // #####FUNCTION NOT IN USE
+	string panelTitle
+	variable DAorTTL, localcount
+	string ListOfChanWithCompleteSets=""
+	string ChannelTypeName
+	string ChannelPopUpMenuName
+	string setName
+	variable columnsInSet
+	string WavePath
+	
+	if(DAorTTL==0)
+	ChannelTypeName="DA"
+	WavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
+	endif
+	
+	if(DAorTTL==1)
+	ChannelTypeName="TTL"
+	WavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
+	endif
+	
+	string ActivechannelList = DC_ControlStatusListString(ChannelTypeName,"check",panelTitle)
+	
+	variable ChannelNumber = 0
+	
+	do
+		if(str2num(stringfromlist(ChannelNumber,ActiveChannelList,";"))==1)
+		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+		controlinfo/w=$panelTitle $ChannelPopUpMenuName
+		setName=WavePath+s_value
+		columnsInSet=dimsize($setName, 1)
+			if(LocalCount >= columnsInSet)
+			ListOfChanWithCompleteSets+="1;"
+			else
+			ListOfChanWithCompleteSets+="0;"
+			endif
+		else
+		ListOfChanWithCompleteSets+="0;"
+		endif
+	
+	ChannelNumber+=1
+	While (ChannelNumber<itemsinlist(ActiveChannelList,";"))
+	
+	return ListOfChanWithCompleteSets
+End
 

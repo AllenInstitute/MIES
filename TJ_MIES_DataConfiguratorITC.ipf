@@ -667,7 +667,7 @@ Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)/
 					localCount -= ActiveSetCount// active set count keeps track of how many steps of the largest currently selected set on all active channels has been taken
 				else //indexing is unlocked
 					// calculate where in list global count is
-					localCount = UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
+					localCount = IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 				endif
 			endif
 

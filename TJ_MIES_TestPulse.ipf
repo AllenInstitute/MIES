@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
+Function TP_SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DAPopUpMenu
@@ -15,7 +15,7 @@ Function SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all
 	while(i < itemsinlist(ListOfCheckedDA))
 End
 
-Function StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave SelectedDACWaveList
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
@@ -24,7 +24,7 @@ Function StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	
 	do
 		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
-			DAPopUpMenu= "Wave_DA_0"+num2str(i)
+			DAPopUpMenu = "Wave_DA_0"+num2str(i)
 			controlinfo /w = $panelTitle $DAPopUpMenu 
 			SelectedDACWaveList[i] = v_value
 		endif
@@ -32,7 +32,7 @@ Function StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	while(i < itemsinlist(ListOfCheckedDA))
 end
 
-Function ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave SelectedDACWaveList
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
@@ -48,7 +48,7 @@ Function ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 
 End
 
-Function StoreDAScale(SelectedDACScale, panelTitle)
+Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	wave SelectedDACScale
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
@@ -65,7 +65,7 @@ Function StoreDAScale(SelectedDACScale, panelTitle)
 	while(i < itemsinlist(ListOfCheckedDA))
 end
 
-Function SetDAScaleToOne(panelTitle)
+Function TP_SetDAScaleToOne(panelTitle)
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DASetVariable
@@ -90,11 +90,11 @@ Function SetDAScaleToOne(panelTitle)
 			
 			setvariable $DASetVariable value = _num:ScalingFactor, win = $panelTitle
 		endif
-	i+=1
+	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
 
-Function RestoreDAScale(SelectedDACScale, panelTitle)
+Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	wave SelectedDACScale
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
@@ -109,7 +109,7 @@ Function RestoreDAScale(SelectedDACScale, panelTitle)
 	while(i < itemsinlist(ListOfCheckedDA))
 end
 
-Function AdjustTestPulseWave(TestPulse, panelTitle)// full path name
+Function TP_UpdateTestPulseWave(TestPulse, panelTitle)// full path name
 	wave TestPulse
 	string panelTitle
 	variable PulseDuration
@@ -146,7 +146,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	PanelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	if(SearchResult != -1)
-	PanelTitle = PanelTitle[0,SearchResult - 2]//SearchResult+1]
+		PanelTitle = PanelTitle[0,SearchResult - 2]//SearchResult+1]
 	endif
 	
 	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
@@ -162,6 +162,9 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	endif
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	
+
+	
 	string CountPath = WavePath + ":count"
 	if(exists(CountPath) == 2)
 		killvariables $CountPath
@@ -188,25 +191,25 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	make /o /n = 0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
 	SetScale /P x 0,0.005,"ms", TestPulse
-	AdjustTestPulseWave(TestPulse, panelTitle)
-	CreateAndScaleTPHoldingWave(panelTitle)
+	TP_UpdateTestPulseWave(TestPulse, panelTitle)
+	DM_CreateScaleTPHoldingWave(panelTitle)
 	make /free /n = 8 SelectedDACWaveList
-	StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	SelectTestPulseWave(panelTitle)
+	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
 
 	make /free /n = 8 SelectedDACScale
-	StoreDAScale(SelectedDACScale,panelTitle)
-	SetDAScaleToOne(panelTitle)
+	TP_StoreDAScale(SelectedDACScale,panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
 	
 	DC_ConfigureDataForITC(panelTitle)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
+
 	controlinfo /w = $panelTitle Check_Settings_BkgTP
-	
 	if(v_value == 1)// runs background TP
-		StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
+		ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	else // runs TP
-		StartTestPulse(DeviceType,DeviceNum, panelTitle)
+		ITC_StartTestPulse(DeviceType,DeviceNum, panelTitle)
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 		if(v_value == 0)
 			DAP_SmoothResizePanel(-340, panelTitle)
@@ -215,8 +218,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		killwaves /f TestPulse
 	endif
 	
-	ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	RestoreDAScale(SelectedDACScale,panelTitle)
+	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 End
 
 //=============================================================================================
@@ -419,3 +422,15 @@ Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a 
 	return ClampMode
 End
 
+Function TP_IsBackgrounOpRunning(panelTitle, OpName)
+	string panelTitle, OpName
+	variable NoYes // no = 0, 1 = yes
+	CtrlNamedBackground $OpName, status
+	if(str2num(stringfromlist(2, s_info, ";")[4])==0)
+		NoYes = 0
+	else
+		NoYes = 1
+	endif
+	
+	return NoYes
+End

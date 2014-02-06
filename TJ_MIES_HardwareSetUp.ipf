@@ -1,6 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 //=====================================================================================
 // ITC HARDWARE CONFIGURATION FUNCTIONS
+// Hardware Set-up (HSU)
 Function HSU_QueryITCDevice(PanelTitle)
 	string PanelTitle
 	variable DeviceType, DeviceNumber
@@ -48,12 +49,9 @@ Function HSU_LockDevice(panelTitle)
 	deviceNo = v_value - 1
 	dowindow /W = $panelTitle /C $DeviceType + "_Dev_" + num2str(DeviceNo)
 	PanelTitle = DeviceType + "_Dev_" + num2str(DeviceNo)
-	MakeGlobalsAndWaves(PanelTitle)
-	GlobalListStrngOfITCPanelTitles()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
-	ListOfITCPanels()
-	
-
-	
+	IM_MakeGlobalsAndWaves(PanelTitle)
+	HSU_GlblListStrngOfITCPanlTitls()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
+	HSU_ListOfITCPanels()
 End
 
 Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
@@ -133,13 +131,6 @@ Function HSU_DeviceLockCheck(PanelTitle)
 	return DeviceLockStatus
 End
 
-Function PopMenuProc_Hrdwr_DevTypeCheck(ctrlName,popNum,popStr) : PopupMenuControl
-	String ctrlName
-	Variable popNum
-	String popStr
-	getwindow kwTopWin wtitle
-	HSU_IsDeviceTypeConnected(s_value)
-End
 
 Function HSU_IsDeviceTypeConnected(PanelTitle)
 	string PanelTitle
@@ -158,35 +149,133 @@ Function HSU_IsDeviceTypeConnected(PanelTitle)
 End
 // below functions are used to create a list of the ITC panels. This list is will be used by functions that need to update items that are common to different panels.
 // for example: DAC popup lists, TTL popup lists
-Function GlobalListStrngOfITCPanelTitles()
+
+Function HSU_GlblListStrngOfITCPanlTitls()
 	If(exists("ITCPanelTitleList") == 0)
 	String /G root:ITCPanelTitleList
 	endif
 End
 
 
-Function ListOfITCPanels()
+Function HSU_ListOfITCPanels()
 	SVAR ITCPanelTitleList = root:ITCPanelTitleList
 	ITCPanelTitleList = winlist("ITC*", ";", "WIN:64") 
 End
 
-Function MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
+Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
+	Variable HeadStageNo, SweepNo, i
+	wave /z W_telegraphServers
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	//string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-	//make /o /n = (12,8) $ChanAmpAssignPath = nan
-	UpdateChanAmpAssignStorageWave(panelTitle)
-	ButtonProc("button_Settings_UpdateAmpStatus")
-	make /o /n= (1,8) $WavePath + ":" + "ITCDataWave"
-	make /o /n= (2,4) $WavePath + ":" + "ITCChanConfigWave"
-	make /o /n= (2,4) $WavePath + ":" + "ITCFIFOAvailAllConfigWave"
-	make /o /n= (2,4) $WavePath + ":" + "ITCFIFOPositionAllConfigWave"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "TestPulseITC"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "InstResistance"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "Resistance"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "SSResistance"
+	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
+	wave /z /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
 
+	controlinfo /w = $panelTitle Popup_Settings_HeadStage
+	HeadStageNo = str2num(s_value)
+	
+	If (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
+		string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
+		make /n = (12,8) $ChanAmpAssignPath
+		wave ChanAmpAssign = $ChanAmpAssignPath
+		ChanAmpAssign = nan
+	endif
+	
+	If (waveexists($WavePath + ":ChanAmpAssignUnit") == 0)// if the wave doesn't exist, it makes the wave that channel unit info is stored in
+		make /T  /n = (4,8)  $ChanAmpAssignUnitPath
+		wave /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
+	endif
+	
+	string ChannelClampModeString = WavePath + ":ChannelClampMode"
+		if(waveexists($ChannelClampModeString) == 0) // makes the storage wave if it does not exist. This wave stores the active clamp mode of AD channels. It is populated in a different procedure
+		make /o /n = (16, 2) $ChannelClampModeString = nan
+	endif
+
+	duplicate /free ChanAmpAssign ChanAmpAssignOrig
+
+	// Assigns V-clamp settings for a particular headstage
+	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
+	ChanAmpAssign[0][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_VC_DAgain
+	ChanAmpAssign[1][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_VC_DA_Unit	
+	ChanAmpAssignUnit[0][HeadStageNo] = s_value
+	ControlInfo /w = $panelTitle Popup_Settings_VC_AD
+	ChanAmpAssign[2][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain_0
+	ChanAmpAssign[3][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_VC_AD_Unit
+	ChanAmpAssignUnit[1][HeadStageNo] = s_value
+	
+	//Assigns I-clamp settings for a particular headstage
+	ControlInfo /w = $panelTitle Popup_Settings_IC_DA
+	ChanAmpAssign[4][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_IC_DAgain
+	ChanAmpAssign[5][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_IC_DA_Unit	
+	ChanAmpAssignUnit[2][HeadStageNo] = s_value
+	ControlInfo /w = $panelTitle Popup_Settings_IC_AD
+	ChanAmpAssign[6][HeadStageNo] = str2num(s_value)
+	ControlInfo /w = $panelTitle setvar_Settings_IC_ADgain
+	ChanAmpAssign[7][HeadStageNo] = v_value
+	ControlInfo /w = $panelTitle SetVar_Hardware_IC_AD_Unit	
+	ChanAmpAssignUnit[3][HeadStageNo] = s_value
+	
+	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
+	if(waveexists(W_telegraphServers) == 1)
+	ControlInfo /w = $panelTitle popup_Settings_Amplifier
+		if(v_value > 1)
+		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0]
+		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1]
+		else
+		ChanAmpAssign[8][HeadStageNo] = nan
+		ChanAmpAssign[9][HeadStageNo] = nan
+		endif
+		ChanAmpAssign[10][HeadStageNo] = v_value
+
+	endif
+	//Duplicate ChanampAssign wave and add sweep number if the wave is changed
+	controlinfo SetVar_Sweep
+	SweepNo = v_value
+	
+	if(SweepNo > 0)
+		ChanAmpAssignOrig -= ChanAmpAssign//used to see if settings have changed
+		if((wavemax(ChanAmpAssignOrig)) != 0 || (wavemin(ChanAmpAssignOrig)) != 0)
+		ED_MakeSettingsHistoryWave(panelTitle)
+		endif
+	endif
 End
+//==================================================================================================
+
+Function HSU_UpdateChanAmpAssignPanel(PanelTitle)
+	string panelTitle
+	Variable HeadStageNo
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+	wave / T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+	controlinfo /w =$panelTitle Popup_Settings_HeadStage
+	HeadStageNo = str2num(s_value)
+	
+	// VC DA settings
+	Popupmenu Popup_Settings_VC_DA win = $panelTitle, mode = (ChanAmpAssign[0][HeadStageNo] + 1)
+	Setvariable setvar_Settings_VC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
+	// VC AD settings
+	Popupmenu Popup_Settings_VC_AD win = $panelTitle, mode = (ChanAmpAssign[2][HeadStageNo] + 1)
+	Setvariable setvar_Settings_VC_ADgain_0 win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
+	// IC DA settings
+	Popupmenu Popup_Settings_IC_DA win = $panelTitle, mode = (ChanAmpAssign[4][HeadStageNo] + 1)
+	Setvariable setvar_Settings_IC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[2][HeadStageNo]
+	// IC AD settings
+	Popupmenu  Popup_Settings_IC_AD win = $panelTitle, mode = (ChanAmpAssign[6][HeadStageNo] + 1)
+	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
+	
+	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo]
+End
+
 //=====================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW
 //=====================================================================================

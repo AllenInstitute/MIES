@@ -147,18 +147,6 @@ wave WP = root:WaveBuilder:Data:WP//
 	while(i < 30)
 End
 
-Function test()
-	
-	Make /O /N = 2e7 /FREE bigWave
-	
-	Variable start = stopmstimer(-2)
-	bigWave = gnoise(10)
-	print "single thread took (ms):", (stopmstimer(-2) - start)/1000
-	
-	start = stopmstimer(-2)
-	MultiThread bigWave = gnoise(10)
-	print "multithread took (ms):", (stopmstimer(-2) - start)/1000
-end
 
 Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight

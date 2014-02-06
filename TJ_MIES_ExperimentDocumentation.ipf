@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 //=============================================================================================================
-Function MakeSettingsHistoryWave(panelTitle)
+Function ED_MakeSettingsHistoryWave(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
@@ -17,7 +17,7 @@ Function MakeSettingsHistoryWave(panelTitle)
 End
 
 //=============================================================================================================
-Function AppendCommentToDataWave(DataWaveName, panelTitle)
+Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 	wave DataWaveName
 	string panelTitle
 	controlinfo /w = $panelTitle SetVar_DataAcq_Comment

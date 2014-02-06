@@ -1,19 +1,19 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITCDataAcq(DeviceType, DeviceNum, panelTitle)
+Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
 	string cmd
-	variable i=0
+	variable i = 0
 	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(PanelTitle)/4)
-	variable ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	variable stopCollectionPoint = dimsize(ITCDataWave, 0)/4
+	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+	variable stopCollectionPoint = dimsize(ITCDataWave, 0) / 4
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	string oscilloscopeSubwindow=panelTitle+"#oscilloscope"
+	string oscilloscopeSubwindow = panelTitle + "#oscilloscope"
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
@@ -31,48 +31,48 @@ Function ITCDataAcq(DeviceType, DeviceNum, panelTitle)
 			do
 				sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
 				Execute cmd	
-				ITCDataWave[0][0]+=0
-				doupdate/w=$oscilloscopeSubwindow
+				ITCDataWave[0][0] += 0
+				doupdate /w = $oscilloscopeSubwindow
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
-		sprintf cmd, "ITCStopAcq/z=0"
+		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-		itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
+		itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
 		doupdate
-		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-		i+=1
-	while (i<1)// 
+		i += 1
+	while (i < 1)// 
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 
-	ControlInfo/w=$panelTitle Check_Settings_SaveData
-	If(v_value==0)
-	SaveITCData(panelTitle)
+	ControlInfo /w = $panelTitle Check_Settings_SaveData
+	If(v_value == 0)
+		DM_SaveITCData(panelTitle)
 	endif
 	
-	 ScaleITCDataWave(panelTitle)
+	 DM_ScaleITCDataWave(panelTitle)
 END
 
 //======================================================================================
-Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
+Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
 	string cmd
-	variable i=0
-	//variable/G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
-	variable/G ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	string/G panelTitleG = panelTitle
+	variable i = 0
+	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
+	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	string /G panelTitleG = panelTitle
 	doupdate
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
-	variable/G StopCollectionPoint = dimsize(ITCDataWave, 0)/4
-	wave ITCFIFOAvailAllConfigWave =  $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+	variable /G StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
-	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
+	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	// open ITC device
@@ -86,66 +86,66 @@ Function ITCBkrdAcq(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCStartAcq" 
 		Execute cmd	
 	
-	StartBackgroundFIFOMonitor()
+	ITC_StartBckgrdFIFOMonitor()
 	
 	End
 //======================================================================================
-Function StopDataAcq()
+Function ITC_StopDataAcq()
 	variable DeviceType, DeviceNum
 	string cmd
 	NVAR StopCollectionPoint, ADChannelToMonitor
 	SVAR panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	string CountPath=WavePath+":count"
+	string CountPath = WavePath + ":count"
 
-	sprintf cmd, "ITCStopAcq/z=0"
+	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
 
-	itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
+	itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
 	doupdate
 	
-	sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	Execute cmd	
 	
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 	
 	
-	ControlInfo/w=$panelTitleG Check_Settings_SaveData
-	If(v_value==0)
-		SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+	ControlInfo /w = $panelTitleG Check_Settings_SaveData
+	If(v_value == 0)
+		DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
 	endif
 	
-	 ScaleITCDataWave(panelTitleG)
+	 DM_ScaleITCDataWave(panelTitleG)
 	
-	if(exists(CountPath)==0)//If the global variable count does not exist, it is the first trial of repeated acquisition
-	controlinfo/w=$panelTitleG Check_DataAcq1_RepeatAcq
-		if(v_value==1)//repeated aquisition is selected
-			RepeatedAcquisition(PanelTitleG)
+	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
+	controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
+		if(v_value == 1)//repeated aquisition is selected
+			RA_Start(PanelTitleG)
 		endif
 	else
 		
-		BckgTPwithCallToRptAcqContr(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 	
-	//killvariables/z StopCollectionPoint, ADChannelToMonitor
-	//killvariables/z  ADChannelToMonitor
-	//killstrings/z PanelTitleG
+	//killvariables /z StopCollectionPoint, ADChannelToMonitor
+	//killvariables /z  ADChannelToMonitor
+	//killstrings /z PanelTitleG
 END
 //======================================================================================
-Function ZeroTheInstrutechDevice()
+Function ITC_ZeroTheInstrutechDevice()
 string cmd
-sprintf cmd, "ITCSetDac/z=0 0, 0;ITCSetDac/z=0 1, 0;ITCSetDac/z=0 2, 0;ITCSetDac/z=0 3, 0;ITCSetDac/z=0 4, 0;ITCSetDac/z=0 5, 0;ITCSetDac/z=0 6, 0;ITCSetDac/z=0 7, 0"
+sprintf cmd, "ITCSetDac /z =0 0, 0;ITCSetDac /z = 0 1, 0;ITCSetDac /z = 0 2, 0;ITCSetDac /z =0 3, 0;ITCSetDac /z = 0 4, 0;ITCSetDac /z = 0 5, 0;ITCSetDac /z = 0 6, 0;ITCSetDac /z = 0 7, 0"
 execute cmd
 END
 //======================================================================================
-Function StartBackgroundFIFOMonitor()
-	CtrlNamedBackground FIFOMonitor, period=2, proc=FIFOMonitor
+Function ITC_StartBckgrdFIFOMonitor()
+	CtrlNamedBackground FIFOMonitor, period = 2, proc = ITC_FIFOMonitor
 	CtrlNamedBackground FIFOMonitor, start
 End
 
-Function FIFOMonitor(s)
+Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 	NVAR StopCollectionPoint, ADChannelToMonitor
 	SVAR panelTitleG
@@ -153,62 +153,61 @@ Function FIFOMonitor(s)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
+	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 	Execute cmd	
-	ITCDataWave[0][0]+=0//forces on screen update
-	string OscilloscopeSubWindow=panelTitleG+"#oscilloscope"
-	doupdate/w=$OscilloscopeSubWindow
+	ITCDataWave[0][0] += 0//forces on screen update
+	string OscilloscopeSubWindow = panelTitleG + "#oscilloscope"
+	doupdate /w = $OscilloscopeSubWindow
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
-		StopDataAcq()
-		STOPFifoMonitor()
+		ITC_StopDataAcq()
+		ITC_STOPFifoMonitor()
 	endif
 				
 	return 0
 End
 
-Function STOPFifoMonitor()
-CtrlNamedBackground FIFOMonitor, stop
+Function ITC_STOPFifoMonitor()
+CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 //======================================================================================
 
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
+Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
 	Variable RunTimePassed//how long you want the background timer to run in seconds
 	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
-	String/G FunctionNameA=FunctionNameAPassedIn
-	String/G FunctionNameB=FunctionNameBPassedIn
-	String/G FunctionNameC=FunctionNameCPassedIn
-	String/G PanelTitleG = panelTitle
+	String /G FunctionNameA = FunctionNameAPassedIn
+	String /G FunctionNameB = FunctionNameBPassedIn
+	String /G FunctionNameC = FunctionNameCPassedIn
+	String /G PanelTitleG = panelTitle
 	Variable numTicks = 15		// Run every quarter second (15 ticks)
-	Variable/G Start=ticks
-	Variable/G RunTime=(RunTimePassed*60)
-	CtrlNamedBackground Timer, period=5, proc=Timer
+	Variable/G Start = ticks
+	Variable/G RunTime = (RunTimePassed*60)
+	CtrlNamedBackground Timer, period = 5, proc = ITC_Timer
 	CtrlNamedBackground Timer, start
 End
 
-Function Timer(s)
+Function ITC_Timer(s)
 	STRUCT WMBackgroundStruct &s
 	SVAR panelTitleG
 	NVAR Start, RunTime
 	variable TimeLeft
 	
-	variable ElapsedTime=(ticks-Start)
+	variable ElapsedTime = (ticks - Start)
 	
-	TimeLeft=abs(((RunTime-(ElapsedTime))/60))
-	if(TimeLeft<0)
-	timeleft=0
+	TimeLeft = abs(((RunTime - (ElapsedTime)) / 60))
+	if(TimeLeft < 0)
+		timeleft = 0
 	endif
-	ValDisplay valdisp_DataAcq_ITICountdown win=$panelTitleG, value=_NUM:TimeLeft
+	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:TimeLeft
 	
-	if(ElapsedTime>=RunTime)
-	StopBackgroundTimerTask()
+	if(ElapsedTime >= RunTime)
+		ITC_StopBackgroundTimerTask()
 	endif
 	//printf "NextRunTicks %d", s.nextRunTicks
 	return 0
 End
 
-Function StopBackgroundTimerTask()
+Function ITC_StopBackgroundTimerTask()
 	SVAR FunctionNameA
 	SVAR FunctionNameB
 	SVAR FunctionNameC
@@ -221,17 +220,17 @@ Function StopBackgroundTimerTask()
 End
 //======================================================================================
 
-Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
+Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string/G PanelTitleG = panelTitle
 	string cmd
-	variable i=0
-	variable/G StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle)/5
+	variable i = 0
+	variable /G StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
 	NVAR stopcollectionpoint
-	variable/G ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	variable/G BackgroundTPCount = 0
+	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable /G BackgroundTPCount = 0
 	doupdate
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -240,13 +239,13 @@ Function StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	Execute cmd	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
-	CtrlNamedBackground TestPulse, period=2, proc=TestPulseFunc
+	CtrlNamedBackground TestPulse, period = 2, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 
 End
 //======================================================================================
 
-Function TestPulseFunc(s)
+Function ITC_TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
 	NVAR StopCollectionPoint, ADChannelToMonitor, BackgroundTPCount
 	SVAR panelTitleG
@@ -257,41 +256,41 @@ Function TestPulseFunc(s)
 	string  ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ResultsWavePath = WavePath + ":ResultsWave"
-	string CountPath=WavePath+":count"
-	string oscilloscopeSubWindow=panelTitle+"#oscilloscope"
+	string CountPath = WavePath + ":count"
+	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
 		sprintf cmd, "ITCStartAcq"
 		Execute cmd	
 		
-		 //StartBackgroundFIFOMonitor()
+		 //ITC_StartBckgrdFIFOMonitor()
 			do
-				sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
+				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 				Execute cmd	
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 5000 IS CHOSEN AS A POINT THAT IS A BIT LARGER THAN THE OUTPUT DATA
 		//Check Status
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
-		sprintf cmd, "ITCStopAcq/z=0"
+		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-		CreateAndScaleTPHoldingWave(panelTitle)
+		DM_CreateScaleTPHoldingWave(panelTitle)
 		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
-		//itcdatawave[0][0]+=0// runs arithmatic on data wave to force onscreen update 
+		//itcdatawave[0][0] += 0// runs arithmatic on data wave to force onscreen update 
 		//doupdate	
-		BackgroundTPCount +=1
-		if(mod(BackgroundTPCount,30)==0 || BackgroundTPCount == 1)
+		BackgroundTPCount += 1
+		if(mod(BackgroundTPCount,30) == 0 || BackgroundTPCount == 1)
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
 		endif
-		if(exists(countPath)==0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
+		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				beep 
-				STOPTestPulse(panelTitle)
+				ITC_STOPTestPulse(panelTitle)
 			endif
 		endif
 	return 0
@@ -299,7 +298,7 @@ Function TestPulseFunc(s)
 End
 //======================================================================================
 
-Function STOPTestPulse(panelTitle)
+Function ITC_STOPTestPulse(panelTitle)
 	string panelTitle
 	string cmd
 	CtrlNamedBackground TestPulse, stop
@@ -309,11 +308,11 @@ Function STOPTestPulse(panelTitle)
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
 		DAP_SmoothResizePanel(-340, panelTitle)
-		setwindow $panelTitle +"#oscilloscope", hide = 1
+		setwindow $panelTitle + "#oscilloscope", hide = 1
 	endif
 
 	DAP_RestoreTTLState(panelTitle)
-	//killwaves/z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
+	//killwaves /z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
@@ -329,9 +328,9 @@ End
 //======================================================================================
 
 
-//StartBackgroundTestPulse();StartBackgroundTimer(20, "STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
+//ITC_StartBackgroundTestPulse();ITC_StartBackgroundTimer(20, "ITC_STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
 
-Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
+Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
 	string cmd
@@ -371,26 +370,26 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	do
 
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		execute cmd// this also seems necessary to update the DA channel data to the board!!
+		execute cmd // this also seems necessary to update the DA channel data to the board!!
 		sprintf cmd, "ITCStartAcq"// /f/r=0/z=0 -1,0,1,1"//   
 		Execute cmd	
 			do
-				sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
+				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 				Execute cmd	
 				//doxopidle
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
-		sprintf cmd, "ITCStopAcq/z=0"
+		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-		CreateAndScaleTPHoldingWave(panelTitle)
+		DM_CreateScaleTPHoldingWave(panelTitle)
 		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		doupdate
-		//itcdatawave[0][0]+=0//runs arithmatic on data wave to force onscreen update 
+		//itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
 		//doupdate
-		sprintf cmd, "ITCConfigChannelUpload/f/z=0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 		if(mod(i, 50) == 0)
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
@@ -413,7 +412,7 @@ Function StartTestPulse(DeviceType, DeviceNum, panelTitle)
 END
 //======================================================================================
 
-Function SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
+Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
 	variable Channel
 	string panelTitle
 	variable ChannelValue
@@ -431,7 +430,7 @@ End
 
 //======================================================================================
 
-Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
+Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	Wave DataWave
 	variable DeviceType, DeviceNum
 	string panelTitle
@@ -462,7 +461,7 @@ Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	
 	do
 		if(str2num(stringfromlist(i, AsyncChannelState,";")) == 1)
-		RawChannelValue=SingleADReading(i +DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+		RawChannelValue=ITC_SingleADReading(i +DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
 		
 			if(i < 10)
 				 SetVar_title = "SetVar_Async_Title_0" + num2str(i)
@@ -478,22 +477,22 @@ Function AD_DataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 			title = s_value
 			controlInfo /w = $panelTitle $SetVar_gain
 			Measurement = num2str(v_value * RawChannelValue)
-			SupportSystemAlarm(i, v_value * RawChannelValue, title, panelTitle)
+			ITC_SupportSystemAlarm(i, v_value * RawChannelValue, title, panelTitle)
 			controlInfo /w = $panelTitle $SetVar_Unit
 			Unit = s_value
 			WaveNote = title + " " + Measurement + " " + Unit
 			note DataWave, WaveNote
 		endif
-		i += 1
+		i += 1 
 	while(i < TotAsyncChannels)
 	
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
-	//print (ticks-starttime)/60
+	//print (ticks - starttime) / 60
 
 End
 //======================================================================================
-Function SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
 variable Channel, Measurement
 string MeasurementTitle, panelTitle
 String CheckAlarm, SetVarTitle, SetVarMin, SetVarMax, Title
@@ -518,7 +517,7 @@ if(v_value == 1)
 	print measurement
 	if(Measurement >= ParamMax || Measurement <= ParamMin)
 		beep
-		print time() +" !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+		print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 		beep
 	endif
 endif
