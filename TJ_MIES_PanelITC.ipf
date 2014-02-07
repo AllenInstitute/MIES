@@ -3007,7 +3007,7 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 	
 	string RadioButtonName = "Radio_ClampMode_"
 	Variable HeadStageNo = str2num(ctrlname[18])
-	Variable ClampMode//
+	Variable ClampMode //
 	getwindow kwTopWin wtitle
 	string panelTitle = s_value
 	RadioButtonName += num2str((HeadStageNo * 2) + 1)
