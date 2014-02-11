@@ -2437,8 +2437,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 
 		
 	if(DataAcqState == 0) // data aquistion is stopped
-		DataAcqState = 1
-		DAP_AcqDataButtonToStopButton(panelTitle)
+		
 	
 	
 		if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops test pulse if it is running
@@ -2480,12 +2479,16 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
 		If(v_value == 0)
-		ITC_DataAcq(DeviceType,DeviceNum, panelTitle)
+		ITC_DataAcq(DeviceType,DeviceNum, panelTitle) // start fore ground data acq
 			controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq// checks for repeated acquisition
 			if(v_value == 1)//repeated aquisition is selected
+				DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
+				DAP_AcqDataButtonToStopButton(panelTitle)	// when RA code is modified to have foreground TP during RA, this will not be needed
 				RA_Start(PanelTitle)
 			endif
-		else
+		else // background data acq
+			DataAcqState = 1
+			DAP_AcqDataButtonToStopButton(panelTitle)
 			ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle) // initiates background aquisition
 		endif
 	else // data aquistion is ongoing
@@ -3047,7 +3050,7 @@ End
 Function DAP_StopOngoingDataAcquisition(PanelTitle)
 	string panelTitle
 	string cmd 
-	SVAR panelTitleG
+	SVAR/z panelTitleG
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
 		ITC_STOPTestPulse(panelTitle)
