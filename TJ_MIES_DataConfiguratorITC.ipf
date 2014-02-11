@@ -141,7 +141,7 @@ Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 	endif
 	
 	do
-		if(str2num(stringfromlist(a,TTLsInUse,";")) == 1)
+		If(str2num(stringfromlist(a,TTLsInUse,";")) == 1)
 			RackTTLStatus = 1
 			return RackTTLStatus
 		endif
@@ -297,7 +297,7 @@ Function DC_CalculateITCDataWaveLength(panelTitle)// determines the longest outp
 	LongestWaveLength *= 5
 	
 	return round(LongestWaveLength)
-End
+end
 
 //==========================================================================================
 Function DC_MakeITCConfigAllConfigWave(PanelTitle)
@@ -474,7 +474,10 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 			//resample the wave to min samp interval and place in ITCDataWave
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
 			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
-			sprintf cmd,  "%s[%d, %d][%d] = (%d*%d) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
+			print "da scale = ", dascale
+			print "da gain = ", dagain
+			sprintf cmd,  "%s[%d, %d][%d] = (%g*%g) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
+			print cmd
 			execute cmd
 	
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
@@ -730,8 +733,7 @@ Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)/
 	
 	column_CycleCount = cmplx(column, cycleCount)
 	return column_CycleCount
-End
-//==========================================================================================
+end
 
 //below function was taken from: http://www.igorexchange.com/node/1614
 //author s.r.chinn
@@ -747,8 +749,7 @@ Function DC_shuffle(inwave)	//	in-place random permutation of input wave element
 		inwave[j]		= inwave[i-1]
 		inwave[i-1]	= temp
 	endfor
-End
-//==========================================================================================
+end
 
 Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the ITCdataWave according to the global changes on the data acquisition tab - should only get called for not TP data acquisition cycles
 	string panelTitle
@@ -763,7 +764,6 @@ Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the I
 	redimension /N = (ITCDataWaveRows + NewRows, -1, -1, -1) ITCDataWave
 	return OnsetDelay
 End
-//==========================================================================================
 
 Function DC_ReturnTotalLengthIncrease(PanelTitle)
 	string panelTitle
@@ -773,5 +773,5 @@ Function DC_ReturnTotalLengthIncrease(PanelTitle)
 	variable TerminationDelay = v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
 	return OnsetDelay + TerminationDelay
-End
-//==========================================================================================
+end
+	

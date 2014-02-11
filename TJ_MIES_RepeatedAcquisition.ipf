@@ -11,17 +11,8 @@ Function RA_Start(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	string CountPath = WavePath+":Count"
-<<<<<<< local
-	variable /g $CountPath=0
-	NVAR Count = $CountPath
-=======
 	variable/g $CountPath=0
-<<<<<<< local
-	NVAR Count=$CountPath
->>>>>>> other
-=======
 	NVAR Count = $CountPath
->>>>>>> other
 	string ActiveSetCountPath=WavePath+":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath=v_value
@@ -94,17 +85,8 @@ Function RA_Start(PanelTitle)
 
 End
 
-<<<<<<< local
-<<<<<<< local
-Function RA_Counter(DeviceType, DeviceNum, panelTitle)
-	variable DeviceType, DeviceNum
-=======
-Function RepeatedAcquisitionCounter(DeviceType,DeviceNum,panelTitle)
-=======
 Function RA_Counter(DeviceType,DeviceNum,panelTitle)
->>>>>>> other
 	variable DeviceType,DeviceNum
->>>>>>> other
 	string panelTitle
 	variable TotTrials
 	variable ITI
@@ -121,63 +103,27 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	ActiveSetCount -= 1
 	
 	controlinfo/w = $panelTitle Check_DataAcq_Indexing
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	if(v_value == 0)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials = v_value
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-<<<<<<< local
-		TotTrials = (TotTrials * v_value) //+1
-=======
-	if(v_value==0)
-		controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials=v_value
-		controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials=(TotTrials*v_value)//+1
->>>>>>> other
-=======
 		TotTrials = (TotTrials * v_value)//+1
->>>>>>> other
 	else
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
 	endif
 	//print "TotTrials = " + num2str(tottrials)
-	print "count = " + num2str(count)
+	print "count = " + num2str(count), "in RA_Counter"
 	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 	//TotTrials = (TotTrials * v_value) + 1
 	
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
 	ITI = v_value
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
-<<<<<<< local
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	If(v_value == 1)// if indexing is activated, indexing is applied.
-		if(count == 1)
-=======
-	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
-	ITI=v_value
-	ValDisplay valdisp_DataAcq_TrialsCountdown win=$panelTitle, value=_NUM:(TotTrials-(Count))// reports trials remaining
-=======
->>>>>>> other
 	
-<<<<<<< local
-	controlinfo/w=$panelTitle Check_DataAcq_Indexing
-	If(v_value==1)// if indexing is activated, indexing is applied.
-		if(count==1)
->>>>>>> other
-=======
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	If(v_value == 1)// if indexing is activated, indexing is applied.
 		if(count == 1)
->>>>>>> other
 			IDX_MakeIndexingStorageWaves(panelTitle)
 			IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
@@ -189,26 +135,11 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				IDX_IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 			endif	
 
-<<<<<<< local
-			valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
-			controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-			activeSetCount = v_value
-			controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-			ActiveSetCount *= v_value
-=======
 			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
-<<<<<<< local
-			controlinfo/w=$panelTitle valdisp_DataAcq_SweepsActiveSet
-			activeSetCount=v_value
-			controlinfo/w=$panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-			ActiveSetCount*=v_value
->>>>>>> other
-=======
 			controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 			activeSetCount = v_value
 			controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
 			ActiveSetCount *= v_value
->>>>>>> other
 		endif
 		
 		controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
@@ -218,16 +149,8 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
 		endif
 	endif
-<<<<<<< local
-	if(Count < TotTrials)
-=======
 	
-<<<<<<< local
-	if(Count<TotTrials)
->>>>>>> other
-=======
 	if(Count < TotTrials)
->>>>>>> other
 		DC_ConfigureDataForITC(PanelTitle)
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 		
@@ -260,23 +183,10 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 					DAP_SmoothResizePanel(340, panelTitle)
 					setwindow $panelTitle + "#oscilloscope", hide = 0
 				endif
-<<<<<<< local
-
-				ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
-				//ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse()", "RA_Counter()", "", panelTitle)
-				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle + "\"" + ")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
-=======
 				
-<<<<<<< local
-				StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
-				//StartBackgroundTimer(ITI, "STOPTestPulse()", "RepeatedAcquisitionCounter()", "", panelTitle)
-				StartBackgroundTimer(ITI, "STOPTestPulse("+"\""+panelTitle+"\""+")", "RepeatedAcquisitionCounter("+num2str(DeviceType)+","+num2str(DeviceNum)+",\""+panelTitle+"\")", "", panelTitle)
->>>>>>> other
-=======
 				ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 				//ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse()", "RA_Counter()", "", panelTitle)
 				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
->>>>>>> other
 				
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale, panelTitle)
@@ -289,15 +199,8 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 		else //background aquisition is on
-<<<<<<< local
-<<<<<<< local
-				ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)					
-=======
-				ITCBkrdAcq(DeviceType,DeviceNum, panelTitle)					
->>>>>>> other
-=======
+				print "about in initate bkcrdDataAcq"
 				ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle)					
->>>>>>> other
 		endif
 	endif
 End
@@ -331,27 +234,10 @@ Function RA_BckgTPwithCallToRACounter(PanelTitle)
 	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 	//TotTrials = (TotTrials * v_value) + 1
 	
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
 	ITI = v_value
-<<<<<<< local
-			print "TotTrials = ", TotTrials
-			if(Count < (TotTrials ))
-=======
-	controlinfo/w=$panelTitle SetVar_DataAcq_ITI
-	ITI=v_value
-=======
->>>>>>> other
 			
-<<<<<<< local
-			if(Count<(TotTrials))
->>>>>>> other
-=======
-			if(Count < (TotTrials))
->>>>>>> other
+			if(Count < (TotTrials - 1))
 				DAP_StoreTTLState(panelTitle)
 				DAP_TurnOffAllTTLs(panelTitle)
 				
@@ -379,6 +265,7 @@ Function RA_BckgTPwithCallToRACounter(PanelTitle)
 				endif
 				
 				ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
+				//print ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 				
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)

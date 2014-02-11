@@ -14,7 +14,6 @@ Function TP_SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for 
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 End
-//=============================================================================================
 
 Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave SelectedDACWaveList
@@ -32,7 +31,6 @@ Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-//=============================================================================================
 
 Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave SelectedDACWaveList
@@ -49,7 +47,6 @@ Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	while(i < itemsinlist(ListOfCheckedDA))
 
 End
-//=============================================================================================
 
 Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	wave SelectedDACScale
@@ -67,7 +64,6 @@ Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-//=============================================================================================
 
 Function TP_SetDAScaleToOne(panelTitle)
 	string panelTitle
@@ -97,7 +93,6 @@ Function TP_SetDAScaleToOne(panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-//=============================================================================================
 
 Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	wave SelectedDACScale
@@ -113,14 +108,13 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-//=============================================================================================
 
 Function TP_UpdateTestPulseWave(TestPulse, panelTitle)// full path name
 	wave TestPulse
 	string panelTitle
 	variable PulseDuration
 	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
-	variable /g  $TPGlobalPath + ":Duration"
+	variable/g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $TPGlobalPath + ":Duration"
 	variable /g $TPGlobalPath + ":AmplitudeVC"
 	NVAR GlobalTPAmplitudeVariableVC = $TPGlobalPath + ":AmplitudeVC"
@@ -141,7 +135,6 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle)// full path name
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 	GlobalTPAmplitudeVariableIC = v_value
 End
-//=============================================================================================
 
 mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
@@ -169,18 +162,9 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	endif
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	
-<<<<<<< local
-=======
->>>>>>> other
-=======
 
 	
->>>>>>> other
 	string CountPath = WavePath + ":count"
 	if(exists(CountPath) == 2)
 		killvariables $CountPath
@@ -229,7 +213,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 		if(v_value == 0)
 			DAP_SmoothResizePanel(-340, panelTitle)
-			setwindow $panelTitle + "#oscilloscope", hide = 1
+			setwindow $panelTitle +"#oscilloscope", hide = 1
 		endif
 		killwaves /f TestPulse
 	endif
@@ -352,8 +336,7 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 					i += 1
 				while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
 			End
-//=============================================================================================
-	
+			
 Function TP_CalculateResistance(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -367,7 +350,6 @@ Function TP_CalculateResistance(panelTitle)
 	variable AmplitudeIC
 
 End
-//=============================================================================================
 
 Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)
 	string panelTitle, InputDataPath
@@ -378,7 +360,6 @@ Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)
 	wave Resistance = $InputDataPath + ":Resistance"
 	NVAR Amplitude = $InputDataPath + ":Amplitude"
 End
-//=============================================================================================
 
 //  function that creates string of clamp modes based on the ad channel associated with the headstage	- in the sequence of ADchannels in ITCDataWave - i.e. numerical order
 Function TP_ClampModeString(panelTitle)
@@ -396,7 +377,6 @@ Function TP_ClampModeString(panelTitle)
 	while(i < itemsinlist(ADChannelList))
 End
 
-//=============================================================================================
 
 
 Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a particular AD
@@ -419,7 +399,6 @@ Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a parti
 		return Nan
 	endif
 End
-//=============================================================================================
 
 Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a "headstage"
 	string panelTitle
@@ -442,31 +421,16 @@ Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a 
 	
 	return ClampMode
 End
-//=============================================================================================
 
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string panelTitle, OpName
 	variable NoYes // no = 0, 1 = yes
 	CtrlNamedBackground $OpName, status
-<<<<<<< local
-	if(str2num(stringfromlist(2, s_info, ";")[4]) == 0)
-=======
 	if(str2num(stringfromlist(2, s_info, ";")[4])==0)
->>>>>>> other
 		NoYes = 0
 	else
 		NoYes = 1
 	endif
 	
 	return NoYes
-<<<<<<< local
 End
-//=============================================================================================
-=======
->>>>>>> other
-=======
-End>>>>>>> other

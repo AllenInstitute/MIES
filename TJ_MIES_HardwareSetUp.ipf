@@ -20,21 +20,18 @@ Function HSU_QueryITCDevice(PanelTitle)
 	sprintf cmd, "ITCCloseDevice" 
 	execute cmd
 End
-//==============================================================================================================================
 
 Function HSU_ButtonProc_Settings_OpenDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_QueryITCDevice(s_value)
 End
-//==============================================================================================================================
 
 Function HSU_ButtonProc_LockDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_LockDevice(s_value)
 End
-//==============================================================================================================================
 
 Function HSU_LockDevice(panelTitle)
 	string PanelTitle
@@ -56,7 +53,6 @@ Function HSU_LockDevice(panelTitle)
 	HSU_GlblListStrngOfITCPanlTitls()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
 	HSU_ListOfITCPanels()
 End
-//==============================================================================================================================
 
 Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
 	string PanelTitle
@@ -69,7 +65,6 @@ Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
 		groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Lock a device to generate device folder structure"
 	endif
 End
-//==============================================================================================================================
 
 Function HSU_CreateDataFolderForLockdDev(PanelTitle)
 	string PanelTitle
@@ -80,7 +75,6 @@ Function HSU_CreateDataFolderForLockdDev(PanelTitle)
 	Newdatafolder /o $FullFolderPath+":Data"
 	Newdatafolder /o $FullFolderPath+":TestPulse"
 End
-//==============================================================================================================================
 
 Function/t HSU_BaseFolderPathString(PanelTitle)
 	string PanelTitle
@@ -92,7 +86,6 @@ Function/t HSU_BaseFolderPathString(PanelTitle)
 	BaseFolderPath = "root:" + stringfromlist(DeviceType, DeviceTypeList, ";")
 	return BaseFolderPath
 End
-//==============================================================================================================================
 
 Function/t HSU_DataFullFolderPathString(PanelTitle)
 	string PanelTitle
@@ -106,14 +99,12 @@ Function/t HSU_DataFullFolderPathString(PanelTitle)
 	FolderPath = "root:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
 	return FolderPath
 End
-//==============================================================================================================================
 
 Function HSU_ButProc_Hrdwr_UnlckDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_UnlockDevSelection(s_value)
 End
-//==============================================================================================================================
 
 Function HSU_UnlockDevSelection(PanelTitle)
 	string PanelTitle
@@ -126,7 +117,6 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	dowindow /W = $panelTitle /C $"DA_Ephys"
 	// ########## ADD CODE HERE TO REMOVE PANEL TITLE FROM GLOBAL LIST OF PANEL TITLES ##########
 End
-//==============================================================================================================================
 
 Function HSU_DeviceLockCheck(PanelTitle)
 	string PanelTitle
@@ -140,7 +130,6 @@ Function HSU_DeviceLockCheck(PanelTitle)
 	endif
 	return DeviceLockStatus
 End
-//==============================================================================================================================
 
 
 Function HSU_IsDeviceTypeConnected(PanelTitle)
@@ -158,35 +147,20 @@ Function HSU_IsDeviceTypeConnected(PanelTitle)
 	endif
 	killwaves localwave
 End
-//==============================================================================================================================
-
 // below functions are used to create a list of the ITC panels. This list is will be used by functions that need to update items that are common to different panels.
 // for example: DAC popup lists, TTL popup lists
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 
 Function HSU_GlblListStrngOfITCPanlTitls()
-<<<<<<< local
-	if(exists("ITCPanelTitleList") == 0)
-=======
-Function GlobalListStrngOfITCPanelTitles()
-=======
->>>>>>> other
 	If(exists("ITCPanelTitleList") == 0)
->>>>>>> other
 	String /G root:ITCPanelTitleList
 	endif
 End
-//==============================================================================================================================
 
 
 Function HSU_ListOfITCPanels()
 	SVAR ITCPanelTitleList = root:ITCPanelTitleList
 	ITCPanelTitleList = winlist("ITC*", ";", "WIN:64") 
 End
-//==============================================================================================================================
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
@@ -197,29 +171,17 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
 	wave /z /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
 
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	controlinfo /w = $panelTitle Popup_Settings_HeadStage
 	HeadStageNo = str2num(s_value)
 	
-<<<<<<< local
-	if (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
-=======
 	If (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
->>>>>>> other
 		string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
 		make /n = (12,8) $ChanAmpAssignPath
 		wave ChanAmpAssign = $ChanAmpAssignPath
 		ChanAmpAssign = nan
 	endif
 	
-<<<<<<< local
-	if (waveexists($WavePath + ":ChanAmpAssignUnit") == 0)// if the wave doesn't exist, it makes the wave that channel unit info is stored in
-=======
 	If (waveexists($WavePath + ":ChanAmpAssignUnit") == 0)// if the wave doesn't exist, it makes the wave that channel unit info is stored in
->>>>>>> other
 		make /T  /n = (4,8)  $ChanAmpAssignUnitPath
 		wave /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
 	endif
@@ -282,11 +244,6 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 		ED_MakeSettingsHistoryWave(panelTitle)
 		endif
 	endif
-<<<<<<< local
-=======
->>>>>>> other
-=======
->>>>>>> other
 End
 //==================================================================================================
 

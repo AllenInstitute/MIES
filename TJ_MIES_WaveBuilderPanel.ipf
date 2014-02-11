@@ -831,50 +831,17 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	execute cmd
 	
 	controlinfo WBP_WaveType
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	if(v_value == 2)
-<<<<<<< local
 		WBP_LowPassDeltaLimits()
 		WBP_HighPassDeltaLimits()
 		WBP_CutOffCrossOver()
-=======
-	if(v_value==2)
-=======
->>>>>>> other
-	WBP_LowPassDeltaLimits()
-	WBP_HighPassDeltaLimits()
-	WBP_CutOffCrossOver()
->>>>>>> other
 	endif
 	
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	if(v_value == 5)
-<<<<<<< local
 		SetVariable SetVar_WaveBuilder_P8 limits = {0, WBP_ReturnPulseDurationMax(), 0.1}
 		controlinfo SetVar_WaveBuilder_P8
 		if(v_value > WBP_ReturnPulseDurationMax())
 			SetVariable SetVar_WaveBuilder_P8 value = _NUM:WBP_ReturnPulseDurationMax()
-=======
-	if(v_value==5)
-	SetVariable SetVar_WaveBuilder_P8 limits={0,WBP_ReturnPulseDurationMax(),0.1}
-=======
-	SetVariable SetVar_WaveBuilder_P8 limits = {0, WBP_ReturnPulseDurationMax(), 0.1}
->>>>>>> other
-	controlinfo SetVar_WaveBuilder_P8
-<<<<<<< local
-		if(v_value>WBP_ReturnPulseDurationMax())
-		SetVariable SetVar_WaveBuilder_P8 value= _NUM:WBP_ReturnPulseDurationMax()
->>>>>>> other
-=======
-		if(v_value > WBP_ReturnPulseDurationMax())
-		SetVariable SetVar_WaveBuilder_P8 value = _NUM:WBP_ReturnPulseDurationMax()
->>>>>>> other
 		endif
 	endif
 	
@@ -902,54 +869,19 @@ variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
 	ControlInfo SetVar_WaveBuilder_P21
 	LowPassDelta = v_value
 	
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	if(LowPassDelta > 0)
-<<<<<<< local
 		DeltaLimit = trunc(100000 / StepCount)
 		SetVariable SetVar_WaveBuilder_P21 limits = {-inf, DeltaLimit, 1}
 		if(LowPassDelta > DeltaLimit)
 			SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
-=======
-	if(LowPassDelta>0)
-	DeltaLimit=trunc(100000/StepCount)
-	SetVariable SetVar_WaveBuilder_P21 limits={-inf,DeltaLimit,1}
-		If(LowPassDelta>DeltaLimit)
-=======
-	DeltaLimit = trunc(100000 / StepCount)
-	SetVariable SetVar_WaveBuilder_P21 limits = {-inf, DeltaLimit, 1}
-		If(LowPassDelta > DeltaLimit)
->>>>>>> other
-		SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
->>>>>>> other
 		endif
 	endif
 	
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	if(LowPassDelta < 0)
-<<<<<<< local
 		DeltaLimit = trunc(-((LowPassCutOff/StepCount) -1))
 		SetVariable SetVar_WaveBuilder_P21 limits = {DeltaLimit, 99999, 1}
 		if(LowPassDelta < DeltaLimit)
 			SetVariable SetVar_WaveBuilder_P21 value = _num:DeltaLimit
-=======
-	if(LowPassDelta<0)
-	DeltaLimit=trunc(-((LowPassCutOff/StepCount)-1))
-	SetVariable SetVar_WaveBuilder_P21 limits={DeltaLimit,99999,1}
-		If(LowPassDelta<DeltaLimit)
-		SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
->>>>>>> other
-=======
-	DeltaLimit = trunc(-((LowPassCutOff/StepCount) -1))
-	SetVariable SetVar_WaveBuilder_P21 limits = {DeltaLimit, 99999, 1}
-		If(LowPassDelta < DeltaLimit)
-		SetVariable SetVar_WaveBuilder_P21 value = _num:DeltaLimit
->>>>>>> other
 		endif
 	endif
 	SetDataFolder saveDFR
@@ -1488,20 +1420,8 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	controlinfo Setvar_WaveBuilder_SegmentEdit
 	SegmentToEdit = v_value
 	
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 	if(SegmentNo <= SegmentToEdit)// This prevents the segment to edit from being larger than the max number of segements
-<<<<<<< local
 		SetVariable setvar_WaveBuilder_SegmentEdit value = _num:SegmentNo - 1
-=======
-	if(SegmentNo<=SegmentToEdit)// This prevents the segment to edit from being larger than the max number of segements
-	SetVariable setvar_WaveBuilder_SegmentEdit value=_num:SegmentNo-1
->>>>>>> other
-=======
-	SetVariable setvar_WaveBuilder_SegmentEdit value = _num:SegmentNo - 1
->>>>>>> other
 	
 		TabControl WBP_WaveType value = SegWvType[SegmentNo - 1]// this selects the correct tab based on changes to the segment to edit value
 		WBP_ExecuteAdamsTabcontrol(SegWvType[SegmentNo - 1])
@@ -1562,20 +1482,8 @@ Function WBP_CutOffCrossOver()
 	controlinfo SetVar_WaveBuilder_P22//High pass cut off frequency
 	HighPassCutOff = v_value
 	
-<<<<<<< local
-<<<<<<< local
 	if(HighPassCutOff >= LowPassCutOff)
-=======
-	If(HighPassCutOff >= LowPassCutOff)
->>>>>>> other
 		SetVariable SetVar_WaveBuilder_P20 value = _NUM:HighPassCutOff + 1
-<<<<<<< local
-=======
-	If(HighPassCutOff>=LowPassCutOff)
-	SetVariable SetVar_WaveBuilder_P20 value= _NUM:HighPassCutOff+1
->>>>>>> other
-=======
->>>>>>> other
 	endif
 	
 	If(LowPassCutOff<=HighPassCutOff)

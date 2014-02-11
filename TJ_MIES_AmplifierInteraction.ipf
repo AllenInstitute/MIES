@@ -27,7 +27,6 @@ Function /t AI_ReturnListOf700BChannels(panelTitle)
 	return ChannelList
 
 End
-//==========================================================================================
 
 
 

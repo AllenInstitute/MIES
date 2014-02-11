@@ -46,7 +46,7 @@ Function DB_PlotDataBrowserWave(panelTitle, SweepName) // Pass in sweep name wit
 	controlinfo check_DataBrowser_Overlay
 	if(v_value == 0)
 		DB_TilePlotForDataBrowser(panelTitle, SweepName)
-		TitleBox ListBox_DataBrowser_NoteDisplay title = "Sweep note: \r " + note(SweepName)
+		TitleBox ListBox_DataBrowser_NoteDisplay title ="Sweep note: \r " + note(SweepName)
 	else
 		//OverlayPlotForDataBrowser(SweepName)
 	endif
@@ -161,7 +161,7 @@ End
 Function DB_OverlayPlotForDataBrowser(SweepName)
 wave SweepName
 
-End
+end
 //==============================================================================================================================
 
 Function DB_RemoveAndKillWavesOnGraph(PanelTitle, GraphName)
@@ -307,7 +307,6 @@ Function /T DB_ReturnDBPanelName()
 	
 	return PanelTitle
 End
-//==========================================================================================
 
 
 Window DataBrowser() : Panel

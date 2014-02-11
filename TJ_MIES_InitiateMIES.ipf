@@ -4,15 +4,7 @@ Function IM_InitiateMIES()
 	WB_InitiateWaveBuilder()
 	execute "DA_Ephys()"
 	execute "DataBrowser()"
-<<<<<<< local
-<<<<<<< local
-=======
->>>>>>> other
 End
-<<<<<<< local
-//==============================================================================================================================
-=======
->>>>>>> other
 
 Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
 	string panelTitle
@@ -30,10 +22,4 @@ Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for
 	make /o /n= (1,8) $WavePath + ":TestPulse:" + "Resistance"
 	make /o /n= (1,8) $WavePath + ":TestPulse:" + "SSResistance"
 
-<<<<<<< local
 End
-//==============================================================================================================================
-=======
-End>>>>>>> other
-=======
-End>>>>>>> other
