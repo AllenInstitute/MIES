@@ -2161,6 +2161,7 @@ Function CheckProc(cba) : CheckBoxControl
 
 	return 0
 End
+//==============================================================================================================================
 
 Function DAP_SetVarProc_DownSampLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2173,6 +2174,7 @@ Function DAP_SetVarProc_DownSampLimit(ctrlName,varNum,varStr,varName) : SetVaria
 	MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	SetVariable SetVar_DownSamp limits = {MinSampInt,inf,1}, win = $panelTitle
 End
+//==============================================================================================================================
 
 Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2206,6 +2208,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	while(i < 8)
 	setdatafolder saveDFR
 End
+//==============================================================================================================================
 
 
 Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -2266,6 +2269,7 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 	endif
 	setdatafolder saveDFR
 End
+//==============================================================================================================================
 
 
 Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
@@ -2301,6 +2305,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 	setdatafolder saveDFR
 End
+//==============================================================================================================================
 
 
 Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
@@ -2338,6 +2343,7 @@ Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab 
 //	endif
 return 0
 End
+//==============================================================================================================================
 
 Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2396,6 +2402,7 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	endif
 	setdatafolder saveDFR
 End
+//==============================================================================================================================
 
 Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure checks to see that a DAC or TTL wave is selected before turning on the corresponding channel
 	String ctrlName
@@ -2418,6 +2425,7 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
 	valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
 End
+//==============================================================================================================================
 
 Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
@@ -2476,6 +2484,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 			ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle)
 		endif	
 End
+//==============================================================================================================================
 
 Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2492,6 +2501,7 @@ Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
 	endif
 End
+//==============================================================================================================================
 
 Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2510,6 +2520,7 @@ Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
 	endif
 
 End
+//==============================================================================================================================
 
 Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 	string BaseName, panelTitle// Popup_DA_IndexEnd_0
@@ -2524,6 +2535,7 @@ Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 	while(i < 8)
 
 End
+//==============================================================================================================================
 
 Function DAP_SmoothResizePanel(RightShift, panelTitle)
 	variable RightShift
@@ -2543,6 +2555,7 @@ Function DAP_SmoothResizePanel(RightShift, panelTitle)
 	while(i < resizeLimit)
 
 End
+//==============================================================================================================================
 
 Function DAP_CheckProc_ShowScopeWin(ctrlName,checked) : CheckBoxControl // need to modify this function so the panel always returns to it's original size
 	String ctrlName
@@ -2557,6 +2570,7 @@ Function DAP_CheckProc_ShowScopeWin(ctrlName,checked) : CheckBoxControl // need 
 		setwindow $panelTitle + "#oscilloscope", hide =1
 	endif
 End
+//==============================================================================================================================
 
 Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
@@ -2570,17 +2584,18 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
+//==============================================================================================================================
 
 Function DAP_StoreTTLState(panelTitle)
-string panelTitle
-string/g StoredTTLState = DC_ControlStatusListString("TTL", "Check", panelTitle)
+	string panelTitle
+	string/g StoredTTLState = DC_ControlStatusListString("TTL", "Check", panelTitle)
 End
 
 Function DAP_RestoreTTLState(panelTitle)
-string panelTitle
-SVAR StoredTTLState
-variable i, NoOfTTLs, CheckBoxState
-string TTLCheckBoxName
+	string panelTitle
+	SVAR StoredTTLState
+	variable i, NoOfTTLs, CheckBoxState
+	string TTLCheckBoxName
 	
 	NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
 	
@@ -2590,8 +2605,9 @@ string TTLCheckBoxName
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
 
-killstrings StoredTTLState
+	killstrings StoredTTLState
 End
+//==============================================================================================================================
 
 Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	String ctrlName
@@ -2599,6 +2615,7 @@ Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	
 	DAP_TurnOffAllTTLs(panelTitle)
 End
+//==============================================================================================================================
 
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
@@ -2612,12 +2629,14 @@ Function DAP_TurnOffAllDACs(panelTitle)
 		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
+//==============================================================================================================================
 
 Function DAP_ButtonProc_DAOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllDACs(panelTitle)
 End
+//==============================================================================================================================
 
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
@@ -2636,12 +2655,14 @@ Function DAP_TurnOffAllADCs(panelTitle)
 		endif
 	endfor
 End
+//==============================================================================================================================
 
 Function DAP_ButtonProc_ADOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllADCs(panelTitle)
 End
+//==============================================================================================================================
 
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
@@ -2657,6 +2678,7 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 	endfor
 
 End
+//==============================================================================================================================
 
 Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	String ctrlName
@@ -2666,6 +2688,7 @@ Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllADCs(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 End
+//==============================================================================================================================
 
 Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DA popupmenu's that show DA waveslist from wavebuilder
 	String ctrlName
@@ -2717,6 +2740,7 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 	endif
 	
 End
+//==============================================================================================================================
 
 Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2732,6 +2756,7 @@ Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVari
 	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
 	
 End
+//==============================================================================================================================
 
 Function DAP_UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
@@ -2739,12 +2764,14 @@ Function DAP_UpdateITCMinSampIntDisplay()
 	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End
+//==============================================================================================================================
 
 Function DAP_CheckProc_UnpdateMinSampInt(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	DAP_UpdateITCMinSampIntDisplay()
 End
+//==============================================================================================================================
 
 Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2764,6 +2791,7 @@ Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVaria
 		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
 	endif
 End
+//==============================================================================================================================
 
 Function /T DAP_ReturnPanelName()	
 	string panelTitle
@@ -2776,7 +2804,15 @@ Function /T DAP_ReturnPanelName()
 	endif
 	
 	return PanelTitle
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -2785,6 +2821,10 @@ Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
 	getwindow kwTopWin wtitle
 	HSU_IsDeviceTypeConnected(s_value)
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 	String ctrlName
@@ -2795,8 +2835,12 @@ Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 	PopUpList += AI_ReturnListOf700BChannels(s_value)+"\""
 	popupmenu  popup_Settings_Amplifier win = $s_value, value = #PopUpList
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
 
 
+>>>>>>> other
 
 Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -2805,6 +2849,10 @@ Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
 	getwindow kwTopWin wtitle
 	HSU_UpdateChanAmpAssignPanel(s_value)
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -2813,6 +2861,10 @@ Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
 	getwindow kwTopWin wtitle
 	HSU_UpdateChanAmpAssignStorWv(s_value)
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2822,6 +2874,10 @@ Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
 	getwindow kwTopWin wtitle
 	HSU_UpdateChanAmpAssignStorWv(s_value)
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
@@ -2832,7 +2888,11 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
 	
+<<<<<<< local
+	if(ClampMode == 0)
+=======
 	If(ClampMode == 0)
+>>>>>>> other
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck win = $panelTitle, value = 1
 		
@@ -2844,34 +2904,81 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 		
 		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode // this line of code updates the wave that stores the clamp mode status a channel
 		
+<<<<<<< local
+		if(ChanAmpAssign[2][HeadStageNo] < 10)
+			ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
+			CheckBox $ADCheck win = $panelTitle, value = 1
+=======
 		If(ChanAmpAssign[2][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
+>>>>>>> other
 
+<<<<<<< local
+			ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
+			SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
+=======
 		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
+>>>>>>> other
 
+<<<<<<< local
+			ADUnit = "Unit_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
+			SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
+=======
 		ADUnit = "Unit_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
+>>>>>>> other
 			
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+=======
 		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+>>>>>>> other
 
 		else
+<<<<<<< local
+			ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
+			CheckBox $ADCheck win = $panelTitle, value = 1
+=======
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
+>>>>>>> other
 			
+<<<<<<< local
+			ADGain = "Gain_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
+			SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]	
+=======
 		ADGain = "Gain_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]	
+>>>>>>> other
 
+<<<<<<< local
+			ADUnit = "Unit_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
+			SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]	
+=======
 		ADUnit = "Unit_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]	
+>>>>>>> other
 				
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+=======
 		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
+>>>>>>> other
 
 		endif
+<<<<<<< local
+	endif
+=======
 	endIf
+>>>>>>> other
 	
+<<<<<<< local
+	if(ClampMode == 1)
+=======
 	If(ClampMode == 1)
+>>>>>>> other
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		CheckBox $DACheck win = $panelTitle, value = 1
 		
@@ -2883,34 +2990,77 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 		
 		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = ClampMode
 
+<<<<<<< local
+		if(ChanAmpAssign[6][HeadStageNo] < 10)
+			ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
+			CheckBox $ADCheck win = $panelTitle, value = 1
+=======
 		If(ChanAmpAssign[6][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
+>>>>>>> other
 				
+<<<<<<< local
+			ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[6][HeadStageNo])
+			SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+=======
 		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[6][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+>>>>>>> other
 
+<<<<<<< local
+			ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
+			SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
+=======
 		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
+>>>>>>> other
 		
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+=======
 		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+>>>>>>> other
 
 		else
+<<<<<<< local
+			ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
+			CheckBox $ADCheck win = $panelTitle, value = 1
+=======
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck win = $panelTitle, value = 1
+>>>>>>> other
 				
+<<<<<<< local
+			ADGain = "Gain_AD_"+num2str(ChanAmpAssign[6][HeadStageNo])
+			SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]	
+=======
 		ADGain = "Gain_AD_"+num2str(ChanAmpAssign[6][HeadStageNo])
 		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]	
+>>>>>>> other
 
+<<<<<<< local
+			ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
+			SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
+=======
 		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
+>>>>>>> other
 		
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+=======
 		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+>>>>>>> other
 
 		endif
 	endIf
 	
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
@@ -2920,46 +3070,101 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	string DACheck, DAGain, ADCheck, ADGain
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	
+<<<<<<< local
+	if(ClampMode == 0)
+=======
 	If(ClampMode == 0)
+>>>>>>> other
 		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck value = 0
 		
 		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = nan
 		
+<<<<<<< local
+		if(ChanAmpAssign[2][HeadStageNo] < 10)
+			ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
+			CheckBox $ADCheck value = 0
+=======
 		If(ChanAmpAssign[2][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck value = 0
+>>>>>>> other
 		
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
+=======
 		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
+>>>>>>> other
 		else
+<<<<<<< local
+			ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
+			CheckBox $ADCheck value = 0
+=======
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
 		CheckBox $ADCheck value = 0
+>>>>>>> other
 		
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
+=======
 		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
+>>>>>>> other
 		endif
+<<<<<<< local
+	endif
+=======
 	endIf
+>>>>>>> other
 
+<<<<<<< local
+	if(ClampMode == 1)
+=======
 	If(ClampMode == 1)
+>>>>>>> other
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		CheckBox $DACheck value = 0
 		
 		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = nan
 		
+<<<<<<< local
+		if(ChanAmpAssign[6][HeadStageNo] < 10)
+			ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
+			CheckBox $ADCheck value = 0
+=======
 		If(ChanAmpAssign[6][HeadStageNo] < 10)
 		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck value = 0
+>>>>>>> other
 		
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
+=======
 		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
+>>>>>>> other
 		else
+<<<<<<< local
+			ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
+			CheckBox $ADCheck value = 0
+=======
 		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
 		CheckBox $ADCheck value = 0
+>>>>>>> other
 		
+<<<<<<< local
+			ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
+=======
 		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
+>>>>>>> other
 		endif
 	endIf
 
 End
+<<<<<<< local
+ //==============================================================================================================================
+
+=======
  
+>>>>>>> other
 Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
@@ -3014,7 +3219,11 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 	ControlInfo/w = $panelTitle $RadioButtonName
 	ClampMode = v_value
 	
+<<<<<<< local
+	if(Checked == 0)
+=======
 	If(Checked == 0)
+>>>>>>> other
 		DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	else
 		DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode,panelTitle)
@@ -3022,4 +3231,9 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
  
 	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
+<<<<<<< local
+=======
+>>>>>>> other
+=======
+>>>>>>> other
 End

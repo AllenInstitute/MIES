@@ -9,6 +9,7 @@ Function IDX_MakeIndexingStorageWaves(panelTitle)
 	make /o /n = (4,NoOfTTLs) $WavePath + ":TTLIndexingStorageWave"
 	make /o /n = (4,NoOfDACs) $WavePath + ":DACIndexingStorageWave"
 End
+//==============================================================================================================================
 
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
@@ -56,6 +57,7 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
 	endfor
 End
+//==============================================================================================================================
 
 Function IDX_IndexingDoIt(panelTitle)// for locked indexing, indexes all active channels at once
 	string panelTitle
@@ -153,6 +155,7 @@ Function IDX_IndexingDoIt(panelTitle)// for locked indexing, indexes all active 
 		endif
 	endfor
 End
+//==============================================================================================================================
 
 Function IDX_IndexSingleChannel(panelTitle, DAorTTL, ChannelNo)// indexes a single channel - used when indexing is unlocked
 	string panelTitle
@@ -267,6 +270,7 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for
 	
 	return MaxSteps
 End
+//==============================================================================================================================
 
 Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
 	string panelTitle
@@ -338,6 +342,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	
 	return MaxSteps
 End
+//==============================================================================================================================
 
 Function IDX_MaxSets(panelTitle)// returns the number of sets on the active channel with the most sets.
 	string panelTitle
@@ -378,6 +383,7 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	
 	return MaxSets
 End
+//==============================================================================================================================
 
 Function IDX_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
 // works for unlocked (independent) indexing
@@ -407,6 +413,7 @@ Function IDX_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number
 	
 	return MaxNoOfSweeps
 End
+//==============================================================================================================================
 
 Function IDX_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, IndexOverRide)// determines the number of trials for a DA or TTL channel
 	string PanelTitle
@@ -438,7 +445,7 @@ Function IDX_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, Inde
 		IndexEnd = v_value 
 	endif
 	
-	If(IndexOverRide == 1)
+	if(IndexOverRide == 1)
 		IndexEnd = indexStart
 	endIF
 	
@@ -454,6 +461,7 @@ Function IDX_NumberOfTrialsAcrossSets(PanelTitle, PopUpMenuNumber, DAorTTL, Inde
 	return NumberOfTrialsAcrossSets
 
 End
+//==============================================================================================================================
 
 Function IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the wave name, does not include wave path
 	string PanelTitle, SetName
@@ -472,7 +480,12 @@ Function IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the
 	variable NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
 	return NumberOfTrialsInSet
 End
+//==============================================================================================================================
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	string panelTitle
 	variable count, DAorTTL
@@ -497,7 +510,17 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	i+=1
 	while(i<itemsinlist(ActiveChannelList,";"))
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
+=======
+>>>>>>> other
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	string panelTitle
 	variable ChannelNumber, DAorTTL
@@ -568,6 +591,10 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	endif
 	return TotalListSteps
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	string paneltitle
@@ -655,7 +682,11 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 		
 		column=count-StepsInSummedSets
 		return column
+<<<<<<< local
+End
+=======
 end
+>>>>>>> other
 //====================================================================================================
 Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
@@ -730,7 +761,11 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
 					if(ChannelNumber==0)
+<<<<<<< local
+					// print PopUpMenuList
+=======
 					print PopUpMenuList
+>>>>>>> other
 					print DAIndexingStorageWave[1][ChannelNumber]
 					//print "steps in summed sets = "+num2str(stepsinsummedsets)
 					endif
@@ -761,6 +796,10 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		endif
 	return AtSetBorder
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function IDX_IndxChannWithCompleteSets(PanelTitle, DAorTTL, localCount) // #####FUNCTION NOT IN USE
 	string panelTitle
@@ -786,6 +825,10 @@ Function IDX_IndxChannWithCompleteSets(PanelTitle, DAorTTL, localCount) // #####
 	channelNumber+=1
 	while(ChannelNumber<itemsinlist(ListOfSetStatus,";"))
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
 Function/T IDX_RetrnLstOfChanWthComplSets(PanelTitle, DAorTTL, localCount) // #####FUNCTION NOT IN USE
 	string panelTitle
@@ -831,4 +874,13 @@ Function/T IDX_RetrnLstOfChanWthComplSets(PanelTitle, DAorTTL, localCount) // ##
 	
 	return ListOfChanWithCompleteSets
 End
+<<<<<<< local
+//==============================================================================================================================
+=======
+>>>>>>> other
 
+<<<<<<< local
+=======
+>>>>>>> other
+=======
+>>>>>>> other

@@ -44,15 +44,55 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test 
 	redimension /d TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
+//==========================================================================================
 
 //Function MakeFloatingPointWave(WaveBeingPassed)
 //wave WaveBeingPassed
 
 //redimension/d WaveBeingPassed
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 //End
+<<<<<<< local
+//==========================================================================================
+=======
+End
+>>>>>>> other
+=======
+>>>>>>> other
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function DM_ADScaling(WaveToScale, panelTitle)
+<<<<<<< local
+	wave WaveToScale
+	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	variable NoOfADColumns = DC_NoOfChannelsSelected("ad", "check", panelTitle)
+	variable StartOfADColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
+	string ADGainControlName
+	variable gain, i
+	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
+	//Gain_AD_00
+		if(str2num(stringfromlist(i, ADChannelList, ";")) < 10)
+			ADGainControlName = "Gain_AD_0" + stringfromlist(i, ADChannelList, ";")
+		else
+			ADGainControlName = "Gain_AD_" + stringfromlist(i, ADChannelList, ";")
+		endif
+		controlinfo /w = $panelTitle $ADGainControlName
+		gain = v_value
+=======
+Function ADScaling(WaveToScale, panelTitle)
+=======
+>>>>>>> other
 wave WaveToScale
 string panelTitle
 string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -72,21 +112,23 @@ for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 	endif
 	controlinfo /w = $panelTitle $ADGainControlName
 	gain = v_value
+>>>>>>> other
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 0) // V-clamp
-		gain *= 3200// itc output will be multiplied by 1000 to convert to pA then divided by the gain
-		WaveToScale[][(StartOfADColumns + i)] /= gain
-		//WaveToScale[][(StartOfADColumns+i)]*=1000
-	endif
+		if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 0) // V-clamp
+			gain *= 3200// itc output will be multiplied by 1000 to convert to pA then divided by the gain
+			WaveToScale[][(StartOfADColumns + i)] /= gain
+			//WaveToScale[][(StartOfADColumns+i)]*=1000
+		endif
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 1) // I-clamp
-		gain *=3200// 
-		WaveToScale[][(StartOfADColumns+i)]/=gain
-	endif
+		if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 1) // I-clamp
+			gain *=3200// 
+			WaveToScale[][(StartOfADColumns+i)]/=gain
+		endif
 	
-endfor
+	endfor
 
-end
+End
+//==========================================================================================
 
 Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
@@ -100,35 +142,53 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	variable gain, i
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
-for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
-	if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)
-		DAGainControlName = "Gain_DA_0" + stringfromlist(i, DAChannelList, ";")
-	else
-		DAGainControlName = "Gain_DA_" + stringfromlist(i, DAChannelList, ";")
-	endif
-	controlinfo /w = $panelTitle $DAGainControlName
-	gain = v_value
+	for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
+		if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)
+			DAGainControlName = "Gain_DA_0" + stringfromlist(i, DAChannelList, ";")
+		else
+			DAGainControlName = "Gain_DA_" + stringfromlist(i, DAChannelList, ";")
+		endif
+		controlinfo /w = $panelTitle $DAGainControlName
+		gain = v_value
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == 0) // V-clamp
-		WaveToScale[][i] /= 3200
-		WaveToScale[][i] *= gain
-	endif
+		if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == 0) // V-clamp
+			WaveToScale[][i] /= 3200
+			WaveToScale[][i] *= gain
+		endif
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == 1) // I-clamp
-		WaveToScale[][i] /= 3200
-		WaveToScale[][i] *= gain
-	endif	
-endfor
+		if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == 1) // I-clamp
+			WaveToScale[][i] /= 3200
+			WaveToScale[][i] *= gain
+		endif	
+	endfor
 
-end
+End
+//==========================================================================================
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function DM_ScaleITCDataWave(panelTitle)// used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
+<<<<<<< local
+	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	redimension/d ITCDataWave
+	DM_ADScaling(ITCDataWave,panelTitle)
+End
+//==============================================================================================================================
+=======
+Function ScaleITCDataWave(panelTitle)// used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
+=======
+>>>>>>> other
 string panelTitle
 string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 wave ITCDataWave = $WavePath + ":ITCDataWave"
 redimension/d ITCDataWave
 DM_ADScaling(ITCDataWave,panelTitle)
 end
+>>>>>>> other
 
 Function DM_DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting history waves "older" than SweepNo
 	variable SweepNo

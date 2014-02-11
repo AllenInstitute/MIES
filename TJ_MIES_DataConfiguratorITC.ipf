@@ -141,7 +141,7 @@ Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 	endif
 	
 	do
-		If(str2num(stringfromlist(a,TTLsInUse,";")) == 1)
+		if(str2num(stringfromlist(a,TTLsInUse,";")) == 1)
 			RackTTLStatus = 1
 			return RackTTLStatus
 		endif
@@ -297,7 +297,7 @@ Function DC_CalculateITCDataWaveLength(panelTitle)// determines the longest outp
 	LongestWaveLength *= 5
 	
 	return round(LongestWaveLength)
-end
+End
 
 //==========================================================================================
 Function DC_MakeITCConfigAllConfigWave(PanelTitle)
@@ -730,7 +730,8 @@ Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)/
 	
 	column_CycleCount = cmplx(column, cycleCount)
 	return column_CycleCount
-end
+End
+//==========================================================================================
 
 //below function was taken from: http://www.igorexchange.com/node/1614
 //author s.r.chinn
@@ -746,7 +747,8 @@ Function DC_shuffle(inwave)	//	in-place random permutation of input wave element
 		inwave[j]		= inwave[i-1]
 		inwave[i-1]	= temp
 	endfor
-end
+End
+//==========================================================================================
 
 Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the ITCdataWave according to the global changes on the data acquisition tab - should only get called for not TP data acquisition cycles
 	string panelTitle
@@ -761,6 +763,7 @@ Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the I
 	redimension /N = (ITCDataWaveRows + NewRows, -1, -1, -1) ITCDataWave
 	return OnsetDelay
 End
+//==========================================================================================
 
 Function DC_ReturnTotalLengthIncrease(PanelTitle)
 	string panelTitle
@@ -770,5 +773,5 @@ Function DC_ReturnTotalLengthIncrease(PanelTitle)
 	variable TerminationDelay = v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
 	return OnsetDelay + TerminationDelay
-end
-	
+End
+//==========================================================================================

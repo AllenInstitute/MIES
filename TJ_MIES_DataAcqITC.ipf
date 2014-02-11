@@ -4,12 +4,39 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
 	string cmd
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	variable i = 0
-	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(PanelTitle)/4)
+<<<<<<< local
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+=======
+	variable i=0
+=======
+>>>>>>> other
+	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(PanelTitle)/4)
+<<<<<<< local
+	variable ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+>>>>>>> other
+=======
+	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+>>>>>>> other
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+<<<<<<< local
+	variable stopCollectionPoint = dimsize(ITCDataWave, 0) / 5
+=======
+	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+	variable stopCollectionPoint = dimsize(ITCDataWave, 0)/4
+>>>>>>> other
+=======
 	variable stopCollectionPoint = dimsize(ITCDataWave, 0) / 4
+>>>>>>> other
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -49,9 +76,25 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCCloseAll" 
 	execute cmd
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
+<<<<<<< local
+	if(v_value == 0)
+=======
 	If(v_value == 0)
+>>>>>>> other
 		DM_SaveITCData(panelTitle)
+<<<<<<< local
+=======
+	ControlInfo/w=$panelTitle Check_Settings_SaveData
+	If(v_value==0)
+	SaveITCData(panelTitle)
+>>>>>>> other
+=======
+>>>>>>> other
 	endif
 	
 	 DM_ScaleITCDataWave(panelTitle)
@@ -62,15 +105,47 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
 	string cmd
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	variable i = 0
+<<<<<<< local
+=======
 	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
+>>>>>>> other
 	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string /G panelTitleG = panelTitle
+<<<<<<< local
+=======
+	variable i=0
+	//variable/G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
+	variable/G ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	string/G panelTitleG = panelTitle
+>>>>>>> other
+=======
+>>>>>>> other
 	doupdate
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	variable /G StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+<<<<<<< local
+	NVAR stopcollectionpoint
+	print " Data stop collection point = ", stopcollectionpoint
+=======
+>>>>>>> other
 	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+<<<<<<< local
+=======
+	variable/G StopCollectionPoint = dimsize(ITCDataWave, 0)/4
+	wave ITCFIFOAvailAllConfigWave =  $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+>>>>>>> other
+=======
+>>>>>>> other
 	
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -112,21 +187,60 @@ Function ITC_StopDataAcq()
 	execute cmd
 	
 	
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	ControlInfo /w = $panelTitleG Check_Settings_SaveData
+<<<<<<< local
+	if(v_value == 0)
+=======
 	If(v_value == 0)
+>>>>>>> other
 		DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+<<<<<<< local
+=======
+	ControlInfo/w=$panelTitleG Check_Settings_SaveData
+	If(v_value==0)
+		SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+>>>>>>> other
+=======
+>>>>>>> other
 	endif
 	
 	 DM_ScaleITCDataWave(panelTitleG)
 	
+<<<<<<< local
+<<<<<<< local
+	if(exists(CountPath) == 0)//if the global variable count does not exist, it is the first trial of repeated acquisition
+		controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
+=======
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
+>>>>>>> other
 		if(v_value == 1)//repeated aquisition is selected
 			RA_Start(PanelTitleG)
+<<<<<<< local
+=======
+	if(exists(CountPath)==0)//If the global variable count does not exist, it is the first trial of repeated acquisition
+	controlinfo/w=$panelTitleG Check_DataAcq1_RepeatAcq
+		if(v_value==1)//repeated aquisition is selected
+			RepeatedAcquisition(PanelTitleG)
+>>>>>>> other
+=======
+>>>>>>> other
 		endif
 	else
-		
+<<<<<<< local
 		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+=======
+		
+<<<<<<< local
+		BckgTPwithCallToRptAcqContr(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+>>>>>>> other
+=======
+		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+>>>>>>> other
 	endif
 	
 	//killvariables /z StopCollectionPoint, ADChannelToMonitor
@@ -134,10 +248,23 @@ Function ITC_StopDataAcq()
 	//killstrings /z PanelTitleG
 END
 //======================================================================================
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function ITC_ZeroTheInstrutechDevice()
+<<<<<<< local
+	string cmd
+	sprintf cmd, "ITCSetDac /z =0 0, 0;ITCSetDac /z = 0 1, 0;ITCSetDac /z = 0 2, 0;ITCSetDac /z =0 3, 0;ITCSetDac /z = 0 4, 0;ITCSetDac /z = 0 5, 0;ITCSetDac /z = 0 6, 0;ITCSetDac /z = 0 7, 0"
+	execute cmd
+=======
+Function ZeroTheInstrutechDevice()
+=======
+>>>>>>> other
 string cmd
 sprintf cmd, "ITCSetDac /z =0 0, 0;ITCSetDac /z = 0 1, 0;ITCSetDac /z = 0 2, 0;ITCSetDac /z =0 3, 0;ITCSetDac /z = 0 4, 0;ITCSetDac /z = 0 5, 0;ITCSetDac /z = 0 6, 0;ITCSetDac /z = 0 7, 0"
 execute cmd
+>>>>>>> other
 END
 //======================================================================================
 Function ITC_StartBckgrdFIFOMonitor()
@@ -166,8 +293,20 @@ Function ITC_FIFOMonitor(s)
 	return 0
 End
 
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function ITC_STOPFifoMonitor()
+<<<<<<< local
+	CtrlNamedBackground ITC_FIFOMonitor, stop
+=======
+Function STOPFifoMonitor()
+CtrlNamedBackground FIFOMonitor, stop
+>>>>>>> other
+=======
 CtrlNamedBackground ITC_FIFOMonitor, stop
+>>>>>>> other
 End
 //======================================================================================
 
@@ -229,8 +368,20 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable i = 0
 	variable /G StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
 	NVAR stopcollectionpoint
+<<<<<<< local
+<<<<<<< local
+	print "Stop collection point = ", stopcollectionpoint
+=======
+>>>>>>> other
 	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	variable /G BackgroundTPCount = 0
+<<<<<<< local
+=======
+	variable/G ADChannelToMonitor=(DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable/G BackgroundTPCount = 0
+>>>>>>> other
+=======
+>>>>>>> other
 	doupdate
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -321,8 +472,8 @@ Function ITC_STOPTestPulse(panelTitle)
 		V_disable = V_disable & ~0x2
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
-	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	killstrings /z PanelTitleG
+	//killvariables /z  ADChannelToMonitor, BackgroundTaskActive // StopCollectionPoint
+	//killstrings /z PanelTitleG
 End
 
 //======================================================================================
@@ -335,7 +486,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle)/5
+	variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
@@ -450,7 +601,7 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
 	DeviceType = v_value - 1
 	variable DeviceChannelOffset // used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
-	If(DeviceType == 2)
+	if(DeviceType == 2)
 		DeviceChannelOffset = 15
 	else
 		DeviceChannelOffset = 0
@@ -461,7 +612,15 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	
 	do
 		if(str2num(stringfromlist(i, AsyncChannelState,";")) == 1)
+<<<<<<< local
+<<<<<<< local
+		RawChannelValue = ITC_SingleADReading(i + DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+=======
+		RawChannelValue=SingleADReading(i +DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+>>>>>>> other
+=======
 		RawChannelValue=ITC_SingleADReading(i +DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+>>>>>>> other
 		
 			if(i < 10)
 				 SetVar_title = "SetVar_Async_Title_0" + num2str(i)
@@ -492,22 +651,50 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 
 End
 //======================================================================================
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+<<<<<<< local
+	variable Channel, Measurement
+	string MeasurementTitle, panelTitle
+	String CheckAlarm, SetVarTitle, SetVarMin, SetVarMax, Title
+	variable ParamMin, ParamMax
+=======
+Function SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+=======
+>>>>>>> other
 variable Channel, Measurement
 string MeasurementTitle, panelTitle
 String CheckAlarm, SetVarTitle, SetVarMin, SetVarMax, Title
 variable ParamMin, ParamMax
+>>>>>>> other
 
-if(channel < 10)
-	CheckAlarm = "check_Async_Alarm_0" + num2str(channel)
-	SetVarMin = "setvar_Async_min_0" + num2str(channel)	
-	SetVarMax = "setvar_Async_max_0" + num2str(channel)	
-else
-	CheckAlarm = "check_Async_Alarm_" + num2str(channel)
-	SetVarMin = "setvar_Async_min_" + num2str(channel)				
-	SetVarMax = "setvar_Async_max_" + num2str(channel)
-endif
+	if(channel < 10)
+		CheckAlarm = "check_Async_Alarm_0" + num2str(channel)
+		SetVarMin = "setvar_Async_min_0" + num2str(channel)	
+		SetVarMax = "setvar_Async_max_0" + num2str(channel)	
+	else
+		CheckAlarm = "check_Async_Alarm_" + num2str(channel)
+		SetVarMin = "setvar_Async_min_" + num2str(channel)				
+		SetVarMax = "setvar_Async_max_" + num2str(channel)
+	endif
 
+<<<<<<< local
+	ControlInfo /W = $panelTitle $CheckAlarm
+	if(v_value == 1)
+		ControlInfo /W = $panelTitle $SetVarMin
+		ParamMin = v_value
+		ControlInfo /W = $panelTitle $SetVarMax
+		ParamMax = v_value
+		print measurement
+		if(Measurement >= ParamMax || Measurement <= ParamMin)
+			beep
+			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+			beep
+		endif
+=======
 ControlInfo /W = $panelTitle $CheckAlarm
 if(v_value == 1)
 	ControlInfo /W = $panelTitle $SetVarMin
@@ -519,7 +706,8 @@ if(v_value == 1)
 		beep
 		print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 		beep
+>>>>>>> other
 	endif
-endif
 
 End
+//======================================================================================

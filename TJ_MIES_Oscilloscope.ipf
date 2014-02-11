@@ -119,12 +119,12 @@ Function SCOPE_RemoveTracesOnGraph(GraphName)
 	
 	ListOfTracesOnGraph = TraceNameList(GraphName, ";", 0 + 1)
 	if(itemsinlist(ListOfTracesOnGraph,";") > 0)
-	do
-	TraceName = "\"#0\""
-	sprintf cmd, "removefromgraph/w=%s $%s" GraphName, TraceName
-	execute cmd
-	i += 1
-	while(i < (itemsinlist(ListOfTracesOnGraph,";")))
+		do
+			TraceName = "\"#0\""
+			sprintf cmd, "removefromgraph/w=%s $%s" GraphName, TraceName
+			execute cmd
+			i += 1
+		while(i < (itemsinlist(ListOfTracesOnGraph,";")))
 	endif
 End
 

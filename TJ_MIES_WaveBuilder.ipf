@@ -32,9 +32,9 @@ Function WB_DisplaySetInPanel()
 	controlInfo popup_WaveBuilder_OutputType
 	string OutputWaveType = s_value
 	string SearchString = "*" + basename + "*" + OutputWaveType + "_*" + num2str(SetNumber)
-	ListOfWavesToGraph = wavelist(SearchString,";","")
+	ListOfWavesToGraph = wavelist(SearchString, ";", "")
 	
-	variable NoOfWavesInList = itemsinlist(ListOfWavesToGraph,";")
+	variable NoOfWavesInList = itemsinlist(ListOfWavesToGraph, ";")
 	
 	do
 		appendtograph /w = WaveBuilder#WaveBuilderGraph $stringfromlist(i,ListOfWavesToGraph,";")
@@ -167,7 +167,7 @@ Function WB_MakeWaveBuilderWave()
 	String ParameterWaveName
 	
 	Variable/g  ParameterHolder
-	String/g StringHolder
+	String /g StringHolder
 	do
 		//Load in parameters
 		ParameterWaveName = "root:WaveBuilder:Data:WP"
@@ -581,7 +581,7 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 	string cmd
 	
 	controlinfo group_WaveBuilder_FolderPath
-	NameOfWaveToBeDuplicated = s_value+NameOfWaveToBeDuplicated
+	NameOfWaveToBeDuplicated = s_value + NameOfWaveToBeDuplicated
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:WaveBuilder:Data

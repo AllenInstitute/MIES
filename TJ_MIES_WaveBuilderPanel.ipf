@@ -642,7 +642,6 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 				WB_DisplaySetInPanel()
 			endif		
 			SetDataFolder saveDFR
-
 			return 0
 		endif
 	else
@@ -832,17 +831,50 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	execute cmd
 	
 	controlinfo WBP_WaveType
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	if(v_value == 2)
+<<<<<<< local
+		WBP_LowPassDeltaLimits()
+		WBP_HighPassDeltaLimits()
+		WBP_CutOffCrossOver()
+=======
+	if(v_value==2)
+=======
+>>>>>>> other
 	WBP_LowPassDeltaLimits()
 	WBP_HighPassDeltaLimits()
 	WBP_CutOffCrossOver()
+>>>>>>> other
 	endif
 	
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	if(v_value == 5)
+<<<<<<< local
+		SetVariable SetVar_WaveBuilder_P8 limits = {0, WBP_ReturnPulseDurationMax(), 0.1}
+		controlinfo SetVar_WaveBuilder_P8
+		if(v_value > WBP_ReturnPulseDurationMax())
+			SetVariable SetVar_WaveBuilder_P8 value = _NUM:WBP_ReturnPulseDurationMax()
+=======
+	if(v_value==5)
+	SetVariable SetVar_WaveBuilder_P8 limits={0,WBP_ReturnPulseDurationMax(),0.1}
+=======
 	SetVariable SetVar_WaveBuilder_P8 limits = {0, WBP_ReturnPulseDurationMax(), 0.1}
+>>>>>>> other
 	controlinfo SetVar_WaveBuilder_P8
+<<<<<<< local
+		if(v_value>WBP_ReturnPulseDurationMax())
+		SetVariable SetVar_WaveBuilder_P8 value= _NUM:WBP_ReturnPulseDurationMax()
+>>>>>>> other
+=======
 		if(v_value > WBP_ReturnPulseDurationMax())
 		SetVariable SetVar_WaveBuilder_P8 value = _NUM:WBP_ReturnPulseDurationMax()
+>>>>>>> other
 		endif
 	endif
 	
@@ -870,19 +902,54 @@ variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
 	ControlInfo SetVar_WaveBuilder_P21
 	LowPassDelta = v_value
 	
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	if(LowPassDelta > 0)
+<<<<<<< local
+		DeltaLimit = trunc(100000 / StepCount)
+		SetVariable SetVar_WaveBuilder_P21 limits = {-inf, DeltaLimit, 1}
+		if(LowPassDelta > DeltaLimit)
+			SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
+=======
+	if(LowPassDelta>0)
+	DeltaLimit=trunc(100000/StepCount)
+	SetVariable SetVar_WaveBuilder_P21 limits={-inf,DeltaLimit,1}
+		If(LowPassDelta>DeltaLimit)
+=======
 	DeltaLimit = trunc(100000 / StepCount)
 	SetVariable SetVar_WaveBuilder_P21 limits = {-inf, DeltaLimit, 1}
 		If(LowPassDelta > DeltaLimit)
+>>>>>>> other
 		SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
+>>>>>>> other
 		endif
 	endif
 	
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	if(LowPassDelta < 0)
+<<<<<<< local
+		DeltaLimit = trunc(-((LowPassCutOff/StepCount) -1))
+		SetVariable SetVar_WaveBuilder_P21 limits = {DeltaLimit, 99999, 1}
+		if(LowPassDelta < DeltaLimit)
+			SetVariable SetVar_WaveBuilder_P21 value = _num:DeltaLimit
+=======
+	if(LowPassDelta<0)
+	DeltaLimit=trunc(-((LowPassCutOff/StepCount)-1))
+	SetVariable SetVar_WaveBuilder_P21 limits={DeltaLimit,99999,1}
+		If(LowPassDelta<DeltaLimit)
+		SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
+>>>>>>> other
+=======
 	DeltaLimit = trunc(-((LowPassCutOff/StepCount) -1))
 	SetVariable SetVar_WaveBuilder_P21 limits = {DeltaLimit, 99999, 1}
 		If(LowPassDelta < DeltaLimit)
 		SetVariable SetVar_WaveBuilder_P21 value = _num:DeltaLimit
+>>>>>>> other
 		endif
 	endif
 	SetDataFolder saveDFR
@@ -1421,8 +1488,20 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	controlinfo Setvar_WaveBuilder_SegmentEdit
 	SegmentToEdit = v_value
 	
+<<<<<<< local
+<<<<<<< local
+=======
+>>>>>>> other
 	if(SegmentNo <= SegmentToEdit)// This prevents the segment to edit from being larger than the max number of segements
+<<<<<<< local
+		SetVariable setvar_WaveBuilder_SegmentEdit value = _num:SegmentNo - 1
+=======
+	if(SegmentNo<=SegmentToEdit)// This prevents the segment to edit from being larger than the max number of segements
+	SetVariable setvar_WaveBuilder_SegmentEdit value=_num:SegmentNo-1
+>>>>>>> other
+=======
 	SetVariable setvar_WaveBuilder_SegmentEdit value = _num:SegmentNo - 1
+>>>>>>> other
 	
 		TabControl WBP_WaveType value = SegWvType[SegmentNo - 1]// this selects the correct tab based on changes to the segment to edit value
 		WBP_ExecuteAdamsTabcontrol(SegWvType[SegmentNo - 1])
@@ -1483,8 +1562,20 @@ Function WBP_CutOffCrossOver()
 	controlinfo SetVar_WaveBuilder_P22//High pass cut off frequency
 	HighPassCutOff = v_value
 	
+<<<<<<< local
+<<<<<<< local
+	if(HighPassCutOff >= LowPassCutOff)
+=======
 	If(HighPassCutOff >= LowPassCutOff)
+>>>>>>> other
 		SetVariable SetVar_WaveBuilder_P20 value = _NUM:HighPassCutOff + 1
+<<<<<<< local
+=======
+	If(HighPassCutOff>=LowPassCutOff)
+	SetVariable SetVar_WaveBuilder_P20 value= _NUM:HighPassCutOff+1
+>>>>>>> other
+=======
+>>>>>>> other
 	endif
 	
 	If(LowPassCutOff<=HighPassCutOff)
@@ -1603,12 +1694,12 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 			ctrlName0d += num2str(i)
 			ctrlName1d += num2str(i)
 		endif
-	PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
-	controlupdate /w = $panelTitle $ctrlname0d
-	PopupMenu  $ctrlName1d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
-	controlupdate/w = $panelTitle $ctrlname1d
+		PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+		controlupdate /w = $panelTitle $ctrlname0d
+		PopupMenu  $ctrlName1d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+		controlupdate/w = $panelTitle $ctrlname1d
 
-	i += 1
+		i += 1
 	while(i < noOfControls)
 	setdatafolder saveDFR
 End
@@ -1624,11 +1715,11 @@ Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns th
 	do
 		switch(StartOrEnd)
 			case 0:
-			popupMenuName = "Wave_" + DAorTTL + "_0" + num2str(i)
-			break
+				popupMenuName = "Wave_" + DAorTTL + "_0" + num2str(i)
+				break
 			case 1:
-			popupMenuName = "Popup_" + DAorTTL + "_IndexEnd_0" + num2str(i)
-			break
+				popupMenuName = "Popup_" + DAorTTL + "_IndexEnd_0" + num2str(i)
+				break
 		endswitch
 		controlInfo /w = $panelTitle $popupMenuName
 		ListOfSelectedWaveNames += s_value + ";"
@@ -1655,29 +1746,29 @@ Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, pa
 				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
 				break
 				endswitch
-			controlinfo/w=$panelTitle $popupMenuName
-			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";"))==1 || cmpstr(s_value,"")==0)
-				PopupMenu  $popupMenuName win=$panelTitle, mode=v_value-1
-				controlinfo/w=$panelTitle $popupMenuName
-				if(cmpstr(s_value,"testpulse")==0)
-				PopupMenu  $popupMenuName win=$panelTitle, mode=1
-				CheckBoxName="Check_"+DAorTTL+"_0" + num2str(i)
-				CheckBox Check_DA_00 win=$panelTitle, value=0
+			controlinfo /w = $panelTitle $popupMenuName
+			if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";")) == 1 || cmpstr(s_value,"")==0)
+				PopupMenu  $popupMenuName win = $panelTitle, mode = v_value - 1
+				controlinfo /w = $panelTitle $popupMenuName
+				if(cmpstr(s_value,"testpulse") == 0)
+					PopupMenu  $popupMenuName win = $panelTitle, mode=1
+					CheckBoxName = "Check_" + DAorTTL + "_0" + num2str(i)
+					CheckBox Check_DA_00 win = $panelTitle, value = 0
 				endif
 			endif
-			i+=1
-		while(i<noOfPopups)
+			i += 1
+		while(i < noOfPopups)
 		doupdate /W = $panelTitle
 End
 
 Function WBP_TotNoOfControlType(ControlType, ChannelType, panelTitle)// Ex. ChannelType = "DA", ControlType = "Check"
 string  ControlType, ChannelType, panelTitle
-string SearchString = ControlType+"_"+ChannelType+"_*"
+string SearchString = ControlType + "_" + ChannelType + "_*"
 string ListString
 variable CatTot//Category Total
 
-ListString=ControlNameList(panelTitle,";",SearchString)
-CatTot=ItemsInlist(ListString,";")
+ListString = ControlNameList(panelTitle, ";", SearchString)
+CatTot = ItemsInlist(ListString, ";")
 
 return CatTot
 End
@@ -1692,17 +1783,17 @@ Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
 		SetDataFolder root:WaveBuilder:Data
 
 		controlinfo WBP_WaveType
-		if(v_value==2)
-		WBP_LowPassDeltaLimits()
-		WBP_HighPassDeltaLimits()
-		WBP_CutOffCrossOver()
+		if(v_value == 2)
+			WBP_LowPassDeltaLimits()
+			WBP_HighPassDeltaLimits()
+			WBP_CutOffCrossOver()
 		endif
 		
-		if(v_value==5)
-		SetVariable SetVar_WaveBuilder_P8 limits={0,WBP_ReturnPulseDurationMax(),0.1}
+		if(v_value == 5)
+		SetVariable SetVar_WaveBuilder_P8 limits = {0,WBP_ReturnPulseDurationMax(), 0.1}
 		controlinfo SetVar_WaveBuilder_P8
-			if(v_value>WBP_ReturnPulseDurationMax())
-			SetVariable SetVar_WaveBuilder_P8 value= _NUM:WBP_ReturnPulseDurationMax()
+			if(v_value > WBP_ReturnPulseDurationMax())
+				SetVariable SetVar_WaveBuilder_P8 value = _NUM:WBP_ReturnPulseDurationMax()
 			endif
 		endif
 		
