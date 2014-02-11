@@ -586,7 +586,6 @@ Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 			SetVariable SetVar_WaveBuilder_P29 win = wavebuilder, disable = 0
 		endif
 	endif
-	print ctrlname
 	if(cmpstr(ctrlName,"check_Noise_Brown")==0)
 		if(checked == 1)
 			Checkbox check_Noise_Pink win = wavebuilder, value = 0, disable = 2

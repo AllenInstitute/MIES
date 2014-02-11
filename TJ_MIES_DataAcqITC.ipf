@@ -61,13 +61,11 @@ END
 Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
-	print "panel title = ", paneltitle
 	string cmd
 	variable i = 0
 	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
 	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string /G panelTitleG = panelTitle
-	print "paneltitleG = ", paneltitle
 	doupdate
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
@@ -119,7 +117,6 @@ Function ITC_StopDataAcq()
 	endif
 	
 	 DM_ScaleITCDataWave(panelTitleG)
-	print "count path status = ", exists(countPath)
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
@@ -130,7 +127,7 @@ Function ITC_StopDataAcq()
 			DataAcqState = 0
 		endif
 	else
-		print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
+		//print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
 		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 	
@@ -230,7 +227,8 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string/G PanelTitleG = panelTitle
+	string /G PanelTitleG //$WavePath + ":PanelTitleG" = panelTitle
+	SVAR panelTitleG// = $WavePath + ":PanelTitleG"
 	string cmd
 	variable i = 0
 	variable /G StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
@@ -254,8 +252,9 @@ End
 Function ITC_TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
 	NVAR StopCollectionPoint, ADChannelToMonitor, BackgroundTPCount
-	SVAR panelTitleG
 	String cmd, Keyboard
+	//string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	SVAR PanelTitleG// = $WavePath + ":panelTitleG"
 	string paneltitle = panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -427,9 +426,10 @@ Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch cha
 	make /o /n = 1 $WavePath + ":AsyncChannelData"
 	string AsyncChannelDataPath = WavePath+":AsyncChannelData"
 	wave AsyncChannelData = $AsyncChannelDataPath
-	sprintf cmd, "ITCReadADC %d, %s" Channel, AsyncChannelDataPath
+	sprintf cmd, "ITCReadADC /V = 1 %d, %s" Channel, AsyncChannelDataPath
 	execute cmd
 	ChannelValue = AsyncChannelData[0]
+	print channelValue
 	killwaves /f AsyncChannelData
 	return ChannelValue
 End 
@@ -482,7 +482,7 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 			controlInfo /w = $panelTitle $SetVar_title
 			title = s_value
 			controlInfo /w = $panelTitle $SetVar_gain
-			Measurement = num2str(v_value * RawChannelValue)
+			Measurement = num2str(RawChannelValue / v_value)//(v_value * RawChannelValue)
 			ITC_SupportSystemAlarm(i, v_value * RawChannelValue, title, panelTitle)
 			controlInfo /w = $panelTitle $SetVar_Unit
 			Unit = s_value

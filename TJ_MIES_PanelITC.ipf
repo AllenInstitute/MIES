@@ -2596,12 +2596,14 @@ End
 
 Function DAP_StoreTTLState(panelTitle)
 string panelTitle
-string  /g StoredTTLState = DC_ControlStatusListString("TTL", "Check", panelTitle)
+string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+string /g $WavePath + ":StoredTTLState" = DC_ControlStatusListString("TTL", "Check", panelTitle)
 End
 
 Function DAP_RestoreTTLState(panelTitle)
 string panelTitle
-SVAR StoredTTLState
+string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+SVAR StoredTTLState = $WavePath + ":StoredTTLState"
 variable i, NoOfTTLs, CheckBoxState
 string TTLCheckBoxName
 	
@@ -2998,7 +3000,7 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		checkbox $PairedRadioButton value=0
 		
 		HeadStageCheckBox += num2str((RadioButtonNo / 2))
-		print headstagecheckbox
+		//print headstagecheckbox
 		controlinfo/w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
@@ -3050,7 +3052,8 @@ End
 Function DAP_StopOngoingDataAcquisition(PanelTitle)
 	string panelTitle
 	string cmd 
-	SVAR/z panelTitleG
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
 		ITC_STOPTestPulse(panelTitle)
@@ -3063,6 +3066,8 @@ Function DAP_StopOngoingDataAcquisition(PanelTitle)
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
 		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
+		ITC_STOPFifoMonitor()
+		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
 	
@@ -3075,7 +3080,7 @@ Function DAP_StopOngoingDataAcquisition(PanelTitle)
 		endif
 		
 		DM_ScaleITCDataWave(panelTitleG)
-		ITC_STOPFifoMonitor()
+	
 	endif
 	
 	print "Data acquisition was manually terminated"
@@ -3087,12 +3092,12 @@ Function DAP_AcqDataButtonToStopButton(panelTitle)
 		controlinfo /w = $PanelTitle Check_Settings_SaveData
 		if(v_value == 0) // Save data
 			Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-			Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion"
+			Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion", win = $panelTitle
 		else // Don't save data
 			Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
 			string ButtonText = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
 			ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-			Button DataAcquireButton title=ButtonText	
+			Button DataAcquireButton title=ButtonText, win = $panelTitle
 		endif
 		
 		
@@ -3104,11 +3109,11 @@ Function DAP_StopButtonToAcqDataButton(panelTitle)
 		controlinfo /w = $PanelTitle Check_Settings_SaveData
 		if(v_value == 0) // Save data
 			Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-			Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
+			Button DataAcquireButton title = "\\Z14\\f01Acquire\rData", win = $panelTitle
 		else // Don't save data
 			Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
 			string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
 			ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-			Button DataAcquireButton title=ButtonText
+			Button DataAcquireButton title=ButtonText, win = $panelTitle
 		endif
 End

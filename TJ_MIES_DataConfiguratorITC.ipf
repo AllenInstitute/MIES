@@ -474,10 +474,9 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 			//resample the wave to min samp interval and place in ITCDataWave
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
 			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
-			print "da scale = ", dascale
-			print "da gain = ", dagain
+
 			sprintf cmd,  "%s[%d, %d][%d] = (%g*%g) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
-			print cmd
+			//print cmd
 			execute cmd
 	
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
