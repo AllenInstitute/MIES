@@ -87,7 +87,6 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
 	sprintf cmd, "ITCStartAcq" 
 		Execute cmd	
-	
 	ITC_StartBckgrdFIFOMonitor()
 	
 	End
@@ -125,6 +124,10 @@ Function ITC_StopDataAcq()
 	controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
 			RA_Start(PanelTitleG)
+		else
+			DAP_StopButtonToAcqDataButton(panelTitleG)
+			NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+			DataAcqState = 0
 		endif
 	else
 		print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"

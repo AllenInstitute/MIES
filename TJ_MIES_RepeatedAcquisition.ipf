@@ -273,6 +273,9 @@ Function RA_BckgTPwithCallToRACounter(PanelTitle)
 				
 				//killwaves/f TestPulse
 			else
+				DAP_StopButtonToAcqDataButton(panelTitle) // 
+				NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+				DataAcqState = 0
 				print "Repeated acquisition is complete"
 				Killvariables Count
 				killvariables /z Start, RunTime

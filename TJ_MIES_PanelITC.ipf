@@ -2427,23 +2427,36 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	
-	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops test pulse if it is running
-		ITC_STOPTestPulse(panelTitle)
+	string DataAcqStatePath = WavePath + ":DataAcqState"
+	print DataAcqStatePath
+	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion
+		variable /G $DataAcqStatePath = 0
 	endif
 	
-	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
+	NVAR /z DataAcqState = $DataAcqStatePath 
+
+		
+	if(DataAcqState == 0) // data aquistion is stopped
+		DataAcqState = 1
+		DAP_AcqDataButtonToStopButton(panelTitle)
 	
-	string CountPath = WavePath + ":count"
-	if(exists(CountPath) == 2)
-		killvariables $CountPath
-	endif
 	
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum = v_value - 1
-	
+		if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops test pulse if it is running
+			ITC_STOPTestPulse(panelTitle)
+		endif
+		
+		wave /z ITCDataWave = $WavePath + ":ITCDataWave"
+		
+		string CountPath = WavePath + ":count"
+		if(exists(CountPath) == 2)
+			killvariables $CountPath
+		endif
+		
+		controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+		variable DeviceType = v_value - 1
+		controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+		variable DeviceNum = v_value - 1
+		
 		//History management
 		controlinfo check_Settings_Overwrite
 		if(v_value == 1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
@@ -2473,8 +2486,15 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 				RA_Start(PanelTitle)
 			endif
 		else
-			ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle)
-		endif	
+			ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle) // initiates background aquisition
+		endif
+	else // data aquistion is ongoing
+		DataAcqState = 0
+		DAP_StopOngoingDataAcquisition(PanelTitle)
+		DAP_StopButtonToAcqDataButton(panelTitle)
+	endif		
+		
+			
 End
 
 Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
@@ -2484,7 +2504,7 @@ Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 
 	If(Checked == 1)
 		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-		string ButtonText = "\\Z14\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+		string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
 		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
 		Button DataAcquireButton title=ButtonText
 	else
@@ -3022,4 +3042,70 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
  
 	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
+End
+
+Function DAP_StopOngoingDataAcquisition(PanelTitle)
+	string panelTitle
+	string cmd 
+	SVAR panelTitleG
+	
+	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
+		ITC_STOPTestPulse(panelTitle)
+	endif
+	
+	
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
+		CtrlNamedBackground ITC_Timer, stop 
+	endif
+	
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
+		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
+		sprintf cmd, "ITCStopAcq /z = 0"
+		Execute cmd
+	
+		sprintf cmd, "ITCCloseAll" 
+		execute cmd
+	
+		ControlInfo /w = $panelTitleG Check_Settings_SaveData
+		If(v_value == 0)
+			DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+		endif
+		
+		DM_ScaleITCDataWave(panelTitleG)
+		ITC_STOPFifoMonitor()
+	endif
+	
+	print "Data acquisition was manually terminated"
+End 
+
+Function DAP_AcqDataButtonToStopButton(panelTitle)
+	string panelTitle
+
+		controlinfo /w = $PanelTitle Check_Settings_SaveData
+		if(v_value == 0) // Save data
+			Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
+			Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion"
+		else // Don't save data
+			Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
+			string ButtonText = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
+			ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
+			Button DataAcquireButton title=ButtonText	
+		endif
+		
+		
+End
+
+Function DAP_StopButtonToAcqDataButton(panelTitle)
+	string panelTitle
+	
+		controlinfo /w = $PanelTitle Check_Settings_SaveData
+		if(v_value == 0) // Save data
+			Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
+			Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
+		else // Don't save data
+			Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
+			string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+			ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
+			Button DataAcquireButton title=ButtonText
+		endif
 End
