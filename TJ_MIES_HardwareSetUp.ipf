@@ -52,6 +52,7 @@ Function HSU_LockDevice(panelTitle)
 	IM_MakeGlobalsAndWaves(PanelTitle)
 	HSU_GlblListStrngOfITCPanlTitls()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
 	HSU_ListOfITCPanels()
+	HSU_OpenITCDevice(panelTitle)
 End
 
 Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
@@ -108,6 +109,7 @@ End
 
 Function HSU_UnlockDevSelection(PanelTitle)
 	string PanelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	PopupMenu popup_MoreSettings_DeviceType win = $PanelTitle, disable = 0
 	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 0
 	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 0
@@ -116,6 +118,13 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	HSU_DataFolderPathDisplay(PanelTitle, 0)
 	dowindow /W = $panelTitle /C $"DA_Ephys"
 	// ########## ADD CODE HERE TO REMOVE PANEL TITLE FROM GLOBAL LIST OF PANEL TITLES ##########
+	print WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	string cmd
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd	
+	sprintf cmd, "ITCCloseDevice"
+	execute cmd
 End
 
 Function HSU_DeviceLockCheck(PanelTitle)
@@ -161,6 +170,26 @@ Function HSU_ListOfITCPanels()
 	SVAR ITCPanelTitleList = root:ITCPanelTitleList
 	ITCPanelTitleList = winlist("ITC*", ";", "WIN:64") 
 End
+
+Function HSU_OpenITCDevice(panelTitle)
+	String panelTitle
+	variable DeviceType, DeviceNumber
+	string cmd
+	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType
+	DeviceType = v_value - 1
+	controlinfo /w = $PanelTitle popup_moreSettings_DeviceNo
+	DeviceNumber = v_value - 1
+	Make /FREE /I /U /N = 1 DevID
+	string DeviceID = "DevID"
+	sprintf cmd, "ITCOpenDevice %d, %d, %s", DeviceType, DeviceNumber, DeviceID
+	Execute cmd
+	
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string ITCDeviceIDGlobal = WavePath + ":ITCDeviceIDGlobal"
+	Variable /G $ITCDeviceIDGlobal =  DevID[0]
+	
+	
+End // Function HSU_OpenITCDevice(panelTitle)
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle

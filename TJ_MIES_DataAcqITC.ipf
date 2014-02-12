@@ -8,6 +8,7 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(PanelTitle)/4)
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	variable stopCollectionPoint = dimsize(ITCDataWave, 0) / 4
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -18,8 +19,12 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
 	// open ITC device
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	Execute cmd	
+	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	//Execute cmd
+	
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd
+		
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 	do
@@ -46,8 +51,9 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 		Execute cmd
 		i += 1
 	while (i < 1)// 
-	sprintf cmd, "ITCCloseAll" 
-	execute cmd
+	
+	//sprintf cmd, "ITCCloseAll" 
+	//execute cmd
 
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
@@ -55,7 +61,7 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	endif
 	
 	 DM_ScaleITCDataWave(panelTitle)
-END
+End
 
 //======================================================================================
 Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
@@ -77,8 +83,12 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	// open ITC device
 	
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-		Execute cmd	
+	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+		//Execute cmd	
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd	
+		
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 		execute cmd
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
@@ -107,9 +117,8 @@ Function ITC_StopDataAcq()
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	Execute cmd	
 	
-	sprintf cmd, "ITCCloseAll" 
-	execute cmd
-	
+	//sprintf cmd, "ITCCloseAll" 
+	//execute cmd
 	
 	ControlInfo /w = $panelTitleG Check_Settings_SaveData
 	If(v_value == 0)
@@ -153,7 +162,7 @@ Function ITC_FIFOMonitor(s)
 	SVAR panelTitleG
 	String cmd
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
-	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
+	Wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 	Execute cmd	
@@ -168,6 +177,8 @@ Function ITC_FIFOMonitor(s)
 				
 	return 0
 End
+
+
 
 Function ITC_STOPFifoMonitor()
 CtrlNamedBackground ITC_FIFOMonitor, stop
@@ -239,8 +250,12 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	// open ITC device
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	Execute cmd	
+	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	//Execute cmd	
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd
+	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 	CtrlNamedBackground TestPulse, period = 2, proc = ITC_TestPulseFunc
@@ -307,8 +322,8 @@ Function ITC_STOPTestPulse(panelTitle)
 	string panelTitle
 	string cmd
 	CtrlNamedBackground TestPulse, stop
-	sprintf cmd, "ITCCloseAll" 
-	execute cmd
+	//sprintf cmd, "ITCCloseAll" 
+	//execute cmd
 
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
@@ -368,8 +383,13 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
 	// open ITC device
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	Execute cmd	
+	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	//Execute cmd	
+	
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd
+	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 	do
@@ -404,8 +424,8 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		Keyboard = KeyboardState("")
 	while (cmpstr(Keyboard[9], " ") != 0)// 
 	
-	sprintf cmd, "ITCCloseAll" 
-	execute cmd
+	//sprintf cmd, "ITCCloseAll" 
+	//execute cmd
 
 	DAP_RestoreTTLState(panelTitle)
 	
