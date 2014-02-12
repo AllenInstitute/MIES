@@ -3071,15 +3071,15 @@ Function DAP_StopOngoingDataAcquisition(PanelTitle)
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
 	
-		sprintf cmd, "ITCCloseAll" 
-		execute cmd
+		//sprintf cmd, "ITCCloseAll" 
+		//execute cmd
 	
-		ControlInfo /w = $panelTitleG Check_Settings_SaveData
+		ControlInfo /w = $panelTitle Check_Settings_SaveData
 		If(v_value == 0)
-			DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+			DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
 		endif
 		
-		DM_ScaleITCDataWave(panelTitleG)
+		DM_ScaleITCDataWave(panelTitle)
 	
 	endif
 	
