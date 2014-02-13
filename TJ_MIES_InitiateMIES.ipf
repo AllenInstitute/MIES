@@ -21,5 +21,4 @@ Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for
 	make /o /n= (1,8) $WavePath + ":TestPulse:" + "InstResistance"
 	make /o /n= (1,8) $WavePath + ":TestPulse:" + "Resistance"
 	make /o /n= (1,8) $WavePath + ":TestPulse:" + "SSResistance"
-
 End
