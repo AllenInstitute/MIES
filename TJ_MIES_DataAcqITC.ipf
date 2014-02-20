@@ -70,12 +70,13 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	string cmd
 	variable i = 0
 	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
-	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	string /G panelTitleG = panelTitle
-	doupdate
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
+	doupdate
+	
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
-	variable /G StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
 	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -102,8 +103,8 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 Function ITC_StopDataAcq()
 	variable DeviceType, DeviceNum
 	string cmd
-	NVAR StopCollectionPoint, ADChannelToMonitor
-	SVAR panelTitleG
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:StopCollectionPoint
+	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string CountPath = WavePath + ":count"
@@ -132,7 +133,7 @@ Function ITC_StopDataAcq()
 			RA_Start(PanelTitleG)
 		else
 			DAP_StopButtonToAcqDataButton(panelTitleG)
-			NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+			NVAR /z DataAcqState = $wavepath + ":DataAcqState"
 			DataAcqState = 0
 		endif
 	else
@@ -158,8 +159,8 @@ End
 
 Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
-	NVAR StopCollectionPoint, ADChannelToMonitor
-	SVAR panelTitleG
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:ADChannelToMonitor
+	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	String cmd
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	Wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -189,21 +190,21 @@ End
 Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
 	Variable RunTimePassed//how long you want the background timer to run in seconds
 	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
-	String /G FunctionNameA = FunctionNameAPassedIn
-	String /G FunctionNameB = FunctionNameBPassedIn
-	String /G FunctionNameC = FunctionNameCPassedIn
-	String /G PanelTitleG = panelTitle
+	String /G root:MIES:ITCDevices:FunctionNameA = FunctionNameAPassedIn
+	String /G root:MIES:ITCDevices:FunctionNameB = FunctionNameBPassedIn
+	String /G root:MIES:ITCDevices:FunctionNameC = FunctionNameCPassedIn
+	String /G root:MIES:ITCDevices:PanelTitleG = panelTitle
 	Variable numTicks = 15		// Run every quarter second (15 ticks)
-	Variable/G Start = ticks
-	Variable/G RunTime = (RunTimePassed*60)
+	Variable /G root:MIES:ITCDevices:Start = ticks
+	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
 	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer
 	CtrlNamedBackground ITC_Timer, start
 End
 
 Function ITC_Timer(s)
 	STRUCT WMBackgroundStruct &s
-	SVAR panelTitleG
-	NVAR Start, RunTime
+	SVAR panelTitleG =  root:MIES:ITCDevices:panelTitleG
+	NVAR Start = root:MIES:ITCDevices:Start, RunTime = root:MIES:ITCDevices:RunTime
 	variable TimeLeft
 	
 	variable ElapsedTime = (ticks - Start)
@@ -222,9 +223,9 @@ Function ITC_Timer(s)
 End
 
 Function ITC_StopBackgroundTimerTask()
-	SVAR FunctionNameA
-	SVAR FunctionNameB
-	SVAR FunctionNameC
+	SVAR FunctionNameA = root:MIES:ITCDevices:FunctionNameA
+	SVAR FunctionNameB = root:MIES:ITCDevices:FunctionNameB
+	SVAR FunctionNameC = root:MIES:ITCDevices:FunctionNameC
 	CtrlNamedBackground ITC_Timer, stop // had incorrect background procedure name
 	Execute FunctionNameA
  	Execute FunctionNameB
@@ -238,14 +239,14 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	string /G PanelTitleG //$WavePath + ":PanelTitleG" = panelTitle
-	SVAR panelTitleG// = $WavePath + ":PanelTitleG"
+	string /G root:MIES:ITCDevices:panelTitleG //$WavePath + ":PanelTitleG" = panelTitle
+	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
 	string cmd
 	variable i = 0
-	variable /G StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
-	NVAR stopcollectionpoint
-	variable /G ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	variable /G BackgroundTPCount = 0
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable /G root:MIES:ITCDevices:BackgroundTPCount = 0
 	doupdate
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -266,10 +267,10 @@ End
 
 Function ITC_TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
-	NVAR StopCollectionPoint, ADChannelToMonitor, BackgroundTPCount
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:ADChannelToMonitor, BackgroundTPCount = root:MIES:ITCDevices:BackgroundTPCount
 	String cmd, Keyboard
 	//string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	SVAR PanelTitleG// = $WavePath + ":panelTitleG"
+	SVAR PanelTitleG = root:MIES:ITCDevices:PanelTitleG// = $WavePath + ":panelTitleG"
 	string paneltitle = panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -332,7 +333,7 @@ Function ITC_STOPTestPulse(panelTitle)
 	endif
 
 	DAP_RestoreTTLState(panelTitle)
-	//killwaves /z root:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
+	//killwaves /z root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
@@ -342,7 +343,7 @@ Function ITC_STOPTestPulse(panelTitle)
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
 	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	killstrings /z PanelTitleG
+	killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
 
 //======================================================================================

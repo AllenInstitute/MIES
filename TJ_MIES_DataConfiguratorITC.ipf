@@ -265,7 +265,7 @@ Function DC_LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types
 	if((str2num(stringfromlist(i,ControlTypeStatus,";"))) == 1)
 		WaveNameString = stringfromlist(i,ChannelTypeWaveList,";")
 		if(stringmatch(WaveNameString,"-none-") == 0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
-			WaveNameString = "root:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
+			WaveNameString = "root:MIES:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
 //			if(cmpstr(WaveNameString, "root:WaveBuilder:savedStimulusSets:DA:TestPulse") == 0)// checks to see if test pulse is the wave being run, if yes, changes path
 //			WaveNameString = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
 //			endif
@@ -445,9 +445,9 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 			DAScale = v_value
 	
 			//get the wave name
-			ChanTypeWaveName = "root:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
+			ChanTypeWaveName = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
 			//check to see if it is a test pulse or user specified da wave
-			if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0)
+			if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0)
 				column = 0
 				insertStart = 0
 				insertEnd = 0
@@ -464,7 +464,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 		if(v_value == 1)
 			ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value == 1)// shutting off DA by setting scaling to zero is only required when indexing is locked
-				if(cmpstr(ChanTypeWaveName,"root:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)// makes sure test pulse wave scaling is maintained
+				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)// makes sure test pulse wave scaling is maintained
 					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1)
 						DAScale = 0
 					endif
@@ -497,7 +497,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	
 	//Place TTL waves into ITCDataWave
 	i = 0
-	wave /z TTLwave = $HSU_DataFullFolderPathString(PanelTitle) + ":TTLwave"//= root:WaveBuilder:SavedStimulusSets:TTL:TTLWave
+	wave /z TTLwave = $HSU_DataFullFolderPathString(PanelTitle) + ":TTLwave"//= root:MIES:WaveBuilder:SavedStimulusSets:TTL:TTLWave
 	if(DC_AreTTLsInRackChecked(0, panelTitle) == 1)
 		DC_MakeITCTTLWave(0, panelTitle)
 		ITCDataWave[InsertStart, round((dimsize(TTLWave,0) / DecimationFactor)) - 1 + InsertEnd][j] = TTLWave[(DecimationFactor) * (p - InsertStart)]		
@@ -539,8 +539,8 @@ Function DC_MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each r
 	string TTLWaveList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
 	string TTLWaveName
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)+":"//"root:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
-	string TTLWavePath = "root:WaveBuilder:savedStimulusSets:TTL:"
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)+":"//"root:MIES:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
+	string TTLWavePath = "root:MIES:WaveBuilder:savedStimulusSets:TTL:"
 	if(RackNo == 0)
 		a = 0
 	endif
@@ -661,7 +661,7 @@ Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)/
 			else // else is used when indexing is on. The local count is now set length dependent
 				controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked// check locked status. locked = popup menus on channels idex in lock - step
 				if(v_value == 1)// indexing is locked
-					NVAR ActiveSetCount=$AcitveSetCountPath
+					NVAR ActiveSetCount = $AcitveSetCountPath
 					controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet// how many columns in the largest currently selected set on all active channels
 					localCount = v_value
 					controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// how many times does the user want the sets to repeat

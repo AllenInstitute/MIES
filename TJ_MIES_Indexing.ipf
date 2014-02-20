@@ -461,14 +461,15 @@ Function IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the
 	string WavePath 
 	
 	if(DAorTTL == 0)// to determine location
-		WavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
+		WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:" // root:MIES:WaveBuilder:SavedStimulusSets:DA
 	endif
 	
 	if(DAorTTL == 1)
-		WavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
+		WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
 	string NameOfWaveSelectedInPopUP = WavePath + setName
+	print NameOfWaveSelectedInPopUP
 	variable NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
 	return NumberOfTrialsInSet
 End
@@ -511,13 +512,13 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	if(DAorTTL==0)
 		ChannelTypeName="DA"
 		ListOffset=3
-		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL==1)
 		ChannelTypeName="TTL"
 		ListOffset=2
-		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 
 	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
@@ -581,13 +582,13 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	if(DAorTTL == 0)
 	ChannelTypeName = "DA"
 	ListOffset = 3
-	DAorTTLWavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
+	DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL == 1)
 	ChannelTypeName = "TTL"
 	ListOffset = 2
-	DAorTTLWavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
+	DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)// Total List steps is all the columns in all the waves defined by the start index and end index waves
@@ -672,13 +673,13 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	if(DAorTTL==0)
 		ChannelTypeName="DA"
 		ListOffset=3
-		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:DA:"
+		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL==1)
 		ChannelTypeName="TTL"
 		ListOffset=2
-		DAorTTLWavePath= "root:WaveBuilder:SavedStimulusSets:TTL:"
+		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
 		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
@@ -799,12 +800,12 @@ Function/T IDX_RetrnLstOfChanWthComplSets(PanelTitle, DAorTTL, localCount) // ##
 	
 	if(DAorTTL==0)
 	ChannelTypeName="DA"
-	WavePath = "root:WaveBuilder:SavedStimulusSets:DA:"
+	WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL==1)
 	ChannelTypeName="TTL"
-	WavePath = "root:WaveBuilder:SavedStimulusSets:TTL:"
+	WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
 	string ActivechannelList = DC_ControlStatusListString(ChannelTypeName,"check",panelTitle)

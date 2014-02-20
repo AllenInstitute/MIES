@@ -8,7 +8,7 @@ Function /t AI_ReturnListOf700BChannels(panelTitle)
 	String Value
 	//make/o/n=0 W_TelegraphServers
 	//AxonTelegraphFindServers
-	wave /z W_TelegraphServers
+	wave /z W_TelegraphServers = root:MIES:Amplifiers:W_TelegraphServers
 	TotalNoChannels = DimSize(W_TelegraphServers, 0 )// 0 is for rows, 1 for columns, 2 for layers, 3 for chunks
 		
 		if(TotalNoChannels > 0)

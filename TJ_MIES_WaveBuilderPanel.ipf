@@ -2,9 +2,10 @@
 #include <Resize Controls>
 #include <FilterDialog> menus=0
 
-Window wavebuilder() : Panel
+Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(86,155,1103,629)
+	NewPanel /W=(1230,597,2247,1071)
+	SetDrawLayer UserBack
 	SetVariable SetVar_WaveBuilder_NoOfSegments,pos={23,61},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_NoOfSegments,userdata(ResizeControlsInfo)= A"!!,Bq!!#?-!!#@\\!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -17,7 +18,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo)= A"!!,GR!!#=k!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P0,limits={0,inf,1},value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P0,limits={0,inf,1},value= _NUM:50
 	SetVariable SetVar_WaveBuilder_P1,pos={300,34},size={100,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P1,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo)= A"!!,HQ!!#=k!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -82,7 +83,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P4,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P4,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P4,userdata(tabnum)=  "1",value= _NUM:10
+	SetVariable SetVar_WaveBuilder_P4,userdata(tabnum)=  "1",value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P6,pos={194,105},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Start Freq"
 	SetVariable SetVar_WaveBuilder_P6,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P6,userdata(ResizeControlsInfo)= A"!!,GR!!#@6!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -93,7 +94,7 @@ Window wavebuilder() : Panel
 	TabControl WBP_WaveType,userdata(tabcontrol)=  "WBP_WaveType"
 	TabControl WBP_WaveType,userdata(currenttab)=  "0"
 	TabControl WBP_WaveType,userdata(initialhook)=  "TabTJHook"
-	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GJ!!#8L!!#D8^]6_Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GJ!!#8L!!#D95QF/'z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
@@ -146,7 +147,7 @@ Window wavebuilder() : Panel
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo)= A"!!,J<5QF1-J,hqP!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_SetList,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ReturnListSavedSets(\"DA\")+WBP_ReturnListSavedSets(\"TTL\")"
+	PopupMenu popup_WaveBuilder_SetList,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ReturnListSavedSets(\"DA\") + WBP_ReturnListSavedSets(\"TTL\")"
 	Button button_WaveBuilder_KillSet,pos={840,442},size={150,23},proc=WBP_ButtonProc_DeleteSet,title="Delete Set"
 	Button button_WaveBuilder_KillSet,help={"If set isn't removed from list after deleting, a wave from the set must be in use, kill the appropriate graph or table and retry."}
 	Button button_WaveBuilder_KillSet,userdata(tabcontrol)=  "WBP_WaveType"
@@ -210,14 +211,14 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_OD00,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_OD00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_OD00,value= _NUM:100
+	SetVariable SetVar_WaveBuilder_OD00,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_DD02,pos={301,81},size={100,16},disable=1,proc=WBP_SetVarProc_Delta01,title="Delta"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo)= A"!!,HQJ,hp1!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_DD02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_DD02,value= _NUM:100
+	SetVariable SetVar_WaveBuilder_DD02,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_DD03,pos={301,81},size={100,16},disable=1,proc=WBP_SetVarProc_Delta01,title="Delta"
 	SetVariable SetVar_WaveBuilder_DD03,userdata(tabnum)=  "3"
 	SetVariable SetVar_WaveBuilder_DD03,userdata(tabcontrol)=  "WBP_WaveType"
@@ -273,7 +274,7 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_OD04,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_OD04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_OD04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_OD04,value= _NUM:-30
+	SetVariable SetVar_WaveBuilder_OD04,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P18,pos={194,81},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Offset"
 	SetVariable SetVar_WaveBuilder_P18,userdata(tabnum)=  "7"
 	SetVariable SetVar_WaveBuilder_P18,userdata(tabcontrol)=  "WBP_WaveType"
@@ -448,18 +449,35 @@ Window wavebuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P30,pos={310,105},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="- increment"
 	SetVariable SetVar_WaveBuilder_P30,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P30,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WaveBuilder_P30,userdata(ResizeControlsInfo)= A"!!,HV!!#@6!!#?o!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P30,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable SetVar_WaveBuilder_P30,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P30,limits={0.01,99999,1},value= _NUM:1
 	TitleBox title_WBP_GNoise_F,pos={300,96},size={4,36},disable=1,title="\\Z30f"
 	TitleBox title_WBP_GNoise_F,userdata(tabnum)=  "2"
 	TitleBox title_WBP_GNoise_F,userdata(tabcontrol)=  "WBP_WaveType"
+	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo)= A"!!,HQ!!#@$!!#97!!#=sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_WBP_GNoise_F,font="Edwardian Script ITC",frame=0
 	CheckBox check_Noise_Pink,pos={413,107},size={39,14},disable=1,proc=WBP_CheckProc,title="Pink"
 	CheckBox check_Noise_Pink,userdata(tabnum)=  "2"
-	CheckBox check_Noise_Pink,userdata(tabcontrol)=  "WBP_WaveType",value= 1
+	CheckBox check_Noise_Pink,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_Noise_Pink,userdata(ResizeControlsInfo)= A"!!,I4J,hpe!!#>*!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Noise_Pink,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox check_Noise_Pink,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox check_Noise_Pink,value= 1
 	CheckBox check_Noise_Brown,pos={413,126},size={48,14},disable=3,proc=WBP_CheckProc,title="Brown"
 	CheckBox check_Noise_Brown,userdata(tabnum)=  "2"
-	CheckBox check_Noise_Brown,userdata(tabcontrol)=  "WBP_WaveType",value= 0
-	CheckBox check_PreventUpdate,pos={189,447},size={91,14},proc=CheckProc_PreventUpdate,title="Prevent update"
+	CheckBox check_Noise_Brown,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_Noise_Brown,userdata(ResizeControlsInfo)= A"!!,I4J,hq6!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Noise_Brown,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox check_Noise_Brown,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox check_Noise_Brown,value= 0
+	CheckBox check_PreventUpdate,pos={189,447},size={91,14},proc=WBP_CheckProc_PreventUpdate,title="Prevent update"
+	CheckBox check_PreventUpdate,userdata(ResizeControlsInfo)= A"!!,GM!!#CDJ,hpE!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_PreventUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox check_PreventUpdate,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	CheckBox check_PreventUpdate,value= 0
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -467,13 +485,9 @@ Window wavebuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-*T-G%G-*Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3f1-8!+8OQ!%3^uFt7o`,K75?nc;FO8U:K'ha8P`)B/Mo4E"
-	String fldrSav0= GetDataFolder(1)
-	SetDataFolder root:WaveBuilder:Data:
-	Display/W=(0,172,671,397)/FG=(,,FR,UGH0)/HOST=#  
-	SetDataFolder fldrSav0
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-)HbG%F!_Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3f1-8!+8OQ!%3^uFt7o`,K75?nc;FO8U:K'ha8P`)B/Mo4E"
+	Display/W=(0,172,671,397)/FG=(,,FR,UGH0)/HOST=# 
 	ModifyGraph frameInset=2
-	ModifyGraph rgb=(13056,13056,13056)
 	SetWindow kwTopWin,userdata(tabcontrol)=  "WBP_WaveType"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!,Ct!!#A/!!#E!5QF0#!!!!\"zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -488,7 +502,7 @@ Function WBP_SetVarProc_SetNo(ctrlName,varNum,varStr,varName) : SetVariableContr
 	String varStr
 	String varName
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	controlinfo /w = WaveBuilder check_PreventUpdate
 	if(v_value == 0)
 	//	WB_MakeStimSet()
@@ -500,7 +514,7 @@ End
 Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	String ctrlName
 	String DAorTTL
-	SVAR ITCPanelTitleList
+	SVAR ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleLIst
 	setdatafolder root:
 	controlinfo /W = wavebuilder popup_WaveBuilder_SetList
 	string SetWaveToDelete = s_value
@@ -536,7 +550,7 @@ Function WBP_SetVarProc_StepCount(ctrlName,varNum,varStr,varName) : SetVariableC
 	String varStr
 	String varName
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	WBP_LowPassDeltaLimits()
 	WBP_HighPassDeltaLimits()
 	controlinfo /w = WaveBuilder check_PreventUpdate
@@ -557,7 +571,7 @@ Function WBP_CheckProc(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	//controlinfo 
 	if(cmpstr(ctrlName,"check_Sin_Chirp")==0)
 		if(checked == 1)
@@ -616,7 +630,7 @@ Function TabTJHook(tca)//This is a function that gets run by ACLight's tab contr
 	STRUCT WMTabControlAction &tca
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	variable tabnum
 	wave SegWvType
@@ -689,13 +703,13 @@ End
 Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
 	variable i = 0
-	SVAR /z ITCPanelTitleList
+	SVAR /z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
 	string panelTitle
 	SetDataFolder root:
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	string ListOfTracesOnGraph
-	ListOfTracesOnGraph=TraceNameList("WaveBuilder#WaveBuilderGraph", ",",0+1 )
+	ListOfTracesOnGraph = TraceNameList("WaveBuilder#WaveBuilderGraph", ",",0+1 )
 	
 	WBP_Transfer1DsTo2D(ListOfTracesOnGraph)//takes the waves displayed in the wavebuilder and makes them into a single wave
 	WBP_RemoveAndKillWavesOnGraph("WaveBuilder#WaveBuilderGraph")//removes waves displayed in wave builder
@@ -704,14 +718,14 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	
 	SetDataFolder saveDFR
 
-	if(exists("ITCPanelTitleList") == 2)// allows wavebuilder to work without rest of itc procedures
+	if(exists("root:MIES:ITCDevices:ITCPanelTitleList") == 2)// allows wavebuilder to work without rest of itc procedures
 		do
 			paneltitle = stringfromlist(i, ITCPanelTitleList, ";")
 			WBP_UpdateITCPanelPopUps(panelTitle)
-			i+=1
-		while (i<itemsinlist(ITCPanelTitleList, ";"))
+			i += 1
+		while (i < itemsinlist(ITCPanelTitleList, ";"))
 		
-		SetVariable setvar_WaveBuilder_baseName win = wavebuilder, value= _STR:"InsertBaseName"
+		SetVariable setvar_WaveBuilder_baseName win = wavebuilder, value = _STR:"InsertBaseName"
 		controlupdate /W = wavebuilder popup_WaveBuilder_SetList
 	endif
 End
@@ -724,7 +738,7 @@ Function WBP_SetVarProc_Frequency(ctrlName,varNum,varStr,varName) : SetVariableC
 	String varName
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	Setvariable SetVar_WaveBuilder_P6, value=_num:varnum
 		
@@ -764,7 +778,7 @@ Function WBP_SetVarProc_Delta00(ctrlName,varNum,varStr,varName) : SetVariableCon
 	String varName
 
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data	
+	SetDataFolder root:MIES:WaveBuilder:Data	
 	
 	Setvariable SetVar_WaveBuilder_P7, value=_num:varnum
 		
@@ -805,7 +819,7 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	String varName
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	wave WPT
 	variable StimulusType
@@ -857,7 +871,7 @@ End
 Function WBP_LowPassDeltaLimits()
 variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	ControlInfo SetVar_WaveBuilder_StepCount
 	StepCount = v_value
@@ -890,7 +904,7 @@ Function WBP_HighPassDeltaLimits()
 variable HighPassCutOff, StepCount, HighPassDelta, DeltaLimit
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	ControlInfo SetVar_WaveBuilder_StepCount
 	StepCount = v_value
@@ -926,7 +940,7 @@ Function WBP_SetVarProc_Offset(ctrlName,varNum,varStr,varName) : SetVariableCont
 	String varName
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	Setvariable SetVar_WaveBuilder_P4, value=_num:varnum
 		
@@ -966,7 +980,7 @@ Function WBP_SetVarProc_Delta01(ctrlName,varNum,varStr,varName) : SetVariableCon
 	String varName
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	Setvariable SetVar_WaveBuilder_P5, value = _num:varnum
 		
@@ -1005,7 +1019,7 @@ Function WBP_ExecuteAdamsTabcontrol(TabToGoTo)
 	Struct WMTabControlAction tca
 
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	tca.ctrlName = "WBP_WaveType"	
 	tca.win	= "wavebuilder"	
@@ -1022,7 +1036,7 @@ Function WBP_PopMenuProc_WaveType(ctrlName,popNum,popStr) : PopupMenuControl
 	String popStr
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	wave SegWvType, WP
 if (cmpstr(popstr,"TTL") == 0)
@@ -1115,7 +1129,7 @@ Function /t WBP_RemoveGraphTracesFromList()
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	variable ListItems = itemsinlist(tracenamelist("WaveBuilder#WaveBuilderGraph", ";",0+1 ),";")
 	string ListString = "- none -;"+Wavelist(WBP_SearchString(),";","TEXT:0,MAXCOLS:1")
@@ -1144,7 +1158,7 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 	SetDataFolder FolderPath
 	//SetDataFolder root:WaveBuilder:Data
 	
-	wave /t WPT = root:WaveBuilder:Data:WPT
+	wave /t WPT = root:MIES:WaveBuilder:Data:WPT
 		//CUSTOM WAVE CODE
 	string cmd
 	variable SegmentNo
@@ -1154,7 +1168,7 @@ Function WBP_PopMenuProc_WaveToLoad(ctrlName,popNum,popStr) : PopupMenuControl
 		
 		
 		If(stringmatch(popStr,"- none -") == 0)// checks to make sure "- none -" is not selected as a wave type	
-			sprintf cmd, "root:WaveBuilder:Data:WPT[%d][%d] = nameofwave(%s)" 0, SegmentNo, FolderPath+popStr
+			sprintf cmd, "root:MIES:WaveBuilder:Data:WPT[%d][%d] = nameofwave(%s)" 0, SegmentNo, FolderPath+popStr
 			execute cmd
 		else
 			WPT[0][SegmentNo] = ""
@@ -1174,7 +1188,7 @@ Function WBP_Transfer1DsTo2D(WaveNameList)
 	string WaveNameList
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	string SetName = WBP_AssembleBaseName()
 	string activeWaveName = stringfromlist(0, WaveNameList, ",")
@@ -1227,7 +1241,7 @@ Function/t WBP_AssembleBaseName()// This function creates a string that is used 
 End
 
 Function /t WBP_FolderAssignment()// returns a folder path based on they wave type ie. TTL or DA - this is used to store the actual sets in the correct folders
-	string FolderLocationString = "root:WaveBuilder:SavedStimulusSets:"
+	string FolderLocationString = "root:MIES:WaveBuilder:SavedStimulusSets:"
 	controlinfo popup_WaveBuilder_OutputType
 	FolderLocationString += s_value
 	FolderLocationString += ":"
@@ -1235,7 +1249,7 @@ Function /t WBP_FolderAssignment()// returns a folder path based on they wave ty
 End
 
 Function /t WBP_WPFolderAssignment()// returns a folder path based on they wave type ie. TTL or DA - this is used to store the set parameters in the correct folders
-	string FolderLocationString = "root:WaveBuilder:SavedStimulusSetParameters:"
+	string FolderLocationString = "root:MIES:WaveBuilder:SavedStimulusSetParameters:"
 	controlinfo popup_WaveBuilder_OutputType
 	FolderLocationString += s_value
 	FolderLocationString += ":"
@@ -1247,7 +1261,7 @@ Function WBP_RemoveAndKillWavesOnGraph(GraphName)
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	string cmd, WaveNameFromList
 	string ListOfTracesOnGraph=TraceNameList(GraphName, ";",0+1)
@@ -1312,7 +1326,7 @@ End
 
 Function/t WBP_ReturnListSavedSets(SetType)// returns a list of waves from the wave builder folder savedStimulusSets
 	string SetType
-	string FolderPath = "root:WaveBuilder:SavedStimulusSets:"+SetType
+	string FolderPath = "root:MIES:WaveBuilder:SavedStimulusSets:"+SetType
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder $FolderPath
 	string SetList = wavelist("*" + SetType + "*", ";", "")
@@ -1336,26 +1350,26 @@ Function WBP_LoadSet()
 			If(stringmatch(SetName, "*TTL*") == 1)// are you loading a DA or TTL set?
 				PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode = 2
 				WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType", 2, "TTL")
-				FolderPath = "root:WaveBuilder:SavedStimulusSetParameters:TTL"
+				FolderPath = "root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL"
 				DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 				SetDataFolder $FolderPath
-				duplicate /o $WPName, $"root:WaveBuilder:Data:WP"
-				duplicate /o $WPTName, $"root:WaveBuilder:Data:WPT"
-				duplicate /o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
+				duplicate /o $WPName, $"root:MIES:WaveBuilder:Data:WP"
+				duplicate /o $WPTName, $"root:MIES:WaveBuilder:Data:WPT"
+				duplicate /o $SegWvTypeName, $"root:MIES:WaveBuilder:Data:SegWvType"
 		
 			else
 				PopupMenu popup_WaveBuilder_OutputType win = wavebuilder, mode = 1
 				WBP_PopMenuProc_WaveType("popup_WaveBuilder_OutputType", 1, "DA")
-				FolderPath = "root:WaveBuilder:SavedStimulusSetParameters:DA"
+				FolderPath = "root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"
 				DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 				SetDataFolder $FolderPath
-				duplicate /o $WPName, $"root:WaveBuilder:Data:WP"
-				duplicate /o $WPTName, $"root:WaveBuilder:Data:WPT"
-				duplicate /o $SegWvTypeName, $"root:WaveBuilder:Data:SegWvType"
+				duplicate /o $WPName, $"root:MIES:WaveBuilder:Data:WP"
+				duplicate /o $WPTName, $"root:MIES:WaveBuilder:Data:WPT"
+				duplicate /o $SegWvTypeName, $"root:MIES:WaveBuilder:Data:SegWvType"
 				
 			endif
 			
-				wave LocalWave = root:WaveBuilder:Data:SegWvType
+				wave LocalWave = root:MIES:WaveBuilder:Data:SegWvType
 				SetVariable SetVar_WaveBuilder_NoOfSegments value = _NUM:LocalWave[100]
 				SetVariable SetVar_WaveBuilder_StepCount value = _NUM:LocalWave[101]
 				SetVariable setvar_WaveBuilder_SegmentEdit value = _NUM:0
@@ -1383,18 +1397,18 @@ string SetName
 
 	if(stringmatch(SetName,"- none -") == 0)	// makes sure that a set is selected
 		If(stringmatch(SetName, "*TTL*") == 1)// are you deleting a DA or TTL set?
-			FolderPath = "root:WaveBuilder:SavedStimulusSetParameters:TTL"
+			FolderPath = "root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL"
 			SetDataFolder $FolderPath
 			Killwaves /F /Z $WPName, $WPTName, $SegWvTypeName
-			FolderPath = "root:WaveBuilder:SavedStimulusSets:TTL"
+			FolderPath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL"
 			SetDataFolder $FolderPath
 			Killwaves /F /Z $SetName
 			
 		else
-			FolderPath = "root:WaveBuilder:SavedStimulusSetParameters:DA"
+			FolderPath = "root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"
 			SetDataFolder $FolderPath
 			Killwaves /F /Z $WPName, $WPTName, $SegWvTypeName
-			FolderPath = "root:WaveBuilder:SavedStimulusSets:DA"
+			FolderPath = "root:MIES:WaveBuilder:SavedStimulusSets:DA"
 			SetDataFolder $FolderPath
 			Killwaves /F /Z $SetName
 		endif
@@ -1409,7 +1423,7 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String varName
 
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 
 	wave SegWvType
 
@@ -1442,7 +1456,7 @@ Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariabl
 	String varName
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	controlinfo SetVar_WaveBuilder_NoOfSegments
 	SetVariable setvar_WaveBuilder_SegmentEdit ,limits = {0, v_value - 1, 1}// sets the maximum segment to edit number to be equal to the numbeer of segments specified
@@ -1538,7 +1552,7 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 
 	if(popNum != 1)
-		if(cmpstr(" root:",popstr) != 0)
+		if(cmpstr(" root:",popstr) != 0) // should the space before root be there???????????
 			controlinfo group_WaveBuilder_FolderPath
 			
 			FolderPath = s_value + popstr
@@ -1566,10 +1580,11 @@ End
 
 Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been saved to the DA or TTL folder. It repopulates the popup menus in the ITC control Panel to reflect the new waves
 	string panelTitle
-	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d, ListOfItemsSelectedInPopup, DAorTTL
+	string ctrlName0, ctrlName1, WB_WaveType, ListOfWavesInFolder,ctrlName0d, ctrlName1d, ListOfItemsSelectedInPopup, DAorTTLt
 	string ListOfWaves
-	variable NoOfControls, i
+	variable NoOfControls, i, DAorTTL
 	DFREF saveDFR = GetDataFolderDFR()
+	
 	controlinfo /W = waveBuilder popup_WaveBuilder_OutputType
 	WB_WaveType = s_value
 	
@@ -1577,18 +1592,20 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 		ctrlName0 = "Wave_DA_"
 		ctrlName1 = "Popup_DA_IndexEnd_"
 		NoOfControls = WBP_TotNoOfControlType("Wave", "DA", panelTitle)
-		setDataFolder root:waveBuilder:savedStimulusSets:DA
-		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist("*DA*", ";", "") + "\""
-		ListOfWaves = Wavelist("*DA*", ";", "")
-		DAorTTL = "DA"
+//		setDataFolder root:MIES:waveBuilder:savedStimulusSets:DA
+//		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist("*DA*", ";", "") + "\""
+//		ListOfWaves = Wavelist("*DA*", ";", "")
+		DAorTTL = 0 // "DA"
+		DAorTTLt = "DA"
 	else
 		ctrlName0 = "Wave_TTL_"
 		ctrlName1 = "Popup_TTL_IndexEnd_"
 		NoOfControls = WBP_TotNoOfControlType("Wave", "TTL", panelTitle)
-		setDataFolder root:waveBuilder:savedStimulusSets:TTL
-		ListOfWavesInFolder = "\"- none -;\""  + "+" + "\"" + Wavelist("*TTL*" , ";", "") + "\""
-		ListOfWaves = Wavelist("*TTL*" , ";", "")
-		DAorTTL = "TTL"
+//		setDataFolder root:MIES:waveBuilder:savedStimulusSets:TTL
+//		ListOfWavesInFolder = "\"- none -;\""  + "+" + "\"" + Wavelist("*TTL*" , ";", "") + "\""
+//		ListOfWaves = Wavelist("*TTL*" , ";", "")
+		DAorTTL = 1 //  "TTL"
+		DAorTTLt = "TTL"
 	endif
 
 	do
@@ -1601,14 +1618,72 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 			ctrlName0d += num2str(i)
 			ctrlName1d += num2str(i)
 		endif
-		PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+		//PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+		PopupMenu  $ctrlName0d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
 		controlupdate /w = $panelTitle $ctrlname0d
-		PopupMenu  $ctrlName1d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+		//PopupMenu  $ctrlName1d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
+		PopupMenu  $ctrlName1d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
 		controlupdate/w = $panelTitle $ctrlname1d
 
 		i += 1
 	while(i < noOfControls)
 	setdatafolder saveDFR
+End
+
+Function /t WBP_ITCPanelPopUps(DAorTTL, searchString) // used to populate DA and TTL popup menus with appropriate stimulus sets.
+	variable DAorTTL//, PopUpMenuNumber // needs to be updated to include search terms!!!!!!!!
+	string searchString// = WBP_ReturnSearchString(panelTitle, PopupMenuNumber, DAorTTL)
+	string stimulusSetList
+	DFREF saveDFR = GetDataFolderDFR()
+
+	if(DAorTTL == 0)
+	setDataFolder root:MIES:waveBuilder:savedStimulusSets:DA
+	stimulusSetList = Wavelist("*"+ searchstring + "*", ";", "")
+	endif
+	
+	if(DAorTTL == 1)
+	setDataFolder root:MIES:waveBuilder:savedStimulusSets:TTL
+	stimulusSetList = Wavelist("*"+ searchstring + "*", ";", "")
+	endif
+	
+	setdatafolder saveDFR
+	return stimulusSetList
+	
+End
+
+Function /t WBP_ReturnSearchString(panelTitle, PopupMenuNumber, DAorTTL) // not in use. Could be used
+	string panelTitle
+	variable PopUpMenuNumber, DAorTTL
+	string searchString
+	string SearchStringSetVar
+	
+	if(DAorTTL == 0)
+		controlinfo /w = $panelTitle SearchUniversal_DA_00
+		if(v_value == 0)
+			controlinfo /w = $panelTitle Search_DA_00
+			searchstring = s_value
+		else
+			SearchStringSetVar = "Search_DA_0" + num2str(PopUpMenuNumber)
+			controlinfo /w = $panelTitle $SearchStringSetVar
+			searchString = s_value
+		endif
+	
+	endif
+
+	if(DAorTTL == 1)
+		controlinfo /w = $panelTitle SearchUniversal_TTL_00
+		if(v_value == 0)
+			controlinfo /w = $panelTitle Search_TTL_00
+			searchstring = s_value
+		else
+			SearchStringSetVar = "Search_TTL_0" + num2str(PopUpMenuNumber)
+			controlinfo /w = $panelTitle $SearchStringSetVar
+			searchString = s_value
+		endif
+	
+	endif	
+	
+	return searchString
 End
 
 Function/t WBP_PopupMenuWaveNameList(DAorTTL,StartOrEnd,panelTitle)// returns the names of the items in the popmenu controls in a list
@@ -1687,7 +1762,7 @@ Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	if(checked == 0)
 		DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-		SetDataFolder root:WaveBuilder:Data
+		SetDataFolder root:MIES:WaveBuilder:Data
 
 		controlinfo WBP_WaveType
 		if(v_value == 2)

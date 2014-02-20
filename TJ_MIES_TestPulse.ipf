@@ -114,7 +114,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle)// full path name
 	string panelTitle
 	variable PulseDuration
 	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
-	variable/g  $TPGlobalPath + ":Duration"
+	variable /g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $TPGlobalPath + ":Duration"
 	variable /g $TPGlobalPath + ":AmplitudeVC"
 	NVAR GlobalTPAmplitudeVariableVC = $TPGlobalPath + ":AmplitudeVC"
@@ -187,7 +187,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	setwindow $panelTitle +"#oscilloscope", hide = 0
 	endif
 	
-	string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 	make /o /n = 0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
 	SetScale /P x 0,0.005,"ms", TestPulse

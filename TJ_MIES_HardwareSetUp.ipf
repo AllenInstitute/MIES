@@ -84,11 +84,11 @@ Function/t HSU_BaseFolderPathString(PanelTitle)
 	string BaseFolderPath
 	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
-	BaseFolderPath = "root:" + stringfromlist(DeviceType, DeviceTypeList, ";")
+	BaseFolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType, DeviceTypeList, ";")
 	return BaseFolderPath
 End
 
-Function/t HSU_DataFullFolderPathString(PanelTitle)
+Function /t HSU_DataFullFolderPathString(PanelTitle)
 	string PanelTitle
 	string DeviceTypeList = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"  
 	variable DeviceType, DeviceNumber
@@ -97,7 +97,7 @@ Function/t HSU_DataFullFolderPathString(PanelTitle)
 	DeviceType = v_value - 1
 	controlinfo /w = $PanelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
-	FolderPath = "root:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
+	FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
 	return FolderPath
 End
 
@@ -119,7 +119,7 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	dowindow /W = $panelTitle /C $"DA_Ephys"
 	// ########## ADD CODE HERE TO REMOVE PANEL TITLE FROM GLOBAL LIST OF PANEL TITLES ##########
 	print WavePath + ":ITCDeviceIDGlobal"
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR /z ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	string cmd
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd	
@@ -160,14 +160,14 @@ End
 // for example: DAC popup lists, TTL popup lists
 
 Function HSU_GlblListStrngOfITCPanlTitls()
-	If(exists("ITCPanelTitleList") == 0)
-	String /G root:ITCPanelTitleList
+	If(exists("root:MIES:ITCDevices:ITCPanelTitleList") == 0)
+	String /G root:MIES:ITCDevices:ITCPanelTitleList
 	endif
 End
 
 
 Function HSU_ListOfITCPanels()
-	SVAR ITCPanelTitleList = root:ITCPanelTitleList
+	SVAR ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
 	ITCPanelTitleList = winlist("ITC*", ";", "WIN:64") 
 End
 
@@ -186,7 +186,7 @@ Function HSU_OpenITCDevice(panelTitle)
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string ITCDeviceIDGlobal = WavePath + ":ITCDeviceIDGlobal"
-	Variable /G $ITCDeviceIDGlobal =  DevID[0]
+	Variable /G $ITCDeviceIDGlobal = DevID[0]
 	
 	
 End // Function HSU_OpenITCDevice(panelTitle)
@@ -194,7 +194,7 @@ End // Function HSU_OpenITCDevice(panelTitle)
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
 	Variable HeadStageNo, SweepNo, i
-	wave /z W_telegraphServers
+	wave /z W_TelegraphServers = root:MIES:Amplifiers:W_TelegraphServers
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
@@ -251,7 +251,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ChanAmpAssignUnit[3][HeadStageNo] = s_value
 	
 	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
-	if(waveexists(W_telegraphServers) == 1)
+	if(waveexists(root:MIES:Amplifiers:W_telegraphServers) == 1)
 	ControlInfo /w = $panelTitle popup_Settings_Amplifier
 		if(v_value > 1)
 		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0]

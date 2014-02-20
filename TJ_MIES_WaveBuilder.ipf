@@ -3,7 +3,7 @@
 Function WB_InitiateWaveBuilder()
 	WB_MakeWaveBuilderFolders()
 	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder  root:WaveBuilder:Data
+	SetDataFolder  root:MIES:WaveBuilder:Data
 	WB_WaveBuilderParameterWaves()
 	String WaveBuilderPanel = "WaveBuilder()"
 	execute WavebuilderPanel
@@ -14,7 +14,7 @@ Function WB_DisplaySetInPanel()
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	WB_RemoveAndKillTracesOnGraph()
 	
@@ -52,7 +52,7 @@ Function WB_RemoveAndKillTracesOnGraph()
 	string ListOfTracesOnGraph
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	ListOfTracesOnGraph = TraceNameList("WaveBuilder#WaveBuilderGraph", ",", 0+1 )
 
@@ -71,14 +71,14 @@ Function WB_RemoveAndKillTracesOnGraph()
 End
 
 Function WB_MakeStimSet()
-	wave  WaveBuilderWave = root:wavebuilder:data:wavebuilderwave
+	wave  WaveBuilderWave = root:MIES:wavebuilder:data:wavebuilderwave
 	variable i = 1
 	Variable start = stopmstimer(-2)
 
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
-	wave wp = root:WaveBuilder:Data:WP
+	wave wp = root:MIES:WaveBuilder:Data:WP
 	duplicate/free wp, wpd// duplicating starting parameter waves so that they can be returned to start parameters at end of wave making
 
 	controlinfo setvar_WaveBuilder_baseName
@@ -109,7 +109,7 @@ Function WB_MakeStimSet()
 End
 
 Function WB_AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
-wave WP = root:WaveBuilder:Data:WP//
+wave WP = root:MIES:WaveBuilder:Data:WP//
 	
 	variable i = 0
 	
@@ -152,10 +152,10 @@ Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
 	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount, FIncrement
-	wave SegWvType=root:WaveBuilder:Data:SegWvType
+	wave SegWvType=root:MIES:WaveBuilder:Data:SegWvType
 	//wave WaveBuilderWave=root:WaveBuilder:Data:WaveBuilderWave
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	make /o /n = 0 WaveBuilderWave = 0
 	make /o /n = 0 SegmentWave = 0
 	
@@ -166,17 +166,19 @@ Function WB_MakeWaveBuilderWave()
 	string cmd, NameOfWaveToBeDuplicated, NameOfWaveToBeDuplicated_NOQUOT
 	String ParameterWaveName
 	
-	Variable/g  ParameterHolder
-	String/g StringHolder
+	Variable /g  root:MIES:WaveBuilder:Data:ParameterHolder
+	NVAR ParameterHolder = root:MIES:WaveBuilder:Data:ParameterHolder
+	String /g root:MIES:WaveBuilder:Data:StringHolder
+	SVAR StringHolder = root:MIES:WaveBuilder:Data:StringHolder
 	do
 		//Load in parameters
-		ParameterWaveName = "root:WaveBuilder:Data:WP"
+		ParameterWaveName = "root:MIES:WaveBuilder:Data:WP"
 	
 		sprintf cmd, "ParameterHolder	= %s[%d][%d][%d]" ParameterWaveName, 0, i, SegWvType[i]
 		Execute cmd
 		Duration = ParameterHolder
 		
-		if(Duration <= 0)
+		if(Duration < 0)
 			Print "User input has generated a negative epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
 			Duration = 1
 		endif
@@ -257,7 +259,7 @@ Function WB_MakeWaveBuilderWave()
 		Execute cmd
 		DeltaCustomOffset = ParameterHolder
 		
-		sprintf cmd, "StringHolder = %s[%d][%d]"  "root:WaveBuilder:Data:WPT", 0, i// passes name of custom wave from a text wave
+		sprintf cmd, "StringHolder = %s[%d][%d]"  "root:MIES:WaveBuilder:Data:WPT", 0, i// passes name of custom wave from a text wave
 		Execute cmd
 		NameOfWaveToBeDuplicated = "'" + StringHolder + "'"
 		
@@ -368,7 +370,7 @@ End
 
 Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run wavebuilder panel
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	Make /O /N = 100 WaveBuilderWave
 	Make /O /N = (31,100,8) WP //WP=Wave Parameters
 	Make /T /O /N = (31,100) WPT//WPT=Wave Parameters Text (wave)
@@ -381,20 +383,20 @@ End
 
 Function WB_MakeWaveBuilderFolders()//makes folders used by wavebuilder panel
 	//DataFolderExists(folderNameStr ) -
-	NewDataFolder /O root:WaveBuilder
-	NewDataFolder /O root:WaveBuilder:Data
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:DA
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSetParameters:TTL
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSets
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:DA
-	NewDataFolder /O root:WaveBuilder:SavedStimulusSets:TTL
+	NewDataFolder /O root:MIES:WaveBuilder
+	NewDataFolder /O root:MIES:WaveBuilder:Data
+	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters
+	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
+	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
+	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets
+	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets:DA
+	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets:TTL
 End
 
 
 Function WB_ParamToPanel(WaveParametersWave)//passes the data from the WP wave to the panel
 	variable WaveParametersWave
-	wave WP = root:wavebuilder:data:wp
+	wave WP = root:MIES:wavebuilder:data:wp
 	string ControlName = "setvar_WaveBuilder_P"
 	variable rowNo = 0
 	
@@ -584,7 +586,7 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 	NameOfWaveToBeDuplicated = s_value+NameOfWaveToBeDuplicated
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:WaveBuilder:Data
+	SetDataFolder root:MIES:WaveBuilder:Data
 	
 	make /o /n = 1 SegmentWave
 	
@@ -638,3 +640,8 @@ End
 
 //=====================================================================================
 //=====================================================================================
+
+Function /t WaveBuilderFolderPath()
+string FolderPath = "root:MIES:WaveBuilder"
+return FolderPath
+End

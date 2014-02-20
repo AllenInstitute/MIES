@@ -9,13 +9,13 @@ Function RA_Start(PanelTitle)
 	variable i = 0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	string CountPath = WavePath+":Count"
-	variable/g $CountPath=0
+	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
+	string CountPath = WavePath + ":Count"
+	variable /g $CountPath = 0
 	NVAR Count = $CountPath
-	string ActiveSetCountPath=WavePath+":ActiveSetCount"
+	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-	variable /g $ActiveSetCountPath=v_value
+	variable /g $ActiveSetCountPath = v_value
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
 	ActiveSetCount *= v_value
@@ -54,7 +54,7 @@ Function RA_Start(PanelTitle)
 
 		DAP_StoreTTLState(panelTitle)//preparations for test pulse begin here
 		DAP_TurnOffAllTTLs(panelTitle)
-		string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+		string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 		make /o /n = 0 $TestPulsePath
 		wave TestPulse = $TestPulsePath
 		SetScale /P x 0, 0.005, "ms", TestPulse
@@ -93,7 +93,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
-	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	string CountPath = WavePath + ":Count"
 	NVAR Count = $CountPath
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
@@ -161,9 +161,9 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				DAP_StoreTTLState(panelTitle)
 				DAP_TurnOffAllTTLs(panelTitle)
 				
-				string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+				string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 				make /o /n = 0 $TestPulsePath
-				wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+				wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 				SetScale /P x 0, 0.005, "ms", TestPulse
 				TP_UpdateTestPulseWave(TestPulse, panelTitle)
 				
@@ -209,7 +209,7 @@ Function RA_BckgTPwithCallToRACounter(PanelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
 	string CountPath = WavePath + ":Count"
@@ -241,9 +241,9 @@ Function RA_BckgTPwithCallToRACounter(PanelTitle)
 				DAP_StoreTTLState(panelTitle)
 				DAP_TurnOffAllTTLs(panelTitle)
 				
-				string TestPulsePath = "root:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+				string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 				make /o /n = 0 $TestPulsePath
-				wave TestPulse = root:WaveBuilder:SavedStimulusSets:DA:TestPulse
+				wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 				SetScale/P x 0, 0.005, "ms", TestPulse
 				TP_UpdateTestPulseWave(TestPulse, panelTitle)
 				
