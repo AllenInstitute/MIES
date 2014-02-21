@@ -20,8 +20,6 @@
 	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
 	//	Execute cmd	
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-
-	
 	
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -33,11 +31,11 @@
 	sprintf cmd, "ITCStartAcq" 
 	Execute cmd	
 	
-	ITC_CreateOrUpdateActiveDeviceListWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
-	ITC_CreateOrUpdateActiveDeviceListTextWave(panelTitle, 1)
+	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
+	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1)
 	
-	if (TP_IsBackgrounOpRunning(panelTitle, ITC_BckgrdFIFOMonitor) == 0)
-		ITC_StartBckgrdFIFOMonitorMD()
+	if (TP_IsBackgrounOpRunning(panelTitle, "ITC_BckgrdFIFOMonitorMD") == 0)
+		ITC_StartBckrdFIFOMonitorMD()
 	endif
 	
 	End
@@ -65,14 +63,14 @@
 		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 		panelTitle = ActiveDeviceTextList[i]
 		WavePath = HSU_DataFullFolderPathString(PanelTitle)
-		ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
-			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2])	// ActiveDeviceList[i][2] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
+		WAVE /Z ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
+			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2]))	// ActiveDeviceList[i][2] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
 				print "stopped data acq on " + panelTitle
-				ITC_CreateOrUpdateActiveDeviceListWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices
-				ITC_CreateOrUpdateActiveDeviceListTextWave(panelTitle, -1)
-				ITC_StopDataAcqMD(panelTitle) 
+				ITC_MakeOrUpdateActivDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
+				ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
+				ITC_StopDataAcqMD(panelTitle, ActiveDeviceList[i][0]) 
 				if (numpnts(ActiveDeviceTextList) == 0) 
-					ITC_STOPFifoMonitorMD() // stops FIFO monitor when there are no devices left to monitor
+					ITC_StopBckrdFIFOMonitorMD() // stops FIFO monitor when there are no devices left to monitor
 				endif
 			endif
 		i += 1
@@ -108,44 +106,44 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	//sprintf cmd, "ITCCloseAll" 
 	//execute cmd
 	
-	ControlInfo /w = $panelTitleG Check_Settings_SaveData
+	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
-		DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
+		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
 	endif
 	
-	 DM_ScaleITCDataWave(panelTitleG)
+	 DM_ScaleITCDataWave(panelTitle)
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
-	controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
+	controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
-			RA_Start(PanelTitleG)
+			RA_Start(PanelTitle)
 		else
-			DAP_StopButtonToAcqDataButton(panelTitleG)
+			DAP_StopButtonToAcqDataButton(panelTitle)
 			NVAR /z DataAcqState = $wavepath + ":DataAcqState"
 			DataAcqState = 0
 		endif
 	else
 		//print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
-		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		RA_BckgTPwithCallToRACounter(panelTitle)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 	
 	//killvariables /z StopCollectionPoint, ADChannelToMonitor
 	//killvariables /z  ADChannelToMonitor
 	//killstrings /z PanelTitleG
 END
-	
-Function ITC_CreateOrUpdateActiveDeviceListWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
+	ITC_MakeOrUpdateActivDevLstWave
+Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle
-	Variable panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
+	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
 	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 	if (AddorRemoveDevice == 1) // add a ITC device
 		if (waveexists($WavePath + ":ActiveDeviceList") == 0) 
 			Make /o /n = (1,4) $WavePath + ":ActiveDeviceList"
-			ActiveDeviceList = $WavePath + ":ActiveDeviceList"
+			WAVE /Z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 			ActiveDeviceList[0, 0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0, 1] = ADChannelToMonitor
 			ActiveDeviceList[0, 2] = StopCollectionPoint
-		elseif (waveexists($WavePath + ActiveDeviceList) == 1)
+		elseif (waveexists($WavePath + ":ActiveDeviceList") == 1)
 			variable numberOfRows = DimSize(ActiveDeviceList, 0)
 			Redimension /n = (numberOfRows, 4) ActiveDeviceList
 			ActiveDeviceList[numberOfRows, 0] = ITCDeviceIDGlobal
@@ -153,21 +151,21 @@ Function ITC_CreateOrUpdateActiveDeviceListWave(panelTitle, ITCDeviceIDGlobal, A
 			ActiveDeviceList[numberOfRows, 2] = StopCollectionPoint
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
-		Duplicate /FREE ActiveDeviceList[0][] ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		FindValue /I = ITCDeviceIDGlobal ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
+		Duplicate /FREE /r = [][0,0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
+		FindValue /I = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
-End // Function ITC_CreateOrUpdateActiveDeviceWaveList(panelTitle)
+End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
 
- Function ITC_CreateOrUpdateActiveDeviceListTextWave(panelTitle, AddorRemoveDevice)
+ Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, AddorRemoveDevice)
  	string panelTitle
  	Variable AddOrRemoveDevice
  	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
- 	WAVE /z ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
+ 	WAVE /z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
  	if (AddOrRemoveDevice == 1) // Add a device
  		if(WaveExists($WavePath + ":ActiveDeviceTextList") == 0)
  			Make /t /o /n = 1 $WavePath + ":ActiveDeviceTextList"
- 			ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
+ 			WAVE /Z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
  		elseif (WaveExists($WavePath + ":ActiveDeviceTextList") == 1)
  			Variable numberOfRows = numpnts(ActiveDeviceTextList)
  			Redimension /n = (numberOfRows) ActiveDeviceTextList
@@ -177,12 +175,12 @@ End // Function ITC_CreateOrUpdateActiveDeviceWaveList(panelTitle)
  		FindValue /Text = panelTitle ActiveDeviceTextList
  		DeletePoints /m = 0 v_value, 1, ActiveDeviceTextList
  	endif
- End // Function ITC_CreateOrUpdateActiveDeviceListTextWave(panelTitle)
+ End // ITC_MakeOrUpdtActivDevListTxtWv(panelTitle)
  
 
 
-Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
-	String PanelTitle = ""
+//Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
+	String PanelTitle
 	Variable TPorDataAcq
 	Variable Add_Remove // 1 to add a device; -1 to remove a device
 	

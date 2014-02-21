@@ -5,6 +5,7 @@
 #include "C:gitwork:MIES_TimJ:TJ_MIES_AmplifierInteraction"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_Analysis"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_DataAcqITC"
+#include "C:gitwork:MIES_TimJ:TJ_MIES_BackgroundMD"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_DataBrowser"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_DataConfiguratorITC"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_DataManagementNew"
