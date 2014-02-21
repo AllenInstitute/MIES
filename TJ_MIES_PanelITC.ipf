@@ -2134,22 +2134,22 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B3&r`U7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^2*1"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
 	String fldrSav0= GetDataFolder(1)
-	SetDataFolder root:MIES:ITCDevices:ITC1600:Device0:
-	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /HIDE=1 /L=AD0 ITCDataWave[*][2]
-	AppendToGraph/L=AD1 ITCDataWave[*][3]
-	SetDataFolder fldrSav0
+	//SetDataFolder root:MIES:ITCDevices:ITC1600:Device0:
+	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /HIDE=1 /L=AD0 //ITCDataWave[*][2]
+	//AppendToGraph/L=AD1 ITCDataWave[*][3]
+	//SetDataFolder fldrSav0
 	ModifyGraph width=25,wbRGB=(61440,61440,61440),gbRGB=(61440,61440,61440)
 	ModifyGraph lblPosMode=1
-	ModifyGraph freePos(AD0)={0,kwFraction}
-	ModifyGraph freePos(AD1)={0,kwFraction}
-	ModifyGraph axisEnab(AD0)={0.525,1}
-	ModifyGraph axisEnab(AD1)={0.025,0.5}
-	Label AD0 "AD0 (pA)"
-	Label bottom "Time (\\U)"
-	Label AD1 "AD1 (pA)"
-	SetAxis/A=2/N=2 AD0
-	SetAxis bottom 0,900
-	SetAxis/A=2/N=2 AD1
+	//ModifyGraph freePos(AD0)={0,kwFraction}
+	//ModifyGraph freePos(AD1)={0,kwFraction}
+	//ModifyGraph axisEnab(AD0)={0.525,1}
+	//ModifyGraph axisEnab(AD1)={0.025,0.5}
+	//Label AD0 "AD0 (pA)"
+	//Label bottom "Time (\\U)"
+	//Label AD1 "AD1 (pA)"
+	//SetAxis/A=2/N=2 AD0
+	//SetAxis bottom 0,900
+	//SetAxis/A=2/N=2 AD1
 	RenameWindow #,Oscilloscope
 	SetActiveSubwindow ##
 EndMacro
