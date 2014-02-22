@@ -2442,7 +2442,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string DataAcqStatePath = WavePath + ":DataAcqState"
 	print DataAcqStatePath
-	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion
+	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
 		variable /G $DataAcqStatePath = 0
 	endif
 	
@@ -2451,7 +2451,6 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		
 	if(DataAcqState == 0) // data aquistion is stopped
 		
-	
 	
 		if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops test pulse if it is running
 			ITC_STOPTestPulse(panelTitle)
@@ -2510,6 +2509,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
+		print "device type = ", devicetype, " Device Number = ", devicenum
 			
 End
 
