@@ -28,9 +28,9 @@
 	execute cmd
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	execute cmd// this also seems necessary to update the DA channel data to the board!!
-	//sprintf cmd, "ITCStartAcq" 
-	//Execute cmd	
-	doupdate
+	sprintf cmd, "ITCStartAcq" 
+	Execute cmd	
+	//doupdate
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1)
 	
@@ -57,9 +57,9 @@
 	Variable i = 0
 	String panelTitle = ""
 	String WavePath = ""
-	WAVE /z ITCDataWave
-	WAVE /z ITCFIFOAvailConfigWave
-	
+	//WAVE /z ITCDataWave
+	//WAVE /z ITCFIFOAvailConfigWave
+	String PathToITCFIFOAvailAllConfigWave
 	do
 		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 		print "Number of Active Devices = ",NumberOfActiveDevices
@@ -69,7 +69,12 @@
 		WAVE /Z ITCDataWave = ActiveDeviceWavePathWave[i][0] 
 		WAVE /Z ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
 			print "AD channel to monitor = ", ActiveDeviceList[i][1]
-
+			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
+			print PathToITCFIFOAvailAllConfigWave
+			sprintf cmd, "ITCFIFOAvailableALL/z=0, %s" PathToITCFIFOAvailAllConfigWave
+			print cmd
+			Execute cmd	
+			print "FIFO available = ", ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2]
 			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2]))	// ActiveDeviceList[i][1] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
 				print "stopped data acq on " + panelTitle
 				ITC_MakeOrUpdateActivDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
@@ -81,8 +86,9 @@
 				NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 			endif
 		i += 1
+		itcdatawave[0][0] += 0
 	while(i < NumberOfActiveDevices)
-	itcdatawave[0][0] += 0
+	
 	ITCFIFOAvailAllConfigWave[0][0] += 0
 	return 0
 End // Function ITC_FIFOMonitorMD(s)
@@ -162,7 +168,8 @@ Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChanne
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		wavestats ListOfITCDeviceIDGlobal
+		// wavestats ListOfITCDeviceIDGlobal
+		print "ITCDeviceIDGlobal = ", ITCDeviceIDGlobal
 		FindValue /I = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
