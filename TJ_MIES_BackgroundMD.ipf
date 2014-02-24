@@ -62,19 +62,19 @@
 	String PathToITCFIFOAvailAllConfigWave
 	do
 		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
-		print "Number of Active Devices = ",NumberOfActiveDevices
+		//print "Number of Active Devices = ",NumberOfActiveDevices
 		panelTitle = ActiveDeviceTextList[i]
-		print "panel Title = ", panelTitle
+		//print "panel Title = ", panelTitle
 		//WavePath = HSU_DataFullFolderPathString(PanelTitle)
 		WAVE /Z ITCDataWave = ActiveDeviceWavePathWave[i][0] 
 		WAVE /Z ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
-			print "AD channel to monitor = ", ActiveDeviceList[i][1]
+			//print "AD channel to monitor = ", ActiveDeviceList[i][1]
 			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
-			print PathToITCFIFOAvailAllConfigWave
+			//print PathToITCFIFOAvailAllConfigWave
 			sprintf cmd, "ITCFIFOAvailableALL/z=0, %s" PathToITCFIFOAvailAllConfigWave
-			print cmd
+			//print cmd
 			Execute cmd	
-			print "FIFO available = ", ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2]
+			//print "FIFO available = ", ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2]
 			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2]))	// ActiveDeviceList[i][1] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
 				print "stopped data acq on " + panelTitle
 				ITC_MakeOrUpdateActivDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
@@ -170,7 +170,7 @@ Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChanne
 		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
 		// wavestats ListOfITCDeviceIDGlobal
 		print "ITCDeviceIDGlobal = ", ITCDeviceIDGlobal
-		FindValue /I = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
+		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
 End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
