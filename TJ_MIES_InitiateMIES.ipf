@@ -5,6 +5,7 @@ Function IM_InitiateMIES()
 	NewDataFolder /o root:MIES:Amplifiers
 	NewDataFolder /o root:MIES:ITCDevices
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices
+	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:TestPulse
 	WB_InitiateWaveBuilder()
 	execute "DA_Ephys()"
 	execute "DataBrowser()"
