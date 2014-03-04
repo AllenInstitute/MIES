@@ -35,11 +35,11 @@ End
 
 Function ITC_TestPulseFuncMD(s)
 	STRUCT WMBackgroundStruct &s
-	String cmd, Keyboard
+	String cmd, Keyboard, panelTitle
 	
-	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
-	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList
-	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
+	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
+	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDeviceTextList
+	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDevWavePathWave
 	
 		//	ActiveDevWavePathWave[0][0] = ITCDataWave
 		//	ActiveDevWavePathWave[0][1] = ITCFIFOAvailAllConfigWave 
@@ -86,19 +86,31 @@ Function ITC_TestPulseFuncMD(s)
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
 		endif
+		
 		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
-				beep 
-				ITC_STOPTestPulse(panelTitle)
+				panelTitle = DAP_ReturnPanelName()
+				if(stringmatch("ITC*",panelTitle) == 1) // makes sure the panel title being passed is a data acq panel title
+					beep 
+					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, -1)
+					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
+					if (numpnts(ActiveDeviceTextList) == 0) 
+						CtrlNamedBackground TestPulse, stop
+						ITC_STOPTestPulse(panelTitle) // stops the test pulse on the top data acq panel
+					endif
+						
+				endif
 			endif
 		endif
-					NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
+		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 
 		i += 1
-
+		if(i > NumberOfActiveDevices)
+			i == 0 // reinitiates loop through active devices
+		endif
 		print "background loop took (ms):", (stopmstimer(-2) - start) / 1000
-		// single loop with one device takes between 26 and 98 micro seconds (micro is the correct prefix)
+		// single loop with one device takes between XXXX micro seconds (micro is the correct prefix)
 	while(i < NumberOfActiveDevices)	
 	
 	return 0

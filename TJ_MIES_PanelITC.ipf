@@ -2807,13 +2807,15 @@ Function /T DAP_ReturnPanelName()
 	string panelTitle
 	getwindow kwTopWin activesw
 	PanelTitle = s_value
-	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
-	
-	if(SearchResult != -1)
-		PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
+	if(stringmatch("ITC*", panelTitle) == 1) // makes sure DataAcq panel is the selected panel type
+		variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
+		if(SearchResult != -1)
+			PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
+		endif
+		return PanelTitle
+	elseif (stringmatch("ITC*", panelTitle)== -1)
+		return ""	
 	endif
-	
-	return PanelTitle
 End
 
 Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl

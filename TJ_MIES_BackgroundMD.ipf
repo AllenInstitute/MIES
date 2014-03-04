@@ -9,7 +9,7 @@
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
-	variable StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+	variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
 	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
