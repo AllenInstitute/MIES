@@ -16,7 +16,7 @@ Function ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//
 	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	variable ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
@@ -39,41 +39,54 @@ Function ITC_TestPulseFuncMD(s)
 	
 	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDeviceTextList
-	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDevWavePathWave
+	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
+	
+	variable i = 0
+	variable BackgroundTPCount = 0
+	variable NumberOfActiveDevices
+	string WavePath
+	string CountPath
+	string oscilloscopeSubWindow
+	variable ADChannelToMonitor
+	variable StopCollectionPoint
 	
 		//	ActiveDevWavePathWave[0][0] = ITCDataWave
 		//	ActiveDevWavePathWave[0][1] = ITCFIFOAvailAllConfigWave 
 		//	ActiveDevWavePathWave[0][2] = ITCFIFOPositionAllConfigWave
 		//	ActiveDevWavePathWave[0][3] = ResultsWave
 	do
-		string WavePath = HSU_DataFullFolderPathString(ActiveDeviceTextList[i])
+		WavePath = HSU_DataFullFolderPathString(ActiveDeviceTextList[i])
 		WAVE ITCDataWave = ActiveDeviceWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
 		WAVE ITCFIFOPositionAllConfigWavePth = ActiveDeviceWavePathWave[i][2]
 		WAVE ResultsWavePath = ActiveDeviceWavePathWave[i][3]
-		string CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + ":count"
-		string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
-		Variable ADChannelToMonitor = ActiveDeviceList[i][1]
-		Variable StopCollectionPoint = ActiveDeviceList[i][2]
-		
+		CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + "count"
+		oscilloscopeSubWindow = ActiveDeviceTextList[i] + "#oscilloscope"
+		ADChannelToMonitor = ActiveDeviceList[i][1]
+		StopCollectionPoint = ActiveDeviceList[i][2]
+	
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]// ITCDeviceIDGlobal
 		execute cmd
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		execute cmd// this also seems necessary to update the DA channel data to the board!!
+		print WavePath + ":ITCFIFOPositionAllConfigWave"
+		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+		execute cmd // this also seems necessary to update the DA channel data to the board!!
+		
 		sprintf cmd, "ITCStartAcq"
 		Execute cmd	
-		
+		print "FIFOSize", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		 //ITC_StartBckgrdFIFOMonitor()
 			do
-				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
+				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" WavePath + ":ITCFIFOPositionAllConfigWave"
 				Execute cmd	
 				//doxopidle
+				print "FIFOSize", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		//Check Status
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
+		
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 		
@@ -93,7 +106,7 @@ Function ITC_TestPulseFuncMD(s)
 				panelTitle = DAP_ReturnPanelName()
 				if(stringmatch("ITC*",panelTitle) == 1) // makes sure the panel title being passed is a data acq panel title
 					beep 
-					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, -1)
+					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
 					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
 					if (numpnts(ActiveDeviceTextList) == 0) 
 						CtrlNamedBackground TestPulse, stop
@@ -107,9 +120,9 @@ Function ITC_TestPulseFuncMD(s)
 
 		i += 1
 		if(i > NumberOfActiveDevices)
-			i == 0 // reinitiates loop through active devices
+			i = 0 // reinitiates loop through active devices
 		endif
-		print "background loop took (ms):", (stopmstimer(-2) - start) / 1000
+		//print "background loop took (ms):", (stopmstimer(-2) - start) / 1000
 		// single loop with one device takes between XXXX micro seconds (micro is the correct prefix)
 	while(i < NumberOfActiveDevices)	
 	
@@ -203,7 +216,7 @@ End // Function 	ITC_MakeOrUpdateTPDevLstWave(panelTitle)
  	endif
  	 		print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 
- 	ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
+ 	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 
  End // ITC_MakeOrUpdtTPDevListTxtWv(panelTitle)
 //=============================================================================================================================
@@ -213,17 +226,17 @@ Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	Variable AddOrRemoveDevice, RowToRemove
 	Variable start = stopmstimer(-2)
 	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDevWavePathWave
+	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 	if (AddOrRemoveDevice == 1) 
-		if (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave) == 0)
-			Make /WAVE /n = (1,4) root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDevWavePathWave
-			WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:TestPulse:ActiveDevWavePathWave
+		if (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave) == 0)
+			Make /WAVE /n = (1,4) root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
+			WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 			// print devicefolderpath + ":itcdatawave"
 			ActiveDevWavePathWave[0][0] = $(DeviceFolderPath + ":ITCDataWave") 
 			ActiveDevWavePathWave[0][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
 			ActiveDevWavePathWave[0][2] = $(DeviceFolderPath + ":ITCFIFOPositionAllConfigWave") 
 			ActiveDevWavePathWave[0][3] = $(DeviceFolderPath + ":ResultsWave") 			
-		elseif (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave) == 1)
+		elseif (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave) == 1)
 			Variable numberOfRows = DimSize(ActiveDevWavePathWave, 0)
 			Redimension /n = (numberOfRows + 1,4) ActiveDevWavePathWave
 			ActiveDevWavePathWave[numberOfRows][0] = $(DeviceFolderPath + ":ITCDataWave") 
