@@ -2807,13 +2807,13 @@ Function /T DAP_ReturnPanelName()
 	string panelTitle
 	getwindow kwTopWin activesw
 	PanelTitle = s_value
-	if(stringmatch("ITC*", panelTitle) == 1) // makes sure DataAcq panel is the selected panel type
+	if(stringmatch(panelTitle, "ITC*") == 1) // makes sure DataAcq panel is the selected panel type
 		variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 		if(SearchResult != -1)
 			PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
 		endif
 		return PanelTitle
-	elseif (stringmatch("ITC*", panelTitle)== -1)
+	elseif (stringmatch(panelTitle, "ITC*")== 0) // this else if does not return anything useful - all functions that call this function would return an error if this elseif was run
 		return ""	
 	endif
 End

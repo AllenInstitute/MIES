@@ -21,3 +21,4 @@
 #include "C:gitwork:MIES_TimJ:TJ_MIES_WaveBuilderPanel"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_WaveNoteMgmnt"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_TPBackgroundMD"
+#include <ProcedureBrowser>
