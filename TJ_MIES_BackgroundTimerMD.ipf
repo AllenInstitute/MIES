@@ -5,10 +5,10 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
 
 	// caclulate timing parameters
-	Variable numTicks = 15		// Run every quarter second (15 ticks)
-	Variable Start = ticks
-	Variable Duration = (RunTime*60)
-	Variable EndTime = Start + Duration
+	//Variable numTicks = 15		// Run every quarter second (15 ticks)
+	Variable StartTicks = ticks
+	Variable DurationTicks = (RunTime*60)
+	Variable EndTimeTicks = StartTicks + DurationTicks
 	
 	// get device ID global
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -17,11 +17,13 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 	// create string list with function names passed in
 	string ListOfFunctions = FunctionNameAPassedIn + ";" + FunctionNameBPassedIn + ";" + FunctionNameCPassedIn
 	
-	// 
+	// Make or update waves that store parameters that the background timer references
+		ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, StartTicks, DurationTicks, EndTimeTicks, 1)
 	
+	// Check if bacground timer operation is running. If no, start background timer operation.
 	if (TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD") == 0)
 		// print "background data acq is not running"
-		CtrlNamedBackground ITC_TimerMD, period = 5, proc = ITC_TimerMD
+		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD // period 6 = 100 ms
 		CtrlNamedBackground ITC_TimerMD, start
 	endif
 
@@ -29,21 +31,39 @@ End
 
 Function ITC_TimerMD(s)
 	STRUCT WMBackgroundStruct &s
-	SVAR panelTitleG =  root:MIES:ITCDevices:panelTitleG
-	NVAR Start = root:MIES:ITCDevices:Start, RunTime = root:MIES:ITCDevices:RunTime
-	variable TimeLeft
 	
-	variable ElapsedTime = (ticks - Start)
+	WAVE ActiveDevTimeParam = root:MIES:ITCDevice:ActiveITCDevices:Timer:ActiveDevTimeParam
+	// column 0 = ITCDeviceIDGlobal; column 1 = Start time; column 2 = run time; column 3 = end time
+	WAVE /T TimerFunctionListWave = root:MIES:ITCDevice:ActiveITCDevices:Timer:TimerFunctionListWave
+	// column 0 = panel title; column 1 = list of functions
+	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
+	Variable i = 0
+	Variable FunctionListCount
+	string panelTitle
+	Variable TimeLeft
 	
-	TimeLeft = abs(((RunTime - (ElapsedTime)) / 60))
-	if(TimeLeft < 0)
-		timeleft = 0
-	endif
-	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:TimeLeft
-	
-	if(ElapsedTime >= RunTime)
-		ITC_StopBackgroundTimerTask()
-	endif
+	do
+		ActiveDevTimeParam[i][4] = (ticks - ActiveDevTimeParam[i][1])
+		TimeLeft = ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4]
+		panelTitle = TimerFunctionListWave[i][0]
+		if(TimeLeft <= 0)
+					do 
+						Execute stringfromlist(FunctionListCount, TimerFunctionListWave[i][1], ";")
+						FunctionListCount +=1
+					while(FunctionListCount < ItemsInList(TimerFunctionListWave[i][1]))
+					ITC_MakeOrUpdateTimerParamWave(TimerFunctionListWave[i][0], "", 0, 0, 0, -1)
+					DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
+					if(DevicesWithActiveTimers == 0) // stops background timer if no more devices are in the parameter waves
+						CtrlNamedBackground ITC_TimerMD, Stop
+					elseif (DevicesWithActiveTimers > 0) // resets i ** NEED TO CHECK HOW REMOVING A DEVICE FROM THE START, MIDDLE OR END OF LIST AFFECTS THINGS
+						i -= 1
+					endif
+		endif
+		
+		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:TimeLeft
+		i+=1
+	while(i < DevicesWithActiveTimers)
+
 	//printf "NextRunTicks %d", s.nextRunTicks
 	return 0
 End
@@ -65,8 +85,8 @@ End
 // start and end time are calculated at function call 
 //=============================================================================================================================
 
-Function ITC_MakeOrUpdateTimerParamWave(panelTitle, startTime, RunTime, EndTime, AddOrRemoveDevice)
-	string panelTitle, FunctionNameA, FunctionNameB, FunctionNameC
+Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, AddOrRemoveDevice)
+	string panelTitle, ListOfFunctions
 Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
 	Variable start = stopmstimer(-2)
 
@@ -74,7 +94,7 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 
-	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices:Timer"
+	WavePath = "root:MIES:ITCDevices:ActiveITCDevices:Timer"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDevTimeParam"
 	if (AddorRemoveDevice == 1) // add a ITC device
 		if (waveexists($WavePath + ":ActiveDevTimeParam") == 0) 
@@ -84,7 +104,7 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 			ActiveDevTimeParam[0][1] = startTime
 			ActiveDevTimeParam[0][2] = RunTime
 			ActiveDevTimeParam[0][3] = EndTime
-			//ActiveDevTimeParam[0][3] = Elapsed time - calculated by background timer
+			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		elseif (waveexists($WavePath + ":ActiveDevTimeParam") == 1)
 			variable numberOfRows = DimSize(ActiveDevTimeParam, 0)
 			// print numberofrows
@@ -93,44 +113,46 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 			ActiveDevTimeParam[0][1] = startTime
 			ActiveDevTimeParam[0][2] = RunTime
 			ActiveDevTimeParam[0][3] = EndTime
-			//ActiveDevTimeParam[0][3] = Elapsed time - calculated by background timer
+			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDevTimeParam ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
 		// wavestats ListOfITCDeviceIDGlobal
 		// print "ITCDeviceIDGlobal = ", ITCDeviceIDGlobal
 		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
-		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
+		variable rowToRemove = v_value
+		DeletePoints /m = 0 rowToRemove, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
 	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	
+	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
 End // Function 	ITC_MakeOrUpdateTimerParamWave
 //=============================================================================================================================
 
- Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
+ Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
  	string panelTitle, ListOfFunctions
- 	Variable AddOrRemoveDevice
+ 	Variable RowToRemove, AddOrRemoveDevice
+ 	
  	Variable start = stopmstimer(-2)
 
  	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
- 	WAVE /z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
+ 	WAVE /z /T TimerFunctionListWave = $WavePath + ":TimerFunctionListWave"
  	if (AddOrRemoveDevice == 1) // Add a device
- 		if(WaveExists($WavePath + ":ActiveDeviceTextList") == 0)
+ 		if(WaveExists($WavePath + ":TimerFunctionListWave") == 0)
  			Make /t /o /n = (1,2) $WavePath + ":ActiveDeviceTextList"
- 			WAVE /Z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
- 			ActiveDeviceTextList[0][0] = panelTitle
- 			ActiveDeviceTextList[0][1] = ListOfFunctions
+ 			WAVE /Z /T TimerFunctionListWave = $WavePath + ":TimerFunctionListWave"
+ 			TimerFunctionListWave[0][0] = panelTitle
+ 			TimerFunctionListWave[0][1] = ListOfFunctions
  		elseif (WaveExists($WavePath + ":ActiveDeviceTextList") == 1)
- 			Variable numberOfRows = numpnts(ActiveDeviceTextList)
- 			Redimension /n = (numberOfRows + 1) ActiveDeviceTextList
- 			ActiveDeviceTextList[numberOfRows] = panelTitle
+ 			Variable numberOfRows = numpnts(TimerFunctionListWave)
+ 			Redimension /n = (numberOfRows + 1) TimerFunctionListWave
+ 			TimerFunctionListWave[numberOfRows][0] = panelTitle
+ 			TimerFunctionListWave[numberOfRows][1] = ListOfFunctions
  		endif
  	elseif (AddOrRemoveDevice == -1) // remove a device 
- 		FindValue /Text = panelTitle ActiveDeviceTextList
- 		Variable RowToRemove = v_value
- 		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
+ 		DeletePoints /m = 0 RowToRemove, 1, TimerFunctionListWave
  	endif
  	 		print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 
- 	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 
  End // IITC_MakeOrUpdtDevTimerTxtWv

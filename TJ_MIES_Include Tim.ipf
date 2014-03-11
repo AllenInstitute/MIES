@@ -1,5 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-
+//
 #include "C:gitwork:MIES_TimJ:ACL_TabUtilities"
 #include "C:gitwork:MIES_TimJ:ACL_UserdataEditor"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_AmplifierInteraction"
@@ -21,4 +21,5 @@
 #include "C:gitwork:MIES_TimJ:TJ_MIES_WaveBuilderPanel"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_WaveNoteMgmnt"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_TPBackgroundMD"
+#include "C:gitwork:MIES_TimJ:TJ_MIES_BackgroundTimerMD"
 #include <ProcedureBrowser>
