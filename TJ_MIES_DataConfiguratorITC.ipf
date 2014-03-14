@@ -406,7 +406,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	variable j = 0//
 	string ChannelStatus
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	wave ITCDataWave = $(WavePath + ":ITCDataWave")
 	string ITCDataWavePath = WavePath + ":ITCDataWave"
 	//string testPulsePath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
 	string ChanTypeWaveNameList, ChanTypeWaveName
@@ -431,15 +431,19 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
 			SetVarDAGain = "gain_DA_0" + num2str(i)
+			print SetVarDAGain
 			SetVarDAScale = "scale_DA_0" + num2str(i)
+			print SetVarDAScale
+			print paneltitle
 			ControlInfo /w = $panelTitle $SetVarDAGain
-			if(ChannelClampMode[i][0] == 0) // V-clamp
-				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-			endif
+			//if(ChannelClampMode[i][0] == 0) // V-clamp		
+			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
+			//endif
 			
-			if(ChannelClampMode[i][0] == 1) // I-clamp
-				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-			endif		
+//			if(ChannelClampMode[i][0] == 1) // I-clamp
+//				print v_value
+//				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
+//			endif		
 			
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value

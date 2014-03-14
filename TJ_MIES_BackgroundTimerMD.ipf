@@ -61,8 +61,9 @@ Function ITC_TimerMD(s)
 						i -= 1
 					endif
 		endif
-		
+		//print TimeLeft/60
 		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:(TimeLeft/60)
+		
 		i+=1
 	while(i < DevicesWithActiveTimers)
 
@@ -100,10 +101,10 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 			variable numberOfRows = DimSize(ActiveDevTimeParam, 0)
 			// print numberofrows
 			Redimension /n = (numberOfRows + 1, 5) ActiveDevTimeParam
-			ActiveDevTimeParam[0][0] = ITCDeviceIDGlobal
-			ActiveDevTimeParam[0][1] = startTime
-			ActiveDevTimeParam[0][2] = RunTime
-			ActiveDevTimeParam[0][3] = EndTime
+			ActiveDevTimeParam[numberOfRows][0] = ITCDeviceIDGlobal
+			ActiveDevTimeParam[numberOfRows][1] = startTime
+			ActiveDevTimeParam[numberOfRows][2] = RunTime
+			ActiveDevTimeParam[numberOfRows][3] = EndTime
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
@@ -135,7 +136,8 @@ End // Function 	ITC_MakeOrUpdateTimerParamWave
  			TimerFunctionListWave[0][0] = panelTitle
  			TimerFunctionListWave[0][1] = ListOfFunctions
  		elseif (WaveExists($WavePath + ":TimerFunctionListWave") == 1)
- 			Variable numberOfRows = numpnts(TimerFunctionListWave)
+ 			Variable numberOfRows = dimSize(TimerFunctionListWave, 0)
+ 			print numberofrows
  			Redimension /n = (numberOfRows + 1, 2) TimerFunctionListWave
  			TimerFunctionListWave[numberOfRows][0] = panelTitle
  			TimerFunctionListWave[numberOfRows][1] = ListOfFunctions

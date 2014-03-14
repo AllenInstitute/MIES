@@ -22,7 +22,7 @@
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	
 	
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
 	execute cmd
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
@@ -109,7 +109,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	string CountPath = WavePath + ":count"
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
 	execute cmd	
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
