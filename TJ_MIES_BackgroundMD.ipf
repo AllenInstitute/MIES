@@ -21,10 +21,12 @@
 	//	Execute cmd	
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	
-	
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	print "global device ID = ", itcdeviceidglobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+	print cmd
+	
 	execute cmd
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	execute cmd// this also seems necessary to update the DA channel data to the board!!
@@ -40,13 +42,13 @@
 	endif
 	
 	End
- 	//=============================================================================================================================
+ //=============================================================================================================================
 
 	Function ITC_StartBckrdFIFOMonitorMD()
 		CtrlNamedBackground ITC_FIFOMonitorMD, period = 1, proc = ITC_FIFOMonitorMD
 		CtrlNamedBackground ITC_FIFOMonitorMD, start
 	End // Function ITC_StartBckrdFIFOMonitorMD
-	//=============================================================================================================================
+//=============================================================================================================================
  
  Function ITC_FIFOMonitorMD(s) // MD = Multiple Devices 
 	STRUCT WMBackgroundStruct &s
@@ -55,13 +57,14 @@
 	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
 	String cmd = ""
 	Variable NumberOfActiveDevices // = numpnts(ActiveDeviceTextList)
+	Variable DeviceIDGlobal
 	Variable i = 0
 	String panelTitle = ""
 	String WavePath = ""
 	String PathToITCFIFOAvailAllConfigWave
 	do
 		Variable start = stopmstimer(-2)
-		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
+		NumberOfActiveDevices = dimsize(ActiveDeviceTextList, 0)
 		//print "Number of Active Devices = ",NumberOfActiveDevices
 		panelTitle = ActiveDeviceTextList[i]
 		//print "panel Title = ", panelTitle
@@ -69,25 +72,31 @@
 		WAVE /Z ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
 			//print "AD channel to monitor = ", ActiveDeviceList[i][1]
 			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
-			//print PathToITCFIFOAvailAllConfigWave
+			
+			sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
+			execute cmd
 			sprintf cmd, "ITCFIFOAvailableALL/z=0, %s" PathToITCFIFOAvailAllConfigWave
 			//print cmd
 			Execute cmd	
 			//print "FIFO available = ", ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2]
 			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2]))	// ActiveDeviceList[i][1] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
-				// print "stopped data acq on " + panelTitle
-				ITC_MakeOrUpdateActivDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
+				print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
+				DeviceIDGlobal = ActiveDeviceList[i][0]
+				ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
 				ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-				ITC_StopDataAcqMD(panelTitle, ActiveDeviceList[i][0]) 
-				if (numpnts(ActiveDeviceTextList) == 0) 
+				ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal) 
+				if (dimsize(ActiveDeviceTextList, 0) == 0) 
+					print "no more active devices, stopping named background"
 					CtrlNamedBackground ITC_FIFOMonitorMD, stop
 					//ITC_StopBckrdFIFOMonitorMD() // stops FIFO monitor when there are no devices left to monitor
 				endif
+				print "i = ",i
 				NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
+				print " number of active devices = ",NumberOfActiveDevices
 			endif
 		i += 1
 		itcdatawave[0][0] += 0
-		print "background loop took (ms):", (stopmstimer(-2) - start) / 1000
+		//print "background loop took (ms):", (stopmstimer(-2) - start) / 1000
 		// single loop with one device takes between 26 and 98 micro seconds (micro is the correct prefix)
 	while(i < NumberOfActiveDevices)
 	
@@ -109,7 +118,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	string CountPath = WavePath + ":count"
 
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd	
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
@@ -154,7 +163,7 @@ Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChanne
 	string panelTitle
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
 	Variable start = stopmstimer(-2)
-
+	print "ITC Device ID global = ", itcdeviceidglobal, "In  ITC_MakeOrUpdateActivDevLstWave"
 	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 	if (AddorRemoveDevice == 1) // add a ITC device

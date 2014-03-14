@@ -22,10 +22,11 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
 	//Execute cmd
 	
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 		
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+	print cmd
 	execute cmd
 	do
 
@@ -87,7 +88,7 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
 		//Execute cmd	
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd	
 		
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
@@ -254,7 +255,7 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
 	//Execute cmd	
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
@@ -388,7 +389,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	//Execute cmd	
 	
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath

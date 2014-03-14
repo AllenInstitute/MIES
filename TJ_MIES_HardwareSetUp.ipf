@@ -121,7 +121,7 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	print WavePath + ":ITCDeviceIDGlobal"
 	NVAR /z ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	string cmd
-	sprintf cmd, "ITCSelectDevice /z = 0 %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd	
 	sprintf cmd, "ITCCloseDevice"
 	execute cmd
@@ -180,12 +180,12 @@ Function HSU_OpenITCDevice(panelTitle)
 	DeviceType = v_value - 1
 	controlinfo /w = $PanelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
-	Make /o  /I /U /N = 2 DevID = 50 // /FREE /I /U /N = 2 DevID = 50
+	Make /o  /I /U /N = 1 DevID = 50 // /FREE /I /U /N = 2 DevID = 50
 	string DeviceID = "DevID"
 	sprintf cmd, "ITCOpenDevice %d, %d, %s", DeviceType, DeviceNumber, DeviceID
 	Execute cmd
 	print "ITC Device ID = ",DevID[0], "is locked."
-	print "ITC Device ID = ",DevID[1], "is locked."
+	//print "ITC Device ID = ",DevID[1], "is locked."
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string ITCDeviceIDGlobal = WavePath + ":ITCDeviceIDGlobal"
 	Variable /G $ITCDeviceIDGlobal = DevID[0]
