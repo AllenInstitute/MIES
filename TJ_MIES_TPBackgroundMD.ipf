@@ -40,6 +40,11 @@ Function ITC_TestPulseFuncMD(s)
 	STRUCT WMBackgroundStruct &s
 	String cmd, Keyboard, panelTitle
 	
+	// UInt32 curRunTicks	// Tick count when task was called
+	// Int32 started	// TRUE when CtrlNamedBackground start is issued
+	// UInt32 nextRunTicks
+	// print s.started
+	// print s.curRunTicks
 	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
@@ -52,7 +57,6 @@ Function ITC_TestPulseFuncMD(s)
 	string oscilloscopeSubWindow
 	variable ADChannelToMonitor
 	variable StopCollectionPoint
-	
 	
 		//	ActiveDevWavePathWave[0][0] = ITCDataWave
 		//	ActiveDevWavePathWave[0][1] = ITCFIFOAvailAllConfigWave 
@@ -72,25 +76,25 @@ Function ITC_TestPulseFuncMD(s)
 	
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]// ITCDeviceIDGlobal
 		execute cmd
-		//print WavePath + ":ITCFIFOPositionAllConfigWave"
+		// print WavePath + ":ITCFIFOPositionAllConfigWave"
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd // this also seems necessary to update the DA channel data to the board!!
 		
 		sprintf cmd, "ITCStartAcq"
 		Execute cmd	
-		//print "FIFOSize", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-		 //ITC_StartBckgrdFIFOMonitor()
-		//print WavePath + ":ITCFIFOPositionAllConfigWave"
+		// print "FIFOSize", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		// ITC_StartBckgrdFIFOMonitor()
+		// print WavePath + ":ITCFIFOPositionAllConfigWave"
 			//print "AD channel to monitor = ", adchanneltomonitor
 			do
 				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
-				//print cmd
+				// print cmd
 				Execute cmd	
 				ITCFIFOAvailAllConfigWave[0][0]+=0
-				//doxopidle
-				//print "FIFOSize = ", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+				// doxopidle
+				// print "FIFOSize = ", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
-		//Check Status
+		// Check Status
 //		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 //		Execute cmd
 		sprintf cmd, "ITCStopAcq /z = 0"
@@ -103,8 +107,8 @@ Function ITC_TestPulseFuncMD(s)
 		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 	
-		BackgroundTPCount += 1
-		if(mod(BackgroundTPCount, 100) == 0 || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
+		//BackgroundTPCount += 1
+		if(mod(s.curRunTicks, 100) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
 		endif
@@ -114,18 +118,19 @@ Function ITC_TestPulseFuncMD(s)
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				panelTitle = DAP_ReturnPanelName()
 				PRINT PANELTITLE
-				if(stringmatch(panelTitle,"ITC*") == 1) // makes sure the panel title being passed is a data acq panel title
+				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title
 					beep 
 					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
 					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
-					if (numpnts(ActiveDeviceTextList) == 0) 
+					if (dimsize(ActiveDeviceTextList, 0) == 0) 
 						CtrlNamedBackground TestPulse, stop
 						print "stopping test pulse"
-						ITC_STOPTestPulse(panelTitle) // stops the test pulse on the top data acq panel
+						ITC_STOPTestPulseMD(panelTitle) // stops the test pulse on the top data acq panel
 					endif
 				endif
 			endif
 		endif
+		
 		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 		//print "Number Of Active Devices = ", NumberOfActiveDevices
 		i += 1
@@ -144,9 +149,9 @@ End
 Function ITC_STOPTestPulseMD(panelTitle)
 	string panelTitle
 	string cmd
-	CtrlNamedBackground TestPulse, stop
-	//sprintf cmd, "ITCCloseAll" 
-	//execute cmd
+	// CtrlNamedBackground TestPulse, stop
+	// sprintf cmd, "ITCCloseAll" 
+	// execute cmd
 
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
@@ -154,12 +159,13 @@ Function ITC_STOPTestPulseMD(panelTitle)
 		setwindow $panelTitle + "#oscilloscope", hide = 1
 	endif
 
-	DAP_RestoreTTLState(panelTitle)
-	//killwaves /z root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
+	//DAP_RestoreTTLState(panelTitle)
+	// killwaves /z root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
 	endif
+	
 	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		V_disable = V_disable & ~0x2
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable

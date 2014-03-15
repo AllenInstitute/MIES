@@ -2608,17 +2608,17 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 End
 
 Function DAP_StoreTTLState(panelTitle)
-string panelTitle
-string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-string /g $WavePath + ":StoredTTLState" = DC_ControlStatusListString("TTL", "Check", panelTitle)
+	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string /g $WavePath + ":StoredTTLState" = DC_ControlStatusListString("TTL", "Check", panelTitle)
 End
 
 Function DAP_RestoreTTLState(panelTitle)
-string panelTitle
-string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-SVAR StoredTTLState = $WavePath + ":StoredTTLState"
-variable i, NoOfTTLs, CheckBoxState
-string TTLCheckBoxName
+	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	SVAR StoredTTLState = $WavePath + ":StoredTTLState"
+	variable i, NoOfTTLs, CheckBoxState
+	string TTLCheckBoxName
 	
 	NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
 	
@@ -2628,7 +2628,7 @@ string TTLCheckBoxName
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
 
-killstrings StoredTTLState
+	killstrings StoredTTLState
 End
 
 Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
@@ -2666,11 +2666,11 @@ Function DAP_TurnOffAllADCs(panelTitle)
 	
 	for(i = 0; i < NoOfADCs;i += 1)
 		if(i < 10)
-		ADCCheckBoxName = "Check_AD_0" + num2str(i)
-		CheckBox $ADCCheckBoxName win = $panelTitle, value = 0
+			ADCCheckBoxName = "Check_AD_0" + num2str(i)
+			CheckBox $ADCCheckBoxName win = $panelTitle, value = 0
 		else
-		ADCCheckBoxName = "Check_AD_" + num2str(i)
-		CheckBox $ADCCheckBoxName win=$panelTitle, value=0
+			ADCCheckBoxName = "Check_AD_" + num2str(i)
+			CheckBox $ADCCheckBoxName win=$panelTitle, value=0
 		endif
 	endfor
 End
