@@ -1,10 +1,12 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
-
+	//Reinitialize Device 1 with intrabox clock
+	Execute "ITCInitialize /M = 1"
+	Execute "ITCStartAcq 1, 256"
  Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
+	Variable start = stopmstimer(-2)
 	string cmd
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -40,7 +42,48 @@
 		// print "background data acq is not running"
 		ITC_StartBckrdFIFOMonitorMD()
 	endif
+		print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
+
+	End
+ //=============================================================================================================================
+Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTilte) // function used to initialize syncronous ITC1600s
+	variable DeviceType, DeviceNum, startTime
+	string panelTitle
+	string cmd
+	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
+	variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
+	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
+	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
+	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
+	// open ITC device
+	//ITCSelectDevice DeviceID
+	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	//	Execute cmd	
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	
+	print "global device ID = ", itcdeviceidglobal
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd
+	
+	Execute "ITCInitialize /M = 1"
+	
+	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+	execute cmd
+	
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	execute cmd // this also seems necessary to update the DA channel data to the board!!
+	
+
+	//doupdate
+	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
+	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
+	
+	sprintf cmd, "ITCStartAcq 1, %d" StartTime
+	Execute cmd	
 	End
  //=============================================================================================================================
 
