@@ -3,8 +3,8 @@
 	//Reinitialize Device 1 with intrabox clock
 	Execute "ITCInitialize /M = 1"
 	Execute "ITCStartAcq 1, 256"
- Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, panelTitle)
-	variable DeviceType, DeviceNum
+ Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, startTime, panelTitle)
+	variable DeviceType, DeviceNum, startTime
 	string panelTitle
 	Variable start = stopmstimer(-2)
 	string cmd
@@ -32,8 +32,12 @@
 	execute cmd
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	execute cmd// this also seems necessary to update the DA channel data to the board!!
-	sprintf cmd, "ITCStartAcq" 
-	Execute cmd	
+	if(StartTime == 0)
+		Execute "ITCStartAcq" 
+	elseif(StartTime > 0)
+		sprintf cmd, "ITCStartAcq 1, %d" StartTime
+		Execute cmd	
+	endif
 	//doupdate
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
@@ -46,7 +50,7 @@
 
 	End
  //=============================================================================================================================
-Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTilte) // function used to initialize syncronous ITC1600s
+Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // function used to initialize syncronous ITC1600s
 	variable DeviceType, DeviceNum, startTime
 	string panelTitle
 	string cmd
