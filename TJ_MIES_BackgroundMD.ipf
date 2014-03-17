@@ -3,7 +3,7 @@
 	//Reinitialize Device 1 with intrabox clock
 	Execute "ITCInitialize /M = 1"
 	Execute "ITCStartAcq 1, 256"
- Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, startTime, panelTitle)
+ Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, startTime, panelTitle) // if start time = 0 the variable is ignored
 	variable DeviceType, DeviceNum, startTime
 	string panelTitle
 	Variable start = stopmstimer(-2)
@@ -17,10 +17,7 @@
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	// open ITC device
-	//ITCSelectDevice DeviceID
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	//	Execute cmd	
+
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	
 	print "global device ID = ", itcdeviceidglobal
@@ -38,6 +35,8 @@
 		sprintf cmd, "ITCStartAcq 1, %d" StartTime
 		Execute cmd	
 	endif
+	print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
+
 	//doupdate
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
@@ -53,6 +52,7 @@
 Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // function used to initialize syncronous ITC1600s
 	variable DeviceType, DeviceNum, startTime
 	string panelTitle
+	
 	string cmd
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -63,18 +63,15 @@ Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // 
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	// open ITC device
-	//ITCSelectDevice DeviceID
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	//	Execute cmd	
+
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	
 	print "global device ID = ", itcdeviceidglobal
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
-	
-	Execute "ITCInitialize /M = 1"
-	
+	Variable start = stopmstimer(-2)
+	Execute "ITCInitialize /M = 1" // this command takes almost 800 ms on it's own
+	print "background data acquisition Yoke function initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 	
@@ -88,6 +85,7 @@ Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // 
 	
 	sprintf cmd, "ITCStartAcq 1, %d" StartTime
 	Execute cmd	
+	
 	End
  //=============================================================================================================================
 
