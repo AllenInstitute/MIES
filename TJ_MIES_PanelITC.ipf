@@ -2,7 +2,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(167,842,643,1395)
+	NewPanel /W=(2340,229,2811,782)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -32,7 +32,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo)= A"!!,B)!!#?q!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_01,value= 1,side= 1
+	CheckBox Check_AD_01,value= 0,side= 1
 	CheckBox Check_AD_02,pos={20,167},size={24,14},disable=1,title="2"
 	CheckBox Check_AD_02,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo)= A"!!,B)!!#@o!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -219,13 +219,13 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo)= A"!!,B)!!#?M!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_00,value= 0,side= 1
+	CheckBox Check_DA_00,value= 1,side= 1
 	CheckBox Check_DA_01,pos={20,120},size={24,14},disable=1,proc=DAP_DAorTTLCheckProc,title="1"
 	CheckBox Check_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo)= A"!!,B)!!#@T!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_01,value= 1,side= 1
+	CheckBox Check_DA_01,value= 0,side= 1
 	CheckBox Check_DA_02,pos={20,167},size={24,14},disable=1,proc=DAP_DAorTTLCheckProc,title="2"
 	CheckBox Check_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_02,userdata(ResizeControlsInfo)= A"!!,B)!!#A6!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -315,17 +315,17 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo)= A"!!,FI!!#?I!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_DA_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj*AScHs<&8T;?UR1e0KV[6Cij)b1imbG6pY064!F"
-	PopupMenu Wave_DA_00,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj*AScHs<&8T;?UR1e0KX>iDJ*cs:j$SqAR@hk?SFQ?Bl79G6!l<-+o"
+	PopupMenu Wave_DA_00,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_00,fSize=7
-	PopupMenu Wave_DA_00,mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+\"DeltaT3st_DA_0;DeltaT4st_DA_0;\""
+	PopupMenu Wave_DA_00,mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+\"DeltaT3st_DA_0;singlePulse_DA_0;Sin_DA_0;\""
 	PopupMenu Wave_DA_01,pos={123,118},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo)= A"!!,FI!!#@P!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_01,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj*AScHs<&8T;?UR1e0KUH"
-	PopupMenu Wave_DA_01,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_01,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_01,fSize=7
 	PopupMenu Wave_DA_01,mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Wave_DA_02,pos={123,165},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
@@ -334,7 +334,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_02,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-+o"
-	PopupMenu Wave_DA_02,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_02,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_02,fSize=7
 	PopupMenu Wave_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Wave_DA_03,pos={123,211},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
@@ -343,7 +343,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_03,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-7VR$W;flSi?UR1e0KUH"
-	PopupMenu Wave_DA_03,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_03,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_03,fSize=7
 	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Wave_DA_04,pos={123,256},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
@@ -352,7 +352,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Wave_DA_04,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_04,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_04,fSize=7
 	PopupMenu Wave_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Wave_DA_05,pos={123,303},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
@@ -361,7 +361,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-7VR$W;flSi?UR1e0KUH"
-	PopupMenu Wave_DA_05,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_05,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_05,fSize=7
 	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Wave_DA_06,pos={123,350},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
@@ -370,7 +370,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-7VR$W;flSi?UR1e0KUH"
-	PopupMenu Wave_DA_06,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_06,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_06,fSize=7
 	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Wave_DA_07,pos={123,397},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
@@ -379,7 +379,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Wave_DA_07,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Wave_DA_07,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Wave_DA_07,fSize=7
 	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	SetVariable Scale_DA_00,pos={272,75},size={40,16},disable=1
@@ -451,7 +451,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo)= A"!!,D'!!#Bb!!#@R!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq1_RepeatAcq,value= 1
+	CheckBox Check_DataAcq1_RepeatAcq,value= 0
 	SetVariable SetVar_DataAcq_ITI,pos={87,431},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
@@ -476,7 +476,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo)= A"!!,F)!!#Aq!!#@@!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_TPDuration,limits={1,inf,5},value= _NUM:10
+	SetVariable SetVar_DataAcq_TPDuration,limits={1,inf,5},value= _NUM:5
 	SetVariable SetVar_DataAcq_TPAmplitude,pos={194,156},size={100,16},disable=1,title="Amplitude VC"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabcontrol)=  "ADC"
@@ -651,7 +651,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
-	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,3,1},value= _NUM:3
+	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,40,1},value= _NUM:0
 	CheckBox Check_Settings_SaveData,pos={34,167},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
 	CheckBox Check_Settings_SaveData,help={"Use cautiously - intended primarily for software development"}
 	CheckBox Check_Settings_SaveData,userdata(tabnum)=  "5"
@@ -900,7 +900,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(ResizeControlsInfo)= A"!!,Ch!!#?k!!#A+!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_BackgrndDataAcq,value= 1
+	CheckBox Check_Settings_BackgrndDataAcq,value= 0
 	CheckBox Radio_ClampMode_0,pos={145,62},size={16,14},disable=1,proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_0,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_0,userdata(ResizeControlsInfo)= A"!!,G$!!#?1!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1058,91 +1058,91 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Radio_ClampMode_15,value= 0,mode=1
-	PopupMenu Popup_Settings_VC_DA,pos={32,294},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
+	PopupMenu Popup_Settings_VC_DA,pos={32,423},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_VC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_DA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo)= A"!!,Cp!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_VC_DA,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu Popup_Settings_VC_AD,pos={32,319},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
+	PopupMenu Popup_Settings_VC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_VC_AD,pos={32,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo)= A"!!,Cp!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_VC_AD,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_IC_AD,pos={215,319},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
+	PopupMenu Popup_Settings_VC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_IC_AD,pos={215,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo)= A"!!,G%!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_IC_AD,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	SetVariable setvar_Settings_VC_DAgain,pos={94,296},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_VC_DAgain,pos={94,425},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo)= A"!!,F!!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_VC_DAgain,value= _NUM:20
-	SetVariable setvar_Settings_VC_ADgain_0,pos={94,321},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_VC_ADgain_0,pos={94,450},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo)= A"!!,F!!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_ADgain_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_ADgain_0,value= _NUM:0.0005
-	SetVariable setvar_Settings_IC_ADgain,pos={277,321},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_VC_ADgain_0,value= _NUM:0.000500000023748726
+	SetVariable setvar_Settings_IC_ADgain,pos={277,450},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_IC_ADgain,value= _NUM:0.01
-	PopupMenu Popup_Settings_HeadStage,pos={32,212},size={95,21},proc=DAP_PopMenuProc_Headstage,title="Head Stage"
+	SetVariable setvar_Settings_IC_ADgain,value= _NUM:0.00999999977648258
+	PopupMenu Popup_Settings_HeadStage,pos={32,341},size={95,21},proc=DAP_PopMenuProc_Headstage,title="Head Stage"
 	PopupMenu Popup_Settings_HeadStage,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_HeadStage,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo)= A"!!,Cp!!#As!!#@\"!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_HeadStage,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu popup_Settings_Amplifier,pos={32,241},size={224,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="Amplfier (700B)"
+	PopupMenu Popup_Settings_HeadStage,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu popup_Settings_Amplifier,pos={32,370},size={224,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="Amplfier (700B)"
 	PopupMenu popup_Settings_Amplifier,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,G8!!#As!!#Ao!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=2,popvalue="AmpNo 834001 Chan 1",value= #"\" - none - ;AmpNo 834001 Chan 1;AmpNo 834001 Chan 2;\""
-	PopupMenu Popup_Settings_IC_DA,pos={215,294},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
+	PopupMenu popup_Settings_Amplifier,mode=2,popvalue="MC not available",value= #"\" - none - ;MC not available;\""
+	PopupMenu Popup_Settings_IC_DA,pos={215,423},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo)= A"!!,G%!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_IC_DA,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
-	SetVariable setvar_Settings_IC_DAgain,pos={278,296},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_IC_DAgain,pos={278,425},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_IC_DAgain,value= _NUM:400
-	TitleBox Title_settings_Hardware_VC,pos={43,278},size={39,13},title="V-Clamp"
+	TitleBox Title_settings_Hardware_VC,pos={43,407},size={39,13},title="V-Clamp"
 	TitleBox Title_settings_Hardware_VC,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_VC,userdata(tabcontrol)=  "ADC"
 	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo)= A"!!,EP!!#B7!!#>*!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_Hardware_VC,frame=0
-	TitleBox Title_settings_ChanlAssign_IC,pos={228,278},size={35,13},title="I-Clamp"
+	TitleBox Title_settings_ChanlAssign_IC,pos={228,407},size={35,13},title="I-Clamp"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(tabnum)=  "6"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(tabcontrol)=  "ADC"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo)= A"!!,GF!!#B7!!#=o!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_ChanlAssign_IC,frame=0
-	Button button_Settings_UpdateAmpStatus,pos={262,241},size={150,20},proc=DAP_FindConnectedAmps,title="Query connected Amp(s)"
+	Button button_Settings_UpdateAmpStatus,pos={262,370},size={150,20},proc=DAP_FindConnectedAmps,title="Query connected Amp(s)"
 	Button button_Settings_UpdateAmpStatus,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateAmpStatus,userdata(tabcontrol)=  "ADC"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HL!!#B8!!#@,!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1306,7 +1306,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-7VR$W;flSi?UR1e0KUH"
-	PopupMenu Popup_DA_IndexEnd_00,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_00,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_01,pos={316,118},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_01,userdata(tabnum)=  "1"
@@ -1315,7 +1315,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Popup_DA_IndexEnd_01,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_01,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_02,pos={316,165},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_02,userdata(tabnum)=  "1"
@@ -1324,7 +1324,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Popup_DA_IndexEnd_02,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_02,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_03,pos={316,211},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_03,userdata(tabnum)=  "1"
@@ -1333,7 +1333,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Popup_DA_IndexEnd_03,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_03,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_04,pos={316,256},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_04,userdata(tabnum)=  "1"
@@ -1342,7 +1342,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Popup_DA_IndexEnd_04,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_04,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_05,pos={316,303},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabnum)=  "1"
@@ -1351,7 +1351,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-7VR$W;flSi?UR1e0KUH"
-	PopupMenu Popup_DA_IndexEnd_05,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_05,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_06,pos={316,350},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabnum)=  "1"
@@ -1360,7 +1360,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Popup_DA_IndexEnd_06,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_06,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_07,pos={316,397},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabnum)=  "1"
@@ -1369,7 +1369,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
-	PopupMenu Popup_DA_IndexEnd_07,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ0AScHs<&AZ<?UR1e0KT"
+	PopupMenu Popup_DA_IndexEnd_07,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ_Bl7R\"APdMcF(J]H6!l<-;e^,V6pY063r"
 	PopupMenu Popup_DA_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_TTL_IndexEnd_00,pos={242,69},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabnum)=  "3"
@@ -1707,7 +1707,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_RepAcqRandom,userdata(ResizeControlsInfo)= A"!!,D'!!#Bj!!#?!!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataAcq_RepAcqRandom,value= 1
+	CheckBox check_DataAcq_RepAcqRandom,value= 0
 	TitleBox title_Settings_SetCondition,pos={35,267},size={64,13},disable=1,title="Set A > Set B"
 	TitleBox title_Settings_SetCondition,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition,userdata(tabcontrol)=  "ADC"
@@ -1935,32 +1935,32 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,value= _NUM:50
-	SetVariable SetVar_Hardware_VC_DA_Unit,pos={156,296},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_VC_DA_Unit,pos={156,425},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_VC_DA_Unit,value= _STR:"mV"
-	SetVariable SetVar_Hardware_IC_DA_Unit,pos={338,297},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_IC_DA_Unit,pos={338,426},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_IC_DA_Unit,value= _STR:"pA"
-	SetVariable SetVar_Hardware_VC_AD_Unit,pos={177,321},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_VC_AD_Unit,pos={177,450},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_VC_AD_Unit,value= _STR:"pA"
-	SetVariable SetVar_Hardware_IC_AD_Unit,pos={361,321},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_IC_AD_Unit,pos={361,450},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_IC_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_IC_AD_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_IC_AD_Unit,value= _STR:"mV"
-	TitleBox Title_Hardware_VC_gain,pos={94,278},size={20,13},title="gain"
+	TitleBox Title_Hardware_VC_gain,pos={94,407},size={20,13},title="gain"
 	TitleBox Title_Hardware_VC_gain,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_VC_gain,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_VC_unit,pos={174,278},size={17,13},title="unit"
+	TitleBox Title_Hardware_VC_unit,pos={174,407},size={17,13},title="unit"
 	TitleBox Title_Hardware_VC_unit,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_VC_unit,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_gain,pos={279,278},size={20,13},title="gain"
+	TitleBox Title_Hardware_IC_gain,pos={279,407},size={20,13},title="gain"
 	TitleBox Title_Hardware_IC_gain,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_gain,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_unit,pos={339,278},size={17,13},title="unit"
+	TitleBox Title_Hardware_IC_unit,pos={339,407},size={17,13},title="unit"
 	TitleBox Title_Hardware_IC_unit,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_unit,userdata(tabcontrol)=  "ADC",frame=0
 	SetVariable Unit_DA_00,pos={92,75},size={30,16},disable=1,help={"hello"}
@@ -2072,19 +2072,19 @@ Window DA_Ephys() : Panel
 	TitleBox Title_AD_Unit1,pos={294,50},size={23,13},disable=1,title="Unit"
 	TitleBox Title_AD_Unit1,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	TitleBox Title_AD_Unit1,frame=0,fStyle=1
-	TitleBox Title_Hardware_VC_DA_Div,pos={190,298},size={15,13},title="/ V"
+	TitleBox Title_Hardware_VC_DA_Div,pos={190,427},size={15,13},title="/ V"
 	TitleBox Title_Hardware_VC_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_VC_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_DA_Div,pos={370,298},size={15,13},title="/ V"
+	TitleBox Title_Hardware_IC_DA_Div,pos={370,427},size={15,13},title="/ V"
 	TitleBox Title_Hardware_IC_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_AD_Div,pos={343,323},size={15,13},title="V /"
+	TitleBox Title_Hardware_IC_AD_Div,pos={343,452},size={15,13},title="V /"
 	TitleBox Title_Hardware_IC_AD_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_AD_Div,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_AD_Div1,pos={158,323},size={15,13},title="V /"
+	TitleBox Title_Hardware_IC_AD_Div1,pos={158,452},size={15,13},title="V /"
 	TitleBox Title_Hardware_IC_AD_Div1,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_AD_Div1,userdata(tabcontrol)=  "ADC",frame=0
-	GroupBox GroupBox_Hardware_Associations,pos={23,176},size={397,191},title="DAC Channel and Device Associations"
+	GroupBox GroupBox_Hardware_Associations,pos={23,305},size={397,191},title="DAC Channel and Device Associations"
 	GroupBox GroupBox_Hardware_Associations,userdata(tabnum)=  "6"
 	GroupBox GroupBox_Hardware_Associations,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_DatAcq,pos={21,99},size={421,250},disable=1,title="Data Acquisition"
@@ -2126,6 +2126,26 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_DataAcq,pos={30,357},size={422,175},disable=1,title="Data Acquisition"
 	GroupBox group_DataAcq_DataAcq,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_DataAcq,userdata(tabcontrol)=  "ADC"
+	GroupBox group_Hardware_Yoke,pos={23,178},size={396,122},title="Yoke"
+	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600. It is not a requirement for the use of asyncronous operation of multiple ITC1600s."}
+	GroupBox group_Hardware_Yoke,userdata(tabnum)=  "6",userdata(tabcontrol)=  "ADC"
+	GroupBox group_Hardware_Yoke,fSize=12
+	Button button_Hardware_Lead1600,pos={38,201},size={100,30},title="Lead"
+	Button button_Hardware_Lead1600,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
+	Button button_Hardware_Lead1600,userdata(tabnum)=  "6"
+	Button button_Hardware_Lead1600,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={145,235},size={192,26},title="List of locked\rITC1600 devices"
+	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
+	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_Hardware_AvailITC1600s,mode=1,popvalue="ITC1600_Dev_1",value= #"\"ITC1600_Dev_1\""
+	Button button_Hardware_AddFollower,pos={38,234},size={100,30},title="Follow"
+	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
+	Button button_Hardware_AddFollower,userdata(tabnum)=  "6"
+	Button button_Hardware_AddFollower,userdata(tabcontrol)=  "ADC"
+	TitleBox title_hardware_1600inst,pos={145,203},size={216,26},title="Designate the status of the ITC1600 assigned\rto this device"
+	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
+	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
+	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC",frame=0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -2134,22 +2154,17 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B3&r`U7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^2*1"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
 	String fldrSav0= GetDataFolder(1)
-	//SetDataFolder root:MIES:ITCDevices:ITC1600:Device0:
-	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /HIDE=1 /L=AD0 //ITCDataWave[*][2]
-	//AppendToGraph/L=AD1 ITCDataWave[*][3]
-	//SetDataFolder fldrSav0
+	SetDataFolder root:MIES:ITCDevices:ITC1600:Device0:
+	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /HIDE=1 /L=AD0 ITCDataWave[*][1]
+	SetDataFolder fldrSav0
 	ModifyGraph width=25,wbRGB=(61440,61440,61440),gbRGB=(61440,61440,61440)
 	ModifyGraph lblPosMode=1
-	//ModifyGraph freePos(AD0)={0,kwFraction}
-	//ModifyGraph freePos(AD1)={0,kwFraction}
-	//ModifyGraph axisEnab(AD0)={0.525,1}
-	//ModifyGraph axisEnab(AD1)={0.025,0.5}
-	//Label AD0 "AD0 (pA)"
-	//Label bottom "Time (\\U)"
-	//Label AD1 "AD1 (pA)"
-	//SetAxis/A=2/N=2 AD0
-	//SetAxis bottom 0,900
-	//SetAxis/A=2/N=2 AD1
+	ModifyGraph freePos(AD0)={0,kwFraction}
+	ModifyGraph axisEnab(AD0)={0.025,1}
+	Label AD0 "AD0 (pA)"
+	Label bottom "Time (\\U)"
+	SetAxis/A=2/N=2 AD0
+	SetAxis bottom 0,1050
 	RenameWindow #,Oscilloscope
 	SetActiveSubwindow ##
 EndMacro
@@ -2174,6 +2189,7 @@ Function CheckProc(cba) : CheckBoxControl
 
 	return 0
 End
+//=========================================================================================
 
 Function DAP_SetVarProc_DownSampLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2186,6 +2202,7 @@ Function DAP_SetVarProc_DownSampLimit(ctrlName,varNum,varStr,varName) : SetVaria
 	MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	SetVariable SetVar_DownSamp limits = {MinSampInt,inf,1}, win = $panelTitle
 End
+//=========================================================================================
 
 Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2219,6 +2236,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	while(i < 8)
 	setdatafolder saveDFR
 End
+//=========================================================================================
 
 
 Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -2279,6 +2297,7 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 	endif
 	setdatafolder saveDFR
 End
+//=========================================================================================
 
 
 Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
@@ -2314,6 +2333,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 	setdatafolder saveDFR
 End
+//=========================================================================================
 
 
 Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
@@ -2349,8 +2369,9 @@ Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab 
 //		DAP_ChangePopUpState("Popup_DA_IndexEnd_0",1)
 //		endif
 //	endif
-return 0
+	return 0
 End
+//=========================================================================================
 
 Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2409,6 +2430,7 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	endif
 	setdatafolder saveDFR
 End
+//=========================================================================================
 
 Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure checks to see that a DAC or TTL wave is selected before turning on the corresponding channel
 	String ctrlName
@@ -2431,6 +2453,7 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
 	valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
 End
+//=========================================================================================
 
 Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
@@ -2509,9 +2532,9 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
-		print "device type = ", devicetype, " Device Number = ", devicenum
-			
+		print "device type = ", devicetype, " Device Number = ", devicenum		
 End
+//=========================================================================================
 
 Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2528,6 +2551,7 @@ Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
 	endif
 End
+//=========================================================================================
 
 Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -2544,8 +2568,8 @@ Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
 		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
 	endif
-
 End
+//=========================================================================================
 
 Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 	string BaseName, panelTitle// Popup_DA_IndexEnd_0
@@ -2558,8 +2582,8 @@ Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 		PopupMenu $CompleteName disable = state, win = $panelTitle
 		i += 1
 	while(i < 8)
-
 End
+//=========================================================================================
 
 Function DAP_SmoothResizePanel(RightShift, panelTitle)
 	variable RightShift
@@ -2577,8 +2601,8 @@ Function DAP_SmoothResizePanel(RightShift, panelTitle)
 		
 		i += 3
 	while(i < resizeLimit)
-
 End
+//=========================================================================================
 
 Function DAP_CheckProc_ShowScopeWin(ctrlName,checked) : CheckBoxControl // need to modify this function so the panel always returns to it's original size
 	String ctrlName
@@ -2593,6 +2617,7 @@ Function DAP_CheckProc_ShowScopeWin(ctrlName,checked) : CheckBoxControl // need 
 		setwindow $panelTitle + "#oscilloscope", hide =1
 	endif
 End
+//=========================================================================================
 
 Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
@@ -2606,12 +2631,14 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
+//=========================================================================================
 
 Function DAP_StoreTTLState(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string /g $WavePath + ":StoredTTLState" = DC_ControlStatusListString("TTL", "Check", panelTitle)
 End
+//=========================================================================================
 
 Function DAP_RestoreTTLState(panelTitle)
 	string panelTitle
@@ -2630,6 +2657,7 @@ Function DAP_RestoreTTLState(panelTitle)
 
 	killstrings StoredTTLState
 End
+//=========================================================================================
 
 Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	String ctrlName
@@ -2637,6 +2665,7 @@ Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	
 	DAP_TurnOffAllTTLs(panelTitle)
 End
+//=========================================================================================
 
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
@@ -2650,12 +2679,14 @@ Function DAP_TurnOffAllDACs(panelTitle)
 		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
+//=========================================================================================
 
 Function DAP_ButtonProc_DAOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllDACs(panelTitle)
 End
+//=========================================================================================
 
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
@@ -2674,12 +2705,14 @@ Function DAP_TurnOffAllADCs(panelTitle)
 		endif
 	endfor
 End
+//=========================================================================================
 
 Function DAP_ButtonProc_ADOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllADCs(panelTitle)
 End
+//=========================================================================================
 
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
@@ -2693,8 +2726,8 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 		DACCheckBoxName = "Check_DataAcq_HS_0"+num2str(i)
 		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
 	endfor
-
 End
+//=========================================================================================
 
 Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	String ctrlName
@@ -2704,6 +2737,7 @@ Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllADCs(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 End
+//=========================================================================================
 
 Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DA popupmenu's that show DA waveslist from wavebuilder
 	String ctrlName
@@ -2753,8 +2787,8 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
 		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
 	endif
-	
 End
+//=========================================================================================
 
 Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2768,8 +2802,8 @@ Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVari
 	string ListOfDataWaves = wavelist("Sweep_*",";","MINCOLS:2")
 	setDataFolder saveDFR
 	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
-	
 End
+//=========================================================================================
 
 Function DAP_UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
@@ -2777,12 +2811,14 @@ Function DAP_UpdateITCMinSampIntDisplay()
 	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End
+//=========================================================================================
 
 Function DAP_CheckProc_UnpdateMinSampInt(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	DAP_UpdateITCMinSampIntDisplay()
 End
+//=========================================================================================
 
 Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2802,6 +2838,7 @@ Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVaria
 		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
 	endif
 End
+//=========================================================================================
 
 Function /T DAP_ReturnPanelName()	
 	string panelTitle
@@ -2817,6 +2854,7 @@ Function /T DAP_ReturnPanelName()
 		return ""	
 	endif
 End
+//=========================================================================================
 
 Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -2825,6 +2863,7 @@ Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
 	getwindow kwTopWin wtitle
 	HSU_IsDeviceTypeConnected(s_value)
 End
+//=========================================================================================
 
 Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 	String ctrlName
@@ -2838,8 +2877,7 @@ Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 	PopUpList += AI_ReturnListOf700BChannels(s_value)+"\""
 	popupmenu  popup_Settings_Amplifier win = $s_value, value = #PopUpList
 End
-
-
+//=========================================================================================
 
 Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -2848,6 +2886,7 @@ Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
 	getwindow kwTopWin wtitle
 	HSU_UpdateChanAmpAssignPanel(s_value)
 End
+//=========================================================================================
 
 Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -2856,6 +2895,7 @@ Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
 	getwindow kwTopWin wtitle
 	HSU_UpdateChanAmpAssignStorWv(s_value)
 End
+//=========================================================================================
 
 Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
@@ -2865,6 +2905,7 @@ Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
 	getwindow kwTopWin wtitle
 	HSU_UpdateChanAmpAssignStorWv(s_value)
 End
+//=========================================================================================
 
 Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
@@ -2952,8 +2993,8 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 
 		endif
 	endIf
-	
 End
+//=========================================================================================
 
 Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
@@ -3000,9 +3041,9 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
 		endif
 	endIf
-
 End
- 
+ //=========================================================================================
+
 Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
@@ -3043,6 +3084,7 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End
+//=========================================================================================
 
 Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -3066,6 +3108,7 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
 End
+//=========================================================================================
 
 Function DAP_StopOngoingDataAcquisition(PanelTitle)
 	string panelTitle
@@ -3100,38 +3143,84 @@ Function DAP_StopOngoingDataAcquisition(PanelTitle)
 		DM_ScaleITCDataWave(panelTitle)
 	
 	endif
-	
 	print "Data acquisition was manually terminated"
 End 
+//=========================================================================================
 
 Function DAP_AcqDataButtonToStopButton(panelTitle)
 	string panelTitle
-
-		controlinfo /w = $PanelTitle Check_Settings_SaveData
-		if(v_value == 0) // Save data
-			Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-			Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion", win = $panelTitle
-		else // Don't save data
-			Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-			string ButtonText = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
-			ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-			Button DataAcquireButton title=ButtonText, win = $panelTitle
-		endif
-		
-		
+	controlinfo /w = $PanelTitle Check_Settings_SaveData
+	if(v_value == 0) // Save data
+		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
+		Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion", win = $panelTitle
+	else // Don't save data
+		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
+		string ButtonText = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
+		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
+		Button DataAcquireButton title=ButtonText, win = $panelTitle
+	endif	
 End
+//=========================================================================================
 
 Function DAP_StopButtonToAcqDataButton(panelTitle)
 	string panelTitle
-	
-		controlinfo /w = $PanelTitle Check_Settings_SaveData
-		if(v_value == 0) // Save data
-			Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-			Button DataAcquireButton title = "\\Z14\\f01Acquire\rData", win = $panelTitle
-		else // Don't save data
-			Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-			string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-			ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-			Button DataAcquireButton title=ButtonText, win = $panelTitle
-		endif
+	controlinfo /w = $PanelTitle Check_Settings_SaveData
+	if(v_value == 0) // Save data
+		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
+		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData", win = $panelTitle
+	else // Don't save data
+		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
+		string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
+		Button DataAcquireButton title=ButtonText, win = $panelTitle
+	endif
 End
+//=========================================================================================
+
+Function /C DAP_TwoOrMoreITC1600s(panelTitle) // returns a complex variable. If the real is = 1 then two or more locked ITC1600s are present. The imaginary component returns the number of locked ITC1600s
+	string panelTitle
+	variable /C YesNo
+	SVAR PanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
+	string ListOf1600s = ListMatch(PanelTitleList, "ITC1600*",";")
+	variable NoOf1600s = itemsinlist(ListOf1600s, ";")
+	
+	if(NoOf1600s > 1)
+		YesNo = cmplx(1,NoOf1600s)
+	elseif(NoOf1600s < 1)
+		YesNo = cmplx(0,NoOf1600s)
+	endif
+	
+	return YesNo
+End
+
+//=========================================================================================
+
+Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls on the DA_Ephys panel depending on the number of locked ITC1600s
+	string panelTitle
+	SVAR PanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList // List of locked ITC devices
+	string ListOf1600s = ListMatch(PanelTitleList, "ITC1600*",";")
+	
+	variable /C TwoOrMore1600s = DAP_TwoOrMoreITC1600s(panelTitle)
+	variable i = 0
+	if(real(TwoOrMore1600s) == 0)
+		do
+			panelTitle = stringfromlist(i, PanelTitleList, ";")
+			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
+			titlebox title_hardware_1600inst Win = $panelTitle, Disable = 2
+			button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
+			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+			i += 1
+		while(i < itemsinlist(PanelTitleList, ";"))
+	elseif(real(TwoOrMore1600s) == 1)
+		do
+			panelTitle = stringfromlist(i, ListOf1600s, ";")
+			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
+			titlebox title_hardware_1600inst Win = $panelTitle, Disable = 0
+			button button_Hardware_AddFollower Win = $panelTitle, Disable = 0
+			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
+			i += 1
+		while(i < imag(TwoOrMore1600s))
+	endif
+End
+imag
+real

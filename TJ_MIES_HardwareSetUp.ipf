@@ -53,6 +53,7 @@ Function HSU_LockDevice(panelTitle)
 	HSU_GlblListStrngOfITCPanlTitls()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
 	HSU_ListOfITCPanels()
 	HSU_OpenITCDevice(panelTitle)
+	DAP_EnableYoking(panelTitle)
 End
 
 Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)

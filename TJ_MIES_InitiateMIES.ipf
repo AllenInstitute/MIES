@@ -15,6 +15,7 @@ Function IM_InitiateMIES()
 	// make data browser panel
 	execute "DataBrowser()"
 End
+//=========================================================================================
 
 Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
 	string panelTitle
@@ -34,3 +35,38 @@ Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for
 	make /o /n= (1,8) $WavePath + ":TestPulse:" + "SSResistance"
 	
 End
+
+//=========================================================================================
+
+Function Folder_ActiveITCfolder(panelTitle)
+	string panelTitle
+	
+End
+//=========================================================================================
+Function Folder_ActiveITCTPfolder(panelTitle)
+	string panelTitle
+	
+End
+//=========================================================================================
+Function Folder_ActiveTimerfolder(panelTitle)
+	string panelTitle
+	
+End
+//=========================================================================================
+Function Folder_WBData(panelTitle)
+	string panelTitle
+	
+End
+//=========================================================================================
+Function Folder_StimSetParam(panelTitle, DAorTTL)
+	string panelTitle
+	variable DAorTTL
+	
+End
+//=========================================================================================
+Function Folder_StimSets(panelTitle, DAorTTL)
+	string panelTitle
+	variable DAorTTL
+	
+End
+//=========================================================================================
