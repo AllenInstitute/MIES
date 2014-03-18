@@ -2,7 +2,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(2340,229,2811,782)
+	NewPanel /W=(2394,820,2865,1373)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -630,7 +630,7 @@ Window DA_Ephys() : Panel
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueColor=(65535,65535,65535)
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueBackColor=(0,0,0)
 	ValDisplay ValDisp_DataAcq_SamplingInt,limits={0,0,0},barmisc={0,1000}
-	ValDisplay ValDisp_DataAcq_SamplingInt,value= _NUM:10
+	ValDisplay ValDisp_DataAcq_SamplingInt,value= _NUM:5
 	CheckBox Check_Settings_DownSamp,pos={34,190},size={84,14},disable=1,proc=CheckProc,title="Down Sample"
 	CheckBox Check_Settings_DownSamp,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_DownSamp,userdata(tabcontrol)=  "ADC"
@@ -1789,7 +1789,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo)= A"!!,Ej!!#@L!!#@i!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_moreSettings_DeviceNo,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
+	PopupMenu popup_moreSettings_DeviceNo,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
 	SetVariable setvar_DataAcq_OnsetDelay,pos={315,377},size={117,16},bodyWidth=35,disable=1,title="Onset delay (ms)"
 	SetVariable setvar_DataAcq_OnsetDelay,help={"A global parameter that delays the onset time of a set after the initiation of data acquistion. Data acquisition start time is NOT delayed. Useful when set(s) have insufficient baseline epoch."}
 	SetVariable setvar_DataAcq_OnsetDelay,userdata(tabnum)=  "0"
@@ -1806,7 +1806,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_TerminationDelay,value= _NUM:0
-	GroupBox group_Hardware_FolderPath,pos={23,49},size={396,122},title="Lock a device to generate device folder structure"
+	GroupBox group_Hardware_FolderPath,pos={23,49},size={396,105},title="Lock a device to generate device folder structure"
 	GroupBox group_Hardware_FolderPath,userdata(tabnum)=  "6"
 	GroupBox group_Hardware_FolderPath,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo)= A"!!,Bq!!#?;!!#B`J,hq.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1833,7 +1833,7 @@ Window DA_Ephys() : Panel
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	Button button_SettingsPlus_LockDevice,pos={203,73},size={85,46},proc=HSU_ButtonProc_LockDev,title="Lock device\r selection"
-	Button button_SettingsPlus_LockDevice,help={"Device must be locked to acquire data."}
+	Button button_SettingsPlus_LockDevice,help={"Device must be locked to acquire data. Locking can take a few seconds (calls to amp hardware are slow)."}
 	Button button_SettingsPlus_LockDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_LockDevice,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo)= A"!!,H$!!#?g!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2126,26 +2126,43 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_DataAcq,pos={30,357},size={422,175},disable=1,title="Data Acquisition"
 	GroupBox group_DataAcq_DataAcq,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_DataAcq,userdata(tabcontrol)=  "ADC"
-	GroupBox group_Hardware_Yoke,pos={23,178},size={396,122},title="Yoke"
-	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600. It is not a requirement for the use of asyncronous operation of multiple ITC1600s."}
+	GroupBox group_Hardware_Yoke,pos={23,156},size={396,145},title="Yoke"
+	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600, however, It is not a requirement for the use of multiple ITC1600s asyncronously."}
 	GroupBox group_Hardware_Yoke,userdata(tabnum)=  "6",userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_Yoke,fSize=12
-	Button button_Hardware_Lead1600,pos={38,201},size={100,30},title="Lead"
+	Button button_Hardware_Lead1600,pos={38,195},size={110,21},disable=2,proc=DAP_ButtonProc_Lead,title="Lead"
 	Button button_Hardware_Lead1600,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Lead1600,userdata(tabnum)=  "6"
 	Button button_Hardware_Lead1600,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={145,235},size={192,26},title="List of locked\rITC1600 devices"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={38,240},size={110,21},bodyWidth=110,disable=2,title="Locked ITC1600s"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_AvailITC1600s,mode=1,popvalue="ITC1600_Dev_1",value= #"\"ITC1600_Dev_1\""
-	Button button_Hardware_AddFollower,pos={38,234},size={100,30},title="Follow"
+	PopupMenu popup_Hardware_AvailITC1600s,mode=0,value= #"DAP_ListOfITCDevices()"
+	Button button_Hardware_AddFollower,pos={152,240},size={110,21},disable=2,proc=DAP_ButtonProc_Follow,title="Follow"
 	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
 	Button button_Hardware_AddFollower,userdata(tabnum)=  "6"
 	Button button_Hardware_AddFollower,userdata(tabcontrol)=  "ADC"
-	TitleBox title_hardware_1600inst,pos={145,203},size={216,26},title="Designate the status of the ITC1600 assigned\rto this device"
+	TitleBox title_hardware_1600inst,pos={38,176},size={282,13},disable=2,title="Designate the status of the ITC1600 assigned to this device"
 	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
 	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC",frame=0
+	Button button_Hardware_Independent,pos={152,195},size={110,21},disable=2,proc=DAP_ButtonProc_Independent,title="Independent"
+	Button button_Hardware_Independent,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
+	Button button_Hardware_Independent,userdata(tabnum)=  "6"
+	Button button_Hardware_Independent,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_Hardware_Status,pos={140,535},size={196,16},bodyWidth=99,title="ITC DAC Status:"
+	SetVariable setvar_Hardware_Status,frame=0,fStyle=1,fColor=(65280,0,0)
+	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
+	SetVariable setvar_Hardware_Status,value= _STR:"Independent",noedit= 1
+	TitleBox title_hardware_Follow,pos={37,222},size={163,13},disable=2,title="Assign ITC1600 DACs as followers"
+	TitleBox title_hardware_Follow,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
+	TitleBox title_hardware_Follow,userdata(tabnum)=  "6"
+	TitleBox title_hardware_Follow,userdata(tabcontrol)=  "ADC",frame=0
+	SetVariable setvar_Hardware_YokeList,pos={36,272},size={300,16},title="Yoked DACs:"
+	SetVariable setvar_Hardware_YokeList,userdata(tabnum)=  "6"
+	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
+	SetVariable setvar_Hardware_YokeList,value= _STR:"",noedit= 1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -3193,6 +3210,10 @@ Function /C DAP_TwoOrMoreITC1600s(panelTitle) // returns a complex variable. If 
 	return YesNo
 End
 
+ListMatch(root:MIES:ITCDevices:ITCPanelTitleList, "ITC1600*",";")
+//=========================================================================================
+// THE FUNCTION BELOW CONTROL THE ASSOCIATIONS BETWEEN THE BUTTONS IN THE YOKE SECTION OF THE 
+// HARDWARE TAB ON THE DA_EPHYS() PANEL
 //=========================================================================================
 
 Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls on the DA_Ephys panel depending on the number of locked ITC1600s
@@ -3204,23 +3225,86 @@ Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls
 	variable i = 0
 	if(real(TwoOrMore1600s) == 0)
 		do
-			panelTitle = stringfromlist(i, PanelTitleList, ";")
+			panelTitle = stringfromlist(i, PanelTitleList, ";") // disables the yoking controls on the last remaining locked ITC1600 - also does all other panel types
 			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
+			button button_Hardware_Independent Win = $panelTitle, Disable = 2
 			titlebox title_hardware_1600inst Win = $panelTitle, Disable = 2
+			titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
 			button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
 			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+			setvariable setvar_Hardware_YokeList Win = $panelTitle, Disable = 2
 			i += 1
-		while(i < itemsinlist(PanelTitleList, ";"))
+		while(i < itemsinlist(PanelTitleList, ";")) 
+			// 4 lines below disables the yoking controls on the panel that was just unlocked
+			button button_Hardware_Lead1600 Win = DA_Ephys, Disable = 2
+			button button_Hardware_Independent Win = DA_Ephys, Disable = 2
+			titlebox title_hardware_1600inst Win = DA_Ephys, Disable = 2
+			titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
+			button button_Hardware_AddFollower Win = DA_Ephys, Disable = 2
+			popupmenu popup_Hardware_AvailITC1600s Win = DA_Ephys, Disable = 2
+			setvariable setvar_Hardware_YokeList Win = DA_Ephys, Disable = 2
 	elseif(real(TwoOrMore1600s) == 1)
 		do
-			panelTitle = stringfromlist(i, ListOf1600s, ";")
+			panelTitle = stringfromlist(i, ListOf1600s, ";") // enables the yoking controls on all the locked ITC1600s
 			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
+			button button_Hardware_Independent Win = $panelTitle, Disable = 2
 			titlebox title_hardware_1600inst Win = $panelTitle, Disable = 0
-			button button_Hardware_AddFollower Win = $panelTitle, Disable = 0
-			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
+			titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
+			button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
+			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+			
 			i += 1
 		while(i < imag(TwoOrMore1600s))
+
 	endif
 End
-imag
-real
+setvar_Hardware_YokeList
+title_hardware_Follow
+//=========================================================================================
+
+Function /t DAP_ListOfITCDevices() // used by popup_Hardware_AvailITC1600s  in hardware tab in yoke section
+	SVAR ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
+	string ListOfAllITC1600s = ListMatch(ITCPanelTitleList, "ITC1600*",";")
+	getwindow kwTopWin wtitle
+	string ListOfPotentialFollowerDevices = removefromlist(s_value,ListOfAllITC1600s)
+	return ListOfPotentialFollowerDevices
+End
+//=========================================================================================
+
+Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl
+	String ctrlName
+	String PanelTitle = DAP_ReturnPanelName()
+	button button_Hardware_Independent Win = $panelTitle, Disable = 0
+	button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
+	button button_Hardware_AddFollower Win = $panelTitle, Disable = 0
+	titlebox title_hardware_Follow Win = $panelTitle, Disable = 0
+	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
+	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Lead"
+End
+button_Hardware_Independent
+//=========================================================================================
+
+Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
+	String ctrlName
+	String PanelTitle = DAP_ReturnPanelName()
+	button button_Hardware_Independent Win = $panelTitle, Disable = 2
+	button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
+	button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
+	titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
+	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
+End
+//=========================================================================================
+
+Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
+	String ctrlName
+	String PanelTitle = DAP_ReturnPanelName()
+	controlinfo /w = $panelTitle popup_Hardware_AvailITC1600s
+	string DeviceToBeAssignedAsFollower = s_value
+	HSU_SetITCDACasFollower(panelTitle, DeviceToBeAssignedAsFollower)
+	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
+
+End
+//=========================================================================================
+
+//=========================================================================================

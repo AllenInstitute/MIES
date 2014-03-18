@@ -1,5 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-//=====================================================================================
+//==================================================================================================
 // ITC HARDWARE CONFIGURATION FUNCTIONS
 // Hardware Set-up (HSU)
 Function HSU_QueryITCDevice(PanelTitle)
@@ -20,18 +20,21 @@ Function HSU_QueryITCDevice(PanelTitle)
 	sprintf cmd, "ITCCloseDevice" 
 	execute cmd
 End
+//==================================================================================================
 
 Function HSU_ButtonProc_Settings_OpenDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_QueryITCDevice(s_value)
 End
+//==================================================================================================
 
 Function HSU_ButtonProc_LockDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_LockDevice(s_value)
 End
+//==================================================================================================
 
 Function HSU_LockDevice(panelTitle)
 	string PanelTitle
@@ -55,6 +58,7 @@ Function HSU_LockDevice(panelTitle)
 	HSU_OpenITCDevice(panelTitle)
 	DAP_EnableYoking(panelTitle)
 End
+//==================================================================================================
 
 Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
 	string PanelTitle
@@ -67,6 +71,7 @@ Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
 		groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Lock a device to generate device folder structure"
 	endif
 End
+//==================================================================================================
 
 Function HSU_CreateDataFolderForLockdDev(PanelTitle)
 	string PanelTitle
@@ -77,6 +82,7 @@ Function HSU_CreateDataFolderForLockdDev(PanelTitle)
 	Newdatafolder /o $FullFolderPath+":Data"
 	Newdatafolder /o $FullFolderPath+":TestPulse"
 End
+//==================================================================================================
 
 Function/t HSU_BaseFolderPathString(PanelTitle)
 	string PanelTitle
@@ -88,6 +94,7 @@ Function/t HSU_BaseFolderPathString(PanelTitle)
 	BaseFolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType, DeviceTypeList, ";")
 	return BaseFolderPath
 End
+//==================================================================================================
 
 Function /t HSU_DataFullFolderPathString(PanelTitle)
 	string PanelTitle
@@ -101,12 +108,17 @@ Function /t HSU_DataFullFolderPathString(PanelTitle)
 	FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
 	return FolderPath
 End
+//==================================================================================================
 
 Function HSU_ButProc_Hrdwr_UnlckDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
-	HSU_UnlockDevSelection(s_value)
+	string panelTitle = s_value
+	HSU_UnlockDevSelection(panelTitle)
+	HSU_ListOfITCPanels()
+	DAP_EnableYoking(panelTitle)
 End
+//==================================================================================================
 
 Function HSU_UnlockDevSelection(PanelTitle)
 	string PanelTitle
@@ -127,6 +139,7 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	sprintf cmd, "ITCCloseDevice"
 	execute cmd
 End
+//==================================================================================================
 
 Function HSU_DeviceLockCheck(PanelTitle)
 	string PanelTitle
@@ -140,7 +153,7 @@ Function HSU_DeviceLockCheck(PanelTitle)
 	endif
 	return DeviceLockStatus
 End
-
+//==================================================================================================
 
 Function HSU_IsDeviceTypeConnected(PanelTitle)
 	string PanelTitle
@@ -158,6 +171,8 @@ Function HSU_IsDeviceTypeConnected(PanelTitle)
 	print "Available number of specified ITC devices =", LocalWave[0]
 	killwaves localwave
 End
+//==================================================================================================
+
 // below functions are used to create a list of the ITC panels. This list is will be used by functions that need to update items that are common to different panels.
 // for example: DAC popup lists, TTL popup lists
 
@@ -166,12 +181,13 @@ Function HSU_GlblListStrngOfITCPanlTitls()
 	String /G root:MIES:ITCDevices:ITCPanelTitleList
 	endif
 End
-
+//==================================================================================================
 
 Function HSU_ListOfITCPanels()
 	SVAR ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
 	ITCPanelTitleList = winlist("ITC*", ";", "WIN:64") 
 End
+//==================================================================================================
 
 Function HSU_OpenITCDevice(panelTitle)
 	String panelTitle
@@ -190,9 +206,8 @@ Function HSU_OpenITCDevice(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string ITCDeviceIDGlobal = WavePath + ":ITCDeviceIDGlobal"
 	Variable /G $ITCDeviceIDGlobal = DevID[0]
-	
-	
 End // Function HSU_OpenITCDevice(panelTitle)
+//==================================================================================================
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
@@ -308,8 +323,38 @@ Function HSU_UpdateChanAmpAssignPanel(PanelTitle)
 	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo]
 End
 
-//=====================================================================================
+//==================================================================================================
+Function HSU_SetITCDACasFollower(panelTitle, followerDAC) // This function sets a ITC1600 device as a follower, ie. The internal clock is used to synchronize 2 or more PCI-1600
+	string panelTitle, followerDAC
+	string LeadDeviceFolderPath =  HSU_DataFullFolderPathString(PanelTitle)
+	string FollowerDeviceFolderPath = HSU_DataFullFolderPathString(followerDAC)
+	variable LeadITCDeviceIDGlobal
+	NVAR /z FollowITCDeviceIDGlobal = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
+
+	// create/append to global string list of follower devices for lead device
+	SVAR /z ListOfFollowerITC1600s = $(LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
+	if(exists(ListOfFollowerITC1600s) == 2)
+		ListOfFollowerITC1600s += followerDAC + ";"
+	elseif(exists(ListOfFollowerITC1600s) == 0)
+		variable/ g $(LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
+		SVAR /z ListOfFollowerITC1600s = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
+		ListOfFollowerITC1600s = followerDAC + ";"
+	endif
+	// set the internal clock of the device
+	string cmd
+	sprintf cmd, "ITCSelectDevice %d" FollowITCDeviceIDGlobal
+	execute cmd
+	Execute "ITCInitialize /M = 1" 
+	
+	setvariable setvar_Hardware_YokeList Win = $panelTitle, value= _STR:ListOfFollowerITC1600s
+End
+
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd
+	Variable start = stopmstimer(-2)
+	Execute "ITCInitialize /M = 1" 
+//==================================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW
-//=====================================================================================
+//==================================================================================================
 
 
