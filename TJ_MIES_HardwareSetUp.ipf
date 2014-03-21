@@ -328,27 +328,37 @@ Function HSU_SetITCDACasFollower(panelTitle, followerDAC) // This function sets 
 	string panelTitle, followerDAC
 	string LeadDeviceFolderPath =  HSU_DataFullFolderPathString(PanelTitle)
 	string FollowerDeviceFolderPath = HSU_DataFullFolderPathString(followerDAC)
-	variable LeadITCDeviceIDGlobal
-	NVAR /z FollowITCDeviceIDGlobal = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
+	// variable LeadITCDeviceIDGlobal
+	NVAR /z FollowerITCDeviceIDGlobal = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
+	string cmd = ""
 
 	// create/append to global string list of follower devices for lead device
 	SVAR /z ListOfFollowerITC1600s = $(LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
-	if(exists(ListOfFollowerITC1600s) == 2)
-		ListOfFollowerITC1600s += followerDAC + ";"
-	elseif(exists(ListOfFollowerITC1600s) == 0)
-		variable/ g $(LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
-		SVAR /z ListOfFollowerITC1600s = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
+	string pathListOfFollowerITC1600s = (LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
+//	print pathListOfFollowerITC1600s
+//	print "global exists = ", exists(pathListOfFollowerITC1600s) 
+	
+	if(exists(pathListOfFollowerITC1600s) == 2)
+		if(whichlistitem(followerDAC,ListOfFollowerITC1600s, ";") == -1) // prevents user from adding the same follower device twice
+			ListOfFollowerITC1600s += followerDAC + ";"
+			sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
+			execute cmd
+		//	Execute "ITCInitialize /M = 1" 
+			setvariable setvar_Hardware_YokeList Win = $panelTitle, value= _STR:ListOfFollowerITC1600s, disable = 0
+		endif
+	elseif(exists(pathListOfFollowerITC1600s) == 0)
+		string/ g $(LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
+		SVAR /z ListOfFollowerITC1600s = $(LeadDeviceFolderPath + ":ListOfFollowerITC1600s")
 		ListOfFollowerITC1600s = followerDAC + ";"
+		sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
+		execute cmd
+		Execute "ITCInitialize /M = 1" 
+		setvariable setvar_Hardware_YokeList Win = $panelTitle, value= _STR:ListOfFollowerITC1600s, disable = 0
 	endif
 	// set the internal clock of the device
-	string cmd
-	sprintf cmd, "ITCSelectDevice %d" FollowITCDeviceIDGlobal
-	execute cmd
-	Execute "ITCInitialize /M = 1" 
-	
-	setvariable setvar_Hardware_YokeList Win = $panelTitle, value= _STR:ListOfFollowerITC1600s
 End
 
+root:MIES:ITCDevices:ITC1600:Device1
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	Variable start = stopmstimer(-2)

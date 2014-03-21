@@ -2,7 +2,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(2394,820,2865,1373)
+	NewPanel /W=(2850,56,3321,609)
 	TitleBox Title_settings_SetManagement,pos={948,-100},size={392,213},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -2130,39 +2130,42 @@ Window DA_Ephys() : Panel
 	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600, however, It is not a requirement for the use of multiple ITC1600s asyncronously."}
 	GroupBox group_Hardware_Yoke,userdata(tabnum)=  "6",userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_Yoke,fSize=12
-	Button button_Hardware_Lead1600,pos={38,195},size={110,21},disable=2,proc=DAP_ButtonProc_Lead,title="Lead"
+	Button button_Hardware_Lead1600,pos={29,195},size={80,21},disable=2,proc=DAP_ButtonProc_Lead,title="Lead"
 	Button button_Hardware_Lead1600,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Lead1600,userdata(tabnum)=  "6"
 	Button button_Hardware_Lead1600,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={38,240},size={110,21},bodyWidth=110,disable=2,title="Locked ITC1600s"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={29,240},size={110,21},bodyWidth=110,disable=2,title="Locked ITC1600s"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_AvailITC1600s,mode=0,value= #"DAP_ListOfITCDevices()"
-	Button button_Hardware_AddFollower,pos={152,240},size={110,21},disable=2,proc=DAP_ButtonProc_Follow,title="Follow"
+	Button button_Hardware_AddFollower,pos={141,240},size={80,21},disable=2,proc=DAP_ButtonProc_Follow,title="Follow"
 	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
 	Button button_Hardware_AddFollower,userdata(tabnum)=  "6"
 	Button button_Hardware_AddFollower,userdata(tabcontrol)=  "ADC"
-	TitleBox title_hardware_1600inst,pos={38,176},size={282,13},disable=2,title="Designate the status of the ITC1600 assigned to this device"
+	TitleBox title_hardware_1600inst,pos={29,176},size={282,13},disable=2,title="Designate the status of the ITC1600 assigned to this device"
 	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
 	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC",frame=0
-	Button button_Hardware_Independent,pos={152,195},size={110,21},disable=2,proc=DAP_ButtonProc_Independent,title="Independent"
+	Button button_Hardware_Independent,pos={143,195},size={80,21},disable=2,proc=DAP_ButtonProc_Independent,title="Independent"
 	Button button_Hardware_Independent,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Independent,userdata(tabnum)=  "6"
 	Button button_Hardware_Independent,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_Status,pos={140,535},size={196,16},bodyWidth=99,title="ITC DAC Status:"
 	SetVariable setvar_Hardware_Status,frame=0,fStyle=1,fColor=(65280,0,0)
 	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
-	SetVariable setvar_Hardware_Status,value= _STR:"Independent",noedit= 1
-	TitleBox title_hardware_Follow,pos={37,222},size={163,13},disable=2,title="Assign ITC1600 DACs as followers"
+	SetVariable setvar_Hardware_Status,value= _STR:"Lead",noedit= 1
+	TitleBox title_hardware_Follow,pos={29,222},size={163,13},disable=2,title="Assign ITC1600 DACs as followers"
 	TitleBox title_hardware_Follow,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Follow,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Follow,userdata(tabcontrol)=  "ADC",frame=0
-	SetVariable setvar_Hardware_YokeList,pos={36,272},size={300,16},title="Yoked DACs:"
+	SetVariable setvar_Hardware_YokeList,pos={29,272},size={300,16},disable=2,title="Yoked DACs:"
 	SetVariable setvar_Hardware_YokeList,userdata(tabnum)=  "6"
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
-	SetVariable setvar_Hardware_YokeList,value= _STR:"",noedit= 1
+	SetVariable setvar_Hardware_YokeList,value= _STR:"ITC1600_Dev_0;",noedit= 1
+	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},title="Release"
+	PopupMenu popup_Hardware_AvailITC1600s1,pos={223,240},size={110,21},bodyWidth=110,title="Locked ITC1600s"
+	PopupMenu popup_Hardware_AvailITC1600s1,mode=0,value= #"DAP_ListOfITCDevices()"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -3239,7 +3242,7 @@ Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls
 			button button_Hardware_Lead1600 Win = DA_Ephys, Disable = 2
 			button button_Hardware_Independent Win = DA_Ephys, Disable = 2
 			titlebox title_hardware_1600inst Win = DA_Ephys, Disable = 2
-			titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
+			titlebox title_hardware_Follow Win = DA_Ephys, Disable = 2
 			button button_Hardware_AddFollower Win = DA_Ephys, Disable = 2
 			popupmenu popup_Hardware_AvailITC1600s Win = DA_Ephys, Disable = 2
 			setvariable setvar_Hardware_YokeList Win = DA_Ephys, Disable = 2
@@ -3301,6 +3304,7 @@ Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	String PanelTitle = DAP_ReturnPanelName()
 	controlinfo /w = $panelTitle popup_Hardware_AvailITC1600s
 	string DeviceToBeAssignedAsFollower = s_value
+	print "panel title =",paneltitle, "follower =", s_value
 	HSU_SetITCDACasFollower(panelTitle, DeviceToBeAssignedAsFollower)
 	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
 
