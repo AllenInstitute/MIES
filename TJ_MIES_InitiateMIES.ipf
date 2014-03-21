@@ -38,35 +38,47 @@ End
 
 //=========================================================================================
 
-Function Folder_ActiveITCfolder(panelTitle)
+Function Path_ActiveITCfolder(panelTitle)
 	string panelTitle
 	
 End
 //=========================================================================================
-Function Folder_ActiveITCTPfolder(panelTitle)
+Function Path_ActiveITCTPfolder(panelTitle)
 	string panelTitle
 	
 End
 //=========================================================================================
-Function Folder_ActiveTimerfolder(panelTitle)
+Function Path_ActiveTimerfolder(panelTitle)
 	string panelTitle
 	
 End
 //=========================================================================================
-Function Folder_WBData(panelTitle)
+Function Path_WBData(panelTitle)
 	string panelTitle
 	
 End
 //=========================================================================================
-Function Folder_StimSetParam(panelTitle, DAorTTL)
-	string panelTitle
-	variable DAorTTL
-	
-End
-//=========================================================================================
-Function Folder_StimSets(panelTitle, DAorTTL)
+Function Path_StimSetParamFolder(panelTitle, DAorTTL)
 	string panelTitle
 	variable DAorTTL
 	
 End
 //=========================================================================================
+Function Path_StimSetsFolder(panelTitle, DAorTTL)
+	string panelTitle
+	variable DAorTTL
+	
+End
+//=========================================================================================
+Function /t Path_ListOfYokedDACs(panelTitle)
+	string panelTitle
+	string strPathToListOfYokedDACs = HSU_DataFullFolderPathString(PanelTitle) + ":ListOfFollowerITC1600s"
+	if(exists(strPathToListOfYokedDACs)==2)
+		SVAR /z ListOfYokedDACs = $strPathToListOfYokedDACs
+		return ListOfYokedDACs
+	else
+		return "No Yoked Devices"
+	endif
+End
+
+Path_ListOfYokedDACs(DAP_ReturnPanelName())
