@@ -352,7 +352,7 @@ Function HSU_SetITCDACasFollower(panelTitle, followerDAC) // This function sets 
 		ListOfFollowerITC1600s = followerDAC + ";"
 		sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
 		execute cmd
-		Execute "ITCInitialize /M = 1" 
+	//	Execute "ITCInitialize /M = 1" 
 		setvariable setvar_Hardware_YokeList Win = $panelTitle, value= _STR:ListOfFollowerITC1600s, disable = 0
 	endif
 	// set the internal clock of the device
