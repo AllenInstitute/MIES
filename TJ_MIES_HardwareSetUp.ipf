@@ -132,7 +132,12 @@ Function HSU_UnlockDevSelection(PanelTitle)
 
 	//GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
 	HSU_DataFolderPathDisplay(PanelTitle, 0)
-	dowindow /W = $panelTitle /C $"DA_Ephys"
+	string DAwindows = winlist("DA_Ephys*", ";", "WIN:64") //getwindow
+	if(itemsinlist(DAwindows,";") == 0)
+		dowindow /W = $panelTitle /C $"DA_Ephys"
+	elseif((itemsinlist(DAwindows,";") >= 1))
+		dowindow /W = $panelTitle /C $("DA_Ephys" + num2str(itemsinlist(DAwindows,";")))
+	endif
 	// ########## ADD CODE HERE TO REMOVE PANEL TITLE FROM GLOBAL LIST OF PANEL TITLES ##########
 	print WavePath + ":ITCDeviceIDGlobal"
 	NVAR /z ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
