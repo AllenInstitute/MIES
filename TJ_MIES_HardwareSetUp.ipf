@@ -43,6 +43,7 @@ Function HSU_LockDevice(panelTitle)
 	PopupMenu popup_MoreSettings_DeviceType win = $PanelTitle, disable = 2
 	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 2
 	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 2
+	Button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
 	HSU_DataFolderPathDisplay(PanelTitle, 1)
 	HSU_CreateDataFolderForLockdDev(PanelTitle)
 	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 0
@@ -127,6 +128,8 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 0
 	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 0
 	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 2
+	Button button_SettingsPlus_PingDevice win = $panelTitle, disable = 0
+
 	//GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
 	HSU_DataFolderPathDisplay(PanelTitle, 0)
 	dowindow /W = $panelTitle /C $"DA_Ephys"

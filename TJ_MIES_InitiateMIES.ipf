@@ -37,37 +37,91 @@ Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for
 End
 
 //=========================================================================================
-
-Function Path_ActiveITCfolder(panelTitle)
+// FUNCTION BELOW WITH THE PATH PREFIX RETURN PATHS TO ALL MIES FOLDERS AS WELL AS A FEW SPECIAL CASE PATHS
+//=========================================================================================
+Function /T Path_MIESfolder(panelTitle)
 	string panelTitle
-	
+	string pathToMies = "root:MIES"
+	return pathToMIES
 End
 //=========================================================================================
-Function Path_ActiveITCTPfolder(panelTitle)
+Function /T Path_AmpFolder(panelTitle)
 	string panelTitle
-	
+	string pathToAmpFolder =Path_MIESfolder(panelTitle) + ":Amplifiers"
+	return pathToAmpFolder
 End
 //=========================================================================================
-Function Path_ActiveTimerfolder(panelTitle)
+Function /T Path_ITCDevicesFolder(panelTitle)
 	string panelTitle
-	
+	string pathToITCDevicesFolder = Path_MIESfolder(panelTitle) + ":ITCDevices"
+	return pathToITCDevicesFolder
 End
 //=========================================================================================
-Function Path_WBData(panelTitle)
+Function /T Path_WaveBuilderFolder(panelTitle)
 	string panelTitle
-	
+	string WaveBuilderFolder = Path_MIESfolder(panelTitle) + ":WaveBuilder"
+	return WaveBuilderFolder
 End
 //=========================================================================================
-Function Path_StimSetParamFolder(panelTitle, DAorTTL)
+Function /T Path_ActiveITCDevicesFolder(panelTitle)
 	string panelTitle
-	variable DAorTTL
-	
+	string ActiveITCDevicesFolder = Path_ITCDevicesFolder(panelTitle) + ":ActiveITCDevices"
+	return ActiveITCDevicesFolder
 End
 //=========================================================================================
-Function Path_StimSetsFolder(panelTitle, DAorTTL)
+Function /T Path_ActITCDevTestPulseFolder(panelTitle)
 	string panelTitle
-	variable DAorTTL
+	string ActITCDevTestPulseFolder = Path_ActiveITCDevicesFolder(panelTitle) + ":TestPulse"
+	return ActITCDevTestPulseFolder
+End
+//=========================================================================================
+Function /T Path_ActITCDevTestTimerFolder(panelTitle)
+	string panelTitle
+	string ActITCDevTestTimerFolder = Path_ActiveITCDevicesFolder(panelTitle) + ":Timer"
 	
+	return ActITCDevTestTimerFolder
+End
+//=========================================================================================
+Function /T Path_WaveBuilderDataFolder(panelTitle)
+	string panelTitle
+	string WaveBuilderDataFolder = Path_WaveBuilderFolder(panelTitle) + ":Data"
+	return WaveBuilderDataFolder
+End
+//=========================================================================================
+Function /T Path_WBSvdStimSetParamFolder(panelTitle)
+	string panelTitle
+	string WBSvdStimSetParamFolder = Path_WaveBuilderFolder(panelTitle) + ":SavedStimulusSetParameters"
+	return WBSvdStimSetParamFolder
+End
+//=========================================================================================
+Function /T Path_WBSvdStimSetFolder(panelTitle)
+	string panelTitle
+	string WBSvdStimSetFolder = Path_WaveBuilderFolder(panelTitle) + ":SavedStimulusSets"
+	return WBSvdStimSetFolder
+End
+//=========================================================================================
+Function /T Path_WBSvdStimSetParamDAFolder(panelTitle)
+	string panelTitle
+	string WBSvdStimSetParamDAFolder = Path_WBSvdStimSetParamFolder(panelTitle) + ":DA"
+	return WBSvdStimSetParamDAFolder
+End
+//=========================================================================================
+Function /T Path_WBSvdStimSetParamTTLFolder(panelTitle)
+	string panelTitle
+	string WBSvdStimSetParamTTLFolder = Path_WBSvdStimSetParamFolder(panelTitle) + ":TTL"
+	return WBSvdStimSetParamTTLFolder
+End
+//=========================================================================================
+Function /T Path_WBSvdStimSetDAFolder(panelTitle)
+	string panelTitle
+	string WBSvdStimSetDAFolder =  Path_WBSvdStimSetFolder(panelTitle) + ":DA"
+	return WBSvdStimSetDAFolder
+End
+//=========================================================================================
+Function /T Path_WBSvdStimSetTTLFolder(panelTitle)
+	string panelTitle
+	string WBSvdStimSetTTLFolder =  Path_WBSvdStimSetFolder(panelTitle) + ":TTL"
+	return WBSvdStimSetTTLFolder
 End
 //=========================================================================================
 Function /t Path_ListOfYokedDACs(panelTitle)
@@ -80,5 +134,4 @@ Function /t Path_ListOfYokedDACs(panelTitle)
 		return "No Yoked Devices"
 	endif
 End
-
-Path_ListOfYokedDACs(DAP_ReturnPanelName())
+//=========================================================================================
