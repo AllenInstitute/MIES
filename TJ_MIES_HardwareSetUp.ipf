@@ -133,7 +133,7 @@ Function HSU_UnlockDevSelection(PanelTitle)
 	//GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
 	HSU_DataFolderPathDisplay(PanelTitle, 0)
 	string DAwindows = winlist("DA_Ephys*", ";", "WIN:64") //getwindow
-	if(itemsinlist(DAwindows,";") == 0)
+	if(itemsinlist(DAwindows,";") == 0) // ensures that when other DA_Ephys windows are unlocked, the panel renaming does not attemp to duplicate the panel name
 		dowindow /W = $panelTitle /C $"DA_Ephys"
 	elseif((itemsinlist(DAwindows,";") >= 1))
 		dowindow /W = $panelTitle /C $("DA_Ephys" + num2str(itemsinlist(DAwindows,";")))

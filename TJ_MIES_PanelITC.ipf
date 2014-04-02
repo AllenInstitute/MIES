@@ -3247,23 +3247,35 @@ Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls
 			setvariable setvar_Hardware_YokeList Win = $panelTitle, Disable = 2
 			i += 1
 		while(i < itemsinlist(PanelTitleList, ";")) 
-			// lines below disables the yoking controls on the panel that was just un yokrf
-			button button_Hardware_Lead1600 Win = DA_Ephys, Disable = 2
-			button button_Hardware_Independent Win = DA_Ephys, Disable = 2
-			titlebox title_hardware_1600inst Win = DA_Ephys, Disable = 2
-			titlebox title_hardware_Follow Win = DA_Ephys, Disable = 2
-			button button_Hardware_AddFollower Win = DA_Ephys, Disable = 2
-			popupmenu popup_Hardware_AvailITC1600s Win = DA_Ephys, Disable = 2
-			setvariable setvar_Hardware_YokeList Win = DA_Ephys, Disable = 2
+			// lines below disables the yoking controls on the panel that was just unlocked
+			getwindow kwTopWin wtitle
+			print s_value
+			button button_Hardware_Lead1600 Win = $s_value, Disable = 2
+			button button_Hardware_Independent Win = $s_value, Disable = 2
+			titlebox title_hardware_1600inst Win = $s_value, Disable = 2
+			titlebox title_hardware_Follow Win = $s_value, Disable = 2
+			button button_Hardware_AddFollower Win = $s_value, Disable = 2
+			popupmenu popup_Hardware_AvailITC1600s Win = $s_value, Disable = 2
+			setvariable setvar_Hardware_YokeList Win = $s_value, Disable = 2
 	elseif(real(TwoOrMore1600s) == 1)
 		do
 			panelTitle = stringfromlist(i, ListOf1600s, ";") // enables the yoking controls on all the locked ITC1600s
-			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
-			button button_Hardware_Independent Win = $panelTitle, Disable = 2
-			titlebox title_hardware_1600inst Win = $panelTitle, Disable = 0
-			titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
-			button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
-			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+			if(stringmatch(panelTitle,"ITC1600_Dev_0") == 1) // ensures yoking controls are only enabled on the ITC1600_Dev_0 - a requirement of the ITC XOP
+				button button_Hardware_Lead1600 Win = $"ITC1600_Dev_0", Disable = 0
+				button button_Hardware_Independent Win = $"ITC1600_Dev_0", Disable = 2
+				titlebox title_hardware_1600inst Win = $"ITC1600_Dev_0", Disable = 0
+				titlebox title_hardware_Follow Win = $"ITC1600_Dev_0", Disable = 2
+				button button_Hardware_AddFollower Win = $"ITC1600_Dev_0", Disable = 2
+				popupmenu popup_Hardware_AvailITC1600s Win = $"ITC1600_Dev_0", Disable = 2
+				doupdate /W = $"ITC1600_Dev_0"
+			else
+				button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
+				button button_Hardware_Independent Win = $panelTitle, Disable = 2
+				titlebox title_hardware_1600inst Win = $panelTitle, Disable = 2
+				titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
+				button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
+				popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+			endif
 			
 			i += 1
 		while(i < imag(TwoOrMore1600s))
