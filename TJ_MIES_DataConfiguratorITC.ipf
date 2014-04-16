@@ -4,6 +4,7 @@
 //=========================================================================================
 Function DC_ConfigureDataForITC(PanelTitle)// pass column into this function?
 	string PanelTitle
+	Variable start = stopmstimer(-2)
 	DC_MakeITCConfigAllConfigWave(PanelTitle)  
 	DC_MakeITCConfigAllDataWave(PanelTitle)  
 	DC_MakeITCFIFOPosAllConfigWave(PanelTitle)
@@ -13,6 +14,7 @@ Function DC_ConfigureDataForITC(PanelTitle)// pass column into this function?
 	DC_PlaceDataInITCDataWave(PanelTitle)
 	DC_PDInITCFIFOPositionAllCW(PanelTitle)// PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(PanelTitle)
+	print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
 
 //==========================================================================================

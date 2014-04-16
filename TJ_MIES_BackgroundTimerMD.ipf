@@ -115,7 +115,7 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 		variable rowToRemove = v_value
 		DeletePoints /m = 0 rowToRemove, 1, ActiveDevTimeParam // removes the row that contains the device 
 	endif
-	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 	
 	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
 End // Function 	ITC_MakeOrUpdateTimerParamWave
@@ -137,7 +137,7 @@ End // Function 	ITC_MakeOrUpdateTimerParamWave
  			TimerFunctionListWave[0][1] = ListOfFunctions
  		elseif (WaveExists($WavePath + ":TimerFunctionListWave") == 1)
  			Variable numberOfRows = dimSize(TimerFunctionListWave, 0)
- 			print numberofrows
+ 			//print numberofrows
  			Redimension /n = (numberOfRows + 1, 2) TimerFunctionListWave
  			TimerFunctionListWave[numberOfRows][0] = panelTitle
  			TimerFunctionListWave[numberOfRows][1] = ListOfFunctions

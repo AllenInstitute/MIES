@@ -26,7 +26,7 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	execute cmd
 		
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-	print cmd
+	//print cmd
 	execute cmd
 	do
 
@@ -451,7 +451,7 @@ Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch cha
 	sprintf cmd, "ITCReadADC /V = 1 %d, %s" Channel, AsyncChannelDataPath
 	execute cmd
 	ChannelValue = AsyncChannelData[0]
-	print channelValue
+	//print channelValue
 	killwaves /f AsyncChannelData
 	return ChannelValue
 End 

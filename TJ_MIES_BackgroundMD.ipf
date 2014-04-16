@@ -3,39 +3,38 @@
 	//Reinitialize Device 1 with intrabox clock
 	Execute "ITCInitialize /M = 1"
 	Execute "ITCStartAcq 1, 256"
- Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, startTime, panelTitle) // if start time = 0 the variable is ignored
-	variable DeviceType, DeviceNum, startTime
+ Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+	variable DeviceType, DeviceNum, TriggerMode
 	string panelTitle
-	Variable start = stopmstimer(-2)
+//	Variable start = stopmstimer(-2)
 	string cmd
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
 	variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
-	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
+//	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
-	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
+//	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
+//	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
+//	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	
-	print "global device ID = ", itcdeviceidglobal
+	//print "global device ID = ", itcdeviceidglobal
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-	print cmd
-	
-	execute cmd
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	execute cmd// this also seems necessary to update the DA channel data to the board!!
-	if(StartTime == 0)
+//	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+//	print cmd	
+//	execute cmd
+//	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+//	execute cmd// this also seems necessary to update the DA channel data to the board!!
+	if(TriggerMode == 0)
 		Execute "ITCStartAcq" 
-	elseif(StartTime > 0)
-		sprintf cmd, "ITCStartAcq 1, %d" StartTime
+	elseif(TriggerMode > 0)
+		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
 		Execute cmd	
 	endif
-	print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
+	//print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 
 	//doupdate
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
@@ -45,12 +44,12 @@
 		// print "background data acq is not running"
 		ITC_StartBckrdFIFOMonitorMD()
 	endif
-		print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
+	//	print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 
 	End
  //=============================================================================================================================
-Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // function used to initialize syncronous ITC1600s
-	variable DeviceType, DeviceNum, startTime
+Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, TriggerMode, panelTitle) // function used to initialize syncronous ITC1600s
+	variable DeviceType, DeviceNum, TriggerMode
 	string panelTitle
 	
 	string cmd
@@ -83,7 +82,7 @@ Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
 	
-	sprintf cmd, "ITCStartAcq 1, %d" StartTime
+	sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
 	Execute cmd	
 	
 	End
@@ -135,9 +134,9 @@ Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, startTime, panelTitle) // 
 					CtrlNamedBackground ITC_FIFOMonitorMD, stop
 					//ITC_StopBckrdFIFOMonitorMD() // stops FIFO monitor when there are no devices left to monitor
 				endif
-				print "i = ",i
+				//print "i = ",i
 				NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
-				print " number of active devices = ",NumberOfActiveDevices
+				//print " number of active devices = ",NumberOfActiveDevices
 			endif
 		i += 1
 		itcdatawave[0][0] += 0
@@ -207,8 +206,8 @@ END
 Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
-	Variable start = stopmstimer(-2)
-	print "ITC Device ID global = ", itcdeviceidglobal, "In  ITC_MakeOrUpdateActivDevLstWave"
+	//Variable start = stopmstimer(-2)
+	//print "ITC Device ID global = ", itcdeviceidglobal, "In  ITC_MakeOrUpdateActivDevLstWave"
 	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 	if (AddorRemoveDevice == 1) // add a ITC device
@@ -233,14 +232,14 @@ Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChanne
 		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
-	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
 //=============================================================================================================================
 
  Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, AddorRemoveDevice)
  	string panelTitle
  	Variable AddOrRemoveDevice
- 	Variable start = stopmstimer(-2)
+ 	//Variable start = stopmstimer(-2)
 
  	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
  	WAVE /z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
@@ -259,7 +258,7 @@ End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
  		Variable RowToRemove = v_value
  		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
  	endif
- 	 		print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+ 	 		//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 
  	ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 
@@ -269,7 +268,7 @@ End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
 Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	String panelTitle
 	Variable AddOrRemoveDevice, RowToRemove
-	Variable start = stopmstimer(-2)
+	//Variable start = stopmstimer(-2)
 	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
 	if (AddOrRemoveDevice == 1) 
@@ -288,7 +287,7 @@ Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	elseif (AddOrRemoveDevice == -1)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave
 	endif
-	print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End // Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddorRemoveDevice)
 //=============================================================================================================================
 

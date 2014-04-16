@@ -114,7 +114,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	string panelTitle
 	variable PulseDuration
 	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
-	print TPGlobalPath
+	//print TPGlobalPath
 	variable /g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
 	variable /g $TPGlobalPath + ":AmplitudeVC"
@@ -192,7 +192,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	make /o /n = 0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
 	SetScale /P x 0,0.005,"ms", TestPulse
-	print testpulsepath
+	//print testpulsepath
 	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	DM_CreateScaleTPHoldingWave(panelTitle)
 	make /free /n = 8 SelectedDACWaveList

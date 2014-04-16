@@ -469,7 +469,7 @@ Function IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)// set name is the
 	endif
 	
 	string NameOfWaveSelectedInPopUP = WavePath + setName
-	print NameOfWaveSelectedInPopUP
+	//print NameOfWaveSelectedInPopUP
 	variable NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
 	return NumberOfTrialsInSet
 End
@@ -731,7 +731,7 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
 					if(ChannelNumber==0)
-					print PopUpMenuList
+					//print PopUpMenuList
 					print DAIndexingStorageWave[1][ChannelNumber]
 					//print "steps in summed sets = "+num2str(stepsinsummedsets)
 					endif

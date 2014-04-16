@@ -2389,7 +2389,7 @@ Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab 
 			print "Please lock the panel to a ITC device in the Hardware tab"
 		endif
 	else
-	print "Please lock the panel to a ITC device in the Hardware tab"
+		print "Please lock the panel to a ITC device in the Hardware tab"
 	endif
 //	if(tabnum==1)// this does not work because hook function runs prior to adams tab functions (i assume)
 //	controlinfo/w=datapro_itc1600 Check_DataAcq_Indexing
@@ -2493,7 +2493,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	string DataAcqStatePath = WavePath + ":DataAcqState"
-	print DataAcqStatePath
+	//print DataAcqStatePath
 	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
 		variable /G $DataAcqStatePath = 0
 	endif
@@ -2561,7 +2561,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
-		print "device type = ", devicetype, " Device Number = ", devicenum		
+		//print "device type = ", devicetype, " Device Number = ", devicenum		
 End
 //=========================================================================================
 
@@ -3249,7 +3249,7 @@ Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls
 		while(i < itemsinlist(PanelTitleList, ";")) 
 			// lines below disables the yoking controls on the panel that was just unlocked
 			getwindow kwTopWin wtitle
-			print s_value
+			//print s_value
 			button button_Hardware_Lead1600 Win = $s_value, Disable = 2
 			button button_Hardware_Independent Win = $s_value, Disable = 2
 			titlebox title_hardware_1600inst Win = $s_value, Disable = 2

@@ -18,11 +18,11 @@ Function ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	string  ITCDataWavePath = WavePath + ":ITCDataWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	print "global device ID = ", ITCDeviceIDGlobal
+	//print "global device ID = ", ITCDeviceIDGlobal
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-	print cmd
+	//print cmd
 	execute cmd
 	
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
@@ -117,7 +117,7 @@ Function ITC_TestPulseFuncMD(s)
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				panelTitle = DAP_ReturnPanelName()
-				PRINT PANELTITLE
+				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title
 					beep 
 					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
@@ -178,7 +178,7 @@ End
 Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
-	Variable start = stopmstimer(-2)
+	//Variable start = stopmstimer(-2)
 
 	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
@@ -204,14 +204,14 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
-	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End // Function 	ITC_MakeOrUpdateTPDevLstWave(panelTitle)
 //=============================================================================================================================
 
  Function ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
  	string panelTitle
  	Variable AddOrRemoveDevice
- 	Variable start = stopmstimer(-2)
+ 	//Variable start = stopmstimer(-2)
 
  	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
  	WAVE /z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
@@ -230,7 +230,7 @@ End // Function 	ITC_MakeOrUpdateTPDevLstWave(panelTitle)
  		Variable RowToRemove = v_value
  		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
  	endif
- 	 		print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+ 	 		//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 
  	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 
@@ -240,7 +240,7 @@ End // Function 	ITC_MakeOrUpdateTPDevLstWave(panelTitle)
 Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) // creates wave that contains wave references
 	String panelTitle
 	Variable AddOrRemoveDevice, RowToRemove
-	Variable start = stopmstimer(-2)
+	//Variable start = stopmstimer(-2)
 	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 	if (AddOrRemoveDevice == 1) 
@@ -263,6 +263,6 @@ Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) //
 	elseif (AddOrRemoveDevice == -1)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave
 	endif
-	print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End // Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddorRemoveDevice)
 //=============================================================================================================================
