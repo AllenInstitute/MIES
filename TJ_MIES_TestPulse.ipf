@@ -131,6 +131,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	redimension /n = (2 * PulseDuration) TestPulse
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+	print "TP amp =",v_value
 	TestPulse[(PulseDuration / 2), (Pulseduration + (PulseDuration / 2))] = v_value
 	GlobalTPAmplitudeVariableVC = v_value
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC

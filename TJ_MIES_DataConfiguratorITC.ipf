@@ -430,6 +430,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle)/5)
 	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
 	ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
+	print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
 			SetVarDAGain = "gain_DA_0" + num2str(i)
@@ -451,7 +452,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 			DAScale = v_value
 	
 			//get the wave name
-			ChanTypeWaveName = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"+ stringfromlist(i,ChanTypeWaveNameList,";")
+			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
 			//check to see if it is a test pulse or user specified da wave
 			if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0)
 				column = 0
@@ -470,7 +471,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 		if(v_value == 1)
 			ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value == 1)// shutting off DA by setting scaling to zero is only required when indexing is locked
-				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")!=0)// makes sure test pulse wave scaling is maintained
+				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)// makes sure test pulse wave scaling is maintained
 					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1)
 						DAScale = 0
 					endif
@@ -485,6 +486,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 			//print cmd
 			//execute cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
+			//print ChanTypeWaveName
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
 			
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
