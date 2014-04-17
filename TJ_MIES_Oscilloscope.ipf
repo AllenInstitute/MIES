@@ -3,6 +3,7 @@
 Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	wave WaveToPlot
 	string panelTitle
+	Variable start = stopmstimer(-2)
 	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
@@ -62,7 +63,8 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	endfor
 	SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) /5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 
-	doupdate
+	//doupdate
+	print "Scope update took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
 
 Function/t ReturnStringforTag(panelTitle, waveToconvert, column) // ####DOES NOT APPEAR TO BE IN USE

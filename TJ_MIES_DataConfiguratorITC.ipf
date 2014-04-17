@@ -75,7 +75,7 @@ End
 
 //==========================================================================================
 
-Function/S DC_ControlStatusListString(ChannelType, ControlType,panelTitle)
+Function/S DC_ControlStatusListString(ChannelType, ControlType,panelTitle) // Channel Type = DA, AD, or TTL, Control Type = ex. check
 	String ChannelType, panelTitle
 	string ControlType
 	variable TotalPossibleChannels = DC_TotNoOfControlType(ControlType, ChannelType,panelTitle)
@@ -315,7 +315,7 @@ Function DC_MakeITCConfigAllDataWave(PanelTitle)// config all refers to configur
 	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
 	make /w /o /n = (DC_CalculateITCDataWaveLength(panelTitle), DC_ChanCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
 	wave/z ITCDataWave = $ITCDataWavePath
-	ITCDataWave = 0
+	FastOp ITCDataWave = 0
 	SetScale/P x 0,(DC_ITCMinSamplingInterval(panelTitle)) / 1000,"ms", ITCDataWave
 End
 //==========================================================================================
@@ -481,10 +481,12 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
 			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
 
-			sprintf cmd,  "%s[%d, %d][%d] = (%g*%g) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
+			//sprintf cmd,  "%s[%d, %d][%d] = (%g*%g) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
 			//print cmd
-			execute cmd
-	
+			//execute cmd
+			Wave/z StimSetSweep = $ChanTypeWaveName
+			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
+			
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
 		endif
 		i += 1

@@ -23,3 +23,4 @@
 #include "C:gitwork:MIES_TimJ:TJ_MIES_TPBackgroundMD"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_BackgroundTimerMD"
 #include <ProcedureBrowser>
+#include <FunctionProfiling>
