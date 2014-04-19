@@ -29,7 +29,7 @@ Function ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
 	
 	if (TP_IsBackgrounOpRunning(panelTitle, "ITC_TestPulseFuncMD") == 0)
-		CtrlNamedBackground TestPulse, period = 2, proc = ITC_TestPulseFuncMD
+		CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFuncMD
 		CtrlNamedBackground TestPulse, start
 	endif
 
@@ -97,6 +97,10 @@ Function ITC_TestPulseFuncMD(s)
 		// Check Status
 //		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 //		Execute cmd
+		
+//		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+//		execute cmd 
+		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
 		

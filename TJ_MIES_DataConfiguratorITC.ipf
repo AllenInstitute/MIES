@@ -52,21 +52,21 @@ Function DC_NoOfChannelsSelected(ChannelType, ControlType, panelTitle)//ChannelT
 	variable i = 0
 	variable DC_NoOfChannelsSelected = 0
 	string CheckBoxName
-	
+	string controlname
 		do
-			CheckBoxName = "Check_"+ ChannelType +"_"
-			
-			if(i < 10)
-				CheckBoxName += "0"+num2str(i)
-				ControlInfo /w = $panelTitle $CheckBoxName
+			//CheckBoxName = "Check_"+ ChannelType +"_"
+			sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+//			if(i < 10)
+//				CheckBoxName += "0"+num2str(i)
+				ControlInfo /w = $panelTitle $ControlName
 				DC_NoOfChannelsSelected += v_value
-			endif
-	
-			if(i >= 10)
-				CheckBoxName += num2str(i)
-				ControlInfo /w = $panelTitle $CheckBoxName
-				DC_NoOfChannelsSelected += v_value
-			endif
+//			endif
+//	
+//			if(i >= 10)
+//				CheckBoxName += num2str(i)
+//				ControlInfo /w = $panelTitle $CheckBoxName
+//				DC_NoOfChannelsSelected += v_value
+//			endif
 		
 		i += 1
 		while(i <= (TotalPossibleChannels - 1))
@@ -87,22 +87,11 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType,panelTitle) // Ch
 	i=0
 	
 		do
-			ControlName = ControlType + "_" + ChannelType + "_"		
-			
-			if(i < 10)
-				ControlName += "0" + num2str(i)
-				ControlInfo /w = $panelTitle $ControlName
-				ControlStatusList += num2str(v_value) + ";"
-			endif
-	
-			if(i >= 10)
-				ControlName += num2str(i)
-				ControlInfo /w = $panelTitle $ControlName
-				ControlStatusList += num2str(v_value) + ";"
-			endif
-		
-	
-		i+=1
+			sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+			ControlInfo /w = $panelTitle $ControlName
+			//ControlStatusList += num2str(v_value) + ";"
+			ControlStatusList = AddlistItem(num2str(v_value), ControlStatusList, ";",i)
+			i+=1
 		while(i <= (TotalPossibleChannels - 1))
 	
 	return ControlStatusList
@@ -226,19 +215,22 @@ Function/s DC_PopMenuStringList(ChannelType, ControlType, panelTitle)// returns 
 	variable i = 0
 	
 		do
-			ControlName = ControlType + "_" + ChannelType + "_"		
-			
-			if(i < 10)
-				ControlName += "0" + num2str(i)
+			//ControlName = ControlType + "_" + ChannelType + "_"		
+			sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+
+			//if(i < 10)
+			//	ControlName += "0" + num2str(i)
 				ControlInfo /w = $panelTitle $ControlName
-				ControlWaveList += s_value + ";"
-			endif
+				//ControlWaveList += s_value + ";"
+				ControlWaveList = AddlistItem(s_value, ControlWaveList, ";",i)
+
+			//endif
 	
-			if(i >= 10)
-				ControlName += num2str(i)
-				ControlInfo /w = $panelTitle $ControlName
-				ControlWaveList += s_value + ";"
-			endif
+//			if(i >= 10)
+//				ControlName += num2str(i)
+//				ControlInfo /w = $panelTitle $ControlName
+//				ControlWaveList += s_value + ";"
+//			endif
 			
 		i += 1
 		while(i <= (TotalPossibleChannels - 1))
