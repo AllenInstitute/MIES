@@ -257,7 +257,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ChanAmpAssignUnit[0][HeadStageNo] = s_value
 	ControlInfo /w = $panelTitle Popup_Settings_VC_AD
 	ChanAmpAssign[2][HeadStageNo] = str2num(s_value)
-	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain_0
+	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain
 	ChanAmpAssign[3][HeadStageNo] = v_value
 	ControlInfo /w = $panelTitle SetVar_Hardware_VC_AD_Unit
 	ChanAmpAssignUnit[1][HeadStageNo] = s_value
@@ -317,7 +317,7 @@ Function HSU_UpdateChanAmpAssignPanel(PanelTitle)
 	Setvariable SetVar_Hardware_VC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
 	// VC AD settings
 	Popupmenu Popup_Settings_VC_AD win = $panelTitle, mode = (ChanAmpAssign[2][HeadStageNo] + 1)
-	Setvariable setvar_Settings_VC_ADgain_0 win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
+	Setvariable setvar_Settings_VC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
 	Setvariable SetVar_Hardware_VC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
 	// IC DA settings
 	Popupmenu Popup_Settings_IC_DA win = $panelTitle, mode = (ChanAmpAssign[4][HeadStageNo] + 1)
@@ -374,11 +374,69 @@ root:MIES:ITCDevices:ITC1600:Device1
 //==================================================================================================
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW
 //==================================================================================================
-Function GetI-ClampGain(panelTitle, AmpSerialNumber, AmpChannel)
-	string panelTitle			 // gain is returned in V/pA for V-Clamp, V/mV for I-Clamp
-	variable AmpSerialNumber
-	variable AmpChannel
+
+//==================================================================================================
+// AUTO IMPORT GAIN SETTINGS FROM AXON AMP FUNCTIONS BELOW
+//==================================================================================================
+
+
+
+Function AutoFillGain(panelTitle)
+	string panelTitle			
+	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
+	// setvar_Settings_VC_DAgain
+	// SetVar_Hardware_VC_DA_Unit
+	//  setvar_Settings_VC_ADgain
+	// SetVar_Hardware_VC_AD_Unit
 	
+	// setvar_Settings_IC_DAgain
+	// SetVar_Hardware_IC_DA_Unit
+	// setvar_Settings_IC_ADgain
+	// SetVar_Hardware_IC_AD_Unit
+
+	// sets the units
+	SetVariable SetVar_Hardware_VC_DA_Unit Win = $panelTitle, Value=_STR:"mV"
+	SetVariable SetVar_Hardware_VC_AD_Unit Win = $panelTitle, Value=_STR:"pA"
+	SetVariable SetVar_Hardware_IC_DA_Unit Win = $panelTitle, Value=_STR:"pA"
+	SetVariable SetVar_Hardware_IC_AD_Unit Win = $panelTitle, Value=_STR:"mV"
+	
+	// get the headstage number being updated
+	controlInfo /w = $PanelTitle Popup_Settings_HeadStage
+	variable HeadStageNo = v_value - 1
+	// get the associated amp serial number - the serial number of the assoicated amp is stored in row 8 of the ChaAmpAssign wave
+	Wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+	variable AmpSerialNo = ChanAmpAssign[8][HeadStageNo]
+	// get the amp channel
+	variable AmpChannel = ChanAmpAssign[9][HeadStageNo]
+	// Select the amp to query
+	
+	string AmpSerialNumberString
+	sprintf AmpSerialNumberString, "%.8d" AmpSerialNo
+	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
+	variable Mode = MCC_GetMode()
+	
+	// set the gain
+	if(Mode == 0)
+		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+	elseif(Mode == 1)
+		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+	endif
+	
+	SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+
+	Mode = MCC_GetMode()
+	 
+	 if(Mode == 0)
+		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+	elseif(Mode == 1)
+		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+	endif
+	
+	SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
 End
 
 Function /C RetrieveADGain(panelTitle, AmpSerialNumber, AmpChannel) // returns AD gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
