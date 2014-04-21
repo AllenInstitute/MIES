@@ -438,6 +438,7 @@ Function AutoFillGain(panelTitle)
 	
 	SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
 End
+//==================================================================================================
 
 Function /C RetrieveADGain(panelTitle, AmpSerialNumber, AmpChannel) // returns AD gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
 	string panelTitle			 // gain is returned in V/pA for V-Clamp, V/mV for I-Clamp
@@ -455,6 +456,7 @@ Function /C RetrieveADGain(panelTitle, AmpSerialNumber, AmpChannel) // returns A
 	
 	return ADGain
 End
+//==================================================================================================
 
 Function /C RetrieveDAGain(panelTitle, AmpSerialNumber, AmpChannel) // returns DA gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
 	string panelTitle				 // gain is returned in mV/V for V-Clamp, V/mV for I clamp
@@ -472,6 +474,7 @@ Function /C RetrieveDAGain(panelTitle, AmpSerialNumber, AmpChannel) // returns D
 
 	return DAGain
 End
+//==================================================================================================
 
 Function SwitchAxonAmpMode(panelTitle, AmpSerialNumber, AmpChannel) // changes the mode of the amplifier between I-Clamp and V-Clamp depending on the mode when function initiates
 	string panelTitle
@@ -491,6 +494,7 @@ Function SwitchAxonAmpMode(panelTitle, AmpSerialNumber, AmpChannel) // changes t
 	//MCC_SetMode
 	//MCC_GetMode
 End
+//==================================================================================================
 
 Function GetAxonTeleServerInfo(AmpSerialNumber, AmpChannel)
 	variable AmpSerialNumber
@@ -498,9 +502,10 @@ Function GetAxonTeleServerInfo(AmpSerialNumber, AmpChannel)
 	STRUCT AxonTelegraph_DataStruct tds
 	tds.version = 13
 	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-//	print tds
+	print tds
 //	print tds.ScaleFactor
 End
+//==================================================================================================
 
 Structure AxonTelegraph_DataStruct
 	uint32 Version	// Structure version.  Value should always be 13.
@@ -530,3 +535,4 @@ Structure AxonTelegraph_DataStruct
 	double SecondaryLPFCutoff
 	double SeriesResistance
 EndStructure
+//==================================================================================================

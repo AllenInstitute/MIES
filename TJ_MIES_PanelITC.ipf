@@ -3591,3 +3591,30 @@ Function DAP_Set1600YokeButtons(panelTitle) // yoking controls are made availabl
 End
 
 titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0"
+
+//=========================================================================================
+
+//Function ButtonProc(ctrlName) : ButtonControl
+	String ctrlName
+	string PanelTitle = DAP_ReturnPanelName()
+	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
+	wave ChanAmpAssign = $wavePath + ":ChanAmpAssign"
+// Is an amp associated with the headstage
+	controlInfo /w = $PanelTitle Popup_Settings_HeadStage
+	variable HeadStageNo = v_value - 1
+	if(ChanAmpAssign[8][HeadStageNo] != Nan)
+		// Is the amp still connected?
+		variable i = 0
+		do
+			
+			i += 1
+		while(
+// does it look like the amp is in use (in the middle of a recording) - if yes, you don't want to auto update because it requires switching clamp mode
+
+// auto fill
+
+// store settings
+
+
+End
+W_TelegraphServers[i][0]
