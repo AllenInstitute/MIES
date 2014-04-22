@@ -2,8 +2,7 @@
 
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(2765,341,3236,1045)
-	ShowTools/A
+	NewPanel /W=(1473,407,1944,1111)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -1069,36 +1068,36 @@ Window da_ephys() : Panel
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo)= A"!!,Cp!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_VC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_VC_DA,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
 	PopupMenu Popup_Settings_VC_AD,pos={32,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo)= A"!!,Cp!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_VC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_IC_AD,pos={215,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
+	PopupMenu Popup_Settings_VC_AD,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_IC_AD,pos={212,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo)= A"!!,G%!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_IC_AD,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	SetVariable setvar_Settings_VC_DAgain,pos={94,425},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_VC_DAgain,pos={93,425},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo)= A"!!,F!!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_VC_DAgain,value= _NUM:20
-	SetVariable setvar_Settings_VC_ADgain,pos={94,450},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_VC_ADgain,pos={93,450},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_VC_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_ADgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_VC_ADgain,userdata(ResizeControlsInfo)= A"!!,F!!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_ADgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_ADgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_ADgain,value= _NUM:0.0005
-	SetVariable setvar_Settings_IC_ADgain,pos={277,450},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_VC_ADgain,value= _NUM:0.000500000023748726
+	SetVariable setvar_Settings_IC_ADgain,pos={273,450},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_ADgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1111,22 +1110,22 @@ Window da_ephys() : Panel
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo)= A"!!,Cp!!#As!!#@\"!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_HeadStage,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_HeadStage,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
 	PopupMenu popup_Settings_Amplifier,pos={32,370},size={224,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="Amplfier (700B)"
 	PopupMenu popup_Settings_Amplifier,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,G8!!#As!!#Ao!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=2,popvalue="AmpNo 834000 Chan 1",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
-	PopupMenu Popup_Settings_IC_DA,pos={215,423},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
+	PopupMenu popup_Settings_Amplifier,mode=3,popvalue="AmpNo 834000 Chan 2",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
+	PopupMenu Popup_Settings_IC_DA,pos={212,423},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo)= A"!!,G%!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_IC_DA,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
-	SetVariable setvar_Settings_IC_DAgain,pos={278,425},size={50,16},proc=DAP_SetVarProc_CAA
+	SetVariable setvar_Settings_IC_DAgain,pos={274,425},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_IC_DAgain,userdata(ResizeControlsInfo)= A"!!,G`!!#BCJ,ho,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1140,7 +1139,7 @@ Window da_ephys() : Panel
 	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_Hardware_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_Hardware_VC,frame=0
-	TitleBox Title_settings_ChanlAssign_IC,pos={228,407},size={35,13},title="I-Clamp"
+	TitleBox Title_settings_ChanlAssign_IC,pos={225,407},size={35,13},title="I-Clamp"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(tabnum)=  "6"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(tabcontrol)=  "ADC"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo)= A"!!,GF!!#B7!!#=o!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1940,32 +1939,32 @@ Window da_ephys() : Panel
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,value= _NUM:50
-	SetVariable SetVar_Hardware_VC_DA_Unit,pos={156,425},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_VC_DA_Unit,pos={151,425},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_VC_DA_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_VC_DA_Unit,value= _STR:"mV"
-	SetVariable SetVar_Hardware_IC_DA_Unit,pos={338,426},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_IC_DA_Unit,pos={330,426},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_IC_DA_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_IC_DA_Unit,value= _STR:"pA"
-	SetVariable SetVar_Hardware_VC_AD_Unit,pos={177,450},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_VC_AD_Unit,pos={172,450},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_VC_AD_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_VC_AD_Unit,value= _STR:"pA"
-	SetVariable SetVar_Hardware_IC_AD_Unit,pos={361,450},size={30,16},proc=DAP_SetVarProc_CAA
+	SetVariable SetVar_Hardware_IC_AD_Unit,pos={353,450},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_IC_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_IC_AD_Unit,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_Hardware_IC_AD_Unit,value= _STR:"mV"
-	TitleBox Title_Hardware_VC_gain,pos={94,407},size={20,13},title="gain"
+	TitleBox Title_Hardware_VC_gain,pos={93,407},size={20,13},title="gain"
 	TitleBox Title_Hardware_VC_gain,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_VC_gain,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_VC_unit,pos={174,407},size={17,13},title="unit"
+	TitleBox Title_Hardware_VC_unit,pos={169,407},size={17,13},title="unit"
 	TitleBox Title_Hardware_VC_unit,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_VC_unit,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_gain,pos={279,407},size={20,13},title="gain"
+	TitleBox Title_Hardware_IC_gain,pos={275,407},size={20,13},title="gain"
 	TitleBox Title_Hardware_IC_gain,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_gain,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_unit,pos={339,407},size={17,13},title="unit"
+	TitleBox Title_Hardware_IC_unit,pos={331,407},size={17,13},title="unit"
 	TitleBox Title_Hardware_IC_unit,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_unit,userdata(tabcontrol)=  "ADC",frame=0
 	SetVariable Unit_DA_00,pos={92,75},size={30,16},disable=1,help={"hello"}
@@ -2077,16 +2076,16 @@ Window da_ephys() : Panel
 	TitleBox Title_AD_Unit1,pos={294,50},size={23,13},disable=1,title="Unit"
 	TitleBox Title_AD_Unit1,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	TitleBox Title_AD_Unit1,frame=0,fStyle=1
-	TitleBox Title_Hardware_VC_DA_Div,pos={190,427},size={15,13},title="/ V"
+	TitleBox Title_Hardware_VC_DA_Div,pos={185,427},size={15,13},title="/ V"
 	TitleBox Title_Hardware_VC_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_VC_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_DA_Div,pos={370,427},size={15,13},title="/ V"
+	TitleBox Title_Hardware_IC_DA_Div,pos={362,427},size={15,13},title="/ V"
 	TitleBox Title_Hardware_IC_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_AD_Div,pos={343,452},size={15,13},title="V /"
+	TitleBox Title_Hardware_IC_AD_Div,pos={335,452},size={15,13},title="V /"
 	TitleBox Title_Hardware_IC_AD_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_AD_Div,userdata(tabcontrol)=  "ADC",frame=0
-	TitleBox Title_Hardware_IC_AD_Div1,pos={158,452},size={15,13},title="V /"
+	TitleBox Title_Hardware_IC_AD_Div1,pos={153,452},size={15,13},title="V /"
 	TitleBox Title_Hardware_IC_AD_Div1,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_AD_Div1,userdata(tabcontrol)=  "ADC",frame=0
 	GroupBox GroupBox_Hardware_Associations,pos={23,305},size={397,191},title="DAC Channel and Device Associations"
@@ -2155,9 +2154,7 @@ Window da_ephys() : Panel
 	Button button_Hardware_Independent,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Independent,userdata(tabnum)=  "6"
 	Button button_Hardware_Independent,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Hardware_Status,pos={144,678},size={196,16},bodyWidth=99,disable=1,title="ITC DAC Status:"
-	SetVariable setvar_Hardware_Status,userdata(tabnum)=  "1"
-	SetVariable setvar_Hardware_Status,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_Hardware_Status,pos={144,678},size={196,16},bodyWidth=99,title="ITC DAC Status:"
 	SetVariable setvar_Hardware_Status,frame=0,fStyle=1,fColor=(65280,0,0)
 	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
 	SetVariable setvar_Hardware_Status,value= _STR:"Lead",noedit= 1
@@ -2219,7 +2216,7 @@ Window da_ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
-	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 0,side= 2,vert= 0,ticks= 0
+	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 4,side= 2,vert= 0,ticks= 0
 	TabControl tab_DataAcq_Amp,pos={38,148},size={408,110},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Amp,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	TabControl tab_DataAcq_Amp,userdata(currenttab)=  "0"
@@ -2283,10 +2280,14 @@ Window da_ephys() : Panel
 	SetVariable setvar_DataAcq_WCR1,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR1,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR1,value= _NUM:0
-	Button button_DataAcq_ForwardHold,pos={372,212},size={50,20},disable=1,title="Forward"
+	Button button_DataAcq_ForwardHold,pos={366,204},size={49,35},disable=1,title="Auto fill\rbias"
 	Button button_DataAcq_ForwardHold,help={"Sets the I-clamp holding current based on the V-clamp holding potential"}
 	Button button_DataAcq_ForwardHold,userdata(tabnum)=  "0"
 	Button button_DataAcq_ForwardHold,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	Button button_Hardware_AutoGainAndUnit,pos={385,421},size={31,47},proc=DAP_ButtonProc_AutoFillGain,title="Auto\rFill"
+	Button button_Hardware_AutoGainAndUnit,help={"A amplifier channel needs to be selected from the popup menu prior to auto filling gain and units."}
+	Button button_Hardware_AutoGainAndUnit,userdata(tabnum)=  "6"
+	Button button_Hardware_AutoGainAndUnit,userdata(tabcontrol)=  "ADC"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -3594,27 +3595,23 @@ titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go 
 
 //=========================================================================================
 
-//Function ButtonProc(ctrlName) : ButtonControl
+Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	String ctrlName
 	string PanelTitle = DAP_ReturnPanelName()
 	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ChanAmpAssign = $wavePath + ":ChanAmpAssign"
+	string W_TelegraphServersPath 
+	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
+	wave W_TelegraphServers = $W_TelegraphServersPath
 // Is an amp associated with the headstage
 	controlInfo /w = $PanelTitle Popup_Settings_HeadStage
 	variable HeadStageNo = v_value - 1
 	if(ChanAmpAssign[8][HeadStageNo] != Nan)
 		// Is the amp still connected?
-		variable i = 0
-		do
-			
-			i += 1
-		while(
-// does it look like the amp is in use (in the middle of a recording) - if yes, you don't want to auto update because it requires switching clamp mode
-
-// auto fill
-
-// store settings
-
-
+		findValue /I = (ChanAmpAssign[8][HeadStageNo]) /T = 0 $W_TelegraphServersPath
+		if(V_value != -1)
+			AutoFillGain(panelTitle)
+			HSU_UpdateChanAmpAssignStorWv(panelTitle)
+		endif
+	endif
 End
-W_TelegraphServers[i][0]

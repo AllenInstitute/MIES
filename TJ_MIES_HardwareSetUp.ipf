@@ -415,28 +415,55 @@ Function AutoFillGain(panelTitle)
 	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
 	variable Mode = MCC_GetMode()
 	
+	variable ResetToModeTwo = 0
 	// set the gain
+
+	
 	if(Mode == 0)
 		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
 		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
 	elseif(Mode == 1)
 		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
 		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+	elseif(Mode == 2)
+		if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
+			MCC_SetMode(1)
+			ResetToModeTwo = 1
+			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+		elseif(MCC_GetHoldingEnable() == 1)
+			print "It appears that a bias current or holding potential is being applied by the MC Commader suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported"
+		endif
 	endif
 	
-	SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+	if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
+		SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+	
+		Mode = MCC_GetMode()
+		 
+		 if(Mode == 0)
+			SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+		elseif(Mode == 1)
+			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+		endif
+		
+		if(ResetToModeTwo == 0)
+			SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+		elseif(ResetToModeTwo == 1)
+			MCC_SetMode(2)
+		endif
+	elseif((MCC_GetHoldingEnable() == 1))
+		if(Mode == 0)
+			print "It appears that a holding potential is being applied, therefore as a precaution, the gains cannot be imported for the I-clamp mode."
+			print "The gains were successfully imported for the V-clamp mode on headstage: ", HeadstageNo
+		elseif(Mode == 1)
+			print "It appears that a bias current is being applied, therefore as a precaution, the gains cannot be imported for the V-clamp mode."
+			print "The gains were successfully imported for the I-clamp mode on headstage: ", HeadstageNo
+		endif
+	endif
 
-	Mode = MCC_GetMode()
-	 
-	 if(Mode == 0)
-		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
-	elseif(Mode == 1)
-		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
-	endif
-	
-	SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
 End
 //==================================================================================================
 
