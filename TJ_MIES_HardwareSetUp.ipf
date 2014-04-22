@@ -381,7 +381,7 @@ root:MIES:ITCDevices:ITC1600:Device1
 
 
 
-Function AutoFillGain(panelTitle)
+Function HSU_AutoFillGain(panelTitle)
 	string panelTitle			
 	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
 	// setvar_Settings_VC_DAgain
@@ -420,37 +420,37 @@ Function AutoFillGain(panelTitle)
 
 	
 	if(Mode == 0)
-		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
 	elseif(Mode == 1)
-		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
 	elseif(Mode == 2)
 		if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
 			MCC_SetMode(1)
 			ResetToModeTwo = 1
-			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
 		elseif(MCC_GetHoldingEnable() == 1)
 			print "It appears that a bias current or holding potential is being applied by the MC Commader suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported"
 		endif
 	endif
 	
 	if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
-		SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+		AI_SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
 	
 		Mode = MCC_GetMode()
 		 
 		 if(Mode == 0)
-			SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-			SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
 		elseif(Mode == 1)
-			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
 		endif
 		
 		if(ResetToModeTwo == 0)
-			SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+			AI_SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
 		elseif(ResetToModeTwo == 1)
 			MCC_SetMode(2)
 		endif
@@ -465,101 +465,3 @@ Function AutoFillGain(panelTitle)
 	endif
 
 End
-//==================================================================================================
-
-Function /C RetrieveADGain(panelTitle, AmpSerialNumber, AmpChannel) // returns AD gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
-	string panelTitle			 // gain is returned in V/pA for V-Clamp, V/mV for I-Clamp
-	variable AmpSerialNumber
-	variable AmpChannel
-	variable /C ADGain = 0
-	STRUCT AxonTelegraph_DataStruct tds
-	tds.version = 13
-	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-	if(tds.OperatingMode == 0)
-		ADGain = cmplx((tds.ScaleFactor * tds.Alpha) / 1000,  tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
-	elseif(tds.OperatingMode == 1)
-		ADGain = cmplx((tds.ScaleFactor * tds.Alpha) / 1000,  tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
-	endif
-	
-	return ADGain
-End
-//==================================================================================================
-
-Function /C RetrieveDAGain(panelTitle, AmpSerialNumber, AmpChannel) // returns DA gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
-	string panelTitle				 // gain is returned in mV/V for V-Clamp, V/mV for I clamp
-	variable AmpSerialNumber
-	variable AmpChannel
-	variable /C DAGain = 0
-	STRUCT AxonTelegraph_DataStruct tds
-	tds.version = 13
-	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-	if(tds.OperatingMode == 0)
-		DAGain = cmplx(tds.ExtCmdSens * 1000, tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
-	elseif(tds.OperatingMode == 1)
-		DAGain = cmplx(tds.ExtCmdSens * 1e12, tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
-	endif
-
-	return DAGain
-End
-//==================================================================================================
-
-Function SwitchAxonAmpMode(panelTitle, AmpSerialNumber, AmpChannel) // changes the mode of the amplifier between I-Clamp and V-Clamp depending on the mode when function initiates
-	string panelTitle
-	variable AmpSerialNumber
-	variable AmpChannel	
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	print AmpSerialNumberString
-	//MCC_FindServers /Z
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	variable Mode = MCC_GetMode()
-	if(Mode == 0)
-		MCC_SetMode(1)
-	elseif(Mode == 1)
-		MCC_SetMode(0)
-	endif
-	//MCC_SetMode
-	//MCC_GetMode
-End
-//==================================================================================================
-
-Function GetAxonTeleServerInfo(AmpSerialNumber, AmpChannel)
-	variable AmpSerialNumber
-	variable AmpChannel
-	STRUCT AxonTelegraph_DataStruct tds
-	tds.version = 13
-	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-	print tds
-//	print tds.ScaleFactor
-End
-//==================================================================================================
-
-Structure AxonTelegraph_DataStruct
-	uint32 Version	// Structure version.  Value should always be 13.
-	uint32 SerialNum
-	uint32 ChannelID
-	uint32 ComPortID
-	uint32 AxoBusID
-	uint32 OperatingMode
-	String OperatingModeString
-	uint32 ScaledOutSignal
-	String ScaledOutSignalString
-	double Alpha
-	double ScaleFactor
-	uint32 ScaleFactorUnits
-	String ScaleFactorUnitsString
-	double LPFCutoff
-	double MembraneCap
-	double ExtCmdSens
-	uint32 RawOutSignal
-	String RawOutSignalString
-	double RawScaleFactor
-	uint32 RawScaleFactorUnits
-	String RawScaleFactorUnitsString
-	uint32 HardwareType
-	String HardwareTypeString
-	double SecondaryAlpha
-	double SecondaryLPFCutoff
-	double SeriesResistance
-EndStructure
-//==================================================================================================

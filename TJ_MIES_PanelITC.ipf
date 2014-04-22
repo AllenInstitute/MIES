@@ -3594,6 +3594,8 @@ End
 titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0"
 
 //=========================================================================================
+// FUNCTION BELOW IS FOR IMPORTING GAIN SETTINGS
+//=========================================================================================
 
 Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	String ctrlName
@@ -3603,15 +3605,23 @@ Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	string W_TelegraphServersPath 
 	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
 	wave W_TelegraphServers = $W_TelegraphServersPath
-// Is an amp associated with the headstage
+// Is an amp associated with the headstage?
 	controlInfo /w = $PanelTitle Popup_Settings_HeadStage
 	variable HeadStageNo = v_value - 1
-	if(ChanAmpAssign[8][HeadStageNo] != Nan)
+
+	if(numtype(ChanAmpAssign[8][HeadStageNo]) != 2)
 		// Is the amp still connected?
 		findValue /I = (ChanAmpAssign[8][HeadStageNo]) /T = 0 $W_TelegraphServersPath
 		if(V_value != -1)
-			AutoFillGain(panelTitle)
+			HSU_AutoFillGain(panelTitle)
 			HSU_UpdateChanAmpAssignStorWv(panelTitle)
 		endif
+	elseif(numtype(ChanAmpAssign[8][HeadStageNo]) == 2)
+		print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
 	endif
 End
+
+//=========================================================================================
+// FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
+//=========================================================================================
+
