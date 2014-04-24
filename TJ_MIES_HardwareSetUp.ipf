@@ -381,18 +381,10 @@ root:MIES:ITCDevices:ITC1600:Device1
 
 
 
-Function HSU_AutoFillGain(panelTitle)
+Function HSU_AutoFillGain(panelTitle) // Auto fills the units and gains in the hardware tab of the DA_Ephys panel - has some limitations that are due to the MCC API limitations
 	string panelTitle			
 	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
-	// setvar_Settings_VC_DAgain
-	// SetVar_Hardware_VC_DA_Unit
-	//  setvar_Settings_VC_ADgain
-	// SetVar_Hardware_VC_AD_Unit
-	
-	// setvar_Settings_IC_DAgain
-	// SetVar_Hardware_IC_DA_Unit
-	// setvar_Settings_IC_ADgain
-	// SetVar_Hardware_IC_AD_Unit
+
 
 	// sets the units
 	SetVariable SetVar_Hardware_VC_DA_Unit Win = $panelTitle, Value=_STR:"mV"
@@ -465,3 +457,7 @@ Function HSU_AutoFillGain(panelTitle)
 	endif
 
 End
+
+//==================================================================================================
+// 
+//==================================================================================================

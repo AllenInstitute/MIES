@@ -3207,9 +3207,10 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		if(v_value == 1)//checks to see if headstage is "ON"
 		DAP_RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
 		DAP_ApplyClmpModeSavdSettngs((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
+		AI_SwitchClampMode(panelTitle, (RadioButtonNo / 2), 0)
 		endif
 		
-	else
+	else // ODD = IC
 		HeadStageCheckBox = "Check_DataAcq_HS_0"
 		PairedRadioButton += (num2str(RadioButtonNo - 1))
 		checkbox $PairedRadioButton value = 0
@@ -3219,6 +3220,7 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		if(v_value == 1)//checks to see if headstage is "ON"
 		DAP_RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
 		DAP_ApplyClmpModeSavdSettngs(((RadioButtonNo - 1) / 2), 1,panelTitle)//Applies IC settings for headstage
+		AI_SwitchClampMode(panelTitle, ((RadioButtonNo - 1) / 2), 1)
 		endif
 
 	endif

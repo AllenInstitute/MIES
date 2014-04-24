@@ -86,20 +86,26 @@ Function ITC_TestPulseFuncMD(s)
 		// ITC_StartBckgrdFIFOMonitor()
 		// print WavePath + ":ITCFIFOPositionAllConfigWave"
 			//print "AD channel to monitor = ", adchanneltomonitor
-			do
-				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
-				// print cmd
-				Execute cmd	
-				ITCFIFOAvailAllConfigWave[0][0]+=0
-				// doxopidle
-				// print "FIFOSize = ", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
+		do
+			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
+			// print cmd
+			Execute cmd	
+			ITCFIFOAvailAllConfigWave[0][0]+=0
+			// doxopidle
+			// print "FIFOSize = ", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
 		// Check Status
+
+
 //		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 //		Execute cmd
 		
+//		sprintf cmd, "ITCConfigChannelReset"
+//		Execute cmd
 //		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 //		execute cmd 
+
+
 		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd

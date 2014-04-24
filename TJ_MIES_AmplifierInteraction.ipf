@@ -76,8 +76,6 @@ Function AI_SwitchAxonAmpMode(panelTitle, AmpSerialNumber, AmpChannel) // change
 	variable AmpChannel	
 	string AmpSerialNumberString
 	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	//print AmpSerialNumberString
-	//MCC_FindServers /Z
 	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
 	variable Mode = MCC_GetMode()
 	if(Mode == 0)
@@ -87,6 +85,52 @@ Function AI_SwitchAxonAmpMode(panelTitle, AmpSerialNumber, AmpChannel) // change
 	endif
 	//MCC_SetMode
 	//MCC_GetMode
+End
+//==================================================================================================
+Function AI_ReturnHeadstageChanAndSer(panelTitle, HeadstageNo)
+	string panelTitle
+	variable HeadstageNo
+End
+//==================================================================================================
+Function AI_IsAmpStillAvailable(panelTitle, AmpSerialNumber, AmpChannel) // no good way to do this
+	string panelTitle
+	variable AmpSerialNumber
+	variable AmpChannel
+	string AmpSerialNumberString
+	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
+	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel);AbortOnRTE
+	
+End
+//==================================================================================================
+
+Function AI_SwitchAxonToVClamp(panelTitle, AmpSerialNumber, AmpChannel)
+	string panelTitle
+	variable AmpSerialNumber
+	variable AmpChannel	
+	string AmpSerialNumberString
+	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
+	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
+	MCC_SetMode(0)
+End
+//==================================================================================================
+Function AI_SwitchAxonToIClamp(panelTitle, AmpSerialNumber, AmpChannel)
+	string panelTitle
+	variable AmpSerialNumber
+	variable AmpChannel	
+	string AmpSerialNumberString
+	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
+	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
+	MCC_SetMode(1)
+End
+//==================================================================================================
+Function AI_SwitchAxonToIZero(panelTitle, AmpSerialNumber, AmpChannel)
+	string panelTitle
+	variable AmpSerialNumber
+	variable AmpChannel	
+	string AmpSerialNumberString
+	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
+	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
+	MCC_SetMode(2)
 End
 //==================================================================================================
 
@@ -131,3 +175,33 @@ Structure AxonTelegraph_DataStruct
 EndStructure
 //==================================================================================================
 
+Function /C AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
+	string panelTitle
+	variable HeadStageNo
+	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
+	Wave ChanAmpAssign = $(WavePath + ":ChanAmpAssign")
+	variable /C SerialNoAndChannelNo
+	SerialNoAndChannelNo = cmplx(ChanAmpAssign[8][HeadStageNo], ChanAmpAssign[9][HeadStageNo])
+	return SerialNoAndChannelNo
+End
+
+//==================================================================================================
+Function AI_SwitchClampMode(panelTitle, HeadStageNo, IorVorZeroClamp)
+	string panelTitle
+	variable HeadStageNo
+	variable IorVorZeroClamp  // 0 = V-Clamp, 1 = I-Clamp, 2 = I equals zero
+	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
+	
+	if(real(numtype(SerialAndChannel)) == 2)
+	print "No Amp is linked with this headstage"
+	elseif(real(numtype(SerialAndChannel)) == 0)
+		if(IorVorZeroClamp == 0)
+			AI_SwitchAxonToVClamp(panelTitle, real(SerialAndChannel), imag(SerialAndChannel))
+		elseif(IorVorZeroClamp == 1)
+			AI_SwitchAxonToIClamp(panelTitle,  real(SerialAndChannel),  imag(SerialAndChannel))
+		elseif(IorVorZeroClamp == 2)
+			AI_SwitchAxonToIZero(panelTitle, real(SerialAndChannel), imag(SerialAndChannel))
+		endif
+	endif
+	
+End
