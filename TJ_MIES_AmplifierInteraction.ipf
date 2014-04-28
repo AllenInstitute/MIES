@@ -360,37 +360,61 @@ Function AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) // returns the mode o
 	return MIESHeadstageMode
 End
 //==================================================================================================
-//Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
+Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
 	string panelTitle
-	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
+	variable MIESHeadStageNo
+	string PathToAmplifierFolder = Path_AmpSettingsFolder(panelTitle)
 	string PathToAmpStorageWave
-	sprintf PathToAmpStorageWave, "%s:%s" PathToAmplifierFolder, panelTitle
+	sprintf PathToAmpStorageWave,"%s:%s" PathToAmplifierFolder, panelTitle
+	print PathToAmpStorageWave
+	print waveexists($PathToAmpStorageWave)
+	Variable Param
 	if(waveexists($PathToAmpStorageWave) == 1)
 		Wave AmpStorageWave = $PathToAmpStorageWave
 		// V-Clamp controls
-		setvariable setvar_DataAcq_Hold_VC WIN = $panelTitle, Value = NUM_:AmpStorageWave[0][0][MIESHeadStageNo]
-		checkbox check_DatAcq_HoldEnableVC WIN = $panelTitle, Value = AmpStorageWave[1][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_WCC WIN = $panelTitle, Value = NUM_:AmpStorageWave[2][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_WCR WIN = $panelTitle, Value = NUM_:AmpStorageWave[3][0][MIESHeadStageNo]
-		checkbox check_DatAcq_WholeCellEnable WIN = $panelTitle, Value = AmpStorageWave[4][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_RsCorr WIN = $panelTitle, Value = NUM_:AmpStorageWave[5][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_RsPred WIN = $panelTitle, Value = NUM_:AmpStorageWave[6][0][MIESHeadStageNo]
-		checkbox check_DatAcq_RsCompEnable WIN = $panelTitle, Value = AmpStorageWave[7][0][MIESHeadStageNo]
+		Param = AmpStorageWave[0][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_Hold_VC WIN = $panelTitle, value= _NUM:Param
+
+		Param = AmpStorageWave[1][0][MIESHeadStageNo]
+		checkbox check_DatAcq_HoldEnableVC WIN = $panelTitle, Value = Param
+		Param = AmpStorageWave[2][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_WCC WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[3][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_WCR WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[4][0][MIESHeadStageNo]
+		checkbox check_DatAcq_WholeCellEnable WIN = $panelTitle, Value = Param
+		Param = AmpStorageWave[5][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_RsCorr WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[6][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_RsPred WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[7][0][MIESHeadStageNo]
+		checkbox check_DatAcq_RsCompEnable WIN = $panelTitle, Value = Param
 		
 		// I-Clamp controls
-		setvariable setvar_DataAcq_Hold_IC WIN = $panelTitle, Value = NUM_:AmpStorageWave[16][0][MIESHeadStageNo]
-		checkbox check_DatAcq_HoldEnable win = $panelTitle, Value = AmpStorageWave[17][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_BB WIN = $panelTitle, Value = NUM_:AmpStorageWave[18][0][MIESHeadStageNo]
-		checkbox check_DatAcq_BBEnable win = $panelTitle, Value = AmpStorageWave[19][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_CN WIN = $panelTitle, Value = NUM_:AmpStorageWave[20][0][MIESHeadStageNo]
-		checkbox check_DatAcq_CNEnable WIN = $panelTitle, Value = AmpStorageWave[21][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_AutoBiasV WIN = $panelTitle, Value = NUM_:AmpStorageWave[22][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_AutoBiasVrange WIN = $panelTitle, Value = NUM_:AmpStorageWave[23][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_Ri WIN = $panelTitle, Value = NUM_:AmpStorageWave[24][0][MIESHeadStageNo]
-		checkbox check_DataAcq_AutoBias WIN = $panelTitle, Value = AmpStorageWave[25][0][MIESHeadStageNo]
+		Param = AmpStorageWave[16][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[17][0][MIESHeadStageNo]
+		checkbox check_DatAcq_HoldEnable win = $panelTitle, Value = Param
+		Param = AmpStorageWave[18][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_BB WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[19][0][MIESHeadStageNo]
+		checkbox check_DatAcq_BBEnable win = $panelTitle, Value = Param
+		Param = AmpStorageWave[20][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_CN WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[21][0][MIESHeadStageNo]
+		checkbox check_DatAcq_CNEnable WIN = $panelTitle, Value = Param
+		Param = AmpStorageWave[22][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_AutoBiasV WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[23][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_AutoBiasVrange WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[24][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_Ri WIN = $panelTitle, value= _NUM:Param
+		Param = AmpStorageWave[25][0][MIESHeadStageNo]
+		checkbox check_DataAcq_AutoBias WIN = $panelTitle, Value = Param
 		
-		// I = zero controls 
-		checkbox check_DataAcq_IzeroEnable WIN = $panelTitle, Value = AmpStorageWave[30][0][MIESHeadStageNo]
+		// I = zero controls
+		Param =  AmpStorageWave[30][0][MIESHeadStageNo]
+		checkbox check_DataAcq_IzeroEnable WIN = $panelTitle, Value = Param
 	endif
 End
 

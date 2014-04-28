@@ -2213,7 +2213,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_DataAcq_CN,pos={41,211},size={86,13},disable=1,title="Cap Neutralization"
 	TitleBox Title_DataAcq_CN,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
-	Slider slider_DataAcq_ActiveHeadstage,pos={144,129},size={255,19}
+	Slider slider_DataAcq_ActiveHeadstage,pos={144,129},size={255,19},proc=DAP_SliderProc_MIESHeadStage
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
@@ -2264,7 +2264,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCC,pos={73,212},size={60,16},title="pF"
 	SetVariable setvar_DataAcq_WCC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_WCC,value= _NUM:0
+	SetVariable setvar_DataAcq_WCC,value= _NUM:5
 	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
 	Button button_DataAcq_WCAuto,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -3646,3 +3646,17 @@ End
 // FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
 //=========================================================================================
 
+
+Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderControl
+	String ctrlName
+	Variable sliderValue
+	Variable event	// bit field: bit 0: value set, 1: mouse down, 2: mouse up, 3: mouse moved
+	string panelTitle 
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
+	if(event %& 0x1)	// bit 0, value set
+		AI_UpdateAmpView(panelTitle, sliderValue)
+	endif
+
+	return 0
+	
+End
