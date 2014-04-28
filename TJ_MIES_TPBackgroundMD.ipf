@@ -22,11 +22,16 @@ Function ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-	//print cmd
 	execute cmd
 	
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
 	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
+	
+//			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+//			execute cmd // this also seems necessary to update the DA channel data to the board!!
+//			
+//			sprintf cmd, "ITCStartAcq /R = %d /Z = %d %d, %d, %d" 0, 0, -1, -1, 0//, -1 , %d, %d, %d
+//			execute cmd
 	
 	if (TP_IsBackgrounOpRunning(panelTitle, "ITC_TestPulseFuncMD") == 0)
 		CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFuncMD
@@ -80,7 +85,7 @@ Function ITC_TestPulseFuncMD(s)
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd // this also seems necessary to update the DA channel data to the board!!
 		
-		sprintf cmd, "ITCStartAcq"
+		sprintf cmd, "ITCStartAcq /R = %d /Z = %d %d, %d, %d" 0, 0, -1, -1, 0//, -1 , %d, %d, %d
 		Execute cmd	
 		// print "FIFOSize", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		// ITC_StartBckgrdFIFOMonitor()
@@ -102,14 +107,14 @@ Function ITC_TestPulseFuncMD(s)
 		
 //		sprintf cmd, "ITCConfigChannelReset"
 //		Execute cmd
-//		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-//		execute cmd 
+////		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+////		execute cmd 
 
 
 		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-		
+//		
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 		
@@ -130,6 +135,8 @@ Function ITC_TestPulseFuncMD(s)
 				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title
 					beep 
+//					sprintf cmd, "ITCStopAcq"
+//					execute cmd
 					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
 					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
 					if (dimsize(ActiveDeviceTextList, 0) == 0) 

@@ -110,7 +110,18 @@ Function AI_SwitchAxonToVClamp(panelTitle, AmpSerialNumber, AmpChannel)
 	string AmpSerialNumberString
 	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
 	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	MCC_SetMode(0)
+	variable ErrorCode = MCC_SetMode(0)
+	if (numtype(ErrorCode) == 2) // NaN is returned
+		DFREF saveDFR = GetDataFolderDFR()
+		SetDataFolder  $Path_AmpFolder(panelTitle)
+		MCC_FindServers /Z = 1
+		SetDataFolder saveDFR
+		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
+			MCC_SetMode(0)
+		elseif(V_flag > 0)
+			print " Mode cannot be switched. Linked MCC is longer present"
+		endif
+	endif
 End
 //==================================================================================================
 Function AI_SwitchAxonToIClamp(panelTitle, AmpSerialNumber, AmpChannel)
@@ -120,7 +131,19 @@ Function AI_SwitchAxonToIClamp(panelTitle, AmpSerialNumber, AmpChannel)
 	string AmpSerialNumberString
 	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
 	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	MCC_SetMode(1)
+	variable ErrorCode = MCC_SetMode(1)
+	if (numtype(ErrorCode) == 2) // NaN is returned
+		DFREF saveDFR = GetDataFolderDFR()
+		SetDataFolder  $Path_AmpFolder(panelTitle)
+		MCC_FindServers /Z = 1
+		SetDataFolder saveDFR
+		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
+			MCC_SetMode(1)
+		elseif(V_flag > 0)
+			print " Mode cannot be switched. Linked MCC is longer present"
+		endif
+	endif
+		
 End
 //==================================================================================================
 Function AI_SwitchAxonToIZero(panelTitle, AmpSerialNumber, AmpChannel)
@@ -130,7 +153,18 @@ Function AI_SwitchAxonToIZero(panelTitle, AmpSerialNumber, AmpChannel)
 	string AmpSerialNumberString
 	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
 	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	MCC_SetMode(2)
+	variable ErrorCode = MCC_SetMode(0)
+	if (numtype(ErrorCode) == 2) // NaN is returned
+		DFREF saveDFR = GetDataFolderDFR()
+		SetDataFolder  $Path_AmpFolder(panelTitle)
+		MCC_FindServers /Z = 1
+		SetDataFolder saveDFR
+		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
+			MCC_SetMode(0)
+		elseif(V_flag > 0)
+			print " Mode cannot be switched. Linked MCC is longer present"
+		endif
+	endif
 End
 //==================================================================================================
 
@@ -175,7 +209,7 @@ Structure AxonTelegraph_DataStruct
 EndStructure
 //==================================================================================================
 
-Function /C AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
+Function /C AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo) // finds the link between the headstage and the user associated MCC
 	string panelTitle
 	variable HeadStageNo
 	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -186,12 +220,11 @@ Function /C AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
 End
 
 //==================================================================================================
-Function AI_SwitchClampMode(panelTitle, HeadStageNo, IorVorZeroClamp)
+Function AI_SwitchClampMode(panelTitle, HeadStageNo, IorVorZeroClamp) // changes mode of user linked MCC based on headstage number
 	string panelTitle
 	variable HeadStageNo
 	variable IorVorZeroClamp  // 0 = V-Clamp, 1 = I-Clamp, 2 = I equals zero
 	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
-	
 	if(real(numtype(SerialAndChannel)) == 2)
 	print "No Amp is linked with this headstage"
 	elseif(real(numtype(SerialAndChannel)) == 0)
@@ -205,3 +238,201 @@ Function AI_SwitchClampMode(panelTitle, HeadStageNo, IorVorZeroClamp)
 	endif
 	
 End
+
+//==================================================================================================
+
+Function AI_SendVClampParamToMCC(panelTitle, HeadStageNo)
+	string panelTitle
+	variable HeadStageNo
+	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
+	string AmpSerialNumberString
+	sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
+	MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
+	
+	//Send holding to MCC
+End
+
+//==================================================================================================
+//Function AI_CreateAmpDataStorageWave(panelTitle)
+	string panelTitle
+	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
+	string AmpStorageWaveWaveName
+	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
+	make /o /n = (26, 2, 8) $AmpStorageWaveWaveName
+	wave AmpStorageWave = $AmpStorageWaveWaveName
+	setdimlabel 1, 0, VClamp, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
+	setdimlabel 1, 1, IClamp, AmpStorageWave // labels column 1 (of all layers) with the heading IClamp
+	setdimlabel 0, 0, StructureVersion, AmpStorageWave
+	setdimlabel 0, 1, SerialNum, AmpStorageWave
+	setdimlabel 0, 2, ChannelID, AmpStorageWave
+	setdimlabel 0, 3, ComPortID, AmpStorageWave
+	setdimlabel 0, 4, AxoBusID, AmpStorageWave
+	setdimlabel 0, 5, OperatingMode, AmpStorageWave
+	setdimlabel 0, 6, ScaledOutSignal, AmpStorageWave
+	setdimlabel 0, 7, Alpha, AmpStorageWave
+	setdimlabel 0, 8, ScaleFactor, AmpStorageWave
+	setdimlabel 0, 9, ScaleFactorUnits, AmpStorageWave
+	setdimlabel 0, 10, LPFCutoff, AmpStorageWave
+	setdimlabel 0, 11, ExtCmdSens, AmpStorageWave
+	setdimlabel 0, 12, RawOutSignal, AmpStorageWave
+	setdimlabel 0, 13, RawScaleFactor, AmpStorageWave
+	setdimlabel 0, 14, RawScaleFactorUnits, AmpStorageWave
+	setdimlabel 0, 15, HardwareType, AmpStorageWave
+	setdimlabel 0, 16, SecondaryLPFCutoff, AmpStorageWave
+	setdimlabel 0, 17, SeriesResistance, AmpStorageWave
+	setdimlabel 0, 18, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 19, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 20, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 21, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 22, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 23, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 24, PlaceHolder, AmpStorageWave
+	setdimlabel 0, 25, PlaceHolder, AmpStorageWave
+End
+
+//==================================================================================================
+
+Function AI_SendVHoldToAmp(panelTitle)
+	string panelTitle
+	variable Mode
+	
+	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
+	
+	// Get the MIES headstage
+	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
+	variable MIESHeadstageNo = v_value
+	
+	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
+		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
+			//Get the associated amp serial number and channel
+			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
+			string AmpSerialNumberString
+			sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
+			MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
+			
+
+			
+		//	MCC_Setholding
+		endif
+	endif
+	
+End
+
+	
+	//0,2,4,6,8,10,12,14
+
+	
+	
+	
+
+//==================================================================================================
+Function AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) // returns 1 if the MIES headstage mode matches the associated MCC mode
+	string panelTitle									  // if these are out of sync the user needs to intervene unless MCC monitoring is enabled (at the time of writing this comment, monitoring has not been implemented)
+	variable MIESHeadstageNo
+	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
+	variable Match
+	STRUCT AxonTelegraph_DataStruct tds
+	tds.version = 13
+	AxonTelegraphGetDataStruct(real(SerialAndChannel), imag(SerialAndChannel), 1, tds)
+	if(tds.operatingMode == AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo))
+		Match = 1
+	elseif(tds.operatingMode != AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo))
+		Match = 0
+	endif
+	
+	return Match
+End
+//==================================================================================================
+Function AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) // returns the mode of the headstage defined in the locked DA_ephys panel
+	string panelTitle
+	variable MIESHeadstageNo // 0 through 7 MIESheadstage 1 has radio buttons 0 and 1 
+	string ClampModeRadioButton
+	sprintf ClampModeRadioButton, "Radio_ClampMode_%d" (MIESHeadstageNo * 2)
+	controlinfo /w = $panelTitle $ClampModeRadioButton
+	variable ClampModeRadioButtonState = v_value
+	variable MIESHeadstageMode 
+	if(ClampModeRadioButtonState == 0)
+		MIESHeadstageMode = 1
+	elseif(ClampModeRadioButtonState == 1)
+		MIESHeadstageMode = 0
+	endif
+	
+	return MIESHeadstageMode
+End
+//==================================================================================================
+//Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
+	string panelTitle
+	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
+	string PathToAmpStorageWave
+	sprintf PathToAmpStorageWave, "%s:%s" PathToAmplifierFolder, panelTitle
+	if(waveexists($PathToAmpStorageWave) == 1)
+		Wave AmpStorageWave = $PathToAmpStorageWave
+		// V-Clamp controls
+		setvariable setvar_DataAcq_Hold_VC WIN = $panelTitle, Value = NUM_:AmpStorageWave[0][0][MIESHeadStageNo]
+		checkbox check_DatAcq_HoldEnableVC WIN = $panelTitle, Value = AmpStorageWave[1][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_WCC WIN = $panelTitle, Value = NUM_:AmpStorageWave[2][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_WCR WIN = $panelTitle, Value = NUM_:AmpStorageWave[3][0][MIESHeadStageNo]
+		checkbox check_DatAcq_WholeCellEnable WIN = $panelTitle, Value = AmpStorageWave[4][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_RsCorr WIN = $panelTitle, Value = NUM_:AmpStorageWave[5][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_RsPred WIN = $panelTitle, Value = NUM_:AmpStorageWave[6][0][MIESHeadStageNo]
+		checkbox check_DatAcq_RsCompEnable WIN = $panelTitle, Value = AmpStorageWave[7][0][MIESHeadStageNo]
+		
+		// I-Clamp controls
+		setvariable setvar_DataAcq_Hold_IC WIN = $panelTitle, Value = NUM_:AmpStorageWave[16][0][MIESHeadStageNo]
+		checkbox check_DatAcq_HoldEnable win = $panelTitle, Value = AmpStorageWave[17][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_BB WIN = $panelTitle, Value = NUM_:AmpStorageWave[18][0][MIESHeadStageNo]
+		checkbox check_DatAcq_BBEnable win = $panelTitle, Value = AmpStorageWave[19][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_CN WIN = $panelTitle, Value = NUM_:AmpStorageWave[20][0][MIESHeadStageNo]
+		checkbox check_DatAcq_CNEnable WIN = $panelTitle, Value = AmpStorageWave[21][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_AutoBiasV WIN = $panelTitle, Value = NUM_:AmpStorageWave[22][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_AutoBiasVrange WIN = $panelTitle, Value = NUM_:AmpStorageWave[23][0][MIESHeadStageNo]
+		setvariable setvar_DataAcq_Ri WIN = $panelTitle, Value = NUM_:AmpStorageWave[24][0][MIESHeadStageNo]
+		checkbox check_DataAcq_AutoBias WIN = $panelTitle, Value = AmpStorageWave[25][0][MIESHeadStageNo]
+		
+		// I = zero controls 
+		checkbox check_DataAcq_IzeroEnable WIN = $panelTitle, Value = AmpStorageWave[30][0][MIESHeadStageNo]
+	endif
+End
+
+//==================================================================================================
+Function AI_CreateAmpParamStorageWave(panelTitle)
+	string panelTitle
+	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
+	string AmpStorageWaveWaveName
+	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
+	make /o /n = (31, 1, 8) $AmpStorageWaveWaveName
+	wave AmpStorageWave = $AmpStorageWaveWaveName
+	setdimlabel 1, 0, HeadstageParam, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
+	setdimlabel 0, 0, HoldingPotential, AmpStorageWave
+	setdimlabel 0, 1, HoldingPotentialEnable, AmpStorageWave
+	setdimlabel 0, 2, WholeCellCap, AmpStorageWave
+	setdimlabel 0, 3, WholeCellRes, AmpStorageWave
+	setdimlabel 0, 4, WholeCellEnable, AmpStorageWave
+	setdimlabel 0, 5, Correction, AmpStorageWave
+	setdimlabel 0, 6, Prediction, AmpStorageWave
+	setdimlabel 0, 7, RsCompEnable, AmpStorageWave
+	setdimlabel 0, 8,VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 9, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 10, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 11, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 12, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 13, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 14, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 15, VClampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 16, BiasCurrent, AmpStorageWave
+	setdimlabel 0, 17, BiasCurrentEnable, AmpStorageWave
+	setdimlabel 0, 18, BridgeBalance, AmpStorageWave
+	setdimlabel 0, 19, BridgeBalanceEnable, AmpStorageWave
+	setdimlabel 0, 20, CapNeut, AmpStorageWave
+	setdimlabel 0, 21, CapNeutEnable, AmpStorageWave
+	setdimlabel 0, 22, AutoBiasVcom, AmpStorageWave
+	setdimlabel 0, 23, AutoBiasVcomVariance, AmpStorageWave
+	setdimlabel 0, 24, AutoBiasRi, AmpStorageWave
+	setdimlabel 0, 25, AutoBiasEnable, AmpStorageWave
+	setdimlabel 0, 26, IclampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 27, IclampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 28, IclampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 29, IclampPlaceHolder, AmpStorageWave
+	setdimlabel 0, 30, IZeroEnable, AmpStorageWave
+End
+//==================================================================================================

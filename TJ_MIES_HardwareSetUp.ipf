@@ -244,6 +244,9 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string ChannelClampModeString = WavePath + ":ChannelClampMode"
 		if(waveexists($ChannelClampModeString) == 0) // makes the storage wave if it does not exist. This wave stores the active clamp mode of AD channels. It is populated in a different procedure
 		make /o /n = (16, 2) $ChannelClampModeString = nan
+		wave ChannelClampMode = $ChannelClampModeString
+		setdimlabel 1, 0, DAC, ChannelClampMode
+		setdimlabel 1, 1, ADC, ChannelClampMode
 	endif
 
 	duplicate /free ChanAmpAssign ChanAmpAssignOrig

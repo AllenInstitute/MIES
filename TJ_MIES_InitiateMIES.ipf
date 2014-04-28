@@ -4,6 +4,7 @@ Function IM_InitiateMIES()
 	// Create MIES data folder architecture
 	NewDataFolder /o root:MIES
 	NewDataFolder /o root:MIES:Amplifiers
+	NewDataFolder /o root:MIES:Amplifiers:Settings
 	NewDataFolder /o root:MIES:ITCDevices
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices // stores lists of data related to ITC devices actively acquiring data
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:TestPulse // stores lists of data related to ITC devices actively running a test pulse
@@ -49,6 +50,13 @@ Function /T Path_AmpFolder(panelTitle)
 	string panelTitle
 	string pathToAmpFolder =Path_MIESfolder(panelTitle) + ":Amplifiers"
 	return pathToAmpFolder
+End
+//=========================================================================================
+Function /T Path_AmpSettingsFolder(panelTitle)
+	string panelTitle
+	string pathToAmpSettingsFolder
+	sprintf pathToAmpSettingsFolder, "%s:Settings" Path_AmpFolder(panelTitle)
+	return pathToAmpSettingsFolder
 End
 //=========================================================================================
 Function /T Path_ITCDevicesFolder(panelTitle)
