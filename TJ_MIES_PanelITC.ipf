@@ -2,7 +2,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(2351,57,2822,761)
+	NewPanel /W=(2392,60,2863,764)
 	ShowTools/A
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
@@ -2185,26 +2185,26 @@ Window DA_Ephys() : Panel
 	TitleBox Title_DataAcq_Bridge,pos={55,193},size={72,13},disable=1,title="Bridge Balance"
 	TitleBox Title_DataAcq_Bridge,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_Bridge,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
-	SetVariable setvar_DataAcq_Hold_IC,pos={135,173},size={36,16},disable=1
+	SetVariable setvar_DataAcq_Hold_IC,pos={135,173},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_Hold_IC,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_Hold_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Hold_IC,value= _NUM:0
-	SetVariable setvar_DataAcq_BB,pos={135,192},size={36,16},disable=1
+	SetVariable setvar_DataAcq_BB,pos={135,192},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_BB,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_BB,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_BB,value= _NUM:0
-	SetVariable setvar_DataAcq_CN,pos={135,211},size={36,16},disable=1
+	SetVariable setvar_DataAcq_CN,pos={135,211},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_CN,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_CN,value= _NUM:0
-	CheckBox check_DatAcq_HoldEnable,pos={178,174},size={51,14},disable=1,title="Enable"
+	CheckBox check_DatAcq_HoldEnable,pos={178,174},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_HoldEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_HoldEnable,value= 0
-	CheckBox check_DatAcq_BBEnable,pos={178,193},size={51,14},disable=1,title="Enable"
+	CheckBox check_DatAcq_BBEnable,pos={178,193},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_BBEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
-	CheckBox check_DatAcq_CNEnable,pos={178,212},size={51,14},disable=1,title="Enable"
+	CheckBox check_DatAcq_CNEnable,pos={178,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
 	Button button_DataAcq_AutoBB,pos={235,191},size={38,18},disable=1,title="AUTO"
@@ -2217,7 +2217,7 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
-	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 2,side= 2,vert= 0,ticks= 0
+	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 7,side= 2,vert= 0,ticks= 0
 	TabControl tab_DataAcq_Amp,pos={38,148},size={408,110},proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Amp,help={"Entries into these tabs update the MCC only when in the active mode. On mode switching, the parameters will be passed to the MCC."}
 	TabControl tab_DataAcq_Amp,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
@@ -2225,61 +2225,61 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Amp,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Amp,tabLabel(0)="V-Clamp",tabLabel(1)="I-Clamp"
 	TabControl tab_DataAcq_Amp,tabLabel(2)="I = 0",value= 0
-	SetVariable setvar_DataAcq_AutoBiasV,pos={309,188},size={80,16},disable=1,title="Vm (mV)"
+	SetVariable setvar_DataAcq_AutoBiasV,pos={309,188},size={80,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Vm (mV)"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasV,value= _NUM:0
-	CheckBox check_DataAcq_AutoBias,pos={304,171},size={63,14},disable=1,title="Auto Bias"
+	CheckBox check_DataAcq_AutoBias,pos={304,171},size={63,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Auto Bias"
 	CheckBox check_DataAcq_AutoBias,help={"Just prior to a sweep the Vm is checked and the bias current is adjusted to maintain desired Vm."}
 	CheckBox check_DataAcq_AutoBias,userdata(tabnum)=  "1"
 	CheckBox check_DataAcq_AutoBias,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
-	SetVariable setvar_DataAcq_Ri,pos={310,208},size={79,18},disable=1,title="Ri (M\\F'Symbol'W\\F'MS Sans Serif')"
+	SetVariable setvar_DataAcq_Ri,pos={310,208},size={79,18},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Ri (M\\F'Symbol'W\\F'MS Sans Serif')"
 	SetVariable setvar_DataAcq_Ri,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_Ri,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Ri,value= _NUM:0
-	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={41,16},disable=1,title="±"
+	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={41,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasVrange,value= _NUM:0
 	TitleBox Title_DataAcq_Hold_VC,pos={70,172},size={60,13},title="Holding (mV)"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
-	SetVariable setvar_DataAcq_Hold_VC,pos={135,171},size={36,16}
+	SetVariable setvar_DataAcq_Hold_VC,pos={135,171},size={36,16},proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
-	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},title="Enable"
+	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_HoldEnableVC,value= 0
-	SetVariable setvar_DataAcq_WCR,pos={136,211},size={60,18},title="M\\F'Symbol'W"
+	SetVariable setvar_DataAcq_WCR,pos={136,211},size={60,18},proc=DAP_SetVarProc_AmpCntrls,title="M\\F'Symbol'W"
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR,value= _NUM:0
-	CheckBox check_DatAcq_WholeCellEnable,pos={82,191},size={16,14},title=""
+	CheckBox check_DatAcq_WholeCellEnable,pos={82,191},size={16,14},proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_WholeCellEnable,value= 0
-	SetVariable setvar_DataAcq_WCC,pos={73,212},size={60,16},title="pF"
+	SetVariable setvar_DataAcq_WCC,pos={73,212},size={60,16},proc=DAP_SetVarProc_AmpCntrls,title="pF"
 	SetVariable setvar_DataAcq_WCC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_WCC,value= _NUM:5
+	SetVariable setvar_DataAcq_WCC,value= _NUM:0
 	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
 	Button button_DataAcq_WCAuto,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	GroupBox group_DataAcq_RsCompensation,pos={210,192},size={143,59},title="       Rs Compensation"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DatAcq_RsCompEnable,pos={232,191},size={16,14},title=""
+	CheckBox check_DatAcq_RsCompEnable,pos={232,191},size={16,14},proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_RsCompEnable,value= 0
-	SetVariable setvar_DataAcq_RsCorr,pos={221,212},size={97,16},title="Corretion (%)"
+	SetVariable setvar_DataAcq_RsCorr,pos={221,212},size={97,16},proc=DAP_SetVarProc_AmpCntrls,title="Corretion (%)"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_RsCorr,value= _NUM:0
-	SetVariable setvar_DataAcq_RsPred,pos={216,232},size={103,16},title="Prediction (%)"
+	SetVariable setvar_DataAcq_RsPred,pos={216,232},size={103,16},proc=DAP_SetVarProc_AmpCntrls,title="Prediction (%)"
 	SetVariable setvar_DataAcq_RsPred,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsPred,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_RsPred,value= _NUM:0
@@ -2291,7 +2291,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_AutoGainAndUnit,help={"A amplifier channel needs to be selected from the popup menu prior to auto filling gain and units."}
 	Button button_Hardware_AutoGainAndUnit,userdata(tabnum)=  "6"
 	Button button_Hardware_AutoGainAndUnit,userdata(tabcontrol)=  "ADC"
-	CheckBox check_DataAcq_IzeroEnable,pos={52,185},size={51,14},disable=1,title="Enable"
+	CheckBox check_DataAcq_IzeroEnable,pos={52,185},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_IzeroEnable,value= 0
@@ -3659,4 +3659,22 @@ Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderContro
 
 	return 0
 	
+End
+
+Function DAP_SetVarProc_AmpCntrls(ctrlName,varNum,varStr,varName) : SetVariableControl
+	String ctrlName
+	Variable varNum
+	String varStr
+	String varName
+	string panelTitle 
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
+	AI_UpdateAmpModel(panelTitle, ctrlName)
+End
+
+Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+	string panelTitle 
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
+	AI_UpdateAmpModel(panelTitle, ctrlName)
 End
