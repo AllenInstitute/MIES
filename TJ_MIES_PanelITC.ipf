@@ -3655,6 +3655,8 @@ Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderContro
 	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
 	if(event %& 0x1)	// bit 0, value set
 		AI_UpdateAmpView(panelTitle, sliderValue)
+		variable Mode = AI_MIESHeadstageMode(panelTitle, sliderValue)
+		DAP_ExecuteAdamsTabcontrolAmp(panelTitle, Mode) // chooses the amp tab accoding to the MIES headstage clamp mode
 	endif
 
 	return 0
@@ -3677,4 +3679,18 @@ Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
 	string panelTitle 
 	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
 	AI_UpdateAmpModel(panelTitle, ctrlName)
+End
+
+Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, TabToGoTo)
+	string panelTitle
+	variable TabToGoTo
+	Struct WMTabControlAction tca
+	
+	tca.ctrlName = "tab_DataAcq_Amp"	
+	tca.win	= panelTitle	
+	tca.eventCode = 2	
+	tca.tab = TabToGoTo
+
+	Variable returnedValue = ACL_DisplayTab(tca)
+
 End
