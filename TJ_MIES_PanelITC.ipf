@@ -2,7 +2,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(2392,60,2863,764)
+	NewPanel /W=(43,53,514,757)
 	ShowTools/A
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
@@ -1448,7 +1448,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(MenuExp)=  "DeltaT4st_TTL_0;"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(MenExp)=  "\"- none -;\"+\"\""
 	PopupMenu Popup_TTL_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	CheckBox check_Settings_ShowScopeWindow,pos={34,415},size={121,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Show Scope Window"
+	CheckBox check_Settings_ShowScopeWindow,pos={34,468},size={121,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Show Scope Window"
 	CheckBox check_Settings_ShowScopeWindow,help={"Enable the scope window to view ongoing acquistion"}
 	CheckBox check_Settings_ShowScopeWindow,userdata(tabnum)=  "5"
 	CheckBox check_Settings_ShowScopeWindow,userdata(tabcontrol)=  "ADC"
@@ -1825,13 +1825,13 @@ Window DA_Ephys() : Panel
 	Button button_SettingsPlus_PingDevice,userdata(ResizeControlsInfo)= A"!!,Fe!!#@r!!#?s!!#=Cz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_PingDevice,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_PingDevice,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_OpenWB,pos={362,449},size={76,45},disable=1,title="Open Wave\r Builder"
+	Button button_SettingsPlus_OpenWB,pos={362,653},size={76,45},disable=1,title="Open Wave\r Builder"
 	Button button_SettingsPlus_OpenWB,userdata(tabnum)=  "5"
 	Button button_SettingsPlus_OpenWB,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_OpenWB,userdata(ResizeControlsInfo)= A"!!,GD!!#CDJ,hp'!!#>Bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_OpenWB,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_OpenWB,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_OpenDB,pos={23,449},size={76,45},disable=1,title="Open Data\r Browser"
+	Button button_SettingsPlus_OpenDB,pos={23,653},size={76,45},disable=1,title="Open Data\r Browser"
 	Button button_SettingsPlus_OpenDB,userdata(tabnum)=  "5"
 	Button button_SettingsPlus_OpenDB,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_OpenDB,userdata(ResizeControlsInfo)= A"!!,HH!!#CAJ,hp'!!#>Bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2095,12 +2095,12 @@ Window DA_Ephys() : Panel
 	GroupBox group_Settings_DatAcq,pos={21,99},size={421,250},disable=1,title="Data Acquisition"
 	GroupBox group_Settings_DatAcq,userdata(tabnum)=  "5"
 	GroupBox group_Settings_DatAcq,userdata(tabcontrol)=  "ADC"
-	GroupBox group_Settings_Asynch,pos={21,352},size={421,40},disable=1,title="Asynchronous"
+	GroupBox group_Settings_Asynch,pos={21,352},size={421,90},disable=1,title="Asynchronous"
 	GroupBox group_Settings_Asynch,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Asynch,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_TP,pos={21,30},size={421,60},disable=1,title="Test Pulse"
 	GroupBox group_Settings_TP,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
-	GroupBox group_Settings_Asynch1,pos={21,396},size={421,40},disable=1,title="Oscilloscope"
+	GroupBox group_Settings_Asynch1,pos={21,449},size={421,40},disable=1,title="Oscilloscope"
 	GroupBox group_Settings_Asynch1,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Asynch1,userdata(tabcontrol)=  "ADC"
 	GroupBox group_DataAcq_ClampMode,pos={30,39},size={422,225},title="Clamp Mode"
@@ -2188,15 +2188,15 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_IC,pos={135,173},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_Hold_IC,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_Hold_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_Hold_IC,value= _NUM:0
+	SetVariable setvar_DataAcq_Hold_IC,value= _NUM:-59
 	SetVariable setvar_DataAcq_BB,pos={135,192},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_BB,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_BB,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_BB,value= _NUM:0
+	SetVariable setvar_DataAcq_BB,limits={0,inf,1},value= _NUM:0
 	SetVariable setvar_DataAcq_CN,pos={135,211},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_CN,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_CN,value= _NUM:0
+	SetVariable setvar_DataAcq_CN,limits={-8,16,1},value= _NUM:-9
 	CheckBox check_DatAcq_HoldEnable,pos={178,174},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_HoldEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2217,7 +2217,7 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
-	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 7,side= 2,vert= 0,ticks= 0
+	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 0,side= 2,vert= 0,ticks= 0
 	TabControl tab_DataAcq_Amp,pos={38,148},size={408,110},proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Amp,help={"Entries into these tabs update the MCC only when in the active mode. On mode switching, the parameters will be passed to the MCC."}
 	TabControl tab_DataAcq_Amp,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
@@ -2228,27 +2228,27 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_AutoBiasV,pos={309,188},size={80,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Vm (mV)"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_AutoBiasV,value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasV,value= _NUM:1
 	CheckBox check_DataAcq_AutoBias,pos={304,171},size={63,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Auto Bias"
 	CheckBox check_DataAcq_AutoBias,help={"Just prior to a sweep the Vm is checked and the bias current is adjusted to maintain desired Vm."}
 	CheckBox check_DataAcq_AutoBias,userdata(tabnum)=  "1"
 	CheckBox check_DataAcq_AutoBias,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
+	CheckBox check_DataAcq_AutoBias,value= 1,side= 1
 	SetVariable setvar_DataAcq_Ri,pos={310,208},size={79,18},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Ri (M\\F'Symbol'W\\F'MS Sans Serif')"
 	SetVariable setvar_DataAcq_Ri,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_Ri,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_Ri,value= _NUM:0
+	SetVariable setvar_DataAcq_Ri,value= _NUM:4
 	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={41,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_AutoBiasVrange,value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasVrange,value= _NUM:3
 	TitleBox Title_DataAcq_Hold_VC,pos={70,172},size={60,13},title="Holding (mV)"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
 	SetVariable setvar_DataAcq_Hold_VC,pos={135,171},size={36,16},proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
+	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:-50
 	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2256,7 +2256,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCR,pos={136,211},size={60,18},proc=DAP_SetVarProc_AmpCntrls,title="M\\F'Symbol'W"
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_WCR,value= _NUM:0
+	SetVariable setvar_DataAcq_WCR,value= _NUM:3
 	CheckBox check_DatAcq_WholeCellEnable,pos={82,191},size={16,14},proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2264,7 +2264,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCC,pos={73,212},size={60,16},proc=DAP_SetVarProc_AmpCntrls,title="pF"
 	SetVariable setvar_DataAcq_WCC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_WCC,value= _NUM:0
+	SetVariable setvar_DataAcq_WCC,value= _NUM:11
 	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
 	Button button_DataAcq_WCAuto,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2274,15 +2274,15 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_RsCompEnable,pos={232,191},size={16,14},proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DatAcq_RsCompEnable,value= 0
+	CheckBox check_DatAcq_RsCompEnable,value= 1
 	SetVariable setvar_DataAcq_RsCorr,pos={221,212},size={97,16},proc=DAP_SetVarProc_AmpCntrls,title="Corretion (%)"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_RsCorr,value= _NUM:0
+	SetVariable setvar_DataAcq_RsCorr,value= _NUM:3
 	SetVariable setvar_DataAcq_RsPred,pos={216,232},size={103,16},proc=DAP_SetVarProc_AmpCntrls,title="Prediction (%)"
 	SetVariable setvar_DataAcq_RsPred,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsPred,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_RsPred,value= _NUM:0
+	SetVariable setvar_DataAcq_RsPred,value= _NUM:1
 	Button button_DataAcq_ForwardHold,pos={366,204},size={49,35},title="Auto fill\rbias"
 	Button button_DataAcq_ForwardHold,help={"Sets the I-clamp holding current based on the V-clamp holding potential"}
 	Button button_DataAcq_ForwardHold,userdata(tabnum)=  "0"
@@ -2295,6 +2295,30 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_IzeroEnable,value= 0
+	CheckBox Check_Settings_AlarmPauseAcq,pos={34,394},size={166,14},disable=1,title="\\JCPause acquisition in alarm state"
+	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
+	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_AlarmPauseAcq,fColor=(65280,43520,0),value= 0
+	CheckBox Check_Settings_AlarmAutoRepeat,pos={34,415},size={250,14},disable=1,title="\\JCAuto repeat last sweep until alarm state is cleared"
+	CheckBox Check_Settings_AlarmAutoRepeat,help={"Turns on TTL pulse at onset of sweep"}
+	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_AlarmAutoRepeat,fColor=(65280,43520,0),value= 0
+	GroupBox group_Settings_Amplifier,pos={21,494},size={421,80},disable=1,title="Amplifier"
+	GroupBox group_Settings_Amplifier,userdata(tabnum)=  "5"
+	GroupBox group_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
+	GroupBox group_Settings_Manipulators,pos={21,576},size={421,40},disable=1,title="Manipulators"
+	GroupBox group_Settings_Manipulators,userdata(tabnum)=  "5"
+	GroupBox group_Settings_Manipulators,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_AmpMCCdefault,pos={34,517},size={174,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default to MCC parameter values"
+	CheckBox check_Settings_AmpMCCdefault,help={"Enable the scope window to view ongoing acquistion"}
+	CheckBox check_Settings_AmpMCCdefault,userdata(tabnum)=  "5"
+	CheckBox check_Settings_AmpMCCdefault,userdata(tabcontrol)=  "ADC",value= 0
+	CheckBox check_Settings_AmpMIESdefault,pos={34,537},size={249,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default amplifier parameter values stored in MIES"
+	CheckBox check_Settings_AmpMIESdefault,help={"Enable the scope window to view ongoing acquistion"}
+	CheckBox check_Settings_AmpMIESdefault,userdata(tabnum)=  "5"
+	CheckBox check_Settings_AmpMIESdefault,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
