@@ -291,6 +291,10 @@ End
 End
 
 //==================================================================================================
+// BELOW ARE COMMAND THAT SEND PARAMETERS, OR ENABLE CONTROLS ON THE MCC PANEL
+// the commands are wrapped in several checks that ensure they are only sent when the appropriate mode is active
+//==================================================================================================
+
 Function AI_SendVHoldToAmp(panelTitle, HoldingV)
 	string panelTitle
 	variable HoldingV
@@ -363,7 +367,7 @@ Function AI_SendWCCToAmp(panelTitle, Capacitance)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
 				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = 1
+				variable Error = MCC_SetWholeCellCompCap(Capacitance * 1e-12)
 				if(numtype(Error) == 2)
 					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 				endif
@@ -390,7 +394,7 @@ Function AI_SendWCRToAmp(panelTitle, Resistance)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
 				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = 1
+				variable Error = MCC_SetWholeCellCompResist(Resistance * 1e6)
 				if(numtype(Error) == 2)
 					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 				endif
@@ -417,7 +421,7 @@ Function AI_SendEnableWCToAmp(panelTitle, EnableWholeCell)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
 				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = 1 
+				variable Error = MCC_SetWholeCellCompEnable(EnableWholeCell)
 				if(numtype(Error) == 2)
 					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 				endif
@@ -444,7 +448,7 @@ Function AI_SendRsCompCorrToAmp(panelTitle, Correction)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
 				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = 1 
+				variable Error = MCC_SetRsCompCorrection(Correction)
 				if(numtype(Error) == 2)
 					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 				endif
@@ -471,7 +475,7 @@ Function AI_SendRsCompPredToAmp(panelTitle, Prediction)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
 				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = 1 
+				variable Error = MCC_SetRsCompPrediction(Prediction)
 				if(numtype(Error) == 2)
 					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 				endif
@@ -482,7 +486,7 @@ End
 //==================================================================================================
 Function AI_SendRsCompEnableToAmp(panelTitle, EnableRsComp)
 	string panelTitle
-	variable EnableRsComp
+	variable EnableRsComp // 1 = enabled
 	
 	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
 	
@@ -498,7 +502,7 @@ Function AI_SendRsCompEnableToAmp(panelTitle, EnableRsComp)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
 				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = 1 
+				variable Error = MCC_SetRsCompEnable(EnableRsComp)
 				if(numtype(Error) == 2)
 					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 				endif
