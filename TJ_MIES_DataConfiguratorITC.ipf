@@ -289,7 +289,7 @@ Function DC_CalculateITCDataWaveLength(panelTitle)// determines the longest outp
 	
 //	LongestWaveLength /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
 	variable exponent = ceil(log(LongestSweep)/log(2))
-	exponent += 2// round(5000 / LongestSweep) // buffer for sweep length
+	exponent += 4// round(5000 / LongestSweep) // buffer for sweep length
 	//print "exponent = ",exponent
 	//print ceil(5000 / LongestSweep)
 	//LongestWaveLength *= 5
