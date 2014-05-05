@@ -16,7 +16,8 @@ Function DM_SaveITCData(panelTitle)
 	
 	string SavedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(SweepNo)
 	string SavedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(SweepNo)
-	variable RowsToCopy = dimsize(ITCDataWave, 0) /5
+	//variable RowsToCopy = dimsize(ITCDataWave, 0) / 5
+	variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
 	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $SavedDataWaveName
 	Duplicate /o ITCChanConfigWave $SavedSetUpWaveName
 	note $savedDataWaveName, Time()// adds time stamp to wave note
@@ -35,7 +36,8 @@ End
 
 Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
-	variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle)/5
+	// variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"

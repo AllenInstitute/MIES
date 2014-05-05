@@ -77,7 +77,8 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	doupdate
 	
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+	//variable /G root:MIES:ITCDevices:StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -244,7 +245,8 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
 	string cmd
 	variable i = 0
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	//variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	variable /G root:MIES:ITCDevices:BackgroundTPCount = 0
@@ -305,9 +307,7 @@ Function ITC_TestPulseFunc(s)
 		//doupdate	
 		BackgroundTPCount += 1
 		if(mod(BackgroundTPCount,30) == 0 || BackgroundTPCount == 1)
-			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
-			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
-		endif
+ 		endif
 		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
@@ -357,7 +357,8 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle)/5
+	//variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0

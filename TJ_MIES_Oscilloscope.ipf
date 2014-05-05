@@ -61,7 +61,8 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 		YaxisLow -= YaxisSpacing
 
 	endfor
-	SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) /5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+	//SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) / 5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+	SetAxis /w = $oscilloscopeSubWindow bottom 0, (DC_CalculateLongestSweep(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 
 	//doupdate
 	print "Scope update took: ", (stopmstimer(-2) - start) / 1000, " ms"

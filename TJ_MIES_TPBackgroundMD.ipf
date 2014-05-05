@@ -10,7 +10,8 @@ Function ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	// SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
 	string cmd
 	variable i = 0
-	variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	//variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	variable /G root:MIES:ITCDevices:BackgroundTPCount = 0
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"

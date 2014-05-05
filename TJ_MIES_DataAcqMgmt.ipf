@@ -122,11 +122,13 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	DC_ConfigureDataForITC(panelTitle)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
-	ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
+	//ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
+	ITC_ConfigUploadDAC(panelTitle)
+	ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle)
 	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
 	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 	
-	if(DeviceType == 2)
+	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
 		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
 		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
 		if(exists(pathToListOfFollowerDevices) == 2)

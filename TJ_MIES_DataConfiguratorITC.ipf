@@ -279,20 +279,38 @@ End
 //==========================================================================================
 Function DC_CalculateITCDataWaveLength(panelTitle)// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).
 	string panelTitle
-	Variable LongestWaveLength
+	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle)
 	//Determine Longest Wave
-	if (DC_LongestOutputWave("DA", panelTitle) >= DC_LongestOutputWave("TTL", panelTitle))
-		LongestWaveLength = DC_LongestOutputWave("DA", panelTitle)
-	else
-		LongestWaveLength = DC_LongestOutputWave("TTL", panelTitle)
-	endif
+	//if (DC_LongestOutputWave("DA", panelTitle) >= DC_LongestOutputWave("TTL", panelTitle))
+//		LongestWaveLength = DC_LongestOutputWave("DA", panelTitle)
+//	else
+//		LongestWaveLength = DC_LongestOutputWave("TTL", panelTitle)
+//	endif
 	
-	LongestWaveLength /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
-	LongestWaveLength *= 5
-	
-	return round(LongestWaveLength)
+//	LongestWaveLength /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
+	variable exponent = ceil(log(LongestSweep)/log(2))
+	exponent += 2// round(5000 / LongestSweep) // buffer for sweep length
+	//print "exponent = ",exponent
+	//print ceil(5000 / LongestSweep)
+	//LongestWaveLength *= 5
+	return (2^exponent)
+	//return round(LongestWaveLength)
 end
+//==========================================================================================
 
+Function DC_CalculateLongestSweep(panelTitle)
+	string panelTitle
+	variable LongestSweep
+	
+	if (DC_LongestOutputWave("DA", panelTitle) >= DC_LongestOutputWave("TTL", panelTitle))
+		LongestSweep = DC_LongestOutputWave("DA", panelTitle)
+	else
+		LongestSweep = DC_LongestOutputWave("TTL", panelTitle)
+	endif
+	LongestSweep /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
+	
+	return ceil(LongestSweep)
+End
 //==========================================================================================
 Function DC_MakeITCConfigAllConfigWave(PanelTitle)
 	string PanelTitle
@@ -419,7 +437,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	endif
 	
 	//Place DA waves into ITCDataWave
-	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle)/5)
+	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle) / 5)
 	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
 	ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
 	print ChanTypeWaveNameList
