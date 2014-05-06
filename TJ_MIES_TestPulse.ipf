@@ -138,6 +138,40 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	GlobalTPAmplitudeVariableIC = v_value
 End
 
+Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates 100 TPs in a row
+	wave TestPulse
+	string panelTitle
+	variable i = 0
+	variable PulseDuration
+	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
+	//print TPGlobalPath
+	variable /g  $TPGlobalPath + ":Duration"
+	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
+	variable /g $TPGlobalPath + ":AmplitudeVC"
+	NVAR GlobalTPAmplitudeVariableVC = $(TPGlobalPath + ":AmplitudeVC")
+	variable /g $TPGlobalPath + ":AmplitudeIC"
+	NVAR GlobalTPAmplitudeVariableIC = $(TPGlobalPath + ":AmplitudeIC")	
+	make /o /n = 8 $TPGlobalPath + ":Resistance"
+	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave")
+	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
+	PulseDuration = (v_value / 0.005)
+	GlobalTPDurationVariable = PulseDuration
+	redimension /n = (200 * PulseDuration) TestPulse // makes room in wave for 100 TPs
+	// need to deal with units here to ensure that resistance is calculated correctly
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+	print "TP amp =", v_value 
+	do
+		TestPulse[((PulseDuration / 2) + (i * PulseDuration * 2)), ((Pulseduration + (PulseDuration / 2))  + (i * PulseDuration * 2))] = v_value
+		
+		i += 1
+	while (i < 100)
+	GlobalTPAmplitudeVariableVC = v_value
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
+	GlobalTPAmplitudeVariableIC = v_value
+End
+
 mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName

@@ -104,10 +104,18 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	SetScale /P x 0,0.005,"ms", TestPulse
 	
 	// adjust test pulse wave according to panel input
-	TP_UpdateTestPulseWave(TestPulse, panelTitle)
+	//TP_UpdateTestPulseWave(TestPulse, panelTitle)
+
+	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle)
 	
 	// creates TP wave used for display
-	DM_CreateScaleTPHoldingWave(panelTitle)
+	//DM_CreateScaleTPHoldingWave(panelTitle)
+	
+	string TPDurationGlobalPath
+	sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
+	NVAR GlobalTPDurationVariable = $TPDurationGlobalPath
+	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, GlobalTPDurationVariable)  // first TP so start point = 0
+	TP_ClampModeString(panelTitle)
 	
 	// stores panel settings
 	make /free /n = 8 SelectedDACWaveList

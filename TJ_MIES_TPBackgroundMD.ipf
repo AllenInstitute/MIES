@@ -202,20 +202,22 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 	if (AddorRemoveDevice == 1) // add a ITC device
 		if (waveexists($WavePath + ":ActiveDeviceList") == 0) 
-			Make /o /n = (1,4) $WavePath + ":ActiveDeviceList"
+			Make /o /n = (1,5) $WavePath + ":ActiveDeviceList"
 			WAVE /Z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] = 1 // sweep count
+			ActiveDeviceList[0][4] = 1 // TP count
 		elseif (waveexists($WavePath + ":ActiveDeviceList") == 1)
 			variable numberOfRows = DimSize(ActiveDeviceList, 0)
 			// print numberofrows
-			Redimension /n = (numberOfRows + 1, 4) ActiveDeviceList
+			Redimension /n = (numberOfRows + 1, 5) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] = 1 // sweep count
+			ActiveDeviceList[0][4] = 1 // TP count
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's

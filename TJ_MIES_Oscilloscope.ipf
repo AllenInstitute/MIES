@@ -5,6 +5,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	string panelTitle
 	Variable start = stopmstimer(-2)
 	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
+	print "name of wave being plotted =", NameOfWaveBeingPlotted
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 	variable i =  0
@@ -62,8 +63,14 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 
 	endfor
 	//SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) / 5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
-	SetAxis /w = $oscilloscopeSubWindow bottom 0, (DC_CalculateLongestSweep(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
-
+	if(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
+		SetAxis /w = $oscilloscopeSubWindow bottom 0, (DC_CalculateLongestSweep(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+	elseif(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 0) // determines if the wave is a test pulse
+		string TPDurationGlobalPath
+		sprintf TPDurationGlobalPath, "%sTestPulse:Duration" WavePath
+		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // number of points in a single test pulse
+		SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
+	endif
 	//doupdate
 	print "Scope update took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
