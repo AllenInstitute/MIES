@@ -172,7 +172,9 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	print pulseduration
 	variable Frequency = 1000 / (TPDurInms * 2)
 	print "frequency = ",frequency
-	TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
+	variable /g $(TPGlobalPath + ":TPPulseCount")
+	NVAR TPPulseCount = $(TPGlobalPath + ":TPPulseCount")
+	TPPulseCount = TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
 //	do
 //		TestPulse[((PulseDuration / 2) + (i * PulseDuration * 2)), ((Pulseduration + (PulseDuration / 2))  + (i * PulseDuration * 2))] = v_value
 //		

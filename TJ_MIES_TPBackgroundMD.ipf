@@ -67,7 +67,8 @@ Function ITC_BkrdTPFuncMD(s)
 	variable startPoint
 	variable PointsInTP
 	string TPDurationGlobalPath 
-
+	//NVAR FifoOffset = root:FifoOffset
+	
 
 	
 	do // works through list of active devices
@@ -80,12 +81,14 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCDataWave = ActiveDeviceWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
 		WAVE ITCFIFOPositionAllConfigWavePth = ActiveDeviceWavePathWave[i][2] //  ActiveDeviceWavePathWave contains wave references
-		WAVE ResultsWavePath = ActiveDeviceWavePathWave[i][3]
+		// WAVE ResultsWavePath = ActiveDeviceWavePathWave[i][3]
+		//ITCFIFOAvailAllConfigWave[][2] = 0
 		CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + "count"
 		oscilloscopeSubWindow = ActiveDeviceTextList[i] + "#oscilloscope"
 		ADChannelToMonitor = ActiveDeviceList[i][1]
-		StopCollectionPoint = ActiveDeviceList[i][2]
-		variable ScalingAdjustment = (deltax(ITCDataWave)) // 0.01 //0.01) // / 2
+	//	StopCollectionPoint = ActiveDeviceList[i][2]
+		//variable ScalingAdjustment = (deltax(ITCDataWave)) // 0.01 //0.01) // / 2
+		//variable PointsInITCData = numpnts(ITCDataWave)
 	//	print ScalingAdjustment
 		PointsInTP = (GlobalTPDurationVariable * 2)// /100) //* (ScalingAdjustment/0.005)
 		//print "PointsInTP =",PointsInTP
@@ -96,41 +99,40 @@ Function ITC_BkrdTPFuncMD(s)
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
 		Execute cmd	
 		
-		if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (PointsInTP * ActiveDeviceList[i][4]))//(GlobalTPDurationVariable * ActiveDeviceList[i][4])) // chops up 100 pulse TP wave into single pulses based on location in data acquisition
-			if(ActiveDeviceList[i][4] >= 65)
-				ActiveDeviceList[i][4] = 1
-			endif
-			//startPoint =((TPDuration / 2) * ActiveDeviceList[i][4]) 
-			//startPoint = ((GlobalTPDurationVariable * ScalingAdjustment) * ActiveDeviceList[i][4])
-			//startPoint = ((GlobalTPDurationVariable * ScalingAdjustment ) * ActiveDeviceList[i][4])
-			//startPoint = ((GlobalTPDurationVariable) * ActiveDeviceList[i][4])
-			//print GlobalTPDurationVariable
-			//startPoint = ((TPduration / ScalingAdjustment * ActiveDeviceList[i][4]))// + (GlobalTPDurationVariable / 10 / ScalingAdjustment) // start point in ms
-			startPoint = (PointsInTP * ActiveDeviceList[i][4])
-			//print startPoint
-			//print "TP duration =",GlobalTPDurationVariable
+		duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
+		// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
+		WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
+	//	FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the FIFO pointers back to the start
+		execute cmd
+		
+		
+		//print "fifo = ",(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]), "NextChunkPoints =", (PointsInTP * (ActiveDeviceList[i][4]))// + ((ActiveDeviceList[i][3] - 1) * PointsInITCData)
+		//if((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] -((ActiveDeviceList[i][3] - 2^16) * PointsInITCData)) > (PointsInTP * ActiveDeviceList[i][4]))
+
+		//if((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]  > (PointsInTP * (ActiveDeviceList[i][4]))))// the +2 adds a delay so that the chunking is always a little behind // chops up 100 pulse TP wave into single pulses based on location in data acquisition
+		//	if((ActiveDeviceList[i][4]) >= ActiveDeviceList[0][5])
+		//		ActiveDeviceList[i][4] = 1
+		//	endif
+			//print "inside"
+			ITCDataWave[0][0] =+ 0
+			startPoint = 0//((PointsInTP / 4))// * ActiveDeviceList[i][4])
 			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
-			//DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, TPDuration)
 			TP_Delta(panelTitle, WavePath + ":TestPulse") 
 			ActiveDeviceList[i][4] += 1
-			ITCDataWave[0][0] =+ 0
-		endif
+			
+		//endif
 		
 		
 		//print "FIFOAvailable =", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		//print "Stop collection point =", StopCollectionPoint*ActiveDeviceList[i][3]
 		
-		if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (StopCollectionPoint / 2 * ActiveDeviceList[i][3])) // advances the FIFO is the TP sweep has reached it's end
-
+		//if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (StopCollectionPoint * .05 * ActiveDeviceList[i][3])) // advances the FIFO is the TP sweep has reached it's end
+			//print "advancing FIFO"
 			
 			//print StopCollectionPoint*ActiveDeviceList[i][3]
-			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
-			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
-			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
-			FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the FIFO pointers back to the start
-			execute cmd
 
+			//FIFOoffset += ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 			//FIFOAdvance[][2] = 0
 			ITCFIFOAvailAllConfigWave[][2] =0
 			ITCDataWave[0][0] =+ 0
@@ -142,7 +144,7 @@ Function ITC_BkrdTPFuncMD(s)
 			
 			ActiveDeviceList[i][3] += 1
 			//ActiveDeviceList[i][4] = 1 // resets the test pulse chunk to use back to 1 every time the DA wave loops
-		endif
+		//endif
 		
 		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
@@ -210,24 +212,29 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 
 	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
+	string TPFolderPath
+	sprintf TPFolderPath, "%s:TestPulse:TPPulseCount" HSU_DataFullFolderPathString(PanelTitle)
+	NVAR TPPulseCount = $TPFolderPath
 	if (AddorRemoveDevice == 1) // add a ITC device
 		if (waveexists($WavePath + ":ActiveDeviceList") == 0) 
-			Make /o /n = (1,5) $WavePath + ":ActiveDeviceList"
+			Make /o /n = (1,6) $WavePath + ":ActiveDeviceList"
 			WAVE /Z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] = 1 // sweep count
 			ActiveDeviceList[0][4] = 1 // TP count
+			ActiveDeviceList[0][5] = TPPulseCount // pulses in TP ITC data wave
 		elseif (waveexists($WavePath + ":ActiveDeviceList") == 1)
 			variable numberOfRows = DimSize(ActiveDeviceList, 0)
 			// print numberofrows
-			Redimension /n = (numberOfRows + 1, 5) ActiveDeviceList
+			Redimension /n = (numberOfRows + 1, 6) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] = 1 // sweep count
 			ActiveDeviceList[0][4] = 1 // TP count
+			ActiveDeviceList[0][5] = TPPulseCount// pulses in TP ITC data wave
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
