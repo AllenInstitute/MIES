@@ -50,12 +50,14 @@ End
 Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
 	variable startPoint, NoOfPointsInTP
-	variable RowsToCopy = NoOfPointsInTP * 2  // DC_CalculateITCDataWaveLength(panelTitle) / 5
 	// variable RowsToCopy = (DC_CalculateLongestSweep(panelTitle)) / 99  // divide by 100 becuase there are 100 TPs
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	variable RowsToCopy = ((NoOfPointsInTP * 1) // / (deltax(ITCDataWave)/.005)  // DC_CalculateITCDataWaveLength(panelTitle) / 5
 	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"
+	startPoint += RowsToCopy / 4
 	Duplicate /o /r = [startPoint,(startPoint + RowsToCopy)][] ITCDataWave $TestPulseITCPath
+	//Duplicate /o /r = [((startPoint + RowsToCopy)/4),(((startPoint + RowsToCopy)/4)+(startPoint + RowsToCopy))][] ITCDataWave $TestPulseITCPath
 	wave TestPulseITC = $TestPulseITCPath
 	redimension /d TestPulseITC
 	SetScale/P x 0,deltax(TestPulseITC),"", TestPulseITC

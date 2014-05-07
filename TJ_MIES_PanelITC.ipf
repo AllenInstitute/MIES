@@ -2645,7 +2645,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
 	setdatafolder root:
 	string PanelTitle = DAP_ReturnPanelName()
-
+	variable DataAcqOrTP = 0
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
 	
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
@@ -2696,7 +2696,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		//Function that passes column to configdataForITCfunction?
 		//If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
 		//
-		DC_ConfigureDataForITC(PanelTitle)
+		DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
 		If(v_value == 0)

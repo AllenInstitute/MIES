@@ -12,7 +12,8 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 	string followerPanelTitle = ""
-	DC_ConfigureDataForITC(PanelTitle)
+	variable DataAcqOrTP = 0 // data acq, not TP
+	DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
 	SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 	
 	if(DeviceType == 2) // starts data acquisition for ITC1600 devices
@@ -25,7 +26,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 				do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					//print followerpaneltitle
-					DC_ConfigureDataForITC(followerPanelTitle)
+					DC_ConfigureDataForITC(followerPanelTitle, DataAcqOrTP)
 					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 					wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 					SCOPE_UpdateGraph(ITCDataWave, followerPanelTitle)
@@ -92,7 +93,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	string panelTitle
 	variable i = 0
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	
+	variable DataAcqOrTP = 1
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 	
@@ -127,7 +128,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	TP_SetDAScaleToOne(panelTitle)
 	
 	// configures data for ITC with testpulse wave selected
-	DC_ConfigureDataForITC(panelTitle)
+	DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 	//ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
@@ -170,7 +171,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 					TP_SetDAScaleToOne(followerPanelTitle)
 					
 					// configures data for ITC with testpulse wave selected
-					DC_ConfigureDataForITC(followerPanelTitle)
+					DC_ConfigureDataForITC(followerPanelTitle, DataAcqOrTP)
 					
 					
 					ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, followerPanelTitle)

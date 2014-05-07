@@ -2,11 +2,12 @@
 
 
 //=========================================================================================
-Function DC_ConfigureDataForITC(PanelTitle)// pass column into this function?
+Function DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)// pass column into this function?
 	string PanelTitle
+	variable DataAcqOrTP
 	Variable start = stopmstimer(-2)
 	DC_MakeITCConfigAllConfigWave(PanelTitle)  
-	DC_MakeITCConfigAllDataWave(PanelTitle)  
+	DC_MakeITCConfigAllDataWave(PanelTitle, DataAcqOrTP)  
 	DC_MakeITCFIFOPosAllConfigWave(PanelTitle)
 	DC_MakeFIFOAvailAllConfigWave(PanelTitle)
 	
@@ -277,8 +278,9 @@ End
 
 
 //==========================================================================================
-Function DC_CalculateITCDataWaveLength(panelTitle)// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).
+Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).
 	string panelTitle
+	variable DataAcqOrTP // 0 = DataAcq, 1 = TP
 	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle)
 	//Determine Longest Wave
 	//if (DC_LongestOutputWave("DA", panelTitle) >= DC_LongestOutputWave("TTL", panelTitle))
@@ -289,7 +291,10 @@ Function DC_CalculateITCDataWaveLength(panelTitle)// determines the longest outp
 	
 //	LongestWaveLength /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
 	variable exponent = ceil(log(LongestSweep)/log(2))
-	exponent += 2// round(5000 / LongestSweep) // buffer for sweep length
+	//exponent += 2
+	if(DataAcqOrTP == 0)
+		exponent += 2 // round(5000 / LongestSweep) // buffer for sweep length
+	endif
 	//print "exponent = ",exponent
 	//print ceil(5000 / LongestSweep)
 	//LongestWaveLength *= 5
@@ -320,10 +325,11 @@ Function DC_MakeITCConfigAllConfigWave(PanelTitle)
 	ITCChanConfigWave = 0
 End
 //==========================================================================================
-Function DC_MakeITCConfigAllDataWave(PanelTitle)// config all refers to configuring all the channels at once
+Function DC_MakeITCConfigAllDataWave(PanelTitle, DataAcqOrTP)// config all refers to configuring all the channels at once
 	string PanelTitle
+	variable DataAcqOrTP
 	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
-	make /w /o /n = (DC_CalculateITCDataWaveLength(panelTitle), DC_ChanCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
+	make /w /o /n = (DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP), DC_ChanCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
 	wave/z ITCDataWave = $ITCDataWavePath
 	FastOp ITCDataWave = 0
 	SetScale/P x 0,(DC_ITCMinSamplingInterval(panelTitle)) / 1000,"ms", ITCDataWave

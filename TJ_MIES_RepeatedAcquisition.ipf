@@ -67,8 +67,8 @@ Function RA_Start(PanelTitle)
 		make /free /n = 8 SelectedDACScale
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
-		
-		DC_ConfigureDataForITC(PanelTitle)
+		variable DataAcqOrTP = 1
+		DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
 		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 		
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -151,9 +151,10 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	endif
 	
 	if(Count < TotTrials)
-		DC_ConfigureDataForITC(PanelTitle)
+		variable DataAcqOrTP = 0
+		DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
-		
+	
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value == 0)//No background aquisition
 			ITC_DataAcq(DeviceType,DeviceNum, panelTitle)
@@ -174,8 +175,8 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				make /free /n = 8 SelectedDACScale
 				TP_StoreDAScale(SelectedDACScale, panelTitle)
 				TP_SetDAScaleToOne(panelTitle)
-				
-				DC_ConfigureDataForITC(PanelTitle)
+				DataAcqOrTP = 1
+				DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
 				SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 				
 				controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -254,8 +255,8 @@ Function RA_BckgTPwithCallToRACounter(PanelTitle)
 				make /free /n = 8 SelectedDACScale
 				TP_StoreDAScale(SelectedDACScale, panelTitle)
 				TP_SetDAScaleToOne(panelTitle)
-				
-				DC_ConfigureDataForITC(panelTitle)
+				variable DataAcqOrTP = 1
+				DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 				SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 				
 				controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
