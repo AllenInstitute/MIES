@@ -68,7 +68,7 @@ Function ITC_BkrdTPFuncMD(s)
 	variable PointsInTP
 	string TPDurationGlobalPath 
 	//NVAR FifoOffset = root:FifoOffset
-	
+	variable PointsInTPITCDataWave
 
 	
 	do // works through list of active devices
@@ -91,6 +91,7 @@ Function ITC_BkrdTPFuncMD(s)
 		//variable PointsInITCData = numpnts(ITCDataWave)
 	//	print ScalingAdjustment
 		PointsInTP = (GlobalTPDurationVariable * 2)// /100) //* (ScalingAdjustment/0.005)
+		PointsInTPITCDataWave = dimsize(ITCDataWave,0)
 		//print "PointsInTP =",PointsInTP
 		// works with a active device
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
@@ -98,29 +99,55 @@ Function ITC_BkrdTPFuncMD(s)
 	
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
 		Execute cmd	
+			
+		//	variable PointsCompletedInNextChunk = mod((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]), PointsInTP)
+		//	variable MaxPossibleCompletedChunks = ((mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)) - PointsCompletedInNextChunk) / PointsInTP
+			
+			//variable ITCDataWaveCompleteSweeps = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
+			//variable PointsCompletedInITCDataWave = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], ITCDataWaveCompleteSweeps)
+			variable PointsCompletedInITCDataWave = PointsInTPITCDataWave - (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave)
+			//startPoint = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - PointsCompletedInNextChunk - PointsInTP
+			//variable PointsInActiveTP = mod(PointsCompletedInITCDataWave / (PointsInTP*2))
+			variable ActiveChunk =  floor(PointsCompletedInITCDataWave /  (PointsInTP*2))
+			startPoint = (ActiveChunk * (PointsInTP*2)) 
+			if(startPoint < PointsInTP)
+				startPoint = 0
+			endif
+			//startPoint = 0// PointsInTP * (MaxPossibleCompletedChunks - 1)
+			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
+			TP_Delta(panelTitle, WavePath + ":TestPulse") 
+			ActiveDeviceList[i][4] += 1
+			print ActiveChunk
 		
-		duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
-		// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
-		WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
-	//	FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the FIFO pointers back to the start
-		execute cmd
 		
+		
+		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * 1)) // advances the FIFO is the TP sweep has reached it's end
+
+			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
+			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
+			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
+			FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the FIFO pointers back to the start
+			execute cmd
+		endif
 		
 		//print "fifo = ",(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]), "NextChunkPoints =", (PointsInTP * (ActiveDeviceList[i][4]))// + ((ActiveDeviceList[i][3] - 1) * PointsInITCData)
 		//if((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] -((ActiveDeviceList[i][3] - 2^16) * PointsInITCData)) > (PointsInTP * ActiveDeviceList[i][4]))
 
 		//if((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]  > (PointsInTP * (ActiveDeviceList[i][4]))))// the +2 adds a delay so that the chunking is always a little behind // chops up 100 pulse TP wave into single pulses based on location in data acquisition
+		//variable PointsCompletedInNextChunk = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTP)
+		//print "PointsCompletedInNextChunk=",PointsCompletedInNextChunk
 		//	if((ActiveDeviceList[i][4]) >= ActiveDeviceList[0][5])
 		//		ActiveDeviceList[i][4] = 1
 		//	endif
 			//print "inside"
 			ITCDataWave[0][0] =+ 0
-			startPoint = 0//((PointsInTP / 4))// * ActiveDeviceList[i][4])
-			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
-			TP_Delta(panelTitle, WavePath + ":TestPulse") 
-			ActiveDeviceList[i][4] += 1
-			
+			//startPoint = 0//((PointsInTP / 4))// * ActiveDeviceList[i][4])
+//			startPoint = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - PointsCompletedInNextChunk - PointsInTP
+//			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
+//			TP_Delta(panelTitle, WavePath + ":TestPulse") 
+//			ActiveDeviceList[i][4] += 1
+//			print startpoint
 		//endif
 		
 		
@@ -134,7 +161,7 @@ Function ITC_BkrdTPFuncMD(s)
 
 			//FIFOoffset += ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 			//FIFOAdvance[][2] = 0
-			ITCFIFOAvailAllConfigWave[][2] =0
+			//ITCFIFOAvailAllConfigWave[][2] =0
 			ITCDataWave[0][0] =+ 0
 			
 			if(mod(s.curRunTicks, 100) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
