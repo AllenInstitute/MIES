@@ -86,7 +86,7 @@ Function ITC_BkrdTPFuncMD(s)
 		CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + "count"
 		oscilloscopeSubWindow = ActiveDeviceTextList[i] + "#oscilloscope"
 		ADChannelToMonitor = ActiveDeviceList[i][1]
-	//	StopCollectionPoint = ActiveDeviceList[i][2]
+		StopCollectionPoint = ActiveDeviceList[i][2]
 		//variable ScalingAdjustment = (deltax(ITCDataWave)) // 0.01 //0.01) // / 2
 		//variable PointsInITCData = numpnts(ITCDataWave)
 	//	print ScalingAdjustment
@@ -108,17 +108,19 @@ Function ITC_BkrdTPFuncMD(s)
 			variable PointsCompletedInITCDataWave = PointsInTPITCDataWave - (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave)
 			//startPoint = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - PointsCompletedInNextChunk - PointsInTP
 			//variable PointsInActiveTP = mod(PointsCompletedInITCDataWave / (PointsInTP*2))
-			variable ActiveChunk =  floor(PointsCompletedInITCDataWave /  (PointsInTP*2))
+			variable ActiveChunk =  (floor(PointsCompletedInITCDataWave /  (PointsInTP*2)))
 			startPoint = (ActiveChunk * (PointsInTP*2)) 
-			if(startPoint < PointsInTP)
+			if(startPoint < (PointsInTP * 2))
 				startPoint = 0
 			endif
 			//startPoint = 0// PointsInTP * (MaxPossibleCompletedChunks - 1)
 			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
 			TP_Delta(panelTitle, WavePath + ":TestPulse") 
 			ActiveDeviceList[i][4] += 1
-			print ActiveChunk
-		
+			//print ActiveChunk
+			//print stopcollectionpoint
+			//print PointsCompletedInITCDataWave
+			//print pointsintp
 		
 		
 		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * 1)) // advances the FIFO is the TP sweep has reached it's end
