@@ -87,9 +87,7 @@ Function ITC_BkrdTPFuncMD(s)
 		oscilloscopeSubWindow = ActiveDeviceTextList[i] + "#oscilloscope"
 		ADChannelToMonitor = ActiveDeviceList[i][1]
 		StopCollectionPoint = ActiveDeviceList[i][2]
-		//variable ScalingAdjustment = (deltax(ITCDataWave)) // 0.01 //0.01) // / 2
-		//variable PointsInITCData = numpnts(ITCDataWave)
-	//	print ScalingAdjustment
+
 		PointsInTP = (GlobalTPDurationVariable * 2)// /100) //* (ScalingAdjustment/0.005)
 		PointsInTPITCDataWave = dimsize(ITCDataWave,0)
 		//print "PointsInTP =",PointsInTP
@@ -99,21 +97,14 @@ Function ITC_BkrdTPFuncMD(s)
 	
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
 		Execute cmd	
-			
-		//	variable PointsCompletedInNextChunk = mod((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]), PointsInTP)
-		//	variable MaxPossibleCompletedChunks = ((mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)) - PointsCompletedInNextChunk) / PointsInTP
-			
-			//variable ITCDataWaveCompleteSweeps = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
-			//variable PointsCompletedInITCDataWave = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], ITCDataWaveCompleteSweeps)
+
 			variable PointsCompletedInITCDataWave = PointsInTPITCDataWave - (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave)
-			//startPoint = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - PointsCompletedInNextChunk - PointsInTP
-			//variable PointsInActiveTP = mod(PointsCompletedInITCDataWave / (PointsInTP*2))
 			variable ActiveChunk =  (floor(PointsCompletedInITCDataWave /  (PointsInTP*2)))
 			startPoint = (ActiveChunk * (PointsInTP*2)) 
 			if(startPoint < (PointsInTP * 2))
 				startPoint = 0
 			endif
-			//startPoint = 0// PointsInTP * (MaxPossibleCompletedChunks - 1)
+
 			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
 			TP_Delta(panelTitle, WavePath + ":TestPulse") 
 			ActiveDeviceList[i][4] += 1
@@ -123,7 +114,7 @@ Function ITC_BkrdTPFuncMD(s)
 			//print pointsintp
 		
 		
-		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * 1)) // advances the FIFO is the TP sweep has reached it's end
+		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .2)) // advances the FIFO is the TP sweep has reached it's end
 
 			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
 			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
@@ -133,40 +124,27 @@ Function ITC_BkrdTPFuncMD(s)
 			execute cmd
 		endif
 		
-		//print "fifo = ",(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]), "NextChunkPoints =", (PointsInTP * (ActiveDeviceList[i][4]))// + ((ActiveDeviceList[i][3] - 1) * PointsInITCData)
-		//if((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] -((ActiveDeviceList[i][3] - 2^16) * PointsInITCData)) > (PointsInTP * ActiveDeviceList[i][4]))
-
-		//if((ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]  > (PointsInTP * (ActiveDeviceList[i][4]))))// the +2 adds a delay so that the chunking is always a little behind // chops up 100 pulse TP wave into single pulses based on location in data acquisition
-		//variable PointsCompletedInNextChunk = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTP)
-		//print "PointsCompletedInNextChunk=",PointsCompletedInNextChunk
-		//	if((ActiveDeviceList[i][4]) >= ActiveDeviceList[0][5])
-		//		ActiveDeviceList[i][4] = 1
-		//	endif
-			//print "inside"
-			ITCDataWave[0][0] =+ 0
-			//startPoint = 0//((PointsInTP / 4))// * ActiveDeviceList[i][4])
-//			startPoint = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - PointsCompletedInNextChunk - PointsInTP
-//			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
-//			TP_Delta(panelTitle, WavePath + ":TestPulse") 
-//			ActiveDeviceList[i][4] += 1
-//			print startpoint
-		//endif
 		
-		
-		//print "FIFOAvailable =", ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-		//print "Stop collection point =", StopCollectionPoint*ActiveDeviceList[i][3]
-		
-		//if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (StopCollectionPoint * .05 * ActiveDeviceList[i][3])) // advances the FIFO is the TP sweep has reached it's end
-			//print "advancing FIFO"
+			if(stringmatch(WavePath,"*ITC1600*") == 0) // checks to see if the device is not a ITC1600
+				if( ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= 4650000) // checks to see if the hardware buffer is at max capacity
+					Execute "ITCStopAcq" // stop and restart acquisition
+					string ITCChanConfigWavePath
+					sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
+					string ITCDataWavePath
+					sprintf ITCDataWavePath, "%s:ITCDataWave" WavePath
+					sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+					Execute cmd	
+					string ITCFIFOPosAllConfigWvPthStr
+					sprintf ITCFIFOPosAllConfigWvPthStr, "%s:ITCFIFOPositionAllConfigWave" WavePath
+					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPosAllConfigWvPthStr// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+					execute cmd
+					Execute "ITCStartAcq"
+				endif
+			endif
 			
-			//print StopCollectionPoint*ActiveDeviceList[i][3]
-
-			//FIFOoffset += ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-			//FIFOAdvance[][2] = 0
-			//ITCFIFOAvailAllConfigWave[][2] =0
 			ITCDataWave[0][0] =+ 0
 			
-			if(mod(s.curRunTicks, 100) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
+			if(mod(s.curRunTicks, 50) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
 				ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 				ModifyGraph /w = $oscilloscopeSubWindow Live = 1
 			endif
@@ -194,8 +172,6 @@ Function ITC_BkrdTPFuncMD(s)
 				endif
 			endif
 		endif
-		
-		
 		
 		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 		i += 1
@@ -313,20 +289,22 @@ Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) //
 	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 	if (AddOrRemoveDevice == 1) 
 		if (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave) == 0)
-			Make /WAVE /n = (1,4) root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
+			Make /WAVE /n = (1,5) root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 			WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 			// print devicefolderpath + ":itcdatawave"
 			ActiveDevWavePathWave[0][0] = $(DeviceFolderPath + ":ITCDataWave") 
 			ActiveDevWavePathWave[0][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
 			ActiveDevWavePathWave[0][2] = $(DeviceFolderPath + ":ITCFIFOPositionAllConfigWave") 
 			ActiveDevWavePathWave[0][3] = $(DeviceFolderPath + ":ResultsWave") 			
+			ActiveDevWavePathWave[0][4] = $(DeviceFolderPath + ":ITCChanConfigWave") 
 		elseif (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave) == 1)
 			Variable numberOfRows = DimSize(ActiveDevWavePathWave, 0)
-			Redimension /n = (numberOfRows + 1,4) ActiveDevWavePathWave
+			Redimension /n = (numberOfRows + 1,5) ActiveDevWavePathWave
 			ActiveDevWavePathWave[numberOfRows][0] = $(DeviceFolderPath + ":ITCDataWave") 
 			ActiveDevWavePathWave[numberOfRows][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
 			ActiveDevWavePathWave[numberOfRows][2] = $(DeviceFolderPath + ":ITCFIFOPositionAllConfigWave") 
 			ActiveDevWavePathWave[numberOfRows][3] = $(DeviceFolderPath + ":ResultsWave")
+			ActiveDevWavePathWave[numberOfRows][4] = $(DeviceFolderPath + ":ITCChanConfigWave") 
 		endif
 	elseif (AddOrRemoveDevice == -1)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave

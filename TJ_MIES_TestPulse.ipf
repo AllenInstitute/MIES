@@ -488,3 +488,34 @@ Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	
 	return NoYes
 End
+
+Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
+	string panelTitle
+	variable frequency
+	variable amplitude
+	Wave TPWave
+	variable numberOfSquarePulses
+	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)
+	//print "longest sweep =", longestSweepPoints
+	variable exponent = ceil(log(longestSweepPoints)/log(2))
+	if(exponent < 16) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
+		exponent = 16
+	endif 
+	print exponent
+	make /FREE /n = (2 ^ exponent)  BuildWave
+	SetScale /P x 0,0.005, "ms", BuildWave
+
+	MultiThread BuildWave = 0.999999 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
+	MultiThread BuildWave = Ceil(BuildWave)
+	duplicate /o BuildWave TPWave
+	TPWave *= Amplitude
+	FindLevels /Q BuildWave, 0.5
+	numberOfSquarePulses = V_LevelsFound
+	if(mod(numberOfSquarePulses, 2) == 0)
+		return (numberOfSquarePulses / 2) 
+	else
+		numberOfSquarePulses -= 1
+		return (numberOfSquarePulses / 2)
+	endif
+	// if an even number of levels are found the TP returns to baseline
+End
