@@ -5,10 +5,13 @@ Function IM_InitiateMIES()
 	NewDataFolder /o root:MIES
 	NewDataFolder /o root:MIES:Amplifiers
 	NewDataFolder /o root:MIES:Amplifiers:Settings
+	NewDataFolder /o root:MIES:Manipulators
+	NewDataFolder /o root:MIES:Camera
 	NewDataFolder /o root:MIES:ITCDevices
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices // stores lists of data related to ITC devices actively acquiring data
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:TestPulse // stores lists of data related to ITC devices actively running a test pulse
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:Timer // stores lists of data that the background timer uses
+	
 	// Initiate wave builder - includes making wave builder panel
 	WB_InitiateWaveBuilder()
 	// make ephys panel

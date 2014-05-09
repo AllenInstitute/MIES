@@ -22,5 +22,6 @@
 #include "C:gitwork:MIES_TimJ:TJ_MIES_WaveNoteMgmnt"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_TPBackgroundMD"
 #include "C:gitwork:MIES_TimJ:TJ_MIES_BackgroundTimerMD"
+#include "C:gitwork:MIES_TimJ:TJ_MIES_DataAcqMgmt"
 #include <ProcedureBrowser>
 #include <FunctionProfiling>

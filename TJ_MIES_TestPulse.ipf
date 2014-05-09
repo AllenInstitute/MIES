@@ -293,11 +293,12 @@ End
 ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
 				string InputDataPath
-				NVAR Duration = $InputDataPath + ":Duration"
+				NVAR DurationG = $InputDataPath + ":Duration"
 				NVAR AmplitudeIC = $InputDataPath + ":AmplitudeIC"	
 				NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"	
 				AmplitudeIC = abs(AmplitudeIC)
 				AmplitudeVC =  abs(AmplitudeVC)
+				variable Duration = 4 * DurationG  // remove this line for non MD test pulse method
 				wave TPWave = $InputDataPath + ":TestPulseITC"
 				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
 				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
