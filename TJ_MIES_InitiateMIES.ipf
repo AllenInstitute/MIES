@@ -12,6 +12,8 @@ Function IM_InitiateMIES()
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:TestPulse // stores lists of data related to ITC devices actively running a test pulse
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:Timer // stores lists of data that the background timer uses
 	
+	string /G root:MIES:ITCDevices:ITCPanelTitleList
+	
 	// Initiate wave builder - includes making wave builder panel
 	WB_InitiateWaveBuilder()
 	// make ephys panel
