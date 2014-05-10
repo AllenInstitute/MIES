@@ -303,7 +303,7 @@ Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the
 end
 //==========================================================================================
 
-Function DC_CalculateLongestSweep(panelTitle)
+Function DC_CalculateLongestSweep(panelTitle) // returns the longest sweep in points
 	string panelTitle
 	variable LongestSweep
 	

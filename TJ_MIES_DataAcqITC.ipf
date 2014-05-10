@@ -10,7 +10,7 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	variable stopCollectionPoint = dimsize(ITCDataWave, 0) / 4
+	variable stopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // dimsize(ITCDataWave, 0) / 4
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -78,7 +78,7 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	
 	wave ITCDataWave = $WavePath+ ":ITCDataWave"
 	//variable /G root:MIES:ITCDevices:StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
 	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -551,4 +551,13 @@ if(v_value == 1)
 	endif
 endif
 
+End
+
+Function ITC_CalcDataAcqStopCollPoint(panelTitle) // calculates the stop colleciton point, includes global adjustments to set on and off set.
+	string panelTitle
+	variable stopCollectionPoint
+	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle) // returns longest sweep in points - accounts for sampling interval
+	Variable GobalOnsetOffsetSum = DC_ReturnTotalLengthIncrease(PanelTitle)
+	stopCollectionPoint = LongestSweep + GobalOnsetOffsetSum
+	return stopCollectionPoint
 End
