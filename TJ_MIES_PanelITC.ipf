@@ -2785,13 +2785,14 @@ Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	string panelTitle = DAP_ReturnPanelName()
+	WBP_UpdateITCPanelPopUps(panelTitle) // makes sure user data for controls is up to date
 	// updates sweeps in cycle value - when indexing is off, only the start set is counted, whend indexing is on all sets between start and end set are counted
 	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
 		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
-	else
+	elseif(v_value ==1)
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
 		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	

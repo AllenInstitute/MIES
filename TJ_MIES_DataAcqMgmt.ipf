@@ -52,7 +52,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 					ITC_BkrdDataAcqMD(2, DeviceNum, TriggerMode, followerPanelTitle)
 					i += 1
 				while(i < numberOfFollowerDevices)
-				ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!!
+				ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!! THIS TRIGGERS THE YOKED ITC1600s
 			elseif(numberOfFollowerDevices == 0)
 				ITC_ConfigUploadDAC(panelTitle)
 				ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
@@ -133,7 +133,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 	//ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	ITC_ConfigUploadDAC(panelTitle)
-	ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle)
+	ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle) // START TP DATA ACQUISITION
 	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
 	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 	

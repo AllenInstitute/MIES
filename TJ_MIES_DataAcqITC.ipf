@@ -552,6 +552,7 @@ if(v_value == 1)
 endif
 
 End
+//======================================================================================
 
 Function ITC_CalcDataAcqStopCollPoint(panelTitle) // calculates the stop colleciton point, includes global adjustments to set on and off set.
 	string panelTitle
@@ -561,3 +562,5 @@ Function ITC_CalcDataAcqStopCollPoint(panelTitle) // calculates the stop colleci
 	stopCollectionPoint = LongestSweep + GobalOnsetOffsetSum
 	return stopCollectionPoint
 End
+
+//======================================================================================

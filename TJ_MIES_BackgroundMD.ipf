@@ -12,7 +12,7 @@
 	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
 	//variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
-	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
+	variable StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
 //	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	
 //	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"

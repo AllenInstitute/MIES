@@ -376,7 +376,7 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 		i += 1
 	while(i < (itemsinlist(DAChannelStatusList,";")))
 	
-	return MaxSets
+	return MaxSets // if the start and end set are the same, this returns 0
 End
 
 Function IDX_MaxNoOfSweeps(PanelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
