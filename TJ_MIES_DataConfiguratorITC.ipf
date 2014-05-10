@@ -293,7 +293,7 @@ Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the
 	variable exponent = ceil(log(LongestSweep)/log(2))
 	//exponent += 2
 	if(DataAcqOrTP == 0)
-		exponent += 2 // round(5000 / LongestSweep) // buffer for sweep length
+		exponent += 1 // round(5000 / LongestSweep) // buffer for sweep length
 	endif
 	//print "exponent = ",exponent
 	//print ceil(5000 / LongestSweep)

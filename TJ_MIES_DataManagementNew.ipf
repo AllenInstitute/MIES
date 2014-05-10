@@ -17,7 +17,7 @@ Function DM_SaveITCData(panelTitle)
 	string SavedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(SweepNo)
 	string SavedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(SweepNo)
 	//variable RowsToCopy = dimsize(ITCDataWave, 0) / 5
-	variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
+	variable RowsToCopy = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
 	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $SavedDataWaveName
 	Duplicate /o ITCChanConfigWave $SavedSetUpWaveName
 	note $savedDataWaveName, Time()// adds time stamp to wave note
