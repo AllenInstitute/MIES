@@ -1620,10 +1620,10 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 		endif
 		//PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
 		PopupMenu  $ctrlName0d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
-		controlupdate /w = $panelTitle $ctrlname0d
+		//controlupdate /w = $panelTitle $ctrlname0d
 		//PopupMenu  $ctrlName1d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
 		PopupMenu  $ctrlName1d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
-		controlupdate/w = $panelTitle $ctrlname1d
+		//controlupdate/w = $panelTitle $ctrlname1d
 
 		i += 1
 	while(i < noOfControls)
