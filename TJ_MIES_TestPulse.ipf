@@ -138,7 +138,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	GlobalTPAmplitudeVariableIC = v_value
 End
 
-Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates 100 TPs in a row
+Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^16)
 	wave TestPulse
 	string panelTitle
 	variable i = 0
@@ -160,9 +160,10 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	variable TPDurInms = v_value
 	print "min samp int = ", minsampint
-	PulseDuration = (TPDurInms  / (MinSampInt/1000))
+	PulseDuration = (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
+	print "pulse points = ", PulseDuration
 	GlobalTPDurationVariable = PulseDuration
-	variable ITCdataWaveLength = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)
+	variable ITCdataWaveLength = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
 	
 	//redimension /n = (200 * PulseDuration) TestPulse // makes room in wave for 100 TPs
 	// need to deal with units here to ensure that resistance is calculated correctly
@@ -298,9 +299,9 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"	
 				AmplitudeIC = abs(AmplitudeIC)
 				AmplitudeVC =  abs(AmplitudeVC)
-				//variable Duration = 4 * DurationG  // remove this line for non MD test pulse method
-				variable Duration = DurationG  
+			//	variable Duration = DurationG  
 				wave TPWave = $InputDataPath + ":TestPulseITC"
+				variable Duration = (deltax(TPWave) / 0.005) * DurationG  // remove this line for non MD test pulse method
 				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
 				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
 				variable TPSSEndTime = (0.95*((Duration * 0.0075)))
@@ -497,19 +498,22 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	variable amplitude
 	Wave TPWave
 	variable numberOfSquarePulses
-	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)
+	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
 	//print "longest sweep =", longestSweepPoints
 	variable exponent = ceil(log(longestSweepPoints)/log(2))
 	if(exponent < 16) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
 		exponent = 16
 	endif 
-	print exponent
+	print "exponent =", exponent
 	make /FREE /n = (2 ^ exponent)  BuildWave
+//	make /o /n = (2 ^ exponent)  BuildWave
+
 	SetScale /P x 0,0.005, "ms", BuildWave
 
 	MultiThread BuildWave = 0.999999 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
 	MultiThread BuildWave = Ceil(BuildWave)
 	duplicate /o BuildWave TPWave
+
 	TPWave *= Amplitude
 	FindLevels /Q BuildWave, 0.5
 	numberOfSquarePulses = V_LevelsFound

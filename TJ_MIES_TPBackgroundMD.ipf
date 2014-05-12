@@ -54,7 +54,6 @@ Function ITC_BkrdTPFuncMD(s)
 	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
-	
 	variable i = 0
 	variable NumberOfActiveDevices
 	string WavePath
@@ -75,6 +74,7 @@ Function ITC_BkrdTPFuncMD(s)
 		// update parameters for a particular active device
 		panelTitle = ActiveDeviceTextList[i]
 		WavePath = HSU_DataFullFolderPathString(panelTitle)
+		WAVE /z FIFOAdvance = $WavePath + ":FifoAdvance"
 		sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
 		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // number of points in a single test pulse
 		
@@ -97,8 +97,21 @@ Function ITC_BkrdTPFuncMD(s)
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
 		Execute cmd	
 		
-		// extracts chunk from ITCDataWave for plotting
 		variable PointsCompletedInITCDataWave = PointsInTPITCDataWave - (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave)
+
+
+		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .1)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
+			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
+			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
+			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
+			FIFOAdvance[][2] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]) // the abs prevents a neg number
+			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the DA FIFO pointers back to the start
+			execute cmd
+			ActiveDeviceList[i][3] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2])
+		endif
+		
+		
+		// extracts chunk from ITCDataWave for plotting
 		variable ActiveChunk =  (floor(PointsCompletedInITCDataWave /  (PointsInTP*2)))
 		startPoint = (ActiveChunk * (PointsInTP*2)) 
 		if(startPoint < (PointsInTP * 2))
@@ -108,24 +121,18 @@ Function ITC_BkrdTPFuncMD(s)
 		DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		ActiveDeviceList[i][4] += 1
-		//print ActiveChunk
-		//print stopcollectionpoint
-		//print PointsCompletedInITCDataWave
-		//print pointsintp
+		// print ActiveChunk
+		// print stopcollectionpoint
+		// print PointsCompletedInITCDataWave
+		// print pointsintp
 		
 		
-		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .2)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
-			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
-			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
-			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
-			FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the DA FIFO pointers back to the start
-			execute cmd
-		endif
+
 		
-		
+		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
+		// the code stops and starts the data acquisition to correct
 			if(stringmatch(WavePath,"*ITC1600*") == 0) // checks to see if the device is not a ITC1600
-				if( ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
+				if(FIFOAdvance[0][2] < 0) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
 					Execute "ITCStopAcq" // stop and restart acquisition
 					string ITCChanConfigWavePath
 					sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
@@ -143,7 +150,7 @@ Function ITC_BkrdTPFuncMD(s)
 			
 			ITCDataWave[0][0] =+ 0
 			
-			if(mod(s.curRunTicks, 50) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
+			if(mod(s.curRunTicks, 100) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
 				ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 				ModifyGraph /w = $oscilloscopeSubWindow Live = 1
 			endif
@@ -226,7 +233,7 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
-			ActiveDeviceList[0][3] = 1 // sweep count
+			ActiveDeviceList[0][3] =  0 // FIFO advance from last background cycle
 			ActiveDeviceList[0][4] = 1 // TP count
 			ActiveDeviceList[0][5] = TPPulseCount // pulses in TP ITC data wave
 		elseif (waveexists($WavePath + ":ActiveDeviceList") == 1)
@@ -236,7 +243,7 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
-			ActiveDeviceList[0][3] = 1 // sweep count
+			ActiveDeviceList[0][3] = 0 // FIFO advance from last background cycle
 			ActiveDeviceList[0][4] = 1 // TP count
 			ActiveDeviceList[0][5] = TPPulseCount// pulses in TP ITC data wave
 		endif

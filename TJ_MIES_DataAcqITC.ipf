@@ -262,7 +262,7 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
-	CtrlNamedBackground TestPulse, period = 2, proc = ITC_TestPulseFunc
+	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 
 End

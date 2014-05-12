@@ -250,7 +250,7 @@ Function DC_LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types
 	string WaveNameString
 	ControlType = "Wave"
 	string ChannelTypeWaveList = DC_PopMenuStringList(ChannelType, ControlType, panelTitle)
-	
+	print "ChannelTypeWaveList =",ChannelTypeWaveList
 	//if da or ttl channels is active, query the wavelength of the active channel
 	i = 0
 	wavelength = 0
@@ -282,22 +282,21 @@ Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the
 	string panelTitle
 	variable DataAcqOrTP // 0 = DataAcq, 1 = TP
 	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle)
-	//Determine Longest Wave
-	//if (DC_LongestOutputWave("DA", panelTitle) >= DC_LongestOutputWave("TTL", panelTitle))
-//		LongestWaveLength = DC_LongestOutputWave("DA", panelTitle)
-//	else
-//		LongestWaveLength = DC_LongestOutputWave("TTL", panelTitle)
-//	endif
-	
-//	LongestWaveLength /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
+	print "Longest sweep =", LongestSweep
 	variable exponent = ceil(log(LongestSweep)/log(2))
 	//exponent += 2
 	if(DataAcqOrTP == 0)
+	print " data acq not TP exponent"
 		exponent += 1 // round(5000 / LongestSweep) // buffer for sweep length
+	endif
+	
+	if(exponent < 16)
+		exponent = 16
 	endif
 	//print "exponent = ",exponent
 	//print ceil(5000 / LongestSweep)
 	//LongestWaveLength *= 5
+	print "DC_CalculateITCDataWaveLength =",(2^exponent), "exponent =", exponent
 	return (2^exponent)
 	//return round(LongestWaveLength)
 end
@@ -446,7 +445,6 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle) / 5)
 	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
 	ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
-	print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
 			SetVarDAGain = "gain_DA_0" + num2str(i)
