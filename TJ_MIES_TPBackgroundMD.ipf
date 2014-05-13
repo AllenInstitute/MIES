@@ -100,7 +100,7 @@ Function ITC_BkrdTPFuncMD(s)
 		variable PointsCompletedInITCDataWave = PointsInTPITCDataWave - (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave)
 
 
-		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .1)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
+		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .05)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
 			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
 			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
 			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
@@ -113,11 +113,14 @@ Function ITC_BkrdTPFuncMD(s)
 		
 		// extracts chunk from ITCDataWave for plotting
 		variable ActiveChunk =  (floor(PointsCompletedInITCDataWave /  (PointsInTP*2)))
+		if(ActiveChunk >= 1) // This is here because trying to get the last complete chunk somtimes returns a what looks like a incomplete chunk - could be because the xop isn't releasing the itc datawave
+			ActiveChunk -= 1 // Doing: ITCDataWave[0][0] += 0 does not help but looking one chunk behind does help
+		endif
 		startPoint = (ActiveChunk * (PointsInTP*2)) 
 		if(startPoint < (PointsInTP * 2))
 			startPoint = 0
 		endif
-
+	//	ITCDataWave[0][0] += 0
 		DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		ActiveDeviceList[i][4] += 1
@@ -132,8 +135,9 @@ Function ITC_BkrdTPFuncMD(s)
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct
 			if(stringmatch(WavePath,"*ITC1600*") == 0) // checks to see if the device is not a ITC1600
-				if(FIFOAdvance[0][2] < 0) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
+				if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] == ActiveDeviceList[i][5]) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
 					Execute "ITCStopAcq" // stop and restart acquisition
+					ITCFIFOAvailAllConfigWave[][2] =0
 					string ITCChanConfigWavePath
 					sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
 					string ITCDataWavePath
@@ -145,10 +149,12 @@ Function ITC_BkrdTPFuncMD(s)
 					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPosAllConfigWvPthStr// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 					execute cmd
 					Execute "ITCStartAcq"
+					print "FIFO advance failed, acq restarted"
 				endif
 			endif
 			
-			ITCDataWave[0][0] =+ 0
+			ActiveDeviceList[i][5] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+			//ITCDataWave[0][0] =+ 0
 			
 			if(mod(s.curRunTicks, 100) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
 				ModifyGraph /w = $oscilloscopeSubWindow Live = 0

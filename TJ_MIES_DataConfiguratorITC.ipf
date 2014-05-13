@@ -250,7 +250,6 @@ Function DC_LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types
 	string WaveNameString
 	ControlType = "Wave"
 	string ChannelTypeWaveList = DC_PopMenuStringList(ChannelType, ControlType, panelTitle)
-	print "ChannelTypeWaveList =",ChannelTypeWaveList
 	//if da or ttl channels is active, query the wavelength of the active channel
 	i = 0
 	wavelength = 0
