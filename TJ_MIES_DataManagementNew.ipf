@@ -61,7 +61,7 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	//Duplicate /o /r = [((startPoint + RowsToCopy)/4),(((startPoint + RowsToCopy)/4)+(startPoint + RowsToCopy))][] ITCDataWave $TestPulseITCPath
 	wave TestPulseITC = $TestPulseITCPath
 	redimension /d TestPulseITC
-	SetScale/P x 0,deltax(TestPulseITC),"", TestPulseITC
+	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 //Function MakeFloatingPointWave(WaveBeingPassed)
