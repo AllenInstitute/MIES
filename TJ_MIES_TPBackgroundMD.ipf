@@ -124,7 +124,7 @@ Function ITC_BkrdTPFuncMD(s)
 		DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		ActiveDeviceList[i][4] += 1
-		// print ActiveChunk
+		//print ActiveChunk
 		// print stopcollectionpoint
 		// print PointsCompletedInITCDataWave
 		// print pointsintp

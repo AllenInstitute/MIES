@@ -48,7 +48,8 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 				
 				do // LOOP that begins data acquistion follower ITC1600 devices
 					followerPanelTitle = stringfromlist(i, ListOfFollowerDevices, ";")
-					controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+					controlinfo /w = $panelTitle popup_moreSettings_DeviceNo // shouldn't this be follower panel title
+					//controlinfo /w = $followerPanelTitle popup_moreSettings_DeviceNo // shouldn't this be follower panel title
 					DeviceNum =  v_value - 1
 					ITC_BkrdDataAcqMD(2, DeviceNum, TriggerMode, followerPanelTitle)
 					i += 1
@@ -107,7 +108,9 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) 
+				ARDStartSequence()
 				string followerPanelTitle
+				
 				do // configure follower device for TP acquistion
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					TP_TPSetUp(followerPanelTitle)
@@ -116,15 +119,19 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 				i = 0
 				TriggerMode = 256
 				
+				//Lead board commands
+				TP_TPSetUp(PanelTitle)
 				ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
 				wave /z SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
 				wave /z SelectedDACScale = $(WavePath + ":SelectedDACScale")
 				TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle) // restores lead board settings
 				TP_RestoreDAScale(SelectedDACScale,panelTitle)
 				
-				
+				//Follower board commands
 				do
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+					controlinfo /w = $followerPanelTitle popup_moreSettings_DeviceNo
+					DeviceNum =  v_value - 1
 					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 					ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, followerPanelTitle) // Sets lead board in wait for trigger mode
 					wave /z SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
@@ -133,6 +140,10 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 					TP_RestoreDAScale(SelectedDACScale,followerPanelTitle)					
 					i += 1
 				while(i < numberOfFollowerDevices)
+				
+				// Arduino gives trigger
+				ARDStartSequence()
+				
 			elseif(numberOfFollowerDevices == 0)
 				TP_TPSetUp(panelTitle)
 				ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle) // START TP DATA ACQUISITION
@@ -173,7 +184,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 //		// adjust test pulse wave according to panel input
 //		//TP_UpdateTestPulseWave(TestPulse, panelTitle)
 //	
-//		TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^16
+//		TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
 //		
 //		// creates TP wave used for display
 //		//DM_CreateScaleTPHoldingWave(panelTitle)
@@ -242,7 +253,7 @@ Function TP_TPSetUp(panelTitle)
 		// adjust test pulse wave according to panel input
 		//TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	
-		TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^16
+		TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
 		
 		// creates TP wave used for display
 		//DM_CreateScaleTPHoldingWave(panelTitle)
@@ -259,8 +270,8 @@ Function TP_TPSetUp(panelTitle)
 		wave ITCDataWave = $WavePath + ":ITCDataWave"
 		variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))
 		
-		if(NewNoOfPoints == 21845) // extra special exceptions for 3 channels - super BS coding right here.
-			NewNoOfPoints = 2^14
+		if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
+			NewNoOfPoints = 2^15
 		endif
 		// print "divisor =",(deltaX(ITCDataWave) / 0.005)
 		// print "new no of points =", NewNoOfPoints

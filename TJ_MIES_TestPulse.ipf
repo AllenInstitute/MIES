@@ -138,7 +138,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	GlobalTPAmplitudeVariableIC = v_value
 End
 
-Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^16)
+Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^17)
 	wave TestPulse
 	string panelTitle
 	variable i = 0
@@ -501,8 +501,8 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
 	//print "longest sweep =", longestSweepPoints
 	variable exponent = ceil(log(longestSweepPoints)/log(2))
-	if(exponent < 16) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
-		exponent = 16
+	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
+		exponent = 17
 	endif 
 	print "exponent =", exponent
 	make /FREE /n = (2 ^ exponent)  BuildWave

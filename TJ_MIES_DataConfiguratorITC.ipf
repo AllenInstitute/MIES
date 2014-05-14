@@ -289,8 +289,8 @@ Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the
 		exponent += 1 // round(5000 / LongestSweep) // buffer for sweep length
 	endif
 	
-	if(exponent < 16)
-		exponent = 16
+	if(exponent < 17)
+		exponent = 17
 	endif
 	//print "exponent = ",exponent
 	//print ceil(5000 / LongestSweep)
