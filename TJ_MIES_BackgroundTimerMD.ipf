@@ -11,7 +11,7 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 	Variable EndTimeTicks = StartTicks + DurationTicks
 	
 	// get device ID global
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 
 	// create string list with function names passed in
@@ -83,7 +83,7 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 	Variable start = stopmstimer(-2)
 
 	// get device ID global
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 
 	WavePath = "root:MIES:ITCDevices:ActiveITCDevices:Timer"

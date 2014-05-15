@@ -3,7 +3,7 @@
 Function DM_SaveITCData(panelTitle)
 	string panelTitle
 	variable DeviceType, DeviceNum
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	Variable SweepNo
@@ -38,7 +38,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test 
 	string panelTitle
 	// variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle) / 5
 	variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"
 	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $TestPulseITCPath
@@ -51,7 +51,7 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	string panelTitle
 	variable startPoint, NoOfPointsInTP
 	// variable RowsToCopy = (DC_CalculateLongestSweep(panelTitle)) / 99  // divide by 100 becuase there are 100 TPs
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	ITCDataWave[0][0] += 0
 	variable RowsToCopy = ((NoOfPointsInTP) // / (deltax(ITCDataWave)/.005)  // DC_CalculateITCDataWaveLength(panelTitle) / 5
@@ -74,7 +74,7 @@ End
 Function DM_ADScaling(WaveToScale, panelTitle)
 wave WaveToScale
 string panelTitle
-string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+string WavePath = HSU_DataFullFolderPathString(panelTitle)
 wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 variable NoOfADColumns = DC_NoOfChannelsSelected("ad", "check", panelTitle)
@@ -110,7 +110,7 @@ end
 Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	variable NoOfDAColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
@@ -143,16 +143,16 @@ end
 
 Function DM_ScaleITCDataWave(panelTitle)// used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
 string panelTitle
-string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+string WavePath = HSU_DataFullFolderPathString(panelTitle)
 wave ITCDataWave = $WavePath + ":ITCDataWave"
 redimension/d ITCDataWave
 DM_ADScaling(ITCDataWave,panelTitle)
 end
 
-Function DM_DeleteSettingsHistoryWaves(SweepNo,PanelTitle)// deletes setting history waves "older" than SweepNo
+Function DM_DeleteSettingsHistoryWaves(SweepNo,panelTitle)// deletes setting history waves "older" than SweepNo
 	variable SweepNo
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
@@ -178,7 +178,7 @@ End
 Function DM_ReturnLastSweepAcquired(panelTitle)
 	//LastSweep
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":data"
+	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":data"
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder $WavePath
 	
@@ -209,7 +209,7 @@ Function DM_DeleteDataWaves(panelTitle, SweepNo)
 	string panelTitle
 	variable SweepNo
 	variable i = SweepNo
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":data"
+	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":data"
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder $WavePath

@@ -9,7 +9,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
 	variable i =  0
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
+	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":"
 	wave ITCDataWave = $WavePath + "ITCDataWave"
 	wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
 	wave ChannelClampMode = $WavePath + "ChannelClampMode"
@@ -62,9 +62,9 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 		YaxisLow -= YaxisSpacing
 
 	endfor
-	//SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) / 5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+	//SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) / 5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 	if(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
-		//SetAxis /w = $oscilloscopeSubWindow bottom 0, (DC_CalculateLongestSweep(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(PanelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
+		//SetAxis /w = $oscilloscopeSubWindow bottom 0, (DC_CalculateLongestSweep(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 		SetAxis /w = $oscilloscopeSubWindow bottom 0, (ITC_CalcDataAcqStopCollPoint(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	
 	elseif(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 1) // determines if the wave is a test pulse

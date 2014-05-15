@@ -20,8 +20,8 @@ Function DB_LockDBPanel(panelTitle)
 End
 
 //==============================================================================================================================
-Function DB_LastSweepAcquired(PanelTitle)// returns last sweep acquired 
-	string PanelTitle
+Function DB_LastSweepAcquired(panelTitle)// returns last sweep acquired 
+	string panelTitle
 	string ListOfAcquiredWaves
 	variable LastSweepAcquired
 	
@@ -31,7 +31,7 @@ Function DB_LastSweepAcquired(PanelTitle)// returns last sweep acquired
 	
 	ListOfAcquiredWaves = wavelist("sweep_*", ";", "MINCOLS:2")
 	LastSweepAcquired = (itemsinlist(ListOfAcquiredWaves, ";")) - 1
-	valdisplay valdisp_DataBrowser_LastSweep win = $PanelTitle, value = _num:LastSweepAcquired
+	valdisplay valdisp_DataBrowser_LastSweep win = $panelTitle, value = _num:LastSweepAcquired
 	
 	SetDataFolder saveDFR
 	
@@ -110,12 +110,12 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 				AxisName = "DA"+stringfromlist(i, DAChannelList,";")
 				NewTraceName = DataPath + ":" + nameofwave(sweepName) + "_" + AxisName
 				duplicate /o /r = (0,inf)(i) SweepName $NewTraceName
-				appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
-				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
+				appendtograph /w = $panelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
+				ModifyGraph /w = $panelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
 				Unit = stringfromlist(i, UnitWaveNote, ";")
-				Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName + " (" + Unit + ")"
-				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" lblPosMode = 1
-				ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" standoff($AxisName) = 0,freePos($AxisName) = 0
+				Label /w = $panelTitle + "#DataBrowserGraph" $AxisName, AxisName + " (" + Unit + ")"
+				ModifyGraph /w = $panelTitle + "#DataBrowserGraph" lblPosMode = 1
+				ModifyGraph /w = $panelTitle + "#DataBrowserGraph" standoff($AxisName) = 0,freePos($AxisName) = 0
 			endif
 		endif
 			//AD wave to plot
@@ -125,12 +125,12 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 			AxisName = "AD" + stringfromlist(i, ADChannelList,";")
 			NewTraceName = DataPath + ":" + nameofwave(sweepName) + "_" + AxisName
 			duplicate /o /r = (0, inf)(i + NumberOfDAchannels) SweepName $NewTraceName
-			appendtograph /w = $PanelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
-			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
+			appendtograph /w = $panelTitle + "#DataBrowserGraph" /L = $AxisName $NewTraceName
+			ModifyGraph /w = $panelTitle + "#DataBrowserGraph" axisEnab($AxisName) = {YaxisLow,YaxisHigh}
 			Unit = stringfromlist((i + NumberOfDAchannels), UnitWaveNote, ";")
-			Label /w = $PanelTitle + "#DataBrowserGraph" $AxisName, AxisName + " (" + Unit + ")"
-			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" lblPosMode = 1
-			ModifyGraph /w = $PanelTitle + "#DataBrowserGraph" standoff($AxisName) = 0, freePos($AxisName) = 0
+			Label /w = $panelTitle + "#DataBrowserGraph" $AxisName, AxisName + " (" + Unit + ")"
+			ModifyGraph /w = $panelTitle + "#DataBrowserGraph" lblPosMode = 1
+			ModifyGraph /w = $panelTitle + "#DataBrowserGraph" standoff($AxisName) = 0, freePos($AxisName) = 0
 		endif
 		
 		if(i >= NumberOfDAchannels)
@@ -164,7 +164,7 @@ wave SweepName
 end
 //==============================================================================================================================
 
-Function DB_RemoveAndKillWavesOnGraph(PanelTitle, GraphName)
+Function DB_RemoveAndKillWavesOnGraph(panelTitle, GraphName)
 	string panelTitle
 	string GraphName
 	variable i = 0
@@ -222,12 +222,12 @@ Function DB_ButtonProc_AutoScale(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle
 	getwindow kwTopWin activesw
-	PanelTitle = s_value
+	panelTitle = s_value
 	
 	variable SearchResult = strsearch(panelTitle, "DataBrowserGraph", 2)
 	
 	if(SearchResult == -1)
-		PanelTitle += "#DataBrowserGraph"
+		panelTitle += "#DataBrowserGraph"
 	endif
 	
 	SetAxis /A /w = $panelTitle
@@ -299,13 +299,13 @@ End
 Function /T DB_ReturnDBPanelName()	
 	string panelTitle
 	getwindow kwTopWin activesw
-	PanelTitle = s_value
+	panelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "DataBrowserGraph", 2)
 	if(SearchResult != -1)
-		PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
+		panelTitle = panelTitle[0, SearchResult - 2]//SearchResult+1]
 	endif
 	
-	return PanelTitle
+	return panelTitle
 End
 
 

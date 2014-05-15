@@ -2,12 +2,12 @@
 
 //this proc gets activated after first trial is already acquired if repeated acquisition is on.
 // it looks like the test pulse is always run in the ITI!!! it should be user selectable
-Function RA_Start(PanelTitle)
-	string PanelTitle
+Function RA_Start(panelTitle)
+	string panelTitle
 	variable ITI
 	variable IndexingState
 	variable i = 0
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
 	string CountPath = WavePath + ":Count"
@@ -68,7 +68,7 @@ Function RA_Start(PanelTitle)
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		variable DataAcqOrTP = 1
-		DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 		
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -90,7 +90,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	string panelTitle
 	variable TotTrials
 	variable ITI
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
@@ -135,7 +135,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				IDX_IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 			endif	
 
-			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
+			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 			controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 			activeSetCount = v_value
 			controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
@@ -152,7 +152,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	
 	if(Count < TotTrials)
 		variable DataAcqOrTP = 0
-		DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
@@ -176,7 +176,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				TP_StoreDAScale(SelectedDACScale, panelTitle)
 				TP_SetDAScaleToOne(panelTitle)
 				DataAcqOrTP = 1
-				DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
+				DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 				SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 				
 				controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -206,9 +206,9 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	endif
 End
 
-Function RA_BckgTPwithCallToRACounter(PanelTitle)
+Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI

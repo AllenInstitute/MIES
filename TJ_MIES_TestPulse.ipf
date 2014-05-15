@@ -69,7 +69,7 @@ Function TP_SetDAScaleToOne(panelTitle)
 	string panelTitle
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DASetVariable
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	variable ScalingFactor
 	variable i
@@ -113,7 +113,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	wave TestPulse
 	string panelTitle
 	variable PulseDuration
-	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
+	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 	//print TPGlobalPath
 	variable /g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
@@ -122,7 +122,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	variable /g $TPGlobalPath + ":AmplitudeIC"
 	NVAR GlobalTPAmplitudeVariableIC = $(TPGlobalPath + ":AmplitudeIC")	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
-	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave")
+	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
@@ -144,7 +144,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable i = 0
 	variable PulseDuration
 	variable DataAcqOrTP = 1 // test pulse function
-	string TPGlobalPath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse"
+	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	//print TPGlobalPath
 	variable /g  $TPGlobalPath + ":Duration"
@@ -154,7 +154,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable /g $TPGlobalPath + ":AmplitudeIC"
 	NVAR GlobalTPAmplitudeVariableIC = $(TPGlobalPath + ":AmplitudeIC")	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
-	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave")
+	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
@@ -190,20 +190,20 @@ End
 mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
-	string PanelTitle
+	string panelTitle
 
 	pauseupdate
 	setdatafolder root:
 	getwindow kwTopWin activesw
 
 	variable DataAcqOrTP = 1
-	PanelTitle = s_value
+	panelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	if(SearchResult != -1)
-		PanelTitle = PanelTitle[0,SearchResult - 2]//SearchResult+1]
+		panelTitle = panelTitle[0,SearchResult - 2]//SearchResult+1]
 	endif
 	
-	AbortOnValue HSU_DeviceLockCheck(PanelTitle),1
+	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
 		
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	if(v_value == 0)
@@ -215,7 +215,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		Button $ctrlName, win = $panelTitle, disable = 2
 	endif
 	
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	
 
 	
@@ -224,8 +224,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		killvariables $CountPath
 	endif
 	
-	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
+	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 	
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType = v_value - 1
@@ -285,7 +285,7 @@ End
 	redimension /n = (2 * PulseDuration) TestPulse
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	TestPulse[(PulseDuration / 2),(Pulseduration + (PulseDuration / 2))] = v_value
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 
 //The function TPDelta is called by the TP dataaquistion functions
 //It updates a wave in the Test pulse folder for the device
@@ -396,7 +396,7 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 			
 Function TP_CalculateResistance(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
 	variable NoOfActiveDA = DC_NoOfChannelsSelected("DA", "check", panelTitle)
@@ -408,7 +408,7 @@ Function TP_CalculateResistance(panelTitle)
 
 End
 
-Function TP_PullDataFromTPITCandAvgIT(PanelTitle, InputDataPath)
+Function TP_PullDataFromTPITCandAvgIT(panelTitle, InputDataPath)
 	string panelTitle, InputDataPath
 	NVAR NoOfActiveDA = $InputDataPath + ":NoOFActiveDA"
 	variable column = NoOfActiveDA-1
@@ -421,7 +421,7 @@ End
 //  function that creates string of clamp modes based on the ad channel associated with the headstage	- in the sequence of ADchannels in ITCDataWave - i.e. numerical order
 Function TP_ClampModeString(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR ADChannelList = $WavePath + ":TestPulse:ADChannelList"
 	variable i = 0
 	string /g $WavePath + ":TestPulse:ClampModeString"
@@ -439,7 +439,7 @@ End
 Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a particular AD
 	string panelTitle
 	variable AD
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $WavePath +":ChanAmpAssign"
 	variable i = 0
 	

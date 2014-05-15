@@ -2508,9 +2508,9 @@ Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab 
 			if(tabnum == 0)
 				do
 					panelTitle = stringfromlist(i, ITCPanelTitleList,";")
-					MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
-					ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value=_NUM:MinSampInt
-					controlUpdate /w = $PanelTitle ValDisp_DataAcq_SamplingInt
+					MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+					ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:MinSampInt
+					controlUpdate /w = $panelTitle ValDisp_DataAcq_SamplingInt
 					i += 1
 				while(i < itemsinlist(ITCPanelTitleList,";"))
 			endif
@@ -2604,23 +2604,23 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 	print "Select " + DACwave[5,7] + " Wave"
 	endif
 
-	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value= _NUM:MinSampInt
+	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:MinSampInt
 	
 	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
-	valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
+	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+	valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 End
 //=========================================================================================
 
 Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	String ctrlName
 	setdatafolder root:
-	string PanelTitle = DAP_ReturnPanelName()
+	string panelTitle = DAP_ReturnPanelName()
 	variable DataAcqOrTP = 0
 	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
 	
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string DataAcqStatePath = WavePath + ":DataAcqState"
 	//print DataAcqStatePath
 	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
@@ -2673,7 +2673,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		//Function that passes column to configdataForITCfunction?
 		//If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
 		//
-		DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
 		If(v_value == 0)
@@ -2682,7 +2682,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 			if(v_value == 1)//repeated aquisition is selected
 				DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
 				DAP_AcqDataButtonToStopButton(panelTitle)	// when RA code is modified to have foreground TP during RA, this will not be needed
-				RA_Start(PanelTitle)
+				RA_Start(panelTitle)
 			endif
 		else // background data acq
 			DataAcqState = 1
@@ -2691,7 +2691,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		endif
 	else // data aquistion is ongoing
 		DataAcqState = 0
-		DAP_StopOngoingDataAcquisition(PanelTitle)
+		DAP_StopOngoingDataAcquisition(panelTitle)
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
@@ -2790,12 +2790,12 @@ Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
 	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	elseif(v_value ==1)
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
 	endif
 End
 //=========================================================================================
@@ -2864,14 +2864,14 @@ End
 
 Function DAP_StoreTTLState(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string /g $WavePath + ":StoredTTLState" = DC_ControlStatusListString("TTL", "Check", panelTitle)
 End
 //=========================================================================================
 
 Function DAP_RestoreTTLState(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR StoredTTLState = $WavePath + ":StoredTTLState"
 	variable i, NoOfTTLs, CheckBoxState
 	string TTLCheckBoxName
@@ -3009,12 +3009,12 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	else
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
 	endif
 End
 //=========================================================================================
@@ -3024,8 +3024,8 @@ Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVari
 	Variable varNum
 	String varStr
 	String varName
-	string PanelTitle = DAP_ReturnPanelName()
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string panelTitle = DAP_ReturnPanelName()
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	DFREF saveDFR = GetDataFolderDFR()
 	setDataFolder $WavePath + ":data"
 	string ListOfDataWaves = wavelist("Sweep_*",";","MINCOLS:2")
@@ -3037,8 +3037,8 @@ End
 Function DAP_UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
 	string panelTitle = DAP_ReturnPanelName()
-	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
+	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
 
@@ -3059,12 +3059,12 @@ Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVaria
 	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(PanelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)
+		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	else
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(PanelTitle,1)	
+		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
 	endif
 End
 //=========================================================================================
@@ -3072,13 +3072,13 @@ End
 Function /T DAP_ReturnPanelName()	
 	string panelTitle
 	getwindow kwTopWin activesw
-	PanelTitle = s_value
+	panelTitle = s_value
 	if(stringmatch(panelTitle, "ITC*") == 1) // makes sure DataAcq panel is the selected panel type
 		variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 		if(SearchResult != -1)
-			PanelTitle = PanelTitle[0, SearchResult - 2]//SearchResult+1]
+			panelTitle = panelTitle[0, SearchResult - 2]//SearchResult+1]
 		endif
-		return PanelTitle
+		return panelTitle
 	elseif (stringmatch(panelTitle, "ITC*")== 0) // this else if does not return anything useful - all functions that call this function would return an error if this elseif was run
 		return ""	
 	endif
@@ -3139,7 +3139,7 @@ End
 Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
@@ -3229,7 +3229,7 @@ End
 Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string DACheck, DAGain, ADCheck, ADGain
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
@@ -3313,8 +3313,8 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 
 	endif
 	
-	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
+	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
 
@@ -3337,15 +3337,15 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 		DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode,panelTitle)
 	endif
  
-	variable MinSampInt = DC_ITCMinSamplingInterval(PanelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $PanelTitle, value = _NUM:MinSampInt
+	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
 
-Function DAP_StopOngoingDataAcquisition(PanelTitle)
+Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
 	string cmd 
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
@@ -3381,7 +3381,7 @@ End
 
 Function DAP_AcqDataButtonToStopButton(panelTitle)
 	string panelTitle
-	controlinfo /w = $PanelTitle Check_Settings_SaveData
+	controlinfo /w = $panelTitle Check_Settings_SaveData
 	if(v_value == 0) // Save data
 		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
 		Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion", win = $panelTitle
@@ -3396,7 +3396,7 @@ End
 
 Function DAP_StopButtonToAcqDataButton(panelTitle)
 	string panelTitle
-	controlinfo /w = $PanelTitle Check_Settings_SaveData
+	controlinfo /w = $panelTitle Check_Settings_SaveData
 	if(v_value == 0) // Save data
 		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
 		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData", win = $panelTitle
@@ -3499,7 +3499,7 @@ End
 
 Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl // The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
 	String ctrlName
-	String PanelTitle = DAP_ReturnPanelName()
+	String panelTitle = DAP_ReturnPanelName()
 	if(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) // ensures that only the first ITC1600 can be the lead device (trying to make other devices lead, returns a XOP error)
 		button button_Hardware_Independent Win = $panelTitle, Disable = 0
 		button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
@@ -3516,7 +3516,7 @@ End
 
 Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
 	String ctrlName
-	String PanelTitle = DAP_ReturnPanelName()
+	String panelTitle = DAP_ReturnPanelName()
 	button button_Hardware_Independent Win = $panelTitle, Disable = 2
 	button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
 	button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
@@ -3534,7 +3534,7 @@ End
 
 Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	String ctrlName
-	String PanelTitle = DAP_ReturnPanelName()
+	String panelTitle = DAP_ReturnPanelName()
 	controlinfo /w = $panelTitle popup_Hardware_AvailITC1600s
 	string DeviceToBeAssignedAsFollower = s_value
 	print "panel title =",paneltitle, "follower =", s_value
@@ -3551,7 +3551,7 @@ End
 //=========================================================================================
 Function DAP_ButtonProc_YokeRelease(ctrlName) : ButtonControl
 	String ctrlName
-	String PanelTitle = DAP_ReturnPanelName()
+	String panelTitle = DAP_ReturnPanelName()
 	DAP_RemoveYokedDAC(panelTitle)
 End
 //=========================================================================================
@@ -3562,7 +3562,7 @@ Function DAP_RemoveYokedDAC(panelTitle)
 	string UpdatedListOfFollowerDev = removefromlist(panelToDeYoke, Path_ListOfYokedDACs(panelTitle), ";")
 	setvariable setvar_Hardware_YokeList Win = $panelTitle, value = _STR:UpdatedListOfFollowerDev // updated in panel display of yoked dacs
 	
-	SVAR ListOfFollowerITC1600s = $(HSU_DataFullFolderPathString(PanelTitle) + ":ListOfFollowerITC1600s")
+	SVAR ListOfFollowerITC1600s = $(HSU_DataFullFolderPathString(panelTitle) + ":ListOfFollowerITC1600s")
 	ListOfFollowerITC1600s = UpdatedListOfFollowerDev // updates global list of yoked dacs of the lead device
 	titlebox title_hardware_1600inst win = $panelToDeYoke, disable = 0
 	button button_Hardware_Lead1600 win = $panelToDeYoke, disable = 0
@@ -3580,8 +3580,8 @@ Function DAP_RemoveYokedDAC(panelTitle)
 End
 //=========================================================================================
 Function DAP_RemoveAllYokedDACs(panelTitle) // resets the lists of follower devices on the lead device
-	string PanelTitle
-	string FolderPath = HSU_DataFullFolderPathString(PanelTitle)
+	string panelTitle
+	string FolderPath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR ListOfFollowerITC1600s = $(FolderPath + ":ListOfFollowerITC1600s")
 	string cmd
 	string DeviceToDeYoke
@@ -3607,7 +3607,7 @@ End
 Function DAP_SetFollowerButtons(panelTitle) // Sets the lists and buttons on the follower device actively being yoked
 	string panelTitle
 
-	string FolderPath = HSU_DataFullFolderPathString(PanelTitle)
+	string FolderPath = HSU_DataFullFolderPathString(panelTitle)
 	string FollowerPanelTitle
 	variable itemInList = 0
 	string LeadDevice
@@ -3660,11 +3660,11 @@ Function DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the Yoke control an
 		popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
 		SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 		setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = 0, value =_STR:"None"
-		if(stringmatch(PanelTitle, "ITC1600_Dev_0") == 0) // makes sure yoking can only be set from ITC1600 Dev 0
+		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // makes sure yoking can only be set from ITC1600 Dev 0
 			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
 			titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0", Disable = 0
 			setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = 2
-		elseif(stringmatch(PanelTitle, "ITC1600_Dev_0") == 1)
+		elseif(stringmatch(panelTitle, "ITC1600_Dev_0") == 1)
 			titlebox title_hardware_1600inst Win = $panelTitle, title = "Designate the status of the ITC1600 devices:", Disable = 0
 		endif	
 		i += 1
@@ -3689,14 +3689,14 @@ titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go 
 
 Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	String ctrlName
-	string PanelTitle = DAP_ReturnPanelName()
-	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string panelTitle = DAP_ReturnPanelName()
+	string wavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $wavePath + ":ChanAmpAssign"
 	string W_TelegraphServersPath 
 	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
 	wave W_TelegraphServers = $W_TelegraphServersPath
 // Is an amp associated with the headstage?
-	controlInfo /w = $PanelTitle Popup_Settings_HeadStage
+	controlInfo /w = $panelTitle Popup_Settings_HeadStage
 	variable HeadStageNo = v_value - 1
 
 	if(numtype(ChanAmpAssign[8][HeadStageNo]) != 2)

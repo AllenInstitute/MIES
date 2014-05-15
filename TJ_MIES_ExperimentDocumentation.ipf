@@ -3,7 +3,7 @@
 //=============================================================================================================
 Function ED_MakeSettingsHistoryWave(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	variable NextSweep
 	controlinfo /w = $panelTitle SetVar_Sweep

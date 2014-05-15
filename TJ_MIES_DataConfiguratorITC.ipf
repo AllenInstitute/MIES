@@ -2,19 +2,19 @@
 
 
 //=========================================================================================
-Function DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)// pass column into this function?
-	string PanelTitle
+Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// pass column into this function?
+	string panelTitle
 	variable DataAcqOrTP
 	Variable start = stopmstimer(-2)
-	DC_MakeITCConfigAllConfigWave(PanelTitle)  
-	DC_MakeITCConfigAllDataWave(PanelTitle, DataAcqOrTP)  
-	DC_MakeITCFIFOPosAllConfigWave(PanelTitle)
-	DC_MakeFIFOAvailAllConfigWave(PanelTitle)
+	DC_MakeITCConfigAllConfigWave(panelTitle)  
+	DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)  
+	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
+	DC_MakeFIFOAvailAllConfigWave(panelTitle)
 	
-	DC_PlaceDataInITCChanConfigWave(PanelTitle)
-	DC_PlaceDataInITCDataWave(PanelTitle)
-	DC_PDInITCFIFOPositionAllCW(PanelTitle)// PD = Place Data
-	DC_PDInITCFIFOAvailAllCW(PanelTitle)
+	DC_PlaceDataInITCChanConfigWave(panelTitle)
+	DC_PlaceDataInITCDataWave(panelTitle)
+	DC_PDInITCFIFOPositionAllCW(panelTitle)// PD = Place Data
+	DC_PDInITCFIFOAvailAllCW(panelTitle)
 	print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
 
@@ -261,7 +261,7 @@ Function DC_LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types
 		if(stringmatch(WaveNameString,"-none-") == 0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
 			WaveNameString = "root:MIES:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
 //			if(cmpstr(WaveNameString, "root:WaveBuilder:savedStimulusSets:DA:TestPulse") == 0)// checks to see if test pulse is the wave being run, if yes, changes path
-//			WaveNameString = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
+//			WaveNameString = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse:TestPulse"
 //			endif
 			if(DimSize($WaveNameString, 0 ) > WaveLength)
 				WaveLength = DimSize($WaveNameString, 0 )
@@ -315,27 +315,27 @@ Function DC_CalculateLongestSweep(panelTitle) // returns the longest sweep in po
 	return ceil(LongestSweep)
 End
 //==========================================================================================
-Function DC_MakeITCConfigAllConfigWave(PanelTitle)
-	string PanelTitle
-	string ITCChanConfigPath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCChanConfigWave"
+Function DC_MakeITCConfigAllConfigWave(panelTitle)
+	string panelTitle
+	string ITCChanConfigPath = HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave"
 	Make /I /o /n = (DC_ChanCalcForITCChanConfigWave(panelTitle), 4) $ITCChanConfigPath
 	wave /z ITCChanConfigWave = $ITCChanConfigPath
 	ITCChanConfigWave = 0
 End
 //==========================================================================================
-Function DC_MakeITCConfigAllDataWave(PanelTitle, DataAcqOrTP)// config all refers to configuring all the channels at once
-	string PanelTitle
+Function DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)// config all refers to configuring all the channels at once
+	string panelTitle
 	variable DataAcqOrTP
-	string ITCDataWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCDataWave"
+	string ITCDataWavePath = HSU_DataFullFolderPathString(panelTitle) + ":ITCDataWave"
 	make /w /o /n = (DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP), DC_ChanCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
 	wave/z ITCDataWave = $ITCDataWavePath
 	FastOp ITCDataWave = 0
 	SetScale/P x 0,(DC_ITCMinSamplingInterval(panelTitle)) / 1000,"ms", ITCDataWave
 End
 //==========================================================================================
-Function DC_MakeITCFIFOPosAllConfigWave(PanelTitle)//MakeITCUpdateFIFOPosAllConfigWave
+Function DC_MakeITCFIFOPosAllConfigWave(panelTitle)//MakeITCUpdateFIFOPosAllConfigWave
 	string panelTitle
-	string ITCFIFOPosAllConfigWavePath = HSU_DataFullFolderPathString(PanelTitle) + ":ITCFIFOPositionAllConfigWave"
+	string ITCFIFOPosAllConfigWavePath = HSU_DataFullFolderPathString(panelTitle) + ":ITCFIFOPositionAllConfigWave"
 	Make /I /o /n = (DC_ChanCalcForITCChanConfigWave(panelTitle), 4) $ITCFIFOPosAllConfigWavePath
 	wave /z ITCFIFOPositionAllConfigWave = $ITCFIFOPosAllConfigWavePath
 	ITCFIFOPositionAllConfigWave = 0
@@ -351,13 +351,13 @@ End
 //==========================================================================================
 
 
-Function DC_PlaceDataInITCChanConfigWave(PanelTitle)
+Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string panelTitle
 	variable i = 0// 
 	variable j = 0//used to keep track of row of ITCChanConfigWave which config data is loaded into
 	variable ChannelType // = 0 for AD, = 1 for DA, = 3 for TTL
 	string ChannelStatus
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle) 
+	string WavePath = HSU_DataFullFolderPathString(panelTitle) 
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
 	string UnitString = ""
@@ -416,21 +416,21 @@ Function DC_PlaceDataInITCChanConfigWave(PanelTitle)
 
 End
 //==========================================================================================
-Function DC_PlaceDataInITCDataWave(PanelTitle)
+Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
 	variable i = 0// 
 	variable j = 0//
 	string ChannelStatus
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $(WavePath + ":ITCDataWave")
 	string ITCDataWavePath = WavePath + ":ITCDataWave"
-	//string testPulsePath = HSU_DataFullFolderPathString(PanelTitle) + ":TestPulse:TestPulse"
+	//string testPulsePath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse:TestPulse"
 	string ChanTypeWaveNameList, ChanTypeWaveName
 	string ResampledWaveName = "ResampledWave"
 	string cmd
 	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
-	string CountPath = HSU_DataFullFolderPathString(PanelTitle)+":count" //%%
+	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
 	if(exists(CountPath) == 2)
@@ -520,7 +520,7 @@ Function DC_PlaceDataInITCDataWave(PanelTitle)
 	
 	//Place TTL waves into ITCDataWave
 	i = 0
-	wave /z TTLwave = $HSU_DataFullFolderPathString(PanelTitle) + ":TTLwave"//= root:MIES:WaveBuilder:SavedStimulusSets:TTL:TTLWave
+	wave /z TTLwave = $HSU_DataFullFolderPathString(panelTitle) + ":TTLwave"//= root:MIES:WaveBuilder:SavedStimulusSets:TTL:TTLWave
 	if(DC_AreTTLsInRackChecked(0, panelTitle) == 1)
 		DC_MakeITCTTLWave(0, panelTitle)
 		ITCDataWave[InsertStart, round((dimsize(TTLWave,0) / DecimationFactor)) - 1 + InsertEnd][j] = TTLWave[(DecimationFactor) * (p - InsertStart)]		
@@ -538,16 +538,16 @@ End
 //=========================================================================================
 Function DC_PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCFIFOPositionAllConfigWave = $WavePath+":ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 	ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
 	ITCFIFOPositionAllConfigWave[][2]=-1
 	ITCFIFOPositionAllConfigWave[][3]=0
 End
 //=========================================================================================
-Function DC_PDInITCFIFOAvailAllCW(PanelTitle)//PlaceDataInITCFIFOAvailAllConfigWave()
+Function DC_PDInITCFIFOAvailAllCW(panelTitle)//PlaceDataInITCFIFOAvailAllConfigWave()
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCFIFOAvailAllConfigWave = $WavePath+":ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 	ITCFIFOAvailAllConfigWave[][0,1] = ITCChanConfigWave
 	ITCFIFOAvailAllConfigWave[][2] = 0
@@ -562,7 +562,7 @@ Function DC_MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each r
 	string TTLWaveList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
 	string TTLWaveName
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)+":"//"root:MIES:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)+":"//"root:MIES:WaveBuilder:savedStimulusSets:TTL:"// the ttl wave should really be located in the device folder not the wavebuilder folder
 	string TTLWavePath = "root:MIES:WaveBuilder:savedStimulusSets:TTL:"
 	if(RackNo == 0)
 		a = 0
@@ -658,12 +658,12 @@ End
 Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// setname is a string that contains the full wave path
 	string panelTitle, SetName
 	variable ChannelNo, DAorTTL
-	variable ColumnsInSet = IDX_NumberOfTrialsInSet(PanelTitle, SetName, DAorTTL)
+	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
 	variable /c column_CycleCount
 	variable localCount
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string CountPath = WavePath +":Count"
 	string AcitveSetCountPath = WavePath +":ActiveSetCount"
 	//following string and wave apply when random set sequence is selected
@@ -780,14 +780,14 @@ Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the I
 	controlinfo /w = $panelTitle setvar_DataAcq_TerminationDelay
 	variable TerminationDelay = v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle) + ":"
+	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":"
 	wave ITCDataWave = $WavePath + "ITCDataWave"
 	variable ITCDataWaveRows = dimsize(ITCDataWave, 0)
 	redimension /N = (ITCDataWaveRows + NewRows, -1, -1, -1) ITCDataWave
 	return OnsetDelay
 End
 
-Function DC_ReturnTotalLengthIncrease(PanelTitle)
+Function DC_ReturnTotalLengthIncrease(panelTitle)
 	string panelTitle
 	controlinfo /w = $panelTitle setvar_DataAcq_OnsetDelay
 	variable OnsetDelay = v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000)

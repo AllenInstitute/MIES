@@ -5,9 +5,9 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(PanelTitle)/4)
+	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(panelTitle)/4)
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	variable stopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // dimsize(ITCDataWave, 0) / 4
@@ -70,8 +70,8 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(PanelTitle)
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(panelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
 	doupdate
@@ -240,7 +240,7 @@ End
 Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG //$WavePath + ":PanelTitleG" = panelTitle
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
 	string cmd
@@ -272,10 +272,10 @@ Function ITC_TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:ADChannelToMonitor, BackgroundTPCount = root:MIES:ITCDevices:BackgroundTPCount
 	String cmd, Keyboard
-	//string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	//string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR PanelTitleG = root:MIES:ITCDevices:PanelTitleG// = $WavePath + ":panelTitleG"
 	string paneltitle = panelTitleG
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string  ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -364,7 +364,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
 	//doupdate /w = $oscilloscopeSubWindow
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =1
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	
 	//wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -445,7 +445,7 @@ Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch cha
 	string panelTitle
 	variable ChannelValue
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	make /o /n = 1 $WavePath + ":AsyncChannelData"
 	string AsyncChannelDataPath = WavePath+":AsyncChannelData"
 	wave AsyncChannelData = $AsyncChannelDataPath
@@ -476,7 +476,7 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	string SetVar_Unit, Unit
 	string WaveNote = ""
 	
-	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
 	DeviceType = v_value - 1
 	variable DeviceChannelOffset // used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
 	If(DeviceType == 2)
@@ -558,9 +558,17 @@ Function ITC_CalcDataAcqStopCollPoint(panelTitle) // calculates the stop colleci
 	string panelTitle
 	variable stopCollectionPoint
 	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle) // returns longest sweep in points - accounts for sampling interval
-	Variable GobalOnsetOffsetSum = DC_ReturnTotalLengthIncrease(PanelTitle)
+	Variable GobalOnsetOffsetSum = DC_ReturnTotalLengthIncrease(panelTitle)
 	stopCollectionPoint = LongestSweep + GobalOnsetOffsetSum
 	return stopCollectionPoint
 End
 
 //======================================================================================
+
+Function ITC_ZeroITCOnActiveChan(panelTitle)
+string panelTitle
+string DAChannelStatusList 
+string cmd
+sprintf cmd, "ITCSetDac /z =0 0, 0;ITCSetDac /z = 0 1, 0;ITCSetDac /z = 0 2, 0;ITCSetDac /z =0 3, 0;ITCSetDac /z = 0 4, 0;ITCSetDac /z = 0 5, 0;ITCSetDac /z = 0 6, 0;ITCSetDac /z = 0 7, 0"
+execute cmd
+END

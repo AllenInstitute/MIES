@@ -2,13 +2,13 @@
 //==================================================================================================
 // ITC HARDWARE CONFIGURATION FUNCTIONS
 // Hardware Set-up (HSU)
-Function HSU_QueryITCDevice(PanelTitle)
-	string PanelTitle
+Function HSU_QueryITCDevice(panelTitle)
+	string panelTitle
 	variable DeviceType, DeviceNumber
 	string cmd
-	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
-	controlinfo /w = $PanelTitle popup_moreSettings_DeviceNo
+	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
 	
 	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
@@ -38,23 +38,23 @@ End
 //==================================================================================================
 
 Function HSU_LockDevice(panelTitle)
-	string PanelTitle
+	string panelTitle
 	string deviceType
 	variable deviceNo
-	PopupMenu popup_MoreSettings_DeviceType win = $PanelTitle, disable = 2
-	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 2
-	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 2
+	PopupMenu popup_MoreSettings_DeviceType win = $panelTitle, disable = 2
+	PopupMenu popup_moreSettings_DeviceNo win = $panelTitle, disable = 2
+	Button button_SettingsPlus_LockDevice win = $panelTitle, disable = 2
 	Button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
-	HSU_DataFolderPathDisplay(PanelTitle, 1)
-	HSU_CreateDataFolderForLockdDev(PanelTitle)
-	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 0
+	HSU_DataFolderPathDisplay(panelTitle, 1)
+	HSU_CreateDataFolderForLockdDev(panelTitle)
+	Button button_SettingsPlus_unLockDevic win = $panelTitle, disable = 0
 	controlinfo /W = $panelTitle popup_MoreSettings_DeviceType
 	deviceType = s_value
 	controlinfo /W = $panelTitle popup_moreSettings_DeviceNo
 	deviceNo = v_value - 1
 	dowindow /W = $panelTitle /C $DeviceType + "_Dev_" + num2str(DeviceNo)
-	PanelTitle = DeviceType + "_Dev_" + num2str(DeviceNo)
-	IM_MakeGlobalsAndWaves(PanelTitle)
+	panelTitle = DeviceType + "_Dev_" + num2str(DeviceNo)
+	IM_MakeGlobalsAndWaves(panelTitle)
 	HSU_GlblListStrngOfITCPanlTitls()//checks to see if list string of panel titles exists, if it doesn't in creates it (in the root: folder)
 	HSU_ListOfITCPanels()
 	HSU_OpenITCDevice(panelTitle)
@@ -62,23 +62,23 @@ Function HSU_LockDevice(panelTitle)
 End
 //==================================================================================================
 
-Function HSU_DataFolderPathDisplay(PanelTitle, LockStatus)
-	string PanelTitle
+Function HSU_DataFolderPathDisplay(panelTitle, LockStatus)
+	string panelTitle
 	variable LockStatus // = 0; unlocked  = 1; locked
 	if(LockStatus == 1)
-		groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Data folder path = " + HSU_DataFullFolderPathString(PanelTitle)
+		groupbox group_Hardware_FolderPath win = $panelTitle, title = "Data folder path = " + HSU_DataFullFolderPathString(panelTitle)
 	endif
 	
 	if(LockStatus == 0)
-		groupbox group_Hardware_FolderPath win = $PanelTitle, title = "Lock a device to generate device folder structure"
+		groupbox group_Hardware_FolderPath win = $panelTitle, title = "Lock a device to generate device folder structure"
 	endif
 End
 //==================================================================================================
 
-Function HSU_CreateDataFolderForLockdDev(PanelTitle)
-	string PanelTitle
-	string FullFolderPath = HSU_DataFullFolderPathString(PanelTitle)
-	string BaseFolderPath = HSU_BaseFolderPathString(PanelTitle)
+Function HSU_CreateDataFolderForLockdDev(panelTitle)
+	string panelTitle
+	string FullFolderPath = HSU_DataFullFolderPathString(panelTitle)
+	string BaseFolderPath = HSU_BaseFolderPathString(panelTitle)
 	Newdatafolder /o $BaseFolderPath
 	Newdatafolder /o $FullFolderPath
 	Newdatafolder /o $FullFolderPath+":Data"
@@ -86,26 +86,26 @@ Function HSU_CreateDataFolderForLockdDev(PanelTitle)
 End
 //==================================================================================================
 
-Function/t HSU_BaseFolderPathString(PanelTitle)
-	string PanelTitle
+Function/t HSU_BaseFolderPathString(panelTitle)
+	string panelTitle
 	string DeviceTypeList = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"  
 	variable DeviceType
 	string BaseFolderPath
-	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
 	BaseFolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType, DeviceTypeList, ";")
 	return BaseFolderPath
 End
 //==================================================================================================
 
-Function /t HSU_DataFullFolderPathString(PanelTitle)
-	string PanelTitle
+Function /t HSU_DataFullFolderPathString(panelTitle)
+	string panelTitle
 	string DeviceTypeList = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"  
 	variable DeviceType, DeviceNumber
 	string FolderPath
-	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
-	controlinfo /w = $PanelTitle popup_moreSettings_DeviceNo
+	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
 	FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
 	return FolderPath
@@ -122,17 +122,17 @@ Function HSU_ButProc_Hrdwr_UnlckDev(ctrlName) : ButtonControl
 End
 //==================================================================================================
 
-Function HSU_UnlockDevSelection(PanelTitle)
-	string PanelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
-	PopupMenu popup_MoreSettings_DeviceType win = $PanelTitle, disable = 0
-	PopupMenu popup_moreSettings_DeviceNo win = $PanelTitle, disable = 0
-	Button button_SettingsPlus_LockDevice win = $PanelTitle, disable = 0
-	Button button_SettingsPlus_unLockDevic win = $PanelTitle, disable = 2
+Function HSU_UnlockDevSelection(panelTitle)
+	string panelTitle
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	PopupMenu popup_MoreSettings_DeviceType win = $panelTitle, disable = 0
+	PopupMenu popup_moreSettings_DeviceNo win = $panelTitle, disable = 0
+	Button button_SettingsPlus_LockDevice win = $panelTitle, disable = 0
+	Button button_SettingsPlus_unLockDevic win = $panelTitle, disable = 2
 	Button button_SettingsPlus_PingDevice win = $panelTitle, disable = 0
 
-	//GroupBox group_Hardware_FolderPath win = $PanelTitle, title = "Lock device to set data folder path"
-	HSU_DataFolderPathDisplay(PanelTitle, 0)
+	//GroupBox group_Hardware_FolderPath win = $panelTitle, title = "Lock device to set data folder path"
+	HSU_DataFolderPathDisplay(panelTitle, 0)
 	string DAwindows = winlist("DA_Ephys*", ";", "WIN:64") //getwindow
 	if(itemsinlist(DAwindows,";") == 0) // ensures that when other DA_Ephys windows are unlocked, the panel renaming does not attemp to duplicate the panel name
 		dowindow /W = $panelTitle /C $"DA_Ephys"
@@ -150,10 +150,10 @@ Function HSU_UnlockDevSelection(PanelTitle)
 End
 //==================================================================================================
 
-Function HSU_DeviceLockCheck(PanelTitle)
-	string PanelTitle
+Function HSU_DeviceLockCheck(panelTitle)
+	string panelTitle
 	variable DeviceLockStatus
-	controlinfo /W = $PanelTitle button_SettingsPlus_LockDevice
+	controlinfo /W = $panelTitle button_SettingsPlus_LockDevice
 	if(V_disable == 1)
 		DoAlert /t = "Hardware Status"  0, "A ITC device must be locked (see Hardware tab) to proceed"
 		DeviceLockStatus = 1
@@ -164,8 +164,8 @@ Function HSU_DeviceLockCheck(PanelTitle)
 End
 //==================================================================================================
 
-Function HSU_IsDeviceTypeConnected(PanelTitle)
-	string PanelTitle
+Function HSU_IsDeviceTypeConnected(panelTitle)
+	string panelTitle
 	string cmd
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	variable DeviceType = v_value - 1
@@ -173,9 +173,9 @@ Function HSU_IsDeviceTypeConnected(PanelTitle)
 	sprintf cmd, "ITCGetDevices /Z=0 %d, localWave" DeviceType
 	execute cmd
 	if(LocalWave[0] == 0)
-		button button_SettingsPlus_PingDevice win = $PanelTitle, disable = 2
+		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
 	else
-		button button_SettingsPlus_PingDevice win = $PanelTitle, disable = 0
+		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 0
 	endif
 	print "Available number of specified ITC devices =", LocalWave[0]
 	killwaves localwave
@@ -202,9 +202,9 @@ Function HSU_OpenITCDevice(panelTitle)
 	String panelTitle
 	variable DeviceType, DeviceNumber
 	string cmd
-	controlinfo /w = $PanelTitle popup_MoreSettings_DeviceType
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
-	controlinfo /w = $PanelTitle popup_moreSettings_DeviceNo
+	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
 	Make /o  /I /U /N = 1 DevID = 50 // /FREE /I /U /N = 2 DevID = 50
 	string DeviceID = "DevID"
@@ -212,7 +212,7 @@ Function HSU_OpenITCDevice(panelTitle)
 	Execute cmd
 	print "ITC Device ID = ",DevID[0], "is locked."
 	//print "ITC Device ID = ",DevID[1], "is locked."
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string ITCDeviceIDGlobal = WavePath + ":ITCDeviceIDGlobal"
 	Variable /G $ITCDeviceIDGlobal = DevID[0]
 End // Function HSU_OpenITCDevice(panelTitle)
@@ -222,7 +222,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
 	Variable HeadStageNo, SweepNo, i
 	wave /z W_TelegraphServers = root:MIES:Amplifiers:W_TelegraphServers
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
 	wave /z /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
@@ -306,10 +306,10 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 End
 //==================================================================================================
 
-Function HSU_UpdateChanAmpAssignPanel(PanelTitle)
+Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 	Variable HeadStageNo
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	wave / T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
 	controlinfo /w =$panelTitle Popup_Settings_HeadStage
@@ -338,7 +338,7 @@ End
 //==================================================================================================
 Function HSU_SetITCDACasFollower(panelTitle, followerDAC) // This function sets a ITC1600 device as a follower, ie. The internal clock is used to synchronize 2 or more PCI-1600
 	string panelTitle, followerDAC
-	string LeadDeviceFolderPath =  HSU_DataFullFolderPathString(PanelTitle)
+	string LeadDeviceFolderPath =  HSU_DataFullFolderPathString(panelTitle)
 	string FollowerDeviceFolderPath = HSU_DataFullFolderPathString(followerDAC)
 	// variable LeadITCDeviceIDGlobal
 	NVAR /z FollowerITCDeviceIDGlobal = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
@@ -387,7 +387,7 @@ root:MIES:ITCDevices:ITC1600:Device1
 
 Function HSU_AutoFillGain(panelTitle) // Auto fills the units and gains in the hardware tab of the DA_Ephys panel - has some limitations that are due to the MCC API limitations
 	string panelTitle			
-	string wavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string wavePath = HSU_DataFullFolderPathString(panelTitle)
 
 
 	// sets the units
@@ -397,7 +397,7 @@ Function HSU_AutoFillGain(panelTitle) // Auto fills the units and gains in the h
 	SetVariable SetVar_Hardware_IC_AD_Unit Win = $panelTitle, Value=_STR:"mV"
 	
 	// get the headstage number being updated
-	controlInfo /w = $PanelTitle Popup_Settings_HeadStage
+	controlInfo /w = $panelTitle Popup_Settings_HeadStage
 	variable HeadStageNo = v_value - 1
 	// get the associated amp serial number - the serial number of the assoicated amp is stored in row 8 of the ChaAmpAssign wave
 	Wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"

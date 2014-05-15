@@ -9,11 +9,11 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	variable i
 	variable TriggerMode = 0
 	variable numberOfFollowerDevices = 0
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 	string followerPanelTitle = ""
 	variable DataAcqOrTP = 0 // data acq, not TP
-	DC_ConfigureDataForITC(PanelTitle, DataAcqOrTP)
+	DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 	SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 	
 	if(DeviceType == 2) // starts data acquisition for ITC1600 devices
@@ -73,7 +73,7 @@ End
 
 Function ITC_ConfigUploadDAC(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	string cmd = ""
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -96,7 +96,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	string panelTitle
 	string TestPulsePath
 	variable i = 0
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable DataAcqOrTP = 1
 	variable TriggerMode
 	string TPDurationGlobalPath
@@ -120,7 +120,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 				TriggerMode = 256
 				
 				//Lead board commands
-				TP_TPSetUp(PanelTitle)
+				TP_TPSetUp(panelTitle)
 				ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
 				wave /z SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
 				wave /z SelectedDACScale = $(WavePath + ":SelectedDACScale")
@@ -225,7 +225,7 @@ End
 
 Function TP_TPSetUp(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string TestPulsePath
 	variable DataAcqOrTP = 1
 	

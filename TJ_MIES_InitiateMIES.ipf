@@ -25,7 +25,7 @@ End
 
 Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	//string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
 	//make /o /n = (12,8) $ChanAmpAssignPath = nan
 	HSU_UpdateChanAmpAssignStorWv(panelTitle)
@@ -139,7 +139,7 @@ End
 //=========================================================================================
 Function /t Path_ListOfYokedDACs(panelTitle)
 	string panelTitle
-	string strPathToListOfYokedDACs = HSU_DataFullFolderPathString(PanelTitle) + ":ListOfFollowerITC1600s"
+	string strPathToListOfYokedDACs = HSU_DataFullFolderPathString(panelTitle) + ":ListOfFollowerITC1600s"
 	if(exists(strPathToListOfYokedDACs)==2)
 		SVAR /z ListOfYokedDACs = $strPathToListOfYokedDACs
 		return ListOfYokedDACs

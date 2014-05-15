@@ -4,7 +4,7 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
  	variable DeviceType, DeviceNum, TriggerMode
 	string panelTitle
 	string WavePath
-	sprintf WavePath, "%s" HSU_DataFullFolderPathString(PanelTitle)
+	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
 	string  ITCDataWavePath
 	sprintf ITCDataWavePath, "%s:ITCDataWave" WavePath
 	string ITCChanConfigWavePath
@@ -133,9 +133,9 @@ Function ITC_BkrdTPFuncMD(s)
 
 		
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
-		// the code stops and starts the data acquisition to correct
+		// the code stops and starts the data acquisition to correct FIFO error
 			if(stringmatch(WavePath,"*ITC1600*") == 0) // checks to see if the device is not a ITC1600
-				if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] == ActiveDeviceList[i][5]) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
+				if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] <= (ActiveDeviceList[i][5] + 1) && ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (ActiveDeviceList[i][5] - 1)) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
 					Execute "ITCStopAcq" // stop and restart acquisition
 					ITCFIFOAvailAllConfigWave[][2] =0
 					string ITCChanConfigWavePath
@@ -149,7 +149,7 @@ Function ITC_BkrdTPFuncMD(s)
 					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPosAllConfigWvPthStr// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 					execute cmd
 					Execute "ITCStartAcq"
-					print "FIFO advance failed, acq restarted"
+					print "FIFO over/underrun, acq restarted"
 				endif
 			endif
 			
@@ -230,7 +230,7 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
 	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
 	string TPFolderPath
-	sprintf TPFolderPath, "%s:TestPulse:TPPulseCount" HSU_DataFullFolderPathString(PanelTitle)
+	sprintf TPFolderPath, "%s:TestPulse:TPPulseCount" HSU_DataFullFolderPathString(panelTitle)
 	NVAR TPPulseCount = $TPFolderPath
 	if (AddorRemoveDevice == 1) // add a ITC device
 		if (waveexists($WavePath + ":ActiveDeviceList") == 0) 
@@ -331,7 +331,7 @@ End // Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddorRemoveDevice)
 Function ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum	// ITC-1600
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	// string /G root:MIES:ITCDevices:panelTitleG //$WavePath + ":PanelTitleG" = panelTitle
 	// SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
 	string cmd

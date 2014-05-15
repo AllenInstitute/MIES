@@ -9,7 +9,7 @@
 //	Variable start = stopmstimer(-2)
 	string cmd
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
 	//variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
 	variable StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
@@ -55,7 +55,7 @@ Function ITC_BckgrdDataAcqYoke(DeviceType, DeviceNum, TriggerMode, panelTitle) /
 	
 	string cmd
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
 //	variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
 	variable  StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
@@ -161,7 +161,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	Variable ITCDeviceIDGlobal
 	variable DeviceType, DeviceNum
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(PanelTitle)
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	string CountPath = WavePath + ":count"
 
@@ -188,7 +188,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
-			RA_Start(PanelTitle)
+			RA_Start(panelTitle)
 		else
 			DAP_StopButtonToAcqDataButton(panelTitle)
 			NVAR /z DataAcqState = $wavepath + ":DataAcqState"
@@ -295,7 +295,7 @@ End // Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddorRemoveDevice)
 //=============================================================================================================================
 
 //Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
-	String PanelTitle
+	String panelTitle
 	Variable TPorDataAcq
 	Variable Add_Remove // 1 to add a device; -1 to remove a device
 	
