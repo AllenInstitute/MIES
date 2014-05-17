@@ -565,10 +565,21 @@ End
 
 //======================================================================================
 
-Function ITC_ZeroITCOnActiveChan(panelTitle)
-string panelTitle
-string DAChannelStatusList 
-string cmd
-sprintf cmd, "ITCSetDac /z =0 0, 0;ITCSetDac /z = 0 1, 0;ITCSetDac /z = 0 2, 0;ITCSetDac /z =0 3, 0;ITCSetDac /z = 0 4, 0;ITCSetDac /z = 0 5, 0;ITCSetDac /z = 0 6, 0;ITCSetDac /z = 0 7, 0"
-execute cmd
+Function ITC_ZeroITCOnActiveChan(panelTitle) // sets active DA channels to Zero - used after TP MD
+	string panelTitle // function operates on active device - does not check to see if a device is open.
+	string WavePath
+	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
+	string DAChannelStatusList  =""
+	sprintf  DAChannelStatusList, "%s" DC_ControlStatusListString("DA", "check", panelTitle)
+	string cmd
+	variable NoOfDAChannels = itemsinList(DAChannelStatusList, ";")
+	variable i
+	
+	for(i = 0; i < NoOfDAChannels; i += 1)
+		if(str2num(stringfromlist(i, DAChannelStatusList)) == 1)
+			sprintf cmd, "ITCSetDAC /z = 0 %d, 0" i 
+			Execute cmd
+		endif
+	endfor
+
 END

@@ -176,6 +176,7 @@ Function ITC_BkrdTPFuncMD(s)
 					execute cmd
 					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
 					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
+					ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 					if (dimsize(ActiveDeviceTextList, 0) == 0) 
 						CtrlNamedBackground TestPulseMD, stop
 						print "Stopping test pulse"
@@ -436,8 +437,6 @@ Function ITC_TestPulseFuncMD(s)
 //		Execute cmd
 ////		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" WavePath + ":ITCFIFOPositionAllConfigWave" // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 ////		execute cmd 
-
-
 		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
