@@ -2697,7 +2697,88 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		
 		//print "device type = ", devicetype, " Device Number = ", devicenum		
 End
+//=========================================================================================
 
+Function DAP_ButtonProc_AcquireDataNEW(ctrlName) : ButtonControl
+	String ctrlName
+	setdatafolder root:
+	string panelTitle = DAP_ReturnPanelName()
+	variable DataAcqOrTP = 0
+	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
+	
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	string DataAcqStatePath = WavePath + ":DataAcqState"
+	//print DataAcqStatePath
+	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
+		variable /G $DataAcqStatePath = 0
+	endif
+	
+	NVAR /z DataAcqState = $DataAcqStatePath 
+
+		
+	if(DataAcqState == 0) // data aquistion is stopped
+		
+		// check if active channels all have output set selected
+		controlinfo /w = $panelTitle Check_DataAcq_Indexing
+		variable IndexingOnOff = v_value
+		AbortOnValue DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff), 1
+		
+		 // stops test pulse if it is running
+		if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD") == 1) // it is running
+			WAVE/Z /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
+			variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
+			variable i = 0
+			for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
+				if(stringmatch(ActiveDeviceTextList[i], panelTitle) == 1)
+					 ITC_StopTPMD(panelTitle)
+				endif
+			endfor
+			// ITC_STOPTestPulse(panelTitle)
+		endif
+		
+		wave /z ITCDataWave = $WavePath + ":ITCDataWave"
+		
+		// checks if the global variable count exists (it shouldn't exist at the onset of data acq, so it gets killed if it does)
+		string CountPath = WavePath + ":count"
+		if(exists(CountPath) == 2)
+			killvariables $CountPath
+		endif
+		
+		// determine the type of device
+		controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+		variable DeviceType = v_value - 1
+		controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+		variable DeviceNum = v_value - 1
+		
+		//History management
+		controlinfo check_Settings_Overwrite
+		if(v_value == 1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
+			
+			if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle) == 1)//Checks for manual roll back of Next Sweep
+				controlinfo SetVar_Sweep
+				variable NextSweep = v_value
+				DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
+				DM_DeleteDataWaves(panelTitle, NextSweep)
+				ED_MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
+			endif
+		
+		endif
+		
+		//Data collection
+
+
+			DataAcqState = 1
+			DAP_AcqDataButtonToStopButton(panelTitle)
+			FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
+		endif
+	else // data aquistion is ongoing
+		DataAcqState = 0
+		DAP_StopOngoingDataAcquisition(panelTitle)
+		DAP_StopButtonToAcqDataButton(panelTitle)
+	endif		
+		
+		//print "device type = ", devicetype, " Device Number = ", devicenum		
+End
 //=========================================================================================
 Function DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff) // returns 1 if any active channel does not have a wave selected
 	string panelTitle
@@ -3343,6 +3424,43 @@ End
 //=========================================================================================
 
 Function DAP_StopOngoingDataAcquisition(panelTitle)
+	string panelTitle
+	string cmd 
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
+	
+	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
+		ITC_STOPTestPulse(panelTitle)
+	endif
+	
+	
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
+		CtrlNamedBackground ITC_Timer, stop 
+	endif
+	
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
+		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
+		ITC_STOPFifoMonitor()
+		
+		sprintf cmd, "ITCStopAcq /z = 0"
+		Execute cmd
+	
+		//sprintf cmd, "ITCCloseAll" 
+		//execute cmd
+	
+		ControlInfo /w = $panelTitle Check_Settings_SaveData
+		If(v_value == 0)
+			DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
+		endif
+		
+		DM_ScaleITCDataWave(panelTitle)
+	
+	endif
+	print "Data acquisition was manually terminated"
+End 
+//=========================================================================================
+
+Function DAP_StopOngoingDataAcquisitionNEW(panelTitle) // NEEDS TO BE ADAPTED FOR MD!!!!!!!!!
 	string panelTitle
 	string cmd 
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
