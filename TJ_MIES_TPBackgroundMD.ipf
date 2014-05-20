@@ -216,11 +216,45 @@ Function ITC_FinishTestPulseMD(panelTitle)
 		V_disable = V_disable & ~0x2
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
-	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	killstrings /z root:MIES:ITCDevices:PanelTitleG
+	// killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
+	// killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
 
+//======================================================================================
+Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test pulse on a particular panel
+	string panelTitle
+	string cmd
+	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
+	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
+	string DeviceIDGlobalPathString
+	sprintf DeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" DeviceFolderPath
+	NVAR DeviceIDGlobal = $DeviceIDGlobalPathString
+	
+	sprintf cmd, "ITCSelectDevice %d" DeviceIDGlobal
+	execute cmd		
+	
+	// code section below is used to get the state of the DAC
+	string StateWavePathString 
+	sprintf StateWavePathString, "%s:StateWave" DeviceFolderPath
+	Make /I/O/N=4 $StateWavePathString
+	wave StateWave = $StateWavePathString
+	sprintf cmd, "ITCGetState /R=1 %s" StateWavePathString
+	execute cmd
 
+	if(StateWave[0] != 0) // makes sure the device being stopped is actually running
+		sprintf cmd, "ITCStopAcq"
+		execute cmd
+		
+		ITC_MakeOrUpdateTPDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1) // 
+		ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
+		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
+		if (dimsize(ActiveDeviceTextList, 0) == 0) 
+			CtrlNamedBackground TestPulseMD, stop
+			print "Stopping test pulse"
+			ITC_FinishTestPulseMD(panelTitle) // makes appropriate updated to locked DA ephys panel following termination of the TP
+		endif
+	endif
+End
 //======================================================================================
 
 Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)

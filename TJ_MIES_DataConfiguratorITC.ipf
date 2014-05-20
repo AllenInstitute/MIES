@@ -466,15 +466,18 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
+			print "chan type wave name =", ChanTypeWaveName, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
 			//check to see if it is a test pulse or user specified da wave
-			if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0)
+			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
+				print "chan type wave name =", ChanTypeWaveName
 				column = 0
 				insertStart = 0
 				insertEnd = 0
 			else
 				column = real(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// DC_CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
-				if(i == 0)
+				if(j == 0) // (i == 0)
 					InsertStart = DC_GlobalChangesToITCDataWave(panelTitle) 
+					print "insert start =", InsertStart
 					InsertEnd = InsertStart 
 				endif
 			endif
@@ -773,10 +776,10 @@ Function DC_shuffle(inwave)	//	in-place random permutation of input wave element
 	endfor
 end
 
-Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the ITCdataWave according to the global changes on the data acquisition tab - should only get called for not TP data acquisition cycles
+Function DC_GlobalChangesToITCDataWave(panelTitle) // adjust the length of the ITCdataWave according to the global changes on the data acquisition tab - should only get called for non TP data acquisition cycles
 	string panelTitle
 	controlinfo /w = $panelTitle setvar_DataAcq_OnsetDelay
-	variable OnsetDelay = v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
+	variable OnsetDelay = round(v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
 	controlinfo /w = $panelTitle setvar_DataAcq_TerminationDelay
 	variable TerminationDelay = v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
