@@ -2699,7 +2699,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 End
 //=========================================================================================
 
-Function DAP_ButtonProc_AcquireDataNEW(ctrlName) : ButtonControl
+Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 	String ctrlName
 	setdatafolder root:
 	string panelTitle = DAP_ReturnPanelName()
@@ -2766,11 +2766,10 @@ Function DAP_ButtonProc_AcquireDataNEW(ctrlName) : ButtonControl
 		
 		//Data collection
 
-
-			DataAcqState = 1
-			DAP_AcqDataButtonToStopButton(panelTitle)
-			FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
-		endif
+		DataAcqState = 1
+		DAP_AcqDataButtonToStopButton(panelTitle)
+		FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
+	
 	else // data aquistion is ongoing
 		DataAcqState = 0
 		DAP_StopOngoingDataAcquisition(panelTitle)
@@ -3434,8 +3433,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	endif
 	
 	
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
-		CtrlNamedBackground ITC_Timer, stop 
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD") == 1) // stops the background timer
+		ITC_StopTimerForDevice(panelTitle) 
 	endif
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
@@ -3460,38 +3459,22 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 End 
 //=========================================================================================
 
-Function DAP_StopOngoingDataAcquisitionNEW(panelTitle) // NEEDS TO BE ADAPTED FOR MD!!!!!!!!!
+Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
 	string panelTitle
 	string cmd 
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
 	
-	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
-		ITC_STOPTestPulse(panelTitle)
+	if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD") == 1) // stops the testpulse
+		 ITC_StopTPMD(panelTitle)
 	endif
 	
-	
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
-		CtrlNamedBackground ITC_Timer, stop 
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD") == 1) // stops the background timer
+		ITC_StopTimerForDevice(panelTitle)
 	endif
 	
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
-		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
-		ITC_STOPFifoMonitor()
-		
-		sprintf cmd, "ITCStopAcq /z = 0"
-		Execute cmd
-	
-		//sprintf cmd, "ITCCloseAll" 
-		//execute cmd
-	
-		ControlInfo /w = $panelTitle Check_Settings_SaveData
-		If(v_value == 0)
-			DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
-		endif
-		
-		DM_ScaleITCDataWave(panelTitle)
-	
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitorMD") == 1) // stops ongoing bacground data aquistion
+		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
 	print "Data acquisition was manually terminated"
 End 

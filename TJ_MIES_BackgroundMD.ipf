@@ -170,6 +170,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
 
+
 	itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
 	doupdate
 	
@@ -204,7 +205,65 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	//killstrings /z PanelTitleG
 END
 //=============================================================================================================================
+Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
+	String panelTitle
+	string cmd
+	
+	string ITCDeviceFolderPathString
+	sprintf  ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
+	
+	string ITCDeviceIDGlobalPathString
+	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" ITCDeviceFolderPathString
+	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+	
+	string CountPathString
+	sprintf CountPathString, "%s:Count" ITCDeviceFolderPathString
+	NVAR /z Count = $CountPathString
+	
+	string DataAcqStatePathString
+	sprintf DataAcqStatePathString, "%s:DataAcqState" ITCDeviceFolderPathString
+	NVAR DataAcqState = $DataAcqStatePathString
+	
+	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList
 
+	// stop data acq on device passsed in
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd	
+	sprintf cmd, "ITCStopAcq /z = 0"
+	Execute cmd
+	
+	// remove device passed in from active device lists
+	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
+	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
+	
+	// determine if device removed was the last device on the list, if yes stop the background function
+	if (dimsize(ActiveDeviceTextList, 0) == 0) 
+		print "no more active devices, stopping named background"
+		CtrlNamedBackground ITC_FIFOMonitorMD, stop
+	endif
+	
+	// Save data if save data check box is selected
+	ControlInfo /w = $panelTitle Check_Settings_SaveData
+	If(v_value == 0)
+		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
+	endif
+	
+	// Scale the ITC Data wave for display
+	DM_ScaleITCDataWave(panelTitle)
+	
+	// kills the global variable associated with ongoing repeated data acquisition
+	if(exists(CountPathString) == 1) 
+		killvariables Count
+	endif
+	
+	// sets the global variable that records the devices aquisition state to 0, indicating no onging acquisition.
+	DataAcqState = 0
+	
+	// sets the state of the data acq button to reflect that data acq has terminated
+	DAP_StopButtonToAcqDataButton(panelTitle)
+
+END
+//=============================================================================================================================
 
 Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle

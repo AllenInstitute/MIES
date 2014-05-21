@@ -77,6 +77,20 @@ End
 // start and end time are calculated at function call 
 //=============================================================================================================================
 
+Function ITC_StopTimerForDevice(panelTitle)
+	string panelTitle
+	WAVE ActiveDevTimeParam = root:MIES:ITCDevices:ActiveITCDevices:Timer:ActiveDevTimeParam	
+
+	ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
+	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
+	if(DevicesWithActiveTimers == 0) // stops background timer if no more devices are in the parameter waves
+		CtrlNamedBackground ITC_TimerMD, Stop
+	endif
+End
+
+
+//=============================================================================================================================
+
 Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, AddOrRemoveDevice)
 	string panelTitle, ListOfFunctions
 Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
