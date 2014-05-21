@@ -2701,22 +2701,33 @@ End
 
 Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 	String ctrlName
+	// set the data folder to the root folder
 	setdatafolder root:
-	string panelTitle = DAP_ReturnPanelName()
-	variable DataAcqOrTP = 0
-	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
 	
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string DataAcqStatePath = WavePath + ":DataAcqState"
-	//print DataAcqStatePath
-	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
-		variable /G $DataAcqStatePath = 0
+	// get the panel title of the panel that the button is on
+	string panelTitle
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()
+	
+	// used for functions that produce different results depending on wether a sweep is being acquired or a TP
+	variable DataAcqOrTP = 0
+	
+	// prevents initiation of data acquisition if panel is not locked to a device
+	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  
+	
+	string ITCDeviceFolderPathString
+	sprintf ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
+	
+	string DataAcqStatePathString
+	sprintf DataAcqStatePathString, "%s:DataAcqState" ITCDeviceFolderPathString
+
+	if(exists(DataAcqStatePathString) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
+		variable /G $DataAcqStatePathString = 0
 	endif
 	
-	NVAR /z DataAcqState = $DataAcqStatePath 
+	NVAR /z DataAcqState = $DataAcqStatePathString 
 
 		
-	if(DataAcqState == 0) // data aquistion is stopped
+	if(DataAcqState == 0) // data aquistion is stopped, initiate data acq
 		
 		// check if active channels all have output set selected
 		controlinfo /w = $panelTitle Check_DataAcq_Indexing
@@ -2733,13 +2744,15 @@ Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 					 ITC_StopTPMD(panelTitle)
 				endif
 			endfor
-			// ITC_STOPTestPulse(panelTitle)
 		endif
 		
-		wave /z ITCDataWave = $WavePath + ":ITCDataWave"
+		string ITCDataWavePathString
+		sprintf ITCDataWavePathString, "%s:ITCDataWave" ITCDeviceFolderPathString
+		wave /z ITCDataWave = $ITCDataWavePathString
 		
 		// checks if the global variable count exists (it shouldn't exist at the onset of data acq, so it gets killed if it does)
-		string CountPath = WavePath + ":count"
+		string CountPath
+		sprintf CountPath, "%s:Count" ITCDeviceFolderPathString
 		if(exists(CountPath) == 2)
 			killvariables $CountPath
 		endif
@@ -2765,14 +2778,13 @@ Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 		endif
 		
 		//Data collection
-
 		DataAcqState = 1
 		DAP_AcqDataButtonToStopButton(panelTitle)
 		FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
 	
-	else // data aquistion is ongoing
+	else // data aquistion is ongoing, stop data acq
 		DataAcqState = 0
-		DAP_StopOngoingDataAcquisition(panelTitle)
+		DAP_StopOngoingDataAcqMD(panelTitle)
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
@@ -3433,8 +3445,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	endif
 	
 	
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD") == 1) // stops the background timer
-		ITC_StopTimerForDevice(panelTitle) 
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
+			CtrlNamedBackground ITC_Timer, stop
 	endif
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
@@ -3470,12 +3482,13 @@ Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
 	endif
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD") == 1) // stops the background timer
-		ITC_StopTimerForDevice(panelTitle)
+		ITC_StopTimerForDeviceMD(panelTitle)
 	endif
 	
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitorMD") == 1) // stops ongoing bacground data aquistion
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
+	
 	print "Data acquisition was manually terminated"
 End 
 //=========================================================================================

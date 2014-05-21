@@ -75,9 +75,11 @@ End
 // functions to execute should be in a string list - or at least not limited to a set number.
 // start time for each device, end time for each device, total elapsed time
 // start and end time are calculated at function call 
+
 //=============================================================================================================================
 
-Function ITC_StopTimerForDevice(panelTitle)
+
+Function ITC_StopTimerForDeviceMD(panelTitle)
 	string panelTitle
 	WAVE ActiveDevTimeParam = root:MIES:ITCDevices:ActiveITCDevices:Timer:ActiveDevTimeParam	
 
