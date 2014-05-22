@@ -3655,13 +3655,22 @@ Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	
 	HSU_SetITCDACasFollower(panelTitle, DeviceToBeAssignedAsFollower)
 	DAP_SetFollowerButtons(panelTitle)
-
-	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
-	popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = 0
-	button button_Hardware_RemoveYoke Win = $panelTitle, Disable = 0
-	titlebox title_hardware_Release Win = $panelTitle, Disable = 0
+	
+	variable disableState
+	controlinfo /w = $panelTitle popup_Hardware_AvailITC1600s
+	disableState = V_disable & ~2
+	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = disableState // 0
+	popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = disableState //0
+	button button_Hardware_RemoveYoke Win = $panelTitle, Disable = disableState //0
+	titlebox title_hardware_Release Win = $panelTitle, Disable = disableState //0
 
 End
+
+
+	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
+		V_disable = V_disable & ~0x2
+		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
+	endif
 //=========================================================================================
 Function DAP_ButtonProc_YokeRelease(ctrlName) : ButtonControl
 	String ctrlName
@@ -3725,7 +3734,8 @@ Function DAP_SetFollowerButtons(panelTitle) // Sets the lists and buttons on the
 	string FollowerPanelTitle
 	variable itemInList = 0
 	string LeadDevice
-
+	variable disableState
+	
 	SVAR /z ListOfFollowerITC1600s = $(FolderPath + ":ListOfFollowerITC1600s")
 
 	if(exists(FolderPath + ":ListOfFollowerITC1600s") == 2)
@@ -3736,20 +3746,24 @@ Function DAP_SetFollowerButtons(panelTitle) // Sets the lists and buttons on the
 			elseif(itemsinlist(ListOfFollowerITC1600s) == 0)
 				FollowerPanelTitle = ListOfFollowerITC1600s
 			endif
-
-			setvariable setvar_Hardware_Status win = $FollowerPanelTitle, value = _STR:"Follower"
-			button button_Hardware_Independent Win = $FollowerPanelTitle, Disable = 2
-			button button_Hardware_Lead1600 Win = $FollowerPanelTitle, Disable = 2
-			button button_Hardware_AddFollower Win = $FollowerPanelTitle, Disable = 2
-			LeadDevice = "Lead device = " + panelTitle
-			setvariable setvar_Hardware_YokeList  Win = $FollowerPanelTitle, Disable = 0, value =_STR:LeadDevice
-			button button_Hardware_RemoveYoke Win = $FollowerPanelTitle, Disable = 2
-			titlebox title_hardware_Follow Win = $FollowerPanelTitle, Disable = 2
-			titlebox title_hardware_Release Win = $FollowerPanelTitle, Disable = 2
-			popupmenu popup_Hardware_AvailITC1600s Win = $FollowerPanelTitle, Disable = 2
-			popupmenu popup_Hardware_YokedDACs Win = $FollowerPanelTitle, Disable = 2
-			titlebox title_hardware_1600inst Win = $FollowerPanelTitle, Disable = 2
 			
+			controlinfo / w = $FollowerPanelTitle setvar_Hardware_Status
+			print "V_disable =", v_disable
+			disableState = 1 | 2
+			setvariable setvar_Hardware_Status win = $FollowerPanelTitle, value = _STR:"Follower"
+			button button_Hardware_Independent Win = $FollowerPanelTitle, Disable = disableState // 2
+			button button_Hardware_Lead1600 Win = $FollowerPanelTitle, Disable =  disableState //2
+			button button_Hardware_AddFollower Win = $FollowerPanelTitle, Disable =  disableState //2
+			button button_Hardware_RemoveYoke Win = $FollowerPanelTitle, Disable =  disableState //2
+			titlebox title_hardware_Follow Win = $FollowerPanelTitle, Disable =  disableState //2
+			titlebox title_hardware_Release Win = $FollowerPanelTitle, Disable =  disableState //2
+			popupmenu popup_Hardware_AvailITC1600s Win = $FollowerPanelTitle, Disable =  disableState //2
+			popupmenu popup_Hardware_YokedDACs Win = $FollowerPanelTitle, Disable =  disableState //2
+			titlebox title_hardware_1600inst Win = $FollowerPanelTitle, Disable =  disableState //2
+			LeadDevice = "Lead device = " + panelTitle
+			controlinfo / w = $FollowerPanelTitle setvar_Hardware_YokeList
+			disableState = V_disable & ~2			
+			setvariable setvar_Hardware_YokeList  Win = $FollowerPanelTitle, Disable = disableState, value =_STR:LeadDevice			
 
 			
 			itemInlist += 1
@@ -3762,24 +3776,52 @@ Function DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the Yoke control an
 	SVAR ListOfAllDACpanels = $(Path_ITCDevicesFolder(panelTitle) + ":ITCPanelTitleList")
 	string ITC1600DeviceList = listMatch(ListOfAllDACpanels, "ITC1600*", ";")
 	variable i = 0
+	variable disableState //=1 & ~0x3
 	do
+// d =0:	Normal (visible), enabled.
+// d =1:	Hidden.
+// d =2:	Visible and disabled. Drawn in grayed state, also disables action procedure.
+// d =3:	Hidden and disabled.
+
+// to switch only the enabled state, you can do this:
+// disable = V_disable & ~2 (this will enable it)
+// disable = V_disable | 2 (this will disable it)
+// to change the visible state, use 1 instead of 2 above
+
 		panelTitle = stringfromlist(i, ITC1600DeviceList, ";")
-		button button_Hardware_Independent Win = $panelTitle, Disable = 2
-		button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
-		button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
-		popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = 2
-		button button_Hardware_RemoveYoke Win = $panelTitle, Disable = 2
-		titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
-		titlebox title_hardware_Release Win = $panelTitle, Disable = 2
-		popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+		controlinfo /w =$panelTitle button_Hardware_Independent
+		print "v_disable =", v_disable
+
+		disableState = v_disable | 2 // makes it disabled
+		button button_Hardware_Independent Win = $panelTitle, Disable = disableState // 2
+		disableState = V_disable & ~2 // makes it enabled
+		button button_Hardware_Lead1600 Win = $panelTitle, Disable = disableState
+		controlinfo /w =$panelTitle button_Hardware_AddFollower
+
+		
+		disableState = v_disable | 2 // makes it disabled
+		button button_Hardware_AddFollower Win = $panelTitle, Disable = disableState // 2
+		popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = disableState // 2
+		button button_Hardware_RemoveYoke Win = $panelTitle, Disable = disableState // 2
+		titlebox title_hardware_Follow Win = $panelTitle, Disable = disableState // 2
+		titlebox title_hardware_Release Win = $panelTitle, Disable = disableState // 2
+		popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = disableState // 2
 		SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
-		setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = 0, value =_STR:"None"
+		controlinfo /w =$panelTitle setvar_Hardware_YokeList
+		disableState = v_disable & ~2 // makes it enabled
+		setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = disableState, value =_STR:"None"
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // makes sure yoking can only be set from ITC1600 Dev 0
-			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
-			titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0", Disable = 0
-			setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = 2
+			controlinfo /w =$panelTitle button_Hardware_Lead1600
+			disableState = v_disable | 2 // makes it enabled
+			button button_Hardware_Lead1600 Win = $panelTitle, Disable = disableState // 2
+			setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = disableState // 2
+			controlinfo /w =$panelTitle title_hardware_1600inst
+
+			disableState = v_disable & ~2 // makes it enabled
+			titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0", Disable = disableState // 0
+
 		elseif(stringmatch(panelTitle, "ITC1600_Dev_0") == 1)
-			titlebox title_hardware_1600inst Win = $panelTitle, title = "Designate the status of the ITC1600 devices:", Disable = 0
+			titlebox title_hardware_1600inst Win = $panelTitle, title = "Designate the status of the ITC1600 devices:", Disable = disableState //0
 		endif	
 		i += 1
 	while(i < itemsinlist(ITC1600DeviceList, ";")) 
