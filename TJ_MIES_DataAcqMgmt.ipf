@@ -281,5 +281,12 @@ Function TP_TPSetUp(panelTitle)
 		SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 		//ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
 		ITC_ConfigUploadDAC(panelTitle)
+		
+		// open scope window
+		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
+		if(v_value == 0)
+			DAP_SmoothResizePanel(340, panelTitle)
+			setwindow $panelTitle + "#oscilloscope", hide = 0
+		endif
 	
 End

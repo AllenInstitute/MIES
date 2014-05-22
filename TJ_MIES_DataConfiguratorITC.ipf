@@ -2,10 +2,10 @@
 
 
 //=========================================================================================
-Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// pass column into this function?
+Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// data acq = 0
 	string panelTitle
 	variable DataAcqOrTP
-	Variable start = stopmstimer(-2)
+	//Variable start = stopmstimer(-2)
 	DC_MakeITCConfigAllConfigWave(panelTitle)  
 	DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)  
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
@@ -15,7 +15,7 @@ Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// pass column into this
 	DC_PlaceDataInITCDataWave(panelTitle)
 	DC_PDInITCFIFOPositionAllCW(panelTitle)// PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
-	print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
+	//print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
 
 //==========================================================================================
@@ -281,11 +281,11 @@ Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the
 	string panelTitle
 	variable DataAcqOrTP // 0 = DataAcq, 1 = TP
 	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle)
-	print "Longest sweep =", LongestSweep
+	// print "Longest sweep =", LongestSweep
 	variable exponent = ceil(log(LongestSweep)/log(2))
 	//exponent += 2
 	if(DataAcqOrTP == 0)
-	print " data acq not TP exponent"
+	// print " data acq not TP exponent"
 		exponent += 1 // round(5000 / LongestSweep) // buffer for sweep length
 	endif
 	
@@ -295,7 +295,7 @@ Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the
 	//print "exponent = ",exponent
 	//print ceil(5000 / LongestSweep)
 	//LongestWaveLength *= 5
-	print "DC_CalculateITCDataWaveLength =",(2^exponent), "exponent =", exponent
+	// print "DC_CalculateITCDataWaveLength =",(2^exponent), "exponent =", exponent
 	return (2^exponent)
 	//return round(LongestWaveLength)
 end
@@ -466,10 +466,10 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
-			print "chan type wave name =", ChanTypeWaveName, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
+			// print "chan type wave name =", ChanTypeWaveName, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
 			//check to see if it is a test pulse or user specified da wave
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
-				print "chan type wave name =", ChanTypeWaveName
+				// print "chan type wave name =", ChanTypeWaveName
 				column = 0
 				insertStart = 0
 				insertEnd = 0
@@ -477,7 +477,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 				column = real(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// DC_CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
 				if(j == 0) // (i == 0)
 					InsertStart = DC_GlobalChangesToITCDataWave(panelTitle) 
-					print "insert start =", InsertStart
+					// print "insert start =", InsertStart
 					InsertEnd = InsertStart 
 				endif
 			endif
