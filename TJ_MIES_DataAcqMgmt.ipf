@@ -223,6 +223,47 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	
 End
 
+Function ITCStopTP(panelTitle)
+	string panelTitle
+
+	variable i = 0
+	variable deviceType = 0
+
+	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
+	if(ITC1600True == 1)
+		deviceType = 2
+	endif
+	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
+		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
+		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
+		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+			if(numberOfFollowerDevices != 0) 
+				string followerPanelTitle
+				
+		
+				//Lead board commands
+				ITC_StopTPMD(panelTitle)
+				
+				//Follower board commands
+				do
+					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+					ITC_StopTPMD(followerPanelTitle)
+					i += 1
+				while(i < numberOfFollowerDevices)
+
+				
+			elseif(numberOfFollowerDevices == 0)
+				ITC_StopTPMD(panelTitle)
+			endif
+		elseif(exists(pathToListOfFollowerDevices) == 0)
+			ITC_StopTPMD(panelTitle)
+		endif
+	elseif(DeviceType != 2)
+			ITC_StopTPMD(panelTitle)
+	endif
+End
+
 Function TP_TPSetUp(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)

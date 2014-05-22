@@ -130,7 +130,7 @@ Function RA_StartMD(panelTitle)
 	IndexingState = v_value
 	
 	StartTestPulse(deviceType, deviceNum, panelTitle)  // 
-	ITC_StartBackgroundTimerMD(ITI,"ITC_STOPTPMD(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
+	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
 	// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 	wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
 	wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
@@ -393,7 +393,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 				
 				ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 				//print ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
-				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
+				ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 				
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale, panelTitle)
@@ -447,7 +447,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 
 				StartTestPulse(deviceType, deviceNum, panelTitle)
 				// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
-				ITC_StartBackgroundTimerMD(ITI,"ITC_STOPTPMD(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
+				ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
 				wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
 				wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
 				TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)

@@ -191,7 +191,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
-			RA_StartMD(panelTitle)
+			RA_StartMD(panelTitle)  // *************THIS NEEDS TO BE POSTPONED FOR YOKED DEVICES*********************************
 		else
 			DAP_StopButtonToAcqDataButton(panelTitle)
 			NVAR /z DataAcqState = $wavepath + ":DataAcqState"
