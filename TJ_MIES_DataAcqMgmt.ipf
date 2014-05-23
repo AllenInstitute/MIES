@@ -222,8 +222,10 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	endif
 	
 End
+//=========================================================================================
+// BELOW IS A GROUP OF FUNCTIONS THAT HANDLE YOKED DEVICES
 
-Function ITCStopTP(panelTitle)
+Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously 
 	string panelTitle
 
 	variable i = 0
@@ -263,8 +265,157 @@ Function ITCStopTP(panelTitle)
 			ITC_StopTPMD(panelTitle)
 	endif
 End
+//=========================================================================================
+Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
+	string panelTitle					// if devices are not yoked, it is the same as it would be if RA_StartMD was called directly
 
-Function TP_TPSetUp(panelTitle)
+
+	variable i = 0
+	variable deviceType = 0
+
+	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
+	if(ITC1600True == 1)
+		deviceType = 2
+	endif
+
+	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
+		print "1600 device"
+		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
+		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
+		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+			if(numberOfFollowerDevices != 0) // There are follower devices
+				string ActiveDeviceListStringPath
+				sprintf ActiveDeviceListStringPath, "%s:ActiveDeviceList" Path_ActiveITCDevicesFolder(panelTitle)
+				Wave / z ActiveDeviceList = $ActiveDeviceListStringPath
+				if(dimsize(ActiveDeviceList, 0) > 0) // if list is empty, there are no active devices.
+
+					string ActiveDeviListDevIDGlobPathStr
+					sprintf ActiveDeviListDevIDGlobPathStr, "%s:ActiveDeviceListDeviceIDGlobals"  Path_ActiveITCDevicesFolder(panelTitle)
+					if(waveexists($ActiveDeviListDevIDGlobPathStr) == 1)
+						redimension /N = 0 $ActiveDeviListDevIDGlobPathStr
+					endif
+					
+					duplicate /o /r = [][0] ActiveDeviceList $ActiveDeviListDevIDGlobPathStr
+					Wave ActiveDeviceListDeviceIDGlobals = $ActiveDeviListDevIDGlobPathStr
+				
+				
+					// Make sure yoked devices have all completed data acq.  If all devices have completed data acq start RA_StartMD(panelTitle) on the lead device (ITC1600_dev_0)
+					// root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList NEED to make sure all yoked devices are inactive !!!!!!!!!!!!
+					
+					// check if lead device is still active
+					string ITCDeviceIDGlobalPathString
+					sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString("ITC1600_Dev_0")
+					NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+					FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
+					
+					if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
+						return 0
+					endif
+					
+					// check if follower devices are still active
+					for (i = 0; i < numberOfFollowerDevices; i += 1)
+						string FollowerITC1600
+						sprintf FollowerITC1600, "%s" stringfromlist(i, ListOfFollowerDevices, ";")
+						sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString(FollowerITC1600)
+						NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+						FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
+						if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
+							return 0
+						endif
+					endfor
+				endif
+				
+				RA_StartMD("ITC1600_dev_0")
+			
+			elseif(numberOfFollowerDevices == 0) // there are no follower devices
+				RA_StartMD(panelTitle)
+			endif
+		elseif(exists(pathToListOfFollowerDevices) == 0) // list of follower devices does not exist
+			RA_StartMD(panelTitle)
+		endif
+	
+	elseif(DeviceType != 2) // not a ITC1600, therefore there can be no follower devices
+			RA_StartMD(panelTitle)
+	endif	
+End
+//=========================================================================================
+
+Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_BckgTPwithCallToRACounterMD(panelTitle) gets called if the panel title is the same as the last follower device
+	string panelTitle
+	
+	variable i = 0
+	variable deviceType = 0
+
+	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
+	if(ITC1600True == 1)
+		deviceType = 2
+	endif
+
+	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
+		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
+		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
+		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+
+			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+			if(numberOfFollowerDevices != 0) 
+				string ActiveDeviceListStringPath
+				sprintf ActiveDeviceListStringPath, "%s:ActiveDeviceList" Path_ActiveITCDevicesFolder(panelTitle)
+				Wave / z ActiveDeviceList = $ActiveDeviceListStringPath
+				string ActiveDeviListDevIDGlobPathStr
+				sprintf ActiveDeviListDevIDGlobPathStr, "%s:ActiveDeviceListDeviceIDGlobals"  Path_ActiveITCDevicesFolder(panelTitle)
+				if(waveexists($ActiveDeviListDevIDGlobPathStr) == 1)
+					redimension /N = 0 $ActiveDeviListDevIDGlobPathStr
+				endif
+				
+				duplicate /o /r = [][0] ActiveDeviceList $ActiveDeviListDevIDGlobPathStr
+				Wave ActiveDeviceListDeviceIDGlobals = $ActiveDeviListDevIDGlobPathStr
+				
+				
+				
+				if(dimsize(ActiveDeviceList, 0) > 0)
+					// Make sure yoked devices have all completed data acq.  If all devices have completed data acq start RA_StartMD(panelTitle) on the lead device (ITC1600_dev_0)
+					// root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList NEED to make sure all yoked devices are inactive !!!!!!!!!!!!
+						
+					// check if lead device is still active
+					string ITCDeviceIDGlobalPathString
+					sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString("ITC1600_Dev_0")
+					NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+					FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
+					
+					if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
+						return 0
+					endif
+					
+					// check if follower devices are still active
+					for (i = 0; i < numberOfFollowerDevices; i += 1)
+						string FollowerITC1600
+						sprintf FollowerITC1600, "%s" stringfromlist(i, ListOfFollowerDevices, ";")
+						sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString(FollowerITC1600)
+						NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+						FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
+						if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
+							return 0
+						endif
+					endfor
+				endif
+				
+				 RA_BckgTPwithCallToRACounterMD("ITC1600_dev_0")
+				
+			elseif(numberOfFollowerDevices == 0) // there are no follower devices
+				 RA_BckgTPwithCallToRACounterMD(panelTitle)
+			endif
+		elseif(exists(pathToListOfFollowerDevices) == 0) // list of follower devices does not exist
+			 RA_BckgTPwithCallToRACounterMD(panelTitle)
+		endif
+	elseif(DeviceType != 2) // not a ITC1600, therefore there can be no follower devices
+			 RA_BckgTPwithCallToRACounterMD(panelTitle)
+	endif	
+End
+
+//=========================================================================================
+
+Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure just prior to calling TP start - don't forget to reset the panel config for data acq following TP
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string TestPulsePath
@@ -331,3 +482,4 @@ Function TP_TPSetUp(panelTitle)
 		endif
 	
 End
+//=========================================================================================
