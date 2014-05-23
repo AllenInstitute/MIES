@@ -159,9 +159,9 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	variable TPDurInms = v_value
-	print "min samp int = ", minsampint
+	// print "min samp int = ", minsampint
 	PulseDuration = (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
-	print "pulse points = ", PulseDuration
+	// print "pulse points = ", PulseDuration
 	GlobalTPDurationVariable = PulseDuration
 	variable ITCdataWaveLength = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
 	
@@ -169,10 +169,10 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	variable Amplitude = v_value
-	print "TP amp =", v_value 
-	print pulseduration
+//	print "TP amp =", v_value 
+//	print pulseduration
 	variable Frequency = 1000 / (TPDurInms * 2)
-	print "frequency = ",frequency
+	// print "frequency = ",frequency
 	variable /g $(TPGlobalPath + ":TPPulseCount")
 	NVAR TPPulseCount = $(TPGlobalPath + ":TPPulseCount")
 	TPPulseCount = TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)

@@ -325,7 +325,7 @@ Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only
 						endif
 					endfor
 				endif
-				
+				print "RA_StartMD(ITC1600_dev_0)"
 				RA_StartMD("ITC1600_dev_0")
 			
 			elseif(numberOfFollowerDevices == 0) // there are no follower devices
@@ -399,8 +399,8 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 						endif
 					endfor
 				endif
-				
-				 RA_BckgTPwithCallToRACounterMD("ITC1600_dev_0")
+				print "RA_BckgTPwithCallToRACounterMD(\"ITC1600_dev_0\")"
+				RA_BckgTPwithCallToRACounterMD("ITC1600_dev_0")
 				
 			elseif(numberOfFollowerDevices == 0) // there are no follower devices
 				 RA_BckgTPwithCallToRACounterMD(panelTitle)
@@ -437,7 +437,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 		
 		// creates test pulse wave
 		TestPulsePath = Path_WBSvdStimSetDAFolder(panelTitle) + ":TestPulse"
-		print "test pulse path = ", testpulsepath
+		//  print "test pulse path = ", testpulsepath
 		make /o /n = 0 $TestPulsePath
 		wave TestPulse = $TestPulsePath
 		SetScale /P x 0,0.005,"ms", TestPulse // test pulse wave made at max possible samp frequency

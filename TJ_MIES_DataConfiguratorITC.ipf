@@ -741,17 +741,17 @@ Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)/
 	
 	if(channelNo == 1)
 		if(DAorTTL == 0)
-		print "DA channel 1 column = " + num2str(column)
+		//print "DA channel 1 column = " + num2str(column)
 		else
-		print "TTL channel 1 column = " + num2str(column)
+		//print "TTL channel 1 column = " + num2str(column)
 		endif
 		//print setname
 	endif
 	if(channelNo == 0)
 		if(DAorTTL == 0)
-		print "DA channel 0 column = " + num2str(column)
+		//print "DA channel 0 column = " + num2str(column)
 		else
-		print "TTL channel 0 column = " + num2str(column)
+		//print "TTL channel 0 column = " + num2str(column)
 		endif
 		//print setname
 	endif
