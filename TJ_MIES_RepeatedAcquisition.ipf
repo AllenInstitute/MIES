@@ -297,9 +297,10 @@ Function RA_StartMD(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
-	string CountPath = WavePath + ":Count"
-	variable /g $CountPath = 0
-	NVAR Count = $CountPath
+	string CountPathString
+	sprintf  CountPathString, "%s:Count"  WavePath
+	variable /g $CountPathString = 0
+	NVAR Count = $CountPathString
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath = v_value
@@ -345,7 +346,7 @@ Function RA_StartMD(panelTitle)
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
 						followerTotTrials = v_value
 						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-						followerTotTrials = (TotTrials * v_value) // + 1
+						followerTotTrials = (followerTotTrials * v_value) // + 1
 					else
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
 						followerTotTrials = v_value
@@ -353,9 +354,16 @@ Function RA_StartMD(panelTitle)
 				
 					TotTrials = max(TotTrials, followerTotTrials)
 					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count))
+					
+					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
+					sprintf  CountPathString, "%s:Count"  WavePath
+					variable /g $CountPathString = 0
+					NVAR /z followerCount = $CountPathString
+					
 					i += 1
 			
 				while(i < numberOfFollowerDevices)
+				
 			
 			endif
 		endif
@@ -389,8 +397,9 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	string CountPath = WavePath + ":Count"
-	NVAR Count = $CountPath
+	string CountPathString
+	sprintf CountPathString, "%s:Count" WavePath
+	NVAR Count = $CountPathString
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	variable i = 0
@@ -456,15 +465,22 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 				variable followerTotTrials
 				
 				do
+					
+					
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					print "follower panel title =", followerPanelTitle
+					
+					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
+					sprintf CountPathString, "%s:Count" WavePath
+					NVAR /z FollowerCount = $CountPathString
+					FollowerCount += 1
 					
 					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
 					if(v_value == 0)
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
 						followerTotTrials = v_value
 						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-						followerTotTrials = (TotTrials * v_value) // + 1
+						followerTotTrials = (followerTotTrials * v_value) // + 1
 					else
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
 						followerTotTrials = v_value
@@ -528,8 +544,9 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
-	string CountPath = WavePath + ":Count"
-	NVAR Count = $CountPath
+	string CountPathString
+	sprintf countPathString, "%s:Count"  WavePath
+	NVAR Count = $countPathString
 	
 	// get the device info: device type and device number	
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
@@ -568,13 +585,15 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
 						followerTotTrials = v_value
 						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-						followerTotTrials = (TotTrials * v_value) // + 1
+						followerTotTrials = (followerTotTrials * v_value) // + 1
 					else
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
 						followerTotTrials = v_value
 					endif
-				
+					print "followerTotTrials =", followerTotTrials
+					print "totalTrials BEFORE MAX =", TotTrials
 					TotTrials = max(TotTrials, followerTotTrials)
+					print "totalTrials AFTER MAX =", TotTrials
 					// ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count))
 					i += 1
 			
@@ -601,11 +620,33 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		
 		//killwaves/f TestPulse
 	else
+		print "totalTrials =", TotTrials
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
 		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		Killvariables Count
+		
+		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+			//numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+			if(numberOfFollowerDevices != 0) // there are followers
+				// string followerPanelTitle
+				// variable followerTotTrials
+				i = 0
+				do
+					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
+					sprintf CountPathString, "%s:Count" WavePath
+					NVAR /z FollowerCount = $CountPathString
+					Killvariables FollowerCount
+					i += 1
+			
+				while(i < numberOfFollowerDevices)
+			
+			endif
+		endif
+		
+		
 		//killvariables /z Start, RunTime
 		//Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
 		//killwaves /f TestPulse
