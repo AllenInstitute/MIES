@@ -2,6 +2,7 @@
 
 // DATA ACQ MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 
+// FunctionStartDataAcq
 Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this function handles the calls to the data configurator (DC) functions and BackgroundMD - it is required because of the special handling syncronous ITC1600s require
 	variable DeviceType, DeviceNum
 	string panelTitle
@@ -69,7 +70,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 		ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
 	endif
 	print "Data Acquisition took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End
+End // Function
 
 Function ITC_ConfigUploadDAC(panelTitle)
 	string panelTitle
@@ -162,56 +163,6 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 		endif
 	elseif(DeviceType != 2)
 	
-//		DAP_StoreTTLState(panelTitle)
-//		DAP_TurnOffAllTTLs(panelTitle)
-//		
-//		// stores panel settings
-//		make /free /n = 8 SelectedDACWaveList
-//		TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-//		TP_SelectTestPulseWave(panelTitle)
-//		
-//		make /free /n = 8 SelectedDACScale
-//		TP_StoreDAScale(SelectedDACScale,panelTitle)
-//		TP_SetDAScaleToOne(panelTitle)
-//		
-//		// creates test pulse wave
-//		TestPulsePath = Path_WBSvdStimSetDAFolder(panelTitle) + ":TestPulse"
-//		print "test pulse path = ", testpulsepath
-//		make /o /n = 0 $TestPulsePath
-//		wave TestPulse = $TestPulsePath
-//		SetScale /P x 0,0.005,"ms", TestPulse // test pulse wave made at max possible samp frequency
-//		
-//		// adjust test pulse wave according to panel input
-//		//TP_UpdateTestPulseWave(TestPulse, panelTitle)
-//	
-//		TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
-//		
-//		// creates TP wave used for display
-//		//DM_CreateScaleTPHoldingWave(panelTitle)
-//		
-//		//string TPDurationGlobalPath
-//		sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
-//		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath
-//		DM_CreateScaleTPHoldWaveChunk(panelTitle,0, GlobalTPDurationVariable)  // first TP so start point = 0
-//		TP_ClampModeString(panelTitle)
-//		
-//		// configures data for ITC with testpulse wave selected
-//		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
-//		// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
-//		wave ITCDataWave = $WavePath + ":ITCDataWave"
-//		// variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))
-//		NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))
-//		if(NewNoOfPoints == 21845) // extra special exceptions for 3 channels - super BS coding right here.
-//			NewNoOfPoints = 2^14
-//		endif
-//		// print "divisor =",(deltaX(ITCDataWave) / 0.005)
-//		// print "new no of points =", NewNoOfPoints
-//		redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
-//		
-//		wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-//		SCOPE_UpdateGraph(TestPulseITC,panelTitle)
-//		//ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
-//		ITC_ConfigUploadDAC(panelTitle)
 		TP_TPSetUp(panelTitle)
 		ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle) // START TP DATA ACQUISITION
 		wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
@@ -225,7 +176,7 @@ End
 //=========================================================================================
 // BELOW IS A GROUP OF FUNCTIONS THAT HANDLE YOKED DEVICES
 
-Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously 
+Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simultaneously 
 	string panelTitle
 
 	variable i = 0
@@ -245,26 +196,82 @@ Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously
 				
 		
 				//Lead board commands
-				ITC_StopTPMD(panelTitle)
-				
+				// ITC_StopTPMD(panelTitle)
+				DAP_StopOngoingDataAcqMD(panelTitle)
 				//Follower board commands
 				do
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-					ITC_StopTPMD(followerPanelTitle)
+					//ITC_StopTPMD(followerPanelTitle)
+					DAP_StopOngoingDataAcqMD(followerPanelTitle)
 					i += 1
 				while(i < numberOfFollowerDevices)
 
 				
 			elseif(numberOfFollowerDevices == 0)
-				ITC_StopTPMD(panelTitle)
+				DAP_StopOngoingDataAcqMD(panelTitle)
 			endif
 		elseif(exists(pathToListOfFollowerDevices) == 0)
-			ITC_StopTPMD(panelTitle)
+			DAP_StopOngoingDataAcqMD(panelTitle)
 		endif
 	elseif(DeviceType != 2)
-			ITC_StopTPMD(panelTitle)
+		// ITC_StopTPMD(panelTitle)
+		DAP_StopOngoingDataAcqMD(panelTitle)
 	endif
 End
+
+Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously 
+
+    string panelTitle
+
+    variable i = 0
+    variable deviceType = 0
+
+    variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
+    if(ITC1600True == 1)
+        deviceType = 2
+    endif
+    if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
+        string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
+        SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
+        if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+            variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+            if(numberOfFollowerDevices != 0) 
+                string followerPanelTitle
+                
+        
+                //Lead board commands
+                ITC_StopTPMD(panelTitle)
+                
+                // ITC_StopTPMD(panelTitle)
+               // DAP_StopOngoingDataAcqMD(panelTitle)
+                //Follower board commands
+                do
+                    followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+                    ITC_StopTPMD(followerPanelTitle)
+                   
+                    i += 1
+                while(i < numberOfFollowerDevices)
+
+                
+            elseif(numberOfFollowerDevices == 0)
+                ITC_StopTPMD(panelTitle)
+               
+            endif
+        elseif(exists(pathToListOfFollowerDevices) == 0)
+            ITC_StopTPMD(panelTitle)
+         
+        endif
+    elseif(DeviceType != 2)
+            ITC_StopTPMD(panelTitle)
+            // ITC_StopTPMD(panelTitle)
+        
+    endif
+End
+
+
+
+
+
 //=========================================================================================
 Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
 	string panelTitle					// if devices are not yoked, it is the same as it would be if RA_StartMD was called directly

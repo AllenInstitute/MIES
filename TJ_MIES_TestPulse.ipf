@@ -278,7 +278,59 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 End
 
 //=============================================================================================
+Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
+	String ctrlName
+	string panelTitle
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()
+	// pauseupdate
+	
+	// make sure data folder is correct
+	setdatafolder root:
+	
+	//variable DataAcqOrTP = 1
+	
+	// Check if panel is locked to a DAC
+	AbortOnValue HSU_DeviceLockCheck(panelTitle),1
+	
+	// *** need to modify for yoked devices
+	// Check if TP uduration is greater than 0 ms	
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
+	if(v_value == 0)
+		abort "Give test pulse a duration greater than 0 ms"
+	endif
+	
+	// Disable the TP start button
+	ControlInfo /w = $panelTitle $ctrlName
+	if(V_disable == 0)
+		Button $ctrlName, win = $panelTitle, disable = 2
+	endif
+	
+	// Determine the data folder path for the DAC
+	string WavePath
+	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
+	
+	// *** need to modify for yoked devices
+	// Kill the global variable Count if it exists - if it was allowed to exist the user would not be able to stop the TP using the space bar
+	string CountPath = WavePath + ":count"
+	if(exists(CountPath) == 2)
+		killvariables $CountPath
+	endif
+	
+	// update the miniumum sampling interval
+	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+	
+	// determine the device type and device number
+	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+	variable DeviceType = v_value - 1
+	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+	variable DeviceNum = v_value - 1
+	
+	StartTestPulse(deviceType, deviceNum, panelTitle)
 
+End
+
+//=============================================================================================
 // Calculate input resistance simultaneously on array so it is fast
 	controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
 	PulseDuration = (v_value / 0.005)
@@ -290,7 +342,7 @@ End
 //The function TPDelta is called by the TP dataaquistion functions
 //It updates a wave in the Test pulse folder for the device
 //The wave contains the steady state difference between the baseline and the TP response
-
+// instantaneous
 ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
 				string InputDataPath
@@ -313,12 +365,12 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod	
 				variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
 				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-				variable TPInstantaneouseOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+				variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
 				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
 				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
 				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
 				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
-				duplicate /free /r = [TPInstantaneouseOnsetPoint, (TPInstantaneouseOnsetPoint + 50)][] TPWave Instantaneous
+				duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
 				
 				MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 				avgTPSS /= dimsize(TPSS, 0)

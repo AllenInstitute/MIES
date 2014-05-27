@@ -1,5 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-
+// SCOPE_UpdateGraph
 Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	wave WaveToPlot
 	string panelTitle
@@ -75,7 +75,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	endif
 	//doupdate
 //	print "Scope update took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End
+End // Function
 
 Function/t ReturnStringforTag(panelTitle, waveToconvert, column) // ####DOES NOT APPEAR TO BE IN USE
 	string panelTitle

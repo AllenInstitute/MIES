@@ -2698,7 +2698,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 		//print "device type = ", devicetype, " Device Number = ", devicenum		
 End
 //=========================================================================================
-
+// DAP_ButtonProc_AcquireDataMD.
 Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 	String ctrlName
 	// set the data folder to the root folder
@@ -2784,12 +2784,13 @@ Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 	
 	else // data aquistion is ongoing, stop data acq
 		DataAcqState = 0
-		DAP_StopOngoingDataAcqMD(panelTitle)
+		// DAP_StopOngoingDataAcqMD(panelTitle)
+		Yoked_ITCStopDataAcq(panelTitle)
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
 		//print "device type = ", devicetype, " Device Number = ", devicenum		
-End
+End // Function
 //=========================================================================================
 Function DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff) // returns 1 if any active channel does not have a wave selected
 	string panelTitle
@@ -3489,6 +3490,9 @@ Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
 	
+	string CountPathString
+	sprintf CountPathString, "%s:Count" WavePath
+	killvariables $CountPathString
 	print "Data acquisition was manually terminated"
 End 
 //=========================================================================================

@@ -2,6 +2,7 @@
 
 
 //=========================================================================================
+// DC_ConfigureDataForITC
 Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// data acq = 0
 	string panelTitle
 	variable DataAcqOrTP
@@ -16,7 +17,7 @@ Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// data acq = 0
 	DC_PDInITCFIFOPositionAllCW(panelTitle)// PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 	//print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End
+End // Function
 
 //==========================================================================================
 
@@ -483,10 +484,11 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			endif
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		ControlInfo /w = $panelTitle check_Settings_ScalingZero 
-		//print "v_value = "+ num2str(v_value)
 		if(v_value == 1)
+			ControlInfo /w = $panelTitle Check_DataAcq_Indexing
+			variable IndexingOnOrOff = v_value // indexing state
 			ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 1)// shutting off DA by setting scaling to zero is only required when indexing is locked
+			if(v_value == 1 || IndexingOnOrOff == 0)// locked indexing or no indexing
 				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)// makes sure test pulse wave scaling is maintained
 					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1)
 						DAScale = 0
@@ -504,7 +506,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			Wave/z StimSetSweep = $ChanTypeWaveName
 			//print ChanTypeWaveName
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
-			
+			// ITCDataWave[0, points in TP][j] = TPAmp * DAGain ** Need to determine TP amp based on Mode of MIES headstage "i" is the DA channel, need to determine mode of DA channel
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
 		endif
 		i += 1
