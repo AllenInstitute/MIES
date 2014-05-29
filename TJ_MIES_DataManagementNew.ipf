@@ -37,7 +37,13 @@ End
 Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
 	string panelTitle
 	// variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle) / 5
-	variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
+	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
+	//print TPGlobalPath
+	//variable /g  $TPGlobalPath + ":Duration"
+	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
+	variable RowsToCopy = (GlobalTPDurationVariable * 2)
+	print "rows to copy =", rowstocopy
+	//variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"

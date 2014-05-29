@@ -126,20 +126,32 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-	PulseDuration = (v_value / 0.005)
-	GlobalTPDurationVariable = PulseDuration
-	redimension /n = (2 * PulseDuration) TestPulse
+	PulseDuration = (v_value) // duration of the TP in ms
+	// PulseDuration = (v_value / 0.005)
+	// PulseDuration = (v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
+	GlobalTPDurationVariable = (PulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
+	print "here, tp global dur =", GlobalTPDurationVariable
+	
+	variable PointsInTPWave = (2 * PulseDuration) 
+	PointsInTPWave *= 200
+	redimension /n = (PointsInTPWave) TestPulse
+	//redimension /n = ((8 * PulseDuration)) TestPulse
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	print "TP amp =",v_value
-	TestPulse[(PulseDuration / 2), (Pulseduration + (PulseDuration / 2))] = v_value
-	GlobalTPAmplitudeVariableVC = v_value
+
+	PulseDuration *= 2
+	print "startpoint = ", (0.25*PointsInTPWave)
+	TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = v_value
+
+ 	GlobalTPAmplitudeVariableVC = v_value
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 	GlobalTPAmplitudeVariableIC = v_value
 End
 
+// TP_UpdateTestPulseWaveChunks  
 Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^17)
-	wave TestPulse
+	wave TestPulse											// this function is only used with MD functions
 	string panelTitle
 	variable i = 0
 	variable PulseDuration
@@ -159,6 +171,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	variable TPDurInms = v_value
+	//print "tp dur in ms=",tpdurinms
 	// print "min samp int = ", minsampint
 	PulseDuration = (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
 	// print "pulse points = ", PulseDuration
@@ -278,6 +291,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 End
 
 //=============================================================================================
+// TP_ButtonProc_DataAcq_TPMD
 Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string panelTitle
@@ -328,7 +342,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	
 	StartTestPulse(deviceType, deviceNum, panelTitle)
 
-End
+End // Function
 
 //=============================================================================================
 // Calculate input resistance simultaneously on array so it is fast
@@ -346,18 +360,26 @@ End
 ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
 				string InputDataPath
-				NVAR DurationG = $InputDataPath + ":Duration"
+				NVAR DurationG = $InputDataPath + ":Duration" // number of points in half the test pulse
 				NVAR AmplitudeIC = $InputDataPath + ":AmplitudeIC"	
 				NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"	
 				AmplitudeIC = abs(AmplitudeIC)
 				AmplitudeVC =  abs(AmplitudeVC)
 			//	variable Duration = DurationG  
 				wave TPWave = $InputDataPath + ":TestPulseITC"
-				variable Duration = (deltax(TPWave) / 0.005) * DurationG  // remove this line for non MD test pulse method
-				variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
-				variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
-				variable TPSSEndTime = (0.95*((Duration * 0.0075)))
-				variable TPInstantaneouseOnsetTime = (Duration / 400) + 0.01 // starts a tenth of a second after pulse to exclude cap transients - this should probably not be hard coded
+			//	print "duration global =",durationG
+			//	variable Duration = (deltax(TPWave) / 0.005) * DurationG  // remove this line for non MD test pulse method Total points in TP wave // equals twice the number of points in the TP
+				variable Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
+			//	print "duration local = ", duration
+			//	variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
+				variable BaselineSteadyStateStartTime =(0.1 * duration)
+			//	variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
+				variable BaselineSteadyStateEndTime = (0.24 * Duration)
+			//	variable TPSSEndTime = (0.95*((Duration * 0.0075)))
+				variable TPSSEndTime = (0.74 * duration)
+			//	variable TPInstantaneouseOnsetTime = (Duration / 400) + 0.03 // starts a tenth of a second after pulse to exclude cap transients - this should probably not be hard coded
+				variable TPInstantaneouseOnsetTime = (0.252 * Duration)
+			//	print "PeakOnset =",	TPInstantaneouseOnsetTime
 				variable DimOffsetVar = DimOffset(TPWave, 0) 
 				variable DimDeltaVar = DimDelta(TPWave, 0)
 				variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
@@ -415,7 +437,7 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				//print "columns " ,columns
 				duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS $InputDataPath + ":SSResistance"
 				wave SSResistance = $InputDataPath + ":SSResistance"
-				SetScale/P x TPSSEndTime,1,"ms", SSResistance
+				SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
 				
 				duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg $InputDataPath + ":InstResistance"
 				wave InstResistance = $InputDataPath + ":InstResistance"

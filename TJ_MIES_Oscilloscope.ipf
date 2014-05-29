@@ -42,7 +42,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
 		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
 		
-		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
+		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0) // handles plotting of peak and steady state resistance values in the oscilloscope window with the TP
 			appendtograph /W = $oscilloscopeSubWindow /R = $"SSResistance" + num2str(i) SSResistanceWave[][i] , InstResistanceWave[][i]
 			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"SSResistance" + num2str(i)) = 2, axThick($"SSResistance" + num2str(i)) = 0, width = 25
 			ModifyGraph /W = $oscilloscopeSubWindow axisEnab($"SSResistance" + num2str(i)) = {YaxisLow,YaxisHigh}, freepos($"SSResistance" + num2str(i)) = {1, kwFraction}
@@ -70,8 +70,9 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	elseif(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 1) // determines if the wave is a test pulse
 		string TPDurationGlobalPath
 		sprintf TPDurationGlobalPath, "%sTestPulse:Duration" WavePath
-		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // number of points in a single test pulse
-		SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * 2
+		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // half the number of points in a single test pulse
+		 SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
+		//SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * .5 // use for non MD TP plotting
 	endif
 	//doupdate
 //	print "Scope update took: ", (stopmstimer(-2) - start) / 1000, " ms"

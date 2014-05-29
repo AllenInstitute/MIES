@@ -170,16 +170,17 @@ Function ITC_BkrdTPFuncMD(s)
 				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
 					beep 
-					sprintf cmd, "ITCStopAcq"
-					execute cmd
-					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
-					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
-					ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
-					if (dimsize(ActiveDeviceTextList, 0) == 0) 
-						CtrlNamedBackground TestPulseMD, stop
-						print "Stopping test pulse"
-						ITC_FinishTestPulseMD(panelTitle) // stops the test pulse on the top data acq panel
-					endif
+//					sprintf cmd, "ITCStopAcq"
+//					execute cmd
+//					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
+//					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
+//					ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
+//					if (dimsize(ActiveDeviceTextList, 0) == 0) 
+//						CtrlNamedBackground TestPulseMD, stop
+//						print "Stopping test pulse"
+//						ITC_FinishTestPulseMD(panelTitle) // stops the test pulse on the top data acq panel
+//					endif
+				   ITCStopTP(panelTitle)
 				endif
 			endif
 		endif
@@ -198,7 +199,7 @@ Function ITC_FinishTestPulseMD(panelTitle)
 	// CtrlNamedBackground TestPulse, stop
 	// sprintf cmd, "ITCCloseAll" 
 	// execute cmd
-
+	//print "PT=",panelTitle
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
 		DAP_SmoothResizePanel(-340, panelTitle)
@@ -218,6 +219,46 @@ Function ITC_FinishTestPulseMD(panelTitle)
 	// killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
 
+//Function ITC_YokedFinishTestPulseMD(panelTitle)
+	string panelTitle
+	variable i = 0
+	variable deviceType = 0
+	
+	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
+	if(ITC1600True == 1)
+		deviceType = 2
+	endif
+ 
+    if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
+        string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
+        SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
+        if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+            variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+            if(numberOfFollowerDevices != 0) 
+                string followerPanelTitle
+			 ITC_FinishTestPulseMD(panelTitle)
+                do
+                    followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+                    ITC_FinishTestPulseMD(followerPanelTitle)
+                   
+                    i += 1
+                while(i < numberOfFollowerDevices)
+
+                
+            elseif(numberOfFollowerDevices == 0)
+                ITC_FinishTestPulseMD(panelTitle)
+               
+            endif
+        elseif(exists(pathToListOfFollowerDevices) == 0)
+            ITC_FinishTestPulseMD(panelTitle)
+         
+        endif
+    elseif(DeviceType != 2)
+            ITC_FinishTestPulseMD(panelTitle)
+        
+    endif
+    
+End
 //======================================================================================
 Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test pulse on a particular panel
 	string panelTitle
