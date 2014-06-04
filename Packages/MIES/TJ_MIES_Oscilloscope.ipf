@@ -114,10 +114,14 @@ Function/s SCOPE_RefToPullDatafrom2DWave(Value,RefColumn, DataColumn, TwoDWave)/
 	string Values = ""
 	string RowList = SCOPE_FindValueInColumnof2Dwave(Value, RefColumn, TwoDWave)
 	
-	do
+//	do
+//		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
+//		i += 1
+//	while(i < (itemsinlist(RowList,";")))
+	variable stopPoint = (itemsinlist(RowList,";")
+	for(i = 0; i < stopPoint; i += 1)
 		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
-		i += 1
-	while(i < (itemsinlist(RowList,";")))
+	endfor
 	
 	return Values
 End
