@@ -2980,7 +2980,7 @@ Function DAP_RestoreTTLState(panelTitle)
 	killstrings StoredTTLState
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_TTLOff
 Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
@@ -2988,7 +2988,7 @@ Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllTTLs(panelTitle)
 End
 //=========================================================================================
-
+/// DAP_TurnOffAllDACs
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 	variable i, NoOfDACs
@@ -3002,14 +3002,14 @@ Function DAP_TurnOffAllDACs(panelTitle)
 	endfor
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_DAOff
 Function DAP_ButtonProc_DAOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllDACs(panelTitle)
 End
 //=========================================================================================
-
+/// DAP_TurnOffAllADCs
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 	variable i, NoOfADCs
@@ -3028,14 +3028,14 @@ Function DAP_TurnOffAllADCs(panelTitle)
 	endfor
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_ADOff
 Function DAP_ButtonProc_ADOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllADCs(panelTitle)
 End
 //=========================================================================================
-
+/// DAP_TurnOffAllHeadstages
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
 //Check_DataAcq_Cell0
@@ -3050,7 +3050,7 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 	endfor
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_AllChanOff
 Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
@@ -3060,7 +3060,7 @@ Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllTTLs(panelTitle)
 End
 //=========================================================================================
-
+/// DAP_PopMenuChkProc_StimSetList
 Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DA popupmenu's that show DA waveslist from wavebuilder
 	String ctrlName
 	Variable popNum
@@ -3111,7 +3111,7 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 	endif
 End
 //=========================================================================================
-
+/// DAP_SetVarProc_NextSweepLimit
 Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -3126,7 +3126,7 @@ Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVari
 	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
 End
 //=========================================================================================
-
+/// DAP_UpdateITCMinSampIntDisplay
 Function DAP_UpdateITCMinSampIntDisplay()
 	getwindow kwTopWin wtitle
 	string panelTitle = DAP_ReturnPanelName()
@@ -3134,14 +3134,14 @@ Function DAP_UpdateITCMinSampIntDisplay()
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
-
+/// DAP_CheckProc_UnpdateMinSampInt
 Function DAP_CheckProc_UnpdateMinSampInt(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	DAP_UpdateITCMinSampIntDisplay()
 End
 //=========================================================================================
-
+/// DAP_SetVarProc_TotSweepCount
 Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -3161,7 +3161,7 @@ Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVaria
 	endif
 End
 //=========================================================================================
-
+///  DAP_ReturnPanelName
 Function /T DAP_ReturnPanelName()	
 	string panelTitle
 	getwindow kwTopWin activesw
@@ -3177,7 +3177,7 @@ Function /T DAP_ReturnPanelName()
 	endif
 End
 //=========================================================================================
-
+/// DAP_PopMenuProc_DevTypeChk
 Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
@@ -3186,7 +3186,7 @@ Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
 	HSU_IsDeviceTypeConnected(s_value)
 End
 //=========================================================================================
-
+/// DAP_FindConnectedAmps
 Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 	String ctrlName
 	make /o /n = 0 root:MIES:Amplifiers:W_TelegraphServers
@@ -3200,7 +3200,7 @@ Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 	popupmenu  popup_Settings_Amplifier win = $s_value, value = #PopUpList
 End
 //=========================================================================================
-
+/// DAP_PopMenuProc_Headstage
 Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
@@ -3209,7 +3209,7 @@ Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
 	HSU_UpdateChanAmpAssignPanel(s_value)
 End
 //=========================================================================================
-
+///  DAP_PopMenuProc_CAA
 Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
@@ -3218,7 +3218,7 @@ Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
 	HSU_UpdateChanAmpAssignStorWv(s_value)
 End
 //=========================================================================================
-
+/// DAP_SetVarProc_CAA
 Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -3228,7 +3228,7 @@ Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
 	HSU_UpdateChanAmpAssignStorWv(s_value)
 End
 //=========================================================================================
-
+/// DAP_ApplyClmpModeSavdSettngs
 Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
 	string panelTitle
@@ -3318,7 +3318,7 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	endIf
 End
 //=========================================================================================
-
+/// DAP_RemoveClampModeSettings
 Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
 	string panelTitle
@@ -3366,7 +3366,7 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	endIf
 End
  //=========================================================================================
-
+/// DAP_CheckProc_ClampMode
 Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
@@ -3410,7 +3410,7 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
-
+/// DAP_CheckProc_HedstgeChck
 Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
@@ -3434,7 +3434,7 @@ Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
-
+/// DAP_StopOngoingDataAcquisition
 Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
 	string cmd 
@@ -3471,7 +3471,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	print "Data acquisition was manually terminated"
 End 
 //=========================================================================================
-
+/// DAP_StopOngoingDataAcqMD
 Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
 	string panelTitle
 	string cmd 
@@ -3496,7 +3496,7 @@ Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
 	print "Data acquisition was manually terminated"
 End 
 //=========================================================================================
-
+/// DAP_AcqDataButtonToStopButton
 Function DAP_AcqDataButtonToStopButton(panelTitle)
 	string panelTitle
 	controlinfo /w = $panelTitle Check_Settings_SaveData
@@ -3511,7 +3511,7 @@ Function DAP_AcqDataButtonToStopButton(panelTitle)
 	endif	
 End
 //=========================================================================================
-
+/// DAP_StopButtonToAcqDataButton
 Function DAP_StopButtonToAcqDataButton(panelTitle)
 	string panelTitle
 	controlinfo /w = $panelTitle Check_Settings_SaveData
@@ -3526,7 +3526,7 @@ Function DAP_StopButtonToAcqDataButton(panelTitle)
 	endif
 End
 //=========================================================================================
-
+/// DAP_TwoOrMoreITC1600s
 Function /C DAP_TwoOrMoreITC1600s(panelTitle) // returns a complex variable. If the real is = 1 then two or more locked ITC1600s are present. The imaginary component returns the number of locked ITC1600s
 	string panelTitle
 	variable /C YesNo
@@ -3548,7 +3548,7 @@ ListMatch(root:MIES:ITCDevices:ITCPanelTitleList, "ITC1600*",";")
 // THE FUNCTION BELOW CONTROL THE ASSOCIATIONS BETWEEN THE BUTTONS IN THE YOKE SECTION OF THE 
 // HARDWARE TAB ON THE DA_EPHYS() PANEL
 //=========================================================================================
-
+/// DAP_EnableYoking
 Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls on the DA_Ephys panel depending on the number of locked ITC1600s
 	string panelTitle
 	SVAR PanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList // List of locked ITC devices
@@ -3604,7 +3604,7 @@ Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls
 	endif
 End
 //=========================================================================================
-
+/// DAP_ListOfITCDevices
 Function /t DAP_ListOfITCDevices() // used by popup_Hardware_AvailITC1600s  in hardware tab in yoke section
 	SVAR ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
 	string ListOfAllITC1600s = ListMatch(ITCPanelTitleList, "ITC1600*",";")
@@ -3614,7 +3614,7 @@ Function /t DAP_ListOfITCDevices() // used by popup_Hardware_AvailITC1600s  in h
 	return ListOfPotentialFollowerDevices
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_Lead
 Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl // The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
 	String ctrlName
 	String panelTitle = DAP_ReturnPanelName()
@@ -3631,7 +3631,7 @@ Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl // The Lead button in the
 	endif
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_Independent
 Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
 	String ctrlName
 	String panelTitle = DAP_ReturnPanelName()
@@ -3649,7 +3649,7 @@ Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
 	DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the buttons on all ITC1600s back to the independent state.
 End
 //=========================================================================================
-
+/// DAP_ButtonProc_Follow
 Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	String ctrlName
 	String panelTitle = DAP_ReturnPanelName()
@@ -3676,12 +3676,14 @@ End
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
 //=========================================================================================
+/// DAP_ButtonProc_YokeRelease
 Function DAP_ButtonProc_YokeRelease(ctrlName) : ButtonControl
 	String ctrlName
 	String panelTitle = DAP_ReturnPanelName()
 	DAP_RemoveYokedDAC(panelTitle)
 End
 //=========================================================================================
+/// DAP_RemoveYokedDAC
 Function DAP_RemoveYokedDAC(panelTitle)
 	string panelTitle
 	controlinfo /w = $panelTitle popup_Hardware_YokedDACs
@@ -3706,6 +3708,7 @@ Function DAP_RemoveYokedDAC(panelTitle)
 	endif
 End
 //=========================================================================================
+/// DAP_RemoveAllYokedDACs
 Function DAP_RemoveAllYokedDACs(panelTitle) // resets the lists of follower devices on the lead device
 	string panelTitle
 	string FolderPath = HSU_DataFullFolderPathString(panelTitle)
@@ -3731,6 +3734,7 @@ Function DAP_RemoveAllYokedDACs(panelTitle) // resets the lists of follower devi
 	endif
 End
 //=========================================================================================
+/// DAP_SetFollowerButtons
 Function DAP_SetFollowerButtons(panelTitle) // Sets the lists and buttons on the follower device actively being yoked
 	string panelTitle
 
@@ -3775,6 +3779,7 @@ Function DAP_SetFollowerButtons(panelTitle) // Sets the lists and buttons on the
 	endif	
 End
 //=========================================================================================
+/// DAP_LastYokedDevRemovedSetCtrls
 Function DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the Yoke control and popup buttons on all the ITC1600 device panels to the independent state
 	string panelTitle
 	SVAR ListOfAllDACpanels = $(Path_ITCDevicesFolder(panelTitle) + ":ITCPanelTitleList")
@@ -3831,6 +3836,7 @@ Function DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the Yoke control an
 	while(i < itemsinlist(ITC1600DeviceList, ";")) 
 End
 //=========================================================================================
+///  DAP_Set1600YokeButtons
 Function DAP_Set1600YokeButtons(panelTitle) // yoking controls are made available only on ITC1600_Dev_0
 	string panelTitle
 	SVAR ListOfAllDACpanels = $(Path_ITCDevicesFolder(panelTitle) + ":ITCPanelTitleList")
@@ -3846,7 +3852,7 @@ titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go 
 //=========================================================================================
 // FUNCTION BELOW IS FOR IMPORTING GAIN SETTINGS
 //=========================================================================================
-
+/// DAP_ButtonProc_AutoFillGain
 Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
@@ -3875,7 +3881,7 @@ End
 // FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
 //=========================================================================================
 
-
+/// DAP_SliderProc_MIESHeadStage
 Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderControl
 	String ctrlName
 	Variable sliderValue
@@ -3892,6 +3898,7 @@ Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderContro
 	
 End
 
+/// DAP_SetVarProc_AmpCntrls
 Function DAP_SetVarProc_AmpCntrls(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -3913,6 +3920,7 @@ Function DAP_SetVarProc_AmpCntrls(ctrlName,varNum,varStr,varName) : SetVariableC
 	
 End
 
+/// DAP_CheckProc_AmpCntrls
 Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
@@ -3921,6 +3929,7 @@ Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
 	AI_UpdateAmpModel(panelTitle, ctrlName)
 End
 
+/// DAP_ExecuteAdamsTabcontrolAmp
 Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, TabToGoTo)
 	string panelTitle
 	variable TabToGoTo
@@ -3934,3 +3943,27 @@ Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, TabToGoTo)
 	Variable returnedValue = ACL_DisplayTab(tca)
 
 End
+
+//=========================================================================================
+// FUNCTION BELOW CONTROL THE GUI STATE FOR CHANGES RELATED TO MULTIPLE DEVICES
+//=========================================================================================
+//	When multiple device support is not enabled there are two options for DAC operation: foreground and background
+//	When multiple device support is enabled there are no options for DAC operation: it is always in the background
+//	When multiple device support is enabled, and there are more than two ITC1600s, yoking controls are enabled.
+
+Function DAP_CheckProc_MDEnable(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+
+End
+
+/// DAP_BackgroundDA_EnableDisable
+Function DAP_BackgroundDA_EnableDisable(panelTitle, Enable) // 0 = disable, 1 = Enable
+	string panelTitle
+	variable Enable
+	// Check_Settings_BkgTP
+	// Check_Settings_BackgrndDataAcq
+	
+	
+End
+
