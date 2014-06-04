@@ -2,8 +2,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(62,277,1111,990)
-	ShowTools/A
+	NewPanel /W=(1392,401,1865,1114)
 	ShowInfo/W=DA_Ephys
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
@@ -38,7 +37,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo)= A"!!,B)!!#?q!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_01,value= 1,side= 1
+	CheckBox Check_AD_01,value= 0,side= 1
 	CheckBox Check_AD_02,pos={20,167},size={24,14},disable=1,title="2"
 	CheckBox Check_AD_02,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo)= A"!!,B)!!#@o!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -231,7 +230,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo)= A"!!,B)!!#@T!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_01,value= 1,side= 1
+	CheckBox Check_DA_01,value= 0,side= 1
 	CheckBox Check_DA_02,pos={20,167},size={24,14},disable=1,proc=DAP_DAorTTLCheckProc,title="2"
 	CheckBox Check_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_02,userdata(ResizeControlsInfo)= A"!!,B)!!#A6!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -444,7 +443,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
-	Button DataAcquireButton,pos={44,616},size={389,40},disable=1,proc=DAP_ButtonProc_AcquireDataMD,title="\\Z14\\f01Acquire\rData"
+	Button DataAcquireButton,pos={44,616},size={389,40},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,Ch!!#C6J,hsRJ,ho(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -457,7 +456,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo)= A"!!,D'!!#Bb!!#@R!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq1_RepeatAcq,value= 1
+	CheckBox Check_DataAcq1_RepeatAcq,value= 0
 	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
@@ -465,7 +464,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:3
-	Button StartTestPulseButton,pos={50,309},size={384,40},disable=1,proc=TP_ButtonProc_DataAcq_TPMD,title="\\Z14\\f01Start Test \rPulse"
+	Button StartTestPulseButton,pos={50,309},size={384,40},disable=1,proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -636,7 +635,7 @@ Window DA_Ephys() : Panel
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueColor=(65535,65535,65535)
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueBackColor=(0,0,0)
 	ValDisplay ValDisp_DataAcq_SamplingInt,limits={0,0,0},barmisc={0,1000}
-	ValDisplay ValDisp_DataAcq_SamplingInt,value= _NUM:10
+	ValDisplay ValDisp_DataAcq_SamplingInt,value= _NUM:5
 	CheckBox Check_Settings_DownSamp,pos={34,228},size={84,14},disable=1,proc=CheckProc,title="Down Sample"
 	CheckBox Check_Settings_DownSamp,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_DownSamp,userdata(tabcontrol)=  "ADC"
@@ -657,7 +656,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
-	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,6,1},value= _NUM:6
+	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,6,1},value= _NUM:0
 	CheckBox Check_Settings_SaveData,pos={34,205},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
 	CheckBox Check_Settings_SaveData,help={"Use cautiously - intended primarily for software development"}
 	CheckBox Check_Settings_SaveData,userdata(tabnum)=  "5"
@@ -937,7 +936,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq_HS_01,userdata(ResizeControlsInfo)= A"!!,GE!!#?e!!#=#!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq_HS_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq_HS_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq_HS_01,value= 1
+	CheckBox Check_DataAcq_HS_01,value= 0
 	CheckBox Check_DataAcq_HS_02,pos={212,86},size={24,14},disable=1,proc=DAP_CheckProc_HedstgeChck,title="2"
 	CheckBox Check_DataAcq_HS_02,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DataAcq_HS_02,userdata(ResizeControlsInfo)= A"!!,Gg!!#?e!!#=#!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1070,21 +1069,21 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo)= A"!!,Cp!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_VC_DA,mode=6,popvalue="5",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_VC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
 	PopupMenu Popup_Settings_VC_AD,pos={32,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo)= A"!!,Cp!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_VC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_VC_AD,mode=10,popvalue="9",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_VC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
 	PopupMenu Popup_Settings_IC_AD,pos={212,448},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_AD,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo)= A"!!,G%!!#BMJ,ho8!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_IC_AD,mode=10,popvalue="9",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_IC_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
 	SetVariable setvar_Settings_VC_DAgain,pos={93,425},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_VC_DAgain,userdata(tabcontrol)=  "ADC"
@@ -1098,7 +1097,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_VC_ADgain,userdata(ResizeControlsInfo)= A"!!,F!!!#BO!!#>V!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_VC_ADgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_Settings_VC_ADgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_VC_ADgain,value= _NUM:0.000500000023748726
+	SetVariable setvar_Settings_VC_ADgain,value= _NUM:0.00999999977648258
 	SetVariable setvar_Settings_IC_ADgain,pos={273,450},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_ADgain,userdata(tabcontrol)=  "ADC"
@@ -1112,21 +1111,21 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo)= A"!!,Cp!!#As!!#@\"!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_HeadStage,mode=6,popvalue="5",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_HeadStage,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
 	PopupMenu popup_Settings_Amplifier,pos={32,370},size={224,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="Amplfier (700B)"
 	PopupMenu popup_Settings_Amplifier,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,G8!!#As!!#Ao!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=3,popvalue="AmpNo 834000 Chan 2",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
+	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
 	PopupMenu Popup_Settings_IC_DA,pos={212,423},size={53,21},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo)= A"!!,G%!!#BB!!#>b!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_IC_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_IC_DA,mode=6,popvalue="5",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_IC_DA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
 	SetVariable setvar_Settings_IC_DAgain,pos={274,425},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_IC_DAgain,userdata(tabcontrol)=  "ADC"
@@ -1456,7 +1455,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo)= A"!!,C<!!#CBJ,hq,!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_ShowScopeWindow,value= 1
+	CheckBox check_Settings_ShowScopeWindow,value= 0
 	Button Button_TTL_TurnOffAllTTLs,pos={21,422},size={67,40},disable=1,proc=DAP_ButtonProc_TTLOff,title="Turn off\rall TTLs"
 	Button Button_TTL_TurnOffAllTTLs,userdata(tabnum)=  "3"
 	Button Button_TTL_TurnOffAllTTLs,userdata(tabcontrol)=  "ADC"
@@ -1487,7 +1486,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo)= A"!!,Ch!!#@F!!#A,!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_ITITP,value= 0
+	CheckBox check_Settings_ITITP,fColor=(65280,43520,0),value= 0
 	ValDisplay valdisp_DataAcq_ITICountdown,pos={60,434},size={129,17},bodyWidth=30,disable=1,title="ITI remaining (s)"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabcontrol)=  "ADC"
@@ -2249,7 +2248,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_VC,pos={135,171},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:-8
+	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2339,9 +2338,8 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
 	String fldrSav0= GetDataFolder(1)
 	SetDataFolder root:MIES:ITCDevices:ITC18USB:Device0:TestPulse:
-	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /L=AD0 TestPulseITC[*][2]
-	AppendToGraph/R=SSResistance0 SSResistance[*][0],InstResistance[*][0]
-	AppendToGraph/L=AD1 TestPulseITC[*][3]
+	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /R=SSResistance0 SSResistance[*][0]
+	AppendToGraph/R=SSResistance0 InstResistance[*][0]
 	AppendToGraph/R=SSResistance1 SSResistance[*][1],InstResistance[*][1]
 	SetDataFolder fldrSav0
 	ModifyGraph width=25,wbRGB=(61440,61440,61440),gbRGB=(61440,61440,61440)
@@ -2350,22 +2348,14 @@ Window DA_Ephys() : Panel
 	ModifyGraph live=1
 	ModifyGraph noLabel(SSResistance0)=2,noLabel(SSResistance1)=2
 	ModifyGraph axThick(SSResistance0)=0,axThick(SSResistance1)=0
-	ModifyGraph lblPosMode(AD0)=1,lblPosMode(bottom)=1,lblPosMode(SSResistance0)=1,lblPosMode(AD1)=1
-	ModifyGraph freePos(AD0)={0,kwFraction}
+	ModifyGraph lblPosMode(SSResistance0)=1,lblPosMode(bottom)=1
 	ModifyGraph freePos(SSResistance0)={1,kwFraction}
-	ModifyGraph freePos(AD1)={0,kwFraction}
 	ModifyGraph freePos(SSResistance1)={1,kwFraction}
-	ModifyGraph axisEnab(AD0)={0.525,1}
 	ModifyGraph axisEnab(SSResistance0)={0.525,1}
-	ModifyGraph axisEnab(AD1)={0.025,0.5}
 	ModifyGraph axisEnab(SSResistance1)={0.025,0.5}
-	Label AD0 "AD0 (pA)"
 	Label bottom "Time (\\U)"
-	Label AD1 "AD1 (pA)"
-	SetAxis/A=2/N=2 AD0
-	SetAxis bottom 0,20
 	SetAxis/A=2/N=2/E=2 SSResistance0 -20000000,20000000
-	SetAxis/A=2/N=2 AD1
+	SetAxis bottom 0,20
 	SetAxis/A=2/N=2/E=2 SSResistance1 -20000000,20000000
 	Tag/C/N=SSR0/I=1/F=0/B=1/X=-5.00/Y=-20.00/L=0 SSResistance, 14.8000000000000007, "R\\Bss\\M\\OY \\Z10(M\\F'Symbol'W\\M)"
 	Tag/C/N=InstR0/F=0/B=1/A=LT/X=-15.00/Y=-20.00/L=0 InstResistance, 5.04000000000000004, "R\\Bpeak\\M \\OY \\Z10(M\\F'Symbol'W\\M)"
@@ -4015,19 +4005,30 @@ End
 Function DAP_BackgroundDA_EnableDisable(panelTitle, Enable) // 0 = disable, 1 = Enable
 	string panelTitle
 	variable Enable
-	// Check_Settings_BkgTP
-	// Check_Settings_BackgrndDataAcq
-	// StartTestPulseButton
-	// DataAcquireButton
+	variable disableState
+
 	If(Enable == 0)
+		//controlinfo /w = $panelTitle StartTestPulseButton
+		//disableState= v_disable
+		checkbox Check_Settings_BkgTP WIN = $panelTitle, disable = 0
+		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, disable = 0
 		button StartTestPulseButton WIN = $panelTitle, proc = TP_ButtonProc_DataAcq_TestPulse
-		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireData	
+		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireData
 	elseif(Enable == 1)
-		checkbox Check_Settings_BkgTP WIN = $panelTitle, value =1
-		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value =1
+		checkbox Check_Settings_BkgTP WIN = $panelTitle, value =1, disable = 2
+		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value =1, disable = 2
 		button StartTestPulseButton WIN = $panelTitle, proc = TP_ButtonProc_DataAcq_TPMD
 		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireDataMD
 	endif
 	
 End
 
+// d =0:	Normal (visible), enabled.
+// d =1:	Hidden.
+// d =2:	Visible and disabled. Drawn in grayed state, also disables action procedure.
+// d =3:	Hidden and disabled.
+
+// to switch only the enabled state, you can do this:
+// disable = V_disable & ~2 (this will enable it)
+// disable = V_disable | 2 (this will disable it)
+// to change the visible state, use 1 instead of 2 above

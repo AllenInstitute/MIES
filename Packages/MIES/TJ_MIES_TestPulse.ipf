@@ -283,7 +283,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 			DAP_SmoothResizePanel(-340, panelTitle)
 			setwindow $panelTitle +"#oscilloscope", hide = 1
 		endif
-		killwaves /f TestPulse
+		// killwaves /f TestPulse
 	endif
 	
 	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
