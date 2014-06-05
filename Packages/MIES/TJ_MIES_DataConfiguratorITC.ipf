@@ -430,7 +430,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	string ResampledWaveName = "ResampledWave"
 	string cmd
 	string SetvarDAGain, SetVarDAScale
-	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
+	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow, insertTestPulse, testPulseGain
 	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
@@ -482,20 +482,20 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 					InsertEnd = InsertStart 
 				endif
 			endif
-		// checks if user wants to set scaling to 0 on sets that have already cycled once
-		ControlInfo /w = $panelTitle check_Settings_ScalingZero 
-		if(v_value == 1)
-			ControlInfo /w = $panelTitle Check_DataAcq_Indexing
-			variable IndexingOnOrOff = v_value // indexing state
-			ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 1 || IndexingOnOrOff == 0)// locked indexing or no indexing
-				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)// makes sure test pulse wave scaling is maintained
-					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1)
-						DAScale = 0
+			// checks if user wants to set scaling to 0 on sets that have already cycled once
+			ControlInfo /w = $panelTitle check_Settings_ScalingZero 
+			if(v_value == 1)
+				ControlInfo /w = $panelTitle Check_DataAcq_Indexing
+				variable IndexingOnOrOff = v_value // indexing state
+				ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
+				if(v_value == 1 || IndexingOnOrOff == 0)// locked indexing or no indexing
+					if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)// makes sure test pulse wave scaling is maintained
+						if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1)
+							DAScale = 0
+						endif
 					endif
 				endif
 			endif
-		endif
 			//resample the wave to min samp interval and place in ITCDataWave
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
 			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
@@ -505,8 +505,26 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			//execute cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
 			//print ChanTypeWaveName
+
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
-			// ITCDataWave[0, points in TP][j] = TPAmp * DAGain ** Need to determine TP amp based on Mode of MIES headstage "i" is the DA channel, need to determine mode of DA channel
+			
+			if (insertTestPulse == 1)		//check box on panel...insert test pulse before actual data wave?'
+				controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration 
+				Variable testPulseDuration = v_value
+				Variable globalOnsetDelay = testPulseDuration * 2
+				setvariable setvar_DataAcq_OnsetDelay, WIN = $panelTitle, value = globalOnsetDelay
+				
+				Variable testPulseInsertionPoint
+				Variable testPulseCompletionPoint
+				
+				testPulseInsertionPoint = (testPulseDuration / 2) / (DecimationFactor * 0.005) // .005*(.5*testPulseDuration)
+				testPulseCompletionPoint = testPulseInsertionPoint + ((testPulseDuration) / (DecimationFactor * 0.005))// .005*testPulseDuration
+				
+				
+				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+				variable TPAmp = v_value
+				ITCDataWave[testPulseInsertionPoint, testPulseCompletionPoint] = TPAmp * DAGain //** Need to determine TP amp based on Mode of MIES headstage "i" is the DA channel, need to determine mode of DA channel
+			endif
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
 		endif
 		i += 1
