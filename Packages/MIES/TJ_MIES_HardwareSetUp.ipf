@@ -33,7 +33,7 @@ Function HSU_ButtonProc_LockDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_LockDevice(s_value)
-	MCC_FindServers // this is here to make sure the amp controls funciton, after a device is locked.
+	MCC_FindServers /Z = 1 // this is here to make sure the amp controls funciton, after a device is locked. /Z = 1 supresses errors
 End
 //==================================================================================================
 
