@@ -100,14 +100,16 @@ End
 
 Function /t HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
-	string DeviceTypeList = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"  
+	string DeviceTypeList
+	sprintf DeviceTypeList, "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 	variable DeviceType, DeviceNumber
 	string FolderPath
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
-	FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
+	// FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
+	sprintf FolderPath, "%s:%s:Device%s", Path_ITCDevicesFolder(panelTitle), stringfromlist(DeviceType,DeviceTypeList,";"), num2str(DeviceNumber)
 	return FolderPath
 End
 //==================================================================================================
