@@ -3,7 +3,7 @@
 // ITC HARDWARE CONFIGURATION FUNCTIONS
 // Hardware Set-up (HSU)
 Function HSU_QueryITCDevice(panelTitle)
-	string panelTitle
+	string panelTitle /// panelTitle is the name of the device that is locked to the panel formerly titled DA_Ephys
 	variable DeviceType, DeviceNumber
 	string cmd
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
