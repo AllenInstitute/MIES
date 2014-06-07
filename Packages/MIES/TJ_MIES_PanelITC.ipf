@@ -4032,3 +4032,46 @@ End
 // disable = V_disable & ~2 (this will enable it)
 // disable = V_disable | 2 (this will disable it)
 // to change the visible state, use 1 instead of 2 above
+
+//=========================================================================================
+// FUNCTION BELOW CONTROLS TP INSERTION INTO SET SWEEPS BEFORE THE SWEEP BEGINSS
+//=========================================================================================
+Function DAP_CheckProc_InsertTP(ctrlName,checked) : CheckBoxControl
+	String ctrlName
+	Variable checked
+	
+	string panelTitle
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
+
+	controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
+	variable TPDuration = 2 * v_value
+	controlinfo /w =$panelTitle setvar_DataAcq_OnsetDelay
+	variable ExistingOnsetDelay = v_value
+	
+	if(checked == 1)
+		if(ExistingOnsetDelay < TPDuration) // only increases onset delay if it is not big enough to for the TP
+			setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:TPDuration,  limits = {TPDuration, inf, 1}					
+		endif
+	elseif(checked == 0) // resets onset delay by subtracting TPDuration
+		variable OnsetDelayResetValue = max(0, (ExistingOnsetDelay - TPDuration)) // makes sure onset delay is never less than 0
+		setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:OnsetDelayResetValue, limits = {0, inf, 1}	
+	endif
+End
+//=========================================================================================
+Function DAP_SetVarProc_TPDuration(ctrlName,varNum,varStr,varName) : SetVariableControl
+	String ctrlName
+	Variable varNum
+	String varStr
+	String varName
+
+	string panelTitle
+	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
+	
+	controlinfo /w = $panelTitle Check_Settings_InsertTP
+	variable Check_Settings_InsertTP = v_value
+	if(Check_Settings_InsertTP == 1)
+		setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:(varNum * 2),  limits = {(varNum * 2), inf, 1}						
+	endif
+
+End
+//=========================================================================================
