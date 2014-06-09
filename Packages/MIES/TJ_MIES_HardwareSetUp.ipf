@@ -3,7 +3,7 @@
 // ITC HARDWARE CONFIGURATION FUNCTIONS
 // Hardware Set-up (HSU)
 Function HSU_QueryITCDevice(panelTitle)
-	string panelTitle
+	string panelTitle /// panelTitle is the name of the device that is locked to the panel formerly titled DA_Ephys
 	variable DeviceType, DeviceNumber
 	string cmd
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
@@ -33,7 +33,7 @@ Function HSU_ButtonProc_LockDev(ctrlName) : ButtonControl
 	String ctrlName
 	getwindow kwTopWin wtitle
 	HSU_LockDevice(s_value)
-	MCC_FindServers // this is here to make sure the amp controls funciton, after a device is locked.
+	MCC_FindServers /Z = 1 // this is here to make sure the amp controls funciton, after a device is locked. /Z = 1 supresses errors
 End
 //==================================================================================================
 
@@ -100,14 +100,16 @@ End
 
 Function /t HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
-	string DeviceTypeList = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"  
+	string DeviceTypeList
+	sprintf DeviceTypeList, "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 	variable DeviceType, DeviceNumber
 	string FolderPath
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
-	FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
+	// FolderPath = "root:MIES:ITCDevices:" + stringfromlist(DeviceType,DeviceTypeList,";") + ":Device" + num2str(DeviceNumber)
+	sprintf FolderPath, "%s:%s:Device%s", Path_ITCDevicesFolder(panelTitle), stringfromlist(DeviceType,DeviceTypeList,";"), num2str(DeviceNumber)
 	return FolderPath
 End
 //==================================================================================================

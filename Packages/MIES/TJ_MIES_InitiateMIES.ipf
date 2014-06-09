@@ -47,7 +47,8 @@ End
 //=========================================================================================
 Function /T Path_MIESfolder(panelTitle)
 	string panelTitle
-	string pathToMies = "root:MIES"
+	string pathToMIES // = "root:MIES"
+	sprintf pathToMIES, "root:MIES"
 	return pathToMIES
 End
 //=========================================================================================
@@ -66,7 +67,8 @@ End
 //=========================================================================================
 Function /T Path_ITCDevicesFolder(panelTitle)
 	string panelTitle
-	string pathToITCDevicesFolder = Path_MIESfolder(panelTitle) + ":ITCDevices"
+	string pathToITCDevicesFolder // = Path_MIESfolder(panelTitle) + ":ITCDevices"
+	sprintf pathToITCDevicesFolder, "%s:ITCDevices" Path_MIESfolder(panelTitle)
 	return pathToITCDevicesFolder
 End
 //=========================================================================================
