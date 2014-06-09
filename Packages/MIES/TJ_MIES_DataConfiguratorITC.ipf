@@ -515,17 +515,17 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 					variable TPAmp
 					controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
 					variable TPDuration = 2 * v_value
-					print tpduration
+					// print tpduration
 					variable TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
 					variable TPEndPoint = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
 					string ChannelClampModePathString
 					sprintf ChannelClampModePathString, "%s:ChannelClampMode" WavePath
 					Wave ChannelClampMode = $ChannelClampModePathString
 					variable ChannelMode = ChannelClampMode[i][0]
-					if(ChannelMode == 0) // V-Clamp
+					if(ChannelMode == 0) // V - Clamp
 						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 						TPAmp = v_value
-					elseif(ChannelMode == 1)
+					elseif(ChannelMode == 1) // I - Clamp
 						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 						TPAmp = v_value
 					endif
