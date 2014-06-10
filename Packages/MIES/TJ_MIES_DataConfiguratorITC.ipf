@@ -178,6 +178,7 @@ End
 // 14. TTL 0;1;1;1
 // 15. TTL 1;1;1;1
 
+
 Function DC_TTLCodeCalculation1(RackNo, panelTitle)// ####### FUNCTION DOES NOT APPEAR TO BE IN USE
 	variable RackNo
 	string panelTitle
