@@ -29,7 +29,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 			numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // List of yoked ITC1600 devices does contain 1 or more yoked ITC1600s
-				//ARDStartSequence() // runs the arduino once before it matters to make sure it is intialized - not sure if i need to do this
+				ARDStartSequence() // runs the arduino once before it matters to make sure it is intialized - not sure if i need to do this
 				do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					//print followerpaneltitle
@@ -62,7 +62,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 					i += 1
 				while(i < numberOfFollowerDevices)
 				// activates trigger
-				//ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!! THIS TRIGGERS THE YOKED ITC1600s
+				ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!! THIS TRIGGERS THE YOKED ITC1600s
 			elseif(numberOfFollowerDevices == 0)
 				ITC_ConfigUploadDAC(panelTitle)
 				ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
@@ -129,7 +129,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) 
-				//ARDStartSequence()
+				ARDStartSequence()
 				string followerPanelTitle
 				
 				do // configure follower device for TP acquistion
@@ -163,7 +163,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 				while(i < numberOfFollowerDevices)
 				
 				// Arduino gives trigger
-				//ARDStartSequence()
+				ARDStartSequence()
 				
 			elseif(numberOfFollowerDevices == 0)
 				TP_TPSetUp(panelTitle)
