@@ -2,7 +2,13 @@
 
 // DATA ACQ MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 
-// FunctionStartDataAcq
+/// @Brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s. 
+/// @param WavePath WavePath is a string that contains the path to the device file folder
+/// @param TriggerMode Trigger mode is either 0 or 256. 256 causes the ITC1600 to wait for the external trigger (5V signal to the PCI card). 0 is used to bin all aquisition immediately on all ITC devies.
+/// @param DataAcqOrTP DataAcqOrTP is used to indicate wether data aquistion or a testpulse is ongoing. 0 = Data acquistion. 1 = TP. Certain function handle data acq and Tp slightly differently.
+/// FunctionStartDataAcq determines what device is being started and begins aquisition in the appropriate manner for the device
+/// FunctionStartDataAcq is used when MD support is enabled in the settings tab of DA_ephys. If MD is not enabled, alternate functions are used to run data acquisition.
+/// FunctionStartDataAcq
 Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this function handles the calls to the data configurator (DC) functions and BackgroundMD - it is required because of the special handling syncronous ITC1600s require
 	variable DeviceType, DeviceNum
 	string panelTitle
@@ -71,7 +77,14 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	endif
 	print "Data Acquisition took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End // Function
+//=================================================================================================================
 
+/// @brief Configures ITC DACs
+/// @param ITCDeviceIDGlobal ITCDeviceIDGlobal is the unique number assigned to a ITC device. ITCDeviceIDGlobal can range from 0 to 14.
+/// ITC_ConfigUploadDAC selects the ITC device based on the panelTitle passed into the function.
+/// ITC_ConfigUploadDAC configures all the DAC channels at once using the ITCconfigAllChannels command
+/// ITC_ConfigUploadDAC resets the DAC FIFOs using the ITCUpdateFIFOPositionAll command
+/// ITC_ConfigUploadDAC
 Function ITC_ConfigUploadDAC(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
@@ -92,6 +105,13 @@ End
 //=================================================================================================================
 // TP MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 //=================================================================================================================
+/// @brief StartTestPulse start the test pulse when MD support is activated.
+/// @param DeviceType Each ITC device has a DeviceType number: 0 through 5.
+/// @param DeviceNum Each locked ITC device has a number starting from zero for devices of that type. It is different from the device global ID. 
+/// @param DeviceNum Ex. Two ITC18s would always have the device number 0 and 1 regardless of the number of other ITC devies connected of other types.
+/// StartTestPulse handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
+/// The external trigger is assumed to be a arduino device using the arduino squencer.
+/// StartTestPulse
 Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
@@ -174,7 +194,6 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	
 End
 //=========================================================================================
-// BELOW IS A GROUP OF FUNCTIONS THAT HANDLE YOKED DEVICES
 
 Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simultaneously 
 	string panelTitle
@@ -218,6 +237,7 @@ Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simul
 		DAP_StopOngoingDataAcqMD(panelTitle)
 	endif
 End
+//=========================================================================================
 
 Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously 
 
@@ -271,10 +291,6 @@ Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously
         
     endif
 End
-
-
-
-
 
 //=========================================================================================
 Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
@@ -381,8 +397,6 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 				
 				duplicate /o /r = [][0] ActiveDeviceList $ActiveDeviListDevIDGlobPathStr
 				Wave ActiveDeviceListDeviceIDGlobals = $ActiveDeviListDevIDGlobPathStr
-				
-				
 				
 				if(dimsize(ActiveDeviceList, 0) > 0)
 					// Make sure yoked devices have all completed data acq.  If all devices have completed data acq start RA_StartMD(panelTitle) on the lead device (ITC1600_dev_0)

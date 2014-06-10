@@ -506,8 +506,34 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			Wave/z StimSetSweep = $ChanTypeWaveName
 			//print ChanTypeWaveName
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
-			// ITCDataWave[0, points in TP][j] = TPAmp * DAGain ** Need to determine TP amp based on Mode of MIES headstage "i" is the DA channel, need to determine mode of DA channel
-			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
+
+			// check if TP insertion is active
+			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0) // prevents insertion of TP into TP
+				controlinfo /w = $panelTitle Check_Settings_InsertTP
+				variable Check_Settings_InsertTP = v_value
+				if(Check_Settings_InsertTP == 1)
+					variable TPAmp
+					controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
+					variable TPDuration = 2 * v_value
+					// print tpduration
+					variable TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
+					variable TPEndPoint = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
+					string ChannelClampModePathString
+					sprintf ChannelClampModePathString, "%s:ChannelClampMode" WavePath
+					Wave ChannelClampMode = $ChannelClampModePathString
+					variable ChannelMode = ChannelClampMode[i][0]
+					if(ChannelMode == 0) // V - Clamp
+						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+						TPAmp = v_value
+					elseif(ChannelMode == 1) // I - Clamp
+						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
+						TPAmp = v_value
+					endif
+					ITCDataWave[TPStartPoint, TPEndPoint][j] = TPAmp * DAGain
+				endif
+				// i is the DA channel number 
+				j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
+			endif
 		endif
 		i += 1
 	while(i < (itemsinlist(ChannelStatus,";")))
