@@ -1,8 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Window da_ephys() : Panel
+Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(764,69,1237,782)
+	NewPanel /W=(60,127,533,840)
 	ShowTools/A
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
@@ -31,7 +31,7 @@ Window da_ephys() : Panel
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo)= A"!!,B)!!#>F!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_AD_00,value= 0,side= 1
+	CheckBox Check_AD_00,value= 1,side= 1
 	CheckBox Check_AD_01,pos={20,121},size={24,14},disable=1,title="1"
 	CheckBox Check_AD_01,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo)= A"!!,B)!!#?q!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -109,25 +109,25 @@ Window da_ephys() : Panel
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo)= A"!!,EF!!#>>!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_00,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_00,limits={0,inf,1},value= _NUM:0.00999999977648258
 	SetVariable Gain_AD_01,pos={49,120},size={50,16},disable=1
 	SetVariable Gain_AD_01,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_01,userdata(ResizeControlsInfo)= A"!!,EF!!#?o!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_01,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_01,limits={0,inf,1},value= _NUM:0.000500000023748726
 	SetVariable Gain_AD_02,pos={49,166},size={50,16},disable=1
 	SetVariable Gain_AD_02,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_02,userdata(ResizeControlsInfo)= A"!!,EF!!#@n!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_02,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_02,limits={0,inf,1},value= _NUM:0.00999999977648258
 	SetVariable Gain_AD_03,pos={49,212},size={50,16},disable=1
 	SetVariable Gain_AD_03,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_03,userdata(ResizeControlsInfo)= A"!!,EF!!#AH!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_03,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_03,limits={0,inf,1},value= _NUM:0.00999999977648258
 	SetVariable Gain_AD_04,pos={49,259},size={50,16},disable=1
 	SetVariable Gain_AD_04,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_04,userdata(ResizeControlsInfo)= A"!!,EF!!#B\"!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -157,25 +157,25 @@ Window da_ephys() : Panel
 	SetVariable Gain_AD_08,userdata(ResizeControlsInfo)= A"!!,Gp!!#>B!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_08,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_08,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_08,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_08,limits={0,inf,1},value= _NUM:0.00999999977648258
 	SetVariable Gain_AD_09,pos={218,120},size={50,16},disable=1
 	SetVariable Gain_AD_09,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_09,userdata(ResizeControlsInfo)= A"!!,Gp!!#?q!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_09,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_09,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_09,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_09,limits={0,inf,1},value= _NUM:0.000500000023748726
 	SetVariable Gain_AD_10,pos={218,166},size={50,16},disable=1
 	SetVariable Gain_AD_10,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_10,userdata(ResizeControlsInfo)= A"!!,Gp!!#@o!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_10,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_10,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_10,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_10,limits={0,inf,1},value= _NUM:0.00999999977648258
 	SetVariable Gain_AD_11,pos={218,212},size={50,16},disable=1
 	SetVariable Gain_AD_11,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_11,userdata(ResizeControlsInfo)= A"!!,Gp!!#AI!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_11,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_11,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_AD_11,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_AD_11,limits={0,inf,1},value= _NUM:0.00999999977648258
 	SetVariable Gain_AD_12,pos={218,259},size={50,16},disable=1
 	SetVariable Gain_AD_12,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_12,userdata(ResizeControlsInfo)= A"!!,Gp!!#B#!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -224,7 +224,7 @@ Window da_ephys() : Panel
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo)= A"!!,B)!!#?M!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_00,value= 0,side= 1
+	CheckBox Check_DA_00,value= 1,side= 1
 	CheckBox Check_DA_01,pos={20,120},size={24,14},disable=1,proc=DAP_DAorTTLCheckProc,title="1"
 	CheckBox Check_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_01,userdata(ResizeControlsInfo)= A"!!,B)!!#@T!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -272,49 +272,49 @@ Window da_ephys() : Panel
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo)= A"!!,EF!!#?M!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_00,limits={0,inf,1},value= _NUM:0.01
+	SetVariable Gain_DA_00,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_01,pos={47,120},size={40,16},disable=1
 	SetVariable Gain_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_01,userdata(ResizeControlsInfo)= A"!!,EF!!#@T!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_01,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_01,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_02,pos={47,167},size={40,16},disable=1
 	SetVariable Gain_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_02,userdata(ResizeControlsInfo)= A"!!,EF!!#A6!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_02,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_02,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_03,pos={47,213},size={40,16},disable=1
 	SetVariable Gain_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_03,userdata(ResizeControlsInfo)= A"!!,EF!!#Ae!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_03,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_03,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_04,pos={47,258},size={40,16},disable=1
 	SetVariable Gain_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_04,userdata(ResizeControlsInfo)= A"!!,EF!!#B<!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_04,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_04,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_05,pos={47,305},size={40,16},disable=1
 	SetVariable Gain_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_05,userdata(ResizeControlsInfo)= A"!!,EF!!#BSJ,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_05,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_05,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_06,pos={47,352},size={40,16},disable=1
 	SetVariable Gain_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_06,userdata(ResizeControlsInfo)= A"!!,EF!!#Bk!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_06,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_06,limits={0,inf,1},value= _NUM:20
 	SetVariable Gain_DA_07,pos={47,399},size={40,16},disable=1
 	SetVariable Gain_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_07,userdata(ResizeControlsInfo)= A"!!,EF!!#C-J,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Gain_DA_07,limits={0,inf,1},value= _NUM:0
+	SetVariable Gain_DA_07,limits={0,inf,1},value= _NUM:20
 	PopupMenu Wave_DA_00,pos={123,73},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo)= A"!!,FI!!#?I!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -456,14 +456,14 @@ Window da_ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo)= A"!!,D'!!#Bb!!#@R!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq1_RepeatAcq,value= 0
+	CheckBox Check_DataAcq1_RepeatAcq,value= 1
 	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:3
 	Button StartTestPulseButton,pos={50,309},size={384,40},proc=TP_ButtonProc_DataAcq_TPMD,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -624,7 +624,7 @@ Window da_ephys() : Panel
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo)= A"!!,GX!!#BlJ,hpW!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_SetRepeats,limits={1,inf,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_SetRepeats,limits={1,inf,1},value= _NUM:1
 	ValDisplay ValDisp_DataAcq_SamplingInt,pos={218,442},size={30,17},bodyWidth=30
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(tabnum)=  "0"
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(tabcontrol)=  "ADC"
@@ -727,49 +727,49 @@ Window da_ephys() : Panel
 	SetVariable SetVar_AsyncAD_Gain_01,userdata(ResizeControlsInfo)= A"!!,Gr!!#@\"!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_01,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_01,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_AsyncAD_Gain_02,pos={226,146},size={75,16},disable=1,title="gain"
 	SetVariable SetVar_AsyncAD_Gain_02,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_02,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_02,userdata(ResizeControlsInfo)= A"!!,Gr!!#A!!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_02,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_02,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_AsyncAD_Gain_03,pos={226,197},size={75,16},disable=1,title="gain"
 	SetVariable SetVar_AsyncAD_Gain_03,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_03,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_03,userdata(ResizeControlsInfo)= A"!!,Gr!!#AT!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_03,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_03,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_AsyncAD_Gain_04,pos={226,248},size={75,16},disable=1,title="gain"
 	SetVariable SetVar_AsyncAD_Gain_04,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_04,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_04,userdata(ResizeControlsInfo)= A"!!,Gr!!#B2!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_04,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_04,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_AsyncAD_Gain_05,pos={226,299},size={75,16},disable=1,title="gain"
 	SetVariable SetVar_AsyncAD_Gain_05,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_05,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_05,userdata(ResizeControlsInfo)= A"!!,Gr!!#BOJ,hp%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_05,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_05,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_AsyncAD_Gain_06,pos={226,350},size={75,16},disable=1,title="gain"
 	SetVariable SetVar_AsyncAD_Gain_06,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_06,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_06,userdata(ResizeControlsInfo)= A"!!,Gr!!#Bi!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_06,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_06,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_AsyncAD_Gain_07,pos={226,402},size={75,16},disable=1,title="gain"
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(ResizeControlsInfo)= A"!!,Gr!!#C.!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Gain_07,limits={0,inf,1},value= _NUM:1
+	SetVariable SetVar_AsyncAD_Gain_07,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_Async_Title_00,pos={14,44},size={150,16},disable=1,title="Title"
 	SetVariable SetVar_Async_Title_00,userdata(tabnum)=  "4"
 	SetVariable SetVar_Async_Title_00,userdata(tabcontrol)=  "ADC"
@@ -984,7 +984,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_2,userdata(ResizeControlsInfo)= A"!!,GE!!#?1!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_2,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_2,value= 0,mode=1
+	CheckBox Radio_ClampMode_2,value= 1,mode=1
 	CheckBox Radio_ClampMode_3,pos={178,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_3,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_3,userdata(ResizeControlsInfo)= A"!!,GE!!#@B!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -996,7 +996,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_4,userdata(ResizeControlsInfo)= A"!!,Gg!!#?1!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_4,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_4,value= 0,mode=1
+	CheckBox Radio_ClampMode_4,value= 1,mode=1
 	CheckBox Radio_ClampMode_5,pos={212,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_5,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_5,userdata(ResizeControlsInfo)= A"!!,Gg!!#@B!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1008,7 +1008,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_6,userdata(ResizeControlsInfo)= A"!!,H4!!#?1!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_6,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_6,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_6,value= 0,mode=1
+	CheckBox Radio_ClampMode_6,value= 1,mode=1
 	CheckBox Radio_ClampMode_7,pos={246,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_7,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_7,userdata(ResizeControlsInfo)= A"!!,H4!!#@B!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1020,7 +1020,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_8,userdata(ResizeControlsInfo)= A"!!,HHJ,ho\\!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_8,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_8,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_8,value= 0,mode=1
+	CheckBox Radio_ClampMode_8,value= 1,mode=1
 	CheckBox Radio_ClampMode_9,pos={280,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_9,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_9,userdata(ResizeControlsInfo)= A"!!,HHJ,hpm!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1032,7 +1032,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_10,userdata(ResizeControlsInfo)= A"!!,HYJ,ho\\!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_10,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_10,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_10,value= 0,mode=1
+	CheckBox Radio_ClampMode_10,value= 1,mode=1
 	CheckBox Radio_ClampMode_11,pos={314,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_11,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_11,userdata(ResizeControlsInfo)= A"!!,HYJ,hpm!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1044,7 +1044,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_12,userdata(ResizeControlsInfo)= A"!!,HjJ,ho\\!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_12,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_12,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_12,value= 0,mode=1
+	CheckBox Radio_ClampMode_12,value= 1,mode=1
 	CheckBox Radio_ClampMode_13,pos={348,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_13,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_13,userdata(ResizeControlsInfo)= A"!!,HjJ,hpm!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1056,7 +1056,7 @@ Window da_ephys() : Panel
 	CheckBox Radio_ClampMode_14,userdata(ResizeControlsInfo)= A"!!,I&J,ho\\!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_14,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_14,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_14,value= 0,mode=1
+	CheckBox Radio_ClampMode_14,value= 1,mode=1
 	CheckBox Radio_ClampMode_15,pos={382,111},size={16,14},proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_15,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo)= A"!!,I&J,hpm!!#<8!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1158,7 +1158,7 @@ Window da_ephys() : Panel
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo)= A"!!,FI!!#@&!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Search_DA_00,value= _STR:""
+	SetVariable Search_DA_00,value= _STR:"test"
 	SetVariable Search_DA_01,pos={141,145},size={124,16},disable=3,title="Search string"
 	SetVariable Search_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_01,userdata(ResizeControlsInfo)= A"!!,FI!!#@t!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1348,7 +1348,7 @@ Window da_ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ>@;Ts>F*(bW6!l<-A7]S!@<=>IFC.F%?SFP"
-	PopupMenu Popup_DA_IndexEnd_04,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
+	PopupMenu Popup_DA_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_05,pos={316,303},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabcontrol)=  "ADC"
@@ -1357,7 +1357,7 @@ Window da_ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFj9:bu$lAT2!E6!l<-7VR$W;flSi?UR1e0KUH"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ>@;Ts>F*(bW6!l<-A7]S!@<=>IFC.F%?SFP"
-	PopupMenu Popup_DA_IndexEnd_05,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
+	PopupMenu Popup_DA_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_06,pos={316,350},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabcontrol)=  "ADC"
@@ -1366,7 +1366,7 @@ Window da_ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ>@;Ts>F*(bW6!l<-A7]S!@<=>IFC.F%?SFP"
-	PopupMenu Popup_DA_IndexEnd_06,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
+	PopupMenu Popup_DA_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_DA_IndexEnd_07,pos={316,397},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabcontrol)=  "ADC"
@@ -1375,7 +1375,7 @@ Window da_ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(MenExp)= A"+tXpTDf0,//NZpCF*(6$Cia/L+tFi]"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(MenuExp)= A"6tL1V@8o%(FC.F%?SFQ>@;Ts>F*(bW6!l<-A7]S!@<=>IFC.F%?SFP"
-	PopupMenu Popup_DA_IndexEnd_07,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
+	PopupMenu Popup_DA_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
 	PopupMenu Popup_TTL_IndexEnd_00,pos={242,69},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabcontrol)=  "ADC"
@@ -2014,19 +2014,19 @@ Window da_ephys() : Panel
 	SetVariable Unit_AD_04,pos={106,259},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_04,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_04,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_04,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_04,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_05,pos={106,305},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_05,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_05,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_05,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_05,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_06,pos={106,351},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_06,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_06,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_06,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_06,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_07,pos={106,398},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_07,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_07,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_07,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_07,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_08,pos={278,74},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_08,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_08,userdata(tabcontrol)=  "ADC"
@@ -2046,19 +2046,19 @@ Window da_ephys() : Panel
 	SetVariable Unit_AD_12,pos={278,259},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_12,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_12,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_12,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_12,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_13,pos={278,305},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_13,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_13,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_13,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_13,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_14,pos={278,351},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_14,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_14,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_14,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_14,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_15,pos={278,398},size={40,16},disable=1,title="V/"
 	SetVariable Unit_AD_15,help={"hello"},userdata(tabnum)=  "2"
 	SetVariable Unit_AD_15,userdata(tabcontrol)=  "ADC"
-	SetVariable Unit_AD_15,limits={0,inf,1},value= _STR:"pA"
+	SetVariable Unit_AD_15,limits={0,inf,1},value= _STR:""
 	TitleBox Title_AD_Unit,pos={122,50},size={23,13},disable=1,title="Unit"
 	TitleBox Title_AD_Unit,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	TitleBox Title_AD_Unit,frame=0,fStyle=1
@@ -2340,7 +2340,29 @@ Window da_ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B3&r`U7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^2*1"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
-	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /HIDE=1 
+	String fldrSav0= GetDataFolder(1)
+	SetDataFolder root:MIES:ITCDevices:ITC1600:Device0:TestPulse:
+	Display/W=(471,34,481,539)/FG=(UGV1,,UGV0,UGH0)/HOST=# /HIDE=1 /L=AD0 TestPulseITC[*][1]
+	AppendToGraph/R=SSResistance0 SSResistance[*][0],InstResistance[*][0]
+	SetDataFolder fldrSav0
+	ModifyGraph width=25,wbRGB=(61440,61440,61440),gbRGB=(61440,61440,61440)
+	ModifyGraph mode(SSResistance)=2
+	ModifyGraph lSize(SSResistance)=0
+	ModifyGraph live=1
+	ModifyGraph noLabel(SSResistance0)=2
+	ModifyGraph axThick(SSResistance0)=0
+	ModifyGraph lblPosMode(AD0)=1,lblPosMode(bottom)=1
+	ModifyGraph freePos(AD0)={0,kwFraction}
+	ModifyGraph freePos(SSResistance0)={1,kwFraction}
+	ModifyGraph axisEnab(AD0)={0.025,1}
+	ModifyGraph axisEnab(SSResistance0)={0.025,1}
+	Label AD0 "AD0 (pA)"
+	Label bottom "Time (\\U)"
+	SetAxis/A=2/N=2 AD0
+	SetAxis bottom 0,30
+	SetAxis/A=2/N=2/E=2 SSResistance0 -20000000,20000000
+	Tag/C/N=SSR0/I=1/F=0/B=1/X=-5.00/Y=-40.00/L=0 SSResistance, 22.1999999999999993, "R\\Bss\\M\\OY \\Z10(M\\F'Symbol'W\\M)"
+	Tag/C/N=InstR0/F=0/B=1/A=LT/X=-15.00/Y=-40.00/L=0 InstResistance, 7.5600000000000005, "R\\Bpeak\\M \\OY \\Z10(M\\F'Symbol'W\\M)"
 	RenameWindow #,Oscilloscope
 	SetActiveSubwindow ##
 EndMacro
@@ -4055,365 +4077,3 @@ Function DAP_SetVarProc_TPDuration(ctrlName,varNum,varStr,varName) : SetVariable
 
 End
 //=========================================================================================
-
-// restore panel settings 
-Function restorePanelSettings(panelTitle)
-	string panelTitle
-
-	CheckBox Check_AD_00 Win = $panelTitle, value = 0
-	CheckBox Check_AD_01 Win = $panelTitle, value = 0
-	CheckBox Check_AD_02 Win = $panelTitle, value = 0
-	CheckBox Check_AD_03 Win = $panelTitle, value = 0
-	CheckBox Check_AD_04 Win = $panelTitle, value = 0
-	CheckBox Check_AD_05 Win = $panelTitle, value = 0	
-	CheckBox Check_AD_06 Win = $panelTitle, value = 0
-	CheckBox Check_AD_07 Win = $panelTitle, value = 0
-	CheckBox Check_AD_08 Win = $panelTitle, value = 0
-	CheckBox Check_AD_09 Win = $panelTitle, value = 0	
-	CheckBox Check_AD_10 Win = $panelTitle, value = 0
-	CheckBox Check_AD_11 Win = $panelTitle, value = 0
-	CheckBox Check_AD_12 Win = $panelTitle, value = 0
-	CheckBox Check_AD_13 Win = $panelTitle, value = 0
-	CheckBox Check_AD_14 Win = $panelTitle, value = 0
-	CheckBox Check_AD_15 Win = $panelTitle, value = 0
-
-	SetVariable Gain_AD_00 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_01 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_02 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_03 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_04 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_05 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_06 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_07 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_08 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_09 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_10 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_11 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_12 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_13 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_14 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_AD_15 WIN = $panelTitle, value = _NUM:0.00
-
-	CheckBox Check_DA_00 Win = $panelTitle, value = 0
-	CheckBox Check_DA_01 Win = $panelTitle, value = 0
-	CheckBox Check_DA_02 Win = $panelTitle, value = 0
-	CheckBox Check_DA_03 Win = $panelTitle, value = 0
-	CheckBox Check_DA_04 Win = $panelTitle, value = 0
-	CheckBox Check_DA_05 Win = $panelTitle, value = 0
-	CheckBox Check_DA_06 Win = $panelTitle, value = 0
-	CheckBox Check_DA_07 Win = $panelTitle, value = 0
-
-	SetVariable Gain_DA_00 WIN = $panelTitle, value = _NUM:0.01
-	SetVariable Gain_DA_01 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_DA_02 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_DA_03 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_DA_04 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_DA_05 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_DA_06 WIN = $panelTitle, value = _NUM:0.00
-	SetVariable Gain_DA_07 WIN = $panelTitle, value = _NUM:0.00
-	
-	PopupMenu Wave_DA_00 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_01 WIN = $panelTitle,mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_02 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_03 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_04 WIN = $panelTitle,mode=5,popvalue="deltat4st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_05 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-
-	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_02 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_03 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_04 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_05 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_06 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_07 WIN = $panelTitle, value = _NUM:1
-
-	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,fSize=8,value= _STR:""
-	
-	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 0
-	
-	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:1
-
-	CheckBox Check_DataAcq_HS_00 WIN = $panelTitle,value= 1
-
-	SetVariable SetVar_DataAcq_TPDuration  WIN = $panelTitle,value= _NUM:15
-	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:15
-
-	CheckBox Check_TTL_00 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_01 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_02 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_03 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_04 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_05 Win = $panelTitle, value = 0	
-	CheckBox Check_TTL_06 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_07 Win = $panelTitle, value = 0
-	
-	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_02 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_03 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_04 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_05 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_06 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_07 Win = $panelTitle ,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	
-	CheckBox Check_Settings_TrigOut Win = $panelTitle, value = 0
-	CheckBox Check_Settings_TrigIn Win = $panelTitle, value = 0
-
-	SetVariable SetVar_DataAcq_SetRepeats WIN = $panelTitle,value= _NUM:0
-
-	CheckBox Check_Settings_DownSamp WIN = $panelTitle,value= 0
-	SetVariable SetVar_DownSamp WIN = $panelTitle, value= _NUM:5
-	SetVariable SetVar_Sweep WIN = $panelTitle, value= _NUM:0
-
-	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
-
-	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_01 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_02 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_03 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_04 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_05 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_06 WIN = $panelTitle,value= 0
-	CheckBox Check_AsyncAD_07 WIN = $panelTitle,value= 0
-	
-	SetVariable SetVar_AsyncAD_Gain_00 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_01 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_02 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_03 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_04 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_05 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_06 WIN = $panelTitle,value= _NUM:1
-	SetVariable SetVar_AsyncAD_Gain_07 WIN = $panelTitle,value= _NUM:1
-	
-	SetVariable SetVar_Async_Title_00 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_01 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_02 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_03 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_04 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_05 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_06 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_07 WIN = $panelTitle,value= _STR:""
-	
-	SetVariable SetVar_Async_Unit_00 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_01 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_02 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_03 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_04 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_05 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_06 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_07 WIN = $panelTitle,value= _STR:""
-	
-	CheckBox Check_Settings_Append WIN = $panelTitle,value= 0
-	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
-	CheckBox Radio_ClampMode_0 WIN = $panelTitle,value= 1,mode=1
-
-	CheckBox Check_DataAcq_HS_01 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_02 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_03 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_04 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_05 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_06 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_07 WIN = $panelTitle, value= 0
-	
-	CheckBox Radio_ClampMode_1 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_2 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_3 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_4 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_5 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_6 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_7 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_8 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_9 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_10 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_11 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_12 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_13 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_14 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_15 WIN = $panelTitle, value= 0,mode=1
-
-	SetVariable SetVar_Settings_VC_DAgain WIN = $panelTitle, value= _NUM:20
-	SetVariable SetVar_Settings_VC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
-	SetVariable SetVar_Settings_IC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
-
-	PopupMenu Popup_Settings_VC_DA WIN = $panelTitle, mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu Popup_Settings_VC_AD WIN = $panelTitle, mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_IC_AD WIN = $panelTitle, mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
-	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-
-	SetVariable SetVar_Settings_IC_DAgain WIN = $panelTitle, value= _NUM:400
-
-	SetVariable Search_DA_00 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_01 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_02 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_03 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_04 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_05 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_06 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_DA_07 WIN = $panelTitle, value= _STR:""
-
-	CheckBox SearchUniversal_DA_00 WIN = $panelTitle, value= 0
-
-	SetVariable Search_TTL_00 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_01 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_02 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_03 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_04 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_05 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_06 WIN = $panelTitle, value= _STR:""
-	SetVariable Search_TTL_07 WIN = $panelTitle, value= _STR:""
-
-	CheckBox SearchUniversal_TTL_00 WIN = $panelTitle, value= 0
-
-	PopupMenu Popup_DA_IndexEnd_00 WIN = $panelTitle, mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_01 WIN = $panelTitle, mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_02 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_03 WIN = $panelTitle, mode=3,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_04 WIN = $panelTitle, mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_05 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_06 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_07 WIN = $panelTitle,mode=4,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-
-	PopupMenu Popup_TTL_IndexEnd_00 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_01 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_02 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_03 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_04 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_05 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_06 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_07 WIN = $panelTitle,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-
-	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle,value= 0
-
-	CheckBox check_Settings_ITITP WIN = $panelTitle, fColor=(65280,43520,0),value= 0
-
-	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
-
-	SetVariable SetVar_Async_min_00 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_00 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_00  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_01 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_01 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_01  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_02 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_02 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_02  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_03 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_03 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_03  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_04 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_04 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_04  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_05 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_05 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_05  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_06 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_06 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_06  WIN = $panelTitle,value= 0
-
-	SetVariable SetVar_Async_min_07 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_07 WIN = $panelTitle,value= _NUM:0
-	CheckBox check_Async_Alarm_07  WIN = $panelTitle,value= 0
-
-	CheckBox check_DataAcq_RepAcqRandom WIN = $panelTitle,value= 0
-	CheckBox check_Settings_Option_3 WIN = $panelTitle,fColor=(65280,43520,0),value= 0
-	CheckBox check_Settings_ScalingZero WIN = $panelTitle,value= 0
-	CheckBox check_Settings_SetOption_04 WIN = $panelTitle,fColor=(65280,43520,0),value= 0
-
-	PopupMenu popup_MoreSettings_DeviceType WIN = $panelTitle,mode=3,popvalue="ITC1600",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
-	PopupMenu popup_moreSettings_DeviceNo WIN = $panelTitle,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
-
-	SetVariable SetVar_DataAcq_OnsetDelay WIN = $panelTitle,value= _NUM:30
-	SetVariable SetVar_DataAcq_TerminationDelay WIN = $panelTitle,value= _NUM:0
-
-	CheckBox check_Settings_SetOption_5 WIN = $panelTitle,fColor=(65280,43520,0),value= 0
-	CheckBox Check_DataAcq1_IndexingLocked WIN = $panelTitle, value= 0
-
-	SetVariable SetVar_DataAcq_ListRepeats WIN = $panelTitle,limits={1,inf,1},value= _NUM:1
-
-	CheckBox check_DataAcq_IndexRandom WIN = $panelTitle, fColor=(65280,43520,0),value= 0
-	SetVariable SetVar_DataAcq_TotalStepOveride WIN = $panelTitle,fColor=(65280,43520,0),value= _NUM:0
-
-	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:-50
-	SetVariable SetVar_Hardware_VC_DA_Unit WIN = $panelTitle,value= _STR:"mV"
-	SetVariable SetVar_Hardware_IC_DA_Unit WIN = $panelTitle,value= _STR:"pA"
-	SetVariable SetVar_Hardware_VC_AD_Unit WIN = $panelTitle,value= _STR:"pA"
-	SetVariable SetVar_Hardware_IC_AD_Unit WIN = $panelTitle,value= _STR:"mV"
-
-	SetVariable Unit_DA_00 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_01 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_02 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_03 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_04 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_05 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_06 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-	SetVariable Unit_DA_07 WIN = $panelTitle,limits={0,inf,1},value= _STR:"mV"
-
-	SetVariable Unit_AD_00 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_01 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_02 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_03 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_04 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_05 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_06 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_07 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_08 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_09 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_10 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_11 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_12 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_13 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_14 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-	SetVariable Unit_AD_15 WIN = $panelTitle,limits={0,inf,1},value= _STR:"pA"
-
-	PopupMenu popup_Hardware_AvailITC1600s WIN = $panelTitle,mode=0,value= #"DAP_ListOfITCDevices()"
-
-	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Lead",noedit= 1
-	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"ITC1600_Dev_0;ITC1600_Dev_1;",noedit= 1
-	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value= #"Path_ListOfYokedDACs(DAP_ReturnPanelName())"
-
-	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_BB WIN = $panelTitle,limits={0,inf,1},value= _NUM:0
-	SetVariable SetVar_DataAcq_CN WIN = $panelTitle,limits={-8,16,1},value= _NUM:0
-
-	CheckBox check_DatAcq_HoldEnable WIN = $panelTitle,value= 0
-	CheckBox check_DatAcq_CNEnable WIN = $panelTitle,value= 0
-
-	Slider slider_DataAcq_ActiveHeadstage  WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_AutoBiasV WIN = $panelTitle,value= _NUM:0
-	CheckBox check_DataAcq_AutoBias WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_Ri WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_Hold_VC WIN = $panelTitle,value= _NUM:0
-	CheckBox check_DatAcq_HoldEnableVC WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_WCR WIN = $panelTitle,value= _NUM:0
-	CheckBox check_DatAcq_WholeCellEnable WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_WCC  WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_RsCorr WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_RsPred WIN = $panelTitle,value= _NUM:0
-	CheckBox check_DataAcq_IzeroEnable WIN = $panelTitle,value= 0
-	CheckBox Check_Settings_AlarmPauseAcq WIN = $panelTitle,value= 0
-	CheckBox Check_Settings_AlarmAutoRepeat WIN = $panelTitle,value= 0
-	CheckBox check_Settings_AmpMCCdefault WIN = $panelTitle,value= 0
-	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
-	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
-	CheckBox check_Settings_MD WIN = $panelTitle,value= 1
-	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 1
-	
-	string oscilloscopeFullWindowName
-	sprintf oscilloscopeFullWindowName, "%s#Oscilloscope" panelTitle
-	Scope_RemoveTracesOnGraph(oscilloscopeFullWindowName)
-	
-	return 0
-End
