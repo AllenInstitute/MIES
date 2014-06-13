@@ -76,19 +76,20 @@ Function TP_SetDAScaleToOne(panelTitle)
 	
 	do
 		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
-			DASetVariable = "Scale_DA_0"+num2str(i)
+			//DASetVariable = "Scale_DA_0"+num2str(i)
+			sprintf DASetVariable, "Scale_DA_0%s" num2str(i)
 			if(ChannelClampMode[i][0] == 0)
 				ScalingFactor = 1
 			endif
 			
-			if(ChannelClampMode[i][0] == 1)
+			if(ChannelClampMode[i][0] == 1) // this adjust the scaling in current clamp so that the TP wave (constructed based on v-clamp param) is converted into the I clamp amp
 				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 				ScalingFactor = v_value
 				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 				ScalingFactor /= v_value
 			endif
 			
-			setvariable $DASetVariable value = _num:ScalingFactor, win = $panelTitle
+			setvariable $DASetVariable WIN = $panelTitle,  value =_num:ScalingFactor 
 		endif
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
@@ -137,16 +138,18 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	redimension /n = (PointsInTPWave) TestPulse
 	//redimension /n = ((8 * PulseDuration)) TestPulse
 	// need to deal with units here to ensure that resistance is calculated correctly
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude // the scaling converts the V-clamp TP to an I-clamp TP as appropriate (i.e. it is not done here)
+	variable TPamp = v_value
 	print "TP amp =",v_value
 
 	PulseDuration *= 2
 	print "startpoint = ", (0.25*PointsInTPWave)
-	TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = v_value
+	TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = TPamp
 
- 	GlobalTPAmplitudeVariableVC = v_value
+ 	GlobalTPAmplitudeVariableVC = TPamp
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 	GlobalTPAmplitudeVariableIC = v_value
+	//print v_value
 End
 
 // TP_UpdateTestPulseWaveChunks  
@@ -357,6 +360,7 @@ End // Function
 //It updates a wave in the Test pulse folder for the device
 //The wave contains the steady state difference between the baseline and the TP response
 // instantaneous
+/// In order to allow TP_Delta to be threadsafe it uses global variables (controlinfo is not threadsafe).
 ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
 				string InputDataPath
@@ -390,22 +394,27 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
 				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
 				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
+			//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
 				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
 				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
 				duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
 				
+			//	average the steady state wave	
 				MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 				avgTPSS /= dimsize(TPSS, 0)
  				//avgTPSS = abs(avgTPSS)
- 				
+ 			
+ 			//	average the baseline wave	
 				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 				AvgBaselineSS /= dimsize(BaselineSS, 0)
 				//AvgBaselineSS = abs(AvgBaselineSS)
-				
+			
+			//	calculate the difference between the steady state and the baseline	
 				duplicate /free AvgTPSS, AvgDeltaSS
 				AvgDeltaSS -= AvgBaselineSS
 				AvgDeltaSS = abs(AvgDeltaSS)
-				
+			
+			//	create wave that will hold instantaneous average
 				wavestats Instantaneous
 				variable i = 0 
 				variable columnsInWave = dimsize(Instantaneous, 1)
@@ -419,7 +428,7 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 					OneDInstMax = v_max
 					OndDBaseline = AvgBaselineSS[0][i + NoOfActiveDA]	
 
-					if(OneDInstMax > OndDBaseline)
+					if(OneDInstMax > OndDBaseline) // handles positive or negative TPs
 						Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
 					else
 						Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
@@ -448,11 +457,11 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 			 	i = 0
 				do
 					if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
-						Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC))*1000 // R = V / I
+						Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000 // R = V / I
 						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
 						SSResistance[0][i] = str2num(decimalAdjustment)
 
-						Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC))*1000
+						Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
 						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
 						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
 					else
