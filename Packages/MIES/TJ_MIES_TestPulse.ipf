@@ -361,7 +361,7 @@ End // Function
 //The wave contains the steady state difference between the baseline and the TP response
 // instantaneous
 /// In order to allow TP_Delta to be threadsafe it uses global variables (controlinfo is not threadsafe).
-ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
+// ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
 				string InputDataPath
 				NVAR DurationG = $InputDataPath + ":Duration" // number of points in half the test pulse
