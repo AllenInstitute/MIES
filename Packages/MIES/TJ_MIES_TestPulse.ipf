@@ -161,8 +161,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable DataAcqOrTP = 1 // test pulse function
 	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	//print TPGlobalPath
-	variable /g  $TPGlobalPath + ":Duration"
+	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)	
 	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
 	variable /g $TPGlobalPath + ":AmplitudeVC"
 	NVAR GlobalTPAmplitudeVariableVC = $(TPGlobalPath + ":AmplitudeVC")

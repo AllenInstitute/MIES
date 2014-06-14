@@ -447,7 +447,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle) / 5)
 	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
 	ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
-	print ChanTypeWaveNameList
+	// print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
 			// SetVarDAGain = "Gain_DA_0" + num2str(i)
@@ -458,7 +458,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			//print SetVarDAScale
 			//print paneltitle
 			ControlInfo /w = $panelTitle $SetVarDAGain
-			print "DA gain =", v_value
+			// print "DA gain =", v_value
 			//if(ChannelClampMode[i][0] == 0) // V-clamp		
 			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
 			//endif
@@ -470,11 +470,11 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			print panelTitle,setvardascale
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
-			print "DA scale =",DAScale
+			// print "DA scale =",DAScale
 			
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
-			 print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
+			// print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
 			//check to see if it is a test pulse or user specified da wave
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
 				// print "chan type wave name =", ChanTypeWaveName
@@ -511,7 +511,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			//print cmd
 			//execute cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
-			print "Column =", column
+			// print "Column =", column
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
 			//print "dascale =", dascale
 			// check if TP is being configured
