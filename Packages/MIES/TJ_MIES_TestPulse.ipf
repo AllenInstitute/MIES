@@ -383,8 +383,12 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 				variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
 				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
 				variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
-				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
-				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
+				sprintf StringPath, "%s:NoOfActiveDA" InputDataPath
+				NVAR NoOfActiveDA = $StringPath
+			//	NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
+				sprintf StringPath, "%s:ClampModeString" InputDataPath
+				SVAR ClampModeString = $StringPath
+			//	SVAR ClampModeString = $InputDataPath + ":ClampModeString"
 			//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
 				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
 				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
