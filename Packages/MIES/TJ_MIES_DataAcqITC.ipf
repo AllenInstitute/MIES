@@ -485,8 +485,8 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 		DeviceChannelOffset = 0
 	endif
 	
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	Execute cmd	
+	// sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	// Execute cmd	
 	
 	do
 		if(str2num(stringfromlist(i, AsyncChannelState,";")) == 1)
@@ -515,8 +515,8 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 		i += 1 
 	while(i < TotAsyncChannels)
 	
-	sprintf cmd, "ITCCloseAll" 
-	execute cmd
+	// sprintf cmd, "ITCCloseAll" 
+	// execute cmd
 	//print (ticks - starttime) / 60
 
 End
