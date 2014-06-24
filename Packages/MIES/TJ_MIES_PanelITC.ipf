@@ -2991,9 +2991,11 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String varName
 	String DA_No = ctrlName[10,inf]
 	print da_no
-	String DAPopUpMenuName = "Wave_DA_" + DA_No
-	String IndexEndPopUpMenuName = "Popup_DA_IndexEnd_" + DA_No
-	String FirstTwoMenuItems = "\"- none -; TestPulse;\""
+	String DAPopUpMenuName
+	sprintf DAPopUpMenuName,  "Wave_DA_%s"  DA_No
+	String IndexEndPopUpMenuName
+	sprintf IndexEndPopUpMenuName, "Popup_DA_IndexEnd_%s" DA_No
+	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
 	String SearchString
 	string popupValue, ListOfWaves
 	variable i = 0
