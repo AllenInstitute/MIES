@@ -1638,16 +1638,17 @@ Function /t WBP_ITCPanelPopUps(DAorTTL, searchString) // used to populate DA and
 
 	if(DAorTTL == 0)
 	setDataFolder root:MIES:waveBuilder:savedStimulusSets:DA
-	stimulusSetList = Wavelist("*"+ searchstring + "*", ";", "")
+	stimulusSetList = Wavelist(searchstring, ";", "")
 	endif
 	
 	if(DAorTTL == 1)
 	setDataFolder root:MIES:waveBuilder:savedStimulusSets:TTL
-	stimulusSetList = Wavelist("*"+ searchstring + "*", ";", "")
+	stimulusSetList = Wavelist(searchstring, ";", "")
 	endif
 	
 	setdatafolder saveDFR
 	return stimulusSetList
+	
 	
 End
 

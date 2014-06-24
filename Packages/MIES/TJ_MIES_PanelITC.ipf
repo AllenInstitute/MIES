@@ -2781,60 +2781,129 @@ End
 //=========================================================================================
 
 
+//Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
+//	String ctrlName
+//	Variable varNum
+//	String varStr
+//	String varName
+//	String TTL_No = ctrlName[11,inf]
+//	String TTLPopUpMenuName = "Wave_TTL_" + TTL_No
+//	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
+//	String FirstTwoMenuItems = "\"- none -;"
+//	String SearchString
+//	String value, ListOfWaves
+//	variable i = 0
+//	string panelTitle = DAP_ReturnPanelName()
+//	
+//	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+//	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
+//	
+//	controlinfo /w = $panelTitle SearchUniversal_TTL_00
+//	if(v_value == 1)
+//		controlinfo /w = $panelTitle Search_TTL_00
+//		If(strlen(s_value) == 0)
+//			SearchString = "*TTL*"
+//		else
+//			SearchString = s_value
+//		endif
+//		
+//		value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
+//		listOfWaves = wavelist(searchstring,";","")
+//
+//		do
+//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
+//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+//			i += 1
+//		while(i < 8)
+//	
+//	else
+//		If(strlen(varstr) == 0)
+//			SearchString = "*TTL*"
+//			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
+//			listOfWaves = wavelist(searchstring,";","")
+//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
+//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+//		else
+//			SearchString = varstr
+//			value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
+//			listOfWaves = wavelist(searchstring,";","")
+//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
+//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+//		endif
+//	endif
+//	setdatafolder saveDFR
+//End
+
 Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
 	String varStr
 	String varName
 	String TTL_No = ctrlName[11,inf]
+	variable test
+//	sscanf ctrlName, "Search_TTL_%.2d", test
+//	print test
 	String TTLPopUpMenuName = "Wave_TTL_" + TTL_No
-	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
-	String FirstTwoMenuItems = "\"- none -;"
+	String IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_" + TTL_No
+	String FirstTwoMenuItems = "\"- none -; TestPulse;\""
 	String SearchString
-	String value, ListOfWaves
+	string popupValue, ListOfWaves
 	variable i = 0
+	
 	string panelTitle = DAP_ReturnPanelName()
 	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
+	DFREF saveDFR = GetDataFolderDFR()
+	setdatafolder root:MIES:WaveBuilder:savedStimulusSets:TTL
+	controlinfo /w = $panelTitle SearchUniversal_TTL_00	
 	
-	controlinfo /w = $panelTitle SearchUniversal_TTL_00
 	if(v_value == 1)
 		controlinfo /w = $panelTitle Search_TTL_00
 		If(strlen(s_value) == 0)
-			SearchString = "*TTL*"
+			sprintf SearchString, "*TTL*"
 		else
-			SearchString = s_value
+			sprintf SearchString, "%s" s_value
 		endif
-		
-		value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
-		listOfWaves = wavelist(searchstring,";","")
 
 		do
-			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+			sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+			listOfWaves = wavelist(searchstring,";","")
+			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+			controlupdate /w =  $panelTitle $TTLPopUpMenuName			
+			sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"			
+			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 			i += 1
 		while(i < 8)
 	
 	else
 		If(strlen(varstr) == 0)
-			SearchString = "*TTL*"
-			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
+			sprintf SearchString, "*TTL*"
+			sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
 			listOfWaves = wavelist(searchstring,";","")
-			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+			controlupdate /w =  $panelTitle $TTLPopUpMenuName
+			sprintf IndexEndPopUpMenuName, "Popup_TTL_IndexEnd_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"			
+			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 		else
-			SearchString = varstr
-			value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
-			listOfWaves = wavelist(searchstring,";","")
-			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
+			sprintf DAPopUpMenuName, "Wave_TTL_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", varstr,"\")"
+			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
+			controlupdate /w =  $panelTitle $TTLPopUpMenuName
+			sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", varStr,"\")"			
+			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 		endif
 	endif
 	setdatafolder saveDFR
@@ -2921,9 +2990,10 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String varStr
 	String varName
 	String DA_No = ctrlName[10,inf]
+	print da_no
 	String DAPopUpMenuName = "Wave_DA_" + DA_No
 	String IndexEndPopUpMenuName = "Popup_DA_IndexEnd_" + DA_No
-	String FirstTwoMenuItems = "\"- none -; TestPulse;"
+	String FirstTwoMenuItems = "\"- none -; TestPulse;\""
 	String SearchString
 	string popupValue, ListOfWaves
 	variable i = 0
@@ -2934,40 +3004,48 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	setdatafolder root:MIES:WaveBuilder:savedStimulusSets:DA
 	controlinfo /w = $panelTitle SearchUniversal_DA_00	
 	
-	
 	if(v_value == 1)
 		controlinfo /w = $panelTitle Search_DA_00
 		If(strlen(s_value) == 0)
-			SearchString = "*DA*"
+			sprintf SearchString, "*DA*"
 		else
-			SearchString = s_value
+			sprintf SearchString, "%s" s_value
 		endif
-		
+
 		do
-			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-			popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
+			sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
 			listOfWaves = wavelist(searchstring,";","")
 			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-			IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+			controlupdate /w =  $panelTitle $DAPopUpMenuName			
+			sprintf IndexEndPopUpMenuName,  "Popup_DA_IndexEnd_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"			
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 			i += 1
 		while(i < 8)
 	
 	else
 		If(strlen(varstr) == 0)
-			SearchString = "*DA*"
-			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-			popupValue = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""
+			sprintf SearchString, "*DA*"
+			sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
 			listOfWaves = wavelist(searchstring,";","")
 			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-			IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+			controlupdate /w =  $panelTitle $DAPopUpMenuName
+			sprintf IndexEndPopUpMenuName, "Popup_DA_IndexEnd_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"			
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 		else
-			DAPopUpMenuName = "Wave_DA_0" + num2str(i)
-			popupValue = FirstTwoMenuItems + wavelist(varstr,";","") + "\""
+			sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", varstr,"\")"
 			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
-			IndexEndPopUpMenuName = "Popup_DA_IndexEnd_0" + num2str(i)
+			controlupdate /w =  $panelTitle $DAPopUpMenuName
+			sprintf IndexEndPopUpMenuName,  "Popup_DA_IndexEnd_%.2d" i
+			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", varStr,"\")"			
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 		endif
 	endif
 	setdatafolder saveDFR
