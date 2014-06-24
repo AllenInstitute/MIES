@@ -2757,21 +2757,24 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	String SearchSetVarName
 	String ListOfWaves
 	
-	variable i = 0
+	Variable i = 0
 	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:DA:
 	
 	if(checked == 0)
-		do
-			SearchString = "*da*"
-			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+		SearchString = "*da*"
+		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+		ListOfWaves = wavelist(searchstring,";","")
 
+		do
 			if(i > 0) // disables search inputs except for Search_DA_00
 				sprintf SearchSetVarName, "Search_DA_%.2d" i
 				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
-				
+	
+				sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+				PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves				
 			endif
 			i += 1
 		while(i < 8)
@@ -2781,6 +2784,8 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 		do
 			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+
+	
 			i += 1	
 		while(i < 8)
 	elseif(checked == 1)
@@ -2795,14 +2800,14 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 		
 
 		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-		ListOfWaves = 	wavelist(searchstring,";","")
+		ListOfWaves = wavelist(searchstring,";","")
 		do
 			sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
 			PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 			
 			if(i > 0) // disables search inputs except for Search_DA_00
 				sprintf SearchSetVarName, "Search_DA_%.2d" i
-				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2
+				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
 			endif
 			i += 1
 		while(i < 8)
@@ -3032,10 +3037,10 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String varStr
 	String varName
 	Variable DA_No
-	sscanf ctrlName, "Wave_DA_%0d", DA_No  //= ctrlName[10,inf]
+	sscanf ctrlName, "Search_DA_%d", DA_No  //= ctrlName[10,inf]
 	String DAPopUpMenuName
 	sprintf DAPopUpMenuName,  "Wave_DA_%0.2d"  DA_No
-	print da_no, DAPopUpMenuName
+	print ctrlName, da_no, DAPopUpMenuName
 	String IndexEndPopUpMenuName
 	sprintf IndexEndPopUpMenuName, "Popup_DA_IndexEnd_%0.2d" DA_No
 	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
