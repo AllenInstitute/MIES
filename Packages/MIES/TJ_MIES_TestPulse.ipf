@@ -162,6 +162,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)	
+	variable /g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
 	variable /g $TPGlobalPath + ":AmplitudeVC"
 	NVAR GlobalTPAmplitudeVariableVC = $(TPGlobalPath + ":AmplitudeVC")
@@ -675,7 +676,10 @@ End
 Function TP_ClampModeString(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	string /g $WavePath + ":TestPulse:ADChannelList"
 	SVAR ADChannelList = $WavePath + ":TestPulse:ADChannelList"
+	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	ADChannelList = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable i = 0
 	string /g $WavePath + ":TestPulse:ClampModeString"
 	SVAR ClampModeString = $WavePath + ":TestPulse:ClampModeString"

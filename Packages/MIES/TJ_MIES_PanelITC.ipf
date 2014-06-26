@@ -2958,38 +2958,118 @@ End
 //=========================================================================================
 
 
+//Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
+//	String ctrlName
+//	Variable checked
+//	String SearchString
+//	string panelTitle=DAP_ReturnPanelName()
+//	
+//	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+//	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
+//	
+//	controlinfo /w = $panelTitle Search_TTL_00
+//	if(strlen(s_value) == 0)
+//		SearchString = "*TTL*"
+//	else
+//		SearchString = s_value
+//	endif
+//	
+//	String TTLPopUpMenuName // = "Wave_DA_"
+//	String IndexEndPopUpMenuName
+//	String FirstTwoMenuItems = "\"- none -;"
+//	variable i = 0
+//	
+//	string popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
+//	string listOfWaves = wavelist(searchstring,";","")
+//	do
+//		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
+//		popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+//		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
+//		popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+//		i += 1
+//	while(i < 8)
+//
+//	setdatafolder saveDFR
+//End
+
 Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 	String SearchString
-	string panelTitle=DAP_ReturnPanelName()
+	String panelTitle = DAP_ReturnPanelName()
+	String TTLPopUpMenuName// = "Wave_DA_"
+	String IndexEndPopUpMenuName
+	String FirstTwoMenuItems = "\"- none -;\""
+	String SearchSetVarName
+	String ListOfWaves
+	
+	Variable i = 0
+	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
 	
-	controlinfo /w = $panelTitle Search_TTL_00
-	if(strlen(s_value) == 0)
+	if(checked == 0)
 		SearchString = "*TTL*"
-	else
-		SearchString = s_value
-	endif
-	
-	String TTLPopUpMenuName // = "Wave_DA_"
-	String IndexEndPopUpMenuName
-	String FirstTwoMenuItems = "\"- none -;"
-	variable i = 0
-	
-	string popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
-	string listOfWaves = wavelist(searchstring,";","")
-	do
-		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-		popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-		popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-		i += 1
-	while(i < 8)
+		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+		ListOfWaves = wavelist(searchstring,";","")
 
-	setdatafolder saveDFR
+		do
+			if(i > 0) // disables search inputs except for Search_TTL_00
+				sprintf SearchSetVarName, "Search_TTL_%.2d" i
+				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
+	
+				sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+				PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves				
+			endif
+			i += 1
+		while(i < 8)
+		
+		i = 0
+		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+		do
+			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
+			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+
+	
+			i += 1	
+		while(i < 8)
+	elseif(checked == 1)
+		
+		
+		controlinfo /w = $panelTitle Search_TTL_00
+		if(strlen(s_value) == 0)
+			SearchString = "*TTL*"
+		else
+			SearchString = s_value
+		endif
+		
+
+		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+		ListOfWaves = wavelist(searchstring,";","")
+		do
+			sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+			PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
+			
+			if(i > 0) // disables search inputs except for Search_TTL_00
+				sprintf SearchSetVarName, "Search_TTL_%.2d" i
+				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
+			endif
+			i += 1
+		while(i < 8)
+		
+		i = 0
+		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+		do
+			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
+			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
+			i += 1
+		while(i < 8)
+		
+		
+	endif
+		setdatafolder saveDFR
+
 End
 //=========================================================================================
 
