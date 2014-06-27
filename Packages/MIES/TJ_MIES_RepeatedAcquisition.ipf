@@ -13,6 +13,7 @@ Function RA_Start(panelTitle)
 	string CountPath = WavePath + ":Count"
 	variable /g $CountPath = 0
 	NVAR Count = $CountPath
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath = v_value
@@ -76,6 +77,9 @@ Function RA_Start(panelTitle)
 			DAP_SmoothResizePanel(340, panelTitle)
 			setwindow $panelTitle + "#oscilloscope", hide = 0
 		endif
+
+		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
 		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		
@@ -99,7 +103,8 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	NVAR Count = $CountPath
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
-	
+	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+
 	Count += 1
 	ActiveSetCount -= 1
 	
@@ -186,6 +191,8 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 					setwindow $panelTitle + "#oscilloscope", hide = 0
 				endif
 				
+				//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+				ITI -= ITC_StopITCDeviceTimer(panelTitle)
 				ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 				//ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse()", "RA_Counter()", "", panelTitle)
 				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
@@ -267,7 +274,9 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 			DAP_SmoothResizePanel(340, panelTitle)
 			setwindow $panelTitle + "#oscilloscope", hide = 0
 		endif
-		
+
+		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 		//print ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
@@ -376,7 +385,8 @@ Function RA_StartMD(panelTitle)
 	
 //	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 //	IndexingState = v_value
-	
+	//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 	StartTestPulse(deviceType, deviceNum, panelTitle)  // 
 	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
 	// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
@@ -609,7 +619,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	ITI = v_value
 			
 	if(Count < (TotTrials - 1))
-
+		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		StartTestPulse(deviceType, deviceNum, panelTitle)
 		// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)

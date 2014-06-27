@@ -14,7 +14,7 @@
 	//variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
 	variable StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
 //	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	
+	variable TimerStart
 //	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 //	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 //	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -29,6 +29,13 @@
 //	execute cmd
 //	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 //	execute cmd// this also seems necessary to update the DA channel data to the board!!
+
+	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+	variable RepeatedAcqOnOrOff = v_value
+	if(RepeatedAcqOnOrOff == 1)
+		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+	endif
+	
 	if(TriggerMode == 0)
 		Execute "ITCStartAcq" 
 	elseif(TriggerMode > 0)

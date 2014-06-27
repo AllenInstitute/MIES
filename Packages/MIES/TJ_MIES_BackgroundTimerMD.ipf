@@ -165,7 +165,47 @@ End // Function 	ITC_MakeOrUpdateTimerParamWave
 
  End // IITC_MakeOrUpdtDevTimerTxtWv
  
- 
+//=============================================================================================================================
+Function ITC_StartITCDeviceTimer(panelTitle)
+	string panelTitle
+	//TimerStart = startmstimer
+	
+	string wavePath
+	sprintf wavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
+	string ITCDeviceIDGlobalPathString 
+	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
+	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+	string CycleTimeStorageWavePathString
+	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
+	
+	wave /z CycleTimeStorageWave = $CycleTimeStorageWavePathString
+	if(waveexists($CycleTimeStorageWavePathString) == 0)
+		make /o /n =10 $CycleTimeStorageWavePathString // the size of the wave is limited by the number of igor timers. This will also limit the number of simultaneously active devices possible to 10
+		wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
+	endif
+	
+	CycleTimeStorageWave[ITCDeviceIDGlobal] = startmstimer // inserts the timer number into the row that corresponds to the device ID global
+End
+//=============================================================================================================================
+Function ITC_StopITCDeviceTimer(panelTitle)
+	string panelTitle
+	string CycleTimeStorageWavePathString
+	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
+	wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
+	string wavePath
+	sprintf wavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
+	string ITCDeviceIDGlobalPathString 
+	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
+	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+	
+	variable runTime = stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000
+	return runTime
+
+End
+//=============================================================================================================================
+
+
+
  Function firstFunction()
  print "first function"
  
