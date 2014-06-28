@@ -195,7 +195,7 @@ Function DB_ButtonProc_NextSweep(ctrlName) : ButtonControl
 	string panelTitle = DB_ReturnDBPanelName()	
 	variable LastSweep = DB_LastSweepAcquired(panelTitle)
 	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
-	
+	print datapath
 	controlinfo check_DataBrowser_SweepOverlay
 	if(v_value == 1)
 		Button button_DataBrowser_Previous disable = 2

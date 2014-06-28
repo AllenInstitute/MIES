@@ -286,8 +286,8 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	if(waveexists(root:MIES:Amplifiers:W_telegraphServers) == 1)
 	ControlInfo /w = $panelTitle popup_Settings_Amplifier
 		if(v_value > 1)
-		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0]
-		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1]
+		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0] // serial number
+		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1] // channel ID
 		else
 		ChanAmpAssign[8][HeadStageNo] = nan
 		ChanAmpAssign[9][HeadStageNo] = nan

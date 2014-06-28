@@ -24,6 +24,8 @@ Function DM_SaveITCData(panelTitle)
 	getwindow kwFrameOuter wtitle 
 	note $savedDataWaveName, s_value
 	ED_AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
+	createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+	
 	controlinfo /w = $panelTitle Check_Settings_Append
 	if(v_value == 1)// if option is checked, wave note containing single readings from (async) ADs is made
 		ITC_ADDataBasedWaveNotes($SavedDataWaveName, DeviceType,DeviceNum, panelTitle)
