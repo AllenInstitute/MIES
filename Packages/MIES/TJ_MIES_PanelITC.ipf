@@ -2774,7 +2774,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
 	
 				sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
-				PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves				
+				PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set		
 			endif
 			i += 1
 		while(i < 8)

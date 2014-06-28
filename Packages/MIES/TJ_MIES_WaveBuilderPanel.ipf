@@ -1637,19 +1637,61 @@ Function /t WBP_ITCPanelPopUps(DAorTTL, searchString) // used to populate DA and
 	DFREF saveDFR = GetDataFolderDFR()
 
 	if(DAorTTL == 0)
-	setDataFolder root:MIES:waveBuilder:savedStimulusSets:DA
-	stimulusSetList = Wavelist(searchstring, ";", "")
+		setDataFolder root:MIES:waveBuilder:savedStimulusSets:DA
+		stimulusSetList = Wavelist(searchstring, ";", "")
 	endif
 	
 	if(DAorTTL == 1)
-	setDataFolder root:MIES:waveBuilder:savedStimulusSets:TTL
-	stimulusSetList = Wavelist(searchstring, ";", "")
+		setDataFolder root:MIES:waveBuilder:savedStimulusSets:TTL
+		stimulusSetList = Wavelist(searchstring, ";", "")
 	endif
-	
+
 	setdatafolder saveDFR
 	return stimulusSetList
 	
+End
+
+/// returns a randomized list of sets.
+Function /t WBP_ITCPanelPopUpsRandom(DAorTTL, searchString) // used to populate DA and TTL popup menus with appropriate stimulus sets.
+	variable DAorTTL//, PopUpMenuNumber // needs to be updated to include search terms!!!!!!!!
+	string searchString// = WBP_ReturnSearchString(panelTitle, PopupMenuNumber, DAorTTL)
+	string stimulusSetList
+	DFREF saveDFR = GetDataFolderDFR()
+
+	if(DAorTTL == 0)
+		setDataFolder root:MIES:waveBuilder:savedStimulusSets:DA
+		stimulusSetList = Wavelist(searchstring, ";", "")
+	endif
 	
+	if(DAorTTL == 1)
+		setDataFolder root:MIES:waveBuilder:savedStimulusSets:TTL
+		stimulusSetList = Wavelist(searchstring, ";", "")
+	endif
+	
+	sprintf stimulusSetList, "%s" WBP_RamdomizeStringList(stimulusSetList)
+
+	setdatafolder saveDFR
+	return stimulusSetList
+	
+End
+
+/// Returns a list string that is a randomized version of the string passed into the function
+Function /t WBP_RamdomizeStringList(ListString)
+	string listString
+	variable ListItemsCount = itemsInList(ListString, ";")
+	make /free /n = (ListItemsCount) ListOrder = x
+	DC_shuffle(ListOrder)
+	string NewList = "", NewNewList
+	variable i = 0
+	//sprintf NewList, "%s" stringfromlist(ListOrder[i], listString, ";")
+	//i += 1
+	do
+		sprintf NewList, "%s" addListItem(stringfromlist(ListOrder[i], ListString, ";"), NewList, ";", i)
+		//sprintf NewList, "%s;%s" NewList, stringfromlist(ListOrder[i], listString, ";")
+		i += 1
+	while(i < ListItemsCount)
+	
+	return NewList
 End
 
 Function /t WBP_ReturnSearchString(panelTitle, PopupMenuNumber, DAorTTL) // not in use. Could be used

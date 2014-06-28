@@ -166,6 +166,9 @@ End // Function 	ITC_MakeOrUpdateTimerParamWave
  End // IITC_MakeOrUpdtDevTimerTxtWv
  
 //=============================================================================================================================
+/// Stores the timer number in a wave where the row number corresponds to the Device ID global.
+/// This function and ITC_StopITCDeviceTimer are used to correct the ITI for the time it took to collect data, and pre and post processing of data. 
+/// It allows for a real time, start to start, ITI
 Function ITC_StartITCDeviceTimer(panelTitle)
 	string panelTitle
 	//TimerStart = startmstimer
@@ -182,11 +185,14 @@ Function ITC_StartITCDeviceTimer(panelTitle)
 	if(waveexists($CycleTimeStorageWavePathString) == 0)
 		make /o /n =10 $CycleTimeStorageWavePathString // the size of the wave is limited by the number of igor timers. This will also limit the number of simultaneously active devices possible to 10
 		wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
+		setDimLabel 1, 0, TimerNumber, CycleTimeStorageWave
+		setDimLabel 0, -1, DeviceIDGlobal, CycleTimeStorageWave
 	endif
 	
 	CycleTimeStorageWave[ITCDeviceIDGlobal] = startmstimer // inserts the timer number into the row that corresponds to the device ID global
 End
 //=============================================================================================================================
+/// Stops the timer associated with a particular device
 Function ITC_StopITCDeviceTimer(panelTitle)
 	string panelTitle
 	string CycleTimeStorageWavePathString
@@ -198,7 +204,7 @@ Function ITC_StopITCDeviceTimer(panelTitle)
 	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
 	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
 	
-	variable runTime = stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000
+	variable runTime = stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
 	return runTime
 
 End
