@@ -7,6 +7,8 @@ Menu "Mies Panels"
 		"Data Browser", execute "DataBrowser()"
 		"Initiate Mies", IM_InitiateMies()		
 		"Close Mies", CloseMies()
+		"Start Polling WSE queue", StartTestTask()
+		"Stop Polling WSE queue", StopTestTask()
 End
 
 Function CloseMies()

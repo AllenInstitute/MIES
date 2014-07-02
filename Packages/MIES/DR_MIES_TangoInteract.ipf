@@ -362,6 +362,10 @@ Function TangoSave(saveFileName)
 	else
 		print "File Name must end with .uxt!  Please re-enter and try again!"
 	endif
+End
+
+Function TangoHDF5Save(saveFilename)
+	string saveFileName
 	
 	string hd5FileName = saveFileName + ".h5"
 	print "hd5FileName: ", hd5FileName

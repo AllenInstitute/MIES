@@ -945,13 +945,13 @@ function createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	sprintf ampSettingsWavePath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "ampSettings"
 	
 	// see if the wave exists....if so, append to it...if not, create it
-	wave ampSettingsWave = $ampSettingsWavePath
+	wave /z ampSettingsWave = $ampSettingsWavePath
 	//print "Does the settings wave exist?..."
 	if (WaveExists($ampSettingsWavePath) == 0)
 		//print "making ampSettingsWave..."
 		// create the 3 dimensional wave
 		make /o /n = (1, 16, noHeadStages ) $ampSettingsWavePath = 0
-		Wave ampSettingsWave = $ampSettingsWavePath
+		Wave /z ampSettingsWave = $ampSettingsWavePath
 	endif	
 	//Redimension/N=(1, 15, noHeadStages ) ampSettingsWave
 		
