@@ -348,40 +348,247 @@ Function StopTestTask()
 	CtrlNamedBackground Test, stop
 End
 
-//// function to save Mies Experiment in two formats....hdf5 and unpacked experiment
-//Function TangoSave(saveFileName)
-//	string saveFileName
-//	
-//	Variable result = 0
-//	string dfPath = "."
-//	string uxtFileName = saveFileName + ".uxt"
-//	//first, save as unpacked experiment
-//	if (stringMatch(uxtFileName, "*.uxt") == 1)		
-//		SaveExperiment/C/F={0,"",2}/P=home as uxtFileName
-//		print "Success!"
-//	else
-//		print "File Name must end with .uxt!  Please re-enter and try again!"
-//	endif
-//	
-//	//Now, try to save as HDF5
-//	// first...create the file
-//	variable groupID
-//	string hd5FileName = saveFileName + ".h5"
-//	print "hd5FileName: ", hd5FileName
-//	HDF5CreateGroup /Z groupID as hd5FileName
-//	print "created hdf5 file..."
-//	if (V_flag != 0)
-//		Print "HDF5CreateFile failed"
-//		return -1
-//	endif
-//	
-//	HDF5SaveGroup /IGOR=-1 /O /R /Z $dfPath, fileID, "."
-//	if (V_flag != 0)
-//		Print "HDF5SaveGroup failed"
-//		result = -1
-//	endif
-//		
-//	HDF5CloseFile fileID
-//	
-//End
+// function to save Mies Experiment in two formats....hdf5 and unpacked experiment
+Function TangoSave(saveFileName)
+	string saveFileName
 	
+	Variable result = 0
+	string dfPath = "."
+	string uxtFileName = saveFileName + ".uxt"
+	//first, save as unpacked experiment
+	if (stringMatch(uxtFileName, "*.uxt") == 1)		
+		SaveExperiment/C/F={0,"",2}/P=home as uxtFileName
+		print "Unpacked Experiment Save Success!"
+	else
+		print "File Name must end with .uxt!  Please re-enter and try again!"
+	endif
+	
+	string hd5FileName = saveFileName + ".h5"
+	print "hd5FileName: ", hd5FileName
+	
+	convert_to_hdf5(hd5FileName)
+	
+End
+
+//////////////////////////////////
+Function convert_to_hdf5(filename)
+	String filename
+	Variable num_dirs, i, j, h5_id
+	String dir_name, wave_list, wave_name, path
+	// move down folder structure looking for where data is stored
+	// assume that hardware device name starts with "I"
+	SetDataFolder root:
+	num_dirs = CountObjects(":", 4)
+	print "num_dirs: ", num_dirs
+	for (i=0; i<num_dirs; i+=1)
+		dir_name = GetIndexedObjName(":", 4, i)
+		print "dir_name: ", dir_name
+		if (stringmatch(dir_name[0], "I"))
+			break
+		endif
+	endfor
+	path = "root:" + dir_name + ":ITCDevices:ITC18USB:Device0:Data:"
+	//print "dir_name: ", dir_name
+	//print "hdf5 path: ", path
+	
+	SetDataFolder path
+	print "about to create hdf5..."
+	
+	HDF5CreateFile /O /Z h5_id as filename
+	if (V_flag != 0)
+		print "HDF5CreateFile failed"
+		return -1
+	endif
+	hdf5_structure(h5_id)
+	// foreach wave, extract data from project and write to hdf5 file
+	wave_list = WaveList("Sweep_*", ";", "")
+	j = strlen(wave_list)
+	for (i=0; i<j; i+=1)
+		wave_name = StringFromList(i, wave_list)
+		if (StringMatch(wave_name, ""))
+			break
+		endif
+		// ignore DA0 and AD0
+		if ((strsearch(wave_name, "AD0", 0) > 0) || (strsearch(wave_name, "DA0", 0) > 0))
+			continue
+		endif
+		Wave data = $wave_name
+		print("Processing " + wave_name)
+		create_dataset(h5_id, wave_name, data)
+	endfor
+	HDF5CloseFile h5_id
+	print "HDF5 save complete..."
+End	
+
+// creates high-level group structure of HDF5 file
+Function hdf5_structure(h5_id)
+	Variable h5_id
+	Variable root_id, grp_id
+	// initialize HDF5 format
+	HDF5CreateGroup /Z h5_id, "/", root_id
+	HDF5CreateGroup /Z root_id, "acquisition", grp_id
+	HDF5CreateGroup /Z root_id, "acquisition/data", grp_id
+	HDF5CreateGroup /Z root_id, "acquisition/stimulus", grp_id
+	HDF5CreateGroup /Z root_id, "analysis", grp_id
+	// store version info
+	Make/n=1/O vers = 1.0
+	HDF5SaveData /O /Z vers, root_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (version)"
+		return -1
+	endif
+End
+
+//////////////////////////////////
+Function create_dataset(h5_id, sweep_name, data)
+	Variable h5_id
+	String sweep_name
+	Wave data
+	Variable grp_id, sweep_id
+	// create group for this sweep
+	String group = "/acquisition/data/" + sweep_name
+	HDF5CreateGroup /Z h5_id, group, sweep_id
+	// pull raw data from Igor, making separate voltage and current waves
+	duplicate/o/r=[][0] data, current_0
+	duplicate/o/r=[][1] data, v_0
+	Wave /Z current_0, v_0
+	// create sweep's ephys group
+	HDF5CreateGroup /Z sweep_id, "ephys", grp_id
+	// write voltage data
+	HDF5SaveData /O /Z V_0, grp_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (voltage)"
+		return -1
+	endif
+	// create sweep's stim group
+	HDF5CreateGroup /Z sweep_id, "stim", grp_id
+	// write current data to stim group
+	HDF5SaveData /O /Z current_0, grp_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (current)"
+		return -1
+	endif
+	// fetch metadata and calculate/store dt
+	String cfg_name = "Config_" + sweep_name
+	Wave cfg = $cfg_name
+	Make /O /N=1 dt = 1e-6 * cfg[0][2][0]
+	HDF5SaveData /O /Z dt, sweep_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (dt)"
+		return -1
+	endif
+	// categorize stimulus and save that data
+	Make /n=5 /o stim_characteristics
+	ident_stimulus(current_0, dt[0], stim_characteristics)
+	HDF5SaveData /O /Z stim_characteristics, grp_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (stim_characteristics)"
+		return -1
+	endif
+	// calculate and store Hz
+	Make /O /N=1 rate = (1.0 / dt)
+	HDF5SaveData /O /Z rate, sweep_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (rate)"
+		return -1
+	endif
+	// calculate and store sweep duration
+	Make /O /N=1 duration = (dt * (DimSize(v_0, 0)-1))
+	HDF5SaveData /O /Z duration, sweep_id
+	if (V_flag != 0)
+		print "HDF5SaveData failed (duration)"
+		return -1
+	endif
+End
+
+// categorize stimulus and extract some features
+Function ident_stimulus(current, dt, stim_characteristics)
+	Wave current
+	Variable dt
+	Wave stim_characteristics
+	///////////////////////////
+	// stimulus type constants
+	// TODO move these to a better location
+	Variable TYPE_UNKNOWN = 0
+	Variable TYPE_NULL = 1
+	Variable TYPE_STEP = 2
+	Variable TYPE_PULSE = 3	// pulse defined as step that lasts less than 20ms
+	Variable TYPE_RAMP = 4
+	//////////////////////////
+	// variables to track stimulus characteristics
+	Variable polarity = 0	// >0 when i increasing; <0 when i decreasing
+	Variable flips = 0	// number of polarity shifts
+	Variable changes = 0	// number of changes in i
+	Variable peak = 0	// peak current
+	Variable start = 0
+	Variable stop = 0
+	Variable last = current[0]
+	//////////////////////////
+	// characterize stimulus, using current polarity and amplitude changes
+	Variable n = DimSize(current, 0)
+	Variable i, cur
+	for (i=0; i<n; i+=1)
+		cur = current[i]
+		if (cur == last)
+			continue
+		endif
+		changes += 1
+		if (polarity == 0)
+			// stimulus just started -- assign initial polarity
+			if (cur > 0)
+				polarity = 1
+			else
+				polarity = -1
+			endif
+			start = i
+		elseif (polarity == -1)
+			// current was decreasing
+			if (cur > last)
+				// current now on upswing -- record polarity shift
+				polarity = 1
+				flips += 1
+			endif
+		else	// polarity == 1
+			// current has been increasing
+			if (cur < last)
+				// current now decreasing -- record polarity shift
+				polarity = -1
+				flips += 1
+			endif
+		endif
+		if (abs(cur) > abs(peak))
+			peak = cur
+		endif
+		if ((cur == 0) && (last != 0))
+			// current returned to zero -- store this as potential end
+			//   of stimulus
+			stop = i
+		endif
+		last = cur
+	endfor
+	Variable t = (n-1) * dt
+	Variable dur = (stop - start) * dt
+	Variable onset = start * dt
+	Variable type = TYPE_UNKNOWN // default to unknown
+	if (changes == 2)
+		if (dur < 0.020)
+			type = TYPE_PULSE
+		else
+			type = TYPE_STEP
+		endif
+	elseif (flips == 1)
+		// too many current changes for step, but only one flip
+		// this must be a ramp
+		type = TYPE_RAMP
+	elseif ((flips == 0) && (changes == 0))
+		// no stimulus
+		type = TYPE_NULL
+	endif
+	// store results in vector -- this is more friendly for hdf5 storage
+	stim_characteristics[0] = type
+	stim_characteristics[1] = t
+	stim_characteristics[2] = onset
+	stim_characteristics[3] = dur
+	stim_characteristics[4] = peak
+End
+

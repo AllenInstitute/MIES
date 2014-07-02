@@ -38,6 +38,9 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	// Location for the saved datawave
 	wave saveDataWave = $saveDataWavePath
 	
+	// local variable for the sweep number
+	variable SweepNo = SweepCounter
+	
 	// Location for the settings wave
 	String settingsHistoryPath
 	sprintf settingsHistoryPath, "%s:%s" Path_LabNoteBookFolder(panelTitle), "settingsHistory"
@@ -48,7 +51,9 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	if (WaveExists($settingsHistoryPath) == 0)
 		//print "creating settingsHistoryPath..."
 		// create the wave...just set the dimensions to give it something to build on
-		make/N = (0,0,0) $settingsHistoryPath
+		make/N = (1,2,0) $settingsHistoryPath
+		// Col 0 - Sweep Number
+		// Col 1 - Time Stamp
 		Wave settingsHistory = $settingsHistoryPath
 	endif
 	
@@ -61,7 +66,11 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	Wave/T /Z keyWave = $keyWavePath
 	if (WaveExists($keyWavePath) == 0)
 		// create the wave...just set the dimensions to give it something to build on
-		make /T /N=(0,0,0)  $keyWavePath
+		make /T /N=(0,0,0)  $keyWavePath		
+		// row 0 - Parameter name
+		// row 1 - Unit
+		// row 2 - Text note
+		
 		Wave/t keyWave = $keyWavePath
 	endif
 	
@@ -89,20 +98,24 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	variable keyColCounter
 	variable incomingKeyColCounter
 	
-	print "keyWaveSize: ", keyColCount
-	print "incoming keyWave size: ", incomingKeyColCount
+	// get the size of the incoming Key Wave
+	variable incomingKeyRowCount = DimSize(incomingKeyWave, 0)			// rows...should be 3
+	//print "incomingKeyRowCount: ", incomingKeyRowCount
+
+	
+	//print "keyWaveSize: ", keyColCount
+	//print "incoming keyWave size: ", incomingKeyColCount
 	variable keyMatchFound = 0
 	// if keyWave is just formed, just add the incoming KeyWave....
 	if (keyColCount == 0)
 		//print "setting up inital keyWave..."
 		// have to redimension the keyWave to create the space for the new stuff
-		Redimension/N= (1, incomingKeyColCount) keyWave
+		Redimension/N= (3, incomingKeyColCount) keyWave
 		// also redimension the settings History Wave to create row space to add new sweep data...
 		Redimension/N=(-1, incomingColCount, incomingLayerCount) settingsHistory
-		keyWave = "#"
 		//print "after key wave redimension..."
-		//print "key wave row size ", DimSize(settingsHistory, 0)		// sweep
-		//print "key wave col size ", DimSize(settingsHistory, 1)		// factor
+		//print "key wave row size ", DimSize(keyWave, 0)		// sweep
+		//print "key wave col size ", DimSize(keyWave, 1)		// factor
 		
 		//print "after settings history redimension..."
 		rowCount = DimSize(settingsHistory, 0)		// sweep
@@ -110,14 +123,16 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		colCount = DimSize(settingsHistory, 1)		// factor
 		//print "colCount: ", colCount
 		layerCount = DimSize(settingsHistory, 2)	// headstage-+ 	
-		//print "layerCount: ", layerCount
+		//print "layerCount: ", layerCount		
 		
-		for (keyColCounter = 0; keyColCounter < incomingKeyColCount; keyColCounter += 1)
-//			print "copying incomingKeyWave factor to keyWave at ", keyColCounter
-//			print "incoming KeyWave factor text: ", incomingKeyWave[0][keyColCounter]
-			keyWave[0][keyColCounter] = incomingKeyWave[0][keyColCounter]
-//			print "after copy step, keyWaveText: ", keyWave[0][keyColCounter]			
+		for (keyColCounter = 0; keyColCounter < (incomingKeyColCount); keyColCounter += 1)
+			//print "copying incomingKeyWave factor to keyWave at ", keyColCounter
+			//print "incoming KeyWave factor text: ", incomingKeyWave[0][keyColCounter]
+			keyWave[0][keyColCounter] = incomingKeyWave[0][keyColCounter] // copy the parameter name
+			//print "after copy step, keyWaveText: ", keyWave[0][keyColCounter]			
+			keyWave[1][keyColCounter] = incomingKeyWave[1][keyColCounter] // copy the unit string			
 		endfor
+		
 		// set this so we don't do the matching bit down below
 		keyMatchFound = 1
 		//print "done creating the initial keyWave..."
@@ -149,6 +164,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		for (insertCounter = keyWaveInsertPoint; insertCounter < (keyWaveInsertPoint + incomingKeyColCount); insertCounter += 1)
 			//print "inserting factor at ", insertCounter
 			keyWave[0][insertCounter] = incomingKeyWave[0][(insertCounter - keyWaveInsertPoint)]
+			keyWave[0][insertCounter] = incomingKeyWave[1][(insertCounter - keyWaveInsertPoint)]
 		endfor
 	endif
 	
@@ -164,18 +180,36 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	// where are we adding the new stuff?
 	variable settingsRowCount = (DimSize(settingsHistory, 0)
 	//print "settingsRowCount: ", settingsRowCount
-	// redimension to add another row...leave the other stuff alone
-	Redimension/N=((settingsRowCount + 1), -1, -1) settingsHistory
-	settingsRowCount = (DimSize(settingsHistory, 0))
-	//print "after the row redimension, settingsRowCount = ", settingsRowCount
-	variable rowIndex = settingsRowCount -1
+	// set the rowredimension to add another row...leave the other stuff alone
+	// Do we need to redimension to accomodate this sweep #?
+	if ((settingsRowCount -1) >= SweepNo)
+		print "no redimension needed ... "  // already have a row for this 
+	else
+		Redimension/N=((sweepNo + 1), -1, -1) settingsHistory
+		settingsRowCount = (DimSize(settingsHistory, 0))
+		//print "after the row redimension, settingsRowCount = ", settingsRowCount
+		//variable rowIndex = sweepNo
+		//print "adding the new stuff at rowIndex: ", rowIndex
+	endif
+	
+	variable rowIndex = sweepNo
 	//print "adding the new stuff at rowIndex: ", rowIndex
+	
+	// put the sweep number in col 0
+	settingsHistory[rowIndex][0] = sweepNo
+	
+	// put the timestamp in col 1
+	//string timeStamp = secs2time(datetime, 1)
+	//settingsHistory[rowIndex][1] = timeStamp
+	//doing this as just the seconds for now....
+	//print "datetime value: ", datetime
+	settingsHistory[rowIndex][1] = datetime
 	
 	// Use the keyWave to see where to add the incomingWave factors to the ampSettingsHistory wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 		//print "doing the factor addition step at ", incomingKeyColCounter
 		//print "factor: ", incomingKeyWave[0][incomingKeyColCounter]
-		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
+		for (keyColCounter = 2; keyColCounter < keyColCount; keyColCounter += 1)
 			//print "looking in keyWave at ", keyColCounter
 			//print "keyWave factor", keyWave[0][keyColCounter]
 			if (stringmatch(incomingKeyWave[0][incomingKeyColCounter], keyWave[0][keyColCounter]) == 1)
@@ -203,36 +237,40 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	colCount = DimSize(settingsHistory, 1)	
 	//print "new Row Count: ", rowCount
 	//print "new Col Count: ", colCount
-	rowIndex = rowCount - 1
+	rowIndex = SweepNo
 	//print "rowIndex: ", rowIndex
 	
 	// just do this to indicate that yes, we did actually create a wave note...this will not be needed in final production version
 	//Note saveDataWave "Hey Mate...we made a wave note!"
 	
-	if (rowCount > 1)	
-		for ( colCounter = 0; colCounter < colCount; colCounter += 1)
-			for (layerCounter = 0; layerCounter < layerCount; layerCounter += 1)
+	if (rowIndex >= 1)	// only need to do this if there are more then 2 sweeps to compare
+		for (layerCounter = 0; layerCounter < layerCount; layerCounter += 1)
+			for ( colCounter = 2; colCounter < colCount; colCounter += 1) // start at 2...otherwise you get wavenotes for every new sweep # and time stamp
 				settingsHistory[rowIndex][colCounter][layerCounter] = incomingSettingsWave[0][colCounter][layerCounter]
 				// and then see if the factor has changed from the previous saved setting
 //				print "Comparing factors..."
 //				print "new setting value: ", settingsHistory[rowIndex][colCounter][layerCounter]
 //				print "old setting value: ", settingsHistory[rowIndex-1][colCounter][layerCounter]
 				if (settingsHistory[rowIndex][colCounter][layerCounter] != settingsHistory[rowIndex-1][colCounter][layerCounter])
+					//print "factor change!"
+					//print "col: ", colCounter
+					//print "layer: ", layerCounter
 					//print "Factor Changed! ", keyWave[0][colCounter]
 					
 					
 					// build up the string for the report
 					String changedFactorText
-					changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
+					sprintf changedFactorText, ":HeadStage#%d:%s: %d:" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter]
+					//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
 					print changedFactorText
 					
 					
 					// make the waveNote
 					//Note saveDataWave "Factor Changed!"
 					//Note saveDataWave "Sweep#" + num2str(SweepCounter)
-					Note saveDataWave "Factor:" + keyWave[0][colCounter]
-					Note saveDataWave num2str(settingsHistory[rowIndex][colCounter][layerCounter])
-					//Note saveDataWave changedFactorText
+					//Note saveDataWave "Factor:" + keyWave[0][colCounter]
+					//Note saveDataWave num2str(settingsHistory[rowIndex][colCounter][layerCounter])
+					Note saveDataWave changedFactorText
 				endif
 			endfor
 		endfor

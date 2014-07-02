@@ -24,7 +24,13 @@ Function DM_SaveITCData(panelTitle)
 	getwindow kwFrameOuter wtitle 
 	note $savedDataWaveName, s_value
 	ED_AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
-	createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+	
+	//Do this if checked on the DA_Ephys panel
+	ControlInfo /w = $panelTitle check_Settings_SaveAmpSettings
+	variable saveAmpSettingsCheck = v_value
+	if (saveAmpSettingsCheck == 1)
+		createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+	endif
 	
 	controlinfo /w = $panelTitle Check_Settings_Append
 	if(v_value == 1)// if option is checked, wave note containing single readings from (async) ADs is made
