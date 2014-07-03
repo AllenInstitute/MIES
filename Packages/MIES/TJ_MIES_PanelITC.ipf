@@ -1,5 +1,12 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Constant HARDWARE_TAB_NUM                = 6
+StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
+static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
+static StrConstant ITC1600_FIRST_DEVICE  = "ITC1600_Dev_0"
+static StrConstant FOLLOWER              = "Follower"
+static StrConstant LEADER                = "Leader"
+
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(2374,521,2844,1234)
@@ -17,13 +24,14 @@ Window DA_Ephys() : Panel
 	TabControl ADC,pos={3,0},size={479,19},proc=ACL_DisplayTab
 	TabControl ADC,userdata(currenttab)=  "0"
 	TabControl ADC,userdata(initialhook)=  "DAP_TabTJHook1"
+	TabControl ADC,userdata(finalhook)  =  "DAP_TabControlFinalHook"
 	TabControl ADC,userdata(ResizeControlsInfo)= A"!!,>Mz!!#CTJ,hm&z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl ADC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl ADC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl ADC,userdata(tabcontrol)=  "ADC",tabLabel(0)="Data Acquisition"
 	TabControl ADC,tabLabel(1)="DA",tabLabel(2)="AD",tabLabel(3)="TTL"
 	TabControl ADC,tabLabel(4)="Asynchronous",tabLabel(5)="Settings"
-	TabControl ADC,tabLabel(6)="Hardware",value= 0
+	TabControl ADC,tabLabel(HARDWARE_TAB_NUM)="Hardware",value= 0
 	CheckBox Check_AD_00,pos={20,75},size={24,14},disable=1,proc=DAP_CheckProc_UnpdateMinSampInt,title="0"
 	CheckBox Check_AD_00,help={"hello!"},userdata(tabnum)=  "2"
 	CheckBox Check_AD_00,userdata(tabcontrol)=  "ADC"
@@ -2875,10 +2883,121 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 	setdatafolder saveDFR
 End
+
 //=========================================================================================
+/// Returns 1 if a ITC1600 device is selected in the Device type popup
+/// Remember: Only ITC1600 devices can be yoked
+Function DAP_DeviceIsYokeable(panelTitle)
+  string panelTitle
 
+  return cmpstr(HSU_GetDeviceType(panelTitle),"ITC1600") == 0
+End
 
-Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab control function every time a tab is selected
+Function DAP_DeviceIsFollower(panelTitle)
+	string panelTitle
+
+	ControlInfo/W=$panelTitle setvar_Hardware_Status
+	ASSERT(V_flag > 0, "Non-existing control or window")
+
+	return cmpstr(S_value,FOLLOWER) == 0
+End
+
+Function DAP_DeviceCanLead(panelTitle)
+	string panelTitle
+
+  return cmpstr(HSU_GetDeviceType(panelTitle),"ITC1600") == 0 && cmpstr(HSU_GetDeviceNumber(panelTitle),"0") == 0
+End
+
+Function DAP_DeviceIsLeader(panelTitle)
+	string panelTitle
+
+	ControlInfo/W=$panelTitle setvar_Hardware_Status
+	ASSERT(V_flag > 0, "Non-existing control or window")
+
+	return cmpstr(S_value,LEADER) == 0
+End
+
+//=========================================================================================
+/// Updates the yoking controls on all locked/unlocked panels
+Function DAP_UpdateAllYokeControls()
+
+	string   ListOfLockedITC1600    = DAP_ListOfLockedITC1600Devs()
+	variable ListOfLockedITC1600Num = ItemsInList(ListOfLockedITC1600)
+	string   ListOfLockedITC        = DAP_ListOfLockedDevs()
+	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC1600)
+
+	string panelTitle
+	variable i
+	for(i=0; i<ListOfLockedITCNum; i+=1)
+		panelTitle = StringFromList(i,ListOfLockedITC)
+
+		// don't touch the current leader
+		if(DAP_DeviceIsLeader(panelTitle))
+			continue
+		endif
+
+		DisableListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		DAP_UpdateYokeControls(panelTitle)
+
+		if(ListOfLockedITC1600Num >= 2 && DAP_DeviceCanLead(panelTitle))
+			// ensures yoking controls are only enabled on the ITC1600_Dev_0
+			// a requirement of the ITC XOP
+			EnableControl(panelTitle,"button_Hardware_Lead1600")
+		endif
+	endfor
+
+	string   ListOfUnlockedITC     = DAP_ListOfUnlockedDevs()
+	variable ListOfUnlockedITCNum  = ItemsInList(ListOfUnlockedITC)
+
+	for(i=0; i<ListOfUnLockedITCNum; i+=1)
+		panelTitle = StringFromList(i,ListOfUnLockedITC)
+		DisableListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+	endfor
+End
+
+Function DAP_GetTabNumber(panelTitle)
+	string panelTitle
+
+	ControlInfo/W=$panelTitle ADC
+	ASSERT(V_flag > 0,"Missing control ADC")
+	return V_value
+End
+
+//=========================================================================================
+Function DAP_UpdateYokeControls(panelTitle)
+	string panelTitle
+
+	if(DAP_GetTabNumber(panelTitle) != HARDWARE_TAB_NUM)
+		return NaN
+	endif
+
+	if(!DAP_DeviceIsYokeable(panelTitle))
+		HideListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:"Device is not yokeable"
+	elseif(DAP_DeviceIsFollower(panelTitle))
+		HideListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+	else
+		ShowListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		if(DAP_DeviceCanLead(panelTitle))
+			TitleBox title_hardware_1600inst win = $panelTitle, title = "Designate the status of the ITC1600 assigned to this device"
+		else
+			TitleBox title_hardware_1600inst win = $panelTitle, title = "To yoke devices go to panel: " + ITC1600_FIRST_DEVICE
+		endif
+		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:Path_ListOfYokedDACs(panelTitle)
+	endif
+End
+
+//=========================================================================================
+Function DAP_TabControlFinalHook(tca)
+	STRUCT WMTabControlAction &tca
+
+	DAP_UpdateYokeControls(tca.win)
+End
+
+/// This is a function that gets run by ACLight's tab control function every time a tab is selected,
+/// but before the internal tabs hook is called
+//=========================================================================================
+Function DAP_TabTJHook1(tca)
 	STRUCT WMTabControlAction &tca
 	variable tabnum , i = 0, MinSampInt
 	SVAR /z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
@@ -2913,8 +3032,8 @@ Function DAP_TabTJHook1(tca)//This is a function that gets run by ACLight's tab 
 //	endif
 	return 0
 End
-//=========================================================================================
 
+//=========================================================================================
 Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -3560,15 +3679,19 @@ Function /T DAP_ReturnPanelName()
 		return ""	
 	endif
 End
+
 //=========================================================================================
-/// DAP_PopMenuProc_DevTypeChk
-Function DAP_PopMenuProc_DevTypeChk(ctrlName,popNum,popStr) : PopupMenuControl
-	String ctrlName
-	Variable popNum
-	String popStr
-	getwindow kwTopWin wtitle
-	HSU_IsDeviceTypeConnected(s_value)
+Function DAP_PopMenuProc_DevTypeChk(s) : PopupMenuControl
+	struct WMPopupAction& s
+
+	if(s.eventCode != EVENT_MOUSE_UP)
+		return 0
+	endif
+
+	HSU_IsDeviceTypeConnected(s.win)
+	DAP_UpdateYokeControls(s.win)
 End
+
 //=========================================================================================
 /// DAP_FindConnectedAmps
 Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
@@ -3909,329 +4032,197 @@ Function DAP_StopButtonToAcqDataButton(panelTitle)
 		Button DataAcquireButton title=ButtonText, win = $panelTitle
 	endif
 End
+
 //=========================================================================================
-/// DAP_TwoOrMoreITC1600s
-Function /C DAP_TwoOrMoreITC1600s(panelTitle) // returns a complex variable. If the real is = 1 then two or more locked ITC1600s are present. The imaginary component returns the number of locked ITC1600s
-	string panelTitle
-	variable /C YesNo
-	SVAR PanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
-	string ListOf1600s = ListMatch(PanelTitleList, "ITC1600*",";")
-	variable NoOf1600s = itemsinlist(ListOf1600s, ";")
-	
-	if(NoOf1600s > 1)
-		YesNo = cmplx(1,NoOf1600s)
-	elseif(NoOf1600s < 1)
-		YesNo = cmplx(0,NoOf1600s)
-	endif
-	
-	return YesNo
+Function/s DAP_ListOfUnlockedDevs()
+
+	return WinList("DA_Ephys*", ";", "WIN:64" )
 End
 
-ListMatch(root:MIES:ITCDevices:ITCPanelTitleList, "ITC1600*",";")
 //=========================================================================================
-// THE FUNCTION BELOW CONTROL THE ASSOCIATIONS BETWEEN THE BUTTONS IN THE YOKE SECTION OF THE 
-// HARDWARE TAB ON THE DA_EPHYS() PANEL
-//=========================================================================================
-/// DAP_EnableYoking
-Function DAP_EnableYoking(panelTitle) // enables or disables the yoking controls on the DA_Ephys panel depending on the number of locked ITC1600s
-	string panelTitle
-	SVAR PanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList // List of locked ITC devices
-	string ListOf1600s = ListMatch(PanelTitleList, "ITC1600*",";")
-	
-	variable /C TwoOrMore1600s = DAP_TwoOrMoreITC1600s(panelTitle)
-	variable i = 0
-	if(real(TwoOrMore1600s) == 0)
-		do
-			panelTitle = stringfromlist(i, PanelTitleList, ";") // disables the yoking controls on the last remaining locked ITC1600 - also does all other panel types
-			button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
-			button button_Hardware_Independent Win = $panelTitle, Disable = 2
-			titlebox title_hardware_1600inst Win = $panelTitle, Disable = 2
-			titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
-			button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
-			popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
-			setvariable setvar_Hardware_YokeList Win = $panelTitle, Disable = 2
-			i += 1
-		while(i < itemsinlist(PanelTitleList, ";")) 
-			// lines below disables the yoking controls on the panel that was just unlocked
-			getwindow kwTopWin wtitle
-			//print s_value
-			button button_Hardware_Lead1600 Win = $s_value, Disable = 2
-			button button_Hardware_Independent Win = $s_value, Disable = 2
-			titlebox title_hardware_1600inst Win = $s_value, Disable = 2
-			titlebox title_hardware_Follow Win = $s_value, Disable = 2
-			button button_Hardware_AddFollower Win = $s_value, Disable = 2
-			popupmenu popup_Hardware_AvailITC1600s Win = $s_value, Disable = 2
-			setvariable setvar_Hardware_YokeList Win = $s_value, Disable = 2
-	elseif(real(TwoOrMore1600s) == 1)
-		do
-			panelTitle = stringfromlist(i, ListOf1600s, ";") // enables the yoking controls on all the locked ITC1600s
-			if(stringmatch(panelTitle,"ITC1600_Dev_0") == 1) // ensures yoking controls are only enabled on the ITC1600_Dev_0 - a requirement of the ITC XOP
-				button button_Hardware_Lead1600 Win = $"ITC1600_Dev_0", Disable = 0
-				button button_Hardware_Independent Win = $"ITC1600_Dev_0", Disable = 2
-				titlebox title_hardware_1600inst Win = $"ITC1600_Dev_0", Disable = 0
-				titlebox title_hardware_Follow Win = $"ITC1600_Dev_0", Disable = 2
-				button button_Hardware_AddFollower Win = $"ITC1600_Dev_0", Disable = 2
-				popupmenu popup_Hardware_AvailITC1600s Win = $"ITC1600_Dev_0", Disable = 2
-				doupdate /W = $"ITC1600_Dev_0"
-			else
-				button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
-				button button_Hardware_Independent Win = $panelTitle, Disable = 2
-				titlebox title_hardware_1600inst Win = $panelTitle, Disable = 2
-				titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
-				button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
-				popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
-			endif
-			
-			i += 1
-		while(i < imag(TwoOrMore1600s))
+Function/s DAP_ListOfLockedDevs()
 
+	SVAR/Z list = root:MIES:ITCDevices:ITCPanelTitleList
+	if(!SVAR_Exists(list))
+		return ""
 	endif
+
+	return list
+End
+
+//=========================================================================================
+Function/s DAP_ListOfLockedITC1600Devs()
+
+	return ListMatch(DAP_ListOfLockedDevs(), "ITC1600*")
+End
+
+/// Returns the list of potential followers for yoking.
+///
+/// Used by popup_Hardware_AvailITC1600s from the hardware tab
+Function /s DAP_ListOfITCDevices()
+
+	string listOfPotentialFollowerDevices = RemoveFromList(ITC1600_FIRST_DEVICE,DAP_ListOfLockedITC1600Devs())
+	return SortList(listOfPotentialFollowerDevices, ";", 16)
 End
 //=========================================================================================
-/// DAP_ListOfITCDevices
-Function /t DAP_ListOfITCDevices() // used by popup_Hardware_AvailITC1600s  in hardware tab in yoke section
-	SVAR ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
-	string ListOfAllITC1600s = ListMatch(ITCPanelTitleList, "ITC1600*",";")
-	getwindow kwTopWin wtitle
-	string ListOfPotentialFollowerDevices = removefromlist(s_value,ListOfAllITC1600s)
-	ListOfPotentialFollowerDevices = sortlist(ListOfPotentialFollowerDevices, ";", 16)
-	return ListOfPotentialFollowerDevices
-End
-//=========================================================================================
-/// DAP_ButtonProc_Lead
-Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl // The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
+
+/// The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
+Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl
 	String ctrlName
+
 	String panelTitle = DAP_ReturnPanelName()
-	if(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) // ensures that only the first ITC1600 can be the lead device (trying to make other devices lead, returns a XOP error)
-		button button_Hardware_Independent Win = $panelTitle, Disable = 0
-		button button_Hardware_Lead1600 Win = $panelTitle, Disable = 2
-		button button_Hardware_AddFollower Win = $panelTitle, Disable = 0
-		popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = 2
-		button button_Hardware_RemoveYoke Win = $panelTitle, Disable = 2
-		titlebox title_hardware_Follow Win = $panelTitle, Disable = 0
-		titlebox title_hardware_Release Win = $panelTitle, Disable = 2
-		popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 0
-		SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Lead"
-	endif
+
+	ASSERT(DAP_DeviceCanLead(panelTitle),"This device can not lead")
+
+	EnableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
+	DisableControl(panelTitle,"button_Hardware_Lead1600")
+	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
 End
 //=========================================================================================
-/// DAP_ButtonProc_Independent
+
 Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
 	String ctrlName
-	String panelTitle = DAP_ReturnPanelName()
-	button button_Hardware_Independent Win = $panelTitle, Disable = 2
-	button button_Hardware_Lead1600 Win = $panelTitle, Disable = 0
-	button button_Hardware_AddFollower Win = $panelTitle, Disable = 2
-	popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = 2
-	button button_Hardware_RemoveYoke Win = $panelTitle, Disable = 2
-	titlebox title_hardware_Follow Win = $panelTitle, Disable = 2
-	titlebox title_hardware_Release Win = $panelTitle, Disable = 2
 
-	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = 2
+	String panelTitle = DAP_ReturnPanelName()
+
+	DisableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
+	EnableControl(panelTitle,"button_Hardware_Lead1600")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
-	DAP_RemoveAllYokedDACs(panelTitle) // sets the initialization state appropriate for independent devices on all ITC1600s
-	DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the buttons on all ITC1600s back to the independent state.
+
+	DAP_RemoveAllYokedDACs(panelTitle)
+	DAP_UpdateAllYokeControls()
 End
+
 //=========================================================================================
-/// DAP_ButtonProc_Follow
 Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	String ctrlName
-	String panelTitle = DAP_ReturnPanelName()
-	controlinfo /w = $panelTitle popup_Hardware_AvailITC1600s
-	string DeviceToBeAssignedAsFollower = s_value
-	print "panel title =",paneltitle, "follower =", s_value
-	
-	HSU_SetITCDACasFollower(panelTitle, DeviceToBeAssignedAsFollower)
-	DAP_SetFollowerButtons(panelTitle)
-	
-	variable disableState
-	controlinfo /w = $panelTitle popup_Hardware_AvailITC1600s
-	disableState = V_disable & ~2
-	popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = disableState // 0
-	popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = disableState //0
-	button button_Hardware_RemoveYoke Win = $panelTitle, Disable = disableState //0
-	titlebox title_hardware_Release Win = $panelTitle, Disable = disableState //0
 
+	string panelTitle = DAP_ReturnPanelName()
+	string panelToYoke
+
+	ControlUpdate/W=$panelTitle popup_Hardware_AvailITC1600s
+	ControlInfo/W=$panelTitle popup_Hardware_AvailITC1600s
+	if(V_flag > 0 && V_Value >= 1)
+		panelToYoke = S_Value
+	endif
+
+	if(!windowExists(panelToYoke))
+		return 0
+	endif
+
+	ASSERT(cmpstr(panelToYoke,ITC1600_FIRST_DEVICE)!=0,"Can't follow the lead device")
+	
+	HSU_SetITCDACasFollower(panelTitle, panelToYoke)
+	DAP_UpdateFollowerControls(panelTitle, panelToYoke)
+	
+	EnableControl(panelTitle,"button_Hardware_RemoveYoke")
+	EnableControl(panelTitle,"popup_Hardware_YokedDACs")
+	EnableControl(panelTitle,"title_hardware_Release")
 End
 
-
-	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
-		V_disable = V_disable & ~0x2
-		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
-	endif
 //=========================================================================================
-/// DAP_ButtonProc_YokeRelease
 Function DAP_ButtonProc_YokeRelease(ctrlName) : ButtonControl
 	String ctrlName
-	String panelTitle = DAP_ReturnPanelName()
-	DAP_RemoveYokedDAC(panelTitle)
+
+	string panelToDeYoke
+	string panelTitle = DAP_ReturnPanelName()
+
+	ControlUpdate/W=$panelTitle popup_Hardware_YokedDACs
+	ControlInfo/W=$panelTitle popup_Hardware_YokedDACs
+	if(V_flag > 0 && V_Value >= 1)
+		panelToDeYoke = S_Value
+	endif
+
+	if(!windowExists(panelToDeYoke))
+		return 0
+	endif
+
+	DAP_RemoveYokedDAC(panelToDeYoke)
+	DAP_UpdateYokeControls(panelToDeYoke)
 End
 //=========================================================================================
-/// DAP_RemoveYokedDAC
-Function DAP_RemoveYokedDAC(panelTitle)
-	string panelTitle
-	controlinfo /w = $panelTitle popup_Hardware_YokedDACs
-	string panelToDeYoke =  s_value
-	string UpdatedListOfFollowerDev = removefromlist(panelToDeYoke, Path_ListOfYokedDACs(panelTitle), ";")
-	setvariable setvar_Hardware_YokeList Win = $panelTitle, value = _STR:UpdatedListOfFollowerDev // updated in panel display of yoked dacs
+
+Function DAP_RemoveYokedDAC(panelToDeYoke)
+	string panelToDeYoke
 	
-	SVAR ListOfFollowerITC1600s = $(HSU_DataFullFolderPathString(panelTitle) + ":ListOfFollowerITC1600s")
-	ListOfFollowerITC1600s = UpdatedListOfFollowerDev // updates global list of yoked dacs of the lead device
-	titlebox title_hardware_1600inst win = $panelToDeYoke, disable = 0
-	button button_Hardware_Lead1600 win = $panelToDeYoke, disable = 0
+	string leadPanel = ITC1600_FIRST_DEVICE
+
+	if(!windowExists(leadPanel))
+		return 0
+	endif
+
+	string str
+	SVAR/SDFR=$HSU_DataFullFolderPathString(leadPanel)/Z ListOfFollowerITC1600s
 	
+	if(!SVAR_Exists(ListOfFollowerITC1600s))
+		return 0
+	endif
+	
+	if(WhichListItem(panelToDeYoke,ListOfFollowerITC1600s) == -1)
+		return 0
+	endif
+	ListOfFollowerITC1600s = RemoveFromList(panelToDeYoke, ListOfFollowerITC1600s)
+
+	str = ListOfFollowerITC1600s
+	if(ItemsInList(ListOfFollowerITC1600s) == 0 )
+		// there are no more followers, disable the release button and its popup menu
+		DisableControl(leadPanel,"popup_Hardware_YokedDACs")
+		DisableControl(leadPanel,"button_Hardware_RemoveYoke")
+		KillStrings ListOfFollowerITC1600s
+		str = "No Yoked Devices"
+	endif
+	SetVariable setvar_Hardware_YokeList Win=$leadPanel, value=_STR:str
+
+	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
+
+	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
+	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
+
 	string cmd
-	string FollowerDeviceFolderPath = HSU_DataFullFolderPathString(panelToDeYoke)
-	NVAR /z FollowerITCDeviceIDGlobal = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
+	NVAR FollowerITCDeviceIDGlobal = $(HSU_DataFullFolderPathString(panelToDeYoke) + ":ITCDeviceIDGlobal")
 	sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
-	execute cmd
-	Execute "ITCInitialize /M = 0" 
-	
-	if(itemsinlist(UpdatedListOfFollowerDev, ";") < 2) // no more yoked devices - resets yoke buttons to default state (no yoked devices, only ITC1600 device 0 can be made into a lead deicve
-		 DAP_LastYokedDevRemovedSetCtrls(panelTitle)
+	Execute cmd
+	Execute "ITCInitialize /M = 0"
+End
+//=========================================================================================
+
+Function DAP_RemoveAllYokedDACs(panelTitle)
+	string panelTitle
+
+	string path = HSU_DataFullFolderPathString(panelTitle)
+
+	string panelToDeYoke, list
+	variable i, listNum
+
+	SVAR/SDFR=$path/Z ListOfFollowerITC1600s
+
+	if(!SVAR_Exists(ListOfFollowerITC1600s))
+		return 0
 	endif
+
+	list = ListOfFollowerITC1600s
+
+	// we have to operate on a copy of ListOfFollowerITC1600s as
+	// DAP_RemoveYokedDAC modifies it.
+
+	listNum = ItemsInList(list)
+
+	for(i=0; i < listNum; i+=1)
+		panelToDeYoke =  StringFromList(i, list)
+		DAP_RemoveYokedDAC(panelToDeYoke)
+	endfor
 End
 //=========================================================================================
-/// DAP_RemoveAllYokedDACs
-Function DAP_RemoveAllYokedDACs(panelTitle) // resets the lists of follower devices on the lead device
-	string panelTitle
-	string FolderPath = HSU_DataFullFolderPathString(panelTitle)
-	SVAR ListOfFollowerITC1600s = $(FolderPath + ":ListOfFollowerITC1600s")
-	string cmd
-	string DeviceToDeYoke
+
+/// Sets the lists and buttons on the follower device actively being yoked
+Function DAP_UpdateFollowerControls(panelTitle, panelToYoke)
+	string panelTitle, panelToYoke
 	
-	if(exists(FolderPath + ":ListOfFollowerITC1600s") == 2)
-		setvariable setvar_Hardware_YokeList Win = $panelTitle, value = _STR:"No Yoked ITC1600s"
-		variable i
-		do
-			DeviceToDeYoke = stringfromlist(i, ListOfFollowerITC1600s, ";")
-			string FollowerDeviceFolderPath = HSU_DataFullFolderPathString(DeviceToDeYoke)
-			NVAR /z FollowerITCDeviceIDGlobal = $(FollowerDeviceFolderPath + ":ITCDeviceIDGlobal")
-			sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
-			execute cmd
-			Execute "ITCInitialize /M = 0" 
-		
-			i += 1
-		while(i < itemsinlist(ListOfFollowerITC1600s))
-		DAP_LastYokedDevRemovedSetCtrls(panelTitle)
-		killstrings ListOfFollowerITC1600s
-	endif
+	SetVariable setvar_Hardware_Status win = $panelToYoke, value = _STR:FOLLOWER
+	EnableControl(panelToYoke,"setvar_Hardware_YokeList")
+	SetVariable setvar_Hardware_YokeList  win=$panelToYoke, value = _STR:"Lead device = " + panelTitle
+	DAP_UpdateYokeControls(panelToYoke)
 End
-//=========================================================================================
-/// DAP_SetFollowerButtons
-Function DAP_SetFollowerButtons(panelTitle) // Sets the lists and buttons on the follower device actively being yoked
-	string panelTitle
-
-	string FolderPath = HSU_DataFullFolderPathString(panelTitle)
-	string FollowerPanelTitle
-	variable itemInList = 0
-	string LeadDevice
-	variable disableState
-	
-	SVAR /z ListOfFollowerITC1600s = $(FolderPath + ":ListOfFollowerITC1600s")
-
-	if(exists(FolderPath + ":ListOfFollowerITC1600s") == 2)
-		do
-
-			if(itemsinlist(ListOfFollowerITC1600s) > 0)
-				FollowerPanelTitle = stringfromlist(itemInlist, ListOfFollowerITC1600s, ";")
-			elseif(itemsinlist(ListOfFollowerITC1600s) == 0)
-				FollowerPanelTitle = ListOfFollowerITC1600s
-			endif
-			
-			controlinfo / w = $FollowerPanelTitle setvar_Hardware_Status
-			print "V_disable =", v_disable
-			disableState = 1 | 2
-			setvariable setvar_Hardware_Status win = $FollowerPanelTitle, value = _STR:"Follower"
-			button button_Hardware_Independent Win = $FollowerPanelTitle, Disable = disableState // 2
-			button button_Hardware_Lead1600 Win = $FollowerPanelTitle, Disable =  disableState //2
-			button button_Hardware_AddFollower Win = $FollowerPanelTitle, Disable =  disableState //2
-			button button_Hardware_RemoveYoke Win = $FollowerPanelTitle, Disable =  disableState //2
-			titlebox title_hardware_Follow Win = $FollowerPanelTitle, Disable =  disableState //2
-			titlebox title_hardware_Release Win = $FollowerPanelTitle, Disable =  disableState //2
-			popupmenu popup_Hardware_AvailITC1600s Win = $FollowerPanelTitle, Disable =  disableState //2
-			popupmenu popup_Hardware_YokedDACs Win = $FollowerPanelTitle, Disable =  disableState //2
-			titlebox title_hardware_1600inst Win = $FollowerPanelTitle, Disable =  disableState //2
-			LeadDevice = "Lead device = " + panelTitle
-			controlinfo / w = $FollowerPanelTitle setvar_Hardware_YokeList
-			disableState = V_disable & ~2			
-			setvariable setvar_Hardware_YokeList  Win = $FollowerPanelTitle, Disable = disableState, value =_STR:LeadDevice			
-
-			
-			itemInlist += 1
-		while(itemInlist< itemsinlist(ListOfFollowerITC1600s))
-	endif	
-End
-//=========================================================================================
-/// DAP_LastYokedDevRemovedSetCtrls
-Function DAP_LastYokedDevRemovedSetCtrls(panelTitle) // sets the Yoke control and popup buttons on all the ITC1600 device panels to the independent state
-	string panelTitle
-	SVAR ListOfAllDACpanels = $(Path_ITCDevicesFolder(panelTitle) + ":ITCPanelTitleList")
-	string ITC1600DeviceList = listMatch(ListOfAllDACpanels, "ITC1600*", ";")
-	variable i = 0
-	variable disableState //=1 & ~0x3
-	do
-// d =0:	Normal (visible), enabled.
-// d =1:	Hidden.
-// d =2:	Visible and disabled. Drawn in grayed state, also disables action procedure.
-// d =3:	Hidden and disabled.
-
-// to switch only the enabled state, you can do this:
-// disable = V_disable & ~2 (this will enable it)
-// disable = V_disable | 2 (this will disable it)
-// to change the visible state, use 1 instead of 2 above
-
-		panelTitle = stringfromlist(i, ITC1600DeviceList, ";")
-		controlinfo /w =$panelTitle button_Hardware_Independent
-		print "v_disable =", v_disable
-
-		disableState = v_disable | 2 // makes it disabled
-		button button_Hardware_Independent Win = $panelTitle, Disable = disableState // 2
-		disableState = V_disable & ~2 // makes it enabled
-		button button_Hardware_Lead1600 Win = $panelTitle, Disable = disableState
-		controlinfo /w =$panelTitle button_Hardware_AddFollower
-
-		
-		disableState = v_disable | 2 // makes it disabled
-		button button_Hardware_AddFollower Win = $panelTitle, Disable = disableState // 2
-		popupmenu popup_Hardware_YokedDACs Win = $panelTitle, Disable = disableState // 2
-		button button_Hardware_RemoveYoke Win = $panelTitle, Disable = disableState // 2
-		titlebox title_hardware_Follow Win = $panelTitle, Disable = disableState // 2
-		titlebox title_hardware_Release Win = $panelTitle, Disable = disableState // 2
-		popupmenu popup_Hardware_AvailITC1600s Win = $panelTitle, Disable = disableState // 2
-		SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
-		controlinfo /w =$panelTitle setvar_Hardware_YokeList
-		disableState = v_disable & ~2 // makes it enabled
-		setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = disableState, value =_STR:"None"
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // makes sure yoking can only be set from ITC1600 Dev 0
-			controlinfo /w =$panelTitle button_Hardware_Lead1600
-			disableState = v_disable | 2 // makes it enabled
-			button button_Hardware_Lead1600 Win = $panelTitle, Disable = disableState // 2
-			setvariable setvar_Hardware_YokeList  Win = $panelTitle, Disable = disableState // 2
-			controlinfo /w =$panelTitle title_hardware_1600inst
-
-			disableState = v_disable & ~2 // makes it enabled
-			titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0", Disable = disableState // 0
-
-		elseif(stringmatch(panelTitle, "ITC1600_Dev_0") == 1)
-			titlebox title_hardware_1600inst Win = $panelTitle, title = "Designate the status of the ITC1600 devices:", Disable = disableState //0
-		endif	
-		i += 1
-	while(i < itemsinlist(ITC1600DeviceList, ";")) 
-End
-//=========================================================================================
-///  DAP_Set1600YokeButtons
-Function DAP_Set1600YokeButtons(panelTitle) // yoking controls are made available only on ITC1600_Dev_0
-	string panelTitle
-	SVAR ListOfAllDACpanels = $(Path_ITCDevicesFolder(panelTitle) + ":ITCPanelTitleList")
-	string ITC1600DeviceList = listMatch(ListOfAllDACpanels, "ITC1600*", ";")
-	if(itemsinlist(ITC1600DeviceList, ";") > 1)
-		DAP_LastYokedDevRemovedSetCtrls(panelTitle)
-	endif
-	
-End
-
-titlebox title_hardware_1600inst Win = $panelTitle, title = "To yoke devices go to panel: ITC1600_Dev_0"
 
 //=========================================================================================
 // FUNCTION BELOW IS FOR IMPORTING GAIN SETTINGS
