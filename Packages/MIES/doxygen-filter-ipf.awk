@@ -14,7 +14,7 @@ BEGIN{
   output=""
 }
 
-# Remove whitespace at beginning and end of string 
+# Remove whitespace at beginning and end of string
 function trim(str)
 {
   gsub(/^[[:space:]]+/,"",str)
@@ -40,9 +40,9 @@ function handleParameter(params, a, i, str)
   {
     str = str "__Param__" i " " a[i]
     if(i < numParams)
-     str = str ", " 
+     str = str ", "
   }
-  return str 
+  return str
 }
 
 {
@@ -53,7 +53,7 @@ function handleParameter(params, a, i, str)
     comment=substr($0,RSTART,RLENGTH)
   }
   else
-  { 
+  {
     code=$0
     comment=""
   }
@@ -71,31 +71,31 @@ function handleParameter(params, a, i, str)
     gsub(/function\/c/,"complex",code)
     gsub(/function\/s/,"string",code)
     gsub(/function\/d/,"variable",code)
-   
-    # add opening bracket, this also throws away any function subType 
+
+    # add opening bracket, this also throws away any function subType
     gsub(/\).*/,"){",code)
-  
+
     # do we have function parameters
     if(match(code,/\(.*[a-z]+.*\)/))
     {
       paramStr = substr(code,RSTART+1,RLENGTH-2)
-      
-      # convert optional parameters to normal parameters 
+
+      # convert optional parameters to normal parameters
       gsub(/[\[\]]/,"",paramStr)
-      
+
       paramStrWithTypes = handleParameter(paramStr, params)
       paramsToHandle = numParams
       # print "paramStr __ " paramStr
-      # print "paramStrWithTypes __ " paramStrWithTypes 
+      # print "paramStrWithTypes __ " paramStrWithTypes
       # print "paramsToHandle __ " paramsToHandle
-      
+
       code = substr(code,0,RSTART) "" paramStrWithTypes "" substr(code,RSTART+RLENGTH-1)
     }
   }
   else if(insideFunction && paramsToHandle > 0)
   {
    numEntries = splitIntoWords(code,entries)
-   
+
    # printf("Found %d words in line \"%s\"\n",numEntries,code)
     for(i=2; i <= numEntries; i++)
       for(j=1; j <= numParams; j++)
@@ -109,8 +109,8 @@ function handleParameter(params, a, i, str)
             paramType = entries[2]
           else
             paramType = entries[1]
-        
-          # add asterisk for call-by-reference parameters 
+
+          # add asterisk for call-by-reference parameters
           if(match(code,/\&/))
             paramType = paramType "*"
 
@@ -139,8 +139,8 @@ function handleParameter(params, a, i, str)
     insideStructure=0
     code = "}"
   }
- 
-  # global constants 
+
+  # global constants
   gsub("strconstant","const string",code)
   gsub("constant","const variable",code)
 
