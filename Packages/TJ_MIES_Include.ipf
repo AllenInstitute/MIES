@@ -16,6 +16,7 @@
 #include "TJ_MIES_DataBrowser"
 #include "TJ_MIES_DataConfiguratorITC"
 #include "TJ_MIES_DataManagementNew"
+#include "TJ_MIES_Downsample"
 #include "TJ_MIES_ExperimentDocumentation"
 #include "TJ_MIES_GuiUtilities"
 #include "TJ_MIES_HardwareSetUp"
