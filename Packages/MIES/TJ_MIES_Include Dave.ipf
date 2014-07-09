@@ -26,4 +26,5 @@
 #include "TJ_MIES_BackgroundTimerMD"
 #include "TJ_MIES_DataAcqMgmt"
 #include "DR_MIES_Menu"
+#include "DR_MIES_TangoInteract"
 //include "Arduino_Menu_and_IncludeFiles"

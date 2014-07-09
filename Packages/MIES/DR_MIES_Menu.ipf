@@ -19,7 +19,6 @@ Function CloseMies()
 
 	for (index = 0; index < noOfActiveWindows;index += 1)
 		string windowToClose = stringfromlist(index, activeWindows, ";")
-		KillWindow windowToClose
 		if (stringmatch(windowToClose, "waveBuilder") == 1)
 			KillWindow waveBuilder
 		elseif (stringmatch(windowToClose, "dataBrowser") == 1)

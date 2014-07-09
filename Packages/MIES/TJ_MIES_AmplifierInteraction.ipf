@@ -1,3 +1,6 @@
+/// @file TJ_MIES_ExperimentDocumentation.ipf
+/// @brief Brief description of Experiment Documentation 
+
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function /t AI_ReturnListOf700BChannels(panelTitle)
@@ -922,15 +925,40 @@ Function AI_CreateAmpParamStorageWave(panelTitle)
 	setdimlabel 0, 30, IZeroEnable, AmpStorageWave
 End
 ////==================================================================================================
-//// function to create wave of amplifier settings
+/// Brief description of the function createAmplifierSettingsWave
+/// This function to create wave of amplifier settings, and a corresponding key wave.  This wave will then be sent to the 
+/// ED_createWaveNotes to amend to the general history settings for reporting to the wave notations.
+///
+///  For the KeyWave, the wave dimensions are:
+/// row 0 - Parameter name
+/// row 1 - Unit
+/// row 2 - Text note
+///
+/// For the settings history, the wave dimensions are:
+/// Col 0 - Sweep Number
+/// Col 1 - Time Stamp
+///
+/// The history wave will use layers to report the different headstages.
+///
+/// Incoming parameters
+/// @param panelTitle -- the calling panel name, used for finding the right folder to save data in.
+/// @param SavedDataWaveName -- the wave name that the wavenotes will be amended to.
+/// @param SweepNo -- the current data wave sweep number
+///
+/// The function is called from DM_SaveITCData function, if the saveAmpSettingsCheck box is checked on the DA_Ephys panel.
+/// 
+/// The function will call the MC700B and query it for the settings and will be added to the Settings wave before it is sent off to the 
+/// ED_createWaveNotes function.
 function createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	string panelTitle
 	string SavedDataWaveName
 	Variable SweepNo
 		
-	string stringPath 
-	sprintf stringPath, "%s:channelClampMode" HSU_DataFullFolderPathString(panelTitle)
-	wave ChannelClampMode = $stringPath
+//	string stringPath 
+//	sprintf stringPath, "%s:channelClampMode" HSU_DataFullFolderPathString(panelTitle)
+//	wave ChannelClampMode = $stringPath
+
+	Wave/SDFR=$HSU_DataFullFolderPathString(panelTitle) ChannelClampMode
 		
 	// get all the Amp connection information
 	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)  	
@@ -947,7 +975,7 @@ function createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	// see if the wave exists....if so, append to it...if not, create it
 	wave /z ampSettingsWave = $ampSettingsWavePath
 	//print "Does the settings wave exist?..."
-	if (WaveExists($ampSettingsWavePath) == 0)
+	if (!WaveExists(ampSettingsWave))
 		//print "making ampSettingsWave..."
 		// create the 3 dimensional wave
 		make /o /n = (1, 16, noHeadStages ) $ampSettingsWavePath = 0
@@ -962,7 +990,7 @@ function createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	// see if the wave exists....if so, skip this part..if not, create it
 	//print "Does the key wave exist?"
 	wave/T ampSettingsKey = $ampSettingsKeyPath
-	if (WaveExists($ampSettingsKeyPath) == 0)
+	if (!WaveExists(ampSettingsKey))
 		//print "making settingsKey Wave...."
 		// create the 2 dimensional wave
 		make /T /o  /n = (3, 16) $ampSettingsKeyPath
@@ -972,6 +1000,12 @@ function createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 		// Row 1: Units	
 		// Row 2: Text notation placeholder
 			
+		// Add dimension labels to the ampSettingsKey wave
+		SetDimLabel 0, 0, Parameter, ampSettingsKey
+		SetDimLabel 0, 1, Units, ampSettingsKey
+		SetDimLabel 0, 2, TextNotation, ampSettingsKey
+		
+		// And now populate the wave
 		ampSettingsKey[0][0] =  "V-Clamp Holding Enable"
 		ampSettingsKey[1][0] =  "On/Off"
 		ampSettingsKey[2][0] =  ""
@@ -1040,82 +1074,67 @@ function createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 				string AmpSerialNumberString
 				sprintf AmpSerialNumberString, "%.8d" real(serAndChan)				
 				//print AmpSerialNumberString
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerAndChan))
 				
-				// now start to query the amp to get the status
-				//Figure out if we are looking at current clamp mode or voltage clamp mode
-				if (ChannelClampMode[ampChannel][0] == 0) // V-clamp
-				// See if the thing is enabled
-					// Save the enabled state in column 0
-					Variable vClampHoldingEnabledValue = MCC_GetHoldingEnable()
-					ampSettingsWave[0][0][headStageControlledCounter]  = vClampHoldingEnabledValue
-										
-					// Save the level in column 1
-					Variable vClampHoldingLevelValue = MCC_GetHolding()	//return the holding level
-					ampSettingsWave[0][1][headStageControlledCounter] = vClampHoldingLevelValue
-					
-					// Save the Osc Killer Enable in column 2	
-					Variable oscKillerEnabled = MCC_GetOscKillerEnable()
-					ampSettingsWave[0][2][headStageControlledCounter] = oscKillerEnabled
-					
-					// Save the RsCompBandwidth in column 3
-					Variable rsCompBandwidthValue = MCC_GetRsCompBandwidth()
-					ampSettingsWave[0][3][headStageControlledCounter] = rsCompBandwidthValue
-					
-					// Save the RsCompCorrection in column 4
-					Variable rsCompCorrValue = MCC_GetRsCompCorrection()
-					ampSettingsWave[0][4][headStageControlledCounter] = rsCompCorrValue
-					
-					// Save the RsCompEnable in column 5
-					Variable rsCompEnabledValue = MCC_GetRsCompEnable()
-					ampSettingsWave[0][5][headStageControlledCounter] =  rsCompEnabledValue
-					
-					// Save the whole cell comp in column 6
-					Variable wholeCellCompEnabled = MCC_GetWholeCellCompEnable()
-					ampSettingsWave[0][6][headStageControlledCounter] =  rsCompEnabledValue
-					
-					// Save the whole celll cap value in column 7
-					Variable wholeCellCompCapValue = MCC_GetWholeCellCompCap()
-					ampSettingsWave[0][7][headStageControlledCounter] =  wholeCellCompCapValue
-					
-					// Save the whole cell comp resist value in column 8
-					Variable wholeCellCompResistValue = MCC_GetWholeCellCompResist()
-					ampSettingsWave[0][8][headStageControlledCounter] =  wholeCellCompResistValue
-					
-				elseif (ChannelClampMode[ampChannel][0]==1) // I-Clamp
-					// Save the i clamp holding enabled in column 9
-					Variable iClampHoldingEnabledValue = MCC_GetHoldingEnable()
-					ampSettingsWave[0][9][headStageControlledCounter] =  wholeCellCompResistValue
-					
-					// Save the i clamp holding value in column 10
-					Variable iClampHoldingLevelValue = MCC_GetHolding()	//return the holding level
-					ampSettingsWave[0][10][headStageControlledCounter] =  iClampHoldingLevelValue					
-					
-					// Save the neutralization enable in column 11
-					Variable neutCapEnabled = MCC_GetNeutralizationEnable()
-					ampSettingsWave[0][11][headStageControlledCounter] =  iClampHoldingLevelValue
-					
-					// Save neut cap value in column 12					
-					Variable neutCapValue = MCC_GetNeutralizationCap()
-					ampSettingsWave[0][12][headStageControlledCounter] =  iClampHoldingLevelValue
-	
-					// save bridge balance enabled in column 13
-					Variable bridgeBalEnabledValue = MCC_GetBridgeBalEnable()
-					ampSettingsWave[0][13][headStageControlledCounter] =  iClampHoldingLevelValue
-					
-					// save bridge balance enabled in column 14
-					Variable bridgeBalResistValue = MCC_GetBridgeBalResist()
-					ampSettingsWave[0][14][headStageControlledCounter] =  iClampHoldingLevelValue					
+				if (stringmatch(ampSerialNumberString, "00000000") == 1) // amp in DemoMode
+					print "Amp is in Demo Mode!"
+				else				
+					// now start to query the amp to get the status
+					//Figure out if we are looking at current clamp mode or voltage clamp mode
+					if (ChannelClampMode[ampChannel][0] == 0) // V-clamp
+					// See if the thing is enabled
+						// Save the enabled state in column 0
+						ampSettingsWave[0][0][headStageControlledCounter]  = MCC_GetHoldingEnable()
+											
+						// Save the level in column 1
+						ampSettingsWave[0][1][headStageControlledCounter] = MCC_GetHolding()	//return the holding level
+						
+						// Save the Osc Killer Enable in column 2	
+						ampSettingsWave[0][2][headStageControlledCounter] = MCC_GetOscKillerEnable()
+						
+						// Save the RsCompBandwidth in column 3
+						ampSettingsWave[0][3][headStageControlledCounter] = MCC_GetRsCompBandwidth()
+						
+						// Save the RsCompCorrection in column 4
+						ampSettingsWave[0][4][headStageControlledCounter] = MCC_GetRsCompCorrection()
+						
+						// Save the RsCompEnable in column 5
+						ampSettingsWave[0][5][headStageControlledCounter] =   MCC_GetRsCompEnable()
+						
+						// Save the whole cell comp in column 6
+						ampSettingsWave[0][6][headStageControlledCounter] = MCC_GetWholeCellCompEnable()
+						
+						// Save the whole celll cap value in column 7
+						ampSettingsWave[0][7][headStageControlledCounter] =   MCC_GetWholeCellCompCap()
+						
+						// Save the whole cell comp resist value in column 8
+						ampSettingsWave[0][8][headStageControlledCounter] =  MCC_GetWholeCellCompResist()
+						
+					elseif (ChannelClampMode[ampChannel][0]==1) // I-Clamp
+						// Save the i clamp holding enabled in column 9
+						ampSettingsWave[0][9][headStageControlledCounter] =  MCC_GetHoldingEnable()
+						
+						// Save the i clamp holding value in column 10
+						ampSettingsWave[0][10][headStageControlledCounter] = MCC_GetHolding()	//return the holding level		
+						
+						// Save the neutralization enable in column 11
+						ampSettingsWave[0][11][headStageControlledCounter] = MCC_GetNeutralizationEnable()
+						
+						// Save neut cap value in column 12					
+						ampSettingsWave[0][12][headStageControlledCounter] =  MCC_GetNeutralizationCap()
+		
+						// save bridge balance enabled in column 13
+						ampSettingsWave[0][13][headStageControlledCounter] =   MCC_GetBridgeBalEnable()
+						
+						// save bridge balance enabled in column 14
+						ampSettingsWave[0][14][headStageControlledCounter] =  MCC_GetBridgeBalResist()					
+					endif
 				endif
 			endif
 		endif
 	endfor
 	
 	
-	// now call the function that will create the wave notes
-	// get the size of the outgoing Key Wave
-	variable outgoingKeyRowCount = DimSize(ampSettingsKey, 0)			// rows...should be 3
-	
+	// now call the function that will create the wave notes	
 	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
 	
 End

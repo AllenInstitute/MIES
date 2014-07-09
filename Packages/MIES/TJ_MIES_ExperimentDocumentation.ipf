@@ -1,3 +1,6 @@
+/// @file TJ_MIES_ExperimentDocumentation.ipf
+/// @brief Brief description of Experiment Documentation 
+
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 //=============================================================================================================
@@ -27,6 +30,31 @@ Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 	endif
 End
 
+/// Brief description of the function ED_createWaveNotes
+/// Function used to add notation of settings to an experiment DataWave.  This function
+/// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.  
+/// 
+/// For the KeyWave, the wave dimensions are:
+/// row 0 - Parameter name
+/// row 1 - Unit
+/// row 2 - Text note
+///
+/// For the settings history, the wave dimensions are:
+/// Col 0 - Sweep Number
+/// Col 1 - Time Stamp
+///
+/// The history wave will use layers to report the different headstages.
+///
+/// Incoming parameters
+/// @param incomingSettingsWave -- the settingsWave sent by the each reporting subsystem
+/// @param incomingKeyWave -- the key wave that is used to reference the incoming settings wave
+/// @param SaveDataWavePath -- the path to the data wave that will have the wave notes added to it
+/// @param SweepCounter -- the sweep number
+/// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
+///
+/// After the key wave and history settings waves are created and have new information appended to them, this function
+/// will compare the new settings to the most recent settings, and will create the wave note indicating the change in states
+/// 
 //=============================================================================================================
 Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWavePath, SweepCounter, panelTitle)
 	wave incomingSettingsWave
@@ -48,13 +76,15 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	
 	wave/Z settingsHistory = $settingsHistoryPath
 	// see if the wave exists....if so, append to it...if not, create it
-	if (WaveExists($settingsHistoryPath) == 0)
+	if (!WaveExists(settingsHistory) )
 		//print "creating settingsHistoryPath..."
 		// create the wave...just set the dimensions to give it something to build on
 		make/N = (1,2,0) $settingsHistoryPath
 		// Col 0 - Sweep Number
 		// Col 1 - Time Stamp
 		Wave settingsHistory = $settingsHistoryPath
+		SetDimLabel 1, 0, SweepNumber, settingsHistory
+		SetDimLabel 1, 1, TimeStamp, settingsHistory
 	endif
 	
 	// Locating for the keyWave
@@ -64,7 +94,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	
 	// see if the wave exists....if so, append to it...if not, create it
 	Wave/T /Z keyWave = $keyWavePath
-	if (WaveExists($keyWavePath) == 0)
+	if (!WaveExists(keyWave))
 		// create the wave...just set the dimensions to give it something to build on
 		make /T /N=(0,0,0)  $keyWavePath		
 		// row 0 - Parameter name
@@ -72,7 +102,13 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		// row 2 - Text note
 		
 		Wave/t keyWave = $keyWavePath
+		// Add dimension labels to the keyWave
+		SetDimLabel 0, 0, Parameter, keyWave
+		SetDimLabel 0, 1, Units, keyWave
+		SetDimLabel 0, 2, TextNotation, KeyWave
 	endif
+	
+	
 	
 	// get the size of the ampSettingsHistory wave
 	variable rowCount = DimSize(settingsHistory, 0)		// sweep
