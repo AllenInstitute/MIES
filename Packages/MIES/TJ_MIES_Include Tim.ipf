@@ -48,4 +48,4 @@
 #include "TJ_MIES_WaveNoteMgmnt"
 #include "TJ_MIES_TPBackgroundMD"
 #include "TJ_MIES_BackgroundTimerMD"
-#include "TJ_MIES_DataAcqMgmt
+#include "TJ_MIES_DataAcqMgmt"

@@ -196,6 +196,7 @@ End
 Function ITC_StopITCDeviceTimer(panelTitle)
 	string panelTitle
 	string CycleTimeStorageWavePathString
+
 	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
 	wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
 	string wavePath

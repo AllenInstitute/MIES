@@ -294,7 +294,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 End
 
 //=============================================================================================
-// TP_ButtonProc_DataAcq_TPMD
+/// TP_ButtonProc_DataAcq_TPMD
 Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string panelTitle

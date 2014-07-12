@@ -28,10 +28,20 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	//print cmd
 	execute cmd
+	
+
+
 	do
 
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
+
+		controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+		variable RepeatedAcqOnOrOff = v_value
+		if(RepeatedAcqOnOrOff == 1)
+			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		endif
+
 		sprintf cmd, "ITCStartAcq"// /f/r=0/z=0 -1,0,1,1"//   
 		Execute cmd	
 			do
@@ -96,6 +106,18 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 		execute cmd
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
+	
+	
+	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+	variable RepeatedAcqOnOrOff = v_value
+	if(RepeatedAcqOnOrOff == 1)
+		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+	endif
+
+	
+	
+	
+	
 	sprintf cmd, "ITCStartAcq" 
 		Execute cmd	
 	ITC_StartBckgrdFIFOMonitor()
