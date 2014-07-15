@@ -220,45 +220,46 @@ Function ITC_FinishTestPulseMD(panelTitle)
 End
 
 //Function ITC_YokedFinishTestPulseMD(panelTitle)
-	string panelTitle
-	variable i = 0
-	variable deviceType = 0
-	
-	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
-	if(ITC1600True == 1)
-		deviceType = 2
-	endif
- 
-    if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
-        string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-        SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-        if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-            variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
-            if(numberOfFollowerDevices != 0) 
-                string followerPanelTitle
-			 ITC_FinishTestPulseMD(panelTitle)
-                do
-                    followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-                    ITC_FinishTestPulseMD(followerPanelTitle)
-                   
-                    i += 1
-                while(i < numberOfFollowerDevices)
+// 	string panelTitle
+// 	variable i = 0
+// 	variable deviceType = 0
+// 	
+// 	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
+// 	if(ITC1600True == 1)
+// 		deviceType = 2
+// 	endif
+//  
+//     if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
+//         string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
+//         SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
+//         if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+//             variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+//             if(numberOfFollowerDevices != 0) 
+//                 string followerPanelTitle
+// 			 ITC_FinishTestPulseMD(panelTitle)
+//                 do
+//                     followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+//                     ITC_FinishTestPulseMD(followerPanelTitle)
+//                    
+//                     i += 1
+//                 while(i < numberOfFollowerDevices)
+// 
+//                 
+//             elseif(numberOfFollowerDevices == 0)
+//                 ITC_FinishTestPulseMD(panelTitle)
+//                
+//             endif
+//         elseif(exists(pathToListOfFollowerDevices) == 0)
+//             ITC_FinishTestPulseMD(panelTitle)
+//          
+//         endif
+//     elseif(DeviceType != 2)
+//             ITC_FinishTestPulseMD(panelTitle)
+//         
+//     endif
+//     
+// End
 
-                
-            elseif(numberOfFollowerDevices == 0)
-                ITC_FinishTestPulseMD(panelTitle)
-               
-            endif
-        elseif(exists(pathToListOfFollowerDevices) == 0)
-            ITC_FinishTestPulseMD(panelTitle)
-         
-        endif
-    elseif(DeviceType != 2)
-            ITC_FinishTestPulseMD(panelTitle)
-        
-    endif
-    
-End
 //======================================================================================
 Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test pulse on a particular panel
 	string panelTitle

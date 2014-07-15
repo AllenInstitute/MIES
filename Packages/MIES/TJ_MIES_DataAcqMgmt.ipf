@@ -2,7 +2,7 @@
 
 // DATA ACQ MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 
-/// @Brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s. 
+/// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
 /// @param WavePath WavePath is a string that contains the path to the device file folder
 /// @param TriggerMode Trigger mode is either 0 or 256. 256 causes the ITC1600 to wait for the external trigger (5V signal to the PCI card). 0 is used to bin all aquisition immediately on all ITC devies.
 /// @param DataAcqOrTP DataAcqOrTP is used to indicate wether data aquistion or a testpulse is ongoing. 0 = Data acquistion. 1 = TP. Certain function handle data acq and Tp slightly differently.

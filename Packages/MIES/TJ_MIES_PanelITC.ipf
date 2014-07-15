@@ -2347,7 +2347,7 @@ EndMacro
 
 //=========================================================================================
 
-///@Brief Restores the base state of the DA_Ephys panel.
+///@brief Restores the base state of the DA_Ephys panel.
 
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
