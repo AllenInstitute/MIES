@@ -83,8 +83,15 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	Newdatafolder /o $FullFolderPath
 	Newdatafolder /o $FullFolderPath+":Data"
 	Newdatafolder /o $FullFolderPath+":TestPulse"
-	Newdatafolder /o $BaseFolderPath+":LabNoteBook:" + panelTitle + ":KeyWave"
-	Newdatafolder /o $BaseFolderPath+":LabNoteBook:" + panelTitle + ":settingsHistory"
+	
+	string DeviceType = stringfromlist(itemsinlist(FullFolderPath, ":") - 2,  FullFolderPath, ":")
+	string DeviceNum = stringfromlist(itemsinlist(FullFolderPath, ":") - 1,  FullFolderPath, ":")
+	
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":KeyWave"
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":settingsHistory"
+	
 End
 //==================================================================================================
 
