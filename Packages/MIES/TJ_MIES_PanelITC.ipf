@@ -2355,7 +2355,7 @@ EndMacro
 
 //=========================================================================================
 
-///@Brief Restores the base state of the DA_Ephys panel.
+///@brief Restores the base state of the DA_Ephys panel.
 
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
@@ -2955,9 +2955,21 @@ Function DAP_UpdateAllYokeControls()
 	endfor
 End
 
+Function DAP_GetTabNumber(panelTitle)
+	string panelTitle
+
+	ControlInfo/W=$panelTitle ADC
+	ASSERT(V_flag > 0,"Missing control ADC")
+	return V_value
+End
+
 //=========================================================================================
 Function DAP_UpdateYokeControls(panelTitle)
 	string panelTitle
+
+	if(DAP_GetTabNumber(panelTitle) != HARDWARE_TAB_NUM)
+		return NaN
+	endif
 
 	if(!DAP_DeviceIsYokeable(panelTitle))
 		HideListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
@@ -2979,9 +2991,7 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	if(tca.tab == HARDWARE_TAB_NUM)
-		DAP_UpdateYokeControls(tca.win)
-	endif
+	DAP_UpdateYokeControls(tca.win)
 End
 
 /// This is a function that gets run by ACLight's tab control function every time a tab is selected,

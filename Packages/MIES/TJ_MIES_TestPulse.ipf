@@ -200,7 +200,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 End
 
 
-mV and pA = Mohm
+// mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string panelTitle
@@ -346,12 +346,12 @@ End // Function
 
 //=============================================================================================
 // Calculate input resistance simultaneously on array so it is fast
-	controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
-	PulseDuration = (v_value / 0.005)
-	redimension /n = (2 * PulseDuration) TestPulse
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-	TestPulse[(PulseDuration / 2),(Pulseduration + (PulseDuration / 2))] = v_value
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+// controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
+// PulseDuration = (v_value / 0.005)
+// redimension /n = (2 * PulseDuration) TestPulse
+// controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
+// TestPulse[(PulseDuration / 2),(Pulseduration + (PulseDuration / 2))] = v_value
+// string WavePath = HSU_DataFullFolderPathString(panelTitle)
 
 //The function TPDelta is called by the TP dataaquistion functions
 //It updates a wave in the Test pulse folder for the device
