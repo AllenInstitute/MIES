@@ -1594,7 +1594,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 //		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist("*DA*", ";", "") + "\""
 //		ListOfWaves = Wavelist("*DA*", ";", "")
 		DAorTTL = 0 // "DA"
-		DAorTTLt = "DA"
+		DAorTTLt = "*DA*"
 	else
 		ctrlName0 = "Wave_TTL_"
 		ctrlName1 = "Popup_TTL_IndexEnd_"
@@ -1603,7 +1603,7 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 //		ListOfWavesInFolder = "\"- none -;\""  + "+" + "\"" + Wavelist("*TTL*" , ";", "") + "\""
 //		ListOfWaves = Wavelist("*TTL*" , ";", "")
 		DAorTTL = 1 //  "TTL"
-		DAorTTLt = "TTL"
+		DAorTTLt = "*TTL*"
 	endif
 
 	do
@@ -1616,6 +1616,8 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)// Used after a new set has been sa
 			ctrlName0d += num2str(i)
 			ctrlName1d += num2str(i)
 		endif
+		print ctrlName0d
+		print DAorTTL, DAorTTLt
 		//PopupMenu  $ctrlName0d win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenuExp) = ListOfWaves
 		PopupMenu  $ctrlName0d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
 		//controlupdate /w = $panelTitle $ctrlname0d
