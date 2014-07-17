@@ -254,41 +254,41 @@ End
 
 //==================================================================================================
 //Function AI_CreateAmpDataStorageWave(panelTitle)
-	string panelTitle
-	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
-	string AmpStorageWaveWaveName
-	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
-	make /o /n = (26, 2, 8) $AmpStorageWaveWaveName
-	wave AmpStorageWave = $AmpStorageWaveWaveName
-	setdimlabel 1, 0, VClamp, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
-	setdimlabel 1, 1, IClamp, AmpStorageWave // labels column 1 (of all layers) with the heading IClamp
-	setdimlabel 0, 0, StructureVersion, AmpStorageWave
-	setdimlabel 0, 1, SerialNum, AmpStorageWave
-	setdimlabel 0, 2, ChannelID, AmpStorageWave
-	setdimlabel 0, 3, ComPortID, AmpStorageWave
-	setdimlabel 0, 4, AxoBusID, AmpStorageWave
-	setdimlabel 0, 5, OperatingMode, AmpStorageWave
-	setdimlabel 0, 6, ScaledOutSignal, AmpStorageWave
-	setdimlabel 0, 7, Alpha, AmpStorageWave
-	setdimlabel 0, 8, ScaleFactor, AmpStorageWave
-	setdimlabel 0, 9, ScaleFactorUnits, AmpStorageWave
-	setdimlabel 0, 10, LPFCutoff, AmpStorageWave
-	setdimlabel 0, 11, ExtCmdSens, AmpStorageWave
-	setdimlabel 0, 12, RawOutSignal, AmpStorageWave
-	setdimlabel 0, 13, RawScaleFactor, AmpStorageWave
-	setdimlabel 0, 14, RawScaleFactorUnits, AmpStorageWave
-	setdimlabel 0, 15, HardwareType, AmpStorageWave
-	setdimlabel 0, 16, SecondaryLPFCutoff, AmpStorageWave
-	setdimlabel 0, 17, SeriesResistance, AmpStorageWave
-	setdimlabel 0, 18, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 19, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 20, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 21, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 22, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 23, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 24, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 25, PlaceHolder, AmpStorageWave
-End
+// 	string panelTitle
+// 	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
+// 	string AmpStorageWaveWaveName
+// 	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
+// 	make /o /n = (26, 2, 8) $AmpStorageWaveWaveName
+// 	wave AmpStorageWave = $AmpStorageWaveWaveName
+// 	setdimlabel 1, 0, VClamp, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
+// 	setdimlabel 1, 1, IClamp, AmpStorageWave // labels column 1 (of all layers) with the heading IClamp
+// 	setdimlabel 0, 0, StructureVersion, AmpStorageWave
+// 	setdimlabel 0, 1, SerialNum, AmpStorageWave
+// 	setdimlabel 0, 2, ChannelID, AmpStorageWave
+// 	setdimlabel 0, 3, ComPortID, AmpStorageWave
+// 	setdimlabel 0, 4, AxoBusID, AmpStorageWave
+// 	setdimlabel 0, 5, OperatingMode, AmpStorageWave
+// 	setdimlabel 0, 6, ScaledOutSignal, AmpStorageWave
+// 	setdimlabel 0, 7, Alpha, AmpStorageWave
+// 	setdimlabel 0, 8, ScaleFactor, AmpStorageWave
+// 	setdimlabel 0, 9, ScaleFactorUnits, AmpStorageWave
+// 	setdimlabel 0, 10, LPFCutoff, AmpStorageWave
+// 	setdimlabel 0, 11, ExtCmdSens, AmpStorageWave
+// 	setdimlabel 0, 12, RawOutSignal, AmpStorageWave
+// 	setdimlabel 0, 13, RawScaleFactor, AmpStorageWave
+// 	setdimlabel 0, 14, RawScaleFactorUnits, AmpStorageWave
+// 	setdimlabel 0, 15, HardwareType, AmpStorageWave
+// 	setdimlabel 0, 16, SecondaryLPFCutoff, AmpStorageWave
+// 	setdimlabel 0, 17, SeriesResistance, AmpStorageWave
+// 	setdimlabel 0, 18, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 19, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 20, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 21, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 22, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 23, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 24, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 25, PlaceHolder, AmpStorageWave
+// End
 
 //==================================================================================================
 // BELOW ARE COMMAND THAT SEND PARAMETERS, OR ENABLE CONTROLS ON THE MCC PANEL

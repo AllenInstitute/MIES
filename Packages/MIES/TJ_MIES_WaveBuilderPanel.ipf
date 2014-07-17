@@ -1284,16 +1284,14 @@ Function WBP_RemoveAndKillWavesOnGraph(GraphName)
 End
 
 
-string myString = "root:foo1:foo2:waveName"
-whoops..make that
-Make $myString
-WAVE myWave = $myString
-
-
-DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-SetDataFolder root:someFolder
-String listOfWaves = WaveList("*", ";", "")
-SetDataFolder saveDFR
+// string myString = "root:foo1:foo2:waveName"
+// whoops..make that
+// Make $myString
+// WAVE myWave = $myString
+// DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+// SetDataFolder root:someFolder
+// String listOfWaves = WaveList("*", ";", "")
+// SetDataFolder saveDFR
 
 //if you don't create a wave reference, when you use a wave name that wave must either be in the current DF or you must provide the full path to the wave
 //and in either of those cases, Igor has to parse the name and look at all waves in the data folder to find the one you want

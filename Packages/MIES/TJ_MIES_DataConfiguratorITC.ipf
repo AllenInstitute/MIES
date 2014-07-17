@@ -539,10 +539,10 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 					endif
 					ITCDataWave[TPStartPoint, TPEndPoint][j] = TPAmp * DAGain
 				endif
-				// i is the DA channel number 
+
 			endif
+			// i is the DA channel number 
 			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
-			
 		endif
 		i += 1
 	while(i < (itemsinlist(ChannelStatus,";")))

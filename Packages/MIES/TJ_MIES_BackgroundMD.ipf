@@ -1,9 +1,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 	//Reinitialize Device 1 with intrabox clock
-	Execute "ITCInitialize /M = 1"
-	Execute "ITCStartAcq 1, 256"
- Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+	// Execute "ITCInitialize /M = 1"
+	// Execute "ITCStartAcq 1, 256"
+ 
+Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
 	variable DeviceType, DeviceNum, TriggerMode
 	string panelTitle
 //	Variable start = stopmstimer(-2)
@@ -365,35 +366,35 @@ End // Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddorRemoveDevice)
 //=============================================================================================================================
 
 //Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
-	String panelTitle
-	Variable TPorDataAcq
-	Variable Add_Remove // 1 to add a device; -1 to remove a device
-	
-	if (TPorDataAcq == 0) 
-		if(NVAR_Exists(ActiveTPDevices)==0) // creates global if it does not exist.
-			Variable /G ActiveTPDevices = 0
-		endif
-	
-		NVAR ActiveTPDevices
-		ActiveTPDevices += Add_Remove // Updates global to reflect the number of active devices
-		
-		if (ActiveTPDevices < 0) // Check to ensure the number of active devices is never less than 0
-			ActiveTPDevices = 0
-		endif
-	
-	elseif (TPorDataAcq == 1)
-			if(NVAR_Exists(ActiveDataAcqDevices)==0) // creates global if it does not exist.
-			Variable /G ActiveDataAcqDevices = 0
-		endif
-	
-		NVAR ActiveDataAcqDevices
-		ActiveDataAcqDevices += Add_Remove // Updates global to reflect the number of active devices
-		
-		if (ActiveDataAcqDevices < 0) // Check to ensure the number of active devices is never less than 0
-			ActiveDataAcqDevices = 0
-		endif
-	endif
-	
-End // Function GlobalActiveDevCountUpdate(panelTitle)
+// 	String panelTitle
+// 	Variable TPorDataAcq
+// 	Variable Add_Remove // 1 to add a device; -1 to remove a device
+// 	
+// 	if (TPorDataAcq == 0) 
+// 		if(NVAR_Exists(ActiveTPDevices)==0) // creates global if it does not exist.
+// 			Variable /G ActiveTPDevices = 0
+// 		endif
+// 	
+// 		NVAR ActiveTPDevices
+// 		ActiveTPDevices += Add_Remove // Updates global to reflect the number of active devices
+// 		
+// 		if (ActiveTPDevices < 0) // Check to ensure the number of active devices is never less than 0
+// 			ActiveTPDevices = 0
+// 		endif
+// 	
+// 	elseif (TPorDataAcq == 1)
+// 			if(NVAR_Exists(ActiveDataAcqDevices)==0) // creates global if it does not exist.
+// 			Variable /G ActiveDataAcqDevices = 0
+// 		endif
+// 	
+// 		NVAR ActiveDataAcqDevices
+// 		ActiveDataAcqDevices += Add_Remove // Updates global to reflect the number of active devices
+// 		
+// 		if (ActiveDataAcqDevices < 0) // Check to ensure the number of active devices is never less than 0
+// 			ActiveDataAcqDevices = 0
+// 		endif
+// 	endif
+// 	
+// End // Function GlobalActiveDevCountUpdate(panelTitle)
 //=============================================================================================================================
 
