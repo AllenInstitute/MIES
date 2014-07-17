@@ -30,6 +30,8 @@ Function DM_SaveITCData(panelTitle)
 	variable saveAmpSettingsCheck = v_value
 	if (saveAmpSettingsCheck == 1)
 		createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+		// this is a test function....to be deleted in production version
+		// createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	endif
 	
 	controlinfo /w = $panelTitle Check_Settings_Append
