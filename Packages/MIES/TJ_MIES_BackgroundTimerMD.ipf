@@ -185,8 +185,8 @@ Function ITC_StartITCDeviceTimer(panelTitle)
 	if(waveexists($CycleTimeStorageWavePathString) == 0)
 		make /o /n =10 $CycleTimeStorageWavePathString // the size of the wave is limited by the number of igor timers. This will also limit the number of simultaneously active devices possible to 10
 		wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
-		setDimLabel 1, 0, TimerNumber, CycleTimeStorageWave
-		setDimLabel 0, -1, DeviceIDGlobal, CycleTimeStorageWave
+//		setDimLabel 1, 0, TimerNumber, CycleTimeStorageWave
+//		setDimLabel 0, -1, DeviceIDGlobal, CycleTimeStorageWave
 	endif
 	
 	CycleTimeStorageWave[ITCDeviceIDGlobal] = startmstimer // inserts the timer number into the row that corresponds to the device ID global

@@ -761,7 +761,7 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
 		exponent = 17
 	endif 
-	print "exponent =", exponent
+//	print "exponent =", exponent
 	make /FREE /n = (2 ^ exponent)  BuildWave
 //	make /o /n = (2 ^ exponent)  BuildWave
 

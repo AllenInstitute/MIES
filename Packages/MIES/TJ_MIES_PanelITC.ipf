@@ -3550,11 +3550,18 @@ Function DAP_CheckForSetOnActiveChannel(panelTitle, DAorTTL, WaveOrPopup, Channe
 	// DA cross checking
 	string ChannelStatusLIst = DC_ControlStatusListString(DAorTTL, "Check",panelTitle)  // controltype, channeltype
 	string ListNoOfPopupSelections = DC_ControlStatusListString(ChannelType, WaveOrPopup, panelTitle)
-
+	
+	variable MinChanSelection
+	if(stringmatch(DAorTTL, "DA") == 1)
+	MinChanSelection = 3
+	elseif(stringmatch(DAorTTL, "TTL") == 1)
+	MinChanSelection = 2
+	endif 
+	
 	for(i = 0; i < itemsinlist(ChannelStatusLIst); i += 1)
 		channelStatus = str2num(stringfromlist(i, ChannelStatusLIst, ";"))
 		channelSelection =  str2num(stringfromlist(i, ListNoOfPopupSelections, ";"))
-		if(ChannelStatus == 1 && ChannelSelection < 3)
+		if(ChannelStatus == 1 && ChannelSelection < MinChanSelection)
 			ChannelWithoutSetYesOrNo = 1
 			return ChannelWithoutSetYesOrNo
 		endif				
@@ -3684,7 +3691,7 @@ Function DAP_RestoreTTLState(panelTitle)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
 
-	killstrings StoredTTLState
+	// killstrings StoredTTLState
 End
 //=========================================================================================
 /// DAP_ButtonProc_TTLOff

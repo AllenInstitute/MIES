@@ -215,6 +215,8 @@ Function ITC_FinishTestPulseMD(panelTitle)
 		V_disable = V_disable & ~0x2
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
+	
+	DAP_RestoreTTLState(panelTitle)
 	// killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
 	// killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
@@ -290,8 +292,8 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 		if (dimsize(ActiveDeviceTextList, 0) == 0) 
 			CtrlNamedBackground TestPulseMD, stop
-			print "Stopping test pulse"
-			ITC_FinishTestPulseMD(panelTitle) // makes appropriate updated to locked DA ephys panel following termination of the TP
+			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
+			ITC_FinishTestPulseMD(panelTitle) // makes appropriate updated to locked DA ephys panel following termination of the TP, ex. enables TP button
 		endif
 	endif
 End

@@ -467,7 +467,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 //				print v_value
 //				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
 //			endif		
-			print panelTitle,setvardascale
+//			print panelTitle,setvardascale
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
 			// print "DA scale =",DAScale

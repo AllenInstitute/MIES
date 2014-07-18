@@ -287,6 +287,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		//killwaves/f TestPulse
 	else
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
+		ITC_StopITCDeviceTimer(panelTitle)
 		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
@@ -309,6 +310,7 @@ Function RA_StartMD(panelTitle)
 	string CountPathString
 	sprintf  CountPathString, "%s:Count"  WavePath
 	variable /g $CountPathString = 0
+	print "count global variable was created here:",CountPathString
 	NVAR Count = $CountPathString
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -346,7 +348,7 @@ Function RA_StartMD(panelTitle)
 				string followerPanelTitle
 				variable followerTotTrials
 				
-				do
+				do // handles status update of variables that are used for indexing on follower devices
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					print "follower panel title =", followerPanelTitle
 					
@@ -362,7 +364,7 @@ Function RA_StartMD(panelTitle)
 					endif
 				
 					TotTrials = max(TotTrials, followerTotTrials)
-					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count))
+					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count)) // updates a status value on follower panels
 					
 					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 					sprintf  CountPathString, "%s:Count"  WavePath
@@ -385,9 +387,10 @@ Function RA_StartMD(panelTitle)
 	
 //	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 //	IndexingState = v_value
-	//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+//	Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 	StartTestPulse(deviceType, deviceNum, panelTitle)  // 
+	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
 	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
 	// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 	// wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
@@ -427,7 +430,7 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 		TotTrials = v_value
 	endif
 	//print "TotTrials = " + num2str(tottrials)
-	print "count = " + num2str(count), "in RA_Counter"
+	print "count = " + num2str(count), "in RA_CounterMD"
 	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 	//TotTrials = (TotTrials * v_value) + 1
 	
@@ -600,10 +603,10 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
 						followerTotTrials = v_value
 					endif
-					print "followerTotTrials =", followerTotTrials
-					print "totalTrials BEFORE MAX =", TotTrials
+//					print "followerTotTrials =", followerTotTrials
+//					print "totalTrials BEFORE MAX =", TotTrials
 					TotTrials = max(TotTrials, followerTotTrials)
-					print "totalTrials AFTER MAX =", TotTrials
+//					print "totalTrials AFTER MAX =", TotTrials
 					// ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count))
 					i += 1
 			
@@ -637,7 +640,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		Killvariables Count
-		
+		ITC_StopITCDeviceTimer(panelTitle)
 		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 			//numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // there are followers

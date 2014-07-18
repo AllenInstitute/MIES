@@ -33,11 +33,12 @@ Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if
 
 	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
 	variable RepeatedAcqOnOrOff = v_value
-	if(RepeatedAcqOnOrOff == 1)
-		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
-	endif
+
 	
 	if(TriggerMode == 0)
+		if(RepeatedAcqOnOrOff == 1)
+			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		endif
 		Execute "ITCStartAcq" 
 	elseif(TriggerMode > 0)
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
@@ -192,10 +193,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
-		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
+		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps, one for saved waves, one for the oscilloscope
 	endif
 	
-	 DM_ScaleITCDataWave(panelTitle)
+	DM_ScaleITCDataWave(panelTitle)
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
