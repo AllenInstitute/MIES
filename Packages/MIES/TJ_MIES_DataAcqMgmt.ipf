@@ -22,9 +22,14 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	variable DataAcqOrTP = 0 // data acq, not TP
 	DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
 	SCOPE_UpdateGraph(ITCDataWave, panelTitle)
+
 	
 	if(DeviceType == 2) // starts data acquisition for ITC1600 devices
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // allows ITC1600 devices that are not device 0 to work independently
+		controlinfo /w = $panelTitle setvar_Hardware_Status
+		string ITCDACStatus = s_value	
+		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
+		// if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // allows ITC1600 devices that are not device 0 to work independently
+			print "Data Acq started on independent ITC1600"
 			ITC_ConfigUploadDAC(panelTitle)
 			ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
 		elseif(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) // it is ITC1600 device 0; potentially the lead device for a group of yoked devices
@@ -138,7 +143,11 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	variable NewNoOfPoints
 
 	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // if the device being started isn't device 0, then it isn't a yoked device. Therefore it starts on its own.
+		controlinfo /w = $panelTitle setvar_Hardware_Status
+		string ITCDACStatus = s_value	
+		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
+//		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // if the device being started isn't device 0, then it isn't a yoked device. Therefore it starts on its own.
+			print "TP Started on independent ITC1600"
 			TP_TPSetUp(panelTitle)
 			ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle) // START TP DATA ACQUISITION
 			wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
@@ -229,7 +238,11 @@ Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simul
 		deviceType = 2
 	endif
 	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0)
+		controlinfo /w = $panelTitle setvar_Hardware_Status
+		string ITCDACStatus = s_value	
+		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
+//		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0)
+			print "Data Acquisition stopped on independent ITC1600"
 			DAP_StopOngoingDataAcqMD(panelTitle)
 		elseif(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) 
 			string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
@@ -272,7 +285,7 @@ string panelTitle
 variable i = 0
 variable deviceType = 0
 variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
-print "ITCStopTP panel title = panelTitle:", panelTitle
+//print "ITCStopTP panel title = panelTitle:", panelTitle
 if(ITC1600True == 1)
 	deviceType = 2
 endif
@@ -282,6 +295,7 @@ if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
 	string ITCDACStatus = s_value	
 	    if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0)  
 	    // if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0)
+	    	print "TP stopped on independent ITC1600"
           	ITC_StopTPMD(panelTitle)
            	ITC_FinishTestPulseMD(panelTitle)
       else // if(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) 
@@ -419,7 +433,7 @@ Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only
 	    	controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 	    	if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) // checks for ITC1600s of device numbers 1 or greater that are not followers
-			print "OOOOPS"
+			print "RA started on independent ITC1600"
 			RA_StartMD(panelTitle)
 	      else // receives any follower ITC1600s or Lead ITC1600 // if(stringmatch(panelTitle, "ITC1600_Dev_*") == 1) // prevents data acquistion from being run on follower device first before another device has 
 			string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s" // looks it ITC1600 device 0 folder
