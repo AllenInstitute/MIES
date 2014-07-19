@@ -1,4 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma IgorVersion=6.3
 
 // third party includes
 #include "ACL_TabUtilities"
