@@ -127,14 +127,9 @@ Function ARDInitialiseSeqGlobals()		// Launches the globals required
 	Variable/G gActiveInputPin = Nan
 	
 	String/G gProtocolListStr = ""
-	
-	String UserPath = SpecialDirPath("Igor Pro User Files", 0, 0, 0)
-	String ArdSeqPathStr = ""
-	sprintf ArdSeqPathStr, "%sArduino:Sequence Files:", UserPath
-	if (strlen(PathList("ArdSeqPath", ";", ""))==0)	// then the path doesn't exist
-		NewPath ArdSeqPath, ArdSeqPathStr
-	else
-	endif
+
+	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
+	NewPath/O ArdSeqPath, ArdSeqPathStr
 	gProtocolListStr = IndexedFile(ArdSeqPath,-1,".ibw")
 	
 	Make /O/N=1 wp2,wp3,wp4,wp5,wp6,wp7,wp8,wp9,wp10,wp11,wp12,wp13
@@ -216,13 +211,10 @@ Function ARDSaveSeqWave(FileNameStr)
 	String FileNameStr
 	sprintf FileNameStr, "%s.ibw", FileNameStr
 	String cdf = getdatafolder(1)
-	String UserPath = SpecialDirPath("Igor Pro User Files", 0, 0, 0)
-	String ArdSeqPathStr = ""
-	sprintf ArdSeqPathStr, "%sArduino:Sequencer", UserPath
-	if (strlen(PathList("ArdSeqPath", ";", ""))==0)	// then the path doesn't exist
-		NewPath ArdSeqPath, ArdSeqPathStr
-	else
-	endif
+
+	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
+	NewPath/O ArdSeqPath, ArdSeqPathStr
+
 	SetDataFolder root:ImageHardware:Arduino 
 	Wave wSeqDefaults =wSeqDefaults
 	Save/O/P=ArdSeqPath wSeqDefaults as FileNameStr
@@ -231,14 +223,9 @@ End
 
 Function ARDSaveCurrentSeqWave()
 	Wave wSeqDefaults = root:ImageHardware:Arduino:wSeqDefaults
-	// should update the list of waves in the relevant directory
-	String UserPath = SpecialDirPath("Igor Pro User Files", 0, 0, 0)
-	String ArdSeqPathStr = ""
-	sprintf ArdSeqPathStr, "%sArduino:Sequencer", UserPath
-	if (strlen(PathList("ArdSeqPath", ";", ""))==0)	// then the path doesn't exist
-		NewPath ArdSeqPath, ArdSeqPathStr
-	else
-	endif
+
+	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
+	NewPath/O ArdSeqPath, ArdSeqPathStr
 
 	Variable tmpVar
 	String FilterStr = "Igor Binary Files (*.ibw):.ibw;"
@@ -268,14 +255,10 @@ Function ARDLoadSeqWave()
 		NewDataFolder Arduino
 	endif
 	SetDataFolder Arduino
-	
-	String UserPath = SpecialDirPath("Igor Pro User Files", 0, 0, 0)
-	String ArdSeqPathStr = ""
-	sprintf ArdSeqPathStr, "%sArduino:Sequencer", UserPath
-	if (strlen(PathList("ArdSeqPath", ";", ""))==0)	// then the path doesn't exist
-		NewPath ArdSeqPath, ArdSeqPathStr
-	else
-	endif
+
+	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
+	NewPath/O ArdSeqPath, ArdSeqPathStr
+
 	Loadwave/H/O
 	SetDataFolder $cdf
 End
@@ -864,15 +847,10 @@ Function ARDLoadNamedProtocol(FileNameStr)
 		NewDataFolder Arduino
 	endif
 	SetDataFolder Arduino
-	
-	String UserPath = SpecialDirPath("Igor Pro User Files", 0, 0, 0)
-	String ArdSeqPathStr = ""
-	sprintf ArdSeqPathStr, "%sArduino:Sequencer", UserPath
-	if (strlen(PathList("ArdSeqPath", ";", ""))==0)	// then the path doesn't exist
-		NewPath ArdSeqPath, ArdSeqPathStr
-	else
-	endif
-	
+
+	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
+	NewPath/O ArdSeqPath, ArdSeqPathStr
+
 	Loadwave/H/O/P=ArdSeqPath FileNameStr
 	
 	SetDataFolder $cdf
