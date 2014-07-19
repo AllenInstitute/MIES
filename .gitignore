@@ -1,3 +1,4 @@
-Packages/doc/*
-Packages/MIES/TJ_MIES_PanelITC.ipf.orig
-Packages/MIES/TJ_MIES_PanelITC.ipfT0
+Packages/doc
+*.orig
+*.rej
+*.T0
