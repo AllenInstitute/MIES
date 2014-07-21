@@ -1327,23 +1327,27 @@ Function ARDInitialise(Quiet)
 	Variable Counter
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
-	VDTOperationsPort2 $ards.gWhichComStr
-	VDT2 baud=115200
-	VDT2 killio
-	For (Counter = 0; Counter < 5; Counter +=1)
-		VDTWrite2 /O=0.1 "2;"	// a value of 2 should elicit a response of 1,Arduino ready;
-		VDTRead2 /N=255 /O=0.1 /Q /T=";"ArduinoStr
-		ards.gVDT2Message = ArduinoStr
-		if (stringmatch(ArduinoStr,"*1,Arduino ready*") == 1)
-			sprintf  ards.gMessageStr, "Arduino Initialised on attempt %g", Counter
-			if (Quiet != 1)	// then print the message
-				printf "Arduino Initialised on attempt %g\r", Counter
+
+	if(strlen(ards.gWhichComStr) > 0 && CmpStr(ards.gWhichComStr,"None") != 0)
+		VDTOperationsPort2 $ards.gWhichComStr
+		VDT2 baud=115200
+		VDT2 killio
+		For (Counter = 0; Counter < 5; Counter +=1)
+			VDTWrite2 /O=0.1 "2;"	// a value of 2 should elicit a response of 1,Arduino ready;
+			VDTRead2 /N=255 /O=0.1 /Q /T=";"ArduinoStr
+			ards.gVDT2Message = ArduinoStr
+			if (stringmatch(ArduinoStr,"*1,Arduino ready*") == 1)
+				sprintf  ards.gMessageStr, "Arduino Initialised on attempt %g", Counter
+				if (Quiet != 1)	// then print the message
+					printf "Arduino Initialised on attempt %g\r", Counter
+				else
+				endif
+				Return 1
 			else
 			endif
-			Return 1
-		else
-		endif
-	EndFor
+		EndFor
+	endif
+
 	sprintf ards.gMessageStr, "Arduino failed to respond"
 	Return -1 	
 End
