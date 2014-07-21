@@ -91,7 +91,8 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum
 	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":KeyWave"
 	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":settingsHistory"
-	
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":textDocKeyWave"
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":textDocumentation"
 End
 //==================================================================================================
 

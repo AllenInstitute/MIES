@@ -80,7 +80,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	
 	// Location for the settings wave
 	String settingsHistoryPath
-	sprintf settingsHistoryPath, "%s:%s" labNoteBookFolder, "settingsHistory"
+	sprintf settingsHistoryPath, "%s:%s" labNoteBookFolder, "settingsHistory:settingsHistory"
 //	print "settingsHistoryPath: ", settingsHistoryPath
 	
 	wave/Z settingsHistory = $settingsHistoryPath
@@ -98,7 +98,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	
 	// Locating for the keyWave
 	String keyWavePath
-	sprintf keyWavePath, "%s:%s"  labNoteBookFolder, "keyWave"
+	sprintf keyWavePath, "%s:%s"  labNoteBookFolder, "keyWave:keyWave"
 //	print "keyWavePath: ", keyWavePath
 	
 	
@@ -309,7 +309,16 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 //	print "new Col Count: ", colCount
 	rowIndex = rowCount - 1
 	//print "rowIndex: ", rowIndex
-		
+	
+	// set dimlabels for every column of the settingsHistory wave and the key wave
+	// define dimLabel counter
+	variable dimLabelCounter
+	for (dimLabelCounter = 0; dimLabelCounter < colCount; dimLabelCounter += 1)
+		string dimLabelText = 	keyWave[0][dimLabelCounter]
+		SetDimLabel 1, dimLabelCounter, dimLabelText, keyWave
+		SetDimLabel 1, dimLabelCounter, dimLabelText, settingsHistory
+	endfor
+	
 	// since we have now de-coupled the row number from the sweep number to facilitate the addition of factors from other places besides the amp settings (like the test pulse, for example)
 	// we may now have "open" spaces in the settings history.  Because of this we can't just compare the [rowIndex] values against the [rowIndex-1] values.  We have to search back through 
 	// the rows to find where the most recent previous value was saved...
@@ -584,7 +593,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	// set the rowredimension to add another row...leave the other stuff alone
 	// Do we need to redimension to accomodate this sweep #?
 	if ((settingsRowCount -1) >= SweepNo)
-		print "no redimension needed ... "  // already have a row for this 
+//		print "no redimension needed ... "  // already have a row for this 
 	else
 		Redimension/N=((sweepNo + 1), -1, -1) textDocWave
 		settingsRowCount = (DimSize(textDocWave, 0))
