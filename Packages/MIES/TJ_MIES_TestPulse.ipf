@@ -517,13 +517,13 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 //				variable rows = dimsize(SSResistance, 0)
 
 				sprintf stringPath,  "%s:TPBaselineBuffer" InputDataPath
-				make /o /n = (RowsInBufferWaves, columns) $stringPath
+				make /o /n = (RowsInBufferWaves, columns) $stringPath // ** does not clear TP buffer wave each time TP is started by the user
 				wave /z TPBaselineBuffer = $stringPath // buffer wave for baseline avg - the first row will hold the value of the most recent TP, the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
 				matrixop /o TPBaselineBuffer =  rotaterows(TPBaselineBuffer, 1)
 //				print BaselineSSAvg[0][0]
 				TPBaselineBuffer[0][] = BaselineSSAvg[0][q]	 
 				matrixop /o BaselineSSAvg = sumcols(TPBaselineBuffer)
-				BaselineSSAvg /= RowsInBufferWaves
+				BaselineSSAvg /= RowsInBufferWaves // *
 								
 				sprintf stringPath,  "%s:TPInstBuffer" InputDataPath
 				make /o /n = (RowsInBufferWaves, columns) $stringPath
