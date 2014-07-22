@@ -80,6 +80,8 @@ Function RA_Start(panelTitle)
 
 		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+
+
 		ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
 		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		
@@ -495,7 +497,11 @@ Function RA_StartMD(panelTitle)
 //	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 //	IndexingState = v_value
 //	Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
-	ITI -= ITC_StopITCDeviceTimer(panelTitle)
+		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+
+
+//	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 	StartTestPulse(deviceType, deviceNum, panelTitle)  // 
 	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
 	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)

@@ -1146,13 +1146,13 @@ Window da_ephys() : Panel
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HL!!#B8!!#@,!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Search_DA_00,pos={141,98},size={124,16},disable=1,title="Search string"
+	SetVariable Search_DA_00,pos={141,98},size={124,16},disable=1,proc=DAP_SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo)= A"!!,FI!!#@&!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_00,value= _STR:""
-	SetVariable Search_DA_01,pos={141,145},size={124,16},disable=1,title="Search string"
+	SetVariable Search_DA_01,pos={141,145},size={124,16},disable=1,proc=DAP_SetVarProc_DASearch,title="Search string"
 	SetVariable Search_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_01,userdata(ResizeControlsInfo)= A"!!,FI!!#@t!!#@\\!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -2516,20 +2516,22 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	CheckBox Check_DataAcq_HS_06 WIN = $panelTitle, value= 0
 	CheckBox Check_DataAcq_HS_07 WIN = $panelTitle, value= 0
 	
+	// Sets MIES headstage to V-Clamp
+	CheckBox Radio_ClampMode_0 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_1 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_2 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_2 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_3 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_4 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_4 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_5 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_6 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_6 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_7 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_8 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_8 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_9 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_10 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_10 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_11 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_12 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_12 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_13 WIN = $panelTitle, value= 0,mode=1
-	CheckBox Radio_ClampMode_14 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_14 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_15 WIN = $panelTitle, value= 0,mode=1
 
 	SetVariable SetVar_Settings_VC_DAgain WIN = $panelTitle, value= _NUM:20

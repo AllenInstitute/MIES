@@ -223,6 +223,11 @@ Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionN
 	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
 	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer
 	CtrlNamedBackground ITC_Timer, start
+	
+	If(RunTimePassed < 0)
+		print "The time to configure the ITC device and the sweep time are greater than the user specified ITI"
+		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by:" + num2str(abs(RunTimePassed)) + "seconds"
+	endif
 End
 
 Function ITC_Timer(s)

@@ -333,6 +333,10 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 		killvariables $CountPath
 	endif
 	
+	// update TP buffer size global
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	
+	
 	// update the miniumum sampling interval
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
@@ -346,7 +350,24 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	StartTestPulse(deviceType, deviceNum, panelTitle)
 
 End // Function
-
+//=============================================================================================
+/// updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
+/// n determines the number of TP cycles to average
+Function TP_UpdateTPBufferSizeGlobal(panelTitle)
+	string panelTitle
+	controlInfo /w = $panelTitle setvar_Settings_TPBuffer
+	variable TPBufferSize = v_value
+	string TPBufferSizeGlobalStringPath
+	sprintf TPBufferSizeGlobalStringPath, "%s:TestPulse:n" HSU_DataFullFolderPathString(panelTitle)
+	if(exists(TPBufferSizeGlobalStringPath) ==2)
+		NVAR TPBufferSizeGlobal = $TPBufferSizeGlobalStringPath
+		TPBufferSizeGlobal = TPBufferSize
+	elseif(exists(TPBufferSizeGlobalStringPath) ==0)
+		variable /g $TPBufferSizeGlobalStringPath
+		NVAR TPBufferSizeGlobal = $TPBufferSizeGlobalStringPath
+		TPBufferSizeGlobal = TPBufferSize	
+	endif
+End
 //=============================================================================================
 // Calculate input resistance simultaneously on array so it is fast
 ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
@@ -749,11 +770,49 @@ Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	return NoYes
 End
 
-Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
+///@breif Creates a square pulse wave at a given frequency
+//Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
+//	string panelTitle
+//	variable frequency
+//	variable amplitude
+//	Wave TPWave
+//	variable numberOfSquarePulses
+//	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
+//	//print "longest sweep =", longestSweepPoints
+//	variable exponent = ceil(log(longestSweepPoints)/log(2))
+//	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
+//		exponent = 17
+//	endif 
+////	print "exponent =", exponent
+//	make /FREE /n = (2 ^ exponent)  BuildWave
+////	make /o /n = (2 ^ exponent)  BuildWave
+//
+//	SetScale /P x 0,0.005, "ms", BuildWave
+//
+//	MultiThread BuildWave = 0.999999 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
+//	MultiThread BuildWave = Ceil(BuildWave)
+//	duplicate /o BuildWave TPWave
+//
+//	TPWave *= Amplitude
+//	FindLevels /Q BuildWave, 0.5
+//	numberOfSquarePulses = V_LevelsFound
+//	if(mod(numberOfSquarePulses, 2) == 0)
+//		return (numberOfSquarePulses / 2) 
+//	else
+//		numberOfSquarePulses -= 1
+//		return (numberOfSquarePulses / 2)
+//	endif
+//	// if an even number of levels are found the TP returns to baseline
+//End
+
+/// Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
+/// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
+Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave) // TPWave = full path name
 	string panelTitle
 	variable frequency
 	variable amplitude
 	Wave TPWave
+
 	variable numberOfSquarePulses
 	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
 	//print "longest sweep =", longestSweepPoints
@@ -761,14 +820,23 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
 		exponent = 17
 	endif 
-//	print "exponent =", exponent
+
+	make /FREE /n = (2 ^ exponent)  SinBuildWave
+	make /FREE /n = (2 ^ exponent)  CosBuildWave
 	make /FREE /n = (2 ^ exponent)  BuildWave
-//	make /o /n = (2 ^ exponent)  BuildWave
 
+	SetScale /P x 0,0.005, "ms", SinBuildWave
+	SetScale /P x 0,0.005, "ms", CosBuildWave
 	SetScale /P x 0,0.005, "ms", BuildWave
+	
+	Frequency /= 1.5
+	// the point offset is 1/4 of a cos wave cycle in points. The is used to make the baseline before the first pulse the same length as the interpulse interval
+	variable PointOffset = ((1 / Frequency) / 0.000005) * 0.25
+	Multithread SinBuildWave =  .49 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * (p + PointOffset))
+	Multithread CosBuildWave = 0.49 * - cos(2 * Pi * ((Frequency* 2) * 1000) * (5 / 1000000000) * (p + PointOffset))
+	Multithread BuildWave = SinBuildWave + CosBuildWave
+	Multithread BuildWave = Ceil(Buildwave)
 
-	MultiThread BuildWave = 0.999999 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
-	MultiThread BuildWave = Ceil(BuildWave)
 	duplicate /o BuildWave TPWave
 
 	TPWave *= Amplitude
@@ -780,5 +848,5 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 		numberOfSquarePulses -= 1
 		return (numberOfSquarePulses / 2)
 	endif
-	// if an even number of levels are found the TP returns to baseline
+	
 End

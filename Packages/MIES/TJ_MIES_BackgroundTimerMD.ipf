@@ -26,7 +26,11 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD // period 6 = 100 ms
 		CtrlNamedBackground ITC_TimerMD, start
 	endif
-
+	
+	If(RunTIme < 0)
+		print "The time to configure " + panelTitle + " and the sweep time are greater than the user specified ITI"
+		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by: " + num2str(abs(RunTime)) + "seconds"
+	endif
 End
 //=============================================================================================================================
 
@@ -189,7 +193,10 @@ Function ITC_StartITCDeviceTimer(panelTitle)
 //		setDimLabel 0, -1, DeviceIDGlobal, CycleTimeStorageWave
 	endif
 	
-	CycleTimeStorageWave[ITCDeviceIDGlobal] = startmstimer // inserts the timer number into the row that corresponds to the device ID global
+	variable TimerNumber = startmstimer
+	ASSERT(TimerNumber != -1, "No more ms timers available, Run: ITC_StopAllMSTimers() to reset")
+	CycleTimeStorageWave[ITCDeviceIDGlobal] = TimerNumber // inserts the timer number into the row that corresponds to the device ID global
+	
 End
 //=============================================================================================================================
 /// Stops the timer associated with a particular device
@@ -206,24 +213,17 @@ Function ITC_StopITCDeviceTimer(panelTitle)
 	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
 	
 	variable runTime = stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
+	// print "RUN TIME=", runtime
 	return runTime
 
 End
 //=============================================================================================================================
+/// Stops all ms timers
+Function ITC_StopAllMSTimers()
+	variable i
+	for(i = 0; i < 10; i += 1)
+		print "ms timer", i, "stopped.", "Elapsed time:", stopmstimer(i)
+	endfor
+End
+//=============================================================================================================================
 
-
-
- Function firstFunction()
- print "first function"
- 
- End
- 
- Function secondFunction()
- print "second function"
- 
- End
- 
- Function ThirdFunction()
- print "third function"
- 
- End
