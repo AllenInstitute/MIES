@@ -204,6 +204,10 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				
 				//killwaves/f TestPulse
 			else
+				DAP_StopButtonToAcqDataButton(panelTitle)
+				ITC_StopITCDeviceTimer(panelTitle)
+				NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+				DataAcqState = 0
 				print "Repeated acquisition is complete"
 				Killvariables Count
 				killvariables /z Start, RunTime

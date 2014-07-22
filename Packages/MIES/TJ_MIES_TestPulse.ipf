@@ -261,6 +261,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	make /o /n = 0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
 	SetScale /P x 0,0.005,"ms", TestPulse
+	
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
 	//print testpulsepath
 	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	DM_CreateScaleTPHoldingWave(panelTitle)

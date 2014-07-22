@@ -142,6 +142,8 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	string TPDurationGlobalPath
 	variable NewNoOfPoints
 
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
+
 	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
@@ -182,6 +184,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 					//Follower board commands
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+						TP_UpdateTPBufferSizeGlobal(followerPanelTitle)
 						controlinfo /w = $followerPanelTitle popup_moreSettings_DeviceNo
 						DeviceNum =  v_value - 1
 						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
