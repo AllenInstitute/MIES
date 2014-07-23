@@ -118,7 +118,7 @@ Function HSU_GetDeviceTypeIndex(panelTitle)
 
 	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
 	ASSERT(V_flag > 0, "Non-existing control or window")
-	return V_value
+	return V_value - 1
 End
 
 Function/s HSU_GetDeviceNumber(panelTitle)
