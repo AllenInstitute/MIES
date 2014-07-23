@@ -141,7 +141,7 @@ End
 //=========================================================================================
 Function /t Path_ListOfYokedDACs(panelTitle)
 	string panelTitle
-	string strPathToListOfYokedDACs = HSU_DataFullFolderPathString(panelTitle) + ":ListOfFollowerITC1600s"
+	string strPathToListOfYokedDACs = HSU_DataFullFolderPathString("ITC1600_Dev_0") + ":ListOfFollowerITC1600s" // ITC1600 Device 0 is always the lead device for yoked ITC1600s
 	if(exists(strPathToListOfYokedDACs)==2)
 		SVAR /z ListOfYokedDACs = $strPathToListOfYokedDACs
 		return ListOfYokedDACs

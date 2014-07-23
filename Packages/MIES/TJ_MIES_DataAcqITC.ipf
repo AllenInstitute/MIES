@@ -28,10 +28,20 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	//print cmd
 	execute cmd
+	
+
+
 	do
 
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
+
+		controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+		variable RepeatedAcqOnOrOff = v_value
+		if(RepeatedAcqOnOrOff == 1)
+			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		endif
+
 		sprintf cmd, "ITCStartAcq"// /f/r=0/z=0 -1,0,1,1"//   
 		Execute cmd	
 			do
@@ -96,6 +106,18 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 		execute cmd
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
+	
+	
+	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+	variable RepeatedAcqOnOrOff = v_value
+	if(RepeatedAcqOnOrOff == 1)
+		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+	endif
+
+	
+	
+	
+	
 	sprintf cmd, "ITCStartAcq" 
 		Execute cmd	
 	ITC_StartBckgrdFIFOMonitor()
@@ -201,6 +223,11 @@ Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionN
 	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
 	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer
 	CtrlNamedBackground ITC_Timer, start
+	
+	If(RunTimePassed < 0)
+		print "The time to configure the ITC device and the sweep time are greater than the user specified ITI"
+		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by:" + num2str(abs(RunTimePassed)) + "seconds"
+	endif
 End
 
 Function ITC_Timer(s)
@@ -243,6 +270,7 @@ Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG //$WavePath + ":PanelTitleG" = panelTitle
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
+	panelTitleG = panelTitle
 	string cmd
 	variable i = 0
 	//variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
@@ -485,8 +513,8 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 		DeviceChannelOffset = 0
 	endif
 	
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	Execute cmd	
+	// sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
+	// Execute cmd	
 	
 	do
 		if(str2num(stringfromlist(i, AsyncChannelState,";")) == 1)
@@ -515,8 +543,8 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 		i += 1 
 	while(i < TotAsyncChannels)
 	
-	sprintf cmd, "ITCCloseAll" 
-	execute cmd
+	// sprintf cmd, "ITCCloseAll" 
+	// execute cmd
 	//print (ticks - starttime) / 60
 
 End

@@ -3,7 +3,8 @@
 Function WB_InitiateWaveBuilder()
 	WB_MakeWaveBuilderFolders()
 	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder  root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	WB_WaveBuilderParameterWaves()
 	String WaveBuilderPanel = "WaveBuilder()"
 	execute WavebuilderPanel
@@ -14,7 +15,8 @@ Function WB_DisplaySetInPanel()
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	
 	WB_RemoveAndKillTracesOnGraph()
 	
@@ -52,7 +54,8 @@ Function WB_RemoveAndKillTracesOnGraph()
 	string ListOfTracesOnGraph
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	
 	ListOfTracesOnGraph = TraceNameList("WaveBuilder#WaveBuilderGraph", ",", 0+1 )
 
@@ -71,14 +74,17 @@ Function WB_RemoveAndKillTracesOnGraph()
 End
 
 Function WB_MakeStimSet()
-	wave  WaveBuilderWave = root:MIES:wavebuilder:data:wavebuilderwave
+//	wave  WaveBuilderWave = root:MIES:wavebuilder:data:wavebuilderwave
+	wave  WaveBuilderWave = $Path_WaveBuilderDataFolder("") + ":wavebuilderwave"
 	variable i = 1
 	Variable start = stopmstimer(-2)
 
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	
-	wave wp = root:MIES:WaveBuilder:Data:WP
+//	wave wp = root:MIES:WaveBuilder:Data:WP
+	wave wp = $Path_WaveBuilderDataFolder("") + ":WP"
 	duplicate/free wp, wpd// duplicating starting parameter waves so that they can be returned to start parameters at end of wave making
 
 	controlinfo setvar_WaveBuilder_baseName
@@ -109,8 +115,9 @@ Function WB_MakeStimSet()
 End
 
 Function WB_AddDelta()//adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter waves
-wave WP = root:MIES:WaveBuilder:Data:WP//
-	
+String WPStringPath = Path_WaveBuilderDataFolder("") + ":WP"
+// wave WP = root:MIES:WaveBuilder:Data:WP //
+wave WP = $WPStringPath	
 	variable i = 0
 	
 	do
@@ -152,10 +159,12 @@ Function WB_MakeWaveBuilderWave()
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
 	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount, FIncrement
-	wave SegWvType=root:MIES:WaveBuilder:Data:SegWvType
+//	wave SegWvType=root:MIES:WaveBuilder:Data:SegWvType
+	wave SegWvType= $Path_WaveBuilderDataFolder("") + ":SegWvType"
 	//wave WaveBuilderWave=root:WaveBuilder:Data:WaveBuilderWave
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	make /o /n = 0 WaveBuilderWave = 0
 	make /o /n = 0 SegmentWave = 0
 	
@@ -166,13 +175,18 @@ Function WB_MakeWaveBuilderWave()
 	string cmd, NameOfWaveToBeDuplicated, NameOfWaveToBeDuplicated_NOQUOT
 	String ParameterWaveName
 	
-	Variable /g  root:MIES:WaveBuilder:Data:ParameterHolder
-	NVAR ParameterHolder = root:MIES:WaveBuilder:Data:ParameterHolder
-	String /g root:MIES:WaveBuilder:Data:StringHolder
-	SVAR StringHolder = root:MIES:WaveBuilder:Data:StringHolder
+//	Variable /g  root:MIES:WaveBuilder:Data:ParameterHolder
+	Variable /g  $Path_WaveBuilderDataFolder("") + ":ParameterHolder"
+//	NVAR ParameterHolder = root:MIES:WaveBuilder:Data:ParameterHolder
+	NVAR ParameterHolder = $Path_WaveBuilderDataFolder("") + ":ParameterHolder"
+//	String /g root:MIES:WaveBuilder:Data:StringHolder
+	String /g $Path_WaveBuilderDataFolder("") + ":StringHolder"
+//	SVAR StringHolder = root:MIES:WaveBuilder:Data:StringHolder
+	SVAR StringHolder = $Path_WaveBuilderDataFolder("") + ":StringHolder"
 	do
 		//Load in parameters
-		ParameterWaveName = "root:MIES:WaveBuilder:Data:WP"
+//		ParameterWaveName = "root:MIES:WaveBuilder:Data:WP"
+		ParameterWaveName = Path_WaveBuilderDataFolder("") + ":WP"
 	
 		sprintf cmd, "ParameterHolder	= %s[%d][%d][%d]" ParameterWaveName, 0, i, SegWvType[i]
 		Execute cmd
@@ -259,7 +273,8 @@ Function WB_MakeWaveBuilderWave()
 		Execute cmd
 		DeltaCustomOffset = ParameterHolder
 		
-		sprintf cmd, "StringHolder = %s[%d][%d]"  "root:MIES:WaveBuilder:Data:WPT", 0, i// passes name of custom wave from a text wave
+//		sprintf cmd, "StringHolder = %s[%d][%d]"  "root:MIES:WaveBuilder:Data:WPT", 0, i// passes name of custom wave from a text wave
+		sprintf cmd, "StringHolder = %s:WPT[%d][%d]"  Path_WaveBuilderDataFolder(""), 0, i// passes name of custom wave from a text wave
 		Execute cmd
 		NameOfWaveToBeDuplicated = "'" + StringHolder + "'"
 		
@@ -370,7 +385,8 @@ End
 
 Function WB_WaveBuilderParameterWaves()//generates waves neccessary to run wavebuilder panel
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	Make /O /N = 100 WaveBuilderWave
 	Make /O /N = (31,100,8) WP //WP=Wave Parameters
 	Make /T /O /N = (31,100) WPT//WPT=Wave Parameters Text (wave)
@@ -383,20 +399,29 @@ End
 
 Function WB_MakeWaveBuilderFolders()//makes folders used by wavebuilder panel
 	//DataFolderExists(folderNameStr ) -
-	NewDataFolder /O root:MIES:WaveBuilder
-	NewDataFolder /O root:MIES:WaveBuilder:Data
-	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters
-	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
-	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
-	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets
-	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets:DA
-	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets:TTL
+//	NewDataFolder /O root:MIES:WaveBuilder
+//	NewDataFolder /O root:MIES:WaveBuilder:Data
+//	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters
+//	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
+//	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
+//	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets
+//	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets:DA
+//	NewDataFolder /O root:MIES:WaveBuilder:SavedStimulusSets:TTL
+	NewDataFolder /O $Path_WaveBuilderFolder("")
+	NewDataFolder /O $Path_WaveBuilderDataFolder("")
+	NewDataFolder /O $Path_WBSvdStimSetParamFolder("")
+	NewDataFolder /O $Path_WBSvdStimSetParamDAFolder("")
+	NewDataFolder /O $Path_WBSvdStimSetParamTTLFolder("")
+	NewDataFolder /O $Path_WBSvdStimSetFolder("")
+	NewDataFolder /O $Path_WBSvdStimSetDAFolder("")
+	NewDataFolder /O $Path_WBSvdStimSetTTLFolder("")
 End
 
 
 Function WB_ParamToPanel(WaveParametersWave)//passes the data from the WP wave to the panel
 	variable WaveParametersWave
-	wave WP = root:MIES:wavebuilder:data:wp
+//	wave WP = root:MIES:wavebuilder:data:wp
+	wave WP = $Path_WaveBuilderDataFolder("") + ":WP"
 	string ControlName = "setvar_WaveBuilder_P"
 	variable rowNo = 0
 	
@@ -586,7 +611,8 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 	NameOfWaveToBeDuplicated = s_value+NameOfWaveToBeDuplicated
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:Data
+	// SetDataFolder  root:MIES:WaveBuilder:Data
+	SetDataFolder $Path_WaveBuilderDataFolder("")
 	
 	make /o /n = 1 SegmentWave
 	
@@ -641,7 +667,7 @@ End
 //=====================================================================================
 //=====================================================================================
 
-Function /t WaveBuilderFolderPath()
-string FolderPath = "root:MIES:WaveBuilder"
-return FolderPath
-End
+//Function /t WaveBuilderFolderPath()
+//string FolderPath = "root:MIES:WaveBuilder"
+//return FolderPath
+//End

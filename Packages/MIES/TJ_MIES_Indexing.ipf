@@ -387,8 +387,8 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)// determine the max number
 	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
 	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
-	
-	do
+ 
+ 	do
 		if(str2num(stringfromlist(i, DAChannelStatusList, ";")) == 1)
 			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 0, IndexOverRide))
 		endif
@@ -404,7 +404,7 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)// determine the max number
 	
 		i += 1
 	while(i < itemsinlist(TTLChannelStatusList, ";"))
-	
+	print MaxNoOfSweeps
 	return MaxNoOfSweeps
 End
 
@@ -414,17 +414,20 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, Inde
 	variable NumberOfTrialsAcrossSets
 	variable IndexStart, IndexEnd, ListOffset
 	string DAorTTL_cntrlName = "", DAorTTL_indexEndName = "", setname = ""
+	string DAorTTLString
 	
 	if(DAorTTL == 0)// determine control names based on DA or TTL 
 		DAorTTL_cntrlName = "Wave_DA_0" + num2str(PopUpMenuNumber)
 		DAorTTL_indexEndName = "Popup_DA_IndexEnd_0" + num2str(PopUpMenuNumber)
 		ListOffset = 3// accounts for first two options in DA popup menu list
+	//	sprintf DAorTTLString, "%s" "DA"
 	endif
 
 	if(DAorTTL == 1)
 		DAorTTL_cntrlName = "Wave_TTL_0" + num2str(PopUpMenuNumber)
 		DAorTTL_indexEndName = "Popup_TTL_IndexEnd_0" + num2str(PopUpMenuNumber)
 		ListOffset = 2
+	//	sprintf DAorTTLString, "%s" "TTL"
 	endif
 	
 	controlinfo /w = $panelTitle $DAorTTL_cntrlName// check if indexing is activated
@@ -442,7 +445,8 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, Inde
 		IndexEnd = indexStart
 	endIF
 	
-	string setList = getuserdata(panelTitle, DAorTTL_cntrlName, "menuexp")
+	string setList  = getuserdata(panelTitle, DAorTTL_cntrlName, "menuexp")
+	//sprintf setLIst, "%s" WBP_ITCPanelPopUps(0, DAorTTLString) 
 	variable i = (min(indexstart, indexend) - ListOffset)
 	
 	do
@@ -450,7 +454,6 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, Inde
 		NumberOfTrialsAcrossSets += IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
 		i += 1
 	while(i < (max(indexstart, indexend) - (ListOffset - 1)))
-	
 	return NumberOfTrialsAcrossSets
 
 End
@@ -467,10 +470,12 @@ Function IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)// set name is the
 	if(DAorTTL == 1)
 		WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
-	
-	string NameOfWaveSelectedInPopUP = WavePath + setName
-	//print NameOfWaveSelectedInPopUP
-	variable NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
+	if(stringmatch(setname, "") == 1)
+		variable NumberOfTrialsInSet = 0
+	else
+		string NameOfWaveSelectedInPopUP = WavePath + setName
+		NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
+	endif
 	return NumberOfTrialsInSet
 End
 

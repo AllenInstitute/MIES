@@ -423,7 +423,8 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable i = 0// 
 	variable j = 0//
 	string ChannelStatus
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	string WavePath // = HSU_DataFullFolderPathString(panelTitle)
+	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $(WavePath + ":ITCDataWave")
 	string ITCDataWavePath = WavePath + ":ITCDataWave"
 	//string testPulsePath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse:TestPulse"
@@ -446,14 +447,18 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle) / 5)
 	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
 	ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
+	// print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
-			SetVarDAGain = "gain_DA_0" + num2str(i)
+			// SetVarDAGain = "Gain_DA_0" + num2str(i)
+			sprintf SetVarDAGain, "Gain_DA_0%s"  num2str(i)
 			//print SetVarDAGain
-			SetVarDAScale = "scale_DA_0" + num2str(i)
+			//SetVarDAScale = "Scale_DA_0" + num2str(i)
+			sprintf SetVarDAScale, "Scale_DA_0%s" num2str(i)
 			//print SetVarDAScale
 			//print paneltitle
 			ControlInfo /w = $panelTitle $SetVarDAGain
+			// print "DA gain =", v_value
 			//if(ChannelClampMode[i][0] == 0) // V-clamp		
 			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
 			//endif
@@ -462,13 +467,14 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 //				print v_value
 //				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
 //			endif		
-			
+//			print panelTitle,setvardascale
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
-	
+			// print "DA scale =",DAScale
+			
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
-			// print "chan type wave name =", ChanTypeWaveName, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
+			// print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
 			//check to see if it is a test pulse or user specified da wave
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
 				// print "chan type wave name =", ChanTypeWaveName
@@ -505,11 +511,12 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			//print cmd
 			//execute cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
-			//print ChanTypeWaveName
+			// print "Column =", column
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
-
-			// check if TP insertion is active
+			//print "dascale =", dascale
+			// check if TP is being configured
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0) // prevents insertion of TP into TP
+				// check if TP insertion is active
 				controlinfo /w = $panelTitle Check_Settings_InsertTP
 				variable Check_Settings_InsertTP = v_value
 				if(Check_Settings_InsertTP == 1)
