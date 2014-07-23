@@ -80,7 +80,7 @@ End
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
 	string panelTitle
 	variable locked
-
+	//print "HSU_UpdateDataFolderDisplay", panelTitle
 	string title
 	if(locked)
 		title = "Data folder path = " + HSU_DataFullFolderPathString(panelTitle)
