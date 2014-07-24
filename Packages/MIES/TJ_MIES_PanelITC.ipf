@@ -3,9 +3,10 @@
 Constant HARDWARE_TAB_NUM                = 6
 StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
-static StrConstant ITC1600_FIRST_DEVICE  = "ITC1600_Dev_0"
+StrConstant ITC1600_FIRST_DEVICE         = "ITC1600_Dev_0"
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
+
 
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
@@ -2169,7 +2170,7 @@ Window da_ephys() : Panel
 	PopupMenu popup_Hardware_YokedDACs,pos={223,240},size={110,21},bodyWidth=110,disable=3,title="Yoked ITC1600s"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_YokedDACs,mode=0,value= #"Path_ListOfYokedDACs(DAP_ReturnPanelName())"
+	PopupMenu popup_Hardware_YokedDACs,mode=0,value=GUIListOfYokedDACs()
 	TitleBox title_hardware_Release,pos={225,222},size={152,13},disable=3,title="Release follower ITC1600 DACs"
 	TitleBox title_hardware_Release,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Release,userdata(tabnum)=  "6"
@@ -2680,7 +2681,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 
 	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Independent",noedit= 1
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
-	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value= #"Path_ListOfYokedDACs(DAP_ReturnPanelName())"
+	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=GUIListOfYokedDACs()
 
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_BB WIN = $panelTitle,limits={0,inf,1},value= _NUM:0
@@ -3155,6 +3156,17 @@ Function DAP_GetTabNumber(panelTitle)
 	return V_value
 End
 
+Function/S GUIListOfYokedDACs()
+	string list = GetListOfYokedDACs()
+
+	if(isEmpty(list))
+		return "No Yoked Devices"
+	endif
+
+	return list
+End
+//=========================================================================================
+
 //=========================================================================================
 Function DAP_UpdateYokeControls(panelTitle)
 	string panelTitle
@@ -3175,7 +3187,7 @@ Function DAP_UpdateYokeControls(panelTitle)
 		else
 			TitleBox title_hardware_1600inst win = $panelTitle, title = "To yoke devices go to panel: " + ITC1600_FIRST_DEVICE
 		endif
-		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:Path_ListOfYokedDACs(panelTitle)
+		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:GUIListOfYokedDACs()
 	endif
 End
 

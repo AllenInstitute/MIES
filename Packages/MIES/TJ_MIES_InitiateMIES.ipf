@@ -139,14 +139,21 @@ Function /T Path_WBSvdStimSetTTLFolder(panelTitle)
 	return WBSvdStimSetTTLFolder
 End
 //=========================================================================================
-Function /t Path_ListOfYokedDACs(panelTitle)
-	string panelTitle
-	string strPathToListOfYokedDACs = HSU_DataFullFolderPathString("ITC1600_Dev_0") + ":ListOfFollowerITC1600s" // ITC1600 Device 0 is always the lead device for yoked ITC1600s
-	if(exists(strPathToListOfYokedDACs)==2)
-		SVAR /z ListOfYokedDACs = $strPathToListOfYokedDACs
-		return ListOfYokedDACs
-	else
-		return "No Yoked Devices"
+// TB in the long run, I would propose to rewrite data folder returning functions like
+// HSU_DataFullFolderPathString to always return a valid datafolder reference.
+// As always checking if the folder exists is error-prone
+Function/S GetListOfYokedDACs()
+
+	dfref dfr = $HSU_DataFullFolderPathString(ITC1600_FIRST_DEVICE)
+	if(!DataFolderExistsDFR(dfr))
+		return ""
 	endif
+
+	SVAR/Z/SDFR=dfr ListOfFollowerITC1600s
+	if(SVAR_Exists(ListOfFollowerITC1600s))
+		return ListOfFollowerITC1600s
+	endif
+
+	return ""
 End
 //=========================================================================================

@@ -139,8 +139,18 @@ End
 Function/s HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
 
-	string path
-	sprintf path, "%s:%s:Device%s", Path_ITCDevicesFolder(panelTitle), HSU_GetDeviceType(panelTitle), HSU_GetDeviceNumber(panelTitle)
+	string deviceType, deviceNumber, path
+	variable ret
+
+	if(windowExists(panelTitle))
+		deviceType   = HSU_GetDeviceType(panelTitle)
+		deviceNumber = HSU_GetDeviceNumber(panelTitle)
+	else  // we can't query the panel here, so we just split the device string
+		ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
+		ASSERT(ret,"Could not parse the panelTitle")
+	endif
+
+	sprintf path, "%s:%s:Device%s", Path_ITCDevicesFolder(panelTitle), deviceType, deviceNumber
 	return path
 End
 //==================================================================================================
