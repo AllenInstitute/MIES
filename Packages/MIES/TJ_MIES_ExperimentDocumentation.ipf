@@ -29,6 +29,14 @@ Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 		SetVariable SetVar_DataAcq_Comment value = _STR:""
 	endif
 End
+//=============================================================================================================
+Function ED_AppendTPparamToDataWave(panelTitle, DataWaveName)
+	string panelTitle
+	wave DataWaveName
+	
+	
+End
+//=============================================================================================================
 
 /// Brief description of the function ED_createWaveNotes
 /// Function used to add notation of settings to an experiment DataWave.  This function

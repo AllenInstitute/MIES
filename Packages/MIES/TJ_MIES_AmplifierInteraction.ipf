@@ -18,7 +18,6 @@ Function /t AI_ReturnListOf700BChannels(panelTitle)
 		if(TotalNoChannels > 0)
 			do
 			sprintf Value, "%g" W_TelegraphServers[i][0]
-//			sprintf Value, "%g" W_TelegraphServers[i][0]
 			sprintf AmpAndChannel, "AmpNo %s Chan %g", Value, W_TelegraphServers[i][1]
 			ChannelList = addListItem(AmpAndChannel, ChannelList, ";", i)
 		//	ChannelList += "AmpNo " + Value + " Chan " + num2str(W_TelegraphServers[i][1]) + ";"
@@ -258,41 +257,41 @@ End
 
 //==================================================================================================
 //Function AI_CreateAmpDataStorageWave(panelTitle)
-	string panelTitle
-	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
-	string AmpStorageWaveWaveName
-	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
-	make /o /n = (26, 2, 8) $AmpStorageWaveWaveName
-	wave AmpStorageWave = $AmpStorageWaveWaveName
-	setdimlabel 1, 0, VClamp, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
-	setdimlabel 1, 1, IClamp, AmpStorageWave // labels column 1 (of all layers) with the heading IClamp
-	setdimlabel 0, 0, StructureVersion, AmpStorageWave
-	setdimlabel 0, 1, SerialNum, AmpStorageWave
-	setdimlabel 0, 2, ChannelID, AmpStorageWave
-	setdimlabel 0, 3, ComPortID, AmpStorageWave
-	setdimlabel 0, 4, AxoBusID, AmpStorageWave
-	setdimlabel 0, 5, OperatingMode, AmpStorageWave
-	setdimlabel 0, 6, ScaledOutSignal, AmpStorageWave
-	setdimlabel 0, 7, Alpha, AmpStorageWave
-	setdimlabel 0, 8, ScaleFactor, AmpStorageWave
-	setdimlabel 0, 9, ScaleFactorUnits, AmpStorageWave
-	setdimlabel 0, 10, LPFCutoff, AmpStorageWave
-	setdimlabel 0, 11, ExtCmdSens, AmpStorageWave
-	setdimlabel 0, 12, RawOutSignal, AmpStorageWave
-	setdimlabel 0, 13, RawScaleFactor, AmpStorageWave
-	setdimlabel 0, 14, RawScaleFactorUnits, AmpStorageWave
-	setdimlabel 0, 15, HardwareType, AmpStorageWave
-	setdimlabel 0, 16, SecondaryLPFCutoff, AmpStorageWave
-	setdimlabel 0, 17, SeriesResistance, AmpStorageWave
-	setdimlabel 0, 18, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 19, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 20, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 21, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 22, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 23, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 24, PlaceHolder, AmpStorageWave
-	setdimlabel 0, 25, PlaceHolder, AmpStorageWave
-End
+// 	string panelTitle
+// 	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
+// 	string AmpStorageWaveWaveName
+// 	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
+// 	make /o /n = (26, 2, 8) $AmpStorageWaveWaveName
+// 	wave AmpStorageWave = $AmpStorageWaveWaveName
+// 	setdimlabel 1, 0, VClamp, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
+// 	setdimlabel 1, 1, IClamp, AmpStorageWave // labels column 1 (of all layers) with the heading IClamp
+// 	setdimlabel 0, 0, StructureVersion, AmpStorageWave
+// 	setdimlabel 0, 1, SerialNum, AmpStorageWave
+// 	setdimlabel 0, 2, ChannelID, AmpStorageWave
+// 	setdimlabel 0, 3, ComPortID, AmpStorageWave
+// 	setdimlabel 0, 4, AxoBusID, AmpStorageWave
+// 	setdimlabel 0, 5, OperatingMode, AmpStorageWave
+// 	setdimlabel 0, 6, ScaledOutSignal, AmpStorageWave
+// 	setdimlabel 0, 7, Alpha, AmpStorageWave
+// 	setdimlabel 0, 8, ScaleFactor, AmpStorageWave
+// 	setdimlabel 0, 9, ScaleFactorUnits, AmpStorageWave
+// 	setdimlabel 0, 10, LPFCutoff, AmpStorageWave
+// 	setdimlabel 0, 11, ExtCmdSens, AmpStorageWave
+// 	setdimlabel 0, 12, RawOutSignal, AmpStorageWave
+// 	setdimlabel 0, 13, RawScaleFactor, AmpStorageWave
+// 	setdimlabel 0, 14, RawScaleFactorUnits, AmpStorageWave
+// 	setdimlabel 0, 15, HardwareType, AmpStorageWave
+// 	setdimlabel 0, 16, SecondaryLPFCutoff, AmpStorageWave
+// 	setdimlabel 0, 17, SeriesResistance, AmpStorageWave
+// 	setdimlabel 0, 18, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 19, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 20, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 21, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 22, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 23, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 24, PlaceHolder, AmpStorageWave
+// 	setdimlabel 0, 25, PlaceHolder, AmpStorageWave
+// End
 
 //==================================================================================================
 // BELOW ARE COMMAND THAT SEND PARAMETERS, OR ENABLE CONTROLS ON THE MCC PANEL
@@ -924,7 +923,8 @@ Function AI_CreateAmpParamStorageWave(panelTitle)
 	setdimlabel 0, 29, IclampPlaceHolder, AmpStorageWave
 	setdimlabel 0, 30, IZeroEnable, AmpStorageWave
 End
-////==================================================================================================
+
+//==================================================================================================
 /// Brief description of the function createAmplifierSettingsWave
 /// This function to create wave of amplifier settings, and a corresponding key wave.  This wave will then be sent to the 
 /// ED_createWaveNotes to amend to the general history settings for reporting to the wave notations.
@@ -1350,3 +1350,196 @@ function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SavedDataWaveName, SweepCount, panelTitle)
 	
 End
+
+//==================================================================================================
+// Below is code to open the MCC and manipulate the MCC windows. It is hard coded from TimJs 700Bs. Needs to be adapted for MIES
+//==================================================================================================
+
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+
+///To open Multiclamp commander, use ExecuteScriptText to open from Windows command line.
+///Each window is appended with a serial number for the amplifier (/S) and a title designating which 
+///headstages it controls (/T). You may also assign configuations (.mcc files) to a window of your 
+///choice. Add the file path to the configuation after /C. The file path for MC700B.exe must be the 
+///default path (C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe) 
+///or else you must change the path in OpenAllMCC().
+///
+
+///Reminder!!! When adding a file path inside of a string, always add \" to the front and end of the
+///path name or else IGOR will not recognize it.
+
+///These scripts use nircmd (http://www.nirsoft.net/utils/nircmd.html) to control window visability 
+///and location. You have the option of having only one window will be visable at a time, but they 
+///all will be open.
+
+Function AI_OpenAllMCC (isHidden)
+	// If ishidden = 1, only one window will be visiable at a time. You can switch between windows 
+	//by using ShowWindowMCC If ishidden = 0, all windows will be stacked ontop of each other.
+	
+	Variable isHidden
+	
+	//This opens the MCC window for the designated amplifier based on its serial number (/S)
+	//3&4
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00834001 /T3&4"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834001.mcc\""
+	ExecuteScriptText "nircmd.exe win center title \"3&4\""
+	
+	//5&6
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00834228 /T5&6"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834228.mcc\""
+	ExecuteScriptText "nircmd.exe win center title \"5&6\""
+	
+	//7&8
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00834191 /T7&8"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834191.mcc\""
+	ExecuteScriptText "nircmd.exe win center title \"7&8\""
+	 
+	//9&10
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00832774 /T9&10"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00832774.mcc\""
+	ExecuteScriptText "nircmd.exe win center title \"9&10\""
+	
+	//11&12
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00834000 /T11&12"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834000.mcc\""
+	ExecuteScriptText "nircmd.exe win center title \"11&12\""
+/// This function closes all of the MCC windows. A window may be closed normally and this will still work.
+	//1&2
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00834380 /T1&2"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834380.mcc\""
+	ExecuteScriptText "nircmd.exe win center title \"1&2\""
+	
+	String/G curMCC = "1&2"
+	
+	if (isHidden)  //1&2 will be the only one open at start up. This line and the others like it will hide all other windows.
+		ExecuteScriptText "nircmd.exe win hide title \"3&4\""
+		ExecuteScriptText "nircmd.exe win hide title \"5&6\""
+		ExecuteScriptText "nircmd.exe win hide title \"7&8\""
+		ExecuteScriptText "nircmd.exe win hide title \"9&10\""
+		ExecuteScriptText "nircmd.exe win hide title \"11&12\""		
+	endif
+End 
+
+//==================================================================================================
+
+
+Function AI_ShowWindowMCC(newMCC)
+	
+	//newMCC must fall between 1 and 6. These correlated to the amplifiers associated with each pair of headstages.
+	
+	Variable newMCC
+	if (exists("curMCC")!=2)
+		String/G curMCC
+		sprintf curMCC, "%d&%d", newMCC*2-1, newMCC*2 //amplifier 1 goes to headstage 1&2, 2 -> 3&4, 3 -> 5&6, etc.
+	endif
+	SVAR/Z curMCC
+	String cmd
+	
+	//Hide the current window
+	sprintf cmd, "nircmd.exe win hide title \"%s\"", curMCC
+	ExecuteScriptText cmd
+	
+	//Make the current window into the new window
+	sprintf curMCC, "%d&%d", newMCC*2-1, newMCC*2
+	
+	//Show the new window
+	sprintf cmd, "nircmd.exe win show title \"%s\"", curMCC
+	ExecuteScriptText cmd
+	
+End
+//==================================================================================================
+
+/// This function is for when the windows are stacked ontop of each other. This will bring the selected one to the front without hiding the previous one.
+
+Function AI_BringToFrontMCC(newMCC)
+
+	Variable newMCC
+	if (exists("curMCC")!=2)
+		String/G curMCC
+		sprintf curMCC, "%d&%d", newMCC*2-1, newMCC*2 //amplifier 1 goes to headstage 1&2, 2 -> 3&4, 3 -> 5&6, etc.
+	endif
+	SVAR/Z curMCC
+	String cmd
+	
+	//Make the current window into the new window
+	sprintf curMCC, "%d&%d", newMCC*2-1, newMCC*2
+	
+	//Show the new window
+	sprintf cmd, "nircmd.exe win activate title \"%s\"", curMCC
+	ExecuteScriptText cmd
+
+End
+//==================================================================================================
+
+/// This function will tile all of the MCC windows so that they are all visable on the screen.
+
+Function AI_ShowAllMCC()
+	ExecuteScriptText "nircmd.exe win show title \"1&2\""
+	ExecuteScriptText "nircmd.exe win setsize title \"1&2\" 50 200 365 580"
+	ExecuteScriptText "nircmd.exe win show title \"3&4\""
+	ExecuteScriptText "nircmd.exe win setsize title \"3&4\" 415 200 365 580"
+	ExecuteScriptText "nircmd.exe win show title \"5&6\""
+	ExecuteScriptText "nircmd.exe win setsize title \"5&6\" 780 200 365 580"
+	ExecuteScriptText "nircmd.exe win show title \"7&8\""
+	ExecuteScriptText "nircmd.exe win setsize title \"7&8\" 50 780 365 580"
+	ExecuteScriptText "nircmd.exe win show title \"9&10\""
+	ExecuteScriptText "nircmd.exe win setsize title \"9&10\" 415 780 365 580"
+	ExecuteScriptText "nircmd.exe win show title \"11&12\""
+	ExecuteScriptText "nircmd.exe win setsize title \"11&12\" 780 780 365 580"
+	
+End
+//==================================================================================================
+
+/// This function will center all of the MCC windows and hide all but the current window.
+
+Function AI_CenterAndHideAllMCC()
+	String cmd
+	SVAR/Z curMCC
+	//Need to figure out if windows can be tiled by nircmd
+	ExecuteScriptText "nircmd.exe win center title \"1&2\""
+	ExecuteScriptText "nircmd.exe win hide title \"1&2\""
+	ExecuteScriptText "nircmd.exe win center title \"3&4\""
+	ExecuteScriptText "nircmd.exe win hide title \"3&4\""
+	ExecuteScriptText "nircmd.exe win center title \"5&6\""
+	ExecuteScriptText "nircmd.exe win hide title \"5&6\""
+	ExecuteScriptText "nircmd.exe win center title \"7&8\""
+	ExecuteScriptText "nircmd.exe win hide title \"7&8\""
+	ExecuteScriptText "nircmd.exe win center title \"9&10\""
+	ExecuteScriptText "nircmd.exe win hide title \"9&10\""
+	ExecuteScriptText "nircmd.exe win center title \"11&12\""
+	ExecuteScriptText "nircmd.exe win hide title \"11&12\""
+	
+	sprintf cmd, "nircmd.exe win show title \"%s\"", curMCC
+	ExecuteScriptText cmd
+End
+//==================================================================================================
+
+
+/// This function will center all of the MCC windows and leave them stacked ontop of each other.
+
+Function AI_CenterAndShowAllMCC()
+	String cmd
+	SVAR/Z curMCC
+	//Need to figure out if windows can be tiled by nircmd
+	ExecuteScriptText "nircmd.exe win center title \"1&2\""
+	ExecuteScriptText "nircmd.exe win show title \"1&2\""
+	ExecuteScriptText "nircmd.exe win center title \"3&4\""
+	ExecuteScriptText "nircmd.exe win show title \"3&4\""
+	ExecuteScriptText "nircmd.exe win center title \"5&6\""
+	ExecuteScriptText "nircmd.exe win show title \"5&6\""
+	ExecuteScriptText "nircmd.exe win center title \"7&8\""
+	ExecuteScriptText "nircmd.exe win show title \"7&8\""
+	ExecuteScriptText "nircmd.exe win center title \"9&10\""
+	ExecuteScriptText "nircmd.exe win show title \"9&10\""
+	ExecuteScriptText "nircmd.exe win center title \"11&12\""
+	ExecuteScriptText "nircmd.exe win show title \"11&12\""
+	sprintf cmd, "nircmd.exe win show title \"%s\"", curMCC
+	ExecuteScriptText cmd
+End
+
+Function AI_CloseAllMCC()
+	//Need to figure out if windows can be tiled by nircmd
+	ExecuteScriptText "nircmd.exe win close title \"1&2\""
+	ExecuteScriptText "nircmd.exe win close title \"3&4\""
+	ExecuteScriptText "nircmd.exe win close title \"5&6\""
+	ExecuteScriptText "nircmd.exe win close title \"7&8\""
+	ExecuteScriptText "nircmd.exe win close title \"9&10\""
+	ExecuteScriptText "nircmd.exe win close title \"11&12\""
+	
+End
+
+//==================================================================================================

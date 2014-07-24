@@ -1,9 +1,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 	//Reinitialize Device 1 with intrabox clock
-	Execute "ITCInitialize /M = 1"
-	Execute "ITCStartAcq 1, 256"
- Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+	// Execute "ITCInitialize /M = 1"
+	// Execute "ITCStartAcq 1, 256"
+ 
+Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
 	variable DeviceType, DeviceNum, TriggerMode
 	string panelTitle
 //	Variable start = stopmstimer(-2)
@@ -14,7 +15,7 @@
 	//variable  StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
 	variable StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
 //	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	
+	variable TimerStart
 //	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 //	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 //	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -29,7 +30,15 @@
 //	execute cmd
 //	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 //	execute cmd// this also seems necessary to update the DA channel data to the board!!
+
+	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+	variable RepeatedAcqOnOrOff = v_value
+
+	
 	if(TriggerMode == 0)
+		if(RepeatedAcqOnOrOff == 1)
+			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		endif
 		Execute "ITCStartAcq" 
 	elseif(TriggerMode > 0)
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
@@ -184,10 +193,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
-		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
+		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps, one for saved waves, one for the oscilloscope
 	endif
 	
-	 DM_ScaleITCDataWave(panelTitle)
+	DM_ScaleITCDataWave(panelTitle)
 	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
 	controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
@@ -358,35 +367,35 @@ End // Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddorRemoveDevice)
 //=============================================================================================================================
 
 //Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
-	String panelTitle
-	Variable TPorDataAcq
-	Variable Add_Remove // 1 to add a device; -1 to remove a device
-	
-	if (TPorDataAcq == 0) 
-		if(NVAR_Exists(ActiveTPDevices)==0) // creates global if it does not exist.
-			Variable /G ActiveTPDevices = 0
-		endif
-	
-		NVAR ActiveTPDevices
-		ActiveTPDevices += Add_Remove // Updates global to reflect the number of active devices
-		
-		if (ActiveTPDevices < 0) // Check to ensure the number of active devices is never less than 0
-			ActiveTPDevices = 0
-		endif
-	
-	elseif (TPorDataAcq == 1)
-			if(NVAR_Exists(ActiveDataAcqDevices)==0) // creates global if it does not exist.
-			Variable /G ActiveDataAcqDevices = 0
-		endif
-	
-		NVAR ActiveDataAcqDevices
-		ActiveDataAcqDevices += Add_Remove // Updates global to reflect the number of active devices
-		
-		if (ActiveDataAcqDevices < 0) // Check to ensure the number of active devices is never less than 0
-			ActiveDataAcqDevices = 0
-		endif
-	endif
-	
-End // Function GlobalActiveDevCountUpdate(panelTitle)
+// 	String panelTitle
+// 	Variable TPorDataAcq
+// 	Variable Add_Remove // 1 to add a device; -1 to remove a device
+// 	
+// 	if (TPorDataAcq == 0) 
+// 		if(NVAR_Exists(ActiveTPDevices)==0) // creates global if it does not exist.
+// 			Variable /G ActiveTPDevices = 0
+// 		endif
+// 	
+// 		NVAR ActiveTPDevices
+// 		ActiveTPDevices += Add_Remove // Updates global to reflect the number of active devices
+// 		
+// 		if (ActiveTPDevices < 0) // Check to ensure the number of active devices is never less than 0
+// 			ActiveTPDevices = 0
+// 		endif
+// 	
+// 	elseif (TPorDataAcq == 1)
+// 			if(NVAR_Exists(ActiveDataAcqDevices)==0) // creates global if it does not exist.
+// 			Variable /G ActiveDataAcqDevices = 0
+// 		endif
+// 	
+// 		NVAR ActiveDataAcqDevices
+// 		ActiveDataAcqDevices += Add_Remove // Updates global to reflect the number of active devices
+// 		
+// 		if (ActiveDataAcqDevices < 0) // Check to ensure the number of active devices is never less than 0
+// 			ActiveDataAcqDevices = 0
+// 		endif
+// 	endif
+// 	
+// End // Function GlobalActiveDevCountUpdate(panelTitle)
 //=============================================================================================================================
 

@@ -1,2 +1,7 @@
-Packages/doc/*
-Packages/MIES/backup*
+Packages/doc/latex
+Packages/doc/html
+Packages/doc/*.log
+*.orig
+*.rej
+*.T0
+Packages/MIES/backup

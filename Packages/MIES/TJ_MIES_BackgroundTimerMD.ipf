@@ -26,7 +26,11 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD // period 6 = 100 ms
 		CtrlNamedBackground ITC_TimerMD, start
 	endif
-
+	
+	If(RunTIme < 0)
+		print "The time to configure " + panelTitle + " and the sweep time are greater than the user specified ITI"
+		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by: " + num2str(abs(RunTime)) + "seconds"
+	endif
 End
 //=============================================================================================================================
 
@@ -165,18 +169,61 @@ End // Function 	ITC_MakeOrUpdateTimerParamWave
 
  End // IITC_MakeOrUpdtDevTimerTxtWv
  
- 
- Function firstFunction()
- print "first function"
- 
- End
- 
- Function secondFunction()
- print "second function"
- 
- End
- 
- Function ThirdFunction()
- print "third function"
- 
- End
+//=============================================================================================================================
+/// Stores the timer number in a wave where the row number corresponds to the Device ID global.
+/// This function and ITC_StopITCDeviceTimer are used to correct the ITI for the time it took to collect data, and pre and post processing of data. 
+/// It allows for a real time, start to start, ITI
+Function ITC_StartITCDeviceTimer(panelTitle)
+	string panelTitle
+	//TimerStart = startmstimer
+	
+	string wavePath
+	sprintf wavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
+	string ITCDeviceIDGlobalPathString 
+	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
+	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+	string CycleTimeStorageWavePathString
+	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
+	
+	wave /z CycleTimeStorageWave = $CycleTimeStorageWavePathString
+	if(waveexists($CycleTimeStorageWavePathString) == 0)
+		make /o /n =10 $CycleTimeStorageWavePathString // the size of the wave is limited by the number of igor timers. This will also limit the number of simultaneously active devices possible to 10
+		wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
+//		setDimLabel 1, 0, TimerNumber, CycleTimeStorageWave
+//		setDimLabel 0, -1, DeviceIDGlobal, CycleTimeStorageWave
+	endif
+	
+	variable TimerNumber = startmstimer
+	ASSERT(TimerNumber != -1, "No more ms timers available, Run: ITC_StopAllMSTimers() to reset")
+	CycleTimeStorageWave[ITCDeviceIDGlobal] = TimerNumber // inserts the timer number into the row that corresponds to the device ID global
+	
+End
+//=============================================================================================================================
+/// Stops the timer associated with a particular device
+Function ITC_StopITCDeviceTimer(panelTitle)
+	string panelTitle
+	string CycleTimeStorageWavePathString
+
+	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
+	wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
+	string wavePath
+	sprintf wavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
+	string ITCDeviceIDGlobalPathString 
+	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
+	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+	
+	variable runTime = stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
+	// print "RUN TIME=", runtime
+	return runTime
+
+End
+//=============================================================================================================================
+/// Stops all ms timers
+Function ITC_StopAllMSTimers()
+	variable i
+	for(i = 0; i < 10; i += 1)
+		print "ms timer", i, "stopped.", "Elapsed time:", stopmstimer(i)
+	endfor
+End
+//=============================================================================================================================
+
