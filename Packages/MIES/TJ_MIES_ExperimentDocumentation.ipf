@@ -402,7 +402,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 						
 						// build up the string for the report
 						String changedFactorText
-						sprintf changedFactorText, "HeadStage#%d:%s: %d" layerCounter, keyWave[0][colCounter-2], settingsHistory[rowIndex][colCounter][layerCounter]
+						sprintf changedFactorText, "HeadStage#%d:%s: %d" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter]
 						//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
 						print changedFactorText
 						
@@ -651,7 +651,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 //				if (StringMatch(textDocWave[rowIndex][colCounter][layerCounter], textDocWave[rowIndex-1][colCounter-2][layerCounter]) != 1)
 				// build up the string for the report
 				String changedDocText
-				sprintf changedDocText, ":HeadStage#%d:%s: %s:" layerCounter, incomingTextDocKeyWave[0][colCounter-2], textDocWave[rowIndex][colCounter][layerCounter]
+				sprintf changedDocText, ":HeadStage#%d:%s: %s:" layerCounter, incomingTextDocKeyWave[0][colCounter], textDocWave[rowIndex][colCounter][layerCounter]
 				//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
 //				print changedDocText
 				Note saveDataWave changedDocText
