@@ -301,6 +301,8 @@ if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
 	    	print "TP stopped on independent ITC1600"
           	ITC_StopTPMD(panelTitle)
            	ITC_FinishTestPulseMD(panelTitle)
+ //         	ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
+
       else // if(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) 
 	      string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
 	      SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
@@ -313,30 +315,35 @@ if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
 	              	//Lead board commands
 	               	ITC_StopTPMD(panelTitle)
 	               	ITC_FinishTestPulseMD(panelTitle)                // ITC_StopTPMD(panelTitle)
+//				ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
 	               	// DAP_StopOngoingDataAcqMD(panelTitle)
 	               	//Follower board commands
 	              do
 	                   followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 	                   ITC_StopTPMD(followerPanelTitle)
 	                   ITC_FinishTestPulseMD(followerPanelTitle)
-	                   i += 1
+//	                   ITC_TPDocumentation(followerPanelTitle) // documents the TP Vrest, peak and steady state resistance values.
+                   i += 1
 	              while(i < numberOfFollowerDevices)
 	
 	                
 	           	elseif(numberOfFollowerDevices == 0)
 	              	ITC_StopTPMD(panelTitle)
 	              	ITC_FinishTestPulseMD(panelTitle)
+//				ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
 	               
 	          	endif
 	       elseif(exists(pathToListOfFollowerDevices) == 0)
 	          	ITC_StopTPMD(panelTitle)
 	           	ITC_FinishTestPulseMD(panelTitle)
-	         
+//			ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
+         
 	       endif
 	endif	   
    elseif(DeviceType != 2)
             ITC_StopTPMD(panelTitle)
             ITC_FinishTestPulseMD(panelTitle)
+//            ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
             // ITC_StopTPMD(panelTitle)
         
     endif

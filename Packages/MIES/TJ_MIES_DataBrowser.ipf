@@ -46,7 +46,8 @@ Function DB_PlotDataBrowserWave(panelTitle, SweepName) // Pass in sweep name wit
 	controlinfo check_DataBrowser_Overlay
 	if(v_value == 0)
 		DB_TilePlotForDataBrowser(panelTitle, SweepName)
-		TitleBox ListBox_DataBrowser_NoteDisplay title ="Sweep note: \r " + note(SweepName)
+	//	TitleBox ListBox_DataBrowser_NoteDisplay title ="Sweep note: \r " + note(SweepName)
+		TitleBox ListBox_DataBrowser_NoteDisplay title =DBP_ReturnWaveNote(SweepName)
 	else
 		//OverlayPlotForDataBrowser(SweepName)
 	endif
@@ -213,6 +214,7 @@ Function DB_ButtonProc_NextSweep(ctrlName) : ButtonControl
 	if(SweepToPlot <= LastSweep)
 		SweepToPlotName = DataPath + ":Sweep_" + num2str(SweepToPlot)
 		valdisplay valdisp_DataBrowser_Sweep win = $panelTitle, value = _num:SweepToPlot
+		SetVariable setvar_DataBrowser_WaveNote value= _STR:DBP_ReturnWaveNote($SweepToPlotName)
 		DB_PlotDataBrowserWave(panelTitle, $SweepToPlotName)
 	endif
 
@@ -307,7 +309,17 @@ Function /T DB_ReturnDBPanelName()
 	
 	return panelTitle
 End
-
+//==============================================================================================================================
+Function /T DBP_ReturnWaveNote(SweepName)
+	wave SweepName
+	string WaveNote 
+	WaveNote = "Sweep note: \r " + note(SweepName)
+	
+	return WaveNote
+End
+root:MIES:ITCDevices:ITC1600:Device0:Data:Sweep_3
+DBP_ReturnWaveNote("root:MIES:ITCDevices:ITC1600:Device0:Data:Sweep_3")
+//==============================================================================================================================
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...

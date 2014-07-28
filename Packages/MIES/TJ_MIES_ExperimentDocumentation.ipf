@@ -72,7 +72,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	variable SweepCounter
 	
 	// Location for the saved datawave
-	wave saveDataWave = $saveDataWavePath
+	wave /z saveDataWave = $saveDataWavePath //  " /z " allow for no path to be provided
 	
 	// local variable for the sweep number
 	variable SweepNo = SweepCounter
@@ -376,43 +376,44 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 //					print "new setting value: ", settingsHistory[rowIndex][colCounter][layerCounter]
 //					print "in Row #: ", recentRowIndex
 //					print "old setting value: ", settingsHistory[recentRowIndex][colCounter][layerCounter]
-					
-					if (stringmatch(keyWave[2][colCounter],"-")) 		// if the factor is an on/off, don't do the tolerance checking
-//						print "This is an enable setting...."
-						if (settingsHistory[rowIndex][colCounter][layerCounter] != settingsHistory[recentRowIndex][colCounter][layerCounter]) // see if the enable setting has changed
-							print "****Enable setting changed!"
-							String changedEnableText
-							String onOffText
-							if (settingsHistory[rowIndex][colCounter][layerCounter] == 0)
-								onOffText = "Off"
-							else
-								onOffText = "On"
-							endif
+					if(cmpstr(saveDataWavePath,"") != 0) // prevents attempting to add note to data wave if no data wave path has been provided
+						if (stringmatch(keyWave[2][colCounter],"-")) 		// if the factor is an on/off, don't do the tolerance checking
+	//						print "This is an enable setting...."
+							if (settingsHistory[rowIndex][colCounter][layerCounter] != settingsHistory[recentRowIndex][colCounter][layerCounter]) // see if the enable setting has changed
+								print "****Enable setting changed!"
+								String changedEnableText
+								String onOffText
+								if (settingsHistory[rowIndex][colCounter][layerCounter] == 0)
+									onOffText = "Off"
+								else
+									onOffText = "On"
+								endif
+								
+								sprintf changedEnableText, "HeadStage#%d:%s: %s" layerCounter, keyWave[0][colCounter], onOffText
+								print changedEnableText
+								Note saveDataWave changedEnableText						
+							endif				
+						elseif (abs(settingsHistory[rowIndex][colCounter][layerCounter] - settingsHistory[recentRowIndex][colCounter][layerCounter]) >= str2num(keyWave[2][colCounter])) // is the change greater then the tolerance?
+							print "Factor change!"
+	//						print "col: ", colCounter
+	//						print "layer: ", layerCounter
+	//						print "Factor Changed! ", keyWave[0][colCounter]
 							
-							sprintf changedEnableText, "HeadStage#%d:%s: %s" layerCounter, keyWave[0][colCounter], onOffText
-							print changedEnableText
-							Note saveDataWave changedEnableText						
-						endif				
-					elseif (abs(settingsHistory[rowIndex][colCounter][layerCounter] - settingsHistory[recentRowIndex][colCounter][layerCounter]) >= str2num(keyWave[2][colCounter])) // is the change greater then the tolerance?
-						print "Factor change!"
-//						print "col: ", colCounter
-//						print "layer: ", layerCounter
-//						print "Factor Changed! ", keyWave[0][colCounter]
-						
-						
-						// build up the string for the report
-						String changedFactorText
-						sprintf changedFactorText, "HeadStage#%d:%s: %d" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter]
-						//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
-						print changedFactorText
-						
-						
-						// make the waveNote
-						//Note saveDataWave "Factor Changed!"
-						//Note saveDataWave "Sweep#" + num2str(SweepCounter)
-						//Note saveDataWave "Factor:" + keyWave[0][colCounter]
-						//Note saveDataWave num2str(settingsHistory[rowIndex][colCounter][layerCounter])
-						Note saveDataWave changedFactorText
+							
+							// build up the string for the report
+							String changedFactorText
+							sprintf changedFactorText, "HeadStage#%d:%s: %d" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter]
+							//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
+							print changedFactorText
+							
+							
+							// make the waveNote
+							//Note saveDataWave "Factor Changed!"
+							//Note saveDataWave "Sweep#" + num2str(SweepCounter)
+							//Note saveDataWave "Factor:" + keyWave[0][colCounter]
+							//Note saveDataWave num2str(settingsHistory[rowIndex][colCounter][layerCounter])
+							Note saveDataWave changedFactorText
+						endif
 					endif
 				endif
 			endfor
