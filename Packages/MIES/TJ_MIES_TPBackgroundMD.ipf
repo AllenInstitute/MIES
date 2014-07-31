@@ -753,7 +753,7 @@ End
 
 
 //======================================================================================
-// Takes TP sweep related data produced by TPDelta function and rearranges it, and passes it into ED_CreateWaveNotes function
+/// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function
 Function ITC_TPDocumentation(panelTitle) 
 	string panelTitle
 	string DataFolderPath = HSU_DataFullFolderPathString(panelTitle)
@@ -779,11 +779,11 @@ Function ITC_TPDocumentation(panelTitle)
 	TPKeyWave[1][1] = "Mohm"
 	TPKeyWave[1][2] = "Mohm"
 	
-	controlinfo /w = $panelTitle setvar_Settings_TP_RTolerance
+	controlinfo /w = $panelTitle setvar_Settings_TP_RTolerance // get tolerances from locked DA_Ephys GUI
 	ASSERT(V_Flag > 0, "Non-existing control or window")
 	variable RTolerance = v_value
-	TPKeyWave[2][0] = "1"
-	TPKeyWave[2][1] = num2str(RTolerance)
+	TPKeyWave[2][0] = "1" // Assume a tolerance of 1 mV for V rest
+	TPKeyWave[2][1] = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
 	TPKeyWave[2][2] = num2str(RTolerance)
 			
 	// add data to TPSettingsWave
@@ -794,12 +794,12 @@ Function ITC_TPDocumentation(panelTitle)
 			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
 			TPSettingsWave[0][1][i] = InstResistance[0][j]
 			TPSettingsWave[0][2][i] = SSResistance[0][j]
-			j += 1
+			j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active heastage (no place holder columns), j only increments for active headstages.
 		endif
 	
 	endfor
 	
-	controlinfo /w = $panelTitle SetVar_Sweep
+	controlinfo /w = $panelTitle SetVar_Sweep // Determine the number of the next sweep to be acquired.
 	ASSERT(V_Flag > 0, "Non-existing control or window")
 	
 	variable NextSweep = v_value
@@ -810,12 +810,11 @@ Function ITC_TPDocumentation(panelTitle)
 	else // adds to settings history wave if data has been acquired
 		string SweepName //= DataFolderPath + ":Sweep+_" + num2str(LastSweep)
 		sprintf SweepName, "%s:Data:Sweep_%d" DataFolderPath, LastSweep
+		ASSERT(waveexists($SweepName) > 0, "Sweep/Wave does not exist")
 		print sweepname
 		ED_createWaveNotes(TPSettingsWave, TPKeyWave, SweepName , lastSweep, panelTitle)
 	endif
-//	ED_createWaveNotes(TPSettingsWave, TPKeyWave, SaveDataWavePath, SweepCounter, panelTitle)
 	
 End
-
 
 
