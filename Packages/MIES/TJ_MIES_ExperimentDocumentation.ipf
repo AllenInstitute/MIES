@@ -402,7 +402,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 							
 							// build up the string for the report
 							String changedFactorText
-							sprintf changedFactorText, "HeadStage#%d:%s: %d" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter]
+							sprintf changedFactorText, "HeadStage#%d:%s: %.2f %s" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter], keyWave[1][colCounter]
 							//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
 							print changedFactorText
 							
