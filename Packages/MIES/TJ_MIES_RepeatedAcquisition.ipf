@@ -280,6 +280,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 			DAP_SmoothResizePanel(340, panelTitle)
 			setwindow $panelTitle + "#oscilloscope", hide = 0
 		endif
+		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
 		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
@@ -292,6 +293,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		
 		//killwaves/f TestPulse
 	else
+		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
 		ITC_StopITCDeviceTimer(panelTitle)
 		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
@@ -754,6 +756,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			
 	if(Count < (TotTrials - 1))
 		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
+
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		StartTestPulse(deviceType, deviceNum, panelTitle)
 		// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
@@ -765,6 +769,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		
 		//killwaves/f TestPulse
 	else
+		ITC_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
 		NVAR/z DataAcqState = $wavepath + ":DataAcqState"

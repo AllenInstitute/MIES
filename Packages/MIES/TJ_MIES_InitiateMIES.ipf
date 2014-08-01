@@ -7,6 +7,7 @@ Function IM_InitiateMIES()
 	NewDataFolder /o root:MIES:Amplifiers:Settings
 	NewDataFolder /o root:MIES:Manipulators
 	NewDataFolder /o root:MIES:Camera
+	NewDataFolder /o root:MIES:LabNoteBook // saves history of device settings
 	NewDataFolder /o root:MIES:ITCDevices
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices // stores lists of data related to ITC devices actively acquiring data
 	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:TestPulse // stores lists of data related to ITC devices actively running a test pulse
@@ -70,6 +71,13 @@ Function /T Path_ITCDevicesFolder(panelTitle)
 	string pathToITCDevicesFolder // = Path_MIESfolder(panelTitle) + ":ITCDevices"
 	sprintf pathToITCDevicesFolder, "%s:ITCDevices" Path_MIESfolder(panelTitle)
 	return pathToITCDevicesFolder
+End
+//=========================================================================================
+Function /T Path_LabNoteBookFolder(panelTitle)
+	string panelTitle
+	string pathToLabNoteBookFolder // = Path_MIESfolder(panelTitle) + ":ITCDevices"
+	sprintf pathToLabNoteBookFolder, "%s:LabNoteBook" Path_MIESfolder(panelTitle)
+	return pathToLabNoteBookFolder
 End
 //=========================================================================================
 Function /T Path_WaveBuilderFolder(panelTitle)

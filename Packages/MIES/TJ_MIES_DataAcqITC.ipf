@@ -341,6 +341,8 @@ Function ITC_TestPulseFunc(s)
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				beep 
 				ITC_STOPTestPulse(panelTitle)
+				ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
+
 			endif
 		endif
 	return 0
@@ -354,7 +356,7 @@ Function ITC_STOPTestPulse(panelTitle)
 	CtrlNamedBackground TestPulse, stop
 	//sprintf cmd, "ITCCloseAll" 
 	//execute cmd
-
+//	ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
 		DAP_SmoothResizePanel(-340, panelTitle)
@@ -459,7 +461,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	//execute cmd
 
 	DAP_RestoreTTLState(panelTitle)
-	
+	ITC_TPDocumentation(panelTitle)
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2)
 		Button StartTestPulseButton, win = $panelTitle, disable = 0

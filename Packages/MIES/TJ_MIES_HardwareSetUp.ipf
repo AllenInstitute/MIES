@@ -100,6 +100,16 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	Newdatafolder /o $FullFolderPath
 	Newdatafolder /o $FullFolderPath+":Data"
 	Newdatafolder /o $FullFolderPath+":TestPulse"
+	
+	string DeviceType = stringfromlist(itemsinlist(FullFolderPath, ":") - 2,  FullFolderPath, ":")
+	string DeviceNum = stringfromlist(itemsinlist(FullFolderPath, ":") - 1,  FullFolderPath, ":")
+	
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":KeyWave"
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":settingsHistory"
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":textDocKeyWave"
+	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":textDocumentation"
 End
 //==================================================================================================
 
@@ -338,8 +348,8 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	if(waveexists(root:MIES:Amplifiers:W_telegraphServers) == 1)
 	ControlInfo /w = $panelTitle popup_Settings_Amplifier
 		if(v_value > 1)
-		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0]
-		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1]
+		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0] // serial number
+		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1] // channel ID
 		else
 		ChanAmpAssign[8][HeadStageNo] = nan
 		ChanAmpAssign[9][HeadStageNo] = nan

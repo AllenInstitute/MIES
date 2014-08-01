@@ -24,6 +24,16 @@ Function DM_SaveITCData(panelTitle)
 	getwindow kwFrameOuter wtitle 
 	note $savedDataWaveName, s_value
 	ED_AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
+	
+	//Do this if checked on the DA_Ephys panel
+	ControlInfo /w = $panelTitle check_Settings_SaveAmpSettings
+	variable saveAmpSettingsCheck = v_value
+	if (saveAmpSettingsCheck == 1)
+		AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+		// this is a test function....to be deleted in production version
+		// createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+	endif
+	
 	controlinfo /w = $panelTitle Check_Settings_Append
 	if(v_value == 1)// if option is checked, wave note containing single readings from (async) ADs is made
 		ITC_ADDataBasedWaveNotes($SavedDataWaveName, DeviceType,DeviceNum, panelTitle)
