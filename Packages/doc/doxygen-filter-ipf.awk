@@ -173,10 +173,10 @@ function handleParameter(params, a,  i, str, entry)
   }
 
   # global constants
-  gsub("strconstant","const string",code)
-  gsub("constant","const variable",code)
+  gsub(/\ystrconstant\y/,"const string",code)
+  gsub(/\yconstant\y/,"const variable",code)
   # prevent that doxygen sees elseif as a function call
-  gsub("elseif","else if",code)
+  gsub("\yelseif\y","else if",code)
 
   # code outside of function/macro definitions is "translated" into statements
   if(!insideFunction && !insideMacro && code != "" && substr(code,0,1) != "#")
