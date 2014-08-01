@@ -663,5 +663,34 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 End		
 	
 	
+//======================================================================================
+
+Function ED_SetDocumenting(panelTitle)
+	string panelTitle
 	
+	string ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
+	string ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
+	
+	
+	ChannelStatus = DC_ControlStatusListString("TTL", "Check", panelTitle)
+	ChanTypeWaveNameList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
+End
+//======================================================================================
+Function ED_HeadStageDocumenting(panelTitle)
+	string panelTitle
+	string DataFolderPath = HSU_DataFullFolderPathString(panelTitle)
+	dfref DataFolderRef = $DataFolderPath
+	
+	wave /SDFR = DataFolderRef ChanAmpAssign
+	
+	
+
+End
+//======================================================================================
+Function ED_CommentDocumenting(panelTitle)
+	string panelTitle
+End
+
+//======================================================================================
+
 

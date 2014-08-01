@@ -497,7 +497,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value == 1 || IndexingOnOrOff == 0)// locked indexing or no indexing
 				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)// makes sure test pulse wave scaling is maintained
-					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1)
+					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1) // checks if set has completed one full cycle
 						DAScale = 0
 					endif
 				endif
