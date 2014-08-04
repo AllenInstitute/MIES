@@ -3,9 +3,7 @@
 // DATA ACQ MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 
 /// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
-/// @param WavePath WavePath is a string that contains the path to the device file folder
-/// @param TriggerMode Trigger mode is either 0 or 256. 256 causes the ITC1600 to wait for the external trigger (5V signal to the PCI card). 0 is used to bin all aquisition immediately on all ITC devies.
-/// @param DataAcqOrTP DataAcqOrTP is used to indicate wether data aquistion or a testpulse is ongoing. 0 = Data acquistion. 1 = TP. Certain function handle data acq and Tp slightly differently.
+///
 /// FunctionStartDataAcq determines what device is being started and begins aquisition in the appropriate manner for the device
 /// FunctionStartDataAcq is used when MD support is enabled in the settings tab of DA_ephys. If MD is not enabled, alternate functions are used to run data acquisition.
 /// FunctionStartDataAcq
@@ -99,7 +97,6 @@ End // Function
 //=================================================================================================================
 
 /// @brief Configures ITC DACs
-/// @param ITCDeviceIDGlobal ITCDeviceIDGlobal is the unique number assigned to a ITC device. ITCDeviceIDGlobal can range from 0 to 14.
 /// ITC_ConfigUploadDAC selects the ITC device based on the panelTitle passed into the function.
 /// ITC_ConfigUploadDAC configures all the DAC channels at once using the ITCconfigAllChannels command
 /// ITC_ConfigUploadDAC resets the DAC FIFOs using the ITCUpdateFIFOPositionAll command
@@ -125,9 +122,10 @@ End
 // TP MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 //=================================================================================================================
 /// @brief StartTestPulse start the test pulse when MD support is activated.
-/// @param DeviceType Each ITC device has a DeviceType number: 0 through 5.
-/// @param DeviceNum Each locked ITC device has a number starting from zero for devices of that type. It is different from the device global ID. 
-/// @param DeviceNum Ex. Two ITC18s would always have the device number 0 and 1 regardless of the number of other ITC devies connected of other types.
+/// @param deviceType Each ITC device has a DeviceType number: 0 through 5.
+/// @param deviceNum Each locked ITC device has a number starting from zero for devices of that type. It is different from the device global ID.
+///                  Ex. Two ITC18s would always have the device number 0 and 1 regardless of the number of other ITC devies connected of other types.
+/// @param panelTitle panel title
 /// StartTestPulse handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
 /// StartTestPulse

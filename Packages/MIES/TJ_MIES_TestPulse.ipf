@@ -772,7 +772,7 @@ Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	return NoYes
 End
 
-///@breif Creates a square pulse wave at a given frequency
+///@brief Creates a square pulse wave at a given frequency
 //Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 //	string panelTitle
 //	variable frequency
