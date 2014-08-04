@@ -66,6 +66,8 @@ Function /T Path_AmpSettingsFolder(panelTitle)
 	return pathToAmpSettingsFolder
 End
 //=========================================================================================
+
+/// @todo take no argument as it is not used
 Function /T Path_ITCDevicesFolder(panelTitle)
 	string panelTitle
 	string pathToITCDevicesFolder // = Path_MIESfolder(panelTitle) + ":ITCDevices"

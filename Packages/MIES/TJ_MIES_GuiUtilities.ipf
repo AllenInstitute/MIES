@@ -3,18 +3,15 @@
 static constant DISABLE_CONTROL_BIT = 2
 static constant HIDDEN_CONTROL_BIT  = 1
 
-/// Show a GUI control in the given window
+Constant CHECKBOX_SELECTED     = 1
+Constant CHECKBOX_UNSELECTED   = 0
+ 
+/// @brief Show a GUI control in the given window
 Function ShowControl(win, control)
 	string win, control
 
-	string errmsg
-
 	ControlInfo/W=$win $control
-
-	if(V_flag == 0)
-		sprintf errmsg, "The control %s does not exist in the window %s\r", control, win
-		Abort errmsg
-	endif
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if((V_disable & HIDDEN_CONTROL_BIT) == 0)
 		return NaN
@@ -23,7 +20,7 @@ Function ShowControl(win, control)
 	ModifyControl $control win=$win, disable=(V_disable & ~HIDDEN_CONTROL_BIT)
 End
 
-/// Show a list of GUI controls in the given window
+/// @brief Show a list of GUI controls in the given window
 Function ShowListOfControls(win, controlList)
 	string win, controlList
 
@@ -36,18 +33,12 @@ Function ShowListOfControls(win, controlList)
 	endfor
 End
 
-/// Hide a GUI control in the given window
+/// @brief Hide a GUI control in the given window
 Function HideControl(win, control)
 	string win, control
 
-	string errmsg
-
 	ControlInfo/W=$win $control
-
-	if(V_flag == 0)
-		sprintf errmsg, "The control %s does not exist in the window %s\r", control, win
-		Abort errmsg
-	endif
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if(V_disable & HIDDEN_CONTROL_BIT)
 		return NaN
@@ -56,7 +47,7 @@ Function HideControl(win, control)
 	ModifyControl $control win=$win, disable=(V_disable | HIDDEN_CONTROL_BIT)
 End
 
-/// Hide a list of GUI controls in the given window
+/// @brief Hide a list of GUI controls in the given window
 Function HideListOfControls(win, controlList)
 	string win, controlList
 
@@ -69,18 +60,12 @@ Function HideListOfControls(win, controlList)
 	endfor
 End
 
-/// Enable a GUI control in the given window
+/// @brief Enable a GUI control in the given window
 Function EnableControl(win, control)
 	string win, control
 
-	string errmsg
-
 	ControlInfo/W=$win $control
-
-	if(V_flag == 0)
-		sprintf errmsg, "The control %s does not exist in the window %s\r", control, win
-		Abort errmsg
-	endif
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if( (V_disable & DISABLE_CONTROL_BIT) == 0)
 		return NaN
@@ -89,7 +74,7 @@ Function EnableControl(win, control)
 	ModifyControl $control win=$win, disable=(V_disable & ~DISABLE_CONTROL_BIT)
 End
 
-/// Enable a list of GUI controls in the given window
+/// @brief Enable a list of GUI controls in the given window
 Function EnableListOfControls(win, controlList)
 	string win, controlList
 
@@ -102,18 +87,12 @@ Function EnableListOfControls(win, controlList)
 	endfor
 End
 
-/// Disable a GUI control in the given window
+/// @brief Disable a GUI control in the given window
 Function DisableControl(win, control)
 	string win, control
 
-	string errmsg
-
 	ControlInfo/W=$win $control
-
-	if(V_flag == 0)
-		sprintf errmsg, "The control %s does not exist in the window %s\r", control, win
-		Abort errmsg
-	endif
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if(V_disable & DISABLE_CONTROL_BIT)
 		return NaN
@@ -122,7 +101,7 @@ Function DisableControl(win, control)
 	ModifyControl $control win=$win, disable=(V_disable | DISABLE_CONTROL_BIT)
 End
 
-/// Disable a list of GUI controls in the given window
+/// @brief Disable a list of GUI controls in the given window
 Function DisableListOfControls(win, controlList)
 	string win, controlList
 
@@ -133,4 +112,111 @@ Function DisableListOfControls(win, controlList)
 		ctrl = StringFromList(i,controlList)
 		DisableControl(win,ctrl)
 	endfor
+End
+
+/// @name Control types from ControlInfo
+/// @{
+Constant CONTROL_TYPE_CHECKBOX    = 2
+Constant CONTROL_TYPE_POPUPMENU   = 3
+Constant CONTROL_TYPE_VALDISPLAY  = 4
+Constant CONTROL_TYPE_SETVARIABLE = 5
+/// @}
+
+/// @brief Returns one if the checkbox is selected, zero if it is unselected
+Function GetCheckBoxState(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+	return V_Value
+End
+
+/// @brief Set the state of the checkbox
+Function SetCheckBoxState(win,control,state)
+	string win, control
+	variable state
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+
+	CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
+End
+
+/// @brief Returns the contents of a SetVariable
+Function GetSetVariable(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control	
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+	return V_Value
+end
+
+/// @brief Returns the current PopupMenu item as string
+Function/S GetPopupMenuString(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	return S_Value
+End
+
+/// @brief Returns the zero-based index of a PopupMenu
+Function GetPopupMenuIndex(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	ASSERT(V_Value >= 1,"Invalid index")
+	return V_Value - 1
+End
+
+/// @brief Sets the zero-based index of the PopupMenu
+Function SetPopupMenuIndex(win, control, index)
+	string win, control
+	variable index
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	ASSERT(index >= 0,"Invalid index")
+	PopupMenu $control win=$win, mode=(index+1)
+End
+
+/// @brief Returns the contents of a ValDisplay
+Function/S GetValDisplayAsString(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_VALDISPLAY, "Control is not a val display")
+	return S_value
+End
+
+/// @brief Set a ValDisplay
+///
+/// The variable var can be formatted using format.
+Function SetValDisplaySingleVariable(win, control, var, [format])
+	string win, control
+	variable var
+	string format
+
+	string formattedString
+
+	if(ParamIsDefault(format))
+		formattedString = num2istr(var)
+	else
+		sprintf formattedString, format, var
+	endif
+
+	// Don't update if the content does not change, prevents flickering
+	if(CmpStr(GetValDisplayAsString(win, control), formattedString) == 0)
+		return NaN
+	endif
+
+	ValDisplay $control win=$win, value=#formattedString
 End

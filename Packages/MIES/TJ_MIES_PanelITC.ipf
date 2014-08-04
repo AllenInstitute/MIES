@@ -7,6 +7,9 @@ StrConstant ITC1600_FIRST_DEVICE         = "ITC1600_Dev_0"
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
 
+/// @todo replace all literal occurences of these strings
+StrConstant DEVICE_TYPES      = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
+StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
