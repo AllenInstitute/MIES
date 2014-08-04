@@ -633,6 +633,12 @@ Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff
 		variable Amplitude, Duration, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
 		variable phase = (abs(enoise(2)) * Pi)
 		variable NumberOfBuildWaves = floor((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
+
+		if(!IsFinite(phase) || !IsFinite(Duration) || !IsFinite(NumberOfBuildWaves))
+			print "Could not create a new pink/brown noise wave as the input values were non-finite."
+			return NaN
+		endif
+
 		make /free /n = (Duration / 0.005, NumberOfBuildWaves) BuildWave
 		SetScale /P x 0,0.005,"ms", BuildWave
 		variable Frequency = HighPassCutOff
