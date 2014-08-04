@@ -372,7 +372,7 @@ Function TP_UpdateTPBufferSizeGlobal(panelTitle)
 End
 //=============================================================================================
 // Calculate input resistance simultaneously on array so it is fast
-ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
+Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 				string panelTitle
 				string InputDataPath
 				string StringPath
