@@ -11,7 +11,7 @@ Function ShowControl(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if((V_disable & HIDDEN_CONTROL_BIT) == 0)
 		return NaN
@@ -38,7 +38,7 @@ Function HideControl(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if(V_disable & HIDDEN_CONTROL_BIT)
 		return NaN
@@ -65,7 +65,7 @@ Function EnableControl(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if( (V_disable & DISABLE_CONTROL_BIT) == 0)
 		return NaN
@@ -92,7 +92,7 @@ Function DisableControl(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	if(V_disable & DISABLE_CONTROL_BIT)
 		return NaN
@@ -127,7 +127,7 @@ Function GetCheckBoxState(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
 	return V_Value
 End
@@ -138,8 +138,8 @@ Function SetCheckBoxState(win,control,state)
 	variable state
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
 
 	CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
 End
@@ -149,8 +149,8 @@ Function GetSetVariable(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control	
-	ASSERT(V_flag > 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 	return V_Value
 end
 
@@ -159,8 +159,8 @@ Function/S GetPopupMenuString(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	return S_Value
 End
 
@@ -169,8 +169,8 @@ Function GetPopupMenuIndex(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	ASSERT(V_Value >= 1,"Invalid index")
 	return V_Value - 1
 End
@@ -181,8 +181,8 @@ Function SetPopupMenuIndex(win, control, index)
 	variable index
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	ASSERT(index >= 0,"Invalid index")
 	PopupMenu $control win=$win, mode=(index+1)
 End
@@ -192,8 +192,8 @@ Function/S GetValDisplayAsString(win, control)
 	string win, control
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag > 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_VALDISPLAY, "Control is not a val display")
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_VALDISPLAY, "Control is not a val display")
 	return S_value
 End
 
