@@ -1,6 +1,5 @@
 Packages/doc/latex
 Packages/doc/html
-Packages/doc/*.log
 *.orig
 *.rej
 *.T0

@@ -1361,7 +1361,7 @@ End
 ///Each window is appended with a serial number for the amplifier (/S) and a title designating which 
 ///headstages it controls (/T). You may also assign configuations (.mcc files) to a window of your 
 ///choice. Add the file path to the configuation after /C. The file path for MC700B.exe must be the 
-///default path (C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe) 
+///default path (C:\\Program Files (x86)\\Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe)
 ///or else you must change the path in OpenAllMCC().
 ///
 

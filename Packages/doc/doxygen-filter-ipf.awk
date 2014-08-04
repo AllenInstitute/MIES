@@ -2,8 +2,8 @@
 # This awk script serves as input filter for Igor procedures and produces a C-ish version of the declarations
 # Tested with Igor Pro 6.3(beta) and doxygen 1.8.1.1
 #
-# Thomas Braun: 6/2014
-# Version: 0.2
+# Thomas Braun: 7/2014
+# Version: 0.21
 
 # Supported Features:
 # -Functions
@@ -11,7 +11,6 @@
 # -File constants
 
 # TODO
-# - handle optional arguments properly
 # - don't delete the function/macro subType
 
 BEGIN{
@@ -40,13 +39,20 @@ function splitIntoWords(str, a, numEntries)
 # Split params into words and prefix each with "__Param__$i"
 # where $i is increased for every parameter
 # Returns the concatenation of all prefixed parameters
-function handleParameter(params, a, i, str)
+function handleParameter(params, a,  i, str, entry)
 {
   numParams = splitIntoWords(params, a)
   str=""
+  entry=""
   for(i=1; i <= numParams; i++)
   {
-    str = str "__Param__" i " " a[i]
+    # convert igor optional parameters to something doxygen understands
+    if(gsub(/[\[\]]/,"",a[i]))
+      entry = a[i] " = defaultValue"
+    else
+      entry = a[i]
+
+    str = str "__Param__" i " " entry
     if(i < numParams)
      str = str ", "
   }
@@ -109,9 +115,6 @@ function handleParameter(params, a, i, str)
     {
       paramStr = substr(code,RSTART+1,RLENGTH-2)
 
-      # convert optional parameters to normal parameters
-      gsub(/[\[\]]/,"",paramStr)
-
       paramStrWithTypes = handleParameter(paramStr, params)
       paramsToHandle = numParams
       # print "paramStr __ " paramStr
@@ -170,10 +173,10 @@ function handleParameter(params, a, i, str)
   }
 
   # global constants
-  gsub("strconstant","const string",code)
-  gsub("constant","const variable",code)
+  gsub(/\ystrconstant\y/,"const string",code)
+  gsub(/\yconstant\y/,"const variable",code)
   # prevent that doxygen sees elseif as a function call
-  gsub("elseif","else if",code)
+  gsub("\yelseif\y","else if",code)
 
   # code outside of function/macro definitions is "translated" into statements
   if(!insideFunction && !insideMacro && code != "" && substr(code,0,1) != "#")
