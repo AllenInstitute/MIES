@@ -556,120 +556,119 @@ ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the
 // instantaneous
 /// In order to allow TP_Delta to be threadsafe it uses global variables (controlinfo is not threadsafe).
 // ThreadSafe Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
-				string panelTitle
-				string InputDataPath
-				NVAR DurationG = $InputDataPath + ":Duration" // number of points in half the test pulse
-				NVAR AmplitudeIC = $InputDataPath + ":AmplitudeIC"	
-				NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"	
-				AmplitudeIC = abs(AmplitudeIC)
-				AmplitudeVC =  abs(AmplitudeVC)
-			//	variable Duration = DurationG  
-				wave TPWave = $InputDataPath + ":TestPulseITC"
-			//	print "duration global =",durationG
-			//	variable Duration = (deltax(TPWave) / 0.005) * DurationG  // remove this line for non MD test pulse method Total points in TP wave // equals twice the number of points in the TP
-				variable Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
-			//	print "duration local = ", duration
-			//	variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
-				variable BaselineSteadyStateStartTime =(0.1 * duration)
-			//	variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
-				variable BaselineSteadyStateEndTime = (0.24 * Duration)
-			//	variable TPSSEndTime = (0.95*((Duration * 0.0075)))
-				variable TPSSEndTime = (0.74 * duration)
-			//	variable TPInstantaneouseOnsetTime = (Duration / 400) + 0.03 // starts a tenth of a second after pulse to exclude cap transients - this should probably not be hard coded
-				variable TPInstantaneouseOnsetTime = (0.252 * Duration)
-			//	print "PeakOnset =",	TPInstantaneouseOnsetTime
-				variable DimOffsetVar = DimOffset(TPWave, 0) 
-				variable DimDeltaVar = DimDelta(TPWave, 0)
-				variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
-				variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
-				variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod	
-				variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
-				variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-				variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
-				NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
-				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
-			//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
-				duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
-				duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
-				duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
-				
-			//	average the steady state wave	
-				MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
-				avgTPSS /= dimsize(TPSS, 0)
+			// 	string panelTitle
+			// 	string InputDataPath
+			// 	NVAR DurationG = $InputDataPath + ":Duration" // number of points in half the test pulse
+			// 	NVAR AmplitudeIC = $InputDataPath + ":AmplitudeIC"
+			// 	NVAR AmplitudeVC = $InputDataPath + ":AmplitudeVC"
+			// 	AmplitudeIC = abs(AmplitudeIC)
+			// 	AmplitudeVC =  abs(AmplitudeVC)
+			// //	variable Duration = DurationG
+			// 	wave TPWave = $InputDataPath + ":TestPulseITC"
+			// //	print "duration global =",durationG
+			// //	variable Duration = (deltax(TPWave) / 0.005) * DurationG  // remove this line for non MD test pulse method Total points in TP wave // equals twice the number of points in the TP
+			// 	variable Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
+			// //	print "duration local = ", duration
+			// //	variable BaselineSteadyStateStartTime = (0.75 * (Duration / 400))
+			// 	variable BaselineSteadyStateStartTime =(0.1 * duration)
+			// //	variable BaselineSteadyStateEndTime = (0.95 * (Duration / 400))
+			// 	variable BaselineSteadyStateEndTime = (0.24 * Duration)
+			// //	variable TPSSEndTime = (0.95*((Duration * 0.0075)))
+			// 	variable TPSSEndTime = (0.74 * duration)
+			// //	variable TPInstantaneouseOnsetTime = (Duration / 400) + 0.03 // starts a tenth of a second after pulse to exclude cap transients - this should probably not be hard coded
+			// 	variable TPInstantaneouseOnsetTime = (0.252 * Duration)
+			// //	print "PeakOnset =",	TPInstantaneouseOnsetTime
+			// 	variable DimOffsetVar = DimOffset(TPWave, 0)
+			// 	variable DimDeltaVar = DimDelta(TPWave, 0)
+			// 	variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
+			// 	variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
+			// 	variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
+			// 	variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
+			// 	variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
+			// 	variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+			// 	NVAR NoOfActiveDA = $InputDataPath + ":NoOfActiveDA"
+			// 	SVAR ClampModeString = $InputDataPath + ":ClampModeString"
+			// //	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
+			// 	duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
+			// 	duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
+			// 	duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
+			//
+			// //	average the steady state wave
+			// 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
+			// 	avgTPSS /= dimsize(TPSS, 0)
  				//avgTPSS = abs(avgTPSS)
- 			
- 			//	average the baseline wave	
-				MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
-				AvgBaselineSS /= dimsize(BaselineSS, 0)
-				//AvgBaselineSS = abs(AvgBaselineSS)
-			
-			//	calculate the difference between the steady state and the baseline	
-				duplicate /free AvgTPSS, AvgDeltaSS
-				AvgDeltaSS -= AvgBaselineSS
-				AvgDeltaSS = abs(AvgDeltaSS)
-			
-			//	create wave that will hold instantaneous average
-				wavestats Instantaneous
-				variable i = 0 
-				variable columnsInWave = dimsize(Instantaneous, 1)
-				make /FREE /n = (1, columnsInWave) InstAvg
-				variable OneDInstMax
-				variable OndDBaseline
 
-				do
-					matrixOp /Free Instantaneous1d = col(Instantaneous, i + NoOfActiveDA)
-					wavestats Instantaneous1d
-					OneDInstMax = v_max
-					OndDBaseline = AvgBaselineSS[0][i + NoOfActiveDA]	
+			//	average the baseline wave
+			// 	MatrixOp /free /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
+			// 	AvgBaselineSS /= dimsize(BaselineSS, 0)
+			// 	//AvgBaselineSS = abs(AvgBaselineSS)
+			//
+			// //	calculate the difference between the steady state and the baseline
+			// 	duplicate /free AvgTPSS, AvgDeltaSS
+			// 	AvgDeltaSS -= AvgBaselineSS
+			// 	AvgDeltaSS = abs(AvgDeltaSS)
+			//
+			// //	create wave that will hold instantaneous average
+			// 	wavestats Instantaneous
+			// 	variable i = 0
+			// 	variable columnsInWave = dimsize(Instantaneous, 1)
+			// 	make /FREE /n = (1, columnsInWave) InstAvg
+			// 	variable OneDInstMax
+			// 	variable OndDBaseline
 
-					if(OneDInstMax > OndDBaseline) // handles positive or negative TPs
-						Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
-					else
-						Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
-					endif
-					//print InstAvg[0][i + NoOfActiveDA]
-					i += 1
-				while(i < (columnsInWave - NoOfActiveDA))
+			// 	do
+			// 		matrixOp /Free Instantaneous1d = col(Instantaneous, i + NoOfActiveDA)
+			// 		wavestats Instantaneous1d
+			// 		OneDInstMax = v_max
+			// 		OndDBaseline = AvgBaselineSS[0][i + NoOfActiveDA]
 
-				//Multithread InstAvg = abs(InstAvg)
-				Multithread InstAvg -= AvgBaselineSS
-				Multithread InstAvg = abs(InstAvg)
-				//Multithread AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
-				
-				//variable columns =  (dimsize(DeltaSS,1)// - NoOfActiveDA) //- 1
-				//print "columns " ,columns
-				duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS $InputDataPath + ":SSResistance"
-				wave SSResistance = $InputDataPath + ":SSResistance"
-				SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
-				
-				duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg $InputDataPath + ":InstResistance"
-				wave InstResistance = $InputDataPath + ":InstResistance"
-				SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
+			// 		if(OneDInstMax > OndDBaseline) // handles positive or negative TPs
+			// 			Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
+			// 		else
+			// 			Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
+			// 		endif
+			// 		//print InstAvg[0][i + NoOfActiveDA]
+			// 		i += 1
+			// 	while(i < (columnsInWave - NoOfActiveDA))
 
-				SVAR ClampModeString = $InputDataPath + ":ClampModeString"
-				string decimalAdjustment
-			 	i = 0
-				do
-					if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
-						Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000 // R = V / I
-						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
-						SSResistance[0][i] = str2num(decimalAdjustment)
+			// 	//Multithread InstAvg = abs(InstAvg)
+			// 	Multithread InstAvg -= AvgBaselineSS
+			// 	Multithread InstAvg = abs(InstAvg)
+			// 	//Multithread AvgInstantaneousDelta = abs(AvgInstantaneousDelta)
+			//
+			// 	//variable columns =  (dimsize(DeltaSS,1)// - NoOfActiveDA) //- 1
+			// 	//print "columns " ,columns
+			// 	duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS $InputDataPath + ":SSResistance"
+			// 	wave SSResistance = $InputDataPath + ":SSResistance"
+			// 	SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
+			//
+			// 	duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg $InputDataPath + ":InstResistance"
+			// 	wave InstResistance = $InputDataPath + ":InstResistance"
+			// 	SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
 
-						Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
-						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
-						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
-					else
- 						Multithread SSResistance[0][i] = ((AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]) * 1000
- 						sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
-						Multithread SSResistance[0][i] = str2num(decimalAdjustment)
- 						
- 						Multithread InstResistance[0][i] = ((AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]) * 1000
- 						sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
-						Multithread InstResistance[0][i] = str2num(decimalAdjustment)						
-					endif
-					i += 1
-				while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
-			End
+			// 	SVAR ClampModeString = $InputDataPath + ":ClampModeString"
+			// 	string decimalAdjustment
+			//  	i = 0
+			// 	do
+			// 		if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
+			// 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000 // R = V / I
+			// 			sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
+			// 			SSResistance[0][i] = str2num(decimalAdjustment)
+
+			// 			Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
+			// 			sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
+			// 			Multithread InstResistance[0][i] = str2num(decimalAdjustment)
+			// 		else
+						// Multithread SSResistance[0][i] = ((AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]) * 1000
+						// sprintf decimalAdjustment, "%0.3g", SSResistance[0][i]
+			// 			Multithread SSResistance[0][i] = str2num(decimalAdjustment)
+						// Multithread InstResistance[0][i] = ((AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]) * 1000
+						// sprintf decimalAdjustment, "%0.3g", InstResistance[0][i]
+			// 			Multithread InstResistance[0][i] = str2num(decimalAdjustment)
+			// 		endif
+			// 		i += 1
+			// 	while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
+			// End
 			
 Function TP_CalculateResistance(panelTitle)
 	string panelTitle
