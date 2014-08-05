@@ -212,26 +212,41 @@ Function HSU_UnlockDevice(panelTitle)
 End
 //==================================================================================================
 
-/// Query the device lock status
+/// @brief Query the device lock status
 /// @param   panelTitle name of the device panel
-/// @param   silentCheck (optional) Alert the user, 0 (default) means yes, everything else no
-/// @returns device lock status, 1 is locked, 0 is unlocked
-Function HSU_DeviceLockCheck(panelTitle,[silentCheck])
+/// @param   silentCheck (optional) Alert the user if it is not locked, 0 (default) means yes, everything else no
+/// @returns device lock status, 1 if unlocked, 0 if locked
+Function HSU_DeviceIsUnlocked(panelTitle, [silentCheck])
 	string panelTitle
 	variable silentCheck
+
+	variable parseable
+	variable validDeviceType
+	variable validDeviceNumber
+	string deviceType, deviceNumber
 
     if(ParamIsDefault(silentCheck))
         silentCheck = 0
     endif
 
-	ControlInfo /W = $panelTitle button_SettingsPlus_LockDevice
-	if(V_disable == 1)
-	    if(!silentCheck)
-	        DoAlert /t = "Hardware Status"  0, "A ITC device must be locked (see Hardware tab) to proceed"
-	    endif
-		return 1
+    parseable = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+    if(parseable)
+		validDeviceType   = ( WhichListItem(deviceType, DEVICE_TYPES)     != -1 )
+		validDeviceNumber = ( WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1 )
+    else
+		validDeviceType   = 0
+		validDeviceNumber = 0
 	endif
-	return 0
+
+	if(parseable && validDeviceType && validDeviceNumber)
+		return 0
+	endif
+
+    if(!silentCheck)
+	    DoAlert /t = "Hardware Status"  0, "A ITC device must be locked (see Hardware tab) to proceed"
+	endif
+
+	return 1
 End
 //==================================================================================================
 

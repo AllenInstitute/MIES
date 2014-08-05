@@ -3345,7 +3345,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	setdatafolder root:
 	string panelTitle = DAP_ReturnPanelName()
 	variable DataAcqOrTP = 0
-	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
+	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
 	
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string DataAcqStatePath = WavePath + ":DataAcqState"
@@ -3440,7 +3440,7 @@ Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 	variable DataAcqOrTP = 0
 	
 	// prevents initiation of data acquisition if panel is not locked to a device
-	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  
+	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 	
 	string ITCDeviceFolderPathString
 	sprintf ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
