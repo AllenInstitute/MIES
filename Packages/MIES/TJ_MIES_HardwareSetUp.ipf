@@ -118,7 +118,7 @@ Function/s HSU_GetDeviceType(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	return S_value
 End
 
@@ -127,7 +127,7 @@ Function HSU_GetDeviceTypeIndex(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	return V_value - 1
 End
 
@@ -135,7 +135,7 @@ Function/s HSU_GetDeviceNumber(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_moreSettings_DeviceNo
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	return S_value
 End
 

@@ -3102,7 +3102,7 @@ Function DAP_DeviceIsFollower(panelTitle)
 	string panelTitle
 
 	ControlInfo/W=$panelTitle setvar_Hardware_Status
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	return cmpstr(S_value,FOLLOWER) == 0
 End
@@ -3117,7 +3117,7 @@ Function DAP_DeviceIsLeader(panelTitle)
 	string panelTitle
 
 	ControlInfo/W=$panelTitle setvar_Hardware_Status
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	return cmpstr(S_value,LEADER) == 0
 End
