@@ -14,6 +14,7 @@ StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(1376,561,1846,1274)
+	SetWindow $s_name, hook(cleanup)=DAP_WindowHook
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2734,16 +2735,19 @@ End
 //=========================================================================================
 
 
-Function CheckProc(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_WindowHook(s)
+	STRUCT WMWinHookStruct &s
 
-	switch( cba.eventCode )
-		case 2: // mouse up
-			Variable checked = cba.checked
-			break
-		case -1: // control being killed
-			checked = 0
-			break
+	string panelTitle
+
+	switch(s.eventCode)
+		case EVENT_KILL_WINDOW_HOOK:
+			panelTitle = s.winName
+			if(!HSU_DeviceIsUnlocked(panelTitle,silentCheck=1))
+				HSU_UnlockDevice(panelTitle)
+			endif
+			return 1
+		break
 	endswitch
 
 	return 0
