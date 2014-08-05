@@ -169,3 +169,17 @@ Function/S GetListOfYokedDACs()
 	return ""
 End
 //=========================================================================================
+
+static Function IgorBeforeQuitHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	DAP_UnlockAllDevices()
+	return 0
+End
+
+static Function IgorBeforeNewHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	DAP_UnlockAllDevices()
+	return 0
+End

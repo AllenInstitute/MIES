@@ -4671,3 +4671,25 @@ Function DAP_SetVarProc_TPDuration(ctrlName,varNum,varStr,varName) : SetVariable
 
 End
 //=========================================================================================
+
+Function DAP_UnlockAllDevices()
+
+	string list = DAP_ListOfLockedDevs()
+	string win
+	variable i, numItems
+
+	// unlock the first ITC1600 device as that might be yoking other devices
+	if(WhichListItem(ITC1600_FIRST_DEVICE,list) != -1)
+		HSU_UnlockDevice(ITC1600_FIRST_DEVICE)
+	endif
+
+	// refetch the, possibly changed, list of locked devices and unlock them all
+	list = DAP_ListOfLockedDevs()
+	numItems = ItemsInList(list)
+	for(i=0; i < numItems; i+=1)
+		win = StringFromList(i, list)
+		HSU_UnlockDevice(win)
+	endfor
+
+	ASSERT(ItemsInList(DAP_ListOfLockedDevs()) == 0, "Missed to unlock some devices")
+End
