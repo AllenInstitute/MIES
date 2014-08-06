@@ -1530,6 +1530,9 @@ Function AI_CenterAndShowAllMCC()
 	sprintf cmd, "nircmd.exe win show title \"%s\"", curMCC
 	ExecuteScriptText cmd
 End
+//==================================================================================================
+
+/// This function closes all of the MCC windows. A window may be closed normally and this will still work.
 
 Function AI_CloseAllMCC()
 	//Need to figure out if windows can be tiled by nircmd
