@@ -3419,6 +3419,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	else // data aquistion is ongoing
 		DataAcqState = 0
 		DAP_StopOngoingDataAcquisition(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
@@ -3513,6 +3514,7 @@ Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 		DataAcqState = 0
 		// DAP_StopOngoingDataAcqMD(panelTitle)
 		Yoked_ITCStopDataAcq(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
 		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif		
 		
@@ -3537,7 +3539,6 @@ Function DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff) // returns 1 if any
 	endif
 	
 	if(IndexingOnOFF == 1)
-	
 		if(DAP_CheckForSetOnActiveChannel(panelTitle, "DA", "Popup", "DA_IndexEnd") == 1)
 			print "An active DA channel does not have a indexing end wave selected"
 			ActiveChanWithoutOutputSelected = 1
@@ -3573,19 +3574,27 @@ Function DAP_CheckForSetOnActiveChannel(panelTitle, DAorTTL, WaveOrPopup, Channe
 	
 	variable MinChanSelection
 	if(stringmatch(DAorTTL, "DA") == 1)
-	MinChanSelection = 3
+		MinChanSelection = 3
+		if(cmpstr(WaveorPopup,"popup") == 0)
+			MinChanSelection -= 1 // handles the fact that test pulse isn't listed in index end wave
+		endif
 	elseif(stringmatch(DAorTTL, "TTL") == 1)
-	MinChanSelection = 2
+		MinChanSelection = 2
 	endif 
 	
-	for(i = 0; i < itemsinlist(ChannelStatusLIst); i += 1)
+	variable ListSize =  itemsinlist(ChannelStatusLIst)
+//	print waveorpopup
+	for(i = 0; i < ListSize; i += 1)
 		channelStatus = str2num(stringfromlist(i, ChannelStatusLIst, ";"))
 		channelSelection =  str2num(stringfromlist(i, ListNoOfPopupSelections, ";"))
+//		print "channel selection =", channelSelection
+//		print "channel status =", channelStatus
 		if(ChannelStatus == 1 && ChannelSelection < MinChanSelection)
 			ChannelWithoutSetYesOrNo = 1
 			return ChannelWithoutSetYesOrNo
 		endif				
 	endfor
+	
 	ChannelWithoutSetYesOrNo = 0
 	return ChannelWithoutSetYesOrNo
 End
@@ -3813,7 +3822,7 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 		endif
 	endif
 	
-	if(stringmatch(ctrlname,"*_DA_*") == 1)
+	if(stringmatch(ctrlname,"Wave_DA_*") == 1)
 		if(popnum == 2)
 			popupmenu $ctrlname win = $panelTitle, mode = 3// prevents the user from selecting the testpulse
 		endif

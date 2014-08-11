@@ -27,14 +27,14 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 			DACIndexingStorageWave[0][i] = v_value
 			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_0" + num2str(i)
 			controlInfo/w = $panelTitle $DACPopUpNameIndexEnd
-			DACIndexingStorageWave[1][i] = v_value
+			DACIndexingStorageWave[1][i] = v_value + 1 // added " +1 " because indexing end no longer has test pulse listed *******************
 		else
 			DACPopUpNameIndexStart = "Wave_DA_"+num2str(i)
 			controlInfo /w = $panelTitle $DACPopUpNameIndexStart
 			DACIndexingStorageWave[0][i] = v_value
 			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_"+num2str(i)
 			controlInfo /w =$panelTitle $DACPopUpNameIndexEnd
-			DACIndexingStorageWave[1][i] = v_value
+			DACIndexingStorageWave[1][i] = v_value + 1 // added " +1 " because indexing end no longer has test pulse listed *******************
 		endif
 	endfor 
 		
@@ -288,7 +288,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			ListStartNo = v_value
 			popMenuIndexEndName = "Popup_DA_IndexEnd_0" + num2str(i)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ListEndNo = v_value
+			ListEndNo = v_value + 1 // " +1 " added to compensate for test pulse not being listed in index end popup menu ************************
 			ListLength = abs(ListStartNo - ListEndNo) + 1
 			index = indexNo
 			if(listLength <= IndexNo)
@@ -316,7 +316,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			ListStartNo = v_value
 			popMenuIndexEndName = "Popup_TTL_IndexEnd_0" + num2str(i)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ListEndNo = v_value
+			ListEndNo = v_value 
 			ListLength = abs(ListStartNo - ListEndNo) + 1
 			index = indexNo
 		
@@ -354,7 +354,7 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 			ChannelSets = v_value
 			popMenuIndexEndName = "Popup_DA_IndexEnd_0" + num2str(i)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ChannelSets -= v_value
+			ChannelSets -= (v_value + 1) // added " +1 " to compensate for test pulse not being listed in indexing end wave *******************
 			ChannelSets = abs(ChannelSets)
 			MaxSets = max(MaxSets,ChannelSets)
 		endif	
@@ -381,6 +381,7 @@ End
 
 Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
 // works for unlocked (independent) indexing
+// index override is the same as indexing off
 	string panelTitle
 	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
 	variable MaxNoOfSweeps = 0
@@ -432,13 +433,15 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, Inde
 	
 	controlinfo /w = $panelTitle $DAorTTL_cntrlName// check if indexing is activated
 	IndexStart = v_value
+	print "index start =", indexStart
 	
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing// checks to if indexing is activated
 	if(v_value == 0)
 		IndexEnd = indexStart
 	else
 		controlinfo /w = $panelTitle $DAorTTL_indexEndName
-		IndexEnd = v_value 
+		IndexEnd = v_value  + 1 // " +1 " is added to compensate for the fact that the index end wave list does not have the test pulse listed. ***********************
+		print "indexing on", "index  end =", indexend
 	endif
 	
 	If(IndexOverRide == 1)
@@ -451,6 +454,7 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, Inde
 	
 	do
 		Setname = stringfromlist(i, setList, ";")
+		print "set name =", setname
 		NumberOfTrialsAcrossSets += IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
 		i += 1
 	while(i < (max(indexstart, indexend) - (ListOffset - 1)))
@@ -470,13 +474,16 @@ Function IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)// set name is the
 	if(DAorTTL == 1)
 		WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
+	
 	if(stringmatch(setname, "") == 1)
 		variable NumberOfTrialsInSet = 0
 	else
 		string NameOfWaveSelectedInPopUP = WavePath + setName
 		NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
 	endif
+
 	return NumberOfTrialsInSet
+
 End
 
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
@@ -737,7 +744,7 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
 					if(ChannelNumber==0)
 					//print PopUpMenuList
-					print DAIndexingStorageWave[1][ChannelNumber]
+					// print DAIndexingStorageWave[1][ChannelNumber]
 					//print "steps in summed sets = "+num2str(stepsinsummedsets)
 					endif
 					if(StepsInSummedSets==Count)
