@@ -446,7 +446,7 @@ Function WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, Delta
 	SegmentWave = Amplitude
 End
 
-Threadsafe Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	Variable AmplitudeIncrement=Amplitude/(Duration/0.005)
 	make /o /n = (Duration / 0.005) SegmentWave
@@ -629,10 +629,16 @@ Function WB_CustomWaveSegment(CustomOffset, NameOfWaveToBeDuplicated)
 End
 
 
-Threadsafe Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)// Pink = 0, Brown = 1
+Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)// Pink = 0, Brown = 1
 		variable Amplitude, Duration, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
 		variable phase = (abs(enoise(2)) * Pi)
 		variable NumberOfBuildWaves = floor((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
+
+		if(!IsFinite(phase) || !IsFinite(Duration) || !IsFinite(NumberOfBuildWaves))
+			print "Could not create a new pink/brown noise wave as the input values were non-finite."
+			return NaN
+		endif
+
 		make /free /n = (Duration / 0.005, NumberOfBuildWaves) BuildWave
 		SetScale /P x 0,0.005,"ms", BuildWave
 		variable Frequency = HighPassCutOff
