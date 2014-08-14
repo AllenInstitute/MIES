@@ -336,9 +336,6 @@ Function readSequenceQueue(dev_name)
 	
 End
 
-
-end
-
 Function sequenceTask(s)											// This is the function that will be called periodically
 	STRUCT WMBackgroundStruct &s
 	
