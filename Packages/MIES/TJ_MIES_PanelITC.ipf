@@ -4161,28 +4161,33 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
-/// DAP_CheckProc_HedstgeChck
-Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	
-	string RadioButtonName = "Radio_ClampMode_"
-	Variable HeadStageNo = str2num(ctrlname[18])
-	Variable ClampMode //
-	getwindow kwTopWin wtitle
-	string panelTitle = s_value
-	RadioButtonName += num2str((HeadStageNo * 2) + 1)
-	ControlInfo/w = $panelTitle $RadioButtonName
-	ClampMode = v_value
-	
-	If(Checked == 0)
-		DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
-	else
-		DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode,panelTitle)
-	endif
- 
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+
+Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle, ctrlClampMode, control
+	variable checked, clampMode, headStageNo
+
+	switch( cba.eventCode )
+		case EVENT_MOUSE_UP:
+			control    = cba.ctrlName
+			panelTitle = cba.win
+			headStageNo = str2num(control[18])
+			ctrlClampMode = "Radio_ClampMode_" + num2str(HeadStageNo * 2 + 1)
+			clampMode = GetCheckBoxState(panelTitle, ctrlClampMode)
+
+			If(!cba.checked)
+				DAP_RemoveClampModeSettings(headStageNo, clampMode, panelTitle)
+			else
+				DAP_ApplyClmpModeSavdSettngs(headStageNo, clampMode, panelTitle)
+			endif
+
+			variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+			break
+	endswitch
+
+	return 0
 End
 //=========================================================================================
 /// DAP_StopOngoingDataAcquisition
