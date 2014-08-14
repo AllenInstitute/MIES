@@ -1,6 +1,3 @@
-/// @file TJ_MIES_ExperimentDocumentation.ipf
-/// @brief Brief description of Experiment Documentation 
-
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function /t AI_ReturnListOf700BChannels(panelTitle)
