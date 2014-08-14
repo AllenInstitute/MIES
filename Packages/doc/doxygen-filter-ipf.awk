@@ -1,14 +1,15 @@
 # Proof of concept implementation for using doxygen to document Igor Pro procedures
 # This awk script serves as input filter for Igor procedures and produces a C-ish version of the declarations
-# Tested with Igor Pro 6.3(beta) and doxygen 1.8.1.1
+# Tested with Igor Pro 6.34A and doxygen 1.8.7
 #
-# Thomas Braun: 7/2014
-# Version: 0.21
+# Thomas Braun: 8/2014
+# Version: 0.22
 
 # Supported Features:
 # -Functions
 # -Macros
 # -File constants
+# -Menu items are currently ignored
 
 # TODO
 # - don't delete the function/macro subType
@@ -172,6 +173,18 @@ function handleParameter(params, a,  i, str, entry)
     code = "}"
   }
 
+  # menu definition
+  if(!insideFunction && !insideMacro && match(code,/Menu[[:space:]]/) )
+  {
+    insideMenu=1
+  }
+
+  if(insideMenu && match(code,/End[[:space:]]*/))
+  {
+    insideMenu=0
+    code = ""
+  }
+
   # global constants
   gsub(/\ystrconstant\y/,"const string",code)
   gsub(/\yconstant\y/,"const variable",code)
@@ -179,7 +192,7 @@ function handleParameter(params, a,  i, str, entry)
   gsub("\yelseif\y","else if",code)
 
   # code outside of function/macro definitions is "translated" into statements
-  if(!insideFunction && !insideMacro && code != "" && substr(code,0,1) != "#")
+  if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,0,1) != "#")
   {
     if(code != "}" && !insideStructure && DO_WARN)
       warning = warning "\n" "warning " NR ": outside code \"" code "\""
@@ -187,7 +200,10 @@ function handleParameter(params, a,  i, str, entry)
     code = code ";"
   }
 
-  output = output "\n" code "" comment
+  if(!insideMenu)
+  {
+    output = output "\n" code "" comment
+  }
 }
 
 END{
