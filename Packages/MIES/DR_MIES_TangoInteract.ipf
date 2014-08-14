@@ -1,5 +1,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+
 #include "tango"
+#include "HDF Utilities"
+#include "HDF5 Browser"
+
+Menu "Mies Panels"
+		"Start Polling WSE queue", StartTestTask()
+		"Stop Polling WSE queue", StopTestTask()
+End
 
 Function writeLog(logMessage)
 	String logMessage
@@ -335,9 +343,6 @@ Function readSequenceQueue(dev_name)
 	print "\t'-> cmd passed\r"
 	
 End
-
-
-end
 
 Function sequenceTask(s)											// This is the function that will be called periodically
 	STRUCT WMBackgroundStruct &s
