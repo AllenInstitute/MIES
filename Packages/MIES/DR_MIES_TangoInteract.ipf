@@ -1,5 +1,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+
 #include "tango"
+#include "HDF Utilities"
+#include "HDF5 Browser"
+
+Menu "Mies Panels"
+		"Start Polling WSE queue", StartTestTask()
+		"Stop Polling WSE queue", StopTestTask()
+End
 
 Function writeLog(logMessage)
 	String logMessage

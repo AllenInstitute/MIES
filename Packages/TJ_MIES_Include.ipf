@@ -34,10 +34,3 @@
 
 // Menu includes
 #include "DR_MIES_Menu"
-
-// includes for Tango Functionality
-#include "DR_MIES_TangoInteract"
-
-// includes for HDF5 
-#include "HDF Utilities"
-#include "HDF5 Browser"
