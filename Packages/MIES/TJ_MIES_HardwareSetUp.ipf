@@ -98,8 +98,8 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	string deviceType, deviceNumber
 	string path = HSU_DataFullFolderPathString(panelTitle)
 
-	createDFWithAllParents(path + "Data")
-	createDFWithAllParents(path + "TestPulse")
+	createDFWithAllParents(path + ":Data")
+	createDFWithAllParents(path + ":TestPulse")
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret,"Could not parse panelTitle")
@@ -143,7 +143,7 @@ End
 Function/DF HSU_GetDeviceTestPulseFromTitle(panelTitle)
 	string panelTitle
 
-	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle) + "TestPulse")
+	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle) + ":TestPulse")
 End
 
 Function/DF HSU_GetDevicePathFromTitle(panelTitle)
@@ -206,7 +206,7 @@ Function HSU_UnlockDevice(panelTitle)
 	variable locked = 0
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
-	NVAR/SDFR=GetDeviceTypePath(HSU_GetDeviceType(panelTitleUnlocked)) ITCDeviceIDGlobal
+	NVAR/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDeviceIDGlobal
 	string cmd
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	Execute cmd
