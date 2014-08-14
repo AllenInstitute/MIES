@@ -38,4 +38,3 @@ Function CloseMies()
 	
 	print "Exiting Mies..."
 End
-	
