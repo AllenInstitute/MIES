@@ -26,21 +26,23 @@ End
 
 Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for the locked device to function.
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	//string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-	//make /o /n = (12,8) $ChanAmpAssignPath = nan
+
+	HSU_CreateDataFolderForLockdDev(panelTitle)
 	HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	DAP_FindConnectedAmps("button_Settings_UpdateAmpStatus")
-	make /o /n= (1,8) $WavePath + ":ITCDataWave"
-	make /o /n= (2,4) $WavePath + ":ITCChanConfigWave"
-	make /o /n= (2,4) $WavePath + ":ITCFIFOAvailAllConfigWave"
-	make /o /n= (2,4) $WavePath + ":ITCFIFOPositionAllConfigWave"
-	make /o /i /n = 4 $WavePath + ":ResultsWave" 
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "TestPulseITC"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "InstResistance"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "Resistance"
-	make /o /n= (1,8) $WavePath + ":TestPulse:" + "SSResistance"
-	
+
+	dfref data = HSU_GetDevicePathFromTitle(panelTitle)
+	make /o /n= (1,8) data:ITCDataWave
+	make /o /n= (2,4) data:ITCChanConfigWave
+	make /o /n= (2,4) data:ITCFIFOAvailAllConfigWave
+	make /o /n= (2,4) data:ITCFIFOPositionAllConfigWave
+	make /o /i /n = 4 data:ResultsWave
+
+	dfref dfr = HSU_GetDeviceTestPulseFromTitle(panelTitle)
+	make /o /n= (1,8) dfr:TestPulseITC
+	make /o /n= (1,8) dfr:InstResistance
+	make /o /n= (1,8) dfr:Resistance
+	make /o /n= (1,8) dfr:SSResistance
 End
 
 //=========================================================================================
@@ -167,3 +169,17 @@ Function/S GetListOfYokedDACs()
 	return ""
 End
 //=========================================================================================
+
+static Function IgorBeforeQuitHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	DAP_UnlockAllDevices()
+	return 0
+End
+
+static Function IgorBeforeNewHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	DAP_UnlockAllDevices()
+	return 0
+End

@@ -14,6 +14,7 @@ StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(1376,561,1846,1274)
+	SetWindow $s_name, hook(cleanup)=DAP_WindowHook
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2734,16 +2735,19 @@ End
 //=========================================================================================
 
 
-Function CheckProc(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_WindowHook(s)
+	STRUCT WMWinHookStruct &s
 
-	switch( cba.eventCode )
-		case 2: // mouse up
-			Variable checked = cba.checked
-			break
-		case -1: // control being killed
-			checked = 0
-			break
+	string panelTitle
+
+	switch(s.eventCode)
+		case EVENT_KILL_WINDOW_HOOK:
+			panelTitle = s.winName
+			if(!HSU_DeviceIsUnlocked(panelTitle,silentCheck=1))
+				HSU_UnlockDevice(panelTitle)
+			endif
+			return 1
+		break
 	endswitch
 
 	return 0
@@ -3102,7 +3106,7 @@ Function DAP_DeviceIsFollower(panelTitle)
 	string panelTitle
 
 	ControlInfo/W=$panelTitle setvar_Hardware_Status
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	return cmpstr(S_value,FOLLOWER) == 0
 End
@@ -3117,7 +3121,7 @@ Function DAP_DeviceIsLeader(panelTitle)
 	string panelTitle
 
 	ControlInfo/W=$panelTitle setvar_Hardware_Status
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	return cmpstr(S_value,LEADER) == 0
 End
@@ -3345,7 +3349,7 @@ Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
 	setdatafolder root:
 	string panelTitle = DAP_ReturnPanelName()
 	variable DataAcqOrTP = 0
-	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
+	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
 	
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string DataAcqStatePath = WavePath + ":DataAcqState"
@@ -3440,7 +3444,7 @@ Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
 	variable DataAcqOrTP = 0
 	
 	// prevents initiation of data acquisition if panel is not locked to a device
-	AbortOnValue HSU_DeviceLockCheck(panelTitle),1  
+	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 	
 	string ITCDeviceFolderPathString
 	sprintf ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
@@ -4667,3 +4671,25 @@ Function DAP_SetVarProc_TPDuration(ctrlName,varNum,varStr,varName) : SetVariable
 
 End
 //=========================================================================================
+
+Function DAP_UnlockAllDevices()
+
+	string list = DAP_ListOfLockedDevs()
+	string win
+	variable i, numItems
+
+	// unlock the first ITC1600 device as that might be yoking other devices
+	if(WhichListItem(ITC1600_FIRST_DEVICE,list) != -1)
+		HSU_UnlockDevice(ITC1600_FIRST_DEVICE)
+	endif
+
+	// refetch the, possibly changed, list of locked devices and unlock them all
+	list = DAP_ListOfLockedDevs()
+	numItems = ItemsInList(list)
+	for(i=0; i < numItems; i+=1)
+		win = StringFromList(i, list)
+		HSU_UnlockDevice(win)
+	endfor
+
+	ASSERT(ItemsInList(DAP_ListOfLockedDevs()) == 0, "Missed to unlock some devices")
+End

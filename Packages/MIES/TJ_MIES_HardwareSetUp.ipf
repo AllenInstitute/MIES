@@ -55,14 +55,13 @@ Function HSU_LockDevice(panelTitle)
 	string panelTitleLocked
 	variable locked
 
-	panelTitleLocked = HSU_GetDeviceType(panelTitle) + "_Dev_" + HSU_GetDeviceNumber(panelTitle)
+	panelTitleLocked = BuildDeviceString(HSU_GetDeviceType(panelTitle), HSU_GetDeviceNumber(panelTitle))
 	if(windowExists(panelTitleLocked))
-		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use"
+		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use."
 	endif
 
 	locked = 1
 	HSU_UpdateDataFolderDisplay(panelTitle, locked)
-	HSU_CreateDataFolderForLockdDev(panelTitle)
 
 	DisableListOfControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
@@ -94,22 +93,22 @@ End
 
 Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	string panelTitle
-	string FullFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	string BaseFolderPath = HSU_BaseFolderPathString(panelTitle)
-	Newdatafolder /o $BaseFolderPath
-	Newdatafolder /o $FullFolderPath
-	Newdatafolder /o $FullFolderPath+":Data"
-	Newdatafolder /o $FullFolderPath+":TestPulse"
 	
-	string DeviceType = stringfromlist(itemsinlist(FullFolderPath, ":") - 2,  FullFolderPath, ":")
-	string DeviceNum = stringfromlist(itemsinlist(FullFolderPath, ":") - 1,  FullFolderPath, ":")
-	
-	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType
-	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum
-	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":KeyWave"
-	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":settingsHistory"
-	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":textDocKeyWave"
-	Newdatafolder /o $"root:mies:LabNoteBook:" + DeviceType + ":" + DeviceNum + ":textDocumentation"
+	variable ret
+	string deviceType, deviceNumber
+	string path = HSU_DataFullFolderPathString(panelTitle)
+
+	createDFWithAllParents(path + ":Data")
+	createDFWithAllParents(path + ":TestPulse")
+
+	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	ASSERT(ret,"Could not parse panelTitle")
+
+	path = Path_LabNoteBookFolder(panelTitle) + ":" + deviceType + ":Device" + deviceNumber + ":"
+	createDFWithAllParents(path + "KeyWave")
+	createDFWithAllParents(path + "settingsHistory")
+	createDFWithAllParents(path + "textDocKeyWave")
+	createDFWithAllParents(path + "textDocumentation")
 End
 //==================================================================================================
 
@@ -118,7 +117,7 @@ Function/s HSU_GetDeviceType(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	return S_value
 End
 
@@ -127,7 +126,7 @@ Function HSU_GetDeviceTypeIndex(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	return V_value - 1
 End
 
@@ -135,18 +134,26 @@ Function/s HSU_GetDeviceNumber(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_moreSettings_DeviceNo
-	ASSERT(V_flag > 0, "Non-existing control or window")
+	ASSERT(V_flag != 0, "Non-existing control or window")
 	return S_value
 End
 
-Function/s HSU_BaseFolderPathString(panelTitle)
-	string panelTitle
-
-	return Path_ITCDevicesFolder(panelTitle) + ":" + HSU_GetDeviceType(panelTitle)
-End
 //==================================================================================================
 
-Function/s HSU_DataFullFolderPathString(panelTitle)
+Function/DF HSU_GetDeviceTestPulseFromTitle(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle) + ":TestPulse")
+End
+
+Function/DF HSU_GetDevicePathFromTitle(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle))
+End
+
+///@todo rename to HSU_GetDevicePathFromTitleAsString
+Function/S HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber, path
@@ -160,8 +167,7 @@ Function/s HSU_DataFullFolderPathString(panelTitle)
 		ASSERT(ret,"Could not parse the panelTitle")
 	endif
 
-	sprintf path, "%s:%s:Device%s", Path_ITCDevicesFolder(panelTitle), deviceType, deviceNumber
-	return path
+	return GetDevicePathAsString(deviceType, deviceNumber)
 End
 //==================================================================================================
 
@@ -175,8 +181,6 @@ Function HSU_ButProc_Hrdwr_UnlckDev(s) : ButtonControl
 	s.blockReentry = 1
 
 	HSU_UnlockDevice(s.win)
-	HSU_UpdateListOfITCPanels()
-	DAP_UpdateAllYokeControls()
 End
 //==================================================================================================
 
@@ -202,36 +206,54 @@ Function HSU_UnlockDevice(panelTitle)
 	variable locked = 0
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
-	NVAR/SDFR=$HSU_DataFullFolderPathString(panelTitleUnlocked)/Z ITCDeviceIDGlobal
+	NVAR/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDeviceIDGlobal
 	string cmd
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	Execute cmd
 	sprintf cmd, "ITCCloseDevice"
 	Execute cmd
+
 	DAP_UpdateYokeControls(panelTitleUnlocked)
+	HSU_UpdateListOfITCPanels()
+	DAP_UpdateAllYokeControls()
 End
 //==================================================================================================
 
-/// Query the device lock status
+/// @brief Query the device lock status
 /// @param   panelTitle name of the device panel
-/// @param   silentCheck (optional) Alert the user, 0 (default) means yes, everything else no
-/// @returns device lock status, 1 is locked, 0 is unlocked
-Function HSU_DeviceLockCheck(panelTitle,[silentCheck])
+/// @param   silentCheck (optional) Alert the user if it is not locked, 0 (default) means yes, everything else no
+/// @returns device lock status, 1 if unlocked, 0 if locked
+Function HSU_DeviceIsUnlocked(panelTitle, [silentCheck])
 	string panelTitle
 	variable silentCheck
+
+	variable parseable
+	variable validDeviceType
+	variable validDeviceNumber
+	string deviceType, deviceNumber
 
     if(ParamIsDefault(silentCheck))
         silentCheck = 0
     endif
 
-	ControlInfo /W = $panelTitle button_SettingsPlus_LockDevice
-	if(V_disable == 1)
-	    if(!silentCheck)
-	        DoAlert /t = "Hardware Status"  0, "A ITC device must be locked (see Hardware tab) to proceed"
-	    endif
-		return 1
+    parseable = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+    if(parseable)
+		validDeviceType   = ( WhichListItem(deviceType, DEVICE_TYPES)     != -1 )
+		validDeviceNumber = ( WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1 )
+    else
+		validDeviceType   = 0
+		validDeviceNumber = 0
 	endif
-	return 0
+
+	if(parseable && validDeviceType && validDeviceNumber)
+		return 0
+	endif
+
+    if(!silentCheck)
+	    DoAlert /t = "Hardware Status"  0, "A ITC device must be locked (see Hardware tab) to proceed"
+	endif
+
+	return 1
 End
 //==================================================================================================
 

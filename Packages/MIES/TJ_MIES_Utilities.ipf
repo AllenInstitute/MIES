@@ -617,11 +617,11 @@ Function/DF GetDeviceTypePath(deviceType)
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
-/// @brief Returns the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600:
+/// @brief Returns the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
 Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
-	return Path_ITCDevicesFolder("") + ":" + deviceType + ":"
+	return Path_ITCDevicesFolder("") + ":" + deviceType
 End
 
 /// @brief Returns a datafolder reference to the device folder
@@ -631,11 +631,11 @@ Function/DF GetDevicePath(deviceType, deviceNumber)
 	return createDFWithAllParents(GetDevicePathAsString(deviceType, deviceNumber))
 End
 
-/// @brief Returns the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:
+/// @brief Returns the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0
 Function/S GetDevicePathAsString(deviceType, deviceNumber)
 	string deviceType, deviceNumber
 
-	return GetDeviceTypePathAsString(deviceType) + "Device" + deviceNumber + ":"
+	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
 End
 
 /// @brief Returns a datafolder reference to the device data folder
@@ -645,9 +645,9 @@ Function/DF GetDeviceDataPath(deviceType, deviceNumber)
 	return createDFWithAllParents(GetDeviceDataPathAsString(deviceType, deviceNumber))
 End
 
-/// @brief Returns the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data:
+/// @brief Returns the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(deviceType, deviceNumber)
 	string deviceType, deviceNumber
 
-	return GetDevicePathAsString(deviceType, deviceNumber) + "Data" + ":"
+	return GetDevicePathAsString(deviceType, deviceNumber) + ":Data"
 End

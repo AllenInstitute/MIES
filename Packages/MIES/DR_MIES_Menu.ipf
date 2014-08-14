@@ -13,29 +13,22 @@ Menu "Mies Panels"
 End
 
 Function CloseMies()
-		
-	string activeWindows = winlist("*", ";", "WIN:64")
+
+	DAP_UnlockAllDevices()
+
+	string windowToClose
+	string activeWindows = WinList("*", ";", "WIN:64")
 	Variable index
-	Variable noOfActiveWindows = itemsinlist(activeWindows)
+	Variable noOfActiveWindows = ItemsInList(activeWindows)
 
 	print "Closing Mies windows..."
+
 	for (index = 0; index < noOfActiveWindows;index += 1)
-		string windowToClose = stringfromlist(index, activeWindows)
-		if (stringmatch(windowToClose, "waveBuilder") == 1)
-			KillWindow waveBuilder
-		elseif (stringmatch(windowToClose, "dataBrowser") == 1)
-			KillWindow dataBrowser
-		elseif(stringmatch(windowToClose, "DB_ITC*") == 1)		// The data browser window title changes to display wave data
+		windowToClose = StringFromList(index, activeWindows)
+		if ( StringMatch(windowToClose, "waveBuilder*") || StringMatch(windowToClose, "dataBrowser*") || StringMatch(windowToClose, "DB_ITC*") || StringMatch(windowToClose, "DA_Ephys*") )
 			KillWindow $windowToClose
-		elseif (stringmatch(windowToClose, "DA_Ephys") == 1)
-			KillWindow DA_Ephys
-		elseif (stringmatch(windowToClose, "ITC*") == 1)
-			HSU_UnlockDevice(windowToClose)
-			// unlocking the device changes the window title back to DA_Ephys
-			KillWindow DA_Ephys
 		endif
 	endfor
-	
+
 	print "Exiting Mies..."
 End
-	
