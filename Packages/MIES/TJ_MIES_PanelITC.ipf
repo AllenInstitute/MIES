@@ -3219,30 +3219,32 @@ End
 //=========================================================================================
 Function DAP_TabTJHook1(tca)
 	STRUCT WMTabControlAction &tca
-	variable tabnum , i = 0, MinSampInt
-	SVAR /z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
+
+	variable tabnum , i, numItems, minSampInt
 	string panelTitle
-	tabnum = tca.tab
-	
-	// Is the panel that is being interacted with locked?
-	if(stringmatch(WinList("DA_Ephys", ";", "WIN:" ),"DA_Ephys;") == 0)// checks to see if panel has been assigned to a ITC device by checking if the panel name is the default name
-		// Does the global string that contains the list of locked panels exist?
-		if(exists("root:MIES:ITCDevices:ITCPanelTitleList") == 2)
-			if(tabnum == 0)
-				do
-					panelTitle = stringfromlist(i, ITCPanelTitleList,";")
-					MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-					ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:MinSampInt
-					controlUpdate /w = $panelTitle ValDisp_DataAcq_SamplingInt
-					i += 1
-				while(i < itemsinlist(ITCPanelTitleList,";"))
-			endif
-		else
-			print "Please lock the panel to a ITC device in the Hardware tab"
-		endif
-	else
+	panelTitle = tca.win
+	tabnum     = tca.tab
+
+	if(HSU_DeviceIsUnLocked(panelTitle,silentCheck=1))
 		print "Please lock the panel to a ITC device in the Hardware tab"
+		return 0
 	endif
+
+	SVAR/Z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
+	ASSERT(SVAR_exists(ITCPanelTitleList), "missing SVAR ITCPanelTitleList")
+	if(tabnum == 0)
+		numItems = ItemsInList(ITCPanelTitleList)
+		for(i=0; i < numItems; i+=1)
+			panelTitle = StringFromList(i, ITCPanelTitleList,";")
+			minSampInt = DC_ITCMinSamplingInterval(panelTitle)
+			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:minSampInt
+			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
+		endfor
+	endif
+
+	return 0
+
+///@todo we can move that stuff into DAP_TabControlFinalHook
 //	if(tabnum==1)// this does not work because hook function runs prior to adams tab functions (i assume)
 //	controlinfo/w=datapro_itc1600 Check_DataAcq_Indexing
 //		if(v_value==0)
@@ -3250,7 +3252,6 @@ Function DAP_TabTJHook1(tca)
 //		DAP_ChangePopUpState("Popup_DA_IndexEnd_0",1)
 //		endif
 //	endif
-	return 0
 End
 
 //=========================================================================================
