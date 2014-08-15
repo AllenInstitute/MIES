@@ -4624,16 +4624,6 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, Enable) // 0 = disable, 1 = 
 	
 End
 
-// d =0:	Normal (visible), enabled.
-// d =1:	Hidden.
-// d =2:	Visible and disabled. Drawn in grayed state, also disables action procedure.
-// d =3:	Hidden and disabled.
-
-// to switch only the enabled state, you can do this:
-// disable = V_disable & ~2 (this will enable it)
-// disable = V_disable | 2 (this will disable it)
-// to change the visible state, use 1 instead of 2 above
-
 //=========================================================================================
 // FUNCTION BELOW CONTROLS TP INSERTION INTO SET SWEEPS BEFORE THE SWEEP BEGINSS
 //=========================================================================================
