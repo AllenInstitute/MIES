@@ -8,7 +8,6 @@
 
 // our includes
 #include "TJ_MIES_AmplifierInteraction"
-#include "TJ_MIES_Analysis"
 #include "TJ_MIES_BackgroundMD"
 #include "TJ_MIES_BackgroundTimerMD"
 #include "TJ_MIES_DataAcqITC"
@@ -30,7 +29,6 @@
 #include "TJ_MIES_Utilities"
 #include "TJ_MIES_WaveBuilder"
 #include "TJ_MIES_WaveBuilderPanel"
-#include "TJ_MIES_WaveNoteMgmnt"
 
 // Menu includes
 #include "DR_MIES_Menu"
