@@ -1834,7 +1834,7 @@ string  ControlType, ChannelType, panelTitle
 string SearchString = ControlType + "_" + ChannelType + "_*"
 string ListString
 variable CatTot//Category Total
-
+///@todo panelTitle might refer to a non existing panel here
 ListString = ControlNameList(panelTitle, ";", SearchString)
 CatTot = ItemsInlist(ListString, ";")
 
