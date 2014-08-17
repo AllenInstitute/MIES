@@ -3219,30 +3219,32 @@ End
 //=========================================================================================
 Function DAP_TabTJHook1(tca)
 	STRUCT WMTabControlAction &tca
-	variable tabnum , i = 0, MinSampInt
-	SVAR /z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
+
+	variable tabnum , i, numItems, minSampInt
 	string panelTitle
-	tabnum = tca.tab
-	
-	// Is the panel that is being interacted with locked?
-	if(stringmatch(WinList("DA_Ephys", ";", "WIN:" ),"DA_Ephys;") == 0)// checks to see if panel has been assigned to a ITC device by checking if the panel name is the default name
-		// Does the global string that contains the list of locked panels exist?
-		if(exists("root:MIES:ITCDevices:ITCPanelTitleList") == 2)
-			if(tabnum == 0)
-				do
-					panelTitle = stringfromlist(i, ITCPanelTitleList,";")
-					MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-					ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:MinSampInt
-					controlUpdate /w = $panelTitle ValDisp_DataAcq_SamplingInt
-					i += 1
-				while(i < itemsinlist(ITCPanelTitleList,";"))
-			endif
-		else
-			print "Please lock the panel to a ITC device in the Hardware tab"
-		endif
-	else
+	panelTitle = tca.win
+	tabnum     = tca.tab
+
+	if(HSU_DeviceIsUnLocked(panelTitle,silentCheck=1))
 		print "Please lock the panel to a ITC device in the Hardware tab"
+		return 0
 	endif
+
+	SVAR/Z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
+	ASSERT(SVAR_exists(ITCPanelTitleList), "missing SVAR ITCPanelTitleList")
+	if(tabnum == 0)
+		numItems = ItemsInList(ITCPanelTitleList)
+		for(i=0; i < numItems; i+=1)
+			panelTitle = StringFromList(i, ITCPanelTitleList,";")
+			minSampInt = DC_ITCMinSamplingInterval(panelTitle)
+			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:minSampInt
+			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
+		endfor
+	endif
+
+	return 0
+
+///@todo we can move that stuff into DAP_TabControlFinalHook
 //	if(tabnum==1)// this does not work because hook function runs prior to adams tab functions (i assume)
 //	controlinfo/w=datapro_itc1600 Check_DataAcq_Indexing
 //		if(v_value==0)
@@ -3250,7 +3252,6 @@ Function DAP_TabTJHook1(tca)
 //		DAP_ChangePopUpState("Popup_DA_IndexEnd_0",1)
 //		endif
 //	endif
-	return 0
 End
 
 //=========================================================================================
@@ -4161,28 +4162,33 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 End
 //=========================================================================================
-/// DAP_CheckProc_HedstgeChck
-Function DAP_CheckProc_HedstgeChck(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	
-	string RadioButtonName = "Radio_ClampMode_"
-	Variable HeadStageNo = str2num(ctrlname[18])
-	Variable ClampMode //
-	getwindow kwTopWin wtitle
-	string panelTitle = s_value
-	RadioButtonName += num2str((HeadStageNo * 2) + 1)
-	ControlInfo/w = $panelTitle $RadioButtonName
-	ClampMode = v_value
-	
-	If(Checked == 0)
-		DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
-	else
-		DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode,panelTitle)
-	endif
- 
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+
+Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle, ctrlClampMode, control
+	variable checked, clampMode, headStageNo
+
+	switch( cba.eventCode )
+		case EVENT_MOUSE_UP:
+			control    = cba.ctrlName
+			panelTitle = cba.win
+			headStageNo = str2num(control[18])
+			ctrlClampMode = "Radio_ClampMode_" + num2str(HeadStageNo * 2 + 1)
+			clampMode = GetCheckBoxState(panelTitle, ctrlClampMode)
+
+			If(!cba.checked)
+				DAP_RemoveClampModeSettings(headStageNo, clampMode, panelTitle)
+			else
+				DAP_ApplyClmpModeSavdSettngs(headStageNo, clampMode, panelTitle)
+			endif
+
+			variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+			break
+	endswitch
+
+	return 0
 End
 //=========================================================================================
 /// DAP_StopOngoingDataAcquisition
@@ -4618,16 +4624,6 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, Enable) // 0 = disable, 1 = 
 	endif
 	
 End
-
-// d =0:	Normal (visible), enabled.
-// d =1:	Hidden.
-// d =2:	Visible and disabled. Drawn in grayed state, also disables action procedure.
-// d =3:	Hidden and disabled.
-
-// to switch only the enabled state, you can do this:
-// disable = V_disable & ~2 (this will enable it)
-// disable = V_disable | 2 (this will disable it)
-// to change the visible state, use 1 instead of 2 above
 
 //=========================================================================================
 // FUNCTION BELOW CONTROLS TP INSERTION INTO SET SWEEPS BEFORE THE SWEEP BEGINSS
