@@ -2323,7 +2323,7 @@ Window da_ephys() : Panel
 	CheckBox check_Settings_AmpMIESdefault,fColor=(65280,43520,0),value= 0
 	CheckBox check_DataAcq_Amp_Chain,pos={324,222},size={45,14},disable=1,title="Chain"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabnum)=  "0"
-	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)=  "ADC",value= 0
+	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)= "tab_DataAcq_Amp",value= 0
 	GroupBox group_Settings_MDSupport,pos={21,26},size={421,40},title="Multiple Device Support"
 	GroupBox group_Settings_MDSupport,help={"Multiple device support includes yoking and multiple independent devices"}
 	GroupBox group_Settings_MDSupport,userdata(tabnum)=  "5"
