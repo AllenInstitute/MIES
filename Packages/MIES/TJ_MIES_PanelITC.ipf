@@ -3990,6 +3990,8 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+
+	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
 	
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
@@ -4079,7 +4081,9 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string DACheck, DAGain, ADCheck, ADGain
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
-	
+
+	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
+
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck value = 0
