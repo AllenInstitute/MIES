@@ -3954,32 +3954,66 @@ Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 End
 //=========================================================================================
 /// DAP_PopMenuProc_Headstage
-Function DAP_PopMenuProc_Headstage(ctrlName,popNum,popStr) : PopupMenuControl
-	String ctrlName
-	Variable popNum
-	String popStr
-	getwindow kwTopWin wtitle
-	HSU_UpdateChanAmpAssignPanel(s_value)
+
+Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+	
+	switch( pa.eventCode )
+		case 2: // mouse up
+			Variable popNum = pa.popNum
+			String popStr = pa.popStr
+			HSU_UpdateChanAmpAssignPanel(pa.win)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+	
+	return 0
 End
+
 //=========================================================================================
 ///  DAP_PopMenuProc_CAA
-Function DAP_PopMenuProc_CAA(ctrlName,popNum,popStr) : PopupMenuControl
-	String ctrlName
-	Variable popNum
-	String popStr
-	getwindow kwTopWin wtitle
-	HSU_UpdateChanAmpAssignStorWv(s_value)
+
+Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+	
+	switch( pa.eventCode )
+		case 2: // mouse up
+			Variable popNum = pa.popNum
+			String popStr = pa.popStr
+			HSU_UpdateChanAmpAssignStorWv(pa.win)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+	
+	return 0
 End
+
+
+
 //=========================================================================================
 /// DAP_SetVarProc_CAA
-Function DAP_SetVarProc_CAA(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	getwindow kwTopWin wtitle
-	HSU_UpdateChanAmpAssignStorWv(s_value)
+
+Function DAP_SetVarProc_CAA(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+			HSU_UpdateChanAmpAssignStorWv(sva.win)
+		case 2: // Enter key
+			HSU_UpdateChanAmpAssignStorWv(sva.win)
+		case 3: // Live update
+			Variable dval = sva.dval
+			String sval = sva.sval
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
+
 //=========================================================================================
 /// DAP_ApplyClmpModeSavdSettngs
 Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
