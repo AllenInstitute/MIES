@@ -440,7 +440,6 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 				AvgDeltaSS = abs(AvgDeltaSS)
 			
 			//	create wave that will hold instantaneous average
-				wavestats Instantaneous
 				variable i = 0 
 				variable columnsInWave = dimsize(Instantaneous, 1)
 				make /FREE /n = (1, columnsInWave) InstAvg
@@ -449,7 +448,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 
 				do
 					matrixOp /Free Instantaneous1d = col(Instantaneous, i + NoOfActiveDA)
-					wavestats Instantaneous1d
+					WaveStats/Q/M=1 Instantaneous1d
 					OneDInstMax = v_max
 					OndDBaseline = AvgBaselineSS[0][i + NoOfActiveDA]	
 

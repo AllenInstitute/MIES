@@ -987,7 +987,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	
 	// see if the wave exists....if so, skip this part..if not, create it
 	//print "Does the key wave exist?"
-	wave/T ampSettingsKey = $ampSettingsKeyPath
+	wave/Z/T ampSettingsKey = $ampSettingsKeyPath
 	if (!WaveExists(ampSettingsKey))
 		//print "making settingsKey Wave...."
 		// create the 2 dimensional wave

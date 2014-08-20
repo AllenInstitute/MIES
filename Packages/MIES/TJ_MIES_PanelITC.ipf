@@ -477,6 +477,7 @@ Window da_ephys() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:5
 	Button StartTestPulseButton,pos={50,309},size={384,40},disable=1,proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
+	Button StartTestPulseButton,help={"Starts generating test pulses. Can be stopped by pressing space bar."}
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -2323,7 +2324,7 @@ Window da_ephys() : Panel
 	CheckBox check_Settings_AmpMIESdefault,fColor=(65280,43520,0),value= 0
 	CheckBox check_DataAcq_Amp_Chain,pos={324,222},size={45,14},disable=1,title="Chain"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabnum)=  "0"
-	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)=  "ADC",value= 0
+	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)= "tab_DataAcq_Amp",value= 0
 	GroupBox group_Settings_MDSupport,pos={21,26},size={421,40},title="Multiple Device Support"
 	GroupBox group_Settings_MDSupport,help={"Multiple device support includes yoking and multiple independent devices"}
 	GroupBox group_Settings_MDSupport,userdata(tabnum)=  "5"
@@ -3989,6 +3990,8 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+
+	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
 	
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
@@ -4078,7 +4081,9 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
 	string DACheck, DAGain, ADCheck, ADGain
 	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
-	
+
+	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
+
 	If(ClampMode == 0)
 		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck value = 0
