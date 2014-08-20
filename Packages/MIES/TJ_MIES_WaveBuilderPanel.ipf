@@ -459,7 +459,7 @@ Window WaveBuilder() : Panel
 	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo)= A"!!,HQ!!#@$!!#97!!#=sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TitleBox title_WBP_GNoise_F,font="Edwardian Script ITC",frame=0
+	TitleBox title_WBP_GNoise_F,frame=0
 	CheckBox check_Noise_Pink,pos={413,107},size={39,14},disable=1,proc=WBP_CheckProc,title="Pink"
 	CheckBox check_Noise_Pink,userdata(tabnum)=  "2"
 	CheckBox check_Noise_Pink,userdata(tabcontrol)=  "WBP_WaveType"
