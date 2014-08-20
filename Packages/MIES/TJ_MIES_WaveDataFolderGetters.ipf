@@ -1425,3 +1425,315 @@ Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	return wv
 End
 
+/// @brief Returns a wave reference to a DA data wave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: DA data
+Function/WAVE P_ITCDataDA(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataDA
+
+	if(WaveExists(ITCDataDA))
+		return ITCDataDA
+	endif
+
+	make /w /o /n =(2^17) dfr:ITCDataDA/WAVE = Wv
+	
+	Wv = 0
+	return Wv
+End
+
+/// @brief Returns a wave reference to a AD data wave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: AD data
+Function/WAVE P_ITCDataAD(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataAD
+
+	if(WaveExists(ITCDataAD))
+		return ITCDataAD
+	endif
+
+	make /w /o /n =(2^17) dfr:ITCDataAD/WAVE = Wv
+	
+	Wv = 0
+	return Wv
+End
+
+/// @brief Returns a wave reference to a TTL data wave used for pressure pulses on rack 0
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: TTL data
+Function/WAVE P_ITCDataTTLRz(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataTTLRz
+
+	if(WaveExists(ITCDataTTLRz))
+		return ITCDataTTLRz
+	endif
+
+	make /w /o /n =(2^17) dfr:ITCDataTTLRz/WAVE = Wv
+	
+	Wv = 0
+	return Wv
+End
+
+/// @brief Returns a wave reference to a TTL data wave used for pressure pulses on rack 1
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: TTL data
+Function/WAVE P_ITCDataTTLRo(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataTTLRo
+
+	if(WaveExists(ITCDataTTLRo))
+		return ITCDataTTLRo
+	endif
+
+	make /w /o /n =(2^17) dfr:ITCDataTTLRo/WAVE = Wv
+	
+	Wv = 0
+	return Wv
+End
+
+/// @brief Returns a wave reference to the data wave for the ITC TTL state
+///
+/// Rows:
+/// - one row
+///
+/// Columns:
+/// - one column
+Function/WAVE P_DIO(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr DIO
+
+	if(WaveExists(DIO))
+		return DIO
+	endif
+
+	Make/N=1/W/O dfr:DIO/WAVE = Wv
+	
+	return Wv
+End
+
+/// @brief Returns a wave reference to the wave used to store the ITC device state
+///
+/// Rows:
+/// - 1: State
+/// - 2: Overflow / Underrun
+/// - 3: Clipping conditions
+/// - 4: Error code
+///
+/// Columns:
+/// - 1: State
+Function/WAVE P_ITCState(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCState
+
+	if(WaveExists(ITCState))
+		return ITCState
+	endif
+
+	Make /I/O/N=4 dfr:ITCState/WAVE = Wv
+	
+	return Wv
+End
+/// @brief Returns a wave reference to a DA data wave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: DA data
+//Function/WAVE P_ITCDataAD(panelTitle)
+//	string panelTitle
+//	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+//
+//	Wave/Z/T/SDFR=dfr P_ITCDAData
+//
+//	if(WaveExists(P_ITCDAData))
+//		return P_ITCDAData
+//	endif
+//
+//	make /w /o /n =(2^15) dfr:P_ITCDAData/WAVE = Wv
+//	
+//	Wv = 0
+//	return Wv
+//End
+
+/// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 50 microsecond intervals)
+///
+/// Columns:
+/// - 0: DA data
+/// - 1: AD data
+/// - 2: TTL data rack 0
+/// - 3: TTL data rack 1
+Function/WAVE P_GetITCData(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ITCData
+	
+	if(WaveExists(P_ITCData))
+
+		return P_ITCData
+	endif
+	
+	make /w /o /n = (2^17, 4) dfr:P_ITCData/WAVE = Wv
+	
+	SetDimLabel COLS, 0, DA, 		Wv
+	SetDimLabel COLS, 1, AD, 		Wv
+	SetDimLabel COLS, 2, TTL_R0, 	Wv
+	SetDimLabel COLS, 3, TTL_R1, 	Wv
+	Wv = 0
+	
+	return Wv
+End
+
+/// @brief Returns a wave reference to the ITCChanConfig wave used for pressure pulses
+///
+/// Rows:
+/// - 0: DA channel specifications
+/// - 1: AD channel specifications
+/// - 2: TTL rack 0 specifications
+/// - 3: TTL rack 1 specifications
+///
+/// Columns:
+/// - 0: Channel Type
+/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 2: Sampling interval
+/// - 3: Decimation
+Function/WAVE P_GetITCChanConfig(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ChanConfig
+
+	if(WaveExists(P_ChanConfig))
+		return P_ChanConfig
+	endif
+	
+	Make /I /o /n = (4, 4) dfr:P_ChanConfig/WAVE = Wv
+	
+	Wv = 0
+	Wv[0][0] = 1 // DA
+	Wv[1][0] = 0 // AD
+	Wv[2][0] = 3 // TTL
+	Wv[3][0] = 3 // TTL
+	
+	Wv[2][1] = 0 // TTL rack 0
+	Wv[3][1] = 3 // TTL rack 1
+	
+	Wv[][2] = SAMPLE_INT_MICRO // 5 micro second sampling interval
+	
+	SetDimLabel ROWS, 0, DA, 		Wv
+	SetDimLabel ROWS, 1, AD, 		Wv
+	SetDimLabel ROWS, 2, TTL_R0, 	Wv
+	SetDimLabel ROWS, 3, TTL_R1, 	Wv
+	
+	SetDimLabel COLS, 0, Chan_Type, Wv
+	SetDimLabel COLS, 1, Chan_num, 	Wv
+	SetDimLabel COLS, 2, Samp_int, 	Wv
+
+	return Wv
+
+End
+
+/// @brief Returns a wave reference to the ITCFIFOAvailConfig wave used for pressure pulses
+
+Function/WAVE P_GetITCFIFOConfig(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ITCFIFOConfig
+
+	if(WaveExists(P_ITCFIFOConfig))
+		return P_ITCFIFOConfig
+	endif
+	
+	Make /I /o /n = (4, 4) dfr:P_ITCFIFOConfig/WAVE = Wv
+	
+	Wv = 0
+	Wv[0][0] = 1 // DA
+	Wv[1][0] = 0 // AD
+	Wv[2][0] = 3 // TTL
+	Wv[3][0] = 3 // TTL
+	
+	Wv[2][1] = 0 // TTL rack 0
+	Wv[3][1] = 3 // TTL rack 1
+	
+	Wv[][2]	= -1 // reset the FIFO
+	
+	
+	
+	SetDimLabel ROWS, 0, DA, 			Wv
+	SetDimLabel ROWS, 1, AD, 			Wv
+	SetDimLabel ROWS, 2, TTL_R0, 		Wv
+	SetDimLabel ROWS, 3, TTL_R1, 		Wv
+	
+	SetDimLabel COLS, 0, Chan_Type,	 	Wv
+	SetDimLabel COLS, 1, Chan_num, 		Wv
+	SetDimLabel COLS, 2, FIFO_advance, 	Wv
+	return Wv
+End
+
+Function/WAVE P_GetITCFIFOAvail(panelTitle)
+	string panelTitle
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ITCFIFOAvail
+
+	if(WaveExists(P_ITCFIFOAvail))
+		return P_ITCFIFOAvail
+	endif
+	
+	Make /I /o /n = (4, 4) dfr:P_ITCFIFOAvail/WAVE = Wv
+	
+	SetDimLabel ROWS, 0, DA, 			Wv
+	SetDimLabel ROWS, 1, AD, 			Wv
+	SetDimLabel ROWS, 2, TTL_R0, 		Wv
+	SetDimLabel ROWS, 3, TTL_R1, 		Wv
+	
+	SetDimLabel COLS, 0, Chan_Type,	 	Wv
+	SetDimLabel COLS, 1, Chan_num, 		Wv
+	SetDimLabel COLS, 2, FIFO_advance, 	Wv
+	
+	Wv = 0
+	Wv[0][0] = 1 // DA
+	Wv[1][0] = 0 // AD
+	Wv[2][0] = 3 // TTL
+	Wv[3][0] = 3 // TTL
+	
+	Wv[2][1] = 0 // TTL rack 0
+	Wv[3][1] = 3 // TTL rack 1	
+	
+	return Wv
+End

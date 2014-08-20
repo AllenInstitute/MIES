@@ -43,7 +43,6 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
 
 End
 
-
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT WMBackgroundStruct &s
 	String cmd, Keyboard, panelTitle
@@ -131,13 +130,10 @@ Function ITC_BkrdTPFuncMD(s)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 //		ActiveDeviceList[i][4] += 1
 		ActiveDeviceList[i][4] = ActiveChunk
-		//print ActiveChunk
+		// print ActiveChunk
 		// print stopcollectionpoint
 		// print PointsCompletedInITCDataWave
 		// print pointsintp
-		
-		
-
 		
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct FIFO error
