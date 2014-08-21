@@ -3954,14 +3954,11 @@ Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
 End
 //=========================================================================================
 /// DAP_PopMenuProc_Headstage
-
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 	
 	switch( pa.eventCode )
 		case 2: // mouse up
-			Variable popNum = pa.popNum
-			String popStr = pa.popStr
 			HSU_UpdateChanAmpAssignPanel(pa.win)
 			break
 		case -1: // control being killed
@@ -3970,17 +3967,13 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	
 	return 0
 End
-
 //=========================================================================================
 ///  DAP_PopMenuProc_CAA
-
 Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 	
 	switch( pa.eventCode )
 		case 2: // mouse up
-			Variable popNum = pa.popNum
-			String popStr = pa.popStr
 			HSU_UpdateChanAmpAssignStorWv(pa.win)
 			break
 		case -1: // control being killed
@@ -3989,23 +3982,17 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	
 	return 0
 End
-
-
-
 //=========================================================================================
 /// DAP_SetVarProc_CAA
-
 Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	switch( sva.eventCode )
 		case 1: // mouse up
-			HSU_UpdateChanAmpAssignStorWv(sva.win)
 		case 2: // Enter key
 			HSU_UpdateChanAmpAssignStorWv(sva.win)
+			break
 		case 3: // Live update
-			Variable dval = sva.dval
-			String sval = sva.sval
 			break
 		case -1: // control being killed
 			break
@@ -4013,7 +4000,6 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 	return 0
 End
-
 //=========================================================================================
 /// DAP_ApplyClmpModeSavdSettngs
 Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
