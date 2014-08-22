@@ -4391,7 +4391,7 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 			Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-			Wave/SDFR=GetAmpFolder() W_TelegraphServers
+			Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
 
 			// Is an amp associated with the headstage?
 			headStage  = GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
@@ -4438,35 +4438,43 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	
 End
 
-/// DAP_SetVarProc_AmpCntrls
-Function DAP_SetVarProc_AmpCntrls(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	string panelTitle 
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	// print paneltitle
-	if(stringmatch(panelTitle, "") == 0)
-		string AmpSettingsFolderPathStr 
-		sprintf AmpSettingsFolderPathStr, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
-		if(waveexists($AmpSettingsFolderPathStr) == 0) // ensures that the storage wave for the amp data exists.
-			AI_CreateAmpParamStorageWave(panelTitle)
-		endif
-			AI_UpdateAmpModel(panelTitle, ctrlName)
-	else
-		print "Associate the panel with a DAC prior to using panel"
-	endif
-	
+Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	string panelTitle, ctrl
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+			panelTitle = sva.win
+			ctrl       = sva.ctrlName
+
+			AI_UpdateAmpModel(panelTitle, ctrl)
+			break
+		case 3: // Live update
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
 
-/// DAP_CheckProc_AmpCntrls
-Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle 
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	AI_UpdateAmpModel(panelTitle, ctrlName)
+Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
+	struct WMCheckboxAction &cba
+
+	string panelTitle, ctrl
+
+	switch( cba.eventCode )
+		case EVENT_MOUSE_UP:
+			panelTitle = cba.win
+			ctrl       = cba.ctrlName
+
+			AI_UpdateAmpModel(panelTitle, ctrl)
+			break
+	endswitch
+
+	return 0
 End
 
 /// DAP_ExecuteAdamsTabcontrolAmp

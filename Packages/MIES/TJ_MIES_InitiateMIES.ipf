@@ -55,12 +55,14 @@ Function /T Path_MIESfolder(panelTitle)
 	return pathToMIES
 End
 //=========================================================================================
+///@deprecated use GetAmplifierFolderAsString() or GetAmplifierFolder()
 Function /T Path_AmpFolder(panelTitle)
 	string panelTitle
 	string pathToAmpFolder =Path_MIESfolder(panelTitle) + ":Amplifiers"
 	return pathToAmpFolder
 End
 //=========================================================================================
+///@deprecated use GetAmpSettingsFolderAsString() or GetAmpSettingsFolder()
 Function /T Path_AmpSettingsFolder(panelTitle)
 	string panelTitle
 	string pathToAmpSettingsFolder
