@@ -264,89 +264,92 @@ Function ITC_StopBackgroundTimerTask()
 End
 //======================================================================================
 
-Function ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
-	variable DeviceType, DeviceNum	// ITC-1600
+Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string /G root:MIES:ITCDevices:panelTitleG //$WavePath + ":PanelTitleG" = panelTitle
-	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG// = $WavePath + ":PanelTitleG"
+	string /G root:MIES:ITCDevices:panelTitleG
+	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	panelTitleG = panelTitle
 	string cmd
-	variable i = 0
-	//variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
+
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
-	variable /G root:MIES:ITCDevices:BackgroundTPCount = 0
-	doupdate
-	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	string  ITCDataWavePath = WavePath + ":ITCDataWave", ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	// open ITC device
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	//Execute cmd	
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", "Check", panelTitle)
+	variable /G root:MIES:ITCDevices:BackgroundTPCount   = 0
+
+	DoUpdate
+	string  ITCDataWavePath = WavePath + ":ITCDataWave"
+	string  ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
+
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
+
 	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
-
 End
 //======================================================================================
 
+///@brief Background execution function for the test pulse data acquisition
 Function ITC_TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:ADChannelToMonitor, BackgroundTPCount = root:MIES:ITCDevices:BackgroundTPCount
+
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
+	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
+	NVAR BackgroundTPCount   = root:MIES:ITCDevices:BackgroundTPCount
+	SVAR panelTitleG         = root:MIES:ITCDevices:PanelTitleG
+	// create a copy as panelTitleG is killed in ITC_STOPTestPulse
+	// but we still need it afterwards
+	string panelTitle        = panelTitleG
+
 	String cmd, Keyboard
-	//string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	SVAR PanelTitleG = root:MIES:ITCDevices:PanelTitleG// = $WavePath + ":panelTitleG"
-	string paneltitle = panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
-	string  ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
+
+	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
+	Wave ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	string CountPath = WavePath + ":count"
-	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		execute cmd// this also seems necessary to update the DA channel data to the board!!
-		sprintf cmd, "ITCStartAcq"
-		Execute cmd	
-		
-		 //ITC_StartBckgrdFIFOMonitor()
-			do
-				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
-				Execute cmd	
-				//doxopidle
-			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 5000 IS CHOSEN AS A POINT THAT IS A BIT LARGER THAN THE OUTPUT DATA
-		//Check Status
-		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
-		Execute cmd
-		sprintf cmd, "ITCStopAcq /z = 0"
-		Execute cmd
-		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
-		Execute cmd
-		DM_CreateScaleTPHoldingWave(panelTitle)
-		TP_ClampModeString(panelTitle)
-		TP_Delta(panelTitle, WavePath + ":TestPulse") 
-		//itcdatawave[0][0] += 0// runs arithmatic on data wave to force onscreen update 
-		//doupdate	
-		BackgroundTPCount += 1
-		if(mod(BackgroundTPCount,30) == 0 || BackgroundTPCount == 1)
- 		endif
-		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
-			Keyboard = KeyboardState("")
-			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
-				beep 
-				ITC_STOPTestPulse(panelTitle)
-				ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
 
-			endif
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	execute cmd // this also seems necessary to update the DA channel data to the board!!
+	sprintf cmd, "ITCStartAcq"
+	Execute cmd
+
+	do
+		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
+		Execute cmd
+	while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 5000 IS CHOSEN AS A POINT THAT IS A BIT LARGER THAN THE OUTPUT DATA
+
+	sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
+	Execute cmd
+	sprintf cmd, "ITCStopAcq /z = 0"
+	Execute cmd
+	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated
+	Execute cmd
+	DM_CreateScaleTPHoldingWave(panelTitle)
+	TP_ClampModeString(panelTitle)
+	TP_Delta(panelTitle, WavePath + ":TestPulse")
+
+	BackgroundTPCount += 1
+
+	if(mod(BackgroundTPCount,30) == 0 || BackgroundTPCount == 1)
+		// debug output at every nth step
+	endif
+
+	if(!exists(countPath)) // uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
+		Keyboard = KeyboardState("")
+		if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
+			beep
+			ITC_STOPTestPulse(panelTitle)
+			ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
 		endif
+	endif
+
 	return 0
-	
 End
 //======================================================================================
 

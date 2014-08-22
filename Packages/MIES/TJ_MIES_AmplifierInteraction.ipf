@@ -1,5 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Constant V_CLAMP_MODE      = 0
+Constant I_CLAMP_MODE      = 1
+Constant I_EQUAL_ZERO_MODE = 2
+
 Function /t AI_ReturnListOf700BChannels(panelTitle)
 	string panelTitle
 	Variable TotalNoChannels
@@ -223,20 +227,26 @@ End
 Function AI_SwitchClampMode(panelTitle, HeadStageNo, IorVorZeroClamp) // changes mode of user linked MCC based on headstage number
 	string panelTitle
 	variable HeadStageNo
-	variable IorVorZeroClamp  // 0 = V-Clamp, 1 = I-Clamp, 2 = I equals zero
+	variable IorVorZeroClamp
+
 	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
-	if(real(numtype(SerialAndChannel)) == 2)
-	print "No Amp is linked with this headstage"
-	elseif(real(numtype(SerialAndChannel)) == 0)
-		if(IorVorZeroClamp == 0)
-			AI_SwitchAxonToVClamp(panelTitle, real(SerialAndChannel), imag(SerialAndChannel))
-		elseif(IorVorZeroClamp == 1)
-			AI_SwitchAxonToIClamp(panelTitle,  real(SerialAndChannel),  imag(SerialAndChannel))
-		elseif(IorVorZeroClamp == 2)
-			AI_SwitchAxonToIZero(panelTitle, real(SerialAndChannel), imag(SerialAndChannel))
-		endif
+	variable serial  = real(SerialAndChannel)
+	variable channel = imag(SerialAndChannel)
+
+	if(!IsFinite(serial))
+		print "No Amp is linked with this headstage"
+		return NaN
 	endif
-	
+
+	if(IorVorZeroClamp == V_CLAMP_MODE)
+		AI_SwitchAxonToVClamp(panelTitle, serial, channel)
+	elseif(IorVorZeroClamp == I_CLAMP_MODE)
+		AI_SwitchAxonToIClamp(panelTitle, serial, channel)
+	elseif(IorVorZeroClamp == I_EQUAL_ZERO_MODE)
+		AI_SwitchAxonToIZero(panelTitle, serial, channel)
+	else
+		ASSERT(0, "Unexpected IorVorZeroClamp mode")
+	endif
 End
 
 //==================================================================================================
@@ -679,18 +689,13 @@ End
 Function AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) // returns 1 if the MIES headstage mode matches the associated MCC mode
 	string panelTitle									  // if these are out of sync the user needs to intervene unless MCC monitoring is enabled (at the time of writing this comment, monitoring has not been implemented)
 	variable MIESHeadstageNo
+
 	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-	variable Match
 	STRUCT AxonTelegraph_DataStruct tds
 	tds.version = 13
 	AxonTelegraphGetDataStruct(real(SerialAndChannel), imag(SerialAndChannel), 1, tds)
-	if(tds.operatingMode == AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo))
-		Match = 1
-	elseif(tds.operatingMode != AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo))
-		Match = 0
-	endif
-	
-	return Match
+
+	return (tds.operatingMode == AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo))
 End
 //==================================================================================================
 Function AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) // returns the mode of the headstage defined in the locked DA_ephys panel
@@ -951,11 +956,6 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	string SavedDataWaveName
 	Variable SweepNo
 		
-//	string stringPath 
-//	sprintf stringPath, "%s:channelClampMode" HSU_DataFullFolderPathString(panelTitle)
-//	wave ChannelClampMode = $stringPath
-//	print "channelClampMode path: ", stringPath
-
 	Wave/SDFR=$HSU_DataFullFolderPathString(panelTitle) ChannelClampMode
 		
 	// get all the Amp connection information

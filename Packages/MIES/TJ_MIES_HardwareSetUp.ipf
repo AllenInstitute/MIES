@@ -138,6 +138,14 @@ Function/s HSU_GetDeviceNumber(panelTitle)
 	return S_value
 End
 
+Function HSU_GetDeviceNumberIndex(panelTitle)
+	string panelTitle
+
+	ControlInfo /w = $panelTitle popup_moreSettings_DeviceNo
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	return V_value - 1
+End
+
 //==================================================================================================
 
 Function/DF HSU_GetDeviceTestPulseFromTitle(panelTitle)
@@ -329,7 +337,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	endif
 	
 	string ChannelClampModeString = WavePath + ":ChannelClampMode"
-		if(waveexists($ChannelClampModeString) == 0) // makes the storage wave if it does not exist. This wave stores the active clamp mode of AD channels. It is populated in a different procedure
+	if(!waveexists($ChannelClampModeString)) // makes the storage wave if it does not exist. This wave stores the active clamp mode of AD channels. It is populated in a different procedure
 		make /o /n = (16, 2) $ChannelClampModeString = nan
 		wave ChannelClampMode = $ChannelClampModeString
 		setdimlabel 1, 0, DAC, ChannelClampMode
@@ -367,18 +375,20 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ChanAmpAssignUnit[3][HeadStageNo] = s_value
 	
 	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
-	if(waveexists(root:MIES:Amplifiers:W_telegraphServers) == 1)
-	ControlInfo /w = $panelTitle popup_Settings_Amplifier
-		if(v_value > 1)
-		ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0] // serial number
-		ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1] // channel ID
-		else
-		ChanAmpAssign[8][HeadStageNo] = nan
-		ChanAmpAssign[9][HeadStageNo] = nan
-		endif
-		ChanAmpAssign[10][HeadStageNo] = v_value
+	if(waveexists(root:MIES:Amplifiers:W_telegraphServers))
+		ControlInfo /w = $panelTitle popup_Settings_Amplifier
 
+		if(v_value > 1)
+			ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0] // serial number
+			ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1] // channel ID
+		else
+			ChanAmpAssign[8][HeadStageNo] = nan
+			ChanAmpAssign[9][HeadStageNo] = nan
+		endif
+
+		ChanAmpAssign[10][HeadStageNo] = v_value
 	endif
+
 	//Duplicate ChanampAssign wave and add sweep number if the wave is changed
 	controlinfo SetVar_Sweep
 	SweepNo = v_value
@@ -394,6 +404,7 @@ End
 
 Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
+
 	Variable HeadStageNo
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"

@@ -1,4 +1,4 @@
- #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function DM_SaveITCData(panelTitle)
 	string panelTitle
@@ -80,12 +80,6 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
-//Function MakeFloatingPointWave(WaveBeingPassed)
-//wave WaveBeingPassed
-
-//redimension/d WaveBeingPassed
-
-//End
 
 Function DM_ADScaling(WaveToScale, panelTitle)
 wave WaveToScale

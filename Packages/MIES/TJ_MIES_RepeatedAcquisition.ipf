@@ -82,7 +82,7 @@ Function RA_Start(panelTitle)
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
 
-		ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)// modify thes line and the next to make the TP during ITI a user option
+		ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
 		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
@@ -195,7 +195,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				
 				//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 				ITI -= ITC_StopITCDeviceTimer(panelTitle)
-				ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
+				ITC_StartBackgroundTestPulse(panelTitle)
 				//ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse()", "RA_Counter()", "", panelTitle)
 				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 				
@@ -284,7 +284,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 
 		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
-		ITC_StartBackgroundTestPulse(DeviceType, DeviceNum, panelTitle)
+		ITC_StartBackgroundTestPulse(panelTitle)
 		//print ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		
