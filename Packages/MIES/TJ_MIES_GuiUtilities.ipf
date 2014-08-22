@@ -114,13 +114,36 @@ Function DisableListOfControls(win, controlList)
 	endfor
 End
 
+/// @brief Change control title
+Function ChangeControlTitle(win, controlName, newTitle)
+	string win, controlName, newTitle
+
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	ModifyControl $ControlName WIN = $win, title = newTitle
+
+End
+
+/// @brief Change color of a control
+Function SetControlTitleColor(win, controlName, R, G, B)
+	string win, controlName
+	variable R, G, B
+
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
+
+End
+
 /// @name Control types from ControlInfo
 /// @{
 Constant CONTROL_TYPE_CHECKBOX    = 2
 Constant CONTROL_TYPE_POPUPMENU   = 3
 Constant CONTROL_TYPE_VALDISPLAY  = 4
 Constant CONTROL_TYPE_SETVARIABLE = 5
-Constant CONTROL_TYPE_SLIDER = 7
+Constant CONTROL_TYPE_SLIDER      = 7
 /// @}
 
 /// @brief Returns one if the checkbox is selected, zero if it is unselected
