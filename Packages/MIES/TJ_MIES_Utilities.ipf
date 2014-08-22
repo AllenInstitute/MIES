@@ -344,6 +344,12 @@ End
 
 /// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES
 /// and Y from @ref DEVICE_NUMBERS.
+///
+/// Returns the result in deviceType and deviceNumber.
+/// Currently the parsing is successfull if X and Y are non-empty.
+/// @param[in]  device       input device string X_DEV_Y
+/// @param[out] deviceType   returns the device type X
+/// @param[out] deviceNumber returns the device number Y
 /// @returns one on successfull parsing, zero on error
 /// @todo replace all similiar usages in the rest of the code
 Function ParseDeviceString(device, deviceType, deviceNumber)
