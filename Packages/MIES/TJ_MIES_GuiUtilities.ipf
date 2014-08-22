@@ -120,6 +120,7 @@ Constant CONTROL_TYPE_CHECKBOX    = 2
 Constant CONTROL_TYPE_POPUPMENU   = 3
 Constant CONTROL_TYPE_VALDISPLAY  = 4
 Constant CONTROL_TYPE_SETVARIABLE = 5
+Constant CONTROL_TYPE_SLIDER = 7
 /// @}
 
 /// @brief Returns one if the checkbox is selected, zero if it is unselected
@@ -130,6 +131,28 @@ Function GetCheckBoxState(win, control)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
 	return V_Value
+End
+
+/// @brief Set the internal number in a setvariable control
+Function SetSetVariable(win,Control, newValue)
+	string win, control
+	variable newValue
+	
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")	
+	
+	SetVariable $control, win = $win, value =_NUM:newValue
+End
+
+Function SetSetVariableString(win,Control, newString)
+	string win, control, newString
+	
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")	
+	
+	SetVariable $control, win = $win, value =_STR:newString
 End
 
 /// @brief Set the state of the checkbox
@@ -152,6 +175,16 @@ Function GetSetVariable(win, control)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 	return V_Value
+end
+
+/// @brief Returns the contents of a SetVariable with an internal string
+Function/S GetSetVariableString(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control	
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+	return S_Value
 end
 
 /// @brief Returns the current PopupMenu item as string
@@ -197,6 +230,14 @@ Function/S GetValDisplayAsString(win, control)
 	return S_value
 End
 
+/// @brief Returns the slider position
+Function GetSliderPositionIndex(win, control)
+	string win, control
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")	
+	return V_value
+End
 /// @brief Set a ValDisplay
 ///
 /// The variable var can be formatted using format.
