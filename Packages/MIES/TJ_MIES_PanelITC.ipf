@@ -4004,7 +4004,7 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 
 	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
 	
-	If(ClampMode == 0)
+	If(ClampMode == V_CLAMP_MODE)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck win = $panelTitle, value = 1
 		
@@ -4044,7 +4044,7 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 		endif
 	endIf
 	
-	If(ClampMode == 1)
+	If(ClampMode == I_CLAMP_MODE)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		CheckBox $DACheck win = $panelTitle, value = 1
 		
@@ -4094,7 +4094,7 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 
 	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
 
-	If(ClampMode == 0)
+	If(ClampMode == V_CLAMP_MODE)
 		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
 		CheckBox $DACheck value = 0
 		
@@ -4113,7 +4113,7 @@ Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 		endif
 	endIf
 
-	If(ClampMode == 1)
+	If(ClampMode == I_CLAMP_MODE)
 		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
 		CheckBox $DACheck value = 0
 		

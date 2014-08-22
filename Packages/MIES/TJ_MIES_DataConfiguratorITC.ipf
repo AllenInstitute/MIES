@@ -521,10 +521,10 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 					sprintf ChannelClampModePathString, "%s:ChannelClampMode" WavePath
 					Wave ChannelClampMode = $ChannelClampModePathString
 					variable ChannelMode = ChannelClampMode[i][0]
-					if(ChannelMode == 0) // V - Clamp
+					if(ChannelMode == V_CLAMP_MODE)
 						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 						TPAmp = v_value
-					elseif(ChannelMode == 1) // I - Clamp
+					elseif(ChannelMode == I_CLAMP_MODE)
 						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 						TPAmp = v_value
 					endif

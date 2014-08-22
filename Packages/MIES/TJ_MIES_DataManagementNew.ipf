@@ -102,15 +102,14 @@ for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 	controlinfo /w = $panelTitle $ADGainControlName
 	gain = v_value
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 0) // V-clamp
-		gain *= 3200// itc output will be multiplied by 1000 to convert to pA then divided by the gain
+	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == V_CLAMP_MODE)
+		gain *= 3200 // itc output will be multiplied by 1000 to convert to pA then divided by the gain
 		WaveToScale[][(StartOfADColumns + i)] /= gain
-		//WaveToScale[][(StartOfADColumns+i)]*=1000
 	endif
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 1) // I-clamp
-		gain *=3200// 
-		WaveToScale[][(StartOfADColumns+i)]/=gain
+	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == I_CLAMP_MODE)
+		gain *=3200
+		WaveToScale[][(StartOfADColumns + i)]/=gain
 	endif
 	
 endfor
@@ -138,12 +137,12 @@ for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
 	controlinfo /w = $panelTitle $DAGainControlName
 	gain = v_value
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == 0) // V-clamp
+	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == V_CLAMP_MODE)
 		WaveToScale[][i] /= 3200
 		WaveToScale[][i] *= gain
 	endif
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == 1) // I-clamp
+	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == I_CLAMP_MODE)
 		WaveToScale[][i] /= 3200
 		WaveToScale[][i] *= gain
 	endif	

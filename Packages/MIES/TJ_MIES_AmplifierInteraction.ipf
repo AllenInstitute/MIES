@@ -1,5 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+///@todo use these constants instead of literal numbers
 Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
@@ -1095,9 +1096,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 					MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerAndChan))			
 					// now start to query the amp to get the status
 					//Figure out if we are looking at current clamp mode or voltage clamp mode
-//					print "ampChannel: ", ampChannel
-//					print "ChannelClampMode: ", ChannelClampMode[ampChannel][0]
-					if (ChannelClampMode[ampChannel][0] == 0) // V-clamp
+					if (ChannelClampMode[ampChannel][0] == V_CLAMP_MODE)
 					// See if the thing is enabled
 						// Save the enabled state in column 0
 						ampSettingsWave[0][0][headStageControlledCounter]  = MCC_GetHoldingEnable() // V-Clamp holding enable
@@ -1129,7 +1128,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 						// Save the whole cell comp resist value in column 9
 						ampSettingsWave[0][9][headStageControlledCounter] =  (MCC_GetWholeCellCompResist() * 1e-6) // V-Clamp Whole Cell Comp Resist, Converts Ohms to MOhms
 						
-					elseif (ChannelClampMode[ampChannel][0]==1) // I-Clamp
+					elseif (ChannelClampMode[ampChannel][0] == I_CLAMP_MODE)
 						// Save the i clamp holding enabled in column 10
 						ampSettingsWave[0][10][headStageControlledCounter] =  MCC_GetHoldingEnable() // I-Clamp holding enable
 						
