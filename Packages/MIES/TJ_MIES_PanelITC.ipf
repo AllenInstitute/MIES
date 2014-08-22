@@ -4056,29 +4056,22 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 		
 		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = ClampMode
 
-		If(ChanAmpAssign[6][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-				
-		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[6][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+	// DAC channels
+	sprintf ctrlSuffix "_DA_%02d", DACchannel
+	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
+	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, DaGain)
+	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, DaUnit)
 
 		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
 		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
 		
 		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
 
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-				
-		ADGain = "Gain_AD_"+num2str(ChanAmpAssign[6][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]	
-
-		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+	// ADC channels
+	sprintf ctrlSuffix "_AD_%02d", ADCchannel
+	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
+	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, ADGain)
+	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
 
 		endif
 	endIf

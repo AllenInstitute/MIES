@@ -36,156 +36,95 @@ Function /t AI_ReturnListOf700BChannels(panelTitle)
 
 End
 
-
 //==================================================================================================
+/// @returns AD gain of amp in selected mode
+/// Gain is returned in V/pA for V-Clamp, V/mV for I-Clamp
+Function AI_RetrieveADGain(panelTitle, axonSerial, channel)
+	string panelTitle
+	variable axonSerial
+	variable channel
 
-Function /C AI_RetrieveADGain(panelTitle, AmpSerialNumber, AmpChannel) // returns AD gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
-	string panelTitle			 // gain is returned in V/pA for V-Clamp, V/mV for I-Clamp
-	variable AmpSerialNumber
-	variable AmpChannel
-	variable /C ADGain = 0
 	STRUCT AxonTelegraph_DataStruct tds
-	tds.version = 13
-	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-	if(tds.OperatingMode == 0)
-		ADGain = cmplx((tds.ScaleFactor * tds.Alpha) / 1000,  tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
-	elseif(tds.OperatingMode == 1)
-		ADGain = cmplx((tds.ScaleFactor * tds.Alpha) / 1000,  tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
+	Init_AxonTelegraph_DataStruct(tds)
+	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+
+	if(tds.OperatingMode == V_CLAMP_MODE)
+		return tds.ScaleFactor * tds.Alpha / 1000
+	elseif(tds.OperatingMode == I_CLAMP_MODE)
+		return tds.ScaleFactor * tds.Alpha / 1000
 	endif
-	
-	return ADGain
 End
 //==================================================================================================
+/// @returns DA gain of amp in selected mode.
+/// Gain is returned in mV/V for V_CLAMP_MODE and V/mV for I_CLAMP_MODE.
+Function AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+	string panelTitle
+	variable axonSerial
+	variable channel
 
-Function /C AI_RetrieveDAGain(panelTitle, AmpSerialNumber, AmpChannel) // returns DA gain of amp in selected mode - mode needs to be switched to return gain for both modes (I-clamp, V-clamp)
-	string panelTitle				 // gain is returned in mV/V for V-Clamp, V/mV for I clamp
-	variable AmpSerialNumber
-	variable AmpChannel
-	variable /C DAGain = 0
 	STRUCT AxonTelegraph_DataStruct tds
-	tds.version = 13
-	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-	if(tds.OperatingMode == 0)
-		DAGain = cmplx(tds.ExtCmdSens * 1000, tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
-	elseif(tds.OperatingMode == 1)
-		DAGain = cmplx(tds.ExtCmdSens * 1e12, tds.OperatingMode) // real component is the gain, imaginary component is the clamp mode.
+	Init_AxonTelegraph_DataStruct(tds)
+	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+
+	if(tds.OperatingMode == V_CLAMP_MODE)
+		return tds.ExtCmdSens * 1000
+	elseif(tds.OperatingMode == I_CLAMP_MODE)
+		return tds.ExtCmdSens * 1e12
+	else
+		// do nothing
 	endif
-
-	return DAGain
 End
 //==================================================================================================
-
-Function AI_SwitchAxonAmpMode(panelTitle, AmpSerialNumber, AmpChannel) // changes the mode of the amplifier between I-Clamp and V-Clamp depending on the mode when function initiates
+/// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
+Function AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
 	string panelTitle
-	variable AmpSerialNumber
-	variable AmpChannel	
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	variable Mode = MCC_GetMode()
-	if(Mode == 0)
-		MCC_SetMode(1)
-	elseif(Mode == 1)
-		MCC_SetMode(0)
+	string mccSerial
+	variable channel
+
+	MCC_SelectMultiClamp700B(mccSerial, channel)
+	variable mode = MCC_GetMode()
+
+	if(mode == V_CLAMP_MODE)
+		MCC_SetMode(I_CLAMP_MODE)
+	elseif(Mode == I_CLAMP_MODE)
+		MCC_SetMode(V_CLAMP_MODE)
+	else
+		// do nothing
 	endif
-	//MCC_SetMode
-	//MCC_GetMode
 End
 //==================================================================================================
-Function AI_ReturnHeadstageChanAndSer(panelTitle, HeadstageNo)
+static Function AI_SwitchAxonMode(panelTitle, mccSerial, channel, mode)
 	string panelTitle
-	variable HeadstageNo
-End
-//==================================================================================================
-Function AI_IsAmpStillAvailable(panelTitle, AmpSerialNumber, AmpChannel) // no good way to do this
-	string panelTitle
-	variable AmpSerialNumber
-	variable AmpChannel
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel);AbortOnRTE
-	
-End
-//==================================================================================================
+	string mccSerial
+	variable channel
+	variable mode
 
-Function AI_SwitchAxonToVClamp(panelTitle, AmpSerialNumber, AmpChannel)
-	string panelTitle
-	variable AmpSerialNumber
-	variable AmpChannel	
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	variable ErrorCode = MCC_SetMode(0)
-	if (numtype(ErrorCode) == 2) // NaN is returned
+	variable errorCode
+	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+
+	MCC_SelectMultiClamp700B(mccSerial, channel)
+	errorCode = MCC_SetMode(mode)
+	if(!IsFinite(errorCode))
 		DFREF saveDFR = GetDataFolderDFR()
-		SetDataFolder  $Path_AmpFolder(panelTitle)
-		MCC_FindServers /Z = 1
+		SetDataFolder $Path_AmpFolder(panelTitle)
+		MCC_FindServers/Z=1
 		SetDataFolder saveDFR
 		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
-			MCC_SetMode(0)
-		elseif(V_flag > 0)
-			print " Mode cannot be switched. Linked MCC is longer present"
+			MCC_SetMode(mode)
+		else
+			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is longer present\r", mode
 		endif
 	endif
 End
 //==================================================================================================
-Function AI_SwitchAxonToIClamp(panelTitle, AmpSerialNumber, AmpChannel)
-	string panelTitle
-	variable AmpSerialNumber
-	variable AmpChannel	
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	variable ErrorCode = MCC_SetMode(1)
-	if (numtype(ErrorCode) == 2) // NaN is returned
-		DFREF saveDFR = GetDataFolderDFR()
-		SetDataFolder  $Path_AmpFolder(panelTitle)
-		MCC_FindServers /Z = 1
-		SetDataFolder saveDFR
-		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
-			MCC_SetMode(1)
-		elseif(V_flag > 0)
-			print " Mode cannot be switched. Linked MCC is longer present"
-		endif
-	endif
-		
-End
-//==================================================================================================
-Function AI_SwitchAxonToIZero(panelTitle, AmpSerialNumber, AmpChannel)
-	string panelTitle
-	variable AmpSerialNumber
-	variable AmpChannel	
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNumber
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
-	variable ErrorCode = MCC_SetMode(0)
-	if (numtype(ErrorCode) == 2) // NaN is returned
-		DFREF saveDFR = GetDataFolderDFR()
-		SetDataFolder  $Path_AmpFolder(panelTitle)
-		MCC_FindServers /Z = 1
-		SetDataFolder saveDFR
-		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
-			MCC_SetMode(0)
-		elseif(V_flag > 0)
-			print " Mode cannot be switched. Linked MCC is longer present"
-		endif
-	endif
-End
-//==================================================================================================
+Function Init_AxonTelegraph_DataStruct(tds)
+	struct AxonTelegraph_DataStruct& tds
 
-Function AI_GetAxonTeleServerInfo(AmpSerialNumber, AmpChannel)
-	variable AmpSerialNumber
-	variable AmpChannel
-	STRUCT AxonTelegraph_DataStruct tds
 	tds.version = 13
-	AxonTelegraphGetDataStruct(AmpSerialNumber, AmpChannel, 1, tds)
-	//print tds
-//	print tds.ScaleFactor
 End
 //==================================================================================================
-
 Structure AxonTelegraph_DataStruct
-	uint32 Version	// Structure version.  Value should always be 13.
+	uint32 Version	///< Structure version.  Value should always be 13.
 	uint32 SerialNum
 	uint32 ChannelID
 	uint32 ComPortID
@@ -213,506 +152,300 @@ Structure AxonTelegraph_DataStruct
 	double SeriesResistance
 EndStructure
 //==================================================================================================
-
-Function /C AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo) // finds the link between the headstage and the user associated MCC
+/// @brief Returns the serial number of the headstage compatible with Axon* functions, @see GetChanAmpAssign
+Function AI_GetAmpAxonSerial(panelTitle, headStage)
 	string panelTitle
-	variable HeadStageNo
+	variable headStage
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 
-	return cmplx(ChanAmpAssign[8][HeadStageNo], ChanAmpAssign[9][HeadStageNo])
+	return ChanAmpAssign[8][headStage]
 End
-
 //==================================================================================================
-Function AI_SwitchClampMode(panelTitle, HeadStageNo, IorVorZeroClamp) // changes mode of user linked MCC based on headstage number
+/// @brief Returns the serial number of the headstage compatible with MCC* functions, @see GetChanAmpAssign
+Function/S AI_GetAmpMCCSerial(panelTitle, headStage)
 	string panelTitle
-	variable HeadStageNo
-	variable IorVorZeroClamp
+	variable headStage
 
-	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
-	variable serial  = real(SerialAndChannel)
-	variable channel = imag(SerialAndChannel)
+	variable axonSerial
+	string mccSerial
 
-	if(!IsFinite(serial))
+	axonSerial = AI_GetAmpAxonSerial(panelTitle, headStage)
+
+	if(axonSerial == 0)
+		return "Demo"
+	else
+		sprintf mccSerial, "%08d", axonSerial
+		return mccSerial
+	endif
+End
+//==================================================================================================
+///@brief Return the channel of the currently selected head stage
+Function AI_GetAmpChannel(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	return ChanAmpAssign[9][headStage]
+End
+//==================================================================================================
+/// @brief changes mode of user linked MCC based on headstage number
+Function AI_SwitchClampMode(panelTitle, headStage, mode)
+	string panelTitle
+	variable headStage
+	variable mode
+
+	string serial    = AI_GetAmpMCCSerial(panelTitle, headStage)
+	variable channel = AI_GetAmpChannel(panelTitle, headStage)
+
+	if(!AI_IsValidSerialAndChannel(mccSerial=serial, channel=channel))
 		print "No Amp is linked with this headstage"
 		return NaN
 	endif
 
-	if(IorVorZeroClamp == V_CLAMP_MODE)
-		AI_SwitchAxonToVClamp(panelTitle, serial, channel)
-	elseif(IorVorZeroClamp == I_CLAMP_MODE)
-		AI_SwitchAxonToIClamp(panelTitle, serial, channel)
-	elseif(IorVorZeroClamp == I_EQUAL_ZERO_MODE)
-		AI_SwitchAxonToIZero(panelTitle, serial, channel)
-	else
-		ASSERT(0, "Unexpected IorVorZeroClamp mode")
-	endif
+	AI_SwitchAxonMode(panelTitle, serial, channel, mode)
 End
-
 //==================================================================================================
+Function AI_IsValidSerialAndChannel([mccSerial, axonSerial, channel])
+	string mccSerial
+	variable axonSerial
+	variable channel
 
-Function AI_SendVClampParamToMCC(panelTitle, HeadStageNo)
-	string panelTitle
-	variable HeadStageNo
-	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo)
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-	
-	//Send holding to MCC
-End
-
-//==================================================================================================
-//Function AI_CreateAmpDataStorageWave(panelTitle)
-// 	string panelTitle
-// 	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
-// 	string AmpStorageWaveWaveName
-// 	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
-// 	make /o /n = (26, 2, 8) $AmpStorageWaveWaveName
-// 	wave AmpStorageWave = $AmpStorageWaveWaveName
-// 	setdimlabel 1, 0, VClamp, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
-// 	setdimlabel 1, 1, IClamp, AmpStorageWave // labels column 1 (of all layers) with the heading IClamp
-// 	setdimlabel 0, 0, StructureVersion, AmpStorageWave
-// 	setdimlabel 0, 1, SerialNum, AmpStorageWave
-// 	setdimlabel 0, 2, ChannelID, AmpStorageWave
-// 	setdimlabel 0, 3, ComPortID, AmpStorageWave
-// 	setdimlabel 0, 4, AxoBusID, AmpStorageWave
-// 	setdimlabel 0, 5, OperatingMode, AmpStorageWave
-// 	setdimlabel 0, 6, ScaledOutSignal, AmpStorageWave
-// 	setdimlabel 0, 7, Alpha, AmpStorageWave
-// 	setdimlabel 0, 8, ScaleFactor, AmpStorageWave
-// 	setdimlabel 0, 9, ScaleFactorUnits, AmpStorageWave
-// 	setdimlabel 0, 10, LPFCutoff, AmpStorageWave
-// 	setdimlabel 0, 11, ExtCmdSens, AmpStorageWave
-// 	setdimlabel 0, 12, RawOutSignal, AmpStorageWave
-// 	setdimlabel 0, 13, RawScaleFactor, AmpStorageWave
-// 	setdimlabel 0, 14, RawScaleFactorUnits, AmpStorageWave
-// 	setdimlabel 0, 15, HardwareType, AmpStorageWave
-// 	setdimlabel 0, 16, SecondaryLPFCutoff, AmpStorageWave
-// 	setdimlabel 0, 17, SeriesResistance, AmpStorageWave
-// 	setdimlabel 0, 18, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 19, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 20, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 21, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 22, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 23, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 24, PlaceHolder, AmpStorageWave
-// 	setdimlabel 0, 25, PlaceHolder, AmpStorageWave
-// End
-
-//==================================================================================================
-// BELOW ARE COMMAND THAT SEND PARAMETERS, OR ENABLE CONTROLS ON THE MCC PANEL
-// the commands are wrapped in several checks that ensure they are only sent when the appropriate mode is active
-//==================================================================================================
-
-Function AI_SendVHoldToAmp(panelTitle, HoldingV)
-	string panelTitle
-	variable HoldingV
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2)
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_Setholding(HoldingV*1e-3)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
+	if(!ParamIsDefault(mccSerial))
+		if(isEmpty(mccSerial))
+			return 0
 		endif
 	endif
+
+	if(!ParamIsDefault(axonSerial))
+		if(!IsFinite(axonSerial))
+			return 0
+		endif
+	endif
+
+	if(!ParamIsDefault(channel))
+		if(!IsFinite(channel))
+			return 0
+		endif
+	endif
+
+	return 1
 End
-//==================================================================================================
-Function AI_SendVHoldEnableToAmp(panelTitle, EnableHolding)
+
+/// @name Possible values for the function parameter of AI_SendToAmp()
+/// @{
+static Constant MCC_SETHOLDING_FUNC             = 0x01
+static Constant MCC_SETHOLDINGENABLE_FUNC       = 0x02
+static Constant MCC_SETWHOLECELLCOMPCAP_FUNC    = 0x04
+static Constant MCC_SETWHOLECELLCOMPRESIST_FUNC = 0x08
+static Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x10
+static Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x20
+static Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x30
+static Constant MCC_SETRSCOMPENABLE_FUNC        = 0x40
+static Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x50
+static Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x60
+static Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x70
+static Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x80
+/// @}
+
+/// @brief Generic function to interface with the MCC amplifier
+///
+/// @param panelTitle 	locked panel name to work on
+/// @param mode			one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
+/// @param function		Function to call
+/// @param value		Numerical value to send
+static Function AI_SendToAmp(panelTitle, mode, function, value)
 	string panelTitle
-	variable EnableHolding
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2)
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetholdingEnable(EnableHolding)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
+	variable mode, function, value
+
+	variable error, headStage, channel
+	string serial
+
+	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+
+	if(AI_MIESHeadstageMode(panelTitle, headStage) == mode && AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+		serial  = AI_GetAmpMCCSerial(panelTitle, headStage)
+		channel = AI_GetAmpChannel(panelTitle, headStage)
+
+		if(AI_IsValidSerialAndChannel(mccserial=serial, channel=channel))
+
+			MCC_SelectMultiClamp700B(serial, channel)
+
+			switch(function)
+				case MCC_SETHOLDING_FUNC:
+					error = MCC_Setholding(value)
+					break
+				case MCC_SETHOLDINGENABLE_FUNC:
+					error = MCC_SetholdingEnable(value)
+					break
+				case MCC_SETWHOLECELLCOMPCAP_FUNC:
+					error = MCC_SetWholeCellCompCap(value)
+					break
+				case MCC_SETWHOLECELLCOMPRESIST_FUNC:
+					error = MCC_SetWholeCellCompResist(value)
+					break
+				case MCC_SETWHOLECELLCOMPENABLE_FUNC:
+					error = MCC_SetWholeCellCompEnable(value)
+					break
+				case MCC_SETRSCOMPCORRECTION_FUNC:
+					error = MCC_SetRsCompCorrection(value)
+					break
+				case MCC_SETRSCOMPPREDICTION_FUNC:
+					error = MCC_SetRsCompPrediction(value)
+					break
+				case MCC_SETRSCOMPENABLE_FUNC:
+					error = MCC_SetRsCompEnable(value)
+					break
+				case MCC_SETBRIDGEBALRESIST_FUNC:
+					error = MCC_SetBridgeBalResist(value)
+					break
+				case MCC_SETBRIDGEBALENABLE_FUNC:
+					error = MCC_SetBridgeBalEnable(value)
+					break
+				case MCC_SETNEUTRALIZATIONCAP_FUNC:
+					error = MCC_SetNeutralizationCap(value)
+					break
+				default:
+					ASSERT(0, "Unknown function")
+					break
+			endswitch
+
+			if(!IsFinite(error))
+				print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 			endif
 		endif
 	endif
 End
 //==================================================================================================
-Function AI_SendWCCToAmp(panelTitle, Capacitance)
+Function AI_SEndVHoldToAmp(panelTitle, holdingV)
 	string panelTitle
-	variable Capacitance
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetWholeCellCompCap(Capacitance * 1e-12)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
+	variable holdingV
+
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, holdingV * 1e-3)
 End
 //==================================================================================================
-Function AI_SendWCRToAmp(panelTitle, Resistance)
+Function AI_SendVHoldEnableToAmp(panelTitle, enableHolding)
 	string panelTitle
-	variable Resistance
+	variable enableHolding
 	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetWholeCellCompResist(Resistance * 1e6)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, enableHolding)
 End
 //==================================================================================================
-Function AI_SendEnableWCToAmp(panelTitle, EnableWholeCell)
+Function AI_SendWCCToAmp(panelTitle, capacitance)
 	string panelTitle
-	variable EnableWholeCell
+	variable capacitance
 	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetWholeCellCompEnable(EnableWholeCell)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, capacitance * 1e-12)
 End
 //==================================================================================================
-Function AI_SendRsCompCorrToAmp(panelTitle, Correction)
+Function AI_SendWCRToAmp(panelTitle, resistance)
 	string panelTitle
-	variable Correction
+	variable resistance
 	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetRsCompCorrection(Correction)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, resistance * 1e6)
 End
 //==================================================================================================
-Function AI_SendRsCompPredToAmp(panelTitle, Prediction)
+Function AI_SendEnableWCToAmp(panelTitle, enableWholeCell)
 	string panelTitle
-	variable Prediction
+	variable enableWholeCell
 	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetRsCompPrediction(Prediction)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, enableWholeCell)
+End
 //==================================================================================================
-Function AI_SendRsCompEnableToAmp(panelTitle, EnableRsComp)
+Function AI_SendRsCompCorrToAmp(panelTitle, correction)
 	string panelTitle
-	variable EnableRsComp // 1 = enabled
+	variable correction
 	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, correction)
+End
+//==================================================================================================
+Function AI_SendRsCompPredToAmp(panelTitle, prediction)
+	string panelTitle
+	variable prediction
 	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, prediction)
+End
+//==================================================================================================
+Function AI_SendRsCompEnableToAmp(panelTitle, enableRsComp)
+	string panelTitle
+	variable enableRsComp
 	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 0) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetRsCompEnable(EnableRsComp)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
+	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, enableRsComp)
+End
+//==================================================================================================
+Function AI_SendBiasIToAmp(panelTitle, biasCurrent)
+	string panelTitle
+	variable biasCurrent
+	
+	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, biasCurrent * 1e-12)
+End
+//==================================================================================================
+Function AI_BiasToAmp(panelTitle, biasEnable)
+	string panelTitle
+	variable biasEnable
+	
+	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, biasEnable)
+End
+//==================================================================================================
+Function AI_BridgeBalanceToAmp(panelTitle, bridgeBalance)
+	string panelTitle
+	variable bridgeBalance
+	
+	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, bridgeBalance * 1e6)
+End
+//==================================================================================================
+Function AI_BridgeBalanceEnableToAmp(panelTitle, bridgeBalanceEnable)
+	string panelTitle
+	variable bridgeBalanceEnable
+	
+	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, bridgeBalanceEnable)
+End
+//==================================================================================================
+Function AI_CapCompToAmp(panelTitle, capCompCap)
+	string panelTitle
+	variable capCompCap
+	
+	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, capCompCap * 1e-12)
+End
+//==================================================================================================
+Function AI_CapCompEnable(panelTitle, capCompCapEnable)
+	string panelTitle
+	variable capCompCapEnable
+	
+	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, capCompCapEnable)
+End
+//==================================================================================================
+/// @returns 1 if the MIES headstage mode matches the associated MCC mode, zero otherwise
+Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
+	// if these are out of sync the user needs to intervene unless MCC monitoring is enabled
+	// (at the time of writing this comment, monitoring has not been implemented)
 
-//==================================================================================================
-Function AI_SendBiasIToAmp(panelTitle, BiasCurrent)
-	string panelTitle
-	variable BiasCurrent
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 1) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetHolding(BiasCurrent*1e-12)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
-//==================================================================================================
-Function AI_BiasToAmp(panelTitle, BiasEnable)
-	string panelTitle
-	variable BiasEnable
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 1) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetHoldingEnable(BiasEnable)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
-//==================================================================================================
-Function AI_BridgeBalanceToAmp(panelTitle, BridgeBalance)
-	string panelTitle
-	variable BridgeBalance
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 1) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetBridgeBalResist(BridgeBalance * 1e6)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
-//==================================================================================================
+	variable serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
+	variable channel = AI_GetAmpChannel(panelTitle, headStage)
 
-Function AI_BridgeBalanceEnableToAmp(panelTitle, BridgeBalanceEnable)
-	string panelTitle
-	variable BridgeBalanceEnable
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 1) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetBridgeBalEnable(BridgeBalanceEnable)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
-//==================================================================================================
-Function AI_CapCompToAmp(panelTitle, CapCompCap)
-	string panelTitle
-	variable CapCompCap
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 1) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetNeutralizationCap(CapCompCap * 1e-12)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
-//==================================================================================================
-Function AI_CapCompEnable(panelTitle, CapCompCapEnable)
-	string panelTitle
-	variable CapCompCapEnable
-	
-	//Is the control for an active mode? ex. Is V-clamp active and is the user trying to change the holding potential
-	
-	// Get the MIES headstage
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadstageNo = v_value
-	
-	if(AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) == 1) // checks to see if Vclamp is the active mode of the MIES headstage
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) == 1) // check to see if the MCC mode matches the MIES headstage mode
-			//Get the associated amp serial number and channel
-			variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
-			if(real(numtype(SerialAndChannel)) != 2 && imag(numtype(SerialAndChannel)) != 2) // checks if values the user entered for a MIES headstage return an associated amp
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(SerialAndChannel)
-				MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerialAndChannel))
-				variable Error = MCC_SetNeutralizationEnable(CapCompCapEnable)
-				if(numtype(Error) == 2)
-					print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-				endif
-			endif
-		endif
-	endif
-End	
-//==================================================================================================
-Function AI_MIESHeadstageMatchesMCCMode(panelTitle, MIESHeadstageNo) // returns 1 if the MIES headstage mode matches the associated MCC mode
-	string panelTitle									  // if these are out of sync the user needs to intervene unless MCC monitoring is enabled (at the time of writing this comment, monitoring has not been implemented)
-	variable MIESHeadstageNo
-
-	variable /C SerialAndChannel = AI_ReturnSerialAndChanNumber(panelTitle, MIESHeadstageNo)
 	STRUCT AxonTelegraph_DataStruct tds
-	tds.version = 13
-	AxonTelegraphGetDataStruct(real(SerialAndChannel), imag(SerialAndChannel), 1, tds)
+	Init_AxonTelegraph_DataStruct(tds)
+	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
 
-	return (tds.operatingMode == AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo))
+	return (tds.operatingMode == AI_MIESHeadstageMode(panelTitle, headStage))
 End
 //==================================================================================================
-Function AI_MIESHeadstageMode(panelTitle, MIESHeadstageNo) // returns the mode of the headstage defined in the locked DA_ephys panel
+/// @returns the mode of the headstage defined in the locked DA_ephys panel,
+///          can be V_CLAMP_MODE or I_CLAMP_MODE
+Function AI_MIESHeadstageMode(panelTitle, headStage)
 	string panelTitle
-	variable MIESHeadstageNo // 0 through 7 MIESheadstage 1 has radio buttons 0 and 1 
-	string ClampModeRadioButton
-	sprintf ClampModeRadioButton, "Radio_ClampMode_%d" (MIESHeadstageNo * 2)
-	controlinfo /w = $panelTitle $ClampModeRadioButton
-	variable ClampModeRadioButtonState = v_value
-	variable MIESHeadstageMode 
-	if(ClampModeRadioButtonState == 0)
-		MIESHeadstageMode = 1
-	elseif(ClampModeRadioButtonState == 1)
-		MIESHeadstageMode = 0
-	endif
-	
-	return MIESHeadstageMode
+	variable headStage  // 0 through 7
+						// MIESheadstage 1 has radio buttons 0 and 1
+
+	string ctrl
+	sprintf ctrl, "Radio_ClampMode_%d", (headStage * 2)
+
+	return GetCheckBoxState(panelTitle, ctrl) == CHECKBOX_SELECTED ? V_CLAMP_MODE : I_CLAMP_MODE
 End
 //==================================================================================================
 Function AI_UpdateAmpModel(panelTitle, cntrlName)
@@ -1072,80 +805,69 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	// Now populate the Settings Wave
 	// the wave is 1 row, 15 columns, and headstage number layers
 	// first...determine if the head stage is being controlled
-	variable headStageControlledCounter
-	for(headStageControlledCounter = 0;headStageControlledCounter < noHeadStages ;headStageControlledCounter += 1)
-		Variable hsControl = str2num(stringfromlist(headStageControlledCounter, controlledHeadStage,";")) // str2num(controlledHeadStage[i])
-		if (hsControl == 1)
-			Variable ampChannel = headStageControlledCounter
-			Variable/C SerAndChan = AI_ReturnSerialAndChanNumber(panelTitle, ampChannel)
-			variable serialNumber = real(SerAndChan)
-			variable channel = imag(serAndChan)
-			//print "serial no =", serialNumber
-			if(numtype(serialNumber) != 2 && numtype(channel) != 2) // checks to make sure amp is associated with MIES headstage
-//				String serialNumString
-//				sprintf serialNumString, "%g%g%s" 0, 0, num2str(real(SerAndChan))
-				string AmpSerialNumberString
-				sprintf AmpSerialNumberString, "%.8d" real(serAndChan)				
-				//print AmpSerialNumberString
-				
-				if (stringmatch(ampSerialNumberString, "00000000") == 1) // amp in DemoMode
-					print "Amp is in Demo Mode!"
-				else	
-//					print "Selecting MC700B..."
-					MCC_SelectMultiClamp700B(AmpSerialNumberString, imag(SerAndChan))			
-					// now start to query the amp to get the status
-					//Figure out if we are looking at current clamp mode or voltage clamp mode
-					if (ChannelClampMode[ampChannel][0] == V_CLAMP_MODE)
-					// See if the thing is enabled
-						// Save the enabled state in column 0
-						ampSettingsWave[0][0][headStageControlledCounter]  = MCC_GetHoldingEnable() // V-Clamp holding enable
-											
-						// Save the level in column 1
-						ampSettingsWave[0][1][headStageControlledCounter] = (MCC_GetHolding() * 1e+3)	// V-Clamp holding level, converts Volts to mV
-						
-						// Save the Osc Killer Enable in column 2	
-						ampSettingsWave[0][2][headStageControlledCounter] = MCC_GetOscKillerEnable() // V-Clamp Osc Killer Enable
-						
-						// Save the RsCompBandwidth in column 3
-						ampSettingsWave[0][3][headStageControlledCounter] = (MCC_GetRsCompBandwidth() * 1e-3) // V-Clamp RsComp Bandwidth, converts Hz to KHz
-						
-						// Save the RsCompCorrection in column 4
-						ampSettingsWave[0][4][headStageControlledCounter] = MCC_GetRsCompCorrection() // V-Clamp RsComp Correction
-						
-						// Save the RsCompEnable in column 5
-						ampSettingsWave[0][5][headStageControlledCounter] =   MCC_GetRsCompEnable() // V-Clamp RsComp Enable
-						
-						// Save the RsCompPrediction in column 6
-						ampSettingsWave[0][6][headStageControlledCounter] = MCC_GetRsCompPrediction() // V-Clamp RsCompPrediction
-						
-						// Save the whole celll cap value in column 7
-						ampSettingsWave[0][7][headStageControlledCounter] =   MCC_GetWholeCellCompEnable() // V-Clamp Whole Cell Comp Enable
-						
-						// Save the whole celll cap value in column 8
-						ampSettingsWave[0][8][headStageControlledCounter] =   (MCC_GetWholeCellCompCap() * 1e+12) // V-Clamp Whole Cell Comp Cap, Converts F to pF
-						
-						// Save the whole cell comp resist value in column 9
-						ampSettingsWave[0][9][headStageControlledCounter] =  (MCC_GetWholeCellCompResist() * 1e-6) // V-Clamp Whole Cell Comp Resist, Converts Ohms to MOhms
-						
-					elseif (ChannelClampMode[ampChannel][0] == I_CLAMP_MODE)
-						// Save the i clamp holding enabled in column 10
-						ampSettingsWave[0][10][headStageControlledCounter] =  MCC_GetHoldingEnable() // I-Clamp holding enable
-						
-						// Save the i clamp holding value in column 11
-						ampSettingsWave[0][11][headStageControlledCounter] = (MCC_GetHolding() * 1e+12)	 // I-Clamp holding level, converts Amps to pAmps		
-						
-						// Save the neutralization enable in column 12
-						ampSettingsWave[0][12][headStageControlledCounter] = MCC_GetNeutralizationEnable() // I-Clamp Neut Enable
-						
-						// Save neut cap value in column 13					
-						ampSettingsWave[0][13][headStageControlledCounter] =  (MCC_GetNeutralizationCap() * 1e+12) // I-Clamp Neut Cap Value, Conversts Farads to pFarads
-		
-						// save bridge balance enabled in column 14
-						ampSettingsWave[0][14][headStageControlledCounter] =   MCC_GetBridgeBalEnable() // I-Clamp Bridge Balance Enable
-						
-						// save bridge balance enabled in column 15
-						ampSettingsWave[0][15][headStageControlledCounter] =  (MCC_GetBridgeBalResist() * 1e-6)	 // I-Clamp Bridge Balance Resist				
-					endif
+	variable i
+	for(i = 0; i < noHeadStages ; i += 1)
+		Variable hsControl = str2num(stringfromlist(i, controlledHeadStage))
+		if (hsControl)
+			string serial    = AI_GetAmpMCCSerial(panelTitle, i)
+			variable channel = AI_GetAmpChannel(panelTitle, i)
+
+			if(AI_IsValidSerialAndChannel(mccSerial=serial, channel=channel)) // checks to make sure amp is associated with MIES headstage
+
+				MCC_SelectMultiClamp700B(serial, channel)
+
+				// now start to query the amp to get the status
+				//Figure out if we are looking at current clamp mode or voltage clamp mode
+				if (ChannelClampMode[i][0] == V_CLAMP_MODE)
+				// See if the thing is enabled
+					// Save the enabled state in column 0
+					ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable() // V-Clamp holding enable
+
+					// Save the level in column 1
+					ampSettingsWave[0][1][i] = (MCC_GetHolding() * 1e+3)	// V-Clamp holding level, converts Volts to mV
+
+					// Save the Osc Killer Enable in column 2
+					ampSettingsWave[0][2][i] = MCC_GetOscKillerEnable() // V-Clamp Osc Killer Enable
+
+					// Save the RsCompBandwidth in column 3
+					ampSettingsWave[0][3][i] = (MCC_GetRsCompBandwidth() * 1e-3) // V-Clamp RsComp Bandwidth, converts Hz to KHz
+
+					// Save the RsCompCorrection in column 4
+					ampSettingsWave[0][4][i] = MCC_GetRsCompCorrection() // V-Clamp RsComp Correction
+
+					// Save the RsCompEnable in column 5
+					ampSettingsWave[0][5][i] =   MCC_GetRsCompEnable() // V-Clamp RsComp Enable
+
+					// Save the RsCompPrediction in column 6
+					ampSettingsWave[0][6][i] = MCC_GetRsCompPrediction() // V-Clamp RsCompPrediction
+
+					// Save the whole celll cap value in column 7
+					ampSettingsWave[0][7][i] =   MCC_GetWholeCellCompEnable() // V-Clamp Whole Cell Comp Enable
+
+					// Save the whole celll cap value in column 8
+					ampSettingsWave[0][8][i] =   (MCC_GetWholeCellCompCap() * 1e+12) // V-Clamp Whole Cell Comp Cap, Converts F to pF
+
+					// Save the whole cell comp resist value in column 9
+					ampSettingsWave[0][9][i] =  (MCC_GetWholeCellCompResist() * 1e-6) // V-Clamp Whole Cell Comp Resist, Converts Ohms to MOhms
+
+				elseif (ChannelClampMode[i][0] == I_CLAMP_MODE)
+					// Save the i clamp holding enabled in column 10
+					ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable
+
+					// Save the i clamp holding value in column 11
+					ampSettingsWave[0][11][i] = (MCC_GetHolding() * 1e+12)	 // I-Clamp holding level, converts Amps to pAmps
+
+					// Save the neutralization enable in column 12
+					ampSettingsWave[0][12][i] = MCC_GetNeutralizationEnable() // I-Clamp Neut Enable
+
+					// Save neut cap value in column 13
+					ampSettingsWave[0][13][i] =  (MCC_GetNeutralizationCap() * 1e+12) // I-Clamp Neut Cap Value, Conversts Farads to pFarads
+
+					// save bridge balance enabled in column 14
+					ampSettingsWave[0][14][i] =   MCC_GetBridgeBalEnable() // I-Clamp Bridge Balance Enable
+
+					// save bridge balance enabled in column 15
+					ampSettingsWave[0][15][i] =  (MCC_GetBridgeBalResist() * 1e-6)	 // I-Clamp Bridge Balance Resist
 				endif
 			endif
 		endif
@@ -1349,8 +1071,6 @@ End
 //==================================================================================================
 // Below is code to open the MCC and manipulate the MCC windows. It is hard coded from TimJs 700Bs. Needs to be adapted for MIES
 //==================================================================================================
-
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 ///To open Multiclamp commander, use ExecuteScriptText to open from Windows command line.
 ///Each window is appended with a serial number for the amplifier (/S) and a title designating which 

@@ -452,11 +452,9 @@ End
 //==================================================================================================
 // AUTO IMPORT GAIN SETTINGS FROM AXON AMP FUNCTIONS BELOW
 //==================================================================================================
-
-Function HSU_AutoFillGain(panelTitle) // Auto fills the units and gains in the hardware tab of the DA_Ephys panel - has some limitations that are due to the MCC API limitations
+/// @brief Auto fills the units and gains in the hardware tab of the DA_Ephys panel - has some limitations that are due to the MCC API limitations
+Function HSU_AutoFillGain(panelTitle)
 	string panelTitle			
-	string wavePath = HSU_DataFullFolderPathString(panelTitle)
-
 
 	// sets the units
 	SetVariable SetVar_Hardware_VC_DA_Unit Win = $panelTitle, Value=_STR:"mV"
@@ -467,62 +465,56 @@ Function HSU_AutoFillGain(panelTitle) // Auto fills the units and gains in the h
 	// get the headstage number being updated
 	controlInfo /w = $panelTitle Popup_Settings_HeadStage
 	variable HeadStageNo = v_value - 1
-	// get the associated amp serial number - the serial number of the assoicated amp is stored in row 8 of the ChaAmpAssign wave
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	variable AmpSerialNo = ChanAmpAssign[8][HeadStageNo]
-	// get the amp channel
-	variable AmpChannel = ChanAmpAssign[9][HeadStageNo]
-	// Select the amp to query
-	
-	string AmpSerialNumberString
-	sprintf AmpSerialNumberString, "%.8d" AmpSerialNo
-	MCC_SelectMultiClamp700B(AmpSerialNumberString, AmpChannel)
+
+	string mccSerial    = AI_GetAmpMCCSerial(panelTitle, headStageNo)
+	variable axonSerial = AI_GetAmpAxonSerial(panelTitle, headStageNo)
+	variable channel    = AI_GetAmpChannel(panelTitle, headStageNo)
+
+	MCC_SelectMultiClamp700B(mccSerial, channel)
 	variable Mode = MCC_GetMode()
 	
 	variable ResetToModeTwo = 0
-	// set the gain
-
 	
-	if(Mode == 0)
-		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
-	elseif(Mode == 1)
-		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
-	elseif(Mode == 2)
+	if(Mode == V_CLAMP_MODE)
+		SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+		SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
+	elseif(Mode == I_CLAMP_MODE)
+		SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
+	elseif(Mode == I_EQUAL_ZERO_MODE)
 		if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
-			MCC_SetMode(1)
+			MCC_SetMode(V_CLAMP_MODE)
 			ResetToModeTwo = 1
-			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
 		elseif(MCC_GetHoldingEnable() == 1)
 			print "It appears that a bias current or holding potential is being applied by the MC Commader suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported"
 		endif
 	endif
 	
 	if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
-		AI_SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+		AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
 	
 		Mode = MCC_GetMode()
 		 
-		 if(Mode == 0)
-			SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-			SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
-		elseif(Mode == 1)
-			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveDAGain(panelTitle, AmpSerialNo, AmpChannel))
-			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:(real(AI_RetrieveADGain(panelTitle, AmpSerialNo, AmpChannel))
+		 if(Mode == V_CLAMP_MODE)
+			SetVariable setvar_Settings_VC_DAgain Win = $panelTitle, Value=_NUM:AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+			SetVariable setvar_Settings_VC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
+		elseif(Mode == I_CLAMP_MODE)
+			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
 		endif
 		
 		if(ResetToModeTwo == 0)
-			AI_SwitchAxonAmpMode(panelTitle, AmpSerialNo, AmpChannel)
+			AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
 		elseif(ResetToModeTwo == 1)
-			MCC_SetMode(2)
+			MCC_SetMode(I_EQUAL_ZERO_MODE)
 		endif
 	elseif((MCC_GetHoldingEnable() == 1))
-		if(Mode == 0)
+		if(Mode == V_CLAMP_MODE)
 			print "It appears that a holding potential is being applied, therefore as a precaution, the gains cannot be imported for the I-clamp mode."
 			print "The gains were successfully imported for the V-clamp mode on headstage: ", HeadstageNo
-		elseif(Mode == 1)
+		elseif(Mode == I_CLAMP_MODE)
 			print "It appears that a bias current is being applied, therefore as a precaution, the gains cannot be imported for the V-clamp mode."
 			print "The gains were successfully imported for the I-clamp mode on headstage: ", HeadstageNo
 		endif
