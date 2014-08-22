@@ -3992,69 +3992,41 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	return 0
 End
 //=========================================================================================
-Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
-	variable HeadStageNo, ClampMode
+Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
+	variable headStage, clampMode
 	string panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
-	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
+	string ctrlSuffix, ADUnit, DAUnit
+	variable DAGain, ADGain
+	variable DACchannel, ADCchannel
+	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
-	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
-	
-	If(ClampMode == V_CLAMP_MODE)
-		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		CheckBox $DACheck win = $panelTitle, value = 1
-		
-		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
-		
-		DAUnit = "Unit_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		SetVariable $DAUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
-		
-		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode // this line of code updates the wave that stores the clamp mode status of a channel
-		
-		///@todo use sprintf to avoid the if/else checking for < 10
-		If(ChanAmpAssign[2][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-
-		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
-
-		ADUnit = "Unit_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
-			
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
-
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-			
-		ADGain = "Gain_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]	
-
-		ADUnit = "Unit_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]	
-				
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
-
-		endif
+	If(clampMode == V_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[0][headStage]
+		ADCchannel = ChanAmpAssign[2][headStage]
+		DAGain     = ChanAmpAssign[1][headStage]
+		ADGain     = ChanAmpAssign[3][headStage]
+		DAUnit     = ChanAmpAssignUnit[0][headStage]
+		ADUnit     = ChanAmpAssignUnit[1][headStage]
+	elseif(clampMode == I_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[4][headStage]
+		ADCchannel = ChanAmpAssign[6][headStage]
+		DAGain     = ChanAmpAssign[5][headStage]
+		ADGain     = ChanAmpAssign[7][headStage]
+		DAUnit     = ChanAmpAssignUnit[2][headStage]
+		ADUnit     = ChanAmpAssignUnit[3][headStage]
+	else
+		ASSERT(0, "unhandled mode")
 	endIf
-	
-	If(ClampMode == I_CLAMP_MODE)
-		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
-		CheckBox $DACheck win = $panelTitle, value = 1
-		
-		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
-		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
 
-		DAUnit = "Unit_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		SetVariable $DAUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[2][HeadStageNo]
-		
-		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = ClampMode
+	/// @todo this should be an assertion, but it is currently triggered
+	/// to often
+	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
+		printf "BUG: neither DACchannel=%s nor ADCchannel=%s can be NaN\r", num2str(DACchannel), num2str(ADCchannel)
+		return NaN
+	endif
 
 	// DAC channels
 	sprintf ctrlSuffix "_DA_%02d", DACchannel
@@ -4062,10 +4034,7 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, DaGain)
 	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, DaUnit)
 
-		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+	ChannelClampMode[DACchannel][%DAC] = clampMode
 
 	// ADC channels
 	sprintf ctrlSuffix "_AD_%02d", ADCchannel
@@ -4073,57 +4042,41 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, ADGain)
 	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
 
-		endif
-	endIf
+	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 //=========================================================================================
-Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
-	variable HeadStageNo, ClampMode
+Function DAP_RemoveClampModeSettings(headStage, clampMode, panelTitle)
+	variable headStage, clampMode
 	string panelTitle
 
-	string DACheck, DAGain, ADCheck, ADGain
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	string ctrl
+	variable DACchannel, ADCchannel
+
+	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 
-	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
-
 	If(ClampMode == V_CLAMP_MODE)
-		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
-		CheckBox $DACheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = nan
-		
-		If(ChanAmpAssign[2][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
-		endif
+		DACchannel = ChanAmpAssign[0][headStage]
+		ADCchannel = ChanAmpAssign[2][headStage]
+	elseif(ClampMode == I_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[4][headStage]
+		ADCchannel = ChanAmpAssign[6][headStage]
 	endIf
 
-	If(ClampMode == I_CLAMP_MODE)
-		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
-		CheckBox $DACheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = nan
-		
-		If(ChanAmpAssign[6][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
-		endif
-	endIf
+	/// @todo this should be an assertion, but it is currently triggered
+	/// to often
+	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
+		printf "BUG: neither DACchannel=%s nor ADCchannel=%s can be NaN\r", num2str(DACchannel), num2str(ADCchannel)
+		return NaN
+	endif
+
+	sprintf ctrl, "Check_DA_%02d", DACchannel
+	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+	ChannelClampMode[DACchannel][%DAC] = nan
+
+	sprintf ctrl, "Check_AD_%02d", ADCchannel
+	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+	ChannelClampMode[ADCchannel][%ADC] = nan
 End
  //=========================================================================================
 Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
@@ -4145,9 +4098,9 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		controlinfo/w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
-		DAP_RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
-		DAP_ApplyClmpModeSavdSettngs((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
-		AI_SwitchClampMode(panelTitle, (RadioButtonNo / 2), 0)
+			DAP_RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
+			DAP_ApplyClmpModeSavdSettngs((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
+			AI_SwitchClampMode(panelTitle, (RadioButtonNo / 2), 0)
 		endif
 		
 	else // ODD = IC
@@ -4158,9 +4111,9 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		controlinfo /w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
-		DAP_RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
-		DAP_ApplyClmpModeSavdSettngs(((RadioButtonNo - 1) / 2), 1,panelTitle)//Applies IC settings for headstage
-		AI_SwitchClampMode(panelTitle, ((RadioButtonNo - 1) / 2), 1)
+			DAP_RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
+			DAP_ApplyClmpModeSavdSettngs(((RadioButtonNo - 1) / 2), 1,panelTitle)//Applies IC settings for headstage
+			AI_SwitchClampMode(panelTitle, ((RadioButtonNo - 1) / 2), 1)
 		endif
 
 	endif
