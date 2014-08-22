@@ -91,7 +91,8 @@ variable NoOfADColumns = DC_NoOfChannelsSelected("ad", "check", panelTitle)
 variable StartOfADColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
 string ADGainControlName
 variable gain, i
-wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
+
 for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 //Gain_AD_00
 	if(str2num(stringfromlist(i, ADChannelList, ";")) < 10)
@@ -126,7 +127,7 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	string DAChannelList  =  SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
 	string DAGainControlName
 	variable gain, i
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 
 for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
 	if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)

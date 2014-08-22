@@ -362,7 +362,7 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string ChannelStatus
 	string WavePath = HSU_DataFullFolderPathString(panelTitle) 
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 	string UnitString = ""
 	
 	string UnitSetVarName = "Unit_DA_0"
@@ -435,7 +435,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
 	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 
 	if(exists(CountPath) == 2)
 		NVAR count = $CountPath

@@ -314,35 +314,13 @@ End
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
+
 	Variable HeadStageNo, SweepNo, i
 	wave /z W_TelegraphServers = root:MIES:Amplifiers:W_TelegraphServers
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave /z ChanAmpAssign = $WavePath + ":ChanAmpAssign"
-	string ChanAmpAssignUnitPath = WavePath + ":ChanAmpAssignUnit"
-	wave /z /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
+	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
-	controlinfo /w = $panelTitle Popup_Settings_HeadStage
-	HeadStageNo = str2num(s_value)
-	
-	If (waveexists($WavePath + ":ChanAmpAssign") == 0)// checks to see if data storage wave exists, makes it if it doesn't
-		string ChanAmpAssignPath = WavePath + ":ChanAmpAssign"
-		make /n = (12,8) $ChanAmpAssignPath
-		wave ChanAmpAssign = $ChanAmpAssignPath
-		ChanAmpAssign = nan
-	endif
-	
-	If (waveexists($WavePath + ":ChanAmpAssignUnit") == 0)// if the wave doesn't exist, it makes the wave that channel unit info is stored in
-		make /T  /n = (4,8)  $ChanAmpAssignUnitPath
-		wave /T ChanAmpAssignUnit = $ChanAmpAssignUnitPath
-	endif
-	
-	string ChannelClampModeString = WavePath + ":ChannelClampMode"
-	if(!waveexists($ChannelClampModeString)) // makes the storage wave if it does not exist. This wave stores the active clamp mode of AD channels. It is populated in a different procedure
-		make /o /n = (16, 2) $ChannelClampModeString = nan
-		wave ChannelClampMode = $ChannelClampModeString
-		setdimlabel 1, 0, DAC, ChannelClampMode
-		setdimlabel 1, 1, ADC, ChannelClampMode
-	endif
+	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
 
 	duplicate /free ChanAmpAssign ChanAmpAssignOrig
 
@@ -406,11 +384,10 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 
 	Variable HeadStageNo
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
-	wave / T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
-	controlinfo /w =$panelTitle Popup_Settings_HeadStage
-	HeadStageNo = str2num(s_value)
+	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
+
+	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
 	
 	// VC DA settings
 	Popupmenu Popup_Settings_VC_DA win = $panelTitle, mode = (ChanAmpAssign[0][HeadStageNo] + 1)
@@ -491,7 +468,7 @@ Function HSU_AutoFillGain(panelTitle) // Auto fills the units and gains in the h
 	controlInfo /w = $panelTitle Popup_Settings_HeadStage
 	variable HeadStageNo = v_value - 1
 	// get the associated amp serial number - the serial number of the assoicated amp is stored in row 8 of the ChaAmpAssign wave
-	Wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 	variable AmpSerialNo = ChanAmpAssign[8][HeadStageNo]
 	// get the amp channel
 	variable AmpChannel = ChanAmpAssign[9][HeadStageNo]

@@ -70,8 +70,7 @@ Function TP_SetDAScaleToOne(panelTitle)
 
 	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
 	string DASetVariable
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 	variable ScalingFactor
 	variable i
 	
@@ -548,8 +547,8 @@ End
 Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a particular AD
 	string panelTitle
 	variable AD
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $WavePath +":ChanAmpAssign"
+
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 	variable i = 0
 	
 	do

@@ -3997,10 +3997,10 @@ Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
 	string panelTitle
 
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
-	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 
 	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
 	
@@ -4087,10 +4087,10 @@ End
 Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
 	variable HeadStageNo, ClampMode
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
+
 	string DACheck, DAGain, ADCheck, ADGain
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 
 	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
 
@@ -4511,7 +4511,7 @@ Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	string wavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $wavePath + ":ChanAmpAssign"
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 	string W_TelegraphServersPath 
 	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
 	wave W_TelegraphServers = $W_TelegraphServersPath

@@ -217,11 +217,10 @@ EndStructure
 Function /C AI_ReturnSerialAndChanNumber(panelTitle, HeadStageNo) // finds the link between the headstage and the user associated MCC
 	string panelTitle
 	variable HeadStageNo
-	string wavePath = HSU_DataFullFolderPathString(panelTitle)
-	Wave ChanAmpAssign = $(WavePath + ":ChanAmpAssign")
-	variable /C SerialNoAndChannelNo
-	SerialNoAndChannelNo = cmplx(ChanAmpAssign[8][HeadStageNo], ChanAmpAssign[9][HeadStageNo])
-	return SerialNoAndChannelNo
+
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	return cmplx(ChanAmpAssign[8][HeadStageNo], ChanAmpAssign[9][HeadStageNo])
 End
 
 //==================================================================================================
