@@ -2269,6 +2269,7 @@ Window da_ephys() : Panel
 	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},disable=1,title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
 	Button button_DataAcq_WCAuto,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	Button button_DataAcq_WCAuto,valueColor=(65280,43520,0)
 	GroupBox group_DataAcq_RsCompensation,pos={210,192},size={168,61},disable=1,title="       Rs Compensation"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2296,6 +2297,7 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_IzeroEnable,value= 0
+	CheckBox check_DataAcq_IzeroEnable,fColor=(65280,43520,0)
 	CheckBox Check_Settings_AlarmPauseAcq,pos={34,411},size={166,14},title="\\JCPause acquisition in alarm state"
 	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
