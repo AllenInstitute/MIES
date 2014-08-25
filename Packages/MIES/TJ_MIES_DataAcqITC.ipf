@@ -429,11 +429,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	
 	DAP_RestoreTTLState(panelTitle)
 	ITC_TPDocumentation(panelTitle)
-	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 2)
-		Button StartTestPulseButton, win = $panelTitle, disable = 0
-	endif
-
+	EnableControl(panelTitle,"StartTestPulseButton")
 END
 //======================================================================================
 
