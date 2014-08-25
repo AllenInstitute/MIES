@@ -114,15 +114,14 @@ Function DisableListOfControls(win, controlList)
 	endfor
 End
 
-/// @brief Change control title
-Function ChangeControlTitle(win, controlName, newTitle)
+/// @brief Set the title of a control
+Function SetControlTitle(win, controlName, newTitle)
 	string win, controlName, newTitle
 
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	ModifyControl $ControlName WIN = $win, title = newTitle
-
 End
 
 /// @brief Change color of a control
@@ -134,7 +133,6 @@ Function SetControlTitleColor(win, controlName, R, G, B)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
-
 End
 
 /// @name Control types from ControlInfo
@@ -160,21 +158,21 @@ End
 Function SetSetVariable(win,Control, newValue)
 	string win, control
 	variable newValue
-	
+
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
-	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")	
-	
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+
 	SetVariable $control, win = $win, value =_NUM:newValue
 End
 
 Function SetSetVariableString(win,Control, newString)
 	string win, control, newString
-	
+
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
-	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")	
-	
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+
 	SetVariable $control, win = $win, value =_STR:newString
 End
 
@@ -204,7 +202,7 @@ end
 Function/S GetSetVariableString(win, control)
 	string win, control
 
-	ControlInfo/W=$win $control	
+	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 	return S_Value
@@ -256,11 +254,13 @@ End
 /// @brief Returns the slider position
 Function GetSliderPositionIndex(win, control)
 	string win, control
+
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
-	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")	
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")
 	return V_value
 End
+
 /// @brief Set a ValDisplay
 ///
 /// The variable var can be formatted using format.
