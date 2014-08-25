@@ -54,19 +54,13 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 				ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance#" + num2str(i)) = 2, lsize($"SSResistance#" + num2str(i)) = 0
 			endif
 			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = -5 /Y = (-Yoffset) /B = 1 /L = 0 /Z = 0 /A = MC /I = 1 $SSResistanceTraceName, 0,"R\\Bss\\M\\{\"%.4g\", TagVal(2)} \\Z10(M\\F'Symbol'W\\M)"
-//			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = -5 /Y = (-Yoffset) /B = 1 /L = 0 /Z = 0 /A = MC /I = 1 $SSResistanceTraceName, 0,"R\Bss\M\\OY \\Z10(M\\F'Symbol'W\M)"
 			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = (-Yoffset) /L = 0 $InstResistanceTraceName, 5.01, "R\\Bpeak\\M\\{\"%.4g\", TagVal(2)} \\Z10(M\\F'Symbol'W\\M)"
-//			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = (-Yoffset) /L = 0 $InstResistanceTraceName, 5.01,"R\Bpeak\M \\OY \Z10(M\\F'Symbol'W\M)"// \\Z10\r(Mohm)"
-			// dynamic tag can call a function that returns a string
-		//	SetAxis /w = $oscilloscopeSubWindow bottom 0, ( ( (DC_CalculateITCDataWaveLength(panelTitle) * (ITCMinSamplingInterval(panelTitle) / 1000)) / 4) 
 		endif
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
 
 	endfor
-	//SetAxis /w = $oscilloscopeSubWindow bottom 0, (dimsize(ITCDataWave, 0) / 5) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 	if(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
-		//SetAxis /w = $oscilloscopeSubWindow bottom 0, (DC_CalculateLongestSweep(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000) //( (DC_CalculateITCDataWaveLength(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)) * ((ITCMinSamplingInterval(panelTitle) / 1000))) / 4) 
 		SetAxis /w = $oscilloscopeSubWindow bottom 0, (ITC_CalcDataAcqStopCollPoint(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	
 	elseif(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 1) // determines if the wave is a test pulse
@@ -74,11 +68,8 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 		sprintf TPDurationGlobalPath, "%sTestPulse:Duration" WavePath
 		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // half the number of points in a single test pulse
 		 SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
-		//SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * .5 // use for non MD TP plotting
 	endif
-	//doupdate
-//	print "Scope update took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End // Function
+End
 
 Function/t ReturnStringforTag(panelTitle, waveToconvert, column) // ####DOES NOT APPEAR TO BE IN USE
 	string panelTitle

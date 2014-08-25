@@ -758,15 +758,9 @@ End
 
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string panelTitle, OpName
-	variable NoYes // no = 0, 1 = yes
+
 	CtrlNamedBackground $OpName, status
-	if(str2num(stringfromlist(2, s_info, ";")[4])==0)
-		NoYes = 0 // NO = 0
-	else
-		NoYes = 1 // YES = 1
-	endif
-	
-	return NoYes
+	return ( str2num(StringFromList(2, s_info, ";")[4]) != 0 )
 End
 
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.

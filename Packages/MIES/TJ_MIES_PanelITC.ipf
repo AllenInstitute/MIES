@@ -2208,9 +2208,6 @@ Window da_ephys() : Panel
 	CheckBox check_DatAcq_CNEnable,pos={178,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
-	Button button_DataAcq_AutoBB,pos={235,191},size={38,18},disable=1,title="AUTO"
-	Button button_DataAcq_AutoBB,userdata(tabnum)=  "1"
-	Button button_DataAcq_AutoBB,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	TitleBox Title_DataAcq_CN,pos={41,211},size={86,13},disable=1,title="Cap Neutralization"
 	TitleBox Title_DataAcq_CN,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
@@ -2741,7 +2738,6 @@ End
 // DAP = Data Acquisition Panel
 //=========================================================================================
 
-
 Function DAP_WindowHook(s)
 	STRUCT WMWinHookStruct &s
 
@@ -2855,66 +2851,6 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 End
 //=========================================================================================
 
-
-//Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
-//	String ctrlName
-//	Variable varNum
-//	String varStr
-//	String varName
-//	String TTL_No = ctrlName[11,inf]
-//	String TTLPopUpMenuName = "Wave_TTL_" + TTL_No
-//	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
-//	String FirstTwoMenuItems = "\"- none -;"
-//	String SearchString
-//	String value, ListOfWaves
-//	variable i = 0
-//	string panelTitle = DAP_ReturnPanelName()
-//	
-//	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-//	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
-//	
-//	controlinfo /w = $panelTitle SearchUniversal_TTL_00
-//	if(v_value == 1)
-//		controlinfo /w = $panelTitle Search_TTL_00
-//		If(strlen(s_value) == 0)
-//			SearchString = "*TTL*"
-//		else
-//			SearchString = s_value
-//		endif
-//		
-//		value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
-//		listOfWaves = wavelist(searchstring,";","")
-//
-//		do
-//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
-//			i += 1
-//		while(i < 8)
-//	
-//	else
-//		If(strlen(varstr) == 0)
-//			SearchString = "*TTL*"
-//			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
-//			listOfWaves = wavelist(searchstring,";","")
-//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
-//		else
-//			SearchString = varstr
-//			value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
-//			listOfWaves = wavelist(searchstring,";","")
-//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
-//		endif
-//	endif
-//	setdatafolder saveDFR
-//End
-
 Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -2984,41 +2920,6 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 	setdatafolder saveDFR
 End
 //=========================================================================================
-
-
-//Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
-//	String ctrlName
-//	Variable checked
-//	String SearchString
-//	string panelTitle=DAP_ReturnPanelName()
-//	
-//	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-//	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
-//	
-//	controlinfo /w = $panelTitle Search_TTL_00
-//	if(strlen(s_value) == 0)
-//		SearchString = "*TTL*"
-//	else
-//		SearchString = s_value
-//	endif
-//	
-//	String TTLPopUpMenuName // = "Wave_DA_"
-//	String IndexEndPopUpMenuName
-//	String FirstTwoMenuItems = "\"- none -;"
-//	variable i = 0
-//	
-//	string popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
-//	string listOfWaves = wavelist(searchstring,";","")
-//	do
-//		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//		popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-//		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//		popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-//		i += 1
-//	while(i < 8)
-//
-//	setdatafolder saveDFR
-//End
 
 Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 	String ctrlName
