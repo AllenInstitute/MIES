@@ -468,7 +468,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 
 	i = 0
 	do
-		if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
+		if((str2num(stringfromlist(i, ClampModeString, ";"))) == I_CLAMP_MODE)
 			// R = V / I
 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
 			Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
