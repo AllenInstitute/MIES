@@ -40,16 +40,22 @@ function splitIntoWords(str, a, numEntries)
 # Split params into words and prefix each with "__Param__$i"
 # where $i is increased for every parameter
 # Returns the concatenation of all prefixed parameters
-function handleParameter(params, a,  i, str, entry)
+function handleParameter(params, a,  i, iOpt, str, entry)
 {
   numParams = splitIntoWords(params, a)
   str=""
   entry=""
+  iOpt=numParams
   for(i=1; i <= numParams; i++)
   {
     # convert igor optional parameters to something doxygen understands
-    if(gsub(/[\[\]]/,"",a[i]))
+    # igor dictates that the optional arguments are the last arguments,
+    # meaning no normal argument can follow the optional arguments
+    if(gsub(/[\[\]]/,"",a[i]) || i > iOpt)
+    {
+      iOpt  = i
       entry = a[i] " = defaultValue"
+    }
     else
       entry = a[i]
 
