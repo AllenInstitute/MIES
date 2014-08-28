@@ -20,6 +20,8 @@ BEGIN{
   IGNORECASE=1
   output=""
   warning=""
+
+  menuEndCount=0
 }
 
 # Remove whitespace at beginning and end of string
@@ -40,16 +42,22 @@ function splitIntoWords(str, a, numEntries)
 # Split params into words and prefix each with "__Param__$i"
 # where $i is increased for every parameter
 # Returns the concatenation of all prefixed parameters
-function handleParameter(params, a,  i, str, entry)
+function handleParameter(params, a,  i, iOpt, str, entry)
 {
   numParams = splitIntoWords(params, a)
   str=""
   entry=""
+  iOpt=numParams
   for(i=1; i <= numParams; i++)
   {
     # convert igor optional parameters to something doxygen understands
-    if(gsub(/[\[\]]/,"",a[i]))
+    # igor dictates that the optional arguments are the last arguments,
+    # meaning no normal argument can follow the optional arguments
+    if(gsub(/[\[\]]/,"",a[i]) || i > iOpt)
+    {
+      iOpt  = i
       entry = a[i] " = defaultValue"
+    }
     else
       entry = a[i]
 
@@ -174,15 +182,22 @@ function handleParameter(params, a,  i, str, entry)
   }
 
   # menu definition
-  if(!insideFunction && !insideMacro && match(code,/Menu[[:space:]]/) )
+  # submenues can be nested in menus. Therefore we have to keep track
+  # of the number of expected "End" keywords
+  if(!insideFunction && !insideMacro && ( match(code,/Menu[[:space:]]/) || match(code,/SubMenu[[:space:]]/) ))
   {
+    menuEndCount++
     insideMenu=1
   }
 
   if(insideMenu && match(code,/End[[:space:]]*/))
   {
-    insideMenu=0
-    code = ""
+    menuEndCount--
+    if(menuEndCount == 0)
+    {
+      insideMenu=0
+      code = ""
+    }
   }
 
   # global constants
