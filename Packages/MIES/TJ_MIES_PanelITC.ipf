@@ -1146,7 +1146,7 @@ Window da_ephys() : Panel
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_ChanlAssign_IC,frame=0
-	Button button_Settings_UpdateAmpStatus,pos={262,370},size={150,20},disable=1,proc=DAP_FindConnectedAmps,title="Query connected Amp(s)"
+	Button button_Settings_UpdateAmpStatus,pos={262,370},size={150,20},disable=1,proc=DAP_ButtonCtrlFindConnectedAmps,title="Query connected Amp(s)"
 	Button button_Settings_UpdateAmpStatus,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateAmpStatus,userdata(tabcontrol)=  "ADC"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HL!!#B8!!#@,!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3930,20 +3930,41 @@ Function DAP_PopMenuProc_DevTypeChk(s) : PopupMenuControl
 	HSU_IsDeviceTypeConnected(s.win)
 	DAP_UpdateYokeControls(s.win)
 End
-
 //=========================================================================================
-/// DAP_FindConnectedAmps
-Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
-	String ctrlName
-	make /o /n = 0 root:MIES:Amplifiers:W_TelegraphServers
+Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			DAP_FindConnectedAmps(ba.win)
+			break
+	endswitch
+End
+//=========================================================================================
+Function DAP_FindConnectedAmps(panelTitle)
+	string panelTitle
+
+	string list
+
+	// compatibility fix
+	// Old panels, created before this change, use
+	// this function as button control and send the
+	// name of the control instead of panelTitle
+	if(!windowExists(panelTitle))
+		GetWindow kwTopWin, activeSW
+		panelTitle = S_value
+	endif
+
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder root:MIES:Amplifiers
+
+	// old axon interface settings wave
+	Make/O/N=0       W_TelegraphServers
 	AxonTelegraphFindServers
 	SetDataFolder saveDFR
-	getwindow kwTopWin wtitle
-	string PopUpList = "\" - none - ;" 
-	PopUpList += AI_ReturnListOf700BChannels(s_value)+"\""
-	popupmenu  popup_Settings_Amplifier win = $s_value, value = #PopUpList
+
+	list = " - none - ;" + AI_ReturnListOf700BChannels(panelTitle)
+	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + list + "\"")
 End
 //=========================================================================================
 /// DAP_PopMenuProc_Headstage

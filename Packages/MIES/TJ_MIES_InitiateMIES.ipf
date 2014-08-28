@@ -29,7 +29,7 @@ Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for
 
 	HSU_CreateDataFolderForLockdDev(panelTitle)
 	HSU_UpdateChanAmpAssignStorWv(panelTitle)
-	DAP_FindConnectedAmps("button_Settings_UpdateAmpStatus")
+	DAP_FindConnectedAmps(panelTitle)
 
 	dfref data = HSU_GetDevicePathFromTitle(panelTitle)
 	make /o /n= (1,8) data:ITCDataWave
