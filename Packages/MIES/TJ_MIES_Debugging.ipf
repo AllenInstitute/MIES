@@ -3,6 +3,11 @@
 /// @file TJ_MIES_Debugging.ipf
 /// This file holds debug helpers.
 
+// Define to control debugging
+// must be uncommented for debug purposes
+// and commented out for production code
+// #define DEBUGGING_ENABLED
+
 #ifdef DEBUGGING_ENABLED
 
 static StrConstant functionReturnMessage = "return value"
@@ -37,7 +42,7 @@ Function DEBUGPRINTv(var, [format])
 	return var
 End
 
-/// @brief Output debug information and return the parameter str.
+/// @brief Output debug information and return the parameter str
 ///
 /// Debug function especially designed for usage in return statements.
 ///
@@ -73,10 +78,9 @@ End
 ///Examples:
 ///@code
 ///DEBUGPRINT("before a possible crash")
-///DEBUGPRINT("some variable", var)
-///DEBUGPRINT("my string", str)
-///DEBUGPRINT(var, format="%.5f")
-///DEBUGPRINT(str, format="%5s")
+///DEBUGPRINT("some variable", var=myVariable)
+///DEBUGPRINT("my string", str=myString)
+///DEBUGPRINT("Current state", var=state, format="%.5f")
 ///@endcode
 ///
 /// @param msg    descriptive string for the debug message
@@ -88,7 +92,7 @@ Function DEBUGPRINT(msg, [var, str, format])
 	variable var
 	string str, format
 
-	string file, line, func, caller, stacktrace, formatted
+	string file, line, func, caller, stacktrace, formatted = ""
 	variable numSuppliedOptParams, idx
 
 	// check parameters

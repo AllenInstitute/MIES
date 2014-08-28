@@ -1,11 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 
-// Define to control debugging
-// can be uncommented for debug purposes
-// but always commnted out for production code
-// #define DEBUGGING_ENABLED
-
 // third party includes
 #include "ACL_TabUtilities"
 #include "ACL_UserdataEditor"
