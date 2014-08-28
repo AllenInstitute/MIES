@@ -20,6 +20,8 @@ BEGIN{
   IGNORECASE=1
   output=""
   warning=""
+
+  menuEndCount=0
 }
 
 # Remove whitespace at beginning and end of string
@@ -180,15 +182,22 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   }
 
   # menu definition
-  if(!insideFunction && !insideMacro && match(code,/Menu[[:space:]]/) )
+  # submenues can be nested in menus. Therefore we have to keep track
+  # of the number of expected "End" keywords
+  if(!insideFunction && !insideMacro && ( match(code,/Menu[[:space:]]/) || match(code,/SubMenu[[:space:]]/) ))
   {
+    menuEndCount++
     insideMenu=1
   }
 
   if(insideMenu && match(code,/End[[:space:]]*/))
   {
-    insideMenu=0
-    code = ""
+    menuEndCount--
+    if(menuEndCount == 0)
+    {
+      insideMenu=0
+      code = ""
+    }
   }
 
   # global constants
