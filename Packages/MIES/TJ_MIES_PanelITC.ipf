@@ -3961,6 +3961,11 @@ Function DAP_FindConnectedAmps(panelTitle)
 	// old axon interface settings wave
 	Make/O/N=0       W_TelegraphServers
 	AxonTelegraphFindServers
+
+	// new mcc interface settings wave
+	Make/O/N=(0,0)/I W_MultiClamps
+	MCC_FindServers/Z=1
+
 	SetDataFolder saveDFR
 
 	list = " - none - ;" + AI_ReturnListOf700BChannels(panelTitle)
