@@ -18,6 +18,7 @@
 #include "TJ_MIES_Debugging"
 #include "TJ_MIES_Downsample"
 #include "TJ_MIES_ExperimentDocumentation"
+#include "TJ_MIES_GlobalStringAndVariableAccess"
 #include "TJ_MIES_GuiUtilities"
 #include "TJ_MIES_HardwareSetUp"
 #include "TJ_MIES_Indexing"
