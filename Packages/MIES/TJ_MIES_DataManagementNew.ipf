@@ -1,4 +1,4 @@
- #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function DM_SaveITCData(panelTitle)
 	string panelTitle
@@ -80,12 +80,6 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
-//Function MakeFloatingPointWave(WaveBeingPassed)
-//wave WaveBeingPassed
-
-//redimension/d WaveBeingPassed
-
-//End
 
 Function DM_ADScaling(WaveToScale, panelTitle)
 wave WaveToScale
@@ -97,7 +91,8 @@ variable NoOfADColumns = DC_NoOfChannelsSelected("ad", "check", panelTitle)
 variable StartOfADColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
 string ADGainControlName
 variable gain, i
-wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
+
 for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 //Gain_AD_00
 	if(str2num(stringfromlist(i, ADChannelList, ";")) < 10)
@@ -108,15 +103,14 @@ for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 	controlinfo /w = $panelTitle $ADGainControlName
 	gain = v_value
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 0) // V-clamp
-		gain *= 3200// itc output will be multiplied by 1000 to convert to pA then divided by the gain
+	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == V_CLAMP_MODE)
+		gain *= 3200 // itc output will be multiplied by 1000 to convert to pA then divided by the gain
 		WaveToScale[][(StartOfADColumns + i)] /= gain
-		//WaveToScale[][(StartOfADColumns+i)]*=1000
 	endif
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == 1) // I-clamp
-		gain *=3200// 
-		WaveToScale[][(StartOfADColumns+i)]/=gain
+	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == I_CLAMP_MODE)
+		gain *=3200
+		WaveToScale[][(StartOfADColumns + i)]/=gain
 	endif
 	
 endfor
@@ -133,7 +127,7 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	string DAChannelList  =  SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
 	string DAGainControlName
 	variable gain, i
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 
 for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
 	if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)
@@ -144,12 +138,12 @@ for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
 	controlinfo /w = $panelTitle $DAGainControlName
 	gain = v_value
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == 0) // V-clamp
+	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == V_CLAMP_MODE)
 		WaveToScale[][i] /= 3200
 		WaveToScale[][i] *= gain
 	endif
 	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == 1) // I-clamp
+	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == I_CLAMP_MODE)
 		WaveToScale[][i] /= 3200
 		WaveToScale[][i] *= gain
 	endif	

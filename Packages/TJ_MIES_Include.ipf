@@ -31,6 +31,7 @@
 #include "TJ_MIES_Utilities"
 #include "TJ_MIES_WaveBuilder"
 #include "TJ_MIES_WaveBuilderPanel"
+#include "TJ_MIES_WaveDataFolderGetters"
 
 // Menu includes
 #include "DR_MIES_Menu"

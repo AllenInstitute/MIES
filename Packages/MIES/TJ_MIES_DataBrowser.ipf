@@ -89,7 +89,6 @@ Function DB_TilePlotForDataBrowser(panelTitle, SweepName) // Pass in sweep name 
 	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, Spacer,DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
 	string AxisName, NewTraceName
 	string WavePath = getuserdata(panelTitle, "", "DataFolderPath")
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 	string UnitWaveNote = note(ConfigWaveName)
 	string Unit
 	

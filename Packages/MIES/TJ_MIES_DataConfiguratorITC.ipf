@@ -30,20 +30,21 @@ End
 
 //==========================================================================================
 
-Function DC_ITCMinSamplingInterval(panelTitle)// minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds
+/// @brief The minimum sampling interval is determined by the rack with the most channels selected
+///
+/// Minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds
+Function DC_ITCMinSamplingInterval(panelTitle)
 	string panelTitle
-	//The min sampling interval is determined by the rack with the most channels selected
-	variable ITCMinSampInt, Rack0DAMinInt, Rack0ADMinInt, Rack1DAMinInt, Rack1ADMinInt
+
+	variable Rack0DAMinInt, Rack0ADMinInt, Rack1DAMinInt, Rack1ADMinInt
 	
 	Rack0DAMinInt = DC_DAMinSampInt(0, panelTitle)
 	Rack1DAMinInt = DC_DAMinSampInt(1, panelTitle)
 	
-	Rack0ADMinInt = DC_ADMinSampInt(0,panelTitle)
+	Rack0ADMinInt = DC_ADMinSampInt(0, panelTitle)
 	Rack1ADMinInt = DC_ADMinSampInt(1, panelTitle)
 	
-	ITCMinSampInt = max(max(Rack0DAMinInt,Rack1DAMinInt), max(Rack0ADMinInt,Rack1ADMinInt))
-
-	return ITCMinSampInt
+	return max(max(Rack0DAMinInt,Rack1DAMinInt), max(Rack0ADMinInt,Rack1ADMinInt))
 End
 
 
@@ -77,9 +78,14 @@ End
 
 //==========================================================================================
 
-Function/S DC_ControlStatusListString(ChannelType, ControlType,panelTitle) // Channel Type = DA, AD, or TTL, Control Type = ex. check
+/// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
+/// @param ChannelType  one of DA, AD, or TTL
+/// @param ControlType  currently restricted to "Check"
+/// @param panelTitle   panel title
+Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	String ChannelType, panelTitle
 	string ControlType
+
 	variable TotalPossibleChannels = DC_TotNoOfControlType(ControlType, ChannelType,panelTitle)
 	
 	String ControlStatusList = ""
@@ -87,14 +93,12 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType,panelTitle) // Ch
 	variable i
 	
 	i=0
-	
-		do
-			sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
-			ControlInfo /w = $panelTitle $ControlName
-			//ControlStatusList += num2str(v_value) + ";"
-			ControlStatusList = AddlistItem(num2str(v_value), ControlStatusList, ";",i)
-			i+=1
-		while(i <= (TotalPossibleChannels - 1))
+	do
+		sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+		ControlInfo /w = $panelTitle $ControlName
+		ControlStatusList = AddlistItem(num2str(v_value), ControlStatusList, ";",i)
+		i+=1
+	while(i <= (TotalPossibleChannels - 1))
 	
 	return ControlStatusList
 End
@@ -154,10 +158,7 @@ Function DC_TotNoOfControlType(ControlType, ChannelType, panelTitle) // Ex. Chan
 	variable CatTot //Category Total
 	
 	ListString = ControlNameList(panelTitle,";",SearchString)
-	//print liststring
-	CatTot = ItemsInlist(ListString,";")// - 1
-	
-	return CatTot
+	return ItemsInlist(ListString,";")
 End
 
 
@@ -361,7 +362,7 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string ChannelStatus
 	string WavePath = HSU_DataFullFolderPathString(panelTitle) 
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 	string UnitString = ""
 	
 	string UnitSetVarName = "Unit_DA_0"
@@ -434,7 +435,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
 	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
+	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 
 	if(exists(CountPath) == 2)
 		NVAR count = $CountPath
@@ -455,23 +456,13 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			//print SetVarDAGain
 			//SetVarDAScale = "Scale_DA_0" + num2str(i)
 			sprintf SetVarDAScale, "Scale_DA_0%s" num2str(i)
-			//print SetVarDAScale
-			//print paneltitle
+
 			ControlInfo /w = $panelTitle $SetVarDAGain
-			// print "DA gain =", v_value
-			//if(ChannelClampMode[i][0] == 0) // V-clamp		
 			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-			//endif
-			
-//			if(ChannelClampMode[i][0] == 1) // I-clamp
-//				print v_value
-//				DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-//			endif		
-//			print panelTitle,setvardascale
+
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
-			// print "DA scale =",DAScale
-			
+
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
 			// print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
@@ -530,10 +521,10 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 					sprintf ChannelClampModePathString, "%s:ChannelClampMode" WavePath
 					Wave ChannelClampMode = $ChannelClampModePathString
 					variable ChannelMode = ChannelClampMode[i][0]
-					if(ChannelMode == 0) // V - Clamp
+					if(ChannelMode == V_CLAMP_MODE)
 						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 						TPAmp = v_value
-					elseif(ChannelMode == 1) // I - Clamp
+					elseif(ChannelMode == I_CLAMP_MODE)
 						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 						TPAmp = v_value
 					endif
@@ -643,6 +634,7 @@ End
 Function DC_DAMinSampInt(RackNo, panelTitle)
 	variable RackNo
 	string panelTitle
+
 	variable a, i, DAChannelStatus,SampInt
 	string DAStatusString = DC_ControlStatusListString("DA", "Check", panelTitle)
 	
@@ -661,17 +653,17 @@ Function DC_DAMinSampInt(RackNo, panelTitle)
 	return SampInt
 End
 //=========================================================================================
-Function DC_ADMinSampInt(RackNo,panelTitle)
+Function DC_ADMinSampInt(RackNo, panelTitle)
 	variable RackNo
 	string panelTitle
-	variable a, i, ADChannelStatus,ADSampInt, Bank1SampInt, Bank2SampInt
+
+	variable a, i, ADChannelStatus, Bank1SampInt, Bank2SampInt
 	string ADStatusString = DC_ControlStatusListString("AD", "Check",panelTitle)
 	
 	a = RackNo*8
 	
 	Bank1SampInt = 0
 	Bank2SampInt = 0
-	ADSampInt = 0
 	i = 0
 	
 	do 
@@ -689,8 +681,7 @@ Function DC_ADMinSampInt(RackNo,panelTitle)
 		i += 1
 	while(i < 4)
 	
-	ADSampInt = max(Bank1SampInt,Bank2SampInt)
-	return ADSampInt
+	return max(Bank1SampInt,Bank2SampInt)
 End
 //=========================================================================================
 
@@ -836,4 +827,3 @@ Function DC_ReturnTotalLengthIncrease(panelTitle)
 	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
 	return OnsetDelay + TerminationDelay
 end
-	

@@ -1146,7 +1146,7 @@ Window da_ephys() : Panel
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_ChanlAssign_IC,frame=0
-	Button button_Settings_UpdateAmpStatus,pos={262,370},size={150,20},disable=1,proc=DAP_FindConnectedAmps,title="Query connected Amp(s)"
+	Button button_Settings_UpdateAmpStatus,pos={262,370},size={150,20},disable=1,proc=DAP_ButtonCtrlFindConnectedAmps,title="Query connected Amp(s)"
 	Button button_Settings_UpdateAmpStatus,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateAmpStatus,userdata(tabcontrol)=  "ADC"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HL!!#B8!!#@,!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2269,6 +2269,7 @@ Window da_ephys() : Panel
 	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},disable=1,title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
 	Button button_DataAcq_WCAuto,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	Button button_DataAcq_WCAuto,valueColor=(65280,43520,0)
 	GroupBox group_DataAcq_RsCompensation,pos={210,192},size={168,61},disable=1,title="       Rs Compensation"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2296,6 +2297,7 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_IzeroEnable,value= 0
+	CheckBox check_DataAcq_IzeroEnable,fColor=(65280,43520,0)
 	CheckBox Check_Settings_AlarmPauseAcq,pos={34,411},size={166,14},title="\\JCPause acquisition in alarm state"
 	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
@@ -3737,69 +3739,60 @@ Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllTTLs(panelTitle)
 End
 //=========================================================================================
-/// DAP_TurnOffAllDACs
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
+
 	variable i, NoOfDACs
-	string DACCheckBoxName
+	string ctrl
 	
 	NoOfDACs = DC_TotNoOfControlType("check", "DA", panelTitle)
 	
 	for(i = 0; i < NoOfDACs; i += 1)
-		DACCheckBoxName = "Check_DA_0" + num2str(i)
-		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
+		sprintf ctrl, "Check_DA_%02d", i
+		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
 //=========================================================================================
-/// DAP_ButtonProc_DAOff
 Function DAP_ButtonProc_DAOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllDACs(panelTitle)
 End
 //=========================================================================================
-/// DAP_TurnOffAllADCs
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
+
 	variable i, NoOfADCs
-	string ADCCheckBoxName
-	
+	string ctrl
+
 	NoOfADCs = DC_TotNoOfControlType("check", "AD", panelTitle)
-	
+
 	for(i = 0; i < NoOfADCs;i += 1)
-		if(i < 10)
-			ADCCheckBoxName = "Check_AD_0" + num2str(i)
-			CheckBox $ADCCheckBoxName win = $panelTitle, value = 0
-		else
-			ADCCheckBoxName = "Check_AD_" + num2str(i)
-			CheckBox $ADCCheckBoxName win=$panelTitle, value=0
-		endif
+		sprintf ctrl, "Check_AD_%02d", i
+		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
 //=========================================================================================
-/// DAP_ButtonProc_ADOff
 Function DAP_ButtonProc_ADOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	DAP_TurnOffAllADCs(panelTitle)
 End
 //=========================================================================================
-/// DAP_TurnOffAllHeadstages
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
-//Check_DataAcq_Cell0
+
 	variable i, NoOfHeadstages
-	string DACCheckBoxName
+	string ctrl
 	
 	NoOfHeadstages = DC_TotNoOfControlType("check", "DataAcq_HS", panelTitle)
 	
 	for(i = 0; i < NoOfHeadstages; i += 1)
-		DACCheckBoxName = "Check_DataAcq_HS_0"+num2str(i)
-		CheckBox $DACCheckBoxName win = $panelTitle, value = 0
+		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
 //=========================================================================================
-/// DAP_ButtonProc_AllChanOff
 Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
@@ -3937,20 +3930,46 @@ Function DAP_PopMenuProc_DevTypeChk(s) : PopupMenuControl
 	HSU_IsDeviceTypeConnected(s.win)
 	DAP_UpdateYokeControls(s.win)
 End
-
 //=========================================================================================
-/// DAP_FindConnectedAmps
-Function DAP_FindConnectedAmps(ctrlName) : ButtonControl
-	String ctrlName
-	make /o /n = 0 root:MIES:Amplifiers:W_TelegraphServers
+Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			DAP_FindConnectedAmps(ba.win)
+			break
+	endswitch
+End
+//=========================================================================================
+Function DAP_FindConnectedAmps(panelTitle)
+	string panelTitle
+
+	string list
+
+	// compatibility fix
+	// Old panels, created before this change, use
+	// this function as button control and send the
+	// name of the control instead of panelTitle
+	if(!windowExists(panelTitle))
+		GetWindow kwTopWin, activeSW
+		panelTitle = S_value
+	endif
+
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder root:MIES:Amplifiers
+
+	// old axon interface settings wave
+	Make/O/N=0       W_TelegraphServers
 	AxonTelegraphFindServers
+
+	// new mcc interface settings wave
+	Make/O/N=(0,0)/I W_MultiClamps
+	MCC_FindServers/Z=1
+
 	SetDataFolder saveDFR
-	getwindow kwTopWin wtitle
-	string PopUpList = "\" - none - ;" 
-	PopUpList += AI_ReturnListOf700BChannels(s_value)+"\""
-	popupmenu  popup_Settings_Amplifier win = $s_value, value = #PopUpList
+
+	list = " - none - ;" + AI_ReturnListOf700BChannels(panelTitle)
+	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + list + "\"")
 End
 //=========================================================================================
 /// DAP_PopMenuProc_Headstage
@@ -4001,149 +4020,93 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	return 0
 End
 //=========================================================================================
-/// DAP_ApplyClmpModeSavdSettngs
-Function DAP_ApplyClmpModeSavdSettngs(HeadStageNo, ClampMode, panelTitle)
-	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
+Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
+	variable headStage, clampMode
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
-	string DACheck, DAGain, DAUnit, ADCheck, ADGain, ADUnit
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
-	wave /T ChanAmpAssignUnit = $WavePath + ":ChanAmpAssignUnit"
 
-	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
-	
-	If(ClampMode == 0)
-		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		CheckBox $DACheck win = $panelTitle, value = 1
-		
-		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
-		
-		DAUnit = "Unit_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		SetVariable $DAUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
-		
-		// ChanAmpAssign[0][HeadStageNo] is the channel number of the amp associated with the MIES headstage - it is either 0 or 1
-		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = ClampMode // this line of code updates the wave that stores the clamp mode status of a channel
-		
-		If(ChanAmpAssign[2][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
+	string ctrlSuffix, ADUnit, DAUnit
+	variable DAGain, ADGain
+	variable DACchannel, ADCchannel
+	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
+	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
-		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
-
-		ADUnit = "Unit_AD_0"+num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
-			
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
-
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-			
-		ADGain = "Gain_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]	
-
-		ADUnit = "Unit_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]	
-				
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = ClampMode
-
-		endif
+	If(clampMode == V_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[0][headStage]
+		ADCchannel = ChanAmpAssign[2][headStage]
+		DAGain     = ChanAmpAssign[1][headStage]
+		ADGain     = ChanAmpAssign[3][headStage]
+		DAUnit     = ChanAmpAssignUnit[0][headStage]
+		ADUnit     = ChanAmpAssignUnit[1][headStage]
+	elseif(clampMode == I_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[4][headStage]
+		ADCchannel = ChanAmpAssign[6][headStage]
+		DAGain     = ChanAmpAssign[5][headStage]
+		ADGain     = ChanAmpAssign[7][headStage]
+		DAUnit     = ChanAmpAssignUnit[2][headStage]
+		ADUnit     = ChanAmpAssignUnit[3][headStage]
+	else
+		ASSERT(0, "unhandled mode")
 	endIf
-	
-	If(ClampMode == 1)
-		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
-		CheckBox $DACheck win = $panelTitle, value = 1
-		
-		DAGain = "Gain_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
-		SetVariable $DAGain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
 
-		DAUnit = "Unit_DA_0" + num2str(ChanAmpAssign[0][HeadStageNo])
-		SetVariable $DAUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[2][HeadStageNo]
-		
-		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = ClampMode
+	/// @todo this should be an assertion, but it is currently triggered
+	/// to often
+	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
+		printf "BUG: neither DACchannel=%s nor ADCchannel=%s can be NaN\r", num2str(DACchannel), num2str(ADCchannel)
+		return NaN
+	endif
 
-		If(ChanAmpAssign[6][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-				
-		ADGain = "Gain_AD_0"+num2str(ChanAmpAssign[6][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
+	// DAC channels
+	sprintf ctrlSuffix "_DA_%02d", DACchannel
+	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
+	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, DaGain)
+	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, DaUnit)
 
-		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
+	ChannelClampMode[DACchannel][%DAC] = clampMode
 
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck win = $panelTitle, value = 1
-				
-		ADGain = "Gain_AD_"+num2str(ChanAmpAssign[6][HeadStageNo])
-		SetVariable $ADGain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]	
+	// ADC channels
+	sprintf ctrlSuffix "_AD_%02d", ADCchannel
+	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
+	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, ADGain)
+	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
 
-		ADUnit = "Unit_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		SetVariable $ADUnit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]	
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = ClampMode
-
-		endif
-	endIf
+	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 //=========================================================================================
-/// DAP_RemoveClampModeSettings
-Function DAP_RemoveClampModeSettings(HeadStageNo, ClampMode, panelTitle)
-	variable HeadStageNo, ClampMode// 0 = VC, 1 = IC
+Function DAP_RemoveClampModeSettings(headStage, clampMode, panelTitle)
+	variable headStage, clampMode
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $WavePath + ":ChanAmpAssign"
-	string DACheck, DAGain, ADCheck, ADGain
-	wave ChannelClampMode = $WavePath + ":ChannelClampMode"
 
-	ASSERT(IsFinite(ChanAmpAssign[0][HeadStageNo]),"Unexpected non finite value")
+	string ctrl
+	variable DACchannel, ADCchannel
 
-	If(ClampMode == 0)
-		DACheck = "Check_DA_0"+num2str(ChanAmpAssign[0][HeadStageNo])
-		CheckBox $DACheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[0][HeadStageNo]][0] = nan
-		
-		If(ChanAmpAssign[2][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[2][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[2][HeadStageNo]][1] = nan
-		endif
+	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
+	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+
+	If(ClampMode == V_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[0][headStage]
+		ADCchannel = ChanAmpAssign[2][headStage]
+	elseif(ClampMode == I_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[4][headStage]
+		ADCchannel = ChanAmpAssign[6][headStage]
 	endIf
 
-	If(ClampMode == 1)
-		DACheck = "Check_DA_0" + num2str(ChanAmpAssign[4][HeadStageNo])
-		CheckBox $DACheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[4][HeadStageNo]][0] = nan
-		
-		If(ChanAmpAssign[6][HeadStageNo] < 10)
-		ADCheck = "Check_AD_0" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
-		else
-		ADCheck = "Check_AD_" + num2str(ChanAmpAssign[6][HeadStageNo])
-		CheckBox $ADCheck value = 0
-		
-		ChannelClampMode[ChanAmpAssign[6][HeadStageNo]][1] = nan
-		endif
-	endIf
+	/// @todo this should be an assertion, but it is currently triggered
+	/// to often
+	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
+		printf "BUG: neither DACchannel=%s nor ADCchannel=%s can be NaN\r", num2str(DACchannel), num2str(ADCchannel)
+		return NaN
+	endif
+
+	sprintf ctrl, "Check_DA_%02d", DACchannel
+	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+	ChannelClampMode[DACchannel][%DAC] = nan
+
+	sprintf ctrl, "Check_AD_%02d", ADCchannel
+	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+	ChannelClampMode[ADCchannel][%ADC] = nan
 End
  //=========================================================================================
-/// DAP_CheckProc_ClampMode
 Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
@@ -4163,9 +4126,9 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		controlinfo/w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
-		DAP_RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
-		DAP_ApplyClmpModeSavdSettngs((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
-		AI_SwitchClampMode(panelTitle, (RadioButtonNo / 2), 0)
+			DAP_RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
+			DAP_ApplyClmpModeSavdSettngs((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
+			AI_SwitchClampMode(panelTitle, (RadioButtonNo / 2), 0)
 		endif
 		
 	else // ODD = IC
@@ -4176,9 +4139,9 @@ Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
 		controlinfo /w = $panelTitle $HeadStageCheckBox
 		
 		if(v_value == 1)//checks to see if headstage is "ON"
-		DAP_RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
-		DAP_ApplyClmpModeSavdSettngs(((RadioButtonNo - 1) / 2), 1,panelTitle)//Applies IC settings for headstage
-		AI_SwitchClampMode(panelTitle, ((RadioButtonNo - 1) / 2), 1)
+			DAP_RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
+			DAP_ApplyClmpModeSavdSettngs(((RadioButtonNo - 1) / 2), 1,panelTitle)//Applies IC settings for headstage
+			AI_SwitchClampMode(panelTitle, ((RadioButtonNo - 1) / 2), 1)
 		endif
 
 	endif
@@ -4522,7 +4485,7 @@ Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
 	String ctrlName
 	string panelTitle = DAP_ReturnPanelName()
 	string wavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ChanAmpAssign = $wavePath + ":ChanAmpAssign"
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 	string W_TelegraphServersPath 
 	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
 	wave W_TelegraphServers = $W_TelegraphServersPath
