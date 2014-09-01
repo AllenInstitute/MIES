@@ -184,13 +184,13 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   # menu definition
   # submenues can be nested in menus. Therefore we have to keep track
   # of the number of expected "End" keywords
-  if(!insideFunction && !insideMacro && ( match(code,/Menu[[:space:]]/) || match(code,/SubMenu[[:space:]]/) ))
+  if(!insideFunction && !insideMacro && ( match(code,/\yMenu\y/) || match(code,/\ySubMenu\y/) ))
   {
     menuEndCount++
     insideMenu=1
   }
 
-  if(insideMenu && match(code,/End[[:space:]]*/))
+  if(insideMenu && match(code,/\yEnd[[:space:]]*/))
   {
     menuEndCount--
     if(menuEndCount == 0)
