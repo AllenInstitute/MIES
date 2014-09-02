@@ -686,14 +686,14 @@ Function/S TP_ClampModeString(panelTitle)
 	ClampModeString = ""
 	
 	do
-		ClampModeString += (num2str(TP_HeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
+		ClampModeString += (num2str(AI_MIESHeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
 		i += 1
 	while(i < itemsinlist(ADChannelList))
 
 	return ClampModeString
 End
 
-/// @brief Find the headstage using a particular AD
+///@brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
 
@@ -714,7 +714,7 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 	return NaN
 End
 
-/// @brief Find the headstage using a particular DA
+///@brief Find the headstage using a particular DA channel
 Function TP_HeadstageUsingDAC(panelTitle, DA)
 	string panelTitle
 	variable DA
@@ -732,28 +732,6 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 	DEBUGPRINT("Could not find headstage for DA channel", var = DA)
 
 	return NaN
-End
-
-Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a "headstage"
-	string panelTitle
-	variable Headstage
-	variable ClampMode
-	Headstage*=2
-
-	string ControlName = "Radio_ClampMode_" + num2str(HeadStage)
-	
-	controlinfo /w = $panelTitle $ControlName
-	if(v_value == 1)
-		clampMode = 0 // V clamp
-		return clampMode
-	endif
-	
-	if(v_value == 0)
-		clampMode = 1 // I clamp
-		return clampMode
-	endif
-	
-	return ClampMode
 End
 
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)

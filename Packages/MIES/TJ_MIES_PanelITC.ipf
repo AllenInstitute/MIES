@@ -4381,50 +4381,57 @@ Function /S DAP_HeadstageStateList(panelTitle)
 	return HeadstageState
 End
 
+Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
+	struct WMButtonAction &ba
 
-//=========================================================================================
-// FUNCTION BELOW IS FOR IMPORTING GAIN SETTINGS
-//=========================================================================================
-/// DAP_ButtonProc_AutoFillGain
-Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	string wavePath = HSU_DataFullFolderPathString(panelTitle)
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	string W_TelegraphServersPath 
-	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
-	wave W_TelegraphServers = $W_TelegraphServersPath
-// Is an amp associated with the headstage?
-	controlInfo /w = $panelTitle Popup_Settings_HeadStage
-	variable HeadStageNo = v_value - 1
+	string panelTitle
+	variable headStage, axonSerial
 
-	if(numtype(ChanAmpAssign[8][HeadStageNo]) != 2)
-		// Is the amp still connected?
-		findValue /I = (ChanAmpAssign[8][HeadStageNo]) /T = 0 $W_TelegraphServersPath
-		if(V_value != -1)
-			HSU_AutoFillGain(panelTitle)
-			HSU_UpdateChanAmpAssignStorWv(panelTitle)
-		endif
-	elseif(numtype(ChanAmpAssign[8][HeadStageNo]) == 2)
-		print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
-	endif
+	switch( ba.eventCode )
+		case 2: // mouse up
+			panelTitle = ba.win
+			Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+			Wave/SDFR=GetAmpFolder() W_TelegraphServers
+
+			// Is an amp associated with the headstage?
+			headStage  = GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
+			axonSerial = ChanAmpAssign[8][headStage]
+
+			if(!IsFinite(axonSerial))
+				print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
+				break
+			endif
+
+			// Is the amp still connected?
+			FindValue/I=(axonSerial)/T=0 W_TelegraphServers
+			if(V_Value != -1)
+				HSU_AutoFillGain(panelTitle)
+				HSU_UpdateChanAmpAssignStorWv(panelTitle)
+			endif
+			break
+	endswitch
+
+	return 0
 End
 
 //=========================================================================================
 // FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
 //=========================================================================================
 
-/// DAP_SliderProc_MIESHeadStage
-Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderControl
-	String ctrlName
-	Variable sliderValue
-	Variable event	// bit field: bit 0: value set, 1: mouse down, 2: mouse up, 3: mouse moved
-	string panelTitle 
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	if(event %& 0x1)	// bit 0, value set
-		AI_UpdateAmpView(panelTitle, sliderValue)
-		variable Mode = AI_MIESHeadstageMode(panelTitle, sliderValue)
-		DAP_ExecuteAdamsTabcontrolAmp(panelTitle, Mode) // chooses the amp tab accoding to the MIES headstage clamp mode
+Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
+	struct WMSliderAction &sc
+
+	string panelTitle
+	variable mode, headStage
+
+	if(sc.eventCode & 0x1)
+			panelTitle = sc.win
+			headStage  = sc.curVal
+
+			AI_UpdateAmpView(panelTitle, headStage)
+			mode = AI_MIESHeadstageMode(panelTitle, headStage)
+			// chooses the amp tab accoding to the MIES headstage clamp mode
+			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
 	endif
 
 	return 0
@@ -4463,18 +4470,18 @@ Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
 End
 
 /// DAP_ExecuteAdamsTabcontrolAmp
-Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, TabToGoTo)
+Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
 	string panelTitle
-	variable TabToGoTo
+	variable tabID
+
 	Struct WMTabControlAction tca
 	
 	tca.ctrlName = "tab_DataAcq_Amp"	
 	tca.win	= panelTitle	
 	tca.eventCode = 2	
-	tca.tab = TabToGoTo
+	tca.tab = tabID
 
-	Variable returnedValue = ACL_DisplayTab(tca)
-
+	ACL_DisplayTab(tca)
 End
 
 //=========================================================================================
