@@ -1,25 +1,22 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @brief Create MIES data folder architecture and create some panels
 Function IM_InitiateMIES()
-	// Create MIES data folder architecture
-	NewDataFolder /o root:MIES
-	NewDataFolder /o root:MIES:Amplifiers
-	NewDataFolder /o root:MIES:Amplifiers:Settings
-	NewDataFolder /o root:MIES:Manipulators
-	NewDataFolder /o root:MIES:Camera
-	NewDataFolder /o root:MIES:LabNoteBook // saves history of device settings
-	NewDataFolder /o root:MIES:ITCDevices
-	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices // stores lists of data related to ITC devices actively acquiring data
-	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:TestPulse // stores lists of data related to ITC devices actively running a test pulse
-	NewDataFolder /o root:MIES:ITCDevices:ActiveITCDevices:Timer // stores lists of data that the background timer uses
-	
+	createDFWithAllParents("root:MIES:Amplifiers:Settings")
+
+	// stores lists of data that the background timer uses
+	createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:Timer")
+
+	// stores lists of data related to ITC devices actively running a test pulse
+	createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:TestPulse")
+	createDFWithAllParents("root:MIES:LabNoteBook")
+	createDFWithAllParents("root:MIES:Camera")
+	createDFWithAllParents("root:MIES:Manipulators")
+
 	string /G root:MIES:ITCDevices:ITCPanelTitleList
-	
-	// Initiate wave builder - includes making wave builder panel
+
 	WB_InitiateWaveBuilder()
-	// make ephys panel
 	execute "DA_Ephys()"
-	// make data browser panel
 	execute "DataBrowser()"
 End
 //=========================================================================================
