@@ -460,16 +460,24 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	// local variable for the sweep number
 	variable SweepNo = SweepCounter
 	
+	string FullFolderPath = HSU_DataFullFolderPathString(panelTitle)
+//	print "fullfolderPath: ", FullFolderPath
+	string DeviceType = stringfromlist(itemsinlist(FullFolderPath, ":") - 2,  FullFolderPath, ":")
+	string DeviceNum = stringfromlist(itemsinlist(FullFolderPath, ":") - 1,  FullFolderPath, ":")
+
+	// New place for all the data wave
+	string labNoteBookFolder
+	sprintf labNoteBookFolder, "root:mies:LabNoteBook:%s:%s" DeviceType, DeviceNum
+
 	// Location for the text documentation wave
 	String textDocPath
-	sprintf textDocPath, "%s:%s" Path_LabNoteBookFolder(panelTitle), "textDocumentation"
-	//print "textDocPath: ", textDocPath
+	sprintf textDocPath, "%s:%s" labNoteBookFolder, "textDocumentation:textDocumentation"
 	
 	wave/Z /T textDocWave = $textDocPath
 	// see if the wave exists....if so, append to it...if not, create it
 	if (!WaveExists(textDocWave) )
 		// create the wave...just set the dimensions to give it something to build on
-		make/T /N = (1,2,0) $textDocPath
+		make/T /N = (0,2,0) $textDocPath
 		// Col 0 - Sweep Number
 		// Col 1 - Time Stamp
 		Wave/T textDocWave = $textDocPath
@@ -479,22 +487,27 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	
 	// Locating for the textDocKeyWave
 	String textDocKeyWavePath
-	sprintf textDocKeyWavePath, "%s:%s" Path_LabNoteBookFolder(panelTitle), "textDocKeyWave"
+	sprintf textDocKeyWavePath, "%s:%s" labNoteBookFolder, "textDocKeyWave:textDocKeyWave"
 	
 	
 	// see if the wave exists....if so, append to it...if not, create it
 	Wave/T /Z textDocKeyWave = $textDocKeyWavePath
 	if (!WaveExists(textDocKeyWave))
 		// create the wave...just set the dimensions to give it something to build on
-		make /T /N=(0,0,0)  $textDocKeyWavePath		
+		make /T /N=(3,2,0)  $textDocKeyWavePath
 		// row 0 - Parameter name
 		// row 1 - Unit
 		// row 2 - Text note
 		
+		// col 0 - Sweep Number
+		// col 1 - Time Stamp
 		Wave/T textDocKeyWave = $textDocKeyWavePath
+		textDocKeyWave[0][0] = "SweepNum"
+		textDocKeyWave[0][1] = "TimeStamp"
 	endif
 	
 	
+	//print "building up the text doc key..."
 	
 	// get the size of the ampSettingsHistory wave
 	variable rowCount = DimSize(textDocWave, 0)		// sweep
@@ -506,11 +519,11 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	
 	// get the size of the incoming Settings Wave
 	variable incomingRowCount = DimSize(incomingTextDocWave, 0)			// sweep
-	//print "incomingRowCount: ", incomingRowCount
+//	print "incomingRowCount: ", incomingRowCount
 	variable incomingColCount = DimSize(incomingTextDocWave, 1)			// factor
-	//print "incomingColCount: ", incomingColCount
+//	print "incomingColCount: ", incomingColCount
 	variable incomingLayerCount = DimSize(incomingTextDocWave, 2)			// headstage
-	//print "incomingLayerCount: ", incomingLayerCount
+//	print "incomingLayerCount: ", incomingLayerCount
 		
 	
 	// Now go through the incoming text wave and see if these factors are already being monitored
@@ -525,12 +538,12 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	variable keyMatchFound = 0
 	
 	// if keyWave is just formed, just add the incoming KeyWave....
-	if (keyColCount == 0)
+	if (keyColCount == 2)
 		//print "setting up inital keyWave..."
 		// have to redimension the keyWave to create the space for the new stuff
-		Redimension/N= (3, incomingKeyColCount) textDocKeyWave
+		Redimension/N= (3, incomingKeyColCount+2) textDocKeyWave
 		// also redimension the settings History Wave to create row space to add new sweep data...
-		Redimension/N=(-1, incomingColCount, incomingLayerCount) textDocWave
+		Redimension/N=(-1, incomingColCount+2, incomingLayerCount) textDocWave
 		//print "after key wave redimension..."
 		//print "key wave row size ", DimSize(keyWave, 0)		// sweep
 		//print "key wave col size ", DimSize(keyWave, 1)		// factor
@@ -546,14 +559,14 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 		for (keyColCounter = 0; keyColCounter < (incomingKeyColCount); keyColCounter += 1)
 //			print "copying incomingKeyWave factor to keyWave at ", keyColCounter
 //			print "incoming KeyWave factor text: ", incomingTextDocKeyWave[0][keyColCounter]
-			textDocKeyWave[0][keyColCounter] = incomingTextDocKeyWave[0][keyColCounter] // copy the parameter name
+			textDocKeyWave[0][keyColCounter+2] = incomingTextDocKeyWave[0][keyColCounter] // copy the parameter name
 //			print "after copy step, keyWaveText: ", textDocKeyWave[0][keyColCounter]			
-			textDocKeyWave[1][keyColCounter] = incomingTextDocKeyWave[1][keyColCounter] // copy the unit string			
+			textDocKeyWave[1][keyColCounter+2] = incomingTextDocKeyWave[1][keyColCounter] // copy the unit string
 		endfor
 		
 		// set this so we don't do the matching bit down below
 		keyMatchFound = 1
-		//print "done creating the initial keyWave..."
+//		print "done creating the initial keyWave..."
 	else	 // scan through the keyWave to see where to stick the incomingKeyWave
 		//print "checking to see if incoming factors are already monitored..."		
 		for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
@@ -596,21 +609,11 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	variable colCounter 
 	variable layerCounter
 	
-	// where are we adding the new stuff?
-	variable settingsRowCount = (DimSize(textDocWave, 0)
-	//print "settingsRowCount: ", settingsRowCount
-	// set the rowredimension to add another row...leave the other stuff alone
-	// Do we need to redimension to accomodate this sweep #?
-	if ((settingsRowCount -1) >= SweepNo)
-//		print "no redimension needed ... "  // already have a row for this 
-	else
-		Redimension/N=((sweepNo + 1), -1, -1) textDocWave
-		settingsRowCount = (DimSize(textDocWave, 0))
-	endif
-	
-	variable rowIndex = sweepNo
+	variable settingsRowCount = (DimSize(textDocWave, 0))  // the new settingsRowCount
+	//print "after the row redimension, settingsRowCount = ", settingsRowCount
+	variable rowIndex = settingsRowCount - 1
 	//print "adding the new stuff at rowIndex: ", rowIndex
-	
+
 	// put the sweep number in col 0
 	textDocWave[rowIndex][0] = num2str(sweepNo)
 	
@@ -620,8 +623,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	
 	// Use the keyWave to see where to add the incomingTextDoc factors to the textDoc wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
-		for (keyColCounter = 2; keyColCounter < keyColCount; keyColCounter += 1)
-			if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter-2]) == 1)
+		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
+			if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]) == 1)
 			// found the string match
 				for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
 //					print "for layer: ", layerCounter
@@ -635,31 +638,34 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 		endfor
 	endfor
 	
-	// And now....see if the factor has changed...and if it has, add a wave note indicating the factor that changed
-	// only do this if there are 2 or more rows
+	// And now....add a wave note for the text Doc Wave
 	rowCount = DimSize(textDocWave, 0)
-	colCount = DimSize(textDocWave, 1)	
-	//print "new Row Count: ", rowCount
-	//print "new Col Count: ", colCount
-	rowIndex = SweepNo
-	//print "rowIndex: ", rowIndex
+	colCount = DimSize(textDocWave, 1)
+	layerCount = DimSize(textDocWave, 2)
+
+//	print "new Row Count: ", rowCount
+//	print "new Col Count: ", colCount
+	rowIndex = rowCount - 1
+//	print "rowIndex: ", rowIndex
 	
-	if (rowIndex >= 1)	// only need to do this if there are more then 2 sweeps to compare
-		for (layerCounter = 0; layerCounter < layerCount; layerCounter += 1)
-			for ( colCounter = 2; colCounter < colCount; colCounter += 1) // start at 2...otherwise you get wavenotes for every new sweep # and time stamp
-				// textDocWave[rowIndex][colCounter][layerCounter] = incomingTextDocWave[0][colCounter][layerCounter]
-				// and then see if the factor has changed from the previous saved setting
+//	print "layerCount: ", layerCount
+
+	for (layerCounter = 0; layerCounter < layerCount; layerCounter += 1)
+		for ( colCounter = 2; colCounter < colCount; colCounter += 1) // start at 2...otherwise you get wavenotes for every new sweep # and time stamp
+			// textDocWave[rowIndex][colCounter][layerCounter] = incomingTextDocWave[0][colCounter][layerCounter]
+			// and then see if the factor has changed from the previous saved setting
 //				if (StringMatch(textDocWave[rowIndex][colCounter][layerCounter], textDocWave[rowIndex-1][colCounter-2][layerCounter]) != 1)
-				// build up the string for the report
+			// build up the string for the report
+			if (StringMatch(textDocWave[rowIndex][colCounter][layerCounter], "!"))
 				String changedDocText
-				sprintf changedDocText, ":HeadStage#%d:%s: %s:" layerCounter, incomingTextDocKeyWave[0][colCounter], textDocWave[rowIndex][colCounter][layerCounter]
+				sprintf changedDocText, "HeadStage#%d:%s: %s" layerCounter, textDocKeyWave[0][colCounter], textDocWave[rowIndex][colCounter][layerCounter]
 				//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter])
 //				print changedDocText
 				Note saveDataWave changedDocText
-//				endif
-			endfor
+			endif
 		endfor
-	endif
+	endfor
+
 End		
 	
 	
@@ -682,15 +688,108 @@ Function ED_HeadStageDocumenting(panelTitle)
 	dfref DataFolderRef = $DataFolderPath
 	
 	wave /SDFR = DataFolderRef ChanAmpAssign
-	
-	
-
 End
 //======================================================================================
 Function ED_CommentDocumenting(panelTitle)
 	string panelTitle
 End
-
 //======================================================================================
+/// Requested by the MAT team...
+/// always create a WaveNote for each sweep that indicates the Stim Wave Name and the Stim scale factor
+// a function to create waveNote tags for the stim wave name and scale factor
+function ED_createWaveNoteTags(panelTitle, savedDataWaveName, SweepNo)
+	string panelTitle
+	string SavedDataWaveName
+	Variable SweepNo
 
+	// sweep count
+	Variable sweepCount = SweepNo
 
+	Wave/SDFR=$HSU_DataFullFolderPathString(panelTitle) ChannelClampMode
+
+	// get all the Amp connection information
+	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)
+	// get the number of headStages...used for building up the ampSettingsWave
+	variable noHeadStages = itemsinlist(controlledHeadStage, ";")
+
+	// Location for the settings wave
+	String stimSettingsWavePath
+	sprintf stimSettingsWavePath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "stimSettings"
+
+	// see if the wave exists....if so, append to it...if not, create it
+	wave /T /z stimSettingsWave = $stimSettingsWavePath
+	//print "Does the settings wave exist?..."
+	if (!WaveExists(stimSettingsWave))
+		//print "making stimSettingsWave..."
+		// create the 3 dimensional wave
+		make /T /o /n = (1, 2, noHeadStages) $stimSettingsWavePath
+		Wave /T /z stimSettingsWave = $stimSettingsWavePath
+	endif
+
+	// make the amp settings key wave
+	String stimSettingsKeyPath
+	sprintf stimSettingsKeyPath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "stimSettingsKey"
+
+	// see if the wave exists....if so, skip this part..if not, create it
+	//print "Does the key wave exist?"
+	wave/T stimSettingsKey = $stimSettingsKeyPath
+	if (!WaveExists(stimSettingsKey))
+		//print "making settingsKey Wave...."
+		// create the 2 dimensional wave
+		make /T /o  /n = (3, 2) $stimSettingsKeyPath
+		Wave/T /z stimSettingsKey = $stimSettingsKeyPath
+
+		// Row 0: Parameter
+		// Row 1: Units
+		// Row 2: Tolerance factor
+
+		// Add dimension labels to the stimSettingsKey wave
+		SetDimLabel 0, 0, Parameter, stimSettingsKey
+		SetDimLabel 0, 1, Units, stimSettingsKey
+		SetDimLabel 0, 2, Tolerance, stimSettingsKey
+
+		// And now populate the wave
+		stimSettingsKey[0][0] =  "Stim Wave Name"
+		stimSettingsKey[1][0] =  ""
+		stimSettingsKey[2][0] =  ""
+
+		stimSettingsKey[0][1] =   "Stim Scale Factor"
+		stimSettingsKey[1][1] =  ""
+		stimSettingsKey[2][1] =  ""
+	endif
+
+	string stimWaveName
+	variable stimScaleFactor
+	string getWaveNameString
+	string getStimScaleString
+	string getDACheckBoxString
+	variable checkBoxState
+
+	// Now populate the Settings Wave
+	// first...determine if the head stage is being controlled
+	variable headStageControlledCounter
+	for(headStageControlledCounter = 0;headStageControlledCounter < noHeadStages ;headStageControlledCounter += 1)
+		// build up the string to get the DA check box to see if the DA is enabled
+		sprintf getDACheckBoxString, "Check_DA_0%d" headStageControlledCounter
+		checkBoxState = GetCheckBoxState(panelTitle, getDACheckBoxString)
+		if (checkBoxState == 1)		// Only make the waveNote if the DA is enabled
+		// build up the string to get the waveName
+			sprintf getWaveNameString, "Wave_DA_0%d" headStageControlledCounter
+			// get the stimWaveName
+			stimWaveName = GetPopupMenuString(panelTitle, getWaveNameString)
+			// build up the string to get the scale factor
+			sprintf getStimScaleString, "Scale_DA_0%d" headStageControlledCounter
+			// get the scale factor
+			stimScaleFactor = GetSetVariable(panelTitle, getStimScaleString)
+
+			// Save that into the stimSettingsWave
+			stimSettingsWave[0][0][headStageControlledCounter] = stimWaveName
+			stimSettingsWave[0][1][headStageControlledCounter] = num2str(stimScaleFactor)
+		endif
+	endfor
+
+	// now call the function that will create the wave notes
+//	print "calling createWaveNotes..."
+	ED_createTextNotes(stimSettingsWave, stimSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+
+End

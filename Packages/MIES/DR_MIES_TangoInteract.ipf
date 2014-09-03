@@ -7,6 +7,8 @@
 Menu "Mies Panels"
 		"Start Polling WSE queue", StartTestTask()
 		"Stop Polling WSE queue", StopTestTask()
+		"Open HDF5 Browser", CreateNewHDF5Browser()
+		"Save HDF5 File", TangoHDF5Save()
 End
 
 Function writeLog(logMessage)
@@ -369,18 +371,18 @@ Function TangoSave(saveFileName)
 	
 	Variable result = 0
 	string dfPath = "."
-	string uxtFileName = saveFileName + ".uxt"
+	string pxpFileName = saveFileName + ".pxp"
 	//first, save as unpacked experiment
-	if (stringMatch(uxtFileName, "*.uxt") == 1)		
-		SaveExperiment/C/F={1,"",2}/P=home as uxtFileName
+	if (stringMatch(pxpFileName, "*.pxp"))
+		SaveExperiment/C/F={1,"",2}/P=home as pxpFileName
 		print "Packed Experiment Save Success!"
 	else
-		print "File Name must end with .uxt!  Please re-enter and try again!"
+		print "File Name must end with .pxp!  Please re-enter and try again!"
 	endif
 End
 
-Function TangoHDF5Save(saveFilename)
-	string saveFileName
+Function TangoHDF5Save()
+	string saveFileName = "dummyFileName"
 	
 	string hd5FileName = saveFileName + ".h5"
 	print "hd5FileName: ", hd5FileName
@@ -402,18 +404,18 @@ Function convert_to_hdf5(filename)
 	for (i=0; i<num_dirs; i+=1)
 		dir_name = GetIndexedObjName(":", 4, i)
 		print "dir_name: ", dir_name
-		if (stringmatch(dir_name[0], "I"))
+		if (stringmatch(dir_name[0], "M"))
 			break
 		endif
 	endfor
 	path = "root:" + dir_name + ":ITCDevices:ITC18USB:Device0:Data:"
-	//print "dir_name: ", dir_name
-	//print "hdf5 path: ", path
+	print "dir_name: ", dir_name
+	print "hdf5 path: ", path
 	
 	SetDataFolder path
 	print "about to create hdf5..."
-	
-	HDF5CreateFile /O /Z h5_id as filename
+
+	HDF5CreateFile /O  /Z h5_id as filename
 	if (V_flag != 0)
 		print "HDF5CreateFile failed"
 		return -1
@@ -525,29 +527,29 @@ Function ident_stimulus(current, dt, stim_characteristics)
 	Wave current
 	Variable dt
 	Wave stim_characteristics
-	
+
 	ASSERT(DimSize(current,ROWS) > 0,"expected non-empty wave")
 	ASSERT(DimSize(stim_characteristics,ROWS) > 5,"expected wave with at least 5 rows")
-	
-	///////////////////////////
-	// stimulus type constants
-	// TODO move these to a better location
+
+///////////////////////////
+// stimulus type constants
+// TODO move these to a better location
 	Variable TYPE_UNKNOWN = 0
 	Variable TYPE_NULL = 1
 	Variable TYPE_STEP = 2
-	Variable TYPE_PULSE = 3	// pulse defined as step that lasts less than 20ms
+	Variable TYPE_PULSE = 3 // pulse defined as step that lasts less than 20ms
 	Variable TYPE_RAMP = 4
-	//////////////////////////
-	// variables to track stimulus characteristics
-	Variable polarity = 0	// >0 when i increasing; <0 when i decreasing
-	Variable flips = 0	// number of polarity shifts
-	Variable changes = 0	// number of changes in i
-	Variable peak = 0	// peak current
+//////////////////////////
+// variables to track stimulus characteristics
+	Variable polarity = 0 // >0 when i increasing; <0 when i decreasing
+	Variable flips = 0 // number of polarity shifts
+	Variable changes = 0 // number of changes in i
+	Variable peak = 0 // peak current
 	Variable start = 0
 	Variable stop = 0
 	Variable last = current[0]
-	//////////////////////////
-	// characterize stimulus, using current polarity and amplitude changes
+//////////////////////////
+// characterize stimulus, using current polarity and amplitude changes
 	Variable n = DimSize(current, 0)
 	Variable i, cur
 	for (i=0; i<n; i+=1)
@@ -557,57 +559,63 @@ Function ident_stimulus(current, dt, stim_characteristics)
 		endif
 		changes += 1
 		if (polarity == 0)
-			// stimulus just started -- assign initial polarity
+// stimulus just started – assign initial polarity
 			if (cur > 0)
 				polarity = 1
 			else
 				polarity = -1
 			endif
-			start = i
+		//start = i
 		elseif (polarity == -1)
-			// current was decreasing
+		// current was decreasing
 			if (cur > last)
-				// current now on upswing -- record polarity shift
+			// current now on upswing – record polarity shift
 				polarity = 1
 				flips += 1
 			endif
-		else	// polarity == 1
-			// current has been increasing
+		else // polarity == 1
+		// current has been increasing
 			if (cur < last)
-				// current now decreasing -- record polarity shift
+			// current now decreasing – record polarity shift
 				polarity = -1
 				flips += 1
 			endif
 		endif
-		if (abs(cur) > abs(peak))
+		if ((start == 0) && (changes == 3))
+			start = i
+		endif
+		if ((start > 0) && (abs(cur) > abs(peak)))
 			peak = cur
 		endif
 		if ((cur == 0) && (last != 0))
-			// current returned to zero -- store this as potential end
-			//   of stimulus
+		// current returned to zero – store this as potential end
+		// of stimulus
 			stop = i
 		endif
 		last = cur
 	endfor
+
 	Variable t = (n-1) * dt
 	Variable dur = (stop - start) * dt
 	Variable onset = start * dt
 	Variable type = TYPE_UNKNOWN // default to unknown
-	if (changes == 2)
+
+	if (changes == 4)
 		if (dur < 0.020)
 			type = TYPE_PULSE
 		else
 			type = TYPE_STEP
 		endif
-	elseif (flips == 1)
-		// too many current changes for step, but only one flip
-		// this must be a ramp
+	elseif (flips == 3)
+	// too many current changes for step, but only one flip
+	// this must be a ramp
 		type = TYPE_RAMP
-	elseif ((flips == 0) && (changes == 0))
-		// no stimulus
+	elseif ((flips == 1) && (changes == 2))
+	// no stimulus
 		type = TYPE_NULL
 	endif
-	// store results in vector -- this is more friendly for hdf5 storage
+
+	// store results in vector – this is more friendly for hdf5 storage
 	stim_characteristics[0] = type
 	stim_characteristics[1] = t
 	stim_characteristics[2] = onset
