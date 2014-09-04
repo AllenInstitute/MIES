@@ -93,7 +93,7 @@ Function DEBUGPRINT(msg, [var, str, format])
 	string str, format
 
 	string file, line, func, caller, stacktrace, formatted = ""
-	variable numSuppliedOptParams, idx
+	variable numSuppliedOptParams, idx, numCallers
 
 	// check parameters
 	// valid combinations:
@@ -119,9 +119,10 @@ Function DEBUGPRINT(msg, [var, str, format])
 	idx = strsearch(stacktrace,"DEBUGPRINT",0)
 	ASSERT(idx != -1, "Could not find the name of the current function")
 	stacktrace = stacktrace[0, idx - 1]
+	numCallers = ItemsInList(stacktrace)
 
-	if(ItemsInList(stacktrace) >= 1)
-		caller = StringFromList(0, stacktrace)
+	if(numCallers >= 1)
+		caller = StringFromList(numCallers - 1, stacktrace)
 		func   = StringFromList(0, caller, ",")
 		file   = StringFromList(1, caller, ",")
 		line   = StringFromList(2, caller, ",")
