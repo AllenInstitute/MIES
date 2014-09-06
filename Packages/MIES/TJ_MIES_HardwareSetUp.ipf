@@ -216,7 +216,7 @@ Function HSU_UnlockDevice(panelTitle)
 
 	NVAR/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDeviceIDGlobal
 	string cmd
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	sprintf cmd, "ITCSelectDevice/Z %d" ITCDeviceIDGlobal
 	Execute cmd
 	sprintf cmd, "ITCCloseDevice"
 	Execute cmd
