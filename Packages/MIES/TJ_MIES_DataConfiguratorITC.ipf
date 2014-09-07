@@ -456,7 +456,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	// print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
-			HeadStage = TP_HeadstageUsingDAC(panelTitle, i) // document the DA channel
+			HeadStage = TP_HeadstageUsingDAC(panelTitle, i) // Determine the headstage
 			if(numtype(Headstage) != 0)
 				HeadStage = -1
 			endif
