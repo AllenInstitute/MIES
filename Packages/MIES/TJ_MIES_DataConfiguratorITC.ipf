@@ -462,7 +462,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			endif
 			
 			if(Headstage >= 0)
-				SweepData[0][0][HeadStage] = i // document the DA gain
+				SweepData[0][0][HeadStage] = i // document the DA channel
 			endif
 			sprintf SetVarDAGain, "Gain_DA_0%s"  num2str(i)
 			sprintf SetVarDAScale, "Scale_DA_0%s" num2str(i)
