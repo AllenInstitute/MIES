@@ -565,6 +565,27 @@ Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a parti
 	endif
 End
 
+Function TP_HeadstageUsingDAC(panelTitle, DA) //find the headstage using a particular DA
+	string panelTitle
+	variable DA
+
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	variable i = 0
+	
+	do
+		if(ChanAmpAssign[0][i] == DA)
+		 	break
+		endif
+		i += 1
+	while(i<7)	
+	
+	if(ChanAmpAssign[0][i] == DA)
+		return i
+	else
+		return Nan
+	endif
+End
+
 Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a "headstage"
 	string panelTitle
 	variable Headstage
