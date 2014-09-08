@@ -102,12 +102,13 @@ for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 	else
 		ADGainControlName = "Gain_AD_" + stringfromlist(i, ADChannelList, ";")
 	endif
-	controlinfo /w = $panelTitle $ADGainControlName
-	gain = v_value
 	
+	gain = getSetVariable(panelTitle, ADGainControlName)
+	
+	// document AD parameters into SweepData wave
 	Headstage = TP_HeadstageUsingADC(panelTitle, i)
 	if(IsFinite(Headstage))
-		SweepData[0][1][HeadStage] = i
+		SweepData[0][1][HeadStage] = i // document the AD channel
 		SweepData[0][3][HeadStage] = gain // document the AD gain
 	endif
 	
