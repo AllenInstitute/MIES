@@ -92,6 +92,8 @@ variable StartOfADColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
 string ADGainControlName
 variable gain, i
 Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
+Wave SweepData = DC_SweepDataWvRef(panelTitle)
+variable Headstage
 
 for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 //Gain_AD_00
@@ -100,8 +102,15 @@ for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 	else
 		ADGainControlName = "Gain_AD_" + stringfromlist(i, ADChannelList, ";")
 	endif
-	controlinfo /w = $panelTitle $ADGainControlName
-	gain = v_value
+	
+	gain = getSetVariable(panelTitle, ADGainControlName)
+	
+	// document AD parameters into SweepData wave
+	Headstage = TP_HeadstageUsingADC(panelTitle, i)
+	if(IsFinite(Headstage))
+		SweepData[0][1][HeadStage] = i // document the AD channel
+		SweepData[0][3][HeadStage] = gain // document the AD gain
+	endif
 	
 	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == V_CLAMP_MODE)
 		gain *= 3200 // itc output will be multiplied by 1000 to convert to pA then divided by the gain

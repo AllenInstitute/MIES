@@ -419,6 +419,8 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 End
 //==========================================================================================
+/// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave. 
+/// Also records certain DA_Ephys GUI settings into SweepData and SweepTxtData
 Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
 	variable i = 0// 
@@ -436,7 +438,12 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
 	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
-
+	// waves below are used to document the settings for each sweep
+	Wave SweepData = DC_SweepDataWvRef(panelTitle)
+	Wave/T SweepTxtData = DC_SweepDataTxtWvRef(panelTitle)
+	SweepData = nan // empty the waves on each new sweep
+	SweepTxtData = ""
+	Variable HeadStage
 	if(exists(CountPath) == 2)
 		NVAR count = $CountPath
 		column = count-1
@@ -451,21 +458,32 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	// print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
-			// SetVarDAGain = "Gain_DA_0" + num2str(i)
+			HeadStage = TP_HeadstageUsingDAC(panelTitle, i) // Determine the headstage
+			
+			if(isFinite(HeadStage))
+				SweepData[0][0][HeadStage] = i // document the DA channel
+			endif
 			sprintf SetVarDAGain, "Gain_DA_0%s"  num2str(i)
-			//print SetVarDAGain
-			//SetVarDAScale = "Scale_DA_0" + num2str(i)
 			sprintf SetVarDAScale, "Scale_DA_0%s" num2str(i)
 
 			ControlInfo /w = $panelTitle $SetVarDAGain
 			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-
+			if(isFinite(HeadStage))
+				SweepData[0][2][HeadStage] = v_value // document the DA gain
+			endif
+			
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
-
+			
+			if(isFinite(HeadStage))
+				SweepData[0][4][HeadStage] = v_value // document the DA scale
+			endif
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
-			// print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
+			// print "chan type wave name =", ChanTypeWaveName 
+			if(isFinite(HeadStage))
+				SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name
+			endif
 			//check to see if it is a test pulse or user specified da wave
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
 				// print "chan type wave name =", ChanTypeWaveName
@@ -496,18 +514,18 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		endif
 			//resample the wave to min samp interval and place in ITCDataWave
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
-			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
-
-			//sprintf cmd,  "%s[%d, %d][%d] = (%g*%g) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
 			//print cmd
-			//execute cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
 			// print "Column =", column
+			if(isFinite(HeadStage))
+				SweepData[0][5][HeadStage] = Column // document the set column
+			endif
+			
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
 			//print "dascale =", dascale
 			// check if TP is being configured
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0) // prevents insertion of TP into TP
-				// check if TP insertion is active
+				// check if global TP insertion is active
 				controlinfo /w = $panelTitle Check_Settings_InsertTP
 				variable Check_Settings_InsertTP = v_value
 				if(Check_Settings_InsertTP == 1)
@@ -544,6 +562,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
+			
 			j += 1
 		endif
 		i += 1
@@ -827,3 +846,4 @@ Function DC_ReturnTotalLengthIncrease(panelTitle)
 	variable NewRows = round((OnsetDelay + TerminationDelay) * 5)
 	return OnsetDelay + TerminationDelay
 end
+

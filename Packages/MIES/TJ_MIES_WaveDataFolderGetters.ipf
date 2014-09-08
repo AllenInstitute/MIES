@@ -88,3 +88,64 @@ Function/Wave GetChannelClampMode(panelTitle)
 
 	return wv
 End
+
+/// @brief Returns a wave reference to the SweepData
+///
+/// SweepData is used to store GUI configuration info which can then be transferred into the documenting functions
+/// Columns:
+/// - 0: DAC
+/// - 1: ADC
+/// - 2: DA Gain
+/// - 3: AD Gain
+/// - 4: DA Scale
+/// - 5: Set sweep count 
+///
+/// Rows:
+/// - Only one
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_SweepDataWvRef(panelTitle)
+	string panelTitle
+	
+	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+
+	Wave/Z/SDFR=dfr wv = SweepData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, 6, 8) dfr:SweepData/Wave=wv
+	wv = NaN
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the SweepTxtData
+///
+/// SweepTxtData is used to store the set name used on a particular headstage
+/// Columns:
+/// - 0: SetName
+///
+/// Rows:
+/// - Only one
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_SweepDataTxtWvRef(panelTitle)
+	string panelTitle
+	
+	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = SweepTxtData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(1,1,8) dfr:SweepTxtData/Wave=wv
+	wv = ""
+
+	return wv
+End
