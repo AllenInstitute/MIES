@@ -419,6 +419,8 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 End
 //==========================================================================================
+/// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave. 
+/// Also records certain DA_Ephys GUI settings into SweepData and SweepTxtData
 Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
 	variable i = 0// 
@@ -478,7 +480,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			endif
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
-			// print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
+			// print "chan type wave name =", ChanTypeWaveName 
 			if(isFinite(HeadStage))
 				SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name
 			endif
@@ -523,7 +525,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			//print "dascale =", dascale
 			// check if TP is being configured
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0) // prevents insertion of TP into TP
-				// check if TP insertion is active
+				// check if global TP insertion is active
 				controlinfo /w = $panelTitle Check_Settings_InsertTP
 				variable Check_Settings_InsertTP = v_value
 				if(Check_Settings_InsertTP == 1)
