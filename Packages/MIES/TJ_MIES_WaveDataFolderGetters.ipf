@@ -100,6 +100,9 @@ End
 /// - 4: DA Scale
 /// - 5: Set sweep count 
 ///
+/// Rows:
+/// - Only one
+///
 /// Layers:
 /// - Headstage
 Function/Wave DC_SweepDataWvRef(panelTitle)
@@ -113,16 +116,20 @@ Function/Wave DC_SweepDataWvRef(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, 10, 8) dfr:SweepData/Wave=wv
+	Make/N=(1, 6, 8) dfr:SweepData/Wave=wv
 	wv = NaN
 
 	return wv
 End
+
 /// @brief Returns a wave reference to the SweepTxtData
 ///
 /// SweepTxtData is used to store the set name used on a particular headstage
 /// Columns:
-/// - 0:SetName
+/// - 0: SetName
+///
+/// Rows:
+/// - Only one
 ///
 /// Layers:
 /// - Headstage

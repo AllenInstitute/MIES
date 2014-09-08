@@ -432,7 +432,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	string ChanTypeWaveNameList, ChanTypeWaveName
 	string ResampledWaveName = "ResampledWave"
 	string cmd
-	string SetvarDAGain, SetVarDAScale, SetVarADGain
+	string SetvarDAGain, SetVarDAScale
 	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
 	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
@@ -457,11 +457,8 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
 			HeadStage = TP_HeadstageUsingDAC(panelTitle, i) // Determine the headstage
-			if(numtype(Headstage) != 0)
-				HeadStage = -1
-			endif
 			
-			if(Headstage >= 0)
+			if(isFinite(HeadStage))
 				SweepData[0][0][HeadStage] = i // document the DA channel
 			endif
 			sprintf SetVarDAGain, "Gain_DA_0%s"  num2str(i)
@@ -469,20 +466,20 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 			ControlInfo /w = $panelTitle $SetVarDAGain
 			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-			if(HeadStage >= 0)
+			if(isFinite(HeadStage))
 				SweepData[0][2][HeadStage] = v_value // document the DA gain
 			endif
 			
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
 			
-			if(HeadStage >= 0)
+			if(isFinite(HeadStage))
 				SweepData[0][4][HeadStage] = v_value // document the DA scale
 			endif
 			//get the wave name
 			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
 			// print "chan type wave name =", ChanTypeWaveName //, "string match =", stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse")
-			if(HeadStage >= 0)
+			if(isFinite(HeadStage))
 				SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name
 			endif
 			//check to see if it is a test pulse or user specified da wave
@@ -515,14 +512,10 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		endif
 			//resample the wave to min samp interval and place in ITCDataWave
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
-			//sprintf cmd, "%s[%d, ((round((dimsize(%s,0) / (%d)) - 1)) + %d)][%d] = (%d*%d) * (%s[((%d) * p) - %d][%d])" ITCDataWavePath, InsertStart, ChanTypeWaveName,DecimationFactor, InsertEnd, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
-
-			//sprintf cmd,  "%s[%d, %d][%d] = (%g*%g) * (%s[(%d * (p - %d))][%d])" ITCDataWavePath, InsertStart, EndRow, j, DAGain, DAScale, ChanTypeWaveName, DecimationFactor, InsertStart, Column
 			//print cmd
-			//execute cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
 			// print "Column =", column
-			if(HeadStage >= 0)
+			if(isFinite(HeadStage))
 				SweepData[0][5][HeadStage] = Column // document the set column
 			endif
 			
@@ -567,16 +560,6 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
-			Headstage = TP_HeadstageUsingADC(panelTitle, i)
-			if(numtype(Headstage) != 0)
-				HeadStage = -1
-			endif
-			if(HeadStage >= 0)
-				SweepData[0][1][HeadStage] = i // Document the AD channel
-				
-				sprintf SetVarDAGain, "Gain_AD_0%s"  num2str(i)
-				SweepData[0][3][HeadStage] = GetSetVariable(panelTitle, SetVarDAGain) // Document the AD channel gain
-			endif
 			
 			j += 1
 		endif

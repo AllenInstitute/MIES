@@ -570,20 +570,18 @@ Function TP_HeadstageUsingDAC(panelTitle, DA) //find the headstage using a parti
 	variable DA
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	variable i = 0
-	
-	do
+	variable i, entries
+
+	entries = DimSize(ChanAmpAssign, COLS)
+	for(i=0; i < entries; i+=1)
 		if(ChanAmpAssign[0][i] == DA)
-		 	break
+			return i
 		endif
-		i += 1
-	while(i<7)	
-	
-	if(ChanAmpAssign[0][i] == DA)
-		return i
-	else
-		return Nan
-	endif
+	endfor
+
+	DEBUGPRINT("Could not find headstage for DA channel", var = DA)
+
+	return NaN
 End
 
 Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a "headstage"
