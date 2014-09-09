@@ -144,6 +144,7 @@ End
 
 //==================================================================================================
 
+///@deprecated new code should use GetDeviceTestPulse(...) from TJ_MIES_WaveDataFolderGetters.ipf
 Function/DF HSU_GetDeviceTestPulseFromTitle(panelTitle)
 	string panelTitle
 

@@ -38,6 +38,9 @@ Constant COUNTOBJECTS_DATAFOLDER = 4
 /// See "Control Structure eventMod Field"
 Constant EVENT_MOUSE_UP = 2
 
+// Conversion factor from ticks to seconds, exact value is 1/60
+Constant TICKS_TO_SECONDS = 0.0166666666666667
+
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 Function IsFinite(var)
 	variable var
@@ -155,9 +158,10 @@ static Constant MINIMUM_WAVE_SIZE   = 64
 ///                     The actual size of the wave after the function returns might be larger.
 /// @param dimension 	dimension to resize, all other dimensions are left untouched.
 ///                     Defaults to @ref ROWS.
-Function EnsureLargeEnoughWave(wv, [minimumSize, dimension])
+/// @param initialValue initialValue of the new wave points
+Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	Wave wv
-	variable minimumSize, dimension
+	variable minimumSize, dimension, initialValue
 
 	if(ParamIsDefault(dimension))
 		dimension = ROWS
@@ -172,7 +176,10 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension])
 
 	minimumSize = max(MINIMUM_WAVE_SIZE,minimumSize)
 
-	if(minimumSize < DimSize(wv,dimension))
+	Make/FREE/I/N=(MAX_DIMENSION_COUNT) oldSizes
+	oldSizes[] = DimSize(wv,p)
+
+	if(minimumSize < oldSizes[dimension])
 		return NaN
 	endif
 
@@ -182,6 +189,23 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension])
 	targetSizes[dimension] = minimumSize
 
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
+
+	if(!ParamIsDefault(initialValue))
+		switch(dimension)
+			case ROWS:
+				wv[oldSizes[ROWS],] = initialValue
+			break
+			case COLS:
+				wv[][oldSizes[COLS],] = initialValue
+			break
+			case LAYERS:
+				wv[][][oldSizes[LAYERS],] = initialValue
+			break
+			case CHUNKS:
+				wv[][][][oldSizes[CHUNKS],] = initialValue
+			break
+		endswitch
+	endif
 End
 
 /// @brief Convert Bytes to MiBs, a mebibyte being 2^20.
@@ -591,7 +615,6 @@ Function RemoveEmptyDataFolder(dfr)
     return 0
 end
 
-
 /// @brief Recursively removes the all folders from the datafolder path,
 /// if and only if all are empty.
 Function RecursiveRemoveEmptyDataFolder(dfr)
@@ -614,46 +637,4 @@ Function RecursiveRemoveEmptyDataFolder(dfr)
 		endif
 		partialPath = RemoveEnding(partialPath, ":" + StringFromList(i, path, ":"))
 	endfor
-End
-
-/// @brief Returns a datafolder reference to the device type folder
-Function/DF GetDeviceTypePath(deviceType)
-	string deviceType
-
-	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
-End
-
-/// @brief Returns the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
-Function/S GetDeviceTypePathAsString(deviceType)
-	string deviceType
-
-	return Path_ITCDevicesFolder("") + ":" + deviceType
-End
-
-/// @brief Returns a datafolder reference to the device folder
-Function/DF GetDevicePath(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	return createDFWithAllParents(GetDevicePathAsString(deviceType, deviceNumber))
-End
-
-/// @brief Returns the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0
-Function/S GetDevicePathAsString(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
-End
-
-/// @brief Returns a datafolder reference to the device data folder
-Function/DF GetDeviceDataPath(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	return createDFWithAllParents(GetDeviceDataPathAsString(deviceType, deviceNumber))
-End
-
-/// @brief Returns the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
-Function/S GetDeviceDataPathAsString(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	return GetDevicePathAsString(deviceType, deviceNumber) + ":Data"
 End

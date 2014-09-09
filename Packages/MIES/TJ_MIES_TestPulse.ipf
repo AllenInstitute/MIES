@@ -286,7 +286,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 End
 
 //=============================================================================================
-/// TP_ButtonProc_DataAcq_TPMD
+/// @brief  Test pulse button call function
 Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
 	string panelTitle
@@ -301,7 +301,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	// Check if panel is locked to a DAC
 	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 	
-	// *** need to modify for yoked devices
+	// *** need to modify for yoked devices becuase it is only looking at the lead device
 	// Check if TP uduration is greater than 0 ms	
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	if(v_value == 0)
@@ -343,7 +343,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 
 End // Function
 //=============================================================================================
-/// updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
+/// @brief Updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
 /// n determines the number of TP cycles to average
 Function TP_UpdateTPBufferSizeGlobal(panelTitle)
 	string panelTitle
@@ -361,7 +361,11 @@ Function TP_UpdateTPBufferSizeGlobal(panelTitle)
 	endif
 End
 //=============================================================================================
-// Calculate input resistance simultaneously on array so it is fast
+/// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
+// The function TPDelta is called by the TP dataaquistion functions
+// It updates a wave in the Test pulse folder for the device
+// The wave contains the steady state difference between the baseline and the TP response
+// In order to allow TP_Delta to be threadsafe it uses global variables (controlinfo is not threadsafe).
 Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 	string panelTitle
 	string InputDataPath
@@ -423,6 +427,10 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 //	create wave that will hold instantaneous average
 	variable i = 0
 	variable columnsInWave = dimsize(Instantaneous, 1)
+	if(columnsInWave == 0)
+		columnsInWave = 1
+	endif
+
 	make /FREE /n = (1, columnsInWave) InstAvg
 	variable OneDInstMax
 	variable OndDBaseline
@@ -473,7 +481,9 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 
 	if(RowsInBufferWaves > 1)
 		variable columns = ((dimsize(TPSS,1)) - NoOfActiveDA)
-
+		if(!columns)
+			columns = 1
+		endif
 		sprintf stringPath,  "%s:TPBaselineBuffer" InputDataPath
 		make /o /n = (RowsInBufferWaves, columns) $stringPath // ** does not clear TP buffer wave each time TP is started by the user
 		wave /z TPBaselineBuffer = $stringPath // buffer wave for baseline avg - the first row will hold the value of the most recent TP, the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
@@ -499,35 +509,163 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 		SSResistance /= RowsInBufferWaves
 
 	endif
+
+	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, NoOfActiveDA)
 End
-			
-Function TP_CalculateResistance(panelTitle)
+
+/// Sampling interval in seconds
+Constant samplingInterval = 0.2
+/// Fitting range in seconds
+Constant fittingRange     = 5
+
+/// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
+///
+/// Used for analysis of TP over time.
+/// When the TP is initiated by any method, the TP storageWave should be empty
+/// If 200 ms have elapsed, or it is the first TP sweep,
+/// data from the input waves is transferred to the storage waves.
+Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, ADchanCount)
+	string 	panelTitle
+	wave 	BaselineSSAvg, InstResistance, SSResistance
+	variable ADchanCount
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	variable count = TP_GetTPCycleCount(panelTitle)
+	variable now   = ticks * TICKS_TO_SECONDS
+	variable needsUpdate
+
+	ASSERT(ADchanCount, "Can not proceed with zero active headstages")
+
+	if(!count)
+		Redimension/N=(-1, ADchanCount, -1, -1) TPStorage
+		TPStorage = NaN
+		// time of the first sweep
+		TPStorage[0][][%TimeInSeconds] = now
+		needsUpdate = 1
+		// % here is used to index the wave using dimension labels, see also
+		// DisplayHelpTopic "Example: Wave Assignment and Indexing Using Labels"
+	elseif((now - TPStorage[count - 1][0][%TimeInSeconds]) > samplingInterval)
+		needsUpdate = 1
+	endif
+
+	if(needsUpdate)
+		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
+
+		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
+		TPStorage[count][][%PeakResistance]        = InstResistance[0][q][0]
+		TPStorage[count][][%SteadyStateResistance] = SSResistance[0][q][0]
+		TPStorage[count][][%TimeInSeconds]         = now
+		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
+		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+
+		TP_SetTPCycleCount(panelTitle, count + 1)
+		TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, count, samplingInterval, fittingRange)
+	endif
+End
+
+/// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
+/// over a user defined window (in seconds)
+///
+/// @param panelTitle       locked device string
+/// @param ADChanCount      the number of columns that will require slope analysis
+/// @param TPStorage        test pulse storage wave
+/// @param endRow           last valid row index in TPStorage
+/// @param samplingInterval approximate time duration in seconds between data points
+/// @param fittingRange     time duration to use for fitting
+Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterval, fittingRange)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-	variable NoOfActiveDA = DC_NoOfChannelsSelected("DA", "check", panelTitle)
-	variable NoOfActiveAD = DC_NoOfChannelsSelected("AD", "check", panelTitle)
-	variable i = 0
-	make /o /n = (NoOfActiveAD) Resistance
-	variable AmplitudeVC
-	variable AmplitudeIC
+	variable ADChanCount
+	wave TPStorage
+	variable endRow, samplingInterval, fittingRange
 
+	variable i, startRow, V_FitOptions, V_FitError, V_AbortCode
+
+	startRow     = endRow - ceil(fittingRange / samplingInterval)
+	V_FitOptions = 4
+
+	if(startRow < 0)
+		return NaN
+	endif
+
+	// used for error supression. Don't want errors in curve fitting stopping
+	// code that interacts with hardware.
+	V_FitOptions = 4
+
+	for(i = 0; i < ADChanCount; i += 1)
+			V_FitError  = 0
+			V_AbortCode = 0
+		try
+			CurveFit/Q/N=1/NTHR=1/M=2/W=2 line, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
+			Wave W_coef
+			TPStorage[startRow,endRow][i][%Vm_Slope] = W_coef[1]
+
+			CurveFit/Q/N=1/NTHR=1/M=2/W=2 line, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
+			TPStorage[startRow,endRow][i][%Rpeak_Slope] = W_coef[1]
+
+			CurveFit/Q/N=1/NTHR=1/M=2/W=2 line, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
+			TPStorage[startRow,endRow][i][%Rss_Slope] = W_coef[1]
+		catch
+			/// @todo - add code that let's functions which rely on this data know to wait for good data
+			DEBUGPRINT("Fit was not successfull")
+			DEBUGPRINT("V_FitError=", var=V_FitError)
+			DEBUGPRINT("V_AbortCode=", var=V_AbortCode)
+			if(V_AbortCode == -4)
+				variable error = GetRTError(1) // clears the error
+				DEBUGPRINT(GetErrMessage(error))
+			endif
+		endtry
+	endfor
 End
 
-Function TP_PullDataFromTPITCandAvgIT(panelTitle, InputDataPath)
-	string panelTitle, InputDataPath
-	NVAR NoOfActiveDA = $InputDataPath + ":NoOFActiveDA"
-	variable column = NoOfActiveDA-1
-	SVAR ADChannelList = $InputDataPath + ":ADChannelList"
-	variable NoOfADChannels = itemsinlist(ADchannelList)
-	wave Resistance = $InputDataPath + ":Resistance"
-	NVAR Amplitude = $InputDataPath + ":Amplitude"
-End
-
-//  function that creates string of clamp modes based on the ad channel associated with the headstage	- in the sequence of ADchannels in ITCDataWave - i.e. numerical order
-Function TP_ClampModeString(panelTitle)
+/// @brief Resets the TP storage wave
+///
+/// - Remove excess rows
+/// - Store the TP record if requested by the user
+/// - Kill the wave to start with a pristine storage wave
+Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	variable count = TP_GetTPCycleCount(panelTitle)
+	string name
+
+	if(count > 0)
+		dfref dfr = GetDeviceTestPulse(panelTitle)
+		Redimension/N=(count, -1, -1, -1) TPStorage
+		if(GetCheckBoxState(panelTitle, "check_Settings_TP_SaveTPRecord"))
+			name = NameOfWave(TPStorage)
+			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, name + "_\d+"))))
+			// reset TPCycleCount in case the wave can not be killed
+			TP_SetTPCycleCount(panelTitle,0)
+			KillWaves/Z TPStorage
+		endif
+	endif
+End
+
+static Function TP_GetTPCycleCount(panelTitle)
+	string panelTitle
+	variable number
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	number = NumberByKey("TPCycleCount", note(TPStorage))
+	ASSERT(IsFinite(number), "TPCycleCount as found in the wave note is non-finite")
+	return number
+End
+
+static Function TP_SetTPCycleCount(panelTitle, number)
+	string panelTitle
+	variable number
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	Note/K TPStorage, ReplaceNumberByKey("TPCycleCount", note(TPStorage), number)
+End
+
+/// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
+///
+/// In the order of the ADchannels in ITCDataWave - i.e. numerical order
+Function/S TP_ClampModeString(panelTitle)
+	string panelTitle
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string /g $WavePath + ":TestPulse:ADChannelList"
 	SVAR ADChannelList = $WavePath + ":TestPulse:ADChannelList"
@@ -542,30 +680,33 @@ Function TP_ClampModeString(panelTitle)
 		ClampModeString += (num2str(TP_HeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
 		i += 1
 	while(i < itemsinlist(ADChannelList))
+
+	return ClampModeString
 End
 
-Function TP_HeadstageUsingADC(panelTitle, AD) //find the headstage using a particular AD
+/// @brief Find the headstage using a particular AD
+Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
+
 	variable AD
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	variable i = 0
-	
-	do
+	variable i, entries
+
+	entries = DimSize(ChanAmpAssign, COLS)
+	for(i=0; i < entries; i+=1)
 		if(ChanAmpAssign[2][i] == AD)
-		 	break
+			return i
 		endif
-		i += 1
-	while(i<7)	
-	
-	if(ChanAmpAssign[2][i] == AD)
-		return i
-	else
-		return Nan
-	endif
+	endfor
+
+	DEBUGPRINT("Could not find headstage for AD channel", var = AD)
+
+	return NaN
 End
 
-Function TP_HeadstageUsingDAC(panelTitle, DA) //find the headstage using a particular DA
+/// @brief Find the headstage using a particular DA
+Function TP_HeadstageUsingDAC(panelTitle, DA)
 	string panelTitle
 	variable DA
 
@@ -619,9 +760,9 @@ Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	return NoYes
 End
 
-/// Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
+/// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
 /// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
-Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave) // TPWave = full path name
+Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	string panelTitle
 	variable frequency
 	variable amplitude
