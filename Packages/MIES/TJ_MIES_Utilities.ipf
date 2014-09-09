@@ -184,7 +184,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension])
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 End
 
-/// @brief Convert Bytes to MiBs, a mebibyte being @f$ 2^{20} @f$.
+/// @brief Convert Bytes to MiBs, a mebibyte being 2^20.
 Function ConvertFromBytesToMiB(var)
 	variable var
 
