@@ -105,7 +105,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   {
     insideFunction=1
     # remove whitespace between function and return type flag
-    gsub(/function[[:space:]]*\//,"function\/",code)
+    gsub(/function[[:space:]]*\//,"function/",code)
 
     # different return types
     gsub(/function /,"variable ",code)
@@ -204,7 +204,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   gsub(/\ystrconstant\y/,"const string",code)
   gsub(/\yconstant\y/,"const variable",code)
   # prevent that doxygen sees elseif as a function call
-  gsub("\yelseif\y","else if",code)
+  gsub(/\yelseif\y/,"else if",code)
 
   # code outside of function/macro definitions is "translated" into statements
   if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,0,1) != "#")
