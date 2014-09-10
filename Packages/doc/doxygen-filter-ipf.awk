@@ -105,7 +105,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   {
     insideFunction=1
     # remove whitespace between function and return type flag
-    gsub(/function[[:space:]]*\//,"function\/",code)
+    gsub(/function[[:space:]]*\//,"function/",code)
 
     # different return types
     gsub(/function /,"variable ",code)
@@ -184,13 +184,13 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   # menu definition
   # submenues can be nested in menus. Therefore we have to keep track
   # of the number of expected "End" keywords
-  if(!insideFunction && !insideMacro && ( match(code,/Menu[[:space:]]/) || match(code,/SubMenu[[:space:]]/) ))
+  if(!insideFunction && !insideMacro && ( match(code,/\yMenu\y/) || match(code,/\ySubMenu\y/) ))
   {
     menuEndCount++
     insideMenu=1
   }
 
-  if(insideMenu && match(code,/End[[:space:]]*/))
+  if(insideMenu && match(code,/\yEnd[[:space:]]*/))
   {
     menuEndCount--
     if(menuEndCount == 0)
@@ -204,7 +204,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   gsub(/\ystrconstant\y/,"const string",code)
   gsub(/\yconstant\y/,"const variable",code)
   # prevent that doxygen sees elseif as a function call
-  gsub("\yelseif\y","else if",code)
+  gsub(/\yelseif\y/,"else if",code)
 
   # code outside of function/macro definitions is "translated" into statements
   if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,0,1) != "#")
