@@ -25,9 +25,6 @@ Function DM_SaveITCData(panelTitle)
 	note $savedDataWaveName, s_value
 	ED_AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
 	
-	//Add wave notes for the stim wave name and scale factor
-	ED_createWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
-
 	//Do this if checked on the DA_Ephys panel
 	ControlInfo /w = $panelTitle check_Settings_SaveAmpSettings
 	variable saveAmpSettingsCheck = v_value
@@ -45,6 +42,9 @@ Function DM_SaveITCData(panelTitle)
 	redimension/d $SavedDataWaveName
 	DM_ADScaling($SavedDataWaveName, panelTitle)
 	DM_DAScaling($SavedDataWaveName, panelTitle)
+	
+	//Add wave notes for the stim wave name and scale factor
+	ED_createWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
 End
 
 Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.

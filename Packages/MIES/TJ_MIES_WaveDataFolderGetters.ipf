@@ -149,3 +149,180 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 
 	return wv
 End
+
+/// @brief Returns a wave reference to the textDocWave
+///
+/// textDocWave is used to save settings for each data sweep and create waveNotes for tagging data sweeps
+/// Columns:
+/// - 0: Sweep Number
+/// - 1: Time Stamp
+/// Rows:
+/// - Only one
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_txtDocWvRef(panelTitle)
+	string panelTitle
+	
+	DFREF dfr = DF_GetDevSpecLabNotebkTxtDoc(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = txtDocWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(0,2,0) dfr:txtDocWave/Wave=wv
+	wv = ""
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the textDocKeyWave
+///
+/// textDocKeyWave is used to index save settings for each data sweep and create waveNotes for tagging data sweeps
+/// Columns:
+/// - 0: Sweep Number
+/// - 1: Time Stamp
+///
+/// Rows:
+/// - 0: Parameter Name
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_txtDocKeyWvRef(panelTitle)
+	string panelTitle
+	
+	DFREF dfr = DF_GetDevSpecLabNotebkTxtDocKey(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(1,2,0) dfr:txtDocKeyWave/Wave=wv
+	wv = ""
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the sweepSettingsWave
+///
+/// sweepSettingsWave is used to save stimulus settings for each data sweep and create waveNotes for tagging data sweeps
+/// Columns:
+/// 0: Stim Wave Name
+/// 1: Stim Scale Factor
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_sweepSettingsWvRef(panelTitle, noHeadStages)
+	string panelTitle
+	variable noHeadStages
+	
+	DFREF dfr =  DF_GetDevSpecLabNotebkSttngs(panelTitle)
+
+	Wave/Z/SDFR=dfr wv = sweepSettingsWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1,6,noHeadStages) dfr:sweepSettingsWave/Wave=wv
+	wv = Nan
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the sweepSettingsKeyWave
+///
+/// sweepSettingsKeyWave is used to index save stimulus settings for each data sweep and create waveNotes for tagging data sweeps
+/// Columns:
+/// 0: Stim Scale Factor
+/// 1: DAC
+/// 2: ADC
+/// 3: DA Gain
+/// 4: AD Gain
+/// 5: Set sweep count 
+///
+/// Rows:
+/// 0: Parameter
+/// 1: Units
+/// 2: Tolerance Factor
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_sweepSettingsKeyWvRef(panelTitle)
+	string panelTitle
+	
+	DFREF dfr = DF_GetDevSpecLabNotebkSttngsKey(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(3,6) dfr:sweepSettingsKeyWave/Wave=wv
+	wv = ""
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the SweepSettingsTxtWave
+///
+/// SweepTxtData is used to store the set name used on a particular headstage and then create waveNotes for the sweep data
+/// Columns:
+/// - 0: SetName
+///
+/// Rows:
+/// - Only one
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_SweepSettingsTxtWvRef(panelTitle, noHeadStages)
+	string panelTitle
+	variable noHeadStages
+	
+	DFREF dfr =DF_GetDevSpecLabNotebkTxtDoc(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(1,1,noHeadStages) dfr:SweepSettingsTxtData/Wave=wv
+	wv = ""
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the SweepSettingsTxtKeyWave
+///
+/// SweepTxtKeyWave is used to index Txt Key Wave
+/// Columns:
+/// - 0: SetName
+///
+/// Rows:
+/// - Only one
+///
+/// Layers:
+/// - Headstage
+Function/Wave DC_sweepSettingsTxtKyWvRef(panelTitle, noHeadStages)
+	string panelTitle
+	variable noHeadStages
+	
+	DFREF dfr =DF_GetDevSpecLabNotebkTxtDocKey(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(1,1,noHeadStages) dfr:SweepSettingsKeyTxtData/Wave=wv
+	wv = ""
+
+	return wv
+End

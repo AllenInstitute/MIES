@@ -372,23 +372,13 @@ Function TangoSave(saveFileName)
 	Variable result = 0
 	string dfPath = "."
 	string pxpFileName = saveFileName + ".pxp"
-	//first, save as unpacked experiment
-	if (stringMatch(pxpFileName, "*.pxp"))
-		SaveExperiment/C/F={1,"",2}/P=home as pxpFileName
-		print "Packed Experiment Save Success!"
-	else
-		print "File Name must end with .pxp!  Please re-enter and try again!"
-	endif
+	//save as packed experiment
+	SaveExperiment/C/F={1,"",2}/P=home as pxpFileName
+	print "Packed Experiment Save Success!"
 End
 
-Function TangoHDF5Save()
-	string saveFileName = "dummyFileName"
-	
-	string hd5FileName = saveFileName + ".h5"
-	print "hd5FileName: ", hd5FileName
-	
-	convert_to_hdf5(hd5FileName)
-	
+Function TangoHDF5Save()	
+	convert_to_hdf5("dummyFilename.h5")	
 End
 
 //////////////////////////////////
@@ -415,7 +405,7 @@ Function convert_to_hdf5(filename)
 	SetDataFolder path
 	print "about to create hdf5..."
 
-	HDF5CreateFile /O  /Z h5_id as filename
+	HDF5CreateFile /O /Z h5_id as filename
 	if (V_flag != 0)
 		print "HDF5CreateFile failed"
 		return -1
@@ -559,7 +549,7 @@ Function ident_stimulus(current, dt, stim_characteristics)
 		endif
 		changes += 1
 		if (polarity == 0)
-// stimulus just started – assign initial polarity
+// stimulus just started - assign initial polarity
 			if (cur > 0)
 				polarity = 1
 			else
@@ -576,7 +566,7 @@ Function ident_stimulus(current, dt, stim_characteristics)
 		else // polarity == 1
 		// current has been increasing
 			if (cur < last)
-			// current now decreasing – record polarity shift
+			// current now decreasing - record polarity shift
 				polarity = -1
 				flips += 1
 			endif
@@ -588,7 +578,7 @@ Function ident_stimulus(current, dt, stim_characteristics)
 			peak = cur
 		endif
 		if ((cur == 0) && (last != 0))
-		// current returned to zero – store this as potential end
+		// current returned to zero - store this as potential end
 		// of stimulus
 			stop = i
 		endif

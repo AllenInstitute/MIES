@@ -83,6 +83,120 @@ Function /T Path_LabNoteBookFolder(panelTitle)
 	sprintf pathToLabNoteBookFolder, "%s:LabNoteBook" Path_MIESfolder(panelTitle)
 	return pathToLabNoteBookFolder
 End
+
+Function/DF DF_GetDeviceSpecificLabNotebook(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(ED_DevSpecLabNotebkPathString(panelTitle))
+End
+
+Function/S ED_DevSpecLabNotebkPathString(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, path
+	variable ret
+
+
+	ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
+	ASSERT(ret,"Could not parse the panelTitle")
+	
+	string labNoteBookFolder
+	sprintf labNoteBookFolder, "%s:%s:Device%s" Path_LabNoteBookFolder(panelTitle), DeviceType, DeviceNumber
+
+	return labNoteBookFolder
+End
+
+// functions for geting the settings key directory
+Function/DF DF_GetDevSpecLabNotebkSttngsKey(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(ED_DevSpcLbNtbkPthStgStgsKey(panelTitle))
+End
+
+Function/S ED_DevSpcLbNtbkPthStgStgsKey(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, path
+	variable ret
+
+
+	ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
+	ASSERT(ret,"Could not parse the panelTitle")
+	
+	string labNoteBookFolder
+	sprintf labNoteBookFolder, "%s:%s:Device%s:KeyWave" Path_LabNoteBookFolder(panelTitle), DeviceType, DeviceNumber
+
+	return labNoteBookFolder
+End
+
+// functions for getting the settings history directory
+Function/DF DF_GetDevSpecLabNotebkSttngs(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(ED_DvSpcLbNtbkPthStgStgs(panelTitle))
+End
+
+Function/S ED_DvSpcLbNtbkPthStgStgs(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, path
+	variable ret
+
+
+	ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
+	ASSERT(ret,"Could not parse the panelTitle")
+	
+	string labNoteBookFolder
+	sprintf labNoteBookFolder, "%s:%s:Device%s:settingsHistory" Path_LabNoteBookFolder(panelTitle), DeviceType, DeviceNumber
+
+	return labNoteBookFolder
+End
+
+// functions for geting the text doc key directory
+Function/DF DF_GetDevSpecLabNotebkTxtDocKey(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(ED_DvSpcLbNtbkPthStgTxtDocKey(panelTitle))
+End
+
+Function/S ED_DvSpcLbNtbkPthStgTxtDocKey(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, path
+	variable ret
+
+
+	ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
+	ASSERT(ret,"Could not parse the panelTitle")
+	
+	string labNoteBookFolder
+	sprintf labNoteBookFolder, "%s:%s:Device%s:TextDocKeyWave" Path_LabNoteBookFolder(panelTitle), DeviceType, DeviceNumber
+
+	return labNoteBookFolder
+End
+
+// functions for getting the text documentation directory
+Function/DF DF_GetDevSpecLabNotebkTxtDoc(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(ED_DvSpcLbNtbkPthStgTxtDoc(panelTitle))
+End
+
+Function/S ED_DvSpcLbNtbkPthStgTxtDoc(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, path
+	variable ret
+
+
+	ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
+	ASSERT(ret,"Could not parse the panelTitle")
+	
+	string labNoteBookFolder
+	sprintf labNoteBookFolder, "%s:%s:Device%s:textDocumentation" Path_LabNoteBookFolder(panelTitle), DeviceType, DeviceNumber
+
+	return labNoteBookFolder
+End
 //=========================================================================================
 Function /T Path_WaveBuilderFolder(panelTitle)
 	string panelTitle
