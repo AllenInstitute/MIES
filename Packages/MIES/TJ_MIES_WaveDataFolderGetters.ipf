@@ -2,9 +2,6 @@
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
-/// Columns:
-/// - Head stage number
-///
 /// Rows:
 /// - 0-3: V-Clamp: DA channel number of amp (0 or 1), DA gain, AD channel, AD gain
 /// - 4-7: I-Clamp: DA channel number of amp (0 or 1), DA gain, AD channel, AD gain
@@ -15,6 +12,10 @@
 /// - 9: Amplifier Channel ID
 /// - 10: Index into popup_Settings_Amplifier in the DA_Ephys panel
 /// - 11: Unused
+///
+/// Columns:
+/// - Head stage number
+///
 Function/Wave GetChanAmpAssign(panelTitle)
 	string panelTitle
 
@@ -34,14 +35,15 @@ End
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (textual part)
 ///
-/// Columns:
-/// - Head stage number
-///
 /// Rows:
 /// - 0: DA unit (V-Clamp mode)
 /// - 1: AD unit (V-Clamp mode)
 /// - 3: DA unit (I-Clamp mode)
 /// - 4: AD unit (I-Clamp mode)
+///
+/// Columns:
+/// - Head stage number
+///
 Function/Wave GetChanAmpAssignUnit(panelTitle)
 	string panelTitle
 
@@ -61,12 +63,12 @@ End
 
 /// @brief Return a wave reference to the channel clamp mode wave
 ///
+/// Rows:
+/// - Channel numbers
+///
 /// Columns:
 /// - 0: DAC channels
 /// - 1: ADC channels
-///
-/// Rows:
-/// - Channel numbers
 ///
 /// Contents:
 /// - Clamp mode: One of V_CLAMP_MODE, I_CLAMP_MODE and I_EQUAL_ZERO_MODE
@@ -92,6 +94,10 @@ End
 /// @brief Returns a wave reference to the SweepData
 ///
 /// SweepData is used to store GUI configuration info which can then be transferred into the documenting functions
+///
+/// Rows:
+/// - Only one
+///
 /// Columns:
 /// - 0: DAC
 /// - 1: ADC
@@ -99,9 +105,6 @@ End
 /// - 3: AD Gain
 /// - 4: DA Scale
 /// - 5: Set sweep count 
-///
-/// Rows:
-/// - Only one
 ///
 /// Layers:
 /// - Headstage
@@ -125,11 +128,11 @@ End
 /// @brief Returns a wave reference to the SweepTxtData
 ///
 /// SweepTxtData is used to store the set name used on a particular headstage
-/// Columns:
-/// - 0: SetName
-///
 /// Rows:
 /// - Only one
+///
+/// Columns:
+/// - 0: SetName
 ///
 /// Layers:
 /// - Headstage
@@ -153,11 +156,12 @@ End
 /// @brief Returns a wave reference to the textDocWave
 ///
 /// textDocWave is used to save settings for each data sweep and create waveNotes for tagging data sweeps
+/// Rows:
+/// - Only one
+///
 /// Columns:
 /// - 0: Sweep Number
 /// - 1: Time Stamp
-/// Rows:
-/// - Only one
 ///
 /// Layers:
 /// - Headstage
@@ -172,7 +176,7 @@ Function/Wave DC_txtDocWvRef(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(0,2,0) dfr:txtDocWave/Wave=wv
+	Make/T/N=(1,2,0) dfr:txtDocWave/Wave=wv
 	wv = ""
 
 	return wv
@@ -181,12 +185,13 @@ End
 /// @brief Returns a wave reference to the textDocKeyWave
 ///
 /// textDocKeyWave is used to index save settings for each data sweep and create waveNotes for tagging data sweeps
-/// Columns:
-/// - 0: Sweep Number
-/// - 1: Time Stamp
 ///
 /// Rows:
 /// - 0: Parameter Name
+///
+/// Columns:
+/// - 0: Sweep Number
+/// - 1: Time Stamp
 ///
 /// Layers:
 /// - Headstage
@@ -210,6 +215,9 @@ End
 /// @brief Returns a wave reference to the sweepSettingsWave
 ///
 /// sweepSettingsWave is used to save stimulus settings for each data sweep and create waveNotes for tagging data sweeps
+/// Rows:
+///  One row
+///
 /// Columns:
 /// 0: Stim Wave Name
 /// 1: Stim Scale Factor
@@ -237,6 +245,12 @@ End
 /// @brief Returns a wave reference to the sweepSettingsKeyWave
 ///
 /// sweepSettingsKeyWave is used to index save stimulus settings for each data sweep and create waveNotes for tagging data sweeps
+///
+/// Rows:
+/// 0: Parameter
+/// 1: Units
+/// 2: Tolerance Factor
+///
 /// Columns:
 /// 0: Stim Scale Factor
 /// 1: DAC
@@ -244,11 +258,6 @@ End
 /// 3: DA Gain
 /// 4: AD Gain
 /// 5: Set sweep count 
-///
-/// Rows:
-/// 0: Parameter
-/// 1: Units
-/// 2: Tolerance Factor
 ///
 /// Layers:
 /// - Headstage
@@ -272,11 +281,12 @@ End
 /// @brief Returns a wave reference to the SweepSettingsTxtWave
 ///
 /// SweepTxtData is used to store the set name used on a particular headstage and then create waveNotes for the sweep data
-/// Columns:
-/// - 0: SetName
 ///
 /// Rows:
 /// - Only one
+///
+/// Columns:
+/// - 0: SetName
 ///
 /// Layers:
 /// - Headstage
@@ -301,11 +311,12 @@ End
 /// @brief Returns a wave reference to the SweepSettingsTxtKeyWave
 ///
 /// SweepTxtKeyWave is used to index Txt Key Wave
-/// Columns:
-/// - 0: SetName
 ///
 /// Rows:
 /// - Only one
+///
+/// Columns:
+/// - 0: SetName
 ///
 /// Layers:
 /// - Headstage

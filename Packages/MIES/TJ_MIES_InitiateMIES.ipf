@@ -106,7 +106,7 @@ Function/S ED_DevSpecLabNotebkPathString(panelTitle)
 	return labNoteBookFolder
 End
 
-// functions for geting the settings key directory
+/// @brief Functions for geting the device specific settings key directory, eg root:mies:LabNoteBook:ITC18USB:Device0:KeyWave
 Function/DF DF_GetDevSpecLabNotebkSttngsKey(panelTitle)
 	string panelTitle
 
@@ -129,7 +129,7 @@ Function/S ED_DevSpcLbNtbkPthStgStgsKey(panelTitle)
 	return labNoteBookFolder
 End
 
-// functions for getting the settings history directory
+/// @brief Functions for getting the Device specific settings history directory, eg root:mies:LabNoteBook:ITC18USB:Device0:settingsHistory
 Function/DF DF_GetDevSpecLabNotebkSttngs(panelTitle)
 	string panelTitle
 
@@ -152,7 +152,7 @@ Function/S ED_DvSpcLbNtbkPthStgStgs(panelTitle)
 	return labNoteBookFolder
 End
 
-// functions for geting the text doc key directory
+/// @brief Functions for geting the device specific text doc key directory, eg root:mies:LabNoteBook:ITC18USB:Device0:textDocKeyWave
 Function/DF DF_GetDevSpecLabNotebkTxtDocKey(panelTitle)
 	string panelTitle
 
@@ -175,7 +175,7 @@ Function/S ED_DvSpcLbNtbkPthStgTxtDocKey(panelTitle)
 	return labNoteBookFolder
 End
 
-// functions for getting the text documentation directory
+/// @brief Functions for getting the device specific text documentation directory, eg root:mies:LabNoteBook:ITC18USB:Device0:textDocumentation
 Function/DF DF_GetDevSpecLabNotebkTxtDoc(panelTitle)
 	string panelTitle
 
