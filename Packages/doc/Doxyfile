@@ -44,7 +44,7 @@ PROJECT_NUMBER         =
 # for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = 
+PROJECT_BRIEF          = "Multifaceted Igor Electrophysiology Suite"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is included in
 # the documentation. The maximum height of the logo should not exceed 55 pixels
@@ -140,7 +140,7 @@ INLINE_INHERITED_MEMB  = NO
 # shortest path that makes the file name unique will be used
 # The default value is: YES.
 
-FULL_PATH_NAMES        = YES
+FULL_PATH_NAMES        = NO
 
 # The STRIP_FROM_PATH tag can be used to strip a user-defined part of the path.
 # Stripping is only done if one of the specified strings matches the left-hand
@@ -754,7 +754,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../MIES
+INPUT                  = ../MIES mainpage.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -774,7 +774,7 @@ INPUT_ENCODING         = UTF-8
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.ipf
+FILE_PATTERNS          = *.ipf *.md
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -859,7 +859,7 @@ IMAGE_PATH             =
 # code is scanned, but not when the output code is generated. If lines are added
 # or removed, the anchors will not be placed correctly.
 
-INPUT_FILTER           = "gawk -f doxygen-filter-ipf.awk"
+INPUT_FILTER           =
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis. Doxygen will compare the file name with each pattern and apply the
@@ -868,7 +868,7 @@ INPUT_FILTER           = "gawk -f doxygen-filter-ipf.awk"
 # filters are used. If the FILTER_PATTERNS tag is empty or if none of the
 # patterns match the file name, INPUT_FILTER is applied.
 
-FILTER_PATTERNS        = 
+FILTER_PATTERNS        = *.ipf="gawk -f doxygen-filter-ipf.awk\""
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER ) will also be used to filter the input files that are used for
@@ -890,7 +890,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = 
+USE_MDFILE_AS_MAINPAGE = mainpage.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
