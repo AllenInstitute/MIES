@@ -15,7 +15,7 @@ Function IM_InitiateMIES()
 
 	string /G root:MIES:ITCDevices:ITCPanelTitleList
 
-	WB_InitiateWaveBuilder()
+	WBP_CreateWaveBuilderPanel()
 	execute "DA_Ephys()"
 	execute "DataBrowser()"
 End
@@ -45,6 +45,7 @@ End
 //=========================================================================================
 // FUNCTION BELOW WITH THE PATH PREFIX RETURN PATHS TO ALL MIES FOLDERS AS WELL AS A FEW SPECIAL CASE PATHS
 //=========================================================================================
+///@deprecated use @ref GetMiesPathAsString() instead
 Function /T Path_MIESfolder(panelTitle)
 	string panelTitle
 	string pathToMIES // = "root:MIES"
@@ -76,12 +77,6 @@ Function /T Path_ITCDevicesFolder(panelTitle)
 	return pathToITCDevicesFolder
 End
 //=========================================================================================
-Function /T Path_WaveBuilderFolder(panelTitle)
-	string panelTitle
-	string WaveBuilderFolder = Path_MIESfolder(panelTitle) + ":WaveBuilder"
-	return WaveBuilderFolder
-End
-//=========================================================================================
 Function /T Path_ActiveITCDevicesFolder(panelTitle)
 	string panelTitle
 	string ActiveITCDevicesFolder = Path_ITCDevicesFolder(panelTitle) + ":ActiveITCDevices"
@@ -101,47 +96,6 @@ Function /T Path_ActITCDevTestTimerFolder(panelTitle)
 	return ActITCDevTestTimerFolder
 End
 //=========================================================================================
-Function /T Path_WaveBuilderDataFolder(panelTitle)
-	string panelTitle
-	string WaveBuilderDataFolder = Path_WaveBuilderFolder(panelTitle) + ":Data"
-	return WaveBuilderDataFolder
-End
-//=========================================================================================
-Function /T Path_WBSvdStimSetParamFolder(panelTitle)
-	string panelTitle
-	string WBSvdStimSetParamFolder = Path_WaveBuilderFolder(panelTitle) + ":SavedStimulusSetParameters"
-	return WBSvdStimSetParamFolder
-End
-//=========================================================================================
-Function /T Path_WBSvdStimSetFolder(panelTitle)
-	string panelTitle
-	string WBSvdStimSetFolder = Path_WaveBuilderFolder(panelTitle) + ":SavedStimulusSets"
-	return WBSvdStimSetFolder
-End
-//=========================================================================================
-Function /T Path_WBSvdStimSetParamDAFolder(panelTitle)
-	string panelTitle
-	string WBSvdStimSetParamDAFolder = Path_WBSvdStimSetParamFolder(panelTitle) + ":DA"
-	return WBSvdStimSetParamDAFolder
-End
-//=========================================================================================
-Function /T Path_WBSvdStimSetParamTTLFolder(panelTitle)
-	string panelTitle
-	string WBSvdStimSetParamTTLFolder = Path_WBSvdStimSetParamFolder(panelTitle) + ":TTL"
-	return WBSvdStimSetParamTTLFolder
-End
-//=========================================================================================
-Function /T Path_WBSvdStimSetDAFolder(panelTitle)
-	string panelTitle
-	string WBSvdStimSetDAFolder =  Path_WBSvdStimSetFolder(panelTitle) + ":DA"
-	return WBSvdStimSetDAFolder
-End
-//=========================================================================================
-Function /T Path_WBSvdStimSetTTLFolder(panelTitle)
-	string panelTitle
-	string WBSvdStimSetTTLFolder =  Path_WBSvdStimSetFolder(panelTitle) + ":TTL"
-	return WBSvdStimSetTTLFolder
-End
 //=========================================================================================
 // TB in the long run, I would propose to rewrite data folder returning functions like
 // HSU_DataFullFolderPathString to always return a valid datafolder reference.

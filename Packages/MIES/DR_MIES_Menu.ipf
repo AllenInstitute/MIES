@@ -4,7 +4,7 @@ static StrConstant optionalInclude = "DR_MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
 		"DA_Ephys", execute "DA_Ephys()"
-		"WaveBuilder", WB_InitiateWaveBuilder()
+		"WaveBuilder", /Q, WBP_CreateWaveBuilderPanel()
 		"Data Browser", execute "DataBrowser()"
 		"Initiate Mies", IM_InitiateMies()		
 		"Close Mies", CloseMies()

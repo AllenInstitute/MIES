@@ -607,7 +607,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 		TP_SetDAScaleToOne(panelTitle)
 		
 		// creates test pulse wave
-		TestPulsePath = Path_WBSvdStimSetDAFolder(panelTitle) + ":TestPulse"
+		TestPulsePath = GetWBSvdStimSetDAPathAsString() + ":TestPulse"
 		//  print "test pulse path = ", testpulsepath
 		make /o /n = 0 $TestPulsePath
 		wave TestPulse = $TestPulsePath

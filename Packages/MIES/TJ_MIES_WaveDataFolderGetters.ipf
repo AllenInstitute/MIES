@@ -662,3 +662,92 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 
 	return wv
 End
+
+/// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
+Function/S GetMiesPathAsString()
+	return "root:MIES"
+End
+
+/// @name Wavebuilder datafolders
+/// @{
+
+/// @brief Returns a data folder reference to the base
+Function/DF GetWaveBuilderPath()
+	return createDFWithAllParents(GetWaveBuilderPathAsString())
+End
+
+/// @brief Returns the full path to the base path, e.g. root:MIES:WaveBuilder
+Function/S GetWaveBuilderPathAsString()
+	return GetMiesPathAsString() + ":WaveBuilder"
+End
+
+/// @brief Returns a data folder reference to the data
+Function/DF GetWaveBuilderDataPath()
+	return createDFWithAllParents(GetWaveBuilderDataPathAsString())
+End
+
+///	@brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data
+Function/S GetWaveBuilderDataPathAsString()
+	return GetWaveBuilderPathAsString() + ":Data"
+End
+
+/// @brief Returns a data folder reference to the stimulus set parameter
+Function/DF GetWBSvdStimSetParamPath()
+	return createDFWithAllParents(GetWBSvdStimSetParamPathAS())
+End
+
+///	@brief Returns the full path to the stimulus set parameter folder, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters
+Function/S GetWBSvdStimSetParamPathAS()
+	return GetWaveBuilderPathAsString() + ":SavedStimulusSetParameters"
+End
+
+/// @brief Returns a data folder reference to the stimulus set
+Function/DF GetWBSvdStimSetPath()
+	return createDFWithAllParents(GetWBSvdStimSetPathAsString())
+End
+
+///	@brief Returns the full path to the stimulus set, e.g. root:MIES:WaveBuilder:SavedStimulusSets
+Function/S GetWBSvdStimSetPathAsString()
+	return GetWaveBuilderPathAsString() + ":SavedStimulusSets"
+End
+
+/// @brief Returns a data folder reference to the stimulus set parameters of `DA` type
+Function/DF GetWBSvdStimSetParamDAPath()
+	return createDFWithAllParents(GetWBSvdStimSetParamDAPathAS())
+End
+
+///	@brief Returns the full path to the stimulus set parameters of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
+Function/S GetWBSvdStimSetParamDAPathAS()
+	return GetWBSvdStimSetParamPathAS() + ":DA"
+End
+
+/// @brief Returns a data folder reference to the stimulus set parameters of `TTL` type
+Function/DF GetWBSvdStimSetParamTTLPath()
+	return createDFWithAllParents(GetWBSvdStimSetParamTTLAsString())
+End
+
+///	@brief Returns the full path to the stimulus set parameters of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
+Function/S GetWBSvdStimSetParamTTLAsString()
+	return GetWBSvdStimSetParamPathAS() + ":TTL"
+End
+
+/// @brief Returns a data folder reference to the stimulus set of `DA` type
+Function/DF GetWBSvdStimSetDAPath()
+	return createDFWithAllParents(GetWBSvdStimSetDAPathAsString())
+End
+
+///	@brief Returns the full path to the stimulus set of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:DA
+Function/S GetWBSvdStimSetDAPathAsString()
+	return GetWBSvdStimSetPathAsString() + ":DA"
+End
+
+/// @brief Returns a data folder reference to the stimulus set of `TTL` type
+Function/DF GetWBSvdStimSetTTLPath()
+	return createDFWithAllParents(GetWBSvdStimSetTTLPathAsString())
+End
+
+///	@brief Returns the full path to the stimulus set of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:TTL
+Function/S GetWBSvdStimSetTTLPathAsString()
+	return GetWBSvdStimSetPathAsString() + ":TTL"
+End
+///@}

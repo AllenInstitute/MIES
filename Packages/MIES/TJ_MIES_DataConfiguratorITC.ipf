@@ -479,7 +479,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 				SweepData[0][4][HeadStage] = v_value // document the DA scale
 			endif
 			//get the wave name
-			ChanTypeWaveName = Path_WBSvdStimSetDAFolder(panelTitle) + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
+			ChanTypeWaveName = GetWBSvdStimSetDAPathAsString() + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
 			// print "chan type wave name =", ChanTypeWaveName 
 			if(isFinite(HeadStage))
 				SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name

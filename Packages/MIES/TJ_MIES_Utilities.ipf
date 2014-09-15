@@ -21,6 +21,9 @@ Constant DECIMATION_BY_AVERAGING = 4
 StrConstant ALL_WINDOW_FUNCTIONS = "Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;None;Parzen;Poisson2;Poisson3;Poisson4;Riemann"
 /// @}
 
+/// Common string to denote an invalid entry in a popupmenu
+StrConstant NONE = "- none -"
+
 /// Hook events constants
 Constant EVENT_KILL_WINDOW_HOOK = 2
 
@@ -708,4 +711,79 @@ Function SetNumberInWaveNote(wv, key, val)
 	ASSERT(!IsEmpty(key), "Empty key")
 
 	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
+End
+
+/// @brief Remove the single quotes from a liberal wave name if they can be found
+Function/S PossiblyUnquoteName(name)
+	string name
+
+	if(isEmpty(name))
+		return name
+	endif
+
+	if(!CmpStr(name[0], "'") && !CmpStr(name[strlen(name) - 1], "'"))
+		ASSERT(strlen(name) > 1, "name is too short")
+		return name[1, strlen(name) - 2]
+	endif
+
+	return name
+End
+
+/// @brief Structured writing of numerical values with names into wave notes
+///
+/// The general layout is `key1 = var;key2 = str;` and the note is never
+/// prefixed with a carriage return ("\r").
+/// @param wv       wave to add the wave note to
+/// @param key      string identifier
+/// @param var      variable to output
+/// @param str      string to output
+/// @param appendCR 0 (default) or 1, should a carriage return ("\r") be appended to the note
+Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
+	Wave wv
+	string key
+	variable var
+	string str
+	variable appendCR
+
+	variable numOptParams
+	string formattedString
+
+	ASSERT(WaveExists(wv), "missing wave")
+	ASSERT(!IsEmpty(key), "empty key")
+
+	numOptParams = !ParamIsDefault(var) + !ParamIsDefault(str)
+	ASSERT(numOptParams == 1, "invalid optional parameter combination")
+
+	if(!ParamIsDefault(var))
+		sprintf formattedString, "%s = %g;", key, var
+	elseif(!ParamIsDefault(str))
+		sprintf formattedString, "%s = %s;", key, str
+	endif
+
+	appendCR = ParamIsDefault(appendCR) ? 0 : appendCR
+
+	if(appendCR)
+		Note/NOCR wv, formattedString + "\r"
+	else
+		Note/NOCR wv, formattedString
+	endif
+End
+
+/// @brief Remove all traces from a graph and try to kill their waves
+Function RemoveAndKillTracesOnGraph(graph)
+	string graph
+
+	variable i, numEntries
+	string traceList, trace
+
+	traceList  = TraceNameList(graph, ";", 0 + 1 )
+	numEntries = ItemsInList(traceList)
+
+	for(i = 0; i < numEntries; i += 1)
+		trace = StringFromList(i, traceList)
+		Wave wv = TraceNameToWaveRef(graph, trace)
+
+		RemoveFromGraph/Z/W=$graph $trace
+		KillWaves/F/Z wv
+	endfor
 End

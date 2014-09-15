@@ -4479,19 +4479,12 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	return 0
 End
 
-/// DAP_ExecuteAdamsTabcontrolAmp
-Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
+static Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
 	string panelTitle
 	variable tabID
 
-	Struct WMTabControlAction tca
-	
-	tca.ctrlName = "tab_DataAcq_Amp"	
-	tca.win	= panelTitle	
-	tca.eventCode = 2	
-	tca.tab = tabID
 
-	ACL_DisplayTab(tca)
+	return ChangeTab(panelTitle, "tab_DataAcq_Amp", tabID)
 End
 
 //=========================================================================================
