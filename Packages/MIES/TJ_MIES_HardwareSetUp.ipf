@@ -203,6 +203,7 @@ Function HSU_UnlockDevice(panelTitle)
 
 	EnableListOfControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	DisableControl(panelTitle,"button_SettingsPlus_unLockDevic")
+	EnableControl(panelTitle,"StartTestPulseButton")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 
 	string panelTitleUnlocked = BASE_WINDOW_TITLE
