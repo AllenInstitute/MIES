@@ -29,8 +29,8 @@ static Function WBP_InitiateWaveBuilder()
 
 	//WPT = Wave Parameters Text
 	Make/T/O/N=(31,100) dfr:WPT
-	//Wave that stores the wave type used in each epoch
-	Make/O/N=102 dfr:SegWvType
+
+	GetSegmentWave()
 End
 
 Function WBP_CreateWaveBuilderPanel()
@@ -147,6 +147,10 @@ Function WBP_CreateWaveBuilderPanel()
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_SegmentEdit,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_WaveBuilder_SegmentEdit,fSize=14,limits={0,2,1},value= _NUM:0
+
+	SetVariable setvar_WaveBuilder_ITI,pos={76,133},size={71,16},proc=WBP_SetVarProc_ITI,title="ITI (s)"
+	SetVariable setvar_WaveBuilder_ITI,limits={0,inf,0},value= _NUM:0
+
 	SetVariable SetVar_WaveBuilder_P5,pos={300,81},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P5,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo)= A"!!,HQ!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -701,7 +705,7 @@ Function TabTJHook(tca)
 
 	string type
 	variable tabnum, idx
-	wave/SDFR=GetWaveBuilderDataPath() SegWvType
+	Wave SegWvType = GetSegmentWave()
 
 	tabnum = tca.tab
 
@@ -730,6 +734,7 @@ Function TabTJHook(tca)
 	endif
 
 	idx = GetSetVariable(panel, "setvar_WaveBuilder_SegmentEdit")
+	ASSERT(idx < 99, "Only supports up to different 99 epochs")
 	SegWvType[idx] = tabnum
 
 	WBP_ParamToPanel(tabnum)
@@ -826,6 +831,24 @@ Function WBP_SetVarProc_UpdateParam(ctrlName,varNum,varStr,varName) : SetVariabl
 	endif
 
 	WBP_UpdatePanelIfAllowed()
+End
+
+Function WBP_SetVarProc_ITI(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			Wave SegWvType = GetSegmentWave()
+			SegWvType[99] = sva.dval
+			WBP_UpdatePanelIfAllowed()
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
 
 static Function WBP_LowPassDeltaLimits()
@@ -1100,27 +1123,6 @@ static Function WBP_MoveWaveTOFolder(FolderPath, NameOfWaveToBeMoved, Kill, Base
 	endif
 End
 
-static Function WBP_SaveSetParam()
-
-	string setName, folder
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr SegWvType
-
-	// stores the total number of segments for a set in the penultimate cell of the wave that stores the segment type for each segment
-	ControlInfo SetVar_WaveBuilder_NoOfSegments
-	SegWvType[100] = v_value
-
-	// stores the total number or steps for a set in the last cell of the wave that stores the segment type for each segment
-	ControlInfo SetVar_WaveBuilder_StepCount
-	SegWvType[101] = v_value
-
-	folder  = WBP_WPFolderAssignment()
-	setName = "_" + WBP_AssembleSetName()
-	WBP_MoveWaveToFolder(folder, "SegWvType", 0, setName)
-	WBP_MoveWaveToFolder(folder, "WP"       , 0, setName)
-	WBP_MoveWaveToFolder(folder, "WPT"      , 0, setName)
-End
-
 /// @brief Returns a list of waves from the wave builder folder savedStimulusSets
 Function/S WBP_ReturnListSavedSets(setType)
 	string setType
@@ -1128,6 +1130,34 @@ Function/S WBP_ReturnListSavedSets(setType)
 	string path = GetWBSvdStimSetPathAsString() + ":" + setType
 	return GetListOfWaves($path, ".*" + setType + ".*")
 end
+
+static Function WBP_SaveSetParam()
+
+	string setName, folder
+	Wave SegWvType = GetSegmentWave()
+
+	// we might be called from an old panel without an ITI setvariable control
+	ControlInfo/W=$panel setvar_WaveBuilder_ITI
+	if(V_flag > 0)
+		SegWvType[99] = V_Value
+	else
+		SegWvType[99] = 0
+	endif
+
+	// stores the total number of segments for a set in the penultimate cell
+	// of the wave that stores the segment type for each segment
+	SegWvType[100] = GetSetVariable(panel, "SetVar_WaveBuilder_NoOfSegments")
+
+	// stores the total number of steps for a set in the last cell
+	// of the wave that stores the segment type for each segment
+	SegWvType[101] = GetSetVariable(panel, "SetVar_WaveBuilder_StepCount")
+
+	folder  = WBP_WPFolderAssignment()
+	setName = "_" + WBP_AssembleSetName()
+	WBP_MoveWaveToFolder(folder, "SegWvType", 0, setName)
+	WBP_MoveWaveToFolder(folder, "WP"       , 0, setName)
+	WBP_MoveWaveToFolder(folder, "WPT"      , 0, setName)
+End
 
 static Function WBP_LoadSet()
 	string SetName
@@ -1160,6 +1190,12 @@ static Function WBP_LoadSet()
 	Duplicate/O WP, $GetWaveBuilderDataPathAsString() + ":WP"
 	Duplicate/O WPT, $GetWaveBuilderDataPathAsString() + ":WPT"
 	Duplicate/O SegWvTypeOrig, $GetWaveBuilderDataPathAsString() + ":SegWvType"/Wave=SegWvType
+
+	// we might be called from an old panel without an ITI setvariable control
+	ControlInfo/W=$panel setvar_WaveBuilder_ITI
+	if(V_flag > 0)
+		SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
+	endif
 
 	SetVariable SetVar_WaveBuilder_NoOfSegments value = _NUM:SegWvType[100]
 	SetVariable SetVar_WaveBuilder_StepCount value = _NUM:SegWvType[101]
@@ -1201,7 +1237,7 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String varStr
 	String varName
 
-	Wave/SDFR=GetWaveBuilderDataPath() SegWvType
+	Wave SegWvType = GetSegmentWave()
 
 	variable SegmentNo, SegmentToEdit
 	ControlInfo SetVar_WaveBuilder_NoOfSegments
@@ -1230,7 +1266,7 @@ Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariabl
 	// sets the maximum segment to edit number to be equal to the numbeer of segments specified
 	SetVariable setvar_WaveBuilder_SegmentEdit limits = {0, v_value - 1, 1}
 
-	Wave/SDFR=GetWaveBuilderDataPath() SegWvType
+	Wave SegWvType = GetSegmentWave()
 	StimulusType = SegWvType[varNum] //selects the appropriate tab based on the data in the SegWvType wave
 	WBP_ExecuteAdamsTabcontrol(StimulusType)
 	WBP_ParamToPanel(StimulusType)

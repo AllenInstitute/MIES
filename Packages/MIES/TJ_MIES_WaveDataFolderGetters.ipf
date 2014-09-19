@@ -751,3 +751,23 @@ Function/S GetWBSvdStimSetTTLPathAsString()
 	return GetWBSvdStimSetPathAsString() + ":TTL"
 End
 ///@}
+
+/// @brief Returns the segment parameter wave used by the wave builder panel
+/// - Rows
+///   - 0 - 98: epoch types using the tabcontrol indizes
+///   - 99: set ITI (s)
+///   - 100: total number of segments/epochs
+///   - 101: total number of steps
+Function/Wave GetSegmentWave()
+
+	dfref dfr = GetWaveBuilderDataPath()
+	Wave/Z/SDFR=dfr wv = SegWvType
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=102 dfr:SegWvType/Wave=wv
+
+	return wv
+End

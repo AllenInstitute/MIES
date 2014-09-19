@@ -227,6 +227,8 @@ static Function WB_MakeWaveBuilderWave()
 		Concatenate/NP=0 {SegmentWave}, WaveBuilderWave
 	endfor
 
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)
+
 	SetScale /P x 0, 0.005, "ms", WaveBuilderWave
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
