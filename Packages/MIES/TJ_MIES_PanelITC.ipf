@@ -3242,8 +3242,8 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 	
 	controlinfo /w = $panelTitle $DACWave
 	if(stringmatch(s_value,"- none -") == 1)
-	checkbox $ctrlName win = $panelTitle, value = 0
-	print "Select " + DACwave[5,7] + " Wave"
+		checkbox $ctrlName win = $panelTitle, value = 0
+		print "Select " + DACwave[5,7] + " Wave"
 	endif
 
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
@@ -3709,54 +3709,45 @@ Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllTTLs(panelTitle)
 End
 //=========================================================================================
-/// DAP_PopMenuChkProc_StimSetList
-Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DA popupmenu's that show DA waveslist from wavebuilder
+/// @brief Procedure for DA/TTL popupmenus including indexing wave popupmenus
+Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
+
 	string CheckBoxName = ctrlName
 	string ListOfWavesInFolder
 	string folderPath
 	string folder
 	string panelTitle = DAP_ReturnPanelName()
 	DFREF saveDFR = GetDataFolderDFR()
-	
-	if(stringmatch(ctrlName,"*indexEnd*") != 1)//makes sure it is the index start wave
-		if(popnum == 1)//if the user selects "none" the channel is automatically turned off
-		CheckBoxName[0,3] = "check"
-		Checkbox $Checkboxname win = $panelTitle, value = 0
+
+	if(StringMatch(ctrlName, "*indexEnd*") != 1)
+		if(popnum == 1) //if the user selects "none" the channel is automatically turned off
+			CheckBoxName[0,3] = "check"
+			Checkbox $Checkboxname win = $panelTitle, value = 0
 		endif
 	endif
-	
-	if(stringmatch(ctrlname,"Wave_DA_*") == 1)
+
+	if(StringMatch(ctrlname, "Wave_DA_*"))
 		if(popnum == 2)
-			popupmenu $ctrlname win = $panelTitle, mode = 3// prevents the user from selecting the testpulse
+			// prevents the user from selecting the testpulse
+			PopupMenu $ctrlname win = $panelTitle, mode = 3
 		endif
 	endif
-//	if(stringmatch(ctrlName, "*_DA_*") == 1) // determines wether to a DA or TTL popup menu needs to be populated
-//		FolderPath = "root:MIES:waveBuilder:savedStimulusSets:DA"
-//		folder = "*DA*"
-//		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-//		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""// DA popups have testpulse listed as option
-//	else
-//		FolderPath = "root:MIES:waveBuilder:savedStimulusSets:TTL"
-//		folder = "*TTL*"
-//		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-//		ListOfWavesInFolder = "\"- none -;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""
-//	endif
-//	
-//	PopupMenu  $ctrlName win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenExp) = ListOfWavesInFolder
-	setdatafolder saveDFR// makes sure data acq starts in the correct folder!!
+
+	// makes sure data acq starts in the correct folder!!
+	SetDataFolder saveDFR
 	
-	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
+	ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+		ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+		ValDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	else
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
+		ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
+		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	endif
 End
 //=========================================================================================

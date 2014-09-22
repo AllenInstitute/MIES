@@ -379,9 +379,10 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	return MaxSets // if the start and end set are the same, this returns 0
 End
 
-Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
-// works for unlocked (independent) indexing
-// index override is the same as indexing off
+/// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
+/// works for unlocked (independent) indexing
+/// index override is the same as indexing off
+Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	string panelTitle
 	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
 	variable MaxNoOfSweeps = 0
@@ -774,74 +775,3 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		endif
 	return AtSetBorder
 End
-
-Function IDX_IndxChannWithCompleteSets(panelTitle, DAorTTL, localCount) // #####FUNCTION NOT IN USE
-	string panelTitle
-	variable DAorTTL, localCount
-	string ListOfSetStatus = IDX_RetrnLstOfChanWthComplSets(panelTitle, DAorTTL, localCount)
-	string channelTypeWaveName, ChannelTypeName
-	string ChannelPopUpMenuName
-	variable ChannelNumber
-	
-	if(DAorTTL==0)
-	ChannelTypeName="DA"
-	endif
-	
-	if(DAorTTL==1)
-	ChannelTypeName="TTL"
-	endif
-	
-	do
-		if(str2num(stringfromlist(ChannelNumber,ListOfSetStatus,";"))==1)
-			ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
-			IDX_IndexSingleChannel(panelTitle, DAorTTL, ChannelNumber)
-		endif
-	channelNumber+=1
-	while(ChannelNumber<itemsinlist(ListOfSetStatus,";"))
-End
-
-Function/T IDX_RetrnLstOfChanWthComplSets(panelTitle, DAorTTL, localCount) // #####FUNCTION NOT IN USE
-	string panelTitle
-	variable DAorTTL, localcount
-	string ListOfChanWithCompleteSets=""
-	string ChannelTypeName
-	string ChannelPopUpMenuName
-	string setName
-	variable columnsInSet
-	string WavePath
-	
-	if(DAorTTL==0)
-	ChannelTypeName="DA"
-	WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
-	endif
-	
-	if(DAorTTL==1)
-	ChannelTypeName="TTL"
-	WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
-	endif
-	
-	string ActivechannelList = DC_ControlStatusListString(ChannelTypeName,"check",panelTitle)
-	
-	variable ChannelNumber = 0
-	
-	do
-		if(str2num(stringfromlist(ChannelNumber,ActiveChannelList,";"))==1)
-		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
-		controlinfo/w=$panelTitle $ChannelPopUpMenuName
-		setName=WavePath+s_value
-		columnsInSet=dimsize($setName, 1)
-			if(LocalCount >= columnsInSet)
-			ListOfChanWithCompleteSets+="1;"
-			else
-			ListOfChanWithCompleteSets+="0;"
-			endif
-		else
-		ListOfChanWithCompleteSets+="0;"
-		endif
-	
-	ChannelNumber+=1
-	While (ChannelNumber<itemsinlist(ActiveChannelList,";"))
-	
-	return ListOfChanWithCompleteSets
-End
-
