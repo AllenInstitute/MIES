@@ -410,6 +410,66 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	return MaxNoOfSweeps
 End
 
+Function/S IDX_GetDAControl(panelTitle, idx)
+	string panelTitle
+	variable idx
+
+	string ctrl
+
+	ASSERT(idx >= 0 && idx < 100, "invalid idx")
+	sprintf ctrl, "Wave_DA_%02d", idx
+	return ctrl
+End
+
+static Function IDX_GetITIFromWaveNote(wv)
+	Wave wv
+
+	string str
+	str = note(wv)
+	// All spaces and carriage returns are just to make the note human readable
+	// remove them before searching the key
+	str = ReplaceString("\r", str, "")
+	str = ReplaceString(" ", str, "")
+	return NumberByKey("ITI",str,"=",";")
+End
+
+Function IDX_LongestITIAcrossSets(panelTitle, numActiveDAChannels)
+	string panelTitle
+	variable& numActiveDAChannels
+
+	variable numEntries, i, iti, maxITI
+	string ctrl, name, str
+
+	Wave DAChannelStatus = DC_ControlStatusWave("DA", panelTitle)
+	numActiveDAChannels = sum(DAChannelStatus)
+	numEntries = DimSize(DAChannelStatus, ROWS)
+
+	maxITI = -INF
+	for(i = 0; i < numEntries; i += 1)
+		if(!DAChannelStatus[i])
+			continue
+		endif
+
+		ctrl = IDX_GetDAControl(panelTitle, i)
+		name = GetPopupMenuString(panelTitle, ctrl)
+		Wave/Z/SDFR=GetWBSvdStimSetDAPath() wv = $name
+		if(!WaveExists(wv))
+			continue
+		endif
+		iti = IDX_GetITIFromWaveNote(wv)
+
+		if(IsFinite(iti))
+			maxITI = max(maxITI, iti)
+		endif
+	endfor
+
+	if(!IsFinite(maxITI))
+		return 0
+	endif
+
+	return maxITI
+End
+
 Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, IndexOverRide)// determines the number of trials for a DA or TTL channel
 	string panelTitle
 	variable PopUpMenuNumber, DAorTTL, IndexOverRide//DA = 0, TTL = 1	

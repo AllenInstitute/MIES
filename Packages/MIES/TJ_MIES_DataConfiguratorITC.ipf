@@ -79,6 +79,9 @@ End
 //==========================================================================================
 
 /// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
+///
+/// @deprecated use @ref DC_ControlStatusWave() instead
+///
 /// @param ChannelType  one of DA, AD, or TTL
 /// @param ControlType  currently restricted to "Check"
 /// @param panelTitle   panel title
@@ -101,6 +104,29 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	while(i <= (TotalPossibleChannels - 1))
 	
 	return ControlStatusList
+End
+
+/// @brief Returns a free wave of the status of the checkboxes specified by channelType
+///
+/// @param channelType  one of DA, AD, or TTL
+/// @param panelTitle   panel title
+Function/Wave DC_ControlStatusWave(channelType, panelTitle)
+	string channelType
+	string panelTitle
+
+	string controlType = "CHECK"
+	string ctrl
+	variable numChannels = DC_TotNoOfControlType(controlType, channelType, panelTitle)
+	variable i
+
+	Make/FREE/U/B/N=(numChannels) wv = 0
+
+	for(i = 0; i < numChannels; i += 1)
+		sprintf ctrl, "%s_%s_%.2d", controlType, channelType, i
+		wv[i] = GetCheckboxState(panelTitle, ctrl)
+	endfor
+
+	return wv
 End
 
 //==========================================================================================

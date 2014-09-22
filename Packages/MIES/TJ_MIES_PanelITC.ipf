@@ -1,5 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Constant DATA_ACQU_TAB_NUM               = 0
 Constant HARDWARE_TAB_NUM                = 6
 StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
@@ -2335,6 +2336,16 @@ Window da_ephys() : Panel
 	CheckBox Check_Settings_InsertTP,help={"Inserts a test pulse at the front of each sweep in a set."}
 	CheckBox Check_Settings_InsertTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_InsertTP,userdata(tabcontrol)=  "ADC",value= 0
+
+	CheckBox Check_Settings_Override_Set_ITI,pos={243,162},size={165,14},title="Allow to override the calculated ITI"
+	CheckBox Check_Settings_Override_Set_ITI,help={"The total ITI is calculated as the minimum of all ITIs involved in the aquisition. Checking allows the user to override the calculated value."}
+	CheckBox Check_Settings_Override_Set_ITI,userdata(tabnum)= "5"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo)= A"!!,H.!!#A1!!#A4!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_Override_Set_ITI,value= 0, proc=DAP_CheckProc_Override_ITI
+
 	SetVariable setvar_Settings_TPBuffer,pos={173,106},size={103,16},title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
@@ -3120,6 +3131,12 @@ Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
 	DAP_UpdateYokeControls(tca.win)
+
+	// Maybe the user changed the stimulus ITI behind our back
+	// here we try to catch that case
+	if(tca.tab == DATA_ACQU_TAB_NUM)
+		DAP_UpdateITIAcrossSets(tca.win)
+	endif
 End
 
 /// This is a function that gets run by ACLight's tab control function every time a tab is selected,
@@ -3245,6 +3262,8 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 		checkbox $ctrlName win = $panelTitle, value = 0
 		print "Select " + DACwave[5,7] + " Wave"
 	endif
+
+	DAP_UpdateITIAcrossSets(panelTitle)
 
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:MinSampInt
@@ -3709,6 +3728,28 @@ Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllTTLs(panelTitle)
 End
 //=========================================================================================
+
+Function DAP_UpdateITIAcrossSets(panelTitle)
+	string panelTitle
+
+	variable numActiveDAChannels, maxITI
+	maxITI = IDX_LongestITIAcrossSets(panelTitle, numActiveDAChannels)
+	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
+
+	if(GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1))
+		EnableControl(panelTitle, "SetVar_DataAcq_ITI")
+	elseif(maxITI == 0 && numActiveDAChannels > 0)
+		EnableControl(panelTitle, "SetVar_DataAcq_ITI")
+		ControlInfo/W=$panelTitle Check_Settings_Override_Set_ITI
+		if(V_flag != 0)
+			SetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", CHECKBOX_SELECTED)
+		endif
+	else
+		DisableControl(panelTitle, "SetVar_DataAcq_ITI")
+		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
+	endif
+End
+
 /// @brief Procedure for DA/TTL popupmenus including indexing wave popupmenus
 Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -3735,6 +3776,8 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 			PopupMenu $ctrlname win = $panelTitle, mode = 3
 		endif
 	endif
+
+	DAP_UpdateITIAcrossSets(panelTitle)
 
 	// makes sure data acq starts in the correct folder!!
 	SetDataFolder saveDFR
@@ -3837,6 +3880,22 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 			DAP_FindConnectedAmps(ba.win)
 			break
 	endswitch
+End
+//=========================================================================================
+Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			if(!cba.checked)
+				DAP_UpdateITIAcrossSets(cba.win)
+			endif
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
 //=========================================================================================
 Function DAP_FindConnectedAmps(panelTitle)
@@ -4068,6 +4127,8 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 			else
 				DAP_ApplyClmpModeSavdSettngs(headStageNo, clampMode, panelTitle)
 			endif
+
+			DAP_UpdateITIAcrossSets(panelTitle)
 
 			variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
