@@ -273,6 +273,7 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	panelTitleG = panelTitle
 	string cmd
 
+	TP_ResetTPStorage(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", "Check", panelTitle)
 	variable /G root:MIES:ITCDevices:BackgroundTPCount   = 0
@@ -397,6 +398,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
 	//doupdate /w = $oscilloscopeSubWindow
 	//ModifyGraph /w = $oscilloscopeSubWindow Live =1
+	TP_ResetTPStorage(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	
 	//wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"

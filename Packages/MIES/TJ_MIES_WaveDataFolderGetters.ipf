@@ -483,3 +483,92 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
 	return wv
 End
 /// @}
+
+/// @brief Return a wave reference for TPStorage
+///
+/// The wave stores TP resistance and Vm data as
+/// function of time while the TP is running.
+Function/Wave GetTPStorage(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	Wave/Z/SDFR=dfr wv = TPStorage
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(128,8,8) dfr:TPStorage/Wave=wv
+	wv = NaN
+
+	SetDimLabel COLS,  -1, HeadStage            , wv
+
+	SetDimLabel LAYERS, 0, Vm                   , wv
+	SetDimLabel LAYERS, 1, PeakResistance       , wv
+	SetDimLabel LAYERS, 2, SteadyStateResistance, wv
+	SetDimLabel LAYERS, 3, TimeInSeconds        , wv
+	SetDimLabel LAYERS, 4, DeltaTimeInSeconds   , wv
+	SetDimLabel LAYERS, 5, Vm_Slope             , wv
+	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
+	SetDimLabel LAYERS, 7, Rss_Slope            , wv
+
+	Note wv, "TPCycleCount:0;"
+
+	return wv
+End
+
+/// @brief Return a datafolder reference to the test pulse folder
+Function/DF GetDeviceTestPulse(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
+End
+
+/// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
+Function/S GetDeviceTestPulseAsString(panelTitle)
+	string panelTitle
+
+	return HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
+End
+
+/// @brief Return a datafolder reference to the device type folder
+Function/DF GetDeviceTypePath(deviceType)
+	string deviceType
+
+	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
+End
+
+/// @brief Return the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
+Function/S GetDeviceTypePathAsString(deviceType)
+	string deviceType
+
+	return Path_ITCDevicesFolder("") + ":" + deviceType
+End
+
+/// @brief Return a datafolder reference to the device folder
+Function/DF GetDevicePath(deviceType, deviceNumber)
+	string deviceType, deviceNumber
+
+	return createDFWithAllParents(GetDevicePathAsString(deviceType, deviceNumber))
+End
+
+/// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0
+Function/S GetDevicePathAsString(deviceType, deviceNumber)
+	string deviceType, deviceNumber
+
+	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
+End
+
+/// @brief Return a datafolder reference to the device data folder
+Function/DF GetDeviceDataPath(deviceType, deviceNumber)
+	string deviceType, deviceNumber
+
+	return createDFWithAllParents(GetDeviceDataPathAsString(deviceType, deviceNumber))
+End
+
+/// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
+Function/S GetDeviceDataPathAsString(deviceType, deviceNumber)
+	string deviceType, deviceNumber
+
+	return GetDevicePathAsString(deviceType, deviceNumber) + ":Data"
+End

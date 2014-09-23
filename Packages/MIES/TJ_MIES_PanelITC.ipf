@@ -13,7 +13,7 @@ StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(1376,561,1846,1274)
+	NewPanel /W=(1598,758,2068,1524)
 	SetWindow $s_name, hook(cleanup)=DAP_WindowHook
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
@@ -2351,6 +2351,10 @@ Window da_ephys() : Panel
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:1
+	CheckBox check_Settings_TP_SaveTPRecord,pos={309,107},size={93,14},disable=1,title="Save TP record"
+	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
+	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
+	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"

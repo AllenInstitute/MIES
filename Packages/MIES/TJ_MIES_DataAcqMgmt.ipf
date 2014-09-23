@@ -141,6 +141,7 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 	variable NewNoOfPoints
 
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	TP_ResetTPStorage(panelTitle)
 
 	if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
 		controlinfo /w = $panelTitle setvar_Hardware_Status
