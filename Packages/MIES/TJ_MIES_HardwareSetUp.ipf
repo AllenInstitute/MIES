@@ -101,14 +101,10 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	createDFWithAllParents(path + ":Data")
 	createDFWithAllParents(path + ":TestPulse")
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret,"Could not parse panelTitle")
-
-	path = Path_LabNoteBookFolder(panelTitle) + ":" + deviceType + ":Device" + deviceNumber + ":"
-	createDFWithAllParents(path + "KeyWave")
-	createDFWithAllParents(path + "settingsHistory")
-	createDFWithAllParents(path + "textDocKeyWave")
-	createDFWithAllParents(path + "textDocumentation")
+	GetDevSpecLabNBSettKeyFolder(panelTitle)
+	GetDevSpecLabNBSettHistFolder(panelTitle)
+	GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
+	GetDevSpecLabNBTextDocFolder(panelTitle)
 End
 //==================================================================================================
 

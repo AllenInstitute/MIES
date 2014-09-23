@@ -77,13 +77,6 @@ Function /T Path_ITCDevicesFolder(panelTitle)
 	return pathToITCDevicesFolder
 End
 //=========================================================================================
-Function /T Path_LabNoteBookFolder(panelTitle)
-	string panelTitle
-	string pathToLabNoteBookFolder // = Path_MIESfolder(panelTitle) + ":ITCDevices"
-	sprintf pathToLabNoteBookFolder, "%s:LabNoteBook" Path_MIESfolder(panelTitle)
-	return pathToLabNoteBookFolder
-End
-//=========================================================================================
 Function /T Path_WaveBuilderFolder(panelTitle)
 	string panelTitle
 	string WaveBuilderFolder = Path_MIESfolder(panelTitle) + ":WaveBuilder"
