@@ -2232,14 +2232,14 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,userdata(tabnum)=  "1"
 	CheckBox check_DataAcq_AutoBias,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
-	SetVariable setvar_DataAcq_Ri,pos={310,208},size={79,18},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Ri (M\\F'Symbol'W\\F'MS Sans Serif')"
-	SetVariable setvar_DataAcq_Ri,userdata(tabnum)=  "1"
-	SetVariable setvar_DataAcq_Ri,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_Ri,value= _NUM:0
-	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={41,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
-	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
+	SetVariable setvar_DataAcq_IbiasMax,pos={310,209},size={120,20},proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={46,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasVrange,value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1}
 	TitleBox Title_DataAcq_Hold_VC,pos={70,172},size={60,13},disable=1,title="Holding (mV)"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
@@ -2710,7 +2710,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	Slider slider_DataAcq_ActiveHeadstage  WIN = $panelTitle,value= 0
 	SetVariable SetVar_DataAcq_AutoBiasV WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DataAcq_AutoBias WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_Ri WIN = $panelTitle,value= _NUM:0
+	SetVariable setvar_DataAcq_IbiasMax WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_Hold_VC WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC WIN = $panelTitle,value= 0

@@ -513,6 +513,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	endif
 
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, NoOfActiveDA)
+	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
 
 /// Sampling interval in seconds
@@ -646,8 +647,9 @@ Function TP_ResetTPStorage(panelTitle)
 		if(GetCheckBoxState(panelTitle, "check_Settings_TP_SaveTPRecord"))
 			name = NameOfWave(TPStorage)
 			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, name + "_\d+"))))
-			// reset TPCycleCount in case the wave can not be killed
+			// reset counters in wave note in case the wave can not be killed
 			SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
+			SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 			KillWaves/Z TPStorage
 		endif
 	endif

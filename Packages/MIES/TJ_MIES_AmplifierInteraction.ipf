@@ -434,7 +434,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 		case "setvar_DataAcq_AutoBiasVrange":
 			AmpStorageWave[23][0][headStage] = v_value
 			break
-		case "setvar_DataAcq_Ri":
+		case "setvar_DataAcq_IbiasMax":
 			AmpStorageWave[24][0][headStage] = v_value
 			break
 		case "check_DataAcq_AutoBias":
@@ -495,7 +495,7 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
 	Param = AmpStorageWave[23][0][MIESHeadStageNo]
 	setvariable setvar_DataAcq_AutoBiasVrange WIN = $panelTitle, value= _NUM:Param
 	Param = AmpStorageWave[24][0][MIESHeadStageNo]
-	setvariable setvar_DataAcq_Ri WIN = $panelTitle, value= _NUM:Param
+	setvariable setvar_DataAcq_IbiasMax WIN = $panelTitle, value= _NUM:Param
 	Param = AmpStorageWave[25][0][MIESHeadStageNo]
 	checkbox check_DataAcq_AutoBias WIN = $panelTitle, Value = Param
 

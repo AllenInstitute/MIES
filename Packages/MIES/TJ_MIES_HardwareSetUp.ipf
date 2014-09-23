@@ -73,6 +73,8 @@ Function HSU_LockDevice(panelTitle)
 	HSU_UpdateListOfITCPanels()
 	HSU_OpenITCDevice(panelTitleLocked)
 	DAP_UpdateAllYokeControls()
+	// create the amplifier settings waves
+	GetAmplifierParamStorageWave(panelTitleLocked)
 End
 //==================================================================================================
 

@@ -358,8 +358,117 @@ Function ITC_STOPTestPulse(panelTitle)
 	killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
 
-//======================================================================================
+static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
+static Constant AUTOBIAS_INTERVALL_SECONDS = 2
 
+/// @brief Handle automatic bias current injection
+///
+/// @param panelTitle	locked panel with test pulse running occasionally
+/// @param BaselineSSAvg
+/// @param SSResistance
+Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+	string panelTitle
+	Wave BaselineSSAvg, SSResistance
+
+	variable headStage, entries, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
+	variable activeHeadStages
+	variable resistance, maximumAutoBiasCurrent
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
+	variable curTime = ticks * TICKS_TO_SECONDS
+
+	if( (curTime - lastInvocation) < AUTOBIAS_INTERVALL_SECONDS )
+		return NaN
+	endif
+
+	DEBUGPRINT("ITC_ApplyAutoBias's turn, curTime=", var=curTime)
+	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime)
+
+	if(isEmpty(panelTitle))
+		DEBUGPRINT("Can't work with an empty panelTitle")
+		return NaN
+	endif
+
+	Wave channelClampMode = GetChannelClampMode(panelTitle)
+	Wave ampSettings      = GetAmplifierParamStorageWave(panelTitle)
+
+	entries = DimSize(ampSettings, LAYERS)
+	activeHeadStages = 0
+	for(headStage=0; headStage < entries; headStage+=1)
+
+		// From DAP_RemoveClampModeSettings and DAP_ApplyClmpModeSavdSettngs we know that
+		// both wave entries are NaN iff the headstage is unset
+		if(!IsFinite(channelClampMode[headStage][%DAC]) || !IsFinite(channelClampMode[headStage][%ADC]))
+			continue
+		endif
+
+		activeHeadStages +=1
+
+		// headStage channels not in current clamp mode
+		if(channelClampMode[headStage][%DAC] != I_CLAMP_MODE && channelClampMode[headStage][%ADC] != I_CLAMP_MODE)
+			continue
+		endif
+
+		// autobias not enabled
+		if(!ampSettings[%AutoBiasEnable][0][headStage])
+			continue
+		endif
+
+		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
+
+		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * 1e-12)
+		if(maximumAutoBiasCurrent == 0 || maximumAutoBiasCurrent > DEFAULT_MAXAUTOBIASCURRENT)
+			printf "Warning for headStage %d: replacing invalid maximum auto bias currrent of %g with %g\r", headStage, maximumAutoBiasCurrent, DEFAULT_MAXAUTOBIASCURRENT
+			maximumAutoBiasCurrent = DEFAULT_MAXAUTOBIASCURRENT
+		endif
+
+		/// all variables holding physical units use plain values without prefixes
+		/// e.g Amps instead of pA
+
+		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
+		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
+
+		resistance = SSResistance[0][activeHeadStages - 1] * 1e6
+		setVoltage = BaselineSSAvg[0][activeHeadStages - 1] * 1e-3
+
+		DEBUGPRINT("resistance=", var=resistance)
+		DEBUGPRINT("setVoltage=", var=setVoltage)
+		DEBUGPRINT("targetVoltage=", var=targetVoltage)
+
+		// if we are in the desired voltage region, check the next headstage
+		if(abs(targetVoltage - setVoltage) < targetVoltageTol)
+			continue
+		endif
+
+		// neuron needs a current shot
+		// I = U / R
+		current = ( targetVoltage - setVoltage ) / resistance
+		DEBUGPRINT("current=", var=current)
+
+		actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
+		DEBUGPRINT("actualCurrent=", var=actualCurrent)
+
+		if(!IsFinite(actualCurrent))
+			print "Queried amplifier current is non-finite"
+			continue
+		endif
+
+		current += actualCurrent
+		// only use 80% of the calculated current, as BaselineSSAvg holds
+		// an overestimate for small buffer sizes
+		current *= 0.80
+
+		if( abs(current) > maximumAutoBiasCurrent)
+			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
+			continue
+		endif
+
+		DEBUGPRINT("current to send=", var=current)
+		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
+		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
+	endfor
+End
 
 //ITC_StartBackgroundTestPulse();ITC_StartBackgroundTimer(20, "ITC_STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
 
