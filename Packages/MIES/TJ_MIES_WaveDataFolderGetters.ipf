@@ -153,9 +153,104 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 	return wv
 End
 
+/// @name Experiment Documentation
+/// @{
+
+/// @brief Return the datafolder reference to the lab notebook
+Function/DF GetLabNotebookFolder(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetLabNotebookFolderAsString(panelTitle))
+End
+
+/// @brief Return the full path to the lab notebook, e.g. root:MIES:LabNoteBook
+Function/S GetLabNotebookFolderAsString(panelTitle)
+	string panelTitle
+
+	return Path_MIESfolder(panelTitle) + ":LabNoteBook"
+End
+
+/// @brief Return the data folder reference to the device specific lab notebook
+Function/DF GetDevSpecLabNBFolder(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecLabNBFolderAsString(panelTitle))
+End
+
+/// @brief Return the full path to the device specific lab notebook, e.g. root:MIES:LabNoteBook:ITC18USB:Device0
+Function/S GetDevSpecLabNBFolderAsString(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	variable ret
+
+	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	ASSERT(ret, "Could not parse the panelTitle")
+
+	return GetLabNotebookFolderAsString(panelTitle) + ":" + deviceType + ":Device" + deviceNumber
+End
+
+/// @brief Return the datafolder reference to the device specific settings key
+Function/DF GetDevSpecLabNBSettKeyFolder(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecLabNBSettKeyFolderAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific settings key, e.g. root:mies:LabNoteBook:ITC18USB:Device0:KeyWave
+Function/S GetDevSpecLabNBSettKeyFolderAS(panelTitle)
+	string panelTitle
+
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":KeyWave"
+End
+
+/// @brief Return the datafolder reference to the device specific settings history
+Function/DF GetDevSpecLabNBSettHistFolder(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecLabNBSettHistFolderAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific settings history, e.g. root:mies:LabNoteBook:ITC18USB:Device0:settingsHistory
+Function/S GetDevSpecLabNBSettHistFolderAS(panelTitle)
+	string panelTitle
+
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":settingsHistory"
+End
+
+/// @brief Return the datafolder reference to the device specific text doc key
+Function/DF GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecLabNBTextDocKeyFoldAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific text doc key, e.g. root:mies:LabNoteBook:ITC18USB:Device0:textDocKeyWave
+Function/S GetDevSpecLabNBTextDocKeyFoldAS(panelTitle)
+	string panelTitle
+
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":TextDocKeyWave"
+End
+
+/// @brief Return the datafolder reference to the device specific text documentation
+Function/DF GetDevSpecLabNBTextDocFolder(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecLabNBTextDocFolderAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:textDocumentation
+Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
+	string panelTitle
+
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation"
+End
+
 /// @brief Returns a wave reference to the textDocWave
 ///
-/// textDocWave is used to save settings for each data sweep and create waveNotes for tagging data sweeps
+/// textDocWave is used to save settings for each data sweep and
+/// create waveNotes for tagging data sweeps
+///
 /// Rows:
 /// - Only one
 ///
@@ -165,10 +260,10 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave DC_txtDocWvRef(panelTitle)
+Function/Wave GetTextDocWave(panelTitle)
 	string panelTitle
-	
-	DFREF dfr = DF_GetDevSpecLabNotebkTxtDoc(panelTitle)
+
+	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = txtDocWave
 
@@ -184,7 +279,8 @@ End
 
 /// @brief Returns a wave reference to the textDocKeyWave
 ///
-/// textDocKeyWave is used to index save settings for each data sweep and create waveNotes for tagging data sweeps
+/// textDocKeyWave is used to index save settings for each data sweep
+/// and create waveNotes for tagging data sweeps
 ///
 /// Rows:
 /// - 0: Parameter Name
@@ -195,10 +291,10 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave DC_txtDocKeyWvRef(panelTitle)
+Function/Wave GetTextDocKeyWave(panelTitle)
 	string panelTitle
-	
-	DFREF dfr = DF_GetDevSpecLabNotebkTxtDocKey(panelTitle)
+
+	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
 
@@ -209,30 +305,39 @@ Function/Wave DC_txtDocKeyWvRef(panelTitle)
 	Make/T/N=(1,2,0) dfr:txtDocKeyWave/Wave=wv
 	wv = ""
 
+	SetDimLabel 0, 0, Parameter, wv
+
 	return wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
 ///
-/// sweepSettingsWave is used to save stimulus settings for each data sweep and create waveNotes for tagging data sweeps
+/// sweepSettingsWave is used to save stimulus settings for each
+/// data sweep and create waveNotes for tagging data sweeps
+///
 /// Rows:
-///  One row
+///  - One row
 ///
 /// Columns:
-/// 0: Stim Wave Name
-/// 1: Stim Scale Factor
+/// - 0: Stim Wave Name
+/// - 1: Stim Scale Factor
 ///
 /// Layers:
 /// - Headstage
-Function/Wave DC_sweepSettingsWvRef(panelTitle, noHeadStages)
+Function/Wave GetSweepSettingsWave(panelTitle, noHeadStages)
 	string panelTitle
 	variable noHeadStages
-	
-	DFREF dfr =  DF_GetDevSpecLabNotebkSttngs(panelTitle)
+
+	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
 
 	Wave/Z/SDFR=dfr wv = sweepSettingsWave
 
 	if(WaveExists(wv))
+		// we have to resize the wave here as the user relies
+		// on the requested size
+		if(DimSize(wv, LAYERS) != noHeadStages)
+			Redimension/N=(-1, -1, noHeadStages) wv
+		endif
 		return wv
 	endif
 
@@ -244,27 +349,28 @@ End
 
 /// @brief Returns a wave reference to the sweepSettingsKeyWave
 ///
-/// sweepSettingsKeyWave is used to index save stimulus settings for each data sweep and create waveNotes for tagging data sweeps
+/// sweepSettingsKeyWave is used to index save stimulus settings for
+/// each data sweep and create waveNotes for tagging data sweeps
 ///
 /// Rows:
-/// 0: Parameter
-/// 1: Units
-/// 2: Tolerance Factor
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance Factor
 ///
 /// Columns:
-/// 0: Stim Scale Factor
-/// 1: DAC
-/// 2: ADC
-/// 3: DA Gain
-/// 4: AD Gain
-/// 5: Set sweep count 
+/// - 0: Stim Scale Factor
+/// - 1: DAC
+/// - 2: ADC
+/// - 3: DA Gain
+/// - 4: AD Gain
+/// - 5: Set sweep count
 ///
 /// Layers:
 /// - Headstage
-Function/Wave DC_sweepSettingsKeyWvRef(panelTitle)
+Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
-	
-	DFREF dfr = DF_GetDevSpecLabNotebkSttngsKey(panelTitle)
+
+	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
@@ -275,12 +381,41 @@ Function/Wave DC_sweepSettingsKeyWvRef(panelTitle)
 	Make/T/N=(3,6) dfr:sweepSettingsKeyWave/Wave=wv
 	wv = ""
 
+	SetDimLabel 0, 0, Parameter, wv
+	SetDimLabel 0, 1, Units, wv
+	SetDimLabel 0, 2, Tolerance, wv
+
+	wv[%Parameter][0] = "Stim Scale Factor"
+	wv[%Units][0]     = "%"
+	wv[%Tolerance][0] = ".0001"
+
+	wv[%Parameter][1] = "DAC"
+	wv[%Units][1]     = ""
+	wv[%Tolerance][1] = ".0001"
+
+	wv[%Parameter][2] = "ADC"
+	wv[%Units][2]     = ""
+	wv[%Tolerance][2] = ".0001"
+
+	wv[%Parameter][3] = "DA Gain"
+	wv[%Units][3]     = "mV/V"
+	wv[%Tolerance][3] = ".000001"
+
+	wv[%Parameter][4] = "AD Gain"
+	wv[%Units][4]     = "V/pA"
+	wv[%Tolerance][4] = ".000001"
+
+	wv[%Parameter][5] = "Set Sweep Count"
+	wv[%Units][5]     = ""
+	wv[%Tolerance][5] = ".0001"
+
 	return wv
 End
 
 /// @brief Returns a wave reference to the SweepSettingsTxtWave
 ///
-/// SweepTxtData is used to store the set name used on a particular headstage and then create waveNotes for the sweep data
+/// SweepSettingsTxtData is used to store the set name used on a particular
+/// headstage and then create waveNotes for the sweep data
 ///
 /// Rows:
 /// - Only one
@@ -290,15 +425,20 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave DC_SweepSettingsTxtWvRef(panelTitle, noHeadStages)
+Function/Wave GetSweepSettingsTextWave(panelTitle, noHeadStages)
 	string panelTitle
 	variable noHeadStages
-	
-	DFREF dfr =DF_GetDevSpecLabNotebkTxtDoc(panelTitle)
+
+	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
 	if(WaveExists(wv))
+		// we have to resize the wave here as the user relies
+		// on the requested size
+		if(DimSize(wv, LAYERS) != noHeadStages)
+			Redimension/N=(-1, -1, noHeadStages) wv
+		endif
 		return wv
 	endif
 
@@ -308,9 +448,9 @@ Function/Wave DC_SweepSettingsTxtWvRef(panelTitle, noHeadStages)
 	return wv
 End
 
-/// @brief Returns a wave reference to the SweepSettingsTxtKeyWave
+/// @brief Returns a wave reference to the SweepSettingsKeyTxtData
 ///
-/// SweepTxtKeyWave is used to index Txt Key Wave
+/// SweepSettingsKeyTxtData is used to index Txt Key Wave
 ///
 /// Rows:
 /// - Only one
@@ -320,15 +460,20 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave DC_sweepSettingsTxtKyWvRef(panelTitle, noHeadStages)
+Function/Wave GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
 	string panelTitle
 	variable noHeadStages
-	
-	DFREF dfr =DF_GetDevSpecLabNotebkTxtDocKey(panelTitle)
+
+	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
 	if(WaveExists(wv))
+		// we have to resize the wave here as the user relies
+		// on the requested size
+		if(DimSize(wv, LAYERS) != noHeadStages)
+			Redimension/N=(-1, -1, noHeadStages) wv
+		endif
 		return wv
 	endif
 
@@ -337,3 +482,4 @@ Function/Wave DC_sweepSettingsTxtKyWvRef(panelTitle, noHeadStages)
 
 	return wv
 End
+/// @}

@@ -1,6 +1,3 @@
-/// @file TJ_MIES_ExperimentDocumentation.ipf
-/// @brief Brief description of Experiment Documentation 
-
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 //=============================================================================================================
@@ -38,18 +35,17 @@ Function ED_AppendTPparamToDataWave(panelTitle, DataWaveName)
 End
 //=============================================================================================================
 
-/// Brief description of the function ED_createWaveNotes
-/// Function used to add notation of settings to an experiment DataWave.  This function
-/// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.  
-/// 
+/// @brief Add notation of settings to an experiment DataWave.  This function
+/// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
+///
 /// For the KeyWave, the wave dimensions are:
-/// row 0 - Parameter name
-/// row 1 - Unit
-/// row 2 - Text note
+/// - row 0 - Parameter name
+/// - row 1 - Unit
+/// - row 2 - Text note
 ///
 /// For the settings history, the wave dimensions are:
-/// Col 0 - Sweep Number
-/// Col 1 - Time Stamp
+/// - Col 0 - Sweep Number
+/// - Col 1 - Time Stamp
 ///
 /// The history wave will use layers to report the different headstages.
 ///
@@ -62,7 +58,7 @@ End
 ///
 /// After the key wave and history settings waves are created and have new information appended to them, this function
 /// will compare the new settings to the most recent settings, and will create the wave note indicating the change in states
-/// 
+///
 //=============================================================================================================
 Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWavePath, SweepCounter, panelTitle)
 	wave incomingSettingsWave
@@ -420,19 +416,18 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		endfor
 	endif
 End			
-	
-/// Brief description of the function ED_createTextNotes
-/// Function used to add text notation to an experiment DataWave.  This function
-/// creates a keyWave to reference the text wave, which spells out each parameter being saved, and a textWave, which stores text notation.  
-/// 
+
+/// @brief Function used to add text notation to an experiment DataWave.  This function creates a keyWave to reference
+/// the text wave, which spells out each parameter being saved, and a textWave, which stores text notation.
+///
 /// For the KeyWave, the wave dimensions are:
-/// row 0 - Parameter name
-/// row 1 - Units
-/// row 2 - Text note Placeholder
+/// - row 0 - Parameter name
+/// - row 1 - Units
+/// - row 2 - Text note Placeholder
 ///
 /// For the text documentation wave, the wave dimensions are:
-/// Col 0 - Sweep Number
-/// Col 1 - Time Stamp
+/// - Col 0 - Sweep Number
+/// - Col 1 - Time Stamp
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
@@ -445,7 +440,7 @@ End
 ///
 /// After the key wave and history settings waves are created and have new information appended to them, this function
 /// will compare the new settings to the most recent settings, and will create the wave note indicating the change in states
-/// 
+///
 //=============================================================================================================
 Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDataWavePath, SweepCounter, panelTitle)
 	wave/T incomingTextDocWave
@@ -453,80 +448,66 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	string saveDataWavePath
 	string panelTitle
 	variable SweepCounter
-	
+
 	// Location for the saved datawave
 	wave saveDataWave = $saveDataWavePath
-	
-	// local variable for the sweep number
-	variable SweepNo = SweepCounter
-	
-	string FullFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	string deviceType, deviceNum
-	ParseDeviceString(panelTitle, deviceType, deviceNum)
-	
-	Wave/T textDocWave = DC_txtDocWvRef(panelTitle)
-		
-	Wave/T textDocKeyWave = DC_txtDocKeyWvRef(panelTitle)
-	
+
+	Wave/T textDocWave = GetTextDocWave(panelTitle)
+	Wave/T textDocKeyWave = GetTextDocKeyWave(panelTitle)
+
 	// put the sweeps and timestamp headers in the key wave
 	textDocKeyWave[0][0] = "Sweep #"
 	textDocKeyWave[0][1] = "Time Stamp"
-	
+
 	// get the size of the ampSettingsHistory wave
 	variable rowCount = DimSize(textDocWave, 0)		// sweep
 	variable colCount = DimSize(textDocWave, 1)		// factor
 	variable layerCount = DimSize(textDocWave, 2)		// headstage
-	
+
 	// get the size of the incoming Settings Wave
 	variable incomingRowCount = DimSize(incomingTextDocWave, 0)			// sweep
 	variable incomingColCount = DimSize(incomingTextDocWave, 1)			// factor
 	variable incomingLayerCount = DimSize(incomingTextDocWave, 2)			// headstage
-			
+
 	// Now go through the incoming text wave and see if these factors are already being monitored
 	// get the dimension of the existing keyWave
 	variable keyColCount = DimSize(textDocKeyWave, 1) 					// factor
 	variable incomingKeyColCount = DimSize(incomingTextDocKeyWave, 1)	// incoming factors
-	
-	
+
 	variable keyColCounter
 	variable incomingKeyColCounter
-	
+
 	// get the size of the incoming Key Wave
 	variable incomingKeyRowCount = DimSize(incomingTextDocKeyWave, 0)	// rows...should be 3
 	variable keyMatchFound = 0
-	
+
 	// if keyWave is just formed, just add the incoming KeyWave....
 	if (keyColCount == 2)
 		// have to redimension the keyWave to create the space for the new stuff
 		Redimension/N= (-1, incomingKeyColCount+2) textDocKeyWave
 		// also redimension the settings History Wave to create row space to add new sweep data...
 		Redimension/N=(-1, incomingColCount+2, incomingLayerCount) textDocWave
-		
+
 		rowCount = DimSize(textDocWave, 0)		// sweep
 		colCount = DimSize(textDocWave, 1)		// factor
-		layerCount = DimSize(textDocWave, 2)	// headstage-+ 	
-		
+		layerCount = DimSize(textDocWave, 2)	// headstage-+
+
 		for (keyColCounter = 0; keyColCounter < (incomingKeyColCount); keyColCounter += 1)
-			textDocKeyWave[0][keyColCounter+2] = incomingTextDocKeyWave[0][keyColCounter] // copy the parameter name			
-//			textDocKeyWave[1][keyColCounter+2] = incomingTextDocKeyWave[1][keyColCounter] // copy the unit string
+			textDocKeyWave[0][keyColCounter+2] = incomingTextDocKeyWave[0][keyColCounter] // copy the parameter name
 		endfor
-		
+
 		// set this so we don't do the matching bit down below
 		keyMatchFound = 1
-	else	 // scan through the keyWave to see where to stick the incomingKeyWave	
+	else	 // scan through the keyWave to see where to stick the incomingKeyWave
 		for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
 				if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]) == 1)
 					keyMatchFound = 1
 				endif
 			endfor
-		endfor		
+		endfor
 	endif
-	
-	// Add dimension labels to the textDocKeyWave
-	SetDimLabel 0, 0, Parameter, textDocKeyWave
-//	SetDimLabel 0, 1, Units, textDocKeyWave
-	
+
 	if (keyMatchFound == 1)
 		// just need to redimension the row size....
 		Redimension/N=((rowCount + incomingRowCount), -1, -1) textDocWave
@@ -534,31 +515,30 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 		// Need to resize the column part of the wave to accomodate the new factors being monitored
 		Redimension/N=(-1, (colCount + incomingColCount), incomingLayerCount) textDocWave
 		variable keyWaveInsertPoint = keyColCount
-		variable insertCounter 
+		variable insertCounter
 		for (insertCounter = keyWaveInsertPoint; insertCounter < (keyWaveInsertPoint + incomingKeyColCount); insertCounter += 1)
 			textDocKeyWave[0][insertCounter] = incomingTextDocKeyWave[0][(insertCounter - keyWaveInsertPoint)]
-//			textDocKeyWave[1][insertCounter] = incomingTextDocKeyWave[1][(insertCounter - keyWaveInsertPoint)]
 		endfor
 	endif
-	
+
 	// Get the size of the new rejiggered keyWave
 	keyColCount = DimSize(textDocKeyWave, 1)
-	
+
 	//define counters
 	variable rowCounter
-	variable colCounter 
+	variable colCounter
 	variable layerCounter
-	
+
 	variable settingsRowCount = (DimSize(textDocWave, 0))  // the new settingsRowCount
 	variable rowIndex = settingsRowCount - 1
 
 	// put the sweep number in col 0
 	textDocWave[rowIndex][0] = num2str(sweepNo)
-	
+
 	// put the timestamp in col 1
 	string timeStamp = secs2time(datetime, 1)
 	textDocWave[rowIndex][1] = timeStamp
-	
+
 	// Use the keyWave to see where to add the incomingTextDoc factors to the textDoc wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
@@ -571,7 +551,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 			endif
 		endfor
 	endfor
-	
+
 	// And now....add a wave note for the text Doc Wave
 	rowCount = DimSize(textDocWave, 0)
 	colCount = DimSize(textDocWave, 1)
@@ -589,10 +569,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 			endif
 		endfor
 	endfor
+End
 
-End		
-	
-	
 //======================================================================================
 
 Function ED_SetDocumenting(panelTitle)
@@ -620,68 +598,29 @@ End
 //======================================================================================
 /// always create a WaveNote for each sweep that indicates the Stim Wave Name and the Stim scale factor
 // a function to create waveNote tags for the stim wave name and scale factor
-function ED_createWaveNoteTags(panelTitle, savedDataWaveName, SweepNo)
+function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	string panelTitle
 	string SavedDataWaveName
-	Variable SweepNo
+	Variable sweepCount
 
-	// sweep count
-	Variable sweepCount = SweepNo
-	
-	wave ChannelClampMode = GetChannelClampMode (panelTitle)
+	string ctrl
 
 	// get all the Amp connection information
 	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)
 	// get the number of headStages...used for building up the ampSettingsWave
-	variable noHeadStages = itemsinlist(controlledHeadStage, ";")
-	
+	variable noHeadStages = ItemsInList(controlledHeadStage)
+
 	// Create the numerical wave for saving the settings
-	Wave sweepSettingsWave = DC_sweepSettingsWvRef(panelTitle, noHeadStages)
-	Wave/T sweepSettingsKey = DC_sweepSettingsKeyWvRef(panelTitle)
-
-	// Add dimension labels to the stimSettingsKey wave
-	SetDimLabel 0, 0, Parameter, sweepSettingsKey
-	SetDimLabel 0, 1, Units, sweepSettingsKey
-	SetDimLabel 0, 2, Tolerance, sweepSettingsKey
-
-	sweepSettingsKey[0][0] =   "Stim Scale Factor"
-	sweepSettingsKey[1][0] =  "%"
-	sweepSettingsKey[2][0] =  ".0001"
-	
-	sweepSettingsKey[0][1] =   "DAC"
-	sweepSettingsKey[1][1] =  ""
-	sweepSettingsKey[2][1] =  ".0001"
-	
-	sweepSettingsKey[0][2] =   "ADC"
-	sweepSettingsKey[1][2] =  ""
-	sweepSettingsKey[2][2] =  ".0001"
-	
-	sweepSettingsKey[0][3] =   "DA Gain"
-	sweepSettingsKey[1][3] =  "mV/V"
-	sweepSettingsKey[2][3] =  ".000001"
-	
-	sweepSettingsKey[0][4] =   "AD Gain"
-	sweepSettingsKey[1][4] =  "V/pA"
-	sweepSettingsKey[2][4] =  ".000001"
-	
-	sweepSettingsKey[0][5] =   "Set Sweep Count"
-	sweepSettingsKey[1][5] =  ""
-	sweepSettingsKey[2][5] =  ".0001"
+	Wave sweepSettingsWave = GetSweepSettingsWave(panelTitle, noHeadStages)
+	Wave/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
 
 	// Create the txt wave to be used for saving the sweep set name
-	Wave/T sweepSettingsTxtWave = DC_sweepSettingsTxtWvRef(panelTitle, noHeadStages)
-	Wave/T sweepSettingsTxtKey = DC_sweepSettingsTxtKyWvRef(panelTitle, noHeadStages)
-	
+	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle, noHeadStages)
+	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
+
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  "Stim Wave Name"
-	
-	string stimWaveName
-	variable stimScaleFactor
-	string getWaveNameString
-	string getStimScaleString
-	string getDACheckBoxString
-	variable checkBoxState
-	
+
 	// Get the wave reference to the new Sweep Data wave
 	Wave sweepDataWave = DC_SweepDataWvRef(panelTitle)
 	Wave/T sweepSetName = DC_SweepDataTxtWvRef(panelTitle)
@@ -691,9 +630,9 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, SweepNo)
 	variable headStageControlledCounter
 	for(headStageControlledCounter = 0;headStageControlledCounter < noHeadStages ;headStageControlledCounter += 1)
 		// build up the string to get the DA check box to see if the DA is enabled
-		sprintf getDACheckBoxString, "Check_DA_0%d" headStageControlledCounter
-		if (GetCheckBoxState(panelTitle, getDACheckBoxString))
-			// Save info into the stimSettingsWave			
+		sprintf ctrl, "Check_DA_0%d" headStageControlledCounter
+		if (GetCheckBoxState(panelTitle, ctrl))
+			// Save info into the stimSettingsWave
 			// wave name
 			sweepSettingsTxtWave[0][0][headStageControlledCounter] = sweepSetName[0][0][headStageControlledCounter]
 			// scale factor
@@ -713,8 +652,7 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, SweepNo)
 
 	// call the function that will create the text wave notes
 	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SavedDataWaveName, SweepCount, panelTitle)
-	
+
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
-
 End
