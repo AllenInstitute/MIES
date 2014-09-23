@@ -484,6 +484,11 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
 End
 /// @}
 
+/// @name Constants for the note of the wave returned by GetTPStorage
+/// @{
+StrConstant TP_CYLCE_COUNT_KEY           = "TPCycleCount"
+/// @}
+
 /// @brief Return a wave reference for TPStorage
 ///
 /// The wave stores TP resistance and Vm data as
@@ -512,7 +517,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
 	SetDimLabel LAYERS, 7, Rss_Slope            , wv
 
-	Note wv, "TPCycleCount:0;"
+	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 
 	return wv
 End

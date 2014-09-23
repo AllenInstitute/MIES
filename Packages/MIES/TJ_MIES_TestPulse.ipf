@@ -530,7 +530,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 	variable ADchanCount
 
 	Wave TPStorage = GetTPStorage(panelTitle)
-	variable count = TP_GetTPCycleCount(panelTitle)
+	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	variable now   = ticks * TICKS_TO_SECONDS
 	variable needsUpdate, numCols
 
@@ -564,7 +564,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
 		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 
-		TP_SetTPCycleCount(panelTitle, count + 1)
+		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, count, samplingInterval, fittingRange)
 	endif
 End
@@ -635,7 +635,7 @@ Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
 
 	Wave TPStorage = GetTPStorage(panelTitle)
-	variable count = TP_GetTPCycleCount(panelTitle)
+	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	string name
 
 	if(count > 0)
@@ -645,28 +645,10 @@ Function TP_ResetTPStorage(panelTitle)
 			name = NameOfWave(TPStorage)
 			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, name + "_\d+"))))
 			// reset TPCycleCount in case the wave can not be killed
-			TP_SetTPCycleCount(panelTitle,0)
+			SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
 			KillWaves/Z TPStorage
 		endif
 	endif
-End
-
-static Function TP_GetTPCycleCount(panelTitle)
-	string panelTitle
-	variable number
-
-	Wave TPStorage = GetTPStorage(panelTitle)
-	number = NumberByKey("TPCycleCount", note(TPStorage))
-	ASSERT(IsFinite(number), "TPCycleCount as found in the wave note is non-finite")
-	return number
-End
-
-static Function TP_SetTPCycleCount(panelTitle, number)
-	string panelTitle
-	variable number
-
-	Wave TPStorage = GetTPStorage(panelTitle)
-	Note/K TPStorage, ReplaceNumberByKey("TPCycleCount", note(TPStorage), number)
 End
 
 /// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage

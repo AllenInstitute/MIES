@@ -682,3 +682,30 @@ Function ResetDebuggerState(debuggerState)
 		DebuggerOptions enable=1, debugOnError=debugOnError, NVAR_SVAR_WAVE_Checking=nvarChecking
 	endif
 End
+
+/// @brief Returns the numeric value of `key` found in the wave note
+///
+/// The expected wave note format is: `key1:val1;key2:val2;`
+Function GetNumberFromWaveNote(wv, key)
+	Wave wv
+	string key
+
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	return NumberByKey(key, note(wv))
+End
+
+/// @brief Updates the numeric value of `key` found in the wave note to `val`
+///
+/// The expected wave note format is: `key1:val1;key2:val2;`
+Function SetNumberInWaveNote(wv, key, val)
+	Wave wv
+	string key
+	variable val
+
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
+End
