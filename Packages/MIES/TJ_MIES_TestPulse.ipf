@@ -414,6 +414,8 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 	avgTPSS /= dimsize(TPSS, 0)
 
+	///@todo rework the matrxOp calls with sumCols to also use ^t (transposition), so that intstead of
+	/// a `1xm` wave we get a `m` wave (no columns)
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 	AvgBaselineSS /= dimsize(BaselineSS, 0)
 	sprintf StringPath, "%s:BaselineSSAvg" InputDataPath
