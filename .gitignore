@@ -1,6 +1,21 @@
-Packages/doc/latex
 Packages/doc/html
+Packages/MIES/backup
 *.orig
 *.rej
 *.T0
-Packages/MIES/backup
+
+# temp files created by Visual Studio
+*.aps
+*.obj
+*.suo
+*.ncb
+*.idb
+*.pdb
+*.dep
+BuildLog.htm
+*.pch
+*.ilk
+*.vcproj.*
+*.vcxproj.*
+*.manifest
+
