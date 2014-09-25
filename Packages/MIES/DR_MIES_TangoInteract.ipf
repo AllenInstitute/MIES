@@ -378,13 +378,16 @@ Function TangoHDF5Save()
 	convert_to_hdf5("dummyFilename.h5")
 End
 
-// proposed wrapper to dump all experiment data to HDF5 with
-//   specified filename
+/// @brief dump all experiment data to HDF5 file
 Function convert_to_hdf5(filename)
     String filename
     Variable root_id, h5_id
     SetDataFolder root:
     HDF5CreateFile /O /Z h5_id as filename
+    if (V_Flag != 0 ) // HDF5CreateFile failed
+    	print "HDF5Create File failed..."
+    	return -1
+    endif
     HDF5CreateGroup /Z h5_id, "/", root_id
     HDF5SaveGroup /O /R  :, root_id, "/"
     HDF5CloseGroup root_id
