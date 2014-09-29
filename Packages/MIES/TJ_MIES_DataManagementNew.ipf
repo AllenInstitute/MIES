@@ -47,22 +47,20 @@ Function DM_SaveITCData(panelTitle)
 	ED_createWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
 End
 
-Function DM_CreateScaleTPHoldingWave(panelTitle)// TestPulseITC is the TP (test pulse) holding wave.
+Function DM_CreateScaleTPHoldingWave(panelTitle)
 	string panelTitle
-	// variable RowsToCopy = DC_CalculateITCDataWaveLength(panelTitle) / 5
-	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
-	//print TPGlobalPath
-	//variable /g  $TPGlobalPath + ":Duration"
-	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
-	variable RowsToCopy = (GlobalTPDurationVariable * 2)
-	// print "rows to copy =", rowstocopy
-	//variable RowsToCopy = DC_CalculateLongestSweep(panelTitle)
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"
-	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $TestPulseITCPath
-	wave TestPulseITC = $TestPulseITCPath
-	redimension /d TestPulseITC
+
+	dfref testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	NVAR/SDFR=testPulseDFR duration
+	Wave/Z/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDataWave
+
+	ASSERT(WaveExists(ITCDataWave), "ITCDataWave is missing")
+	ASSERT(Duration > 0, "duration is not strictly positive")
+	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
+
+	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
+	Redimension/D TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
