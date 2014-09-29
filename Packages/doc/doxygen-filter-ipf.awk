@@ -2,8 +2,8 @@
 # This awk script serves as input filter for Igor procedures and produces a C-ish version of the declarations
 # Tested with Igor Pro 6.34A and doxygen 1.8.7
 #
-# Thomas Braun: 8/2014
-# Version: 0.22
+# Thomas Braun: 9/2014
+# Version: 0.23
 
 # Supported Features:
 # -Functions
@@ -25,10 +25,21 @@ BEGIN{
 }
 
 # Remove whitespace at beginning and end of string
+# Return the whitespace in front of the string in the
+# global variable frontSpace to be able
+# to reconstruct the indentation
 function trim(str)
 {
-  gsub(/^[[:space:]]+/,"",str)
+  if(match(str, /^[[:space:]]+/))
+  {
+    frontSpace = substr(str, 1, RLENGTH)
+    str = substr(str, RLENGTH + 1)
+  }
+  else
+    frontSpace = ""
+
   gsub(/[[:space:]]+$/,"",str)
+
   return str
 }
 
@@ -217,8 +228,10 @@ function handleParameter(params, a,  i, iOpt, str, entry)
 
   if(!insideMenu)
   {
-    output = output "\n" code "" comment
+    output = output frontSpace code comment
   }
+
+  output = output "\n"
 }
 
 END{
