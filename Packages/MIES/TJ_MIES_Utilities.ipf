@@ -638,3 +638,47 @@ Function RecursiveRemoveEmptyDataFolder(dfr)
 		partialPath = RemoveEnding(partialPath, ":" + StringFromList(i, path, ":"))
 	endfor
 End
+
+/// @name Debugger state constants for DisableDebugger and ResetDebuggerState
+/// @{
+static Constant DEBUGGER_ENABLED        = 0x01
+static Constant DEBUGGER_DEBUG_ON_ERROR = 0x02
+static Constant DEBUGGER_NVAR_CHECKING  = 0x04
+/// @}
+
+/// @brief Disable the debugger
+///
+/// @returns the full debugger state binary encoded. first bit: on/off, second bit: debugOnError on/off, third bit: nvar/svar/wave checking on/off
+Function DisableDebugger()
+
+	variable debuggerState
+	DebuggerOptions
+	debuggerState = V_enable * DEBUGGER_ENABLED + V_debugOnError * DEBUGGER_DEBUG_ON_ERROR + V_NVAR_SVAR_WAVE_Checking * DEBUGGER_NVAR_CHECKING
+
+	if(V_enable)
+		DebuggerOptions enable=0
+	endif
+
+	return debuggerState
+End
+
+/// @brief Reset the debugger to the given state
+///
+/// Useful in conjunction with DisableDebugger() to temporarily disable the debugger
+///@code
+/// variable debuggerState = DisableDebugger()
+/// // code which might trigger the debugger, e.g. CurveFit
+/// ResetDebuggerState(debuggerState)
+/// // now the debugger is in the same state as before
+///@endcode
+Function ResetDebuggerState(debuggerState)
+	variable debuggerState
+
+	variable debugOnError, nvarChecking
+
+	if(debuggerState & DEBUGGER_ENABLED)
+		debugOnError = debuggerState & DEBUGGER_DEBUG_ON_ERROR
+		nvarChecking = debuggerState & DEBUGGER_NVAR_CHECKING
+		DebuggerOptions enable=1, debugOnError=debugOnError, NVAR_SVAR_WAVE_Checking=nvarChecking
+	endif
+End

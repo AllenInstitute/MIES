@@ -578,18 +578,16 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 	wave TPStorage
 	variable endRow, samplingInterval, fittingRange
 
-	variable i, startRow, V_FitOptions, V_FitError, V_AbortCode
+	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode, debuggerState
 
-	startRow     = endRow - ceil(fittingRange / samplingInterval)
-	V_FitOptions = 4
+	startRow = endRow - ceil(fittingRange / samplingInterval)
 
 	if(startRow < 0)
 		return NaN
 	endif
 
-	// used for error supression. Don't want errors in curve fitting stopping
-	// code that interacts with hardware.
 	V_FitOptions = 4
+	debuggerState = DisableDebugger()
 
 	for(i = 0; i < ADChanCount; i += 1)
 			V_FitError  = 0
@@ -606,15 +604,20 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 			TPStorage[startRow,endRow][i][%Rss_Slope] = W_coef[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
+			TPStorage[startRow,endRow][i][%Vm_Slope]    = NaN
+			TPStorage[startRow,endRow][i][%Rpeak_Slope] = NaN
+			TPStorage[startRow,endRow][i][%Rss_Slope]   = NaN
 			DEBUGPRINT("Fit was not successfull")
 			DEBUGPRINT("V_FitError=", var=V_FitError)
+			DEBUGPRINT("V_FitQuitReason=", var=V_FitQuitReason)
 			DEBUGPRINT("V_AbortCode=", var=V_AbortCode)
 			if(V_AbortCode == -4)
-				variable error = GetRTError(1) // clears the error
-				DEBUGPRINT(GetErrMessage(error))
+				DEBUGPRINT(GetErrMessage(GetRTError(1)))
 			endif
 		endtry
 	endfor
+
+	ResetDebuggerState(debuggerState)
 End
 
 /// @brief Resets the TP storage wave
