@@ -378,48 +378,22 @@ Function TangoHDF5Save()
 	convert_to_hdf5("dummyFilename.h5")
 End
 
-//////////////////////////////////
+/// @brief dump all experiment data to HDF5 file
 Function convert_to_hdf5(filename)
-	String filename
-	Variable num_dirs, i, numItems, h5_id
-	String dir_name, wave_list, wave_name, path
-	// move down folder structure looking for where data is stored
-	// assume that hardware device name starts with "I"
-	SetDataFolder root:
-	num_dirs = CountObjects(":", 4)
-	for (i=0; i<num_dirs; i+=1)
-		dir_name = GetIndexedObjName(":", 4, i)
-		print "dir_name: ", dir_name
-		if (stringmatch(dir_name[0], "M"))
-			break
-		endif
-	endfor
-	path = "root:" + dir_name + ":ITCDevices:ITC18USB:Device0:Data:"
+    String filename
+    Variable root_id, h5_id
+    SetDataFolder root:
+    HDF5CreateFile /O /Z h5_id as filename
+    if (V_Flag != 0 ) // HDF5CreateFile failed
+    	print "HDF5Create File failed..."
+    	return -1
+    endif
+    HDF5CreateGroup /Z h5_id, "/", root_id
+    HDF5SaveGroup /O /R  :, root_id, "/"
+    HDF5CloseGroup root_id
+    HDF5CloseFile h5_id
+end
 
-	SetDataFolder path
-
-	HDF5CreateFile /O /Z h5_id as filename
-	if (V_flag != 0)
-		print "HDF5CreateFile failed"
-		return -1
-	endif
-	hdf5_structure(h5_id)
-	// foreach wave, extract data from project and write to hdf5 file
-	wave_list = WaveList("Sweep_*", ";", "")
-	numItems = ItemsInList(wave_list)
-	for (i=0; i<numItems; i+=1)
-		wave_name = StringFromList(i, wave_list)
-		// ignore DA0 and AD0
-		if ((strsearch(wave_name, "AD0", 0) > 0) || (strsearch(wave_name, "DA0", 0) > 0))
-			continue
-		endif
-		Wave data = $wave_name
-		print "Processing " + wave_name
-		create_dataset(h5_id, wave_name, data)
-	endfor
-	HDF5CloseFile h5_id
-	print "HDF5 save complete..."
-End
 
 // creates high-level group structure of HDF5 file
 Function hdf5_structure(h5_id)
