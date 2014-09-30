@@ -218,7 +218,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 		panelTitle = panelTitle[0,SearchResult - 2]//SearchResult+1]
 	endif
 	
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle),1
 		
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	if(v_value == 0)
@@ -294,8 +294,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	// make sure data folder is correct
 	setdatafolder root:
 	
-	// Check if panel is locked to a DAC
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle),1
 	
 	// *** need to modify for yoked devices becuase it is only looking at the lead device
 	// Check if TP uduration is greater than 0 ms	
