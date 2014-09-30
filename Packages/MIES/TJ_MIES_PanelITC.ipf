@@ -2501,6 +2501,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1
 	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1, value= #"\" - none - ;\""
 	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
+	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 
 	SetVariable SetVar_Settings_IC_DAgain WIN = $panelTitle, value= _NUM:400
 

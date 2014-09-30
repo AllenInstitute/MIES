@@ -21,15 +21,6 @@ End // Function
 
 //==========================================================================================
 
-Function DC_TotalChannelsSelected(panelTitle) //DA_00 - DA_07 and AD_00-AD_15, // THIS FUNCTION PROBABLY ISN'T IN USE!!!
-	string panelTitle
-	variable TotalNumOfChanSelected
-	TotalNumOfChanSelected = DC_NoOfChannelsSelected("DA", "Check",panelTitle) + DC_NoOfChannelsSelected("AD", "Check",panelTitle) + DC_NoOfChannelsSelected("TTL", "Check",panelTitle)
-	return TotalNumOfChanSelected
-End
-
-//==========================================================================================
-
 /// @brief The minimum sampling interval is determined by the rack with the most channels selected
 ///
 /// Minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds

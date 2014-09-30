@@ -438,12 +438,6 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	return maxITI
 End
 
-Function/S IDX_GetSet(panelTitle, channel, channelType)
-	string panelTitle
-	variable channel, channelType
-
-End
-
 /// @brief Returns a ";" seperated list of selected set names
 /// @param panelTitle panel
 /// @param channel channel
