@@ -234,10 +234,9 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	if(exists(CountPath) == 2)
 		killvariables $CountPath
 	endif
-	
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
-	
+
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+
 	variable DeviceType = HSU_GetDeviceTypeIndex(panelTitle)
 	variable DeviceNum  = HSU_GetDeviceNumberIndex(panelTitle)
 	
@@ -327,11 +326,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	
 	// update TP buffer size global
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	
-	
-	// update the miniumum sampling interval
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
 	
 	// determine the device type and device number
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType

@@ -3080,8 +3080,7 @@ Function DAP_TabTJHook1(tca)
 		numItems = ItemsInList(ITCPanelTitleList)
 		for(i=0; i < numItems; i+=1)
 			panelTitle = StringFromList(i, ITCPanelTitleList,";")
-			minSampInt = DC_ITCMinSamplingInterval(panelTitle)
-			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:minSampInt
+			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
 		endfor
 	endif
@@ -3184,8 +3183,6 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 
 	DAP_UpdateITIAcrossSets(panelTitle)
 
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:MinSampInt
 	
 	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
@@ -3750,19 +3747,18 @@ Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVari
 	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
 End
 //=========================================================================================
-/// DAP_UpdateITCMinSampIntDisplay
-Function DAP_UpdateITCMinSampIntDisplay()
-	getwindow kwTopWin wtitle
-	string panelTitle = DAP_ReturnPanelName()
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+
+Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	string panelTitle
+
+	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DC_ITCMinSamplingInterval(panelTitle))
 End
 //=========================================================================================
-/// DAP_CheckProc_UnpdateMinSampInt
-Function DAP_CheckProc_UnpdateMinSampInt(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	DAP_UpdateITCMinSampIntDisplay()
+
+Function DAP_CheckProc_UnpdateMinSampInt(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	DAP_UpdateITCMinSampIntDisplay(cba.win)
 End
 //=========================================================================================
 /// DAP_SetVarProc_TotSweepCount
@@ -4069,10 +4065,9 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 				DAP_ApplyClmpModeSavdSettngs(headStageNo, clampMode, panelTitle)
 			endif
 
+			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 			DAP_UpdateITIAcrossSets(panelTitle)
 
-			variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
 			break
 	endswitch
 
