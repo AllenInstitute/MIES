@@ -532,7 +532,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable count = TP_GetTPCycleCount(panelTitle)
 	variable now   = ticks * TICKS_TO_SECONDS
-	variable needsUpdate
+	variable needsUpdate, numCols
 
 	ASSERT(ADchanCount, "Can not proceed with zero active headstages")
 
@@ -550,6 +550,12 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 
 	if(needsUpdate)
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
+
+		numCols = DimSize(TPStorage, COLS)
+		if( numCols != DimSize(BaselineSSAvg, COLS) || numCols != DimSize(InstResistance, COLS) || numCols != DimSize(SSResistance, COLS) )
+			print "BUG! The column count of TPStorage, BaselineSSAvg, InstResistance, SSResistance do not match"
+			return NaN
+		endif
 
 		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
 		TPStorage[count][][%PeakResistance]        = InstResistance[0][q][0]
