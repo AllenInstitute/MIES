@@ -3649,13 +3649,20 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 	endfor
 End
 //=========================================================================================
-Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	DAP_TurnOffAllHeadstages(panelTitle)
-	DAP_TurnOffAllDACs(panelTitle)
-	DAP_TurnOffAllADCs(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
+Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			panelTitle = ba.win
+			DAP_TurnOffAllHeadstages(panelTitle)
+			DAP_TurnOffAllDACs(panelTitle)
+			DAP_TurnOffAllADCs(panelTitle)
+			DAP_TurnOffAllTTLs(panelTitle)
+			break
+	endswitch
 End
 //=========================================================================================
 
