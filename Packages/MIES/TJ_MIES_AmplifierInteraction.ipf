@@ -540,7 +540,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)  	
 	// get the number of headStages...used for building up the ampSettingsWave
 	variable noHeadStages = itemsinlist(controlledHeadStage, ";")
-	
+		
 	// sweep count
 	Variable sweepCount = SweepNo
 	
@@ -554,7 +554,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	if (!WaveExists(ampSettingsWave))
 		//print "making ampSettingsWave..."
 		// create the 3 dimensional wave
-		make /o /n = (1, 16, noHeadStages ) $ampSettingsWavePath = 0
+		make /o /n = (1, 35, noHeadStages ) $ampSettingsWavePath = 0
 		Wave /z ampSettingsWave = $ampSettingsWavePath
 	endif	
 	//Redimension/N=(1, 15, noHeadStages ) ampSettingsWave
@@ -569,7 +569,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	if (!WaveExists(ampSettingsKey))
 		//print "making settingsKey Wave...."
 		// create the 2 dimensional wave
-		make /T /o  /n = (3, 16) $ampSettingsKeyPath
+		make /T /o  /n = (3, 35) $ampSettingsKeyPath
 		Wave/T ampSettingsKey = $ampSettingsKeyPath
 	
 		// Row 0: Parameter
@@ -644,11 +644,88 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 		
 		ampSettingsKey[0][15] =   "Bridge Bal Value"
 		ampSettingsKey[1][15] =   "MOhm"
-		ampSettingsKey[2][15] =   "0.9"		
+		ampSettingsKey[2][15] =   "0.9"
+		
+		// and now add the Axon values to the amp settings key
+		ampSettingsKey[0][16] =   "Serial Number"
+		ampSettingsKey[1][16] =   ""
+		ampSettingsKey[2][16] =   ""
+		
+		ampSettingsKey[0][17] =   "Channel ID"
+		ampSettingsKey[1][17] =   ""
+		ampSettingsKey[2][17] =   ""
+		
+		ampSettingsKey[0][18] =   "ComPort ID"
+		ampSettingsKey[1][18] =   ""
+		ampSettingsKey[2][18] =   ""		
+		
+		ampSettingsKey[0][19] =   "AxoBus ID"
+		ampSettingsKey[1][19] =   ""
+		ampSettingsKey[2][19] =   ""
+		
+		ampSettingsKey[0][20] =   "Operating Mode"
+		ampSettingsKey[1][20] =   ""
+		ampSettingsKey[2][20] =   ""
+		
+		ampSettingsKey[0][21] =   "Scaled Out Signal"
+		ampSettingsKey[1][21] =   ""
+		ampSettingsKey[2][21] =   ""
+		
+		ampSettingsKey[0][22] =   "Alpha"
+		ampSettingsKey[1][22] =   ""
+		ampSettingsKey[2][22] =   ""
+				
+		ampSettingsKey[0][23] =   "Scale Factor"
+		ampSettingsKey[1][23] =   ""
+		ampSettingsKey[2][23] =   ""		
+		
+		ampSettingsKey[0][24] =   "Scale Factor Units"
+		ampSettingsKey[1][24] =   ""
+		ampSettingsKey[2][24] =   ""		
+		
+		ampSettingsKey[0][25] =   "LPF Cutoff"
+		ampSettingsKey[1][25] =   ""
+		ampSettingsKey[2][25] =   ""
+		
+		ampSettingsKey[0][26] =   "Membrane Cap"
+		ampSettingsKey[1][26] =   "pF"
+		ampSettingsKey[2][26] =   "0.9"
+		
+		ampSettingsKey[0][27] =   "Ext Cmd Sens"
+		ampSettingsKey[1][27] =   ""
+		ampSettingsKey[2][27] =   ""
+		
+		ampSettingsKey[0][28] =   "Raw Out Signal"
+		ampSettingsKey[1][28] =   ""
+		ampSettingsKey[2][28] =   ""
+		
+		ampSettingsKey[0][29] =   "Raw Scale Factor"
+		ampSettingsKey[1][29] =   ""
+		ampSettingsKey[2][29] =   ""
+		
+		ampSettingsKey[0][30] =   "Raw Scale Factor Units"
+		ampSettingsKey[1][30] =   ""
+		ampSettingsKey[2][30] =   ""
+		
+		ampSettingsKey[0][31] =   "Hardware Type"
+		ampSettingsKey[1][31] =   ""
+		ampSettingsKey[2][31] =   ""
+		
+		ampSettingsKey[0][32] =   "Secondary Alpha"
+		ampSettingsKey[1][32] =   ""
+		ampSettingsKey[2][32] =   ""
+		
+		ampSettingsKey[0][33] =   "Secondary LPF Cutoff"
+		ampSettingsKey[1][33] =   ""
+		ampSettingsKey[2][33] =   ""
+		
+		ampSettingsKey[0][34] =   "Series Resistance"
+		ampSettingsKey[1][34] =   "MOhms"
+		ampSettingsKey[2][34] =   "0.9"		
 	endif
 	
 	// Now populate the Settings Wave
-	// the wave is 1 row, 15 columns, and headstage number layers
+	// the wave is 1 row, 35 columns, and headstage number layers
 	// first...determine if the head stage is being controlled
 	variable i
 	for(i = 0; i < noHeadStages ; i += 1)
@@ -657,9 +734,17 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 			string serial    = AI_GetAmpMCCSerial(panelTitle, i)
 			variable channel = AI_GetAmpChannel(panelTitle, i)
 
+			print "serial: ", serial
+			print "channel: ", channel
+			
 			if(AI_IsValidSerialAndChannel(mccSerial=serial, channel=channel)) // checks to make sure amp is associated with MIES headstage
 
 				MCC_SelectMultiClamp700B(serial, channel)
+								
+				// get the data structure to get axon telegraph information
+				STRUCT AxonTelegraph_DataStruct tds
+				Init_AxonTelegraph_DataStruct(tds)				
+				AxonTelegraphGetDataStruct(str2num(serial), channel, 1, tds)
 
 				// now start to query the amp to get the status
 				//Figure out if we are looking at current clamp mode or voltage clamp mode
@@ -714,6 +799,27 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 					// save bridge balance enabled in column 15
 					ampSettingsWave[0][15][i] =  (MCC_GetBridgeBalResist() * 1e-6)	 // I-Clamp Bridge Balance Resist
 				endif
+				
+			// save the axon telegraph settings as well
+				ampSettingsWave[0][16][i] = tds.SerialNum
+				ampSettingsWave[0][17][i] = tds.ChannelID
+				ampSettingsWave[0][18][i] = tds.ComPortID
+				ampSettingsWave[0][19][i] = tds.AxoBusID
+				ampSettingsWave[0][20][i] = tds.OperatingMode
+				ampSettingsWave[0][21][i] = tds.ScaledOutSignal
+				ampSettingsWave[0][22][i] = tds.Alpha
+				ampSettingsWave[0][23][i] = tds.ScaleFactor
+				ampSettingsWave[0][24][i] = tds.ScaleFactorUnits
+				ampSettingsWave[0][25][i] = tds.LPFCutoff
+				ampSettingsWave[0][26][i] = (tds.MembraneCap * 1e+12) // converts F to pF
+				ampSettingsWave[0][27][i] = tds.ExtCmdSens
+				ampSettingsWave[0][28][i] = tds.RawOutSignal
+				ampSettingsWave[0][29][i] = tds.RawScaleFactor
+				ampSettingsWave[0][30][i] = tds.RawScaleFactorUnits
+				ampSettingsWave[0][31][i] = tds.HardwareType
+				ampSettingsWave[0][32][i] = tds.SecondaryAlpha
+				ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
+				ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
 			endif
 		endif
 	endfor
