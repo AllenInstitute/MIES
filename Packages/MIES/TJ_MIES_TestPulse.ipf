@@ -414,6 +414,8 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 	avgTPSS /= dimsize(TPSS, 0)
 
+	///@todo rework the matrxOp calls with sumCols to also use ^t (transposition), so that intstead of
+	/// a `1xm` wave we get a `m` wave (no columns)
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 	AvgBaselineSS /= dimsize(BaselineSS, 0)
 	sprintf StringPath, "%s:BaselineSSAvg" InputDataPath
@@ -468,7 +470,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 
 	i = 0
 	do
-		if((str2num(stringfromlist(i, ClampModeString, ";"))) == 1)
+		if((str2num(stringfromlist(i, ClampModeString, ";"))) == I_CLAMP_MODE)
 			// R = V / I
 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
 			Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
@@ -511,6 +513,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	endif
 
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, NoOfActiveDA)
+	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
 
 /// Sampling interval in seconds
@@ -530,7 +533,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 	variable ADchanCount
 
 	Wave TPStorage = GetTPStorage(panelTitle)
-	variable count = TP_GetTPCycleCount(panelTitle)
+	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	variable now   = ticks * TICKS_TO_SECONDS
 	variable needsUpdate, numCols
 
@@ -564,7 +567,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
 		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 
-		TP_SetTPCycleCount(panelTitle, count + 1)
+		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, count, samplingInterval, fittingRange)
 	endif
 End
@@ -635,7 +638,7 @@ Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
 
 	Wave TPStorage = GetTPStorage(panelTitle)
-	variable count = TP_GetTPCycleCount(panelTitle)
+	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	string name
 
 	if(count > 0)
@@ -644,29 +647,12 @@ Function TP_ResetTPStorage(panelTitle)
 		if(GetCheckBoxState(panelTitle, "check_Settings_TP_SaveTPRecord"))
 			name = NameOfWave(TPStorage)
 			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, name + "_\d+"))))
-			// reset TPCycleCount in case the wave can not be killed
-			TP_SetTPCycleCount(panelTitle,0)
+			// reset counters in wave note in case the wave can not be killed
+			SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
+			SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 			KillWaves/Z TPStorage
 		endif
 	endif
-End
-
-static Function TP_GetTPCycleCount(panelTitle)
-	string panelTitle
-	variable number
-
-	Wave TPStorage = GetTPStorage(panelTitle)
-	number = NumberByKey("TPCycleCount", note(TPStorage))
-	ASSERT(IsFinite(number), "TPCycleCount as found in the wave note is non-finite")
-	return number
-End
-
-static Function TP_SetTPCycleCount(panelTitle, number)
-	string panelTitle
-	variable number
-
-	Wave TPStorage = GetTPStorage(panelTitle)
-	Note/K TPStorage, ReplaceNumberByKey("TPCycleCount", note(TPStorage), number)
 End
 
 /// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
@@ -686,14 +672,14 @@ Function/S TP_ClampModeString(panelTitle)
 	ClampModeString = ""
 	
 	do
-		ClampModeString += (num2str(TP_HeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
+		ClampModeString += (num2str(AI_MIESHeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
 		i += 1
 	while(i < itemsinlist(ADChannelList))
 
 	return ClampModeString
 End
 
-/// @brief Find the headstage using a particular AD
+///@brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
 
@@ -714,7 +700,7 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 	return NaN
 End
 
-/// @brief Find the headstage using a particular DA
+///@brief Find the headstage using a particular DA channel
 Function TP_HeadstageUsingDAC(panelTitle, DA)
 	string panelTitle
 	variable DA
@@ -734,39 +720,11 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 	return NaN
 End
 
-Function TP_HeadstageMode(panelTitle, HeadStage) // returns the clamp mode of a "headstage"
-	string panelTitle
-	variable Headstage
-	variable ClampMode
-	Headstage*=2
-
-	string ControlName = "Radio_ClampMode_" + num2str(HeadStage)
-	
-	controlinfo /w = $panelTitle $ControlName
-	if(v_value == 1)
-		clampMode = 0 // V clamp
-		return clampMode
-	endif
-	
-	if(v_value == 0)
-		clampMode = 1 // I clamp
-		return clampMode
-	endif
-	
-	return ClampMode
-End
-
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string panelTitle, OpName
-	variable NoYes // no = 0, 1 = yes
+
 	CtrlNamedBackground $OpName, status
-	if(str2num(stringfromlist(2, s_info, ";")[4])==0)
-		NoYes = 0 // NO = 0
-	else
-		NoYes = 1 // YES = 1
-	endif
-	
-	return NoYes
+	return ( str2num(StringFromList(2, s_info, ";")[4]) != 0 )
 End
 
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.

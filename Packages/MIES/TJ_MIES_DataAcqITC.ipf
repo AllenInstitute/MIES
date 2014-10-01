@@ -18,9 +18,6 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
-	// open ITC device
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	//Execute cmd
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
@@ -28,8 +25,6 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	//print cmd
 	execute cmd
-	
-
 
 	do
 
@@ -63,9 +58,6 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 		i += 1
 	while (i < 1)// 
 	
-	//sprintf cmd, "ITCCloseAll" 
-	//execute cmd
-
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
 		DM_SaveITCData(panelTitle)
@@ -113,10 +105,6 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	if(RepeatedAcqOnOrOff == 1)
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
-
-	
-	
-	
 	
 	sprintf cmd, "ITCStartAcq" 
 		Execute cmd	
@@ -164,17 +152,9 @@ Function ITC_StopDataAcq()
 		//print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
 		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
-	
-	//killvariables /z StopCollectionPoint, ADChannelToMonitor
-	//killvariables /z  ADChannelToMonitor
-	//killstrings /z PanelTitleG
 END
 //======================================================================================
-Function ITC_ZeroTheInstrutechDevice()
-string cmd
-sprintf cmd, "ITCSetDac /z =0 0, 0;ITCSetDac /z = 0 1, 0;ITCSetDac /z = 0 2, 0;ITCSetDac /z =0 3, 0;ITCSetDac /z = 0 4, 0;ITCSetDac /z = 0 5, 0;ITCSetDac /z = 0 6, 0;ITCSetDac /z = 0 7, 0"
-execute cmd
-END
+
 //======================================================================================
 Function ITC_StartBckgrdFIFOMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, period = 2, proc = ITC_FIFOMonitor
@@ -203,13 +183,10 @@ Function ITC_FIFOMonitor(s)
 	return 0
 End
 
-
-
 Function ITC_STOPFifoMonitor()
 CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 //======================================================================================
-
 
 Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
 	Variable RunTimePassed//how long you want the background timer to run in seconds
@@ -381,48 +358,146 @@ Function ITC_STOPTestPulse(panelTitle)
 	killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
 
-//======================================================================================
+static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
+static Constant AUTOBIAS_INTERVALL_SECONDS = 2
 
+/// @brief Handle automatic bias current injection
+///
+/// @param panelTitle	locked panel with test pulse running occasionally
+/// @param BaselineSSAvg
+/// @param SSResistance
+Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+	string panelTitle
+	Wave BaselineSSAvg, SSResistance
+
+	variable headStage, entries, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
+	variable activeHeadStages
+	variable resistance, maximumAutoBiasCurrent
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
+	variable curTime = ticks * TICKS_TO_SECONDS
+
+	if( (curTime - lastInvocation) < AUTOBIAS_INTERVALL_SECONDS )
+		return NaN
+	endif
+
+	DEBUGPRINT("ITC_ApplyAutoBias's turn, curTime=", var=curTime)
+	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime)
+
+	if(isEmpty(panelTitle))
+		DEBUGPRINT("Can't work with an empty panelTitle")
+		return NaN
+	endif
+
+	Wave channelClampMode = GetChannelClampMode(panelTitle)
+	Wave ampSettings      = GetAmplifierParamStorageWave(panelTitle)
+
+	entries = DimSize(ampSettings, LAYERS)
+	activeHeadStages = 0
+	for(headStage=0; headStage < entries; headStage+=1)
+
+		// From DAP_RemoveClampModeSettings and DAP_ApplyClmpModeSavdSettngs we know that
+		// both wave entries are NaN iff the headstage is unset
+		if(!IsFinite(channelClampMode[headStage][%DAC]) || !IsFinite(channelClampMode[headStage][%ADC]))
+			continue
+		endif
+
+		activeHeadStages +=1
+
+		// headStage channels not in current clamp mode
+		if(channelClampMode[headStage][%DAC] != I_CLAMP_MODE && channelClampMode[headStage][%ADC] != I_CLAMP_MODE)
+			continue
+		endif
+
+		// autobias not enabled
+		if(!ampSettings[%AutoBiasEnable][0][headStage])
+			continue
+		endif
+
+		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
+
+		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * 1e-12)
+		if(maximumAutoBiasCurrent == 0 || maximumAutoBiasCurrent > DEFAULT_MAXAUTOBIASCURRENT)
+			printf "Warning for headStage %d: replacing invalid maximum auto bias currrent of %g with %g\r", headStage, maximumAutoBiasCurrent, DEFAULT_MAXAUTOBIASCURRENT
+			maximumAutoBiasCurrent = DEFAULT_MAXAUTOBIASCURRENT
+		endif
+
+		/// all variables holding physical units use plain values without prefixes
+		/// e.g Amps instead of pA
+
+		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
+		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
+
+		resistance = SSResistance[0][activeHeadStages - 1] * 1e6
+		setVoltage = BaselineSSAvg[0][activeHeadStages - 1] * 1e-3
+
+		DEBUGPRINT("resistance=", var=resistance)
+		DEBUGPRINT("setVoltage=", var=setVoltage)
+		DEBUGPRINT("targetVoltage=", var=targetVoltage)
+
+		// if we are in the desired voltage region, check the next headstage
+		if(abs(targetVoltage - setVoltage) < targetVoltageTol)
+			continue
+		endif
+
+		// neuron needs a current shot
+		// I = U / R
+		current = ( targetVoltage - setVoltage ) / resistance
+		DEBUGPRINT("current=", var=current)
+
+		actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
+		DEBUGPRINT("actualCurrent=", var=actualCurrent)
+
+		if(!IsFinite(actualCurrent))
+			print "Queried amplifier current is non-finite"
+			continue
+		endif
+
+		current += actualCurrent
+		// only use 80% of the calculated current, as BaselineSSAvg holds
+		// an overestimate for small buffer sizes
+		current *= 0.80
+
+		if( abs(current) > maximumAutoBiasCurrent)
+			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
+			continue
+		endif
+
+		DEBUGPRINT("current to send=", var=current)
+		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
+		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
+	endfor
+End
 
 //ITC_StartBackgroundTestPulse();ITC_StartBackgroundTimer(20, "ITC_STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
 
 Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
+
 	string cmd
 	variable i = 0
-	//variable StopCollectionPoint = DC_CalculateITCDataWaveLength(panelTitle) / 5
 	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
-	//ModifyGraph /w = $oscilloscopeSubWindow Live =0
-	//doupdate /w = $oscilloscopeSubWindow
-	//ModifyGraph /w = $oscilloscopeSubWindow Live =1
+
 	TP_ResetTPStorage(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	
-	//wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	
-	//wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string ITCDataWavePath = WavePath + ":ITCDataWave"
-	
 	wave ITCFIFOAvailAllConfigWave = $WavePath+ ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
 	string ITCFIFOAvailAllConfigWavePath = WavePath+ ":ITCFIFOAvailAllConfigWave"
 	
-	//wave ITCFIFOPositionAllConfigWave = $WavePath + ":ITCFIFOPositionAllConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	
-	//wave ResultsWave = $WavePath + ":ResultsWave"
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	
 	string Keyboard
 
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
-	// open ITC device
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	//Execute cmd	
 	
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -431,17 +506,18 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 	do
+		// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+		// this also seems necessary to update the DA channel data to the board!!
+		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth
+		execute cmd
+		sprintf cmd, "ITCStartAcq"
+		Execute cmd
 
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		execute cmd // this also seems necessary to update the DA channel data to the board!!
-		sprintf cmd, "ITCStartAcq"// /f/r=0/z=0 -1,0,1,1"//   
-		Execute cmd	
-			do
-				sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
-				Execute cmd	
-				//doxopidle
-			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
-		//Check Status
+		do
+			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
+			Execute cmd
+		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
+
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
 		sprintf cmd, "ITCStopAcq /z = 0"
@@ -450,8 +526,6 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
 		doupdate
-		//itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
-		//doupdate
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 		if(mod(i, 50) == 0)
@@ -460,18 +534,11 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 		endif
 		i += 1	
 		Keyboard = KeyboardState("")
-	while (cmpstr(Keyboard[9], " ") != 0)// 
+	while (cmpstr(Keyboard[9], " ") != 0)
 	
-	//sprintf cmd, "ITCCloseAll" 
-	//execute cmd
-
 	DAP_RestoreTTLState(panelTitle)
 	ITC_TPDocumentation(panelTitle)
-	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 2)
-		Button StartTestPulseButton, win = $panelTitle, disable = 0
-	endif
-
+	EnableControl(panelTitle,"StartTestPulseButton")
 END
 //======================================================================================
 

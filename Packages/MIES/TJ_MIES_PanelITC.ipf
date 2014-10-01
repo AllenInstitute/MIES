@@ -2208,9 +2208,6 @@ Window da_ephys() : Panel
 	CheckBox check_DatAcq_CNEnable,pos={178,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
-	Button button_DataAcq_AutoBB,pos={235,191},size={38,18},disable=1,title="AUTO"
-	Button button_DataAcq_AutoBB,userdata(tabnum)=  "1"
-	Button button_DataAcq_AutoBB,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	TitleBox Title_DataAcq_CN,pos={41,211},size={86,13},disable=1,title="Cap Neutralization"
 	TitleBox Title_DataAcq_CN,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
@@ -2235,14 +2232,14 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,userdata(tabnum)=  "1"
 	CheckBox check_DataAcq_AutoBias,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
-	SetVariable setvar_DataAcq_Ri,pos={310,208},size={79,18},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Ri (M\\F'Symbol'W\\F'MS Sans Serif')"
-	SetVariable setvar_DataAcq_Ri,userdata(tabnum)=  "1"
-	SetVariable setvar_DataAcq_Ri,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_Ri,value= _NUM:0
-	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={41,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
-	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
+	SetVariable setvar_DataAcq_IbiasMax,pos={310,209},size={120,20},proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={46,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasVrange,value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1}
 	TitleBox Title_DataAcq_Hold_VC,pos={70,172},size={60,13},disable=1,title="Holding (mV)"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
@@ -2713,7 +2710,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	Slider slider_DataAcq_ActiveHeadstage  WIN = $panelTitle,value= 0
 	SetVariable SetVar_DataAcq_AutoBiasV WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DataAcq_AutoBias WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_Ri WIN = $panelTitle,value= _NUM:0
+	SetVariable setvar_DataAcq_IbiasMax WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_Hold_VC WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC WIN = $panelTitle,value= 0
@@ -2740,7 +2737,6 @@ End
 //=========================================================================================
 // DAP = Data Acquisition Panel
 //=========================================================================================
-
 
 Function DAP_WindowHook(s)
 	STRUCT WMWinHookStruct &s
@@ -2855,66 +2851,6 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 End
 //=========================================================================================
 
-
-//Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
-//	String ctrlName
-//	Variable varNum
-//	String varStr
-//	String varName
-//	String TTL_No = ctrlName[11,inf]
-//	String TTLPopUpMenuName = "Wave_TTL_" + TTL_No
-//	String TTLIndexEndPopMenuName="Popup_TTL_IndexEnd_" + TTL_No
-//	String FirstTwoMenuItems = "\"- none -;"
-//	String SearchString
-//	String value, ListOfWaves
-//	variable i = 0
-//	string panelTitle = DAP_ReturnPanelName()
-//	
-//	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-//	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
-//	
-//	controlinfo /w = $panelTitle SearchUniversal_TTL_00
-//	if(v_value == 1)
-//		controlinfo /w = $panelTitle Search_TTL_00
-//		If(strlen(s_value) == 0)
-//			SearchString = "*TTL*"
-//		else
-//			SearchString = s_value
-//		endif
-//		
-//		value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
-//		listOfWaves = wavelist(searchstring,";","")
-//
-//		do
-//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
-//			i += 1
-//		while(i < 8)
-//	
-//	else
-//		If(strlen(varstr) == 0)
-//			SearchString = "*TTL*"
-//			value = FirstTwoMenuItems+wavelist(SearchString,";","") + "\""
-//			listOfWaves = wavelist(searchstring,";","")
-//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
-//		else
-//			SearchString = varstr
-//			value = FirstTwoMenuItems + wavelist(SearchString,";","") + "\""
-//			listOfWaves = wavelist(searchstring,";","")
-//			TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #value, userdata(MenuExp) = ListOfWaves
-//			TTLIndexEndPopMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//			popupmenu $TTLIndexEndPopMenuName win = $panelTitle, value = #value
-//		endif
-//	endif
-//	setdatafolder saveDFR
-//End
-
 Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
 	String ctrlName
 	Variable varNum
@@ -2984,41 +2920,6 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 	setdatafolder saveDFR
 End
 //=========================================================================================
-
-
-//Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
-//	String ctrlName
-//	Variable checked
-//	String SearchString
-//	string panelTitle=DAP_ReturnPanelName()
-//	
-//	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-//	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
-//	
-//	controlinfo /w = $panelTitle Search_TTL_00
-//	if(strlen(s_value) == 0)
-//		SearchString = "*TTL*"
-//	else
-//		SearchString = s_value
-//	endif
-//	
-//	String TTLPopUpMenuName // = "Wave_DA_"
-//	String IndexEndPopUpMenuName
-//	String FirstTwoMenuItems = "\"- none -;"
-//	variable i = 0
-//	
-//	string popupValue = FirstTwoMenuItems+wavelist(searchstring,";","") + "\""
-//	string listOfWaves = wavelist(searchstring,";","")
-//	do
-//		TTLPopUpMenuName = "Wave_TTL_0" + num2str(i)
-//		popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-//		IndexEndPopUpMenuName = "Popup_TTL_IndexEnd_0" + num2str(i)
-//		popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-//		i += 1
-//	while(i < 8)
-//
-//	setdatafolder saveDFR
-//End
 
 Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -4480,100 +4381,115 @@ Function /S DAP_HeadstageStateList(panelTitle)
 	return HeadstageState
 End
 
+Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
+	struct WMButtonAction &ba
 
-//=========================================================================================
-// FUNCTION BELOW IS FOR IMPORTING GAIN SETTINGS
-//=========================================================================================
-/// DAP_ButtonProc_AutoFillGain
-Function DAP_ButtonProc_AutoFillGain(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	string wavePath = HSU_DataFullFolderPathString(panelTitle)
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	string W_TelegraphServersPath 
-	sprintf W_TelegraphServersPath, "%s:W_TelegraphServers" Path_AmpFolder(panelTitle)
-	wave W_TelegraphServers = $W_TelegraphServersPath
-// Is an amp associated with the headstage?
-	controlInfo /w = $panelTitle Popup_Settings_HeadStage
-	variable HeadStageNo = v_value - 1
+	string panelTitle
+	variable headStage, axonSerial
 
-	if(numtype(ChanAmpAssign[8][HeadStageNo]) != 2)
-		// Is the amp still connected?
-		findValue /I = (ChanAmpAssign[8][HeadStageNo]) /T = 0 $W_TelegraphServersPath
-		if(V_value != -1)
-			HSU_AutoFillGain(panelTitle)
-			HSU_UpdateChanAmpAssignStorWv(panelTitle)
-		endif
-	elseif(numtype(ChanAmpAssign[8][HeadStageNo]) == 2)
-		print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
-	endif
+	switch( ba.eventCode )
+		case 2: // mouse up
+			panelTitle = ba.win
+			Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+			Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
+
+			// Is an amp associated with the headstage?
+			headStage  = GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
+			axonSerial = ChanAmpAssign[8][headStage]
+
+			if(!IsFinite(axonSerial))
+				print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
+				break
+			endif
+
+			// Is the amp still connected?
+			FindValue/I=(axonSerial)/T=0 W_TelegraphServers
+			if(V_Value != -1)
+				HSU_AutoFillGain(panelTitle)
+				HSU_UpdateChanAmpAssignStorWv(panelTitle)
+			endif
+			break
+	endswitch
+
+	return 0
 End
 
 //=========================================================================================
 // FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
 //=========================================================================================
 
-/// DAP_SliderProc_MIESHeadStage
-Function DAP_SliderProc_MIESHeadStage(ctrlName,sliderValue,event) : SliderControl
-	String ctrlName
-	Variable sliderValue
-	Variable event	// bit field: bit 0: value set, 1: mouse down, 2: mouse up, 3: mouse moved
-	string panelTitle 
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	if(event %& 0x1)	// bit 0, value set
-		AI_UpdateAmpView(panelTitle, sliderValue)
-		variable Mode = AI_MIESHeadstageMode(panelTitle, sliderValue)
-		DAP_ExecuteAdamsTabcontrolAmp(panelTitle, Mode) // chooses the amp tab accoding to the MIES headstage clamp mode
+Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
+	struct WMSliderAction &sc
+
+	string panelTitle
+	variable mode, headStage
+
+	if(sc.eventCode & 0x1)
+			panelTitle = sc.win
+			headStage  = sc.curVal
+
+			AI_UpdateAmpView(panelTitle, headStage)
+			mode = AI_MIESHeadstageMode(panelTitle, headStage)
+			// chooses the amp tab accoding to the MIES headstage clamp mode
+			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
 	endif
 
 	return 0
 	
 End
 
-/// DAP_SetVarProc_AmpCntrls
-Function DAP_SetVarProc_AmpCntrls(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	string panelTitle 
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	// print paneltitle
-	if(stringmatch(panelTitle, "") == 0)
-		string AmpSettingsFolderPathStr 
-		sprintf AmpSettingsFolderPathStr, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
-		if(waveexists($AmpSettingsFolderPathStr) == 0) // ensures that the storage wave for the amp data exists.
-			AI_CreateAmpParamStorageWave(panelTitle)
-		endif
-			AI_UpdateAmpModel(panelTitle, ctrlName)
-	else
-		print "Associate the panel with a DAC prior to using panel"
-	endif
-	
+Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	string panelTitle, ctrl
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+			panelTitle = sva.win
+			ctrl       = sva.ctrlName
+
+			AI_UpdateAmpModel(panelTitle, ctrl)
+			break
+		case 3: // Live update
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
 
-/// DAP_CheckProc_AmpCntrls
-Function DAP_CheckProc_AmpCntrls(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle 
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	AI_UpdateAmpModel(panelTitle, ctrlName)
+Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
+	struct WMCheckboxAction &cba
+
+	string panelTitle, ctrl
+
+	switch( cba.eventCode )
+		case EVENT_MOUSE_UP:
+			panelTitle = cba.win
+			ctrl       = cba.ctrlName
+
+			AI_UpdateAmpModel(panelTitle, ctrl)
+			break
+	endswitch
+
+	return 0
 End
 
 /// DAP_ExecuteAdamsTabcontrolAmp
-Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, TabToGoTo)
+Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
 	string panelTitle
-	variable TabToGoTo
+	variable tabID
+
 	Struct WMTabControlAction tca
 	
 	tca.ctrlName = "tab_DataAcq_Amp"	
 	tca.win	= panelTitle	
 	tca.eventCode = 2	
-	tca.tab = TabToGoTo
+	tca.tab = tabID
 
-	Variable returnedValue = ACL_DisplayTab(tca)
-
+	ACL_DisplayTab(tca)
 End
 
 //=========================================================================================

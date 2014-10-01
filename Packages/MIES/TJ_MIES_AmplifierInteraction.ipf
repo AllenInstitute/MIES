@@ -5,35 +5,28 @@ Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 
-Function /t AI_ReturnListOf700BChannels(panelTitle)
+Function/S AI_ReturnListOf700BChannels(panelTitle)
 	string panelTitle
-	Variable TotalNoChannels
-	Variable i = 0
-	String ChannelList = ""
-	String Value
-	String AmpAndChannel
-	//make/o/n=0 W_TelegraphServers
-	//AxonTelegraphFindServers
-	wave /z W_TelegraphServers = $(Path_AmpFolder(panelTitle) + ":W_TelegraphServers")
-	TotalNoChannels = DimSize(W_TelegraphServers, 0 )// 0 is for rows, 1 for columns, 2 for layers, 3 for chunks
-		
-		if(TotalNoChannels > 0)
-			do
-			sprintf Value, "%g" W_TelegraphServers[i][0]
-			sprintf AmpAndChannel, "AmpNo %s Chan %g", Value, W_TelegraphServers[i][1]
-			ChannelList = addListItem(AmpAndChannel, ChannelList, ";", i)
-		//	ChannelList += "AmpNo " + Value + " Chan " + num2str(W_TelegraphServers[i][1]) + ";"
-			i += 1
-			while(i < TotalNoChannels)
-		endif
-	
-	if(cmpstr(ChannelList, "") == 0)
-		ChannelList = "MC not available;"
-		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-	endif
-	
-	return ChannelList
 
+	variable numRows
+	variable i
+	string str
+	string list = ""
+
+	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
+
+	numRows = DimSize(W_TelegraphServers, ROWS)
+	if(!numRows)
+		print "Activate Multiclamp Commander software to populate list of available amplifiers"
+		return "MC not available;"
+	endif
+
+	for(i=0; i < numRows; i+=1)
+		sprintf str, "AmpNo %d Chan %d", W_TelegraphServers[i][0], W_TelegraphServers[i][1]
+		list = AddListItem(str, list, ";", inf)
+	endfor
+
+	return list
 End
 
 //==================================================================================================
@@ -235,186 +228,99 @@ End
 
 /// @name Possible values for the function parameter of AI_SendToAmp()
 /// @{
-static Constant MCC_SETHOLDING_FUNC             = 0x01
-static Constant MCC_SETHOLDINGENABLE_FUNC       = 0x02
-static Constant MCC_SETWHOLECELLCOMPCAP_FUNC    = 0x04
-static Constant MCC_SETWHOLECELLCOMPRESIST_FUNC = 0x08
-static Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x10
-static Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x20
-static Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x30
-static Constant MCC_SETRSCOMPENABLE_FUNC        = 0x40
-static Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x50
-static Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x60
-static Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x70
-static Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x80
+Constant MCC_SETHOLDING_FUNC             = 0x01
+Constant MCC_GETHOLDING_FUNC             = 0x02
+Constant MCC_SETHOLDINGENABLE_FUNC       = 0x04
+Constant MCC_SETWHOLECELLCOMPCAP_FUNC    = 0x08
+Constant MCC_SETWHOLECELLCOMPRESIST_FUNC = 0x10
+Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x20
+Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x30
+Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x40
+Constant MCC_SETRSCOMPENABLE_FUNC        = 0x50
+Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x60
+Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x70
+Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x80
+Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x90
 /// @}
 
-/// @brief Generic function to interface with the MCC amplifier
+/// @brief Generic interface to call MCC amplifier functions
 ///
-/// @param panelTitle 	locked panel name to work on
-/// @param mode			one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
-/// @param function		Function to call
-/// @param value		Numerical value to send
-static Function AI_SendToAmp(panelTitle, mode, function, value)
+/// @param panelTitle locked panel name to work on
+/// @param headStage  number of the headStage, must be between 0 and 7
+/// @param mode       one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
+/// @param func       Function to call
+/// @param value      Numerical value to send, ignored for MCC_GETHOLDING_FUNC
+/// @returns return value or error condition. An error is indicated by a return value of NaN.
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string panelTitle
-	variable mode, function, value
+	variable headStage, mode, func, value
 
-	variable error, headStage, channel
+	variable ret, channel
 	string serial
 
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	ASSERT(headStage >= 0 && headStage <= 7, "invalid headStage index")
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
-	if(AI_MIESHeadstageMode(panelTitle, headStage) == mode && AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
-		serial  = AI_GetAmpMCCSerial(panelTitle, headStage)
-		channel = AI_GetAmpChannel(panelTitle, headStage)
-
-		if(AI_IsValidSerialAndChannel(mccserial=serial, channel=channel))
-
-			MCC_SelectMultiClamp700B(serial, channel)
-
-			switch(function)
-				case MCC_SETHOLDING_FUNC:
-					error = MCC_Setholding(value)
-					break
-				case MCC_SETHOLDINGENABLE_FUNC:
-					error = MCC_SetholdingEnable(value)
-					break
-				case MCC_SETWHOLECELLCOMPCAP_FUNC:
-					error = MCC_SetWholeCellCompCap(value)
-					break
-				case MCC_SETWHOLECELLCOMPRESIST_FUNC:
-					error = MCC_SetWholeCellCompResist(value)
-					break
-				case MCC_SETWHOLECELLCOMPENABLE_FUNC:
-					error = MCC_SetWholeCellCompEnable(value)
-					break
-				case MCC_SETRSCOMPCORRECTION_FUNC:
-					error = MCC_SetRsCompCorrection(value)
-					break
-				case MCC_SETRSCOMPPREDICTION_FUNC:
-					error = MCC_SetRsCompPrediction(value)
-					break
-				case MCC_SETRSCOMPENABLE_FUNC:
-					error = MCC_SetRsCompEnable(value)
-					break
-				case MCC_SETBRIDGEBALRESIST_FUNC:
-					error = MCC_SetBridgeBalResist(value)
-					break
-				case MCC_SETBRIDGEBALENABLE_FUNC:
-					error = MCC_SetBridgeBalEnable(value)
-					break
-				case MCC_SETNEUTRALIZATIONCAP_FUNC:
-					error = MCC_SetNeutralizationCap(value)
-					break
-				default:
-					ASSERT(0, "Unknown function")
-					break
-			endswitch
-
-			if(!IsFinite(error))
-				print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
-			endif
-		endif
+	if(AI_MIESHeadstageMode(panelTitle, headStage) != mode && !AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+		return NaN
 	endif
-End
-//==================================================================================================
-Function AI_SEndVHoldToAmp(panelTitle, holdingV)
-	string panelTitle
-	variable holdingV
 
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, holdingV * 1e-3)
-End
-//==================================================================================================
-Function AI_SendVHoldEnableToAmp(panelTitle, enableHolding)
-	string panelTitle
-	variable enableHolding
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, enableHolding)
-End
-//==================================================================================================
-Function AI_SendWCCToAmp(panelTitle, capacitance)
-	string panelTitle
-	variable capacitance
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, capacitance * 1e-12)
-End
-//==================================================================================================
-Function AI_SendWCRToAmp(panelTitle, resistance)
-	string panelTitle
-	variable resistance
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, resistance * 1e6)
-End
-//==================================================================================================
-Function AI_SendEnableWCToAmp(panelTitle, enableWholeCell)
-	string panelTitle
-	variable enableWholeCell
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, enableWholeCell)
-End
-//==================================================================================================
-Function AI_SendRsCompCorrToAmp(panelTitle, correction)
-	string panelTitle
-	variable correction
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, correction)
-End
-//==================================================================================================
-Function AI_SendRsCompPredToAmp(panelTitle, prediction)
-	string panelTitle
-	variable prediction
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, prediction)
-End
-//==================================================================================================
-Function AI_SendRsCompEnableToAmp(panelTitle, enableRsComp)
-	string panelTitle
-	variable enableRsComp
-	
-	AI_SendToAmp(panelTitle, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, enableRsComp)
-End
-//==================================================================================================
-Function AI_SendBiasIToAmp(panelTitle, biasCurrent)
-	string panelTitle
-	variable biasCurrent
-	
-	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, biasCurrent * 1e-12)
-End
-//==================================================================================================
-Function AI_BiasToAmp(panelTitle, biasEnable)
-	string panelTitle
-	variable biasEnable
-	
-	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, biasEnable)
-End
-//==================================================================================================
-Function AI_BridgeBalanceToAmp(panelTitle, bridgeBalance)
-	string panelTitle
-	variable bridgeBalance
-	
-	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, bridgeBalance * 1e6)
-End
-//==================================================================================================
-Function AI_BridgeBalanceEnableToAmp(panelTitle, bridgeBalanceEnable)
-	string panelTitle
-	variable bridgeBalanceEnable
-	
-	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, bridgeBalanceEnable)
-End
-//==================================================================================================
-Function AI_CapCompToAmp(panelTitle, capCompCap)
-	string panelTitle
-	variable capCompCap
-	
-	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, capCompCap * 1e-12)
-End
-//==================================================================================================
-Function AI_CapCompEnable(panelTitle, capCompCapEnable)
-	string panelTitle
-	variable capCompCapEnable
-	
-	AI_SendToAmp(panelTitle, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, capCompCapEnable)
+	serial  = AI_GetAmpMCCSerial(panelTitle, headStage)
+	channel = AI_GetAmpChannel(panelTitle, headStage)
+
+	if(!AI_IsValidSerialAndChannel(mccserial=serial, channel=channel))
+		return NaN
+	endif
+
+	MCC_SelectMultiClamp700B(serial, channel)
+
+	switch(func)
+		case MCC_SETHOLDING_FUNC:
+			ret = MCC_Setholding(value)
+			break
+		case MCC_GETHOLDING_FUNC:
+			ret = MCC_Getholding()
+			break
+		case MCC_SETHOLDINGENABLE_FUNC:
+			ret = MCC_SetholdingEnable(value)
+			break
+		case MCC_SETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_SetWholeCellCompCap(value)
+			break
+		case MCC_SETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_SetWholeCellCompResist(value)
+			break
+		case MCC_SETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_SetWholeCellCompEnable(value)
+			break
+		case MCC_SETRSCOMPCORRECTION_FUNC:
+			ret = MCC_SetRsCompCorrection(value)
+			break
+		case MCC_SETRSCOMPPREDICTION_FUNC:
+			ret = MCC_SetRsCompPrediction(value)
+			break
+		case MCC_SETRSCOMPENABLE_FUNC:
+			ret = MCC_SetRsCompEnable(value)
+			break
+		case MCC_SETBRIDGEBALRESIST_FUNC:
+			ret = MCC_SetBridgeBalResist(value)
+			break
+		case MCC_SETBRIDGEBALENABLE_FUNC:
+			ret = MCC_SetBridgeBalEnable(value)
+			break
+		case MCC_SETNEUTRALIZATIONCAP_FUNC:
+			ret = MCC_SetNeutralizationCap(value)
+			break
+		default:
+			ASSERT(0, "Unknown function")
+			break
+	endswitch
+
+	if(!IsFinite(ret))
+		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
+	endif
+
+	return ret
 End
 //==================================================================================================
 /// @returns 1 if the MIES headstage mode matches the associated MCC mode, zero otherwise
@@ -451,212 +357,151 @@ End
 Function AI_UpdateAmpModel(panelTitle, cntrlName)
 	string panelTitle
 	string cntrlName
-	string PathToAmplifierFolder = Path_AmpSettingsFolder(panelTitle)
-	string PathToAmpStorageWave
-	sprintf PathToAmpStorageWave,"%s:%s" PathToAmplifierFolder, panelTitle
-	
-	controlinfo /w = $panelTitle slider_DataAcq_ActiveHeadstage
-	variable MIESHeadStageNo =  v_value
-	
-	if(waveexists($PathToAmpStorageWave) == 1)
-		wave AmpStoragewave = $PathToAmpStorageWave
-		strswitch(cntrlName) // used case switch because controlinfo is a slowish command 
-			//V-clamp controls
-			case "setvar_DataAcq_Hold_VC":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[0][0][MIESHeadStageNo] = v_value
-				AI_SendVHoldToAmp(panelTitle, AmpStorageWave[0][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_HoldEnableVC":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[1][0][MIESHeadStageNo] = v_value
-				AI_SendVHoldEnableToAmp(panelTitle, AmpStorageWave[1][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_WCC":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[2][0][MIESHeadStageNo] = v_value
-				AI_SendWCCToAmp(panelTitle, AmpStorageWave[2][0][MIESHeadStageNo])
-				break				
-			case "setvar_DataAcq_WCR":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[3][0][MIESHeadStageNo] = v_value
-				AI_SendWCRToAmp(panelTitle, AmpStorageWave[3][0][MIESHeadStageNo])
-				break		
-			case "check_DatAcq_WholeCellEnable":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[4][0][MIESHeadStageNo] = v_value
-				AI_SendEnableWCToAmp(panelTitle, AmpStorageWave[4][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_RsCorr":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[5][0][MIESHeadStageNo] = v_value
-				 AI_SendRsCompCorrToAmp(panelTitle, AmpStorageWave[5][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_RsPred":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[6][0][MIESHeadStageNo] = v_value
-				AI_SendRsCompPredToAmp(panelTitle, AmpStorageWave[6][0][MIESHeadStageNo])
-				break								
-			case "check_DatAcq_RsCompEnable":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[7][0][MIESHeadStageNo] = v_value
-				AI_SendRsCompEnableToAmp(panelTitle, AmpStorageWave[7][0][MIESHeadStageNo])
-				break
-			// I-Clamp controls	
-			case "setvar_DataAcq_Hold_IC":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[16][0][MIESHeadStageNo] = v_value
-				AI_SendBiasIToAmp(panelTitle, AmpStorageWave[16][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_HoldEnable":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[17][0][MIESHeadStageNo] = v_value
-				AI_BiasToAmp(panelTitle, AmpStorageWave[17][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_BB":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[18][0][MIESHeadStageNo] = v_value
-				AI_BridgeBalanceToAmp(panelTitle, AmpStorageWave[18][0][MIESHeadStageNo])
-				break								
-			case "check_DatAcq_BBEnable":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[19][0][MIESHeadStageNo] = v_value
-				AI_BridgeBalanceEnableToAmp(panelTitle, AmpStorageWave[19][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_CN":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[20][0][MIESHeadStageNo] = v_value
-				AI_CapCompToAmp(panelTitle, AmpStorageWave[20][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_CNEnable":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[21][0][MIESHeadStageNo] = v_value
-				AI_CapCompEnable(panelTitle, AmpStorageWave[21][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_AutoBiasV":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[22][0][MIESHeadStageNo] = v_value
-				break
-			case "setvar_DataAcq_AutoBiasVrange":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[23][0][MIESHeadStageNo] = v_value
-				break
-			case "setvar_DataAcq_Ri":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[24][0][MIESHeadStageNo] = v_value
-				break
-			case "check_DataAcq_AutoBias":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[25][0][MIESHeadStageNo] = v_value
-				break
-			// I Zero controls
-			case "check_DataAcq_IzeroEnable":
-				controlinfo /w = $panelTitle $cntrlName
-				AmpStorageWave[30][0][MIESHeadStageNo] = v_value
-				break
-			endswitch			
-		endif
-		
+
+	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		print "Associate the panel with a DAC prior to using panel"
+		return 0
+	endif
+
+	variable headStage  = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+
+	ControlInfo /w = $panelTitle $cntrlName
+	ASSERT(V_flag != 0, "non-existing window or control")
+
+	strswitch(cntrlName)
+		//V-clamp controls
+		case "setvar_DataAcq_Hold_VC":
+			AmpStorageWave[0][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, v_value * 1e-3)
+			break
+		case "check_DatAcq_HoldEnableVC":
+			AmpStorageWave[1][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, v_value)
+			break
+		case "setvar_DataAcq_WCC":
+			AmpStorageWave[2][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, v_value * 1e-12)
+			break
+		case "setvar_DataAcq_WCR":
+			AmpStorageWave[3][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, v_value * 1e6)
+			break
+		case "check_DatAcq_WholeCellEnable":
+			AmpStorageWave[4][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, v_value)
+			break
+		case "setvar_DataAcq_RsCorr":
+			AmpStorageWave[5][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, v_value)
+			break
+		case "setvar_DataAcq_RsPred":
+			AmpStorageWave[6][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, v_value)
+			break
+		case "check_DatAcq_RsCompEnable":
+			AmpStorageWave[7][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, v_value)
+			break
+		// I-Clamp controls
+		case "setvar_DataAcq_Hold_IC":
+			AmpStorageWave[16][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, v_value * 1e-12)
+			break
+		case "check_DatAcq_HoldEnable":
+			AmpStorageWave[17][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, v_value)
+			break
+		case "setvar_DataAcq_BB":
+			AmpStorageWave[18][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, v_value * 1e6)
+			break
+		case "check_DatAcq_BBEnable":
+			AmpStorageWave[19][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, v_value)
+			break
+		case "setvar_DataAcq_CN":
+			AmpStorageWave[20][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, v_value * 1e-12)
+			break
+		case "check_DatAcq_CNEnable":
+			AmpStorageWave[21][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, v_value)
+			break
+		case "setvar_DataAcq_AutoBiasV":
+			AmpStorageWave[22][0][headStage] = v_value
+			break
+		case "setvar_DataAcq_AutoBiasVrange":
+			AmpStorageWave[23][0][headStage] = v_value
+			break
+		case "setvar_DataAcq_IbiasMax":
+			AmpStorageWave[24][0][headStage] = v_value
+			break
+		case "check_DataAcq_AutoBias":
+			AmpStorageWave[25][0][headStage] = v_value
+			break
+		// I Zero controls
+		case "check_DataAcq_IzeroEnable":
+			AmpStorageWave[30][0][headStage] = v_value
+			break
+		default:
+			printf "BUG: unknown control %s\r", cntrlName
+			break
+	endswitch
 End
 //==================================================================================================
 
 Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
 	string panelTitle
 	variable MIESHeadStageNo
-	string PathToAmplifierFolder = Path_AmpSettingsFolder(panelTitle)
-	string PathToAmpStorageWave
-	sprintf PathToAmpStorageWave,"%s:%s" PathToAmplifierFolder, panelTitle
 
 	Variable Param
-	if(waveexists($PathToAmpStorageWave) == 1)
-		Wave AmpStorageWave = $PathToAmpStorageWave
-		// V-Clamp controls
-		Param = AmpStorageWave[0][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_Hold_VC WIN = $panelTitle, value= _NUM:Param
+	Wave AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
 
-		Param = AmpStorageWave[1][0][MIESHeadStageNo]
-		checkbox check_DatAcq_HoldEnableVC WIN = $panelTitle, Value = Param
-		Param = AmpStorageWave[2][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_WCC WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[3][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_WCR WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[4][0][MIESHeadStageNo]
-		checkbox check_DatAcq_WholeCellEnable WIN = $panelTitle, Value = Param
-		Param = AmpStorageWave[5][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_RsCorr WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[6][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_RsPred WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[7][0][MIESHeadStageNo]
-		checkbox check_DatAcq_RsCompEnable WIN = $panelTitle, Value = Param
-		
-		// I-Clamp controls
-		Param = AmpStorageWave[16][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[17][0][MIESHeadStageNo]
-		checkbox check_DatAcq_HoldEnable win = $panelTitle, Value = Param
-		Param = AmpStorageWave[18][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_BB WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[19][0][MIESHeadStageNo]
-		checkbox check_DatAcq_BBEnable win = $panelTitle, Value = Param
-		Param = AmpStorageWave[20][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_CN WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[21][0][MIESHeadStageNo]
-		checkbox check_DatAcq_CNEnable WIN = $panelTitle, Value = Param
-		Param = AmpStorageWave[22][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_AutoBiasV WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[23][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_AutoBiasVrange WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[24][0][MIESHeadStageNo]
-		setvariable setvar_DataAcq_Ri WIN = $panelTitle, value= _NUM:Param
-		Param = AmpStorageWave[25][0][MIESHeadStageNo]
-		checkbox check_DataAcq_AutoBias WIN = $panelTitle, Value = Param
-		
-		// I = zero controls
-		Param =  AmpStorageWave[30][0][MIESHeadStageNo]
-		checkbox check_DataAcq_IzeroEnable WIN = $panelTitle, Value = Param
-	endif
-End
+	// V-Clamp controls
+	Param = AmpStorageWave[0][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_Hold_VC WIN = $panelTitle, value= _NUM:Param
 
-//==================================================================================================
-Function AI_CreateAmpParamStorageWave(panelTitle)
-	string panelTitle
-	string PathToAmplifierFolder = Path_AmpFolder(panelTitle)
-	string AmpStorageWaveWaveName
-	sprintf AmpStorageWaveWaveName, "%s:%s" Path_AmpSettingsFolder(panelTitle), panelTitle
-	make /o /n = (31, 1, 8) $AmpStorageWaveWaveName
-	wave AmpStorageWave = $AmpStorageWaveWaveName
-	setdimlabel 1, 0, HeadstageParam, AmpStorageWave // labels column 0 (of all layers) with the heading VClamp
-	setdimlabel 0, 0, HoldingPotential, AmpStorageWave
-	setdimlabel 0, 1, HoldingPotentialEnable, AmpStorageWave
-	setdimlabel 0, 2, WholeCellCap, AmpStorageWave
-	setdimlabel 0, 3, WholeCellRes, AmpStorageWave
-	setdimlabel 0, 4, WholeCellEnable, AmpStorageWave
-	setdimlabel 0, 5, Correction, AmpStorageWave
-	setdimlabel 0, 6, Prediction, AmpStorageWave
-	setdimlabel 0, 7, RsCompEnable, AmpStorageWave
-	setdimlabel 0, 8,VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 9, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 10, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 11, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 12, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 13, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 14, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 15, VClampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 16, BiasCurrent, AmpStorageWave
-	setdimlabel 0, 17, BiasCurrentEnable, AmpStorageWave
-	setdimlabel 0, 18, BridgeBalance, AmpStorageWave
-	setdimlabel 0, 19, BridgeBalanceEnable, AmpStorageWave
-	setdimlabel 0, 20, CapNeut, AmpStorageWave
-	setdimlabel 0, 21, CapNeutEnable, AmpStorageWave
-	setdimlabel 0, 22, AutoBiasVcom, AmpStorageWave
-	setdimlabel 0, 23, AutoBiasVcomVariance, AmpStorageWave
-	setdimlabel 0, 24, AutoBiasRi, AmpStorageWave
-	setdimlabel 0, 25, AutoBiasEnable, AmpStorageWave
-	setdimlabel 0, 26, IclampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 27, IclampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 28, IclampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 29, IclampPlaceHolder, AmpStorageWave
-	setdimlabel 0, 30, IZeroEnable, AmpStorageWave
+	Param = AmpStorageWave[1][0][MIESHeadStageNo]
+	checkbox check_DatAcq_HoldEnableVC WIN = $panelTitle, Value = Param
+	Param = AmpStorageWave[2][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_WCC WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[3][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_WCR WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[4][0][MIESHeadStageNo]
+	checkbox check_DatAcq_WholeCellEnable WIN = $panelTitle, Value = Param
+	Param = AmpStorageWave[5][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_RsCorr WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[6][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_RsPred WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[7][0][MIESHeadStageNo]
+	checkbox check_DatAcq_RsCompEnable WIN = $panelTitle, Value = Param
+
+	// I-Clamp controls
+	Param = AmpStorageWave[16][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[17][0][MIESHeadStageNo]
+	checkbox check_DatAcq_HoldEnable win = $panelTitle, Value = Param
+	Param = AmpStorageWave[18][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_BB WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[19][0][MIESHeadStageNo]
+	checkbox check_DatAcq_BBEnable win = $panelTitle, Value = Param
+	Param = AmpStorageWave[20][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_CN WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[21][0][MIESHeadStageNo]
+	checkbox check_DatAcq_CNEnable WIN = $panelTitle, Value = Param
+	Param = AmpStorageWave[22][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_AutoBiasV WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[23][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_AutoBiasVrange WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[24][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_IbiasMax WIN = $panelTitle, value= _NUM:Param
+	Param = AmpStorageWave[25][0][MIESHeadStageNo]
+	checkbox check_DataAcq_AutoBias WIN = $panelTitle, Value = Param
+
+	// I = zero controls
+	Param =  AmpStorageWave[30][0][MIESHeadStageNo]
+	checkbox check_DataAcq_IzeroEnable WIN = $panelTitle, Value = Param
 End
 
 //==================================================================================================

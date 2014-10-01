@@ -484,6 +484,12 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
 End
 /// @}
 
+/// @name Constants for the note of the wave returned by GetTPStorage
+/// @{
+StrConstant TP_CYLCE_COUNT_KEY           = "TPCycleCount"
+StrConstant AUTOBIAS_LAST_INVOCATION_KEY = "AutoBiasLastInvocation"
+/// @}
+
 /// @brief Return a wave reference for TPStorage
 ///
 /// The wave stores TP resistance and Vm data as
@@ -512,7 +518,8 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
 	SetDimLabel LAYERS, 7, Rss_Slope            , wv
 
-	Note wv, "TPCycleCount:0;"
+	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
+	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
 
 	return wv
 End
@@ -571,4 +578,87 @@ Function/S GetDeviceDataPathAsString(deviceType, deviceNumber)
 	string deviceType, deviceNumber
 
 	return GetDevicePathAsString(deviceType, deviceNumber) + ":Data"
+End
+
+/// @brief Return the datafolder reference to the amplifier
+Function/DF GetAmplifierFolder()
+	return createDFWithAllParents(GetAmplifierFolderAsString())
+End
+
+/// @brief Return the path to the amplifierm e.g. root:mies:Amplifiers"
+Function/S GetAmplifierFolderAsString()
+	return Path_MIESfolder("") + ":Amplifiers"
+End
+
+/// @brief Return the datafolder reference to the amplifier settings
+Function/DF GetAmpSettingsFolder()
+	return createDFWithAllParents(GetAmpSettingsFolderAsString())
+End
+
+/// @brief Return the path to the amplifier settings, e.g. root:MIES:Amplifiers:Settings
+Function/S GetAmpSettingsFolderAsString()
+	return GetAmplifierFolderAsString() + ":Settings"
+End
+
+/// @brief Return a wave reference to the amplifier parameter storage wave
+///
+/// Rows:
+/// - 0-31: Amplifier settings identified by dimension labels
+///
+/// Columns:
+/// - Only one
+///
+/// Layers:
+/// - 0-7: Headstage identifier
+///
+/// Contents:
+/// - numerical amplifier settings
+Function/Wave GetAmplifierParamStorageWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetAmpSettingsFolder()
+
+	// wave's name is like ITC18USB_Dev_0
+	Wave/Z/SDFR=dfr wv = $panelTitle
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(31, 1, 8) dfr:$panelTitle/Wave=wv
+
+	SetDimLabel LAYERS, -1, Headstage             , wv
+	SetDimLabel ROWS  , 0 , HoldingPotential      , wv
+	SetDimLabel ROWS  , 1 , HoldingPotentialEnable, wv
+	SetDimLabel ROWS  , 2 , WholeCellCap          , wv
+	SetDimLabel ROWS  , 3 , WholeCellRes          , wv
+	SetDimLabel ROWS  , 4 , WholeCellEnable       , wv
+	SetDimLabel ROWS  , 5 , Correction            , wv
+	SetDimLabel ROWS  , 6 , Prediction            , wv
+	SetDimLabel ROWS  , 7 , RsCompEnable          , wv
+	SetDimLabel ROWS  , 8 , VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 9 , VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 10, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 11, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 12, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 13, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 14, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 15, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 16, BiasCurrent           , wv
+	SetDimLabel ROWS  , 17, BiasCurrentEnable     , wv
+	SetDimLabel ROWS  , 18, BridgeBalance         , wv
+	SetDimLabel ROWS  , 19, BridgeBalanceEnable   , wv
+	SetDimLabel ROWS  , 20, CapNeut               , wv
+	SetDimLabel ROWS  , 21, CapNeutEnable         , wv
+	SetDimLabel ROWS  , 22, AutoBiasVcom          , wv
+	SetDimLabel ROWS  , 23, AutoBiasVcomVariance  , wv
+	SetDimLabel ROWS  , 24, AutoBiasIbiasmax      , wv
+	SetDimLabel ROWS  , 25, AutoBiasEnable        , wv
+	SetDimLabel ROWS  , 26, IclampPlaceHolder     , wv
+	SetDimLabel ROWS  , 27, IclampPlaceHolder     , wv
+	SetDimLabel ROWS  , 28, IclampPlaceHolder     , wv
+	SetDimLabel ROWS  , 29, IclampPlaceHolder     , wv
+	SetDimLabel ROWS  , 30, IZeroEnable           , wv
+
+	return wv
 End
