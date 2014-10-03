@@ -521,6 +521,9 @@ Constant samplingInterval = 0.2
 /// Fitting range in seconds
 Constant fittingRange     = 5
 
+/// Units MOhm
+static Constant MAX_VALID_RESISTANCE = 50000
+
 /// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
@@ -561,8 +564,8 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		endif
 
 		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]        = InstResistance[0][q][0]
-		TPStorage[count][][%SteadyStateResistance] = SSResistance[0][q][0]
+		TPStorage[count][][%PeakResistance]        = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance] = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
 		TPStorage[count][][%TimeInSeconds]         = now
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
 		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
