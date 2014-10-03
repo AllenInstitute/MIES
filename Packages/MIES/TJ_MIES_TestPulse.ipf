@@ -634,9 +634,8 @@ End
 
 /// @brief Resets the TP storage wave
 ///
-/// - Remove excess rows
 /// - Store the TP record if requested by the user
-/// - Kill the wave to start with a pristine storage wave
+/// - Clear the wave to start with a pristine storage wave
 Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
 
@@ -645,16 +644,16 @@ Function TP_ResetTPStorage(panelTitle)
 	string name
 
 	if(count > 0)
-		dfref dfr = GetDeviceTestPulse(panelTitle)
-		Redimension/N=(count, -1, -1, -1) TPStorage
 		if(GetCheckBoxState(panelTitle, "check_Settings_TP_SaveTPRecord"))
+			dfref dfr = GetDeviceTestPulse(panelTitle)
+			Redimension/N=(count, -1, -1, -1) TPStorage
 			name = NameOfWave(TPStorage)
 			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, name + "_\d+"))))
-			// reset counters in wave note in case the wave can not be killed
-			SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
-			SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
-			KillWaves/Z TPStorage
 		endif
+
+		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
+		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+		TPStorage = NaN
 	endif
 End
 
