@@ -535,7 +535,6 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	Variable SweepNo
 		
 	Wave/SDFR=$HSU_DataFullFolderPathString(panelTitle) ChannelClampMode
-	Wave/SDFR=$HSU_DataFullFolderPathString(panelTitle) ChanAmpAssign
 		
 	// get all the Amp connection information
 	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)  	
@@ -729,12 +728,13 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	for(i = 0; i < noHeadStages ; i += 1)
 		Variable hsControl = str2num(stringfromlist(i, controlledHeadStage))
 		if (hsControl)
-			string serial    = AI_GetAmpMCCSerial(panelTitle, i)
-			variable channel = AI_GetAmpChannel(panelTitle, i)
+			string mccSerial    = AI_GetAmpMCCSerial(panelTitle, i)
+			variable axonSerial = AI_GetAmpAxonSerial(panelTitle, i)
+			variable channel    = AI_GetAmpChannel(panelTitle, i)
 			
-			if(AI_IsValidSerialAndChannel(mccSerial=serial, channel=channel)) // checks to make sure amp is associated with MIES headstage
+			if(AI_IsValidSerialAndChannel(axonSerial=axonSerial, mccSerial=mccSerial, channel=channel)) // checks to make sure amp is associated with MIES headstage
 
-				MCC_SelectMultiClamp700B(serial, channel)
+				MCC_SelectMultiClamp700B(mccSerial, channel)
 
 				// now start to query the amp to get the status
 				//Figure out if we are looking at current clamp mode or voltage clamp mode
@@ -795,29 +795,26 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 				STRUCT AxonTelegraph_DataStruct tds
 				Init_AxonTelegraph_DataStruct(tds)	
 				
-				variable axonSerial = ChanAmpAssign[8][i]				
-				if(AI_IsValidSerialAndChannel(mccSerial=num2str(axonSerial), channel=channel))  // checks to make sure amp is associated with MIES headstage	
-					AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
-					ampSettingsWave[0][16][i] = tds.SerialNum
-					ampSettingsWave[0][17][i] = tds.ChannelID
-					ampSettingsWave[0][18][i] = tds.ComPortID
-					ampSettingsWave[0][19][i] = tds.AxoBusID
-					ampSettingsWave[0][20][i] = tds.OperatingMode
-					ampSettingsWave[0][21][i] = tds.ScaledOutSignal
-					ampSettingsWave[0][22][i] = tds.Alpha
-					ampSettingsWave[0][23][i] = tds.ScaleFactor
-					ampSettingsWave[0][24][i] = tds.ScaleFactorUnits
-					ampSettingsWave[0][25][i] = tds.LPFCutoff
-					ampSettingsWave[0][26][i] = (tds.MembraneCap * 1e+12) // converts F to pF
-					ampSettingsWave[0][27][i] = tds.ExtCmdSens
-					ampSettingsWave[0][28][i] = tds.RawOutSignal
-					ampSettingsWave[0][29][i] = tds.RawScaleFactor
-					ampSettingsWave[0][30][i] = tds.RawScaleFactorUnits
-					ampSettingsWave[0][31][i] = tds.HardwareType
-					ampSettingsWave[0][32][i] = tds.SecondaryAlpha
-					ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
-					ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
-				endif
+				AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+				ampSettingsWave[0][16][i] = tds.SerialNum
+				ampSettingsWave[0][17][i] = tds.ChannelID
+				ampSettingsWave[0][18][i] = tds.ComPortID
+				ampSettingsWave[0][19][i] = tds.AxoBusID
+				ampSettingsWave[0][20][i] = tds.OperatingMode
+				ampSettingsWave[0][21][i] = tds.ScaledOutSignal
+				ampSettingsWave[0][22][i] = tds.Alpha
+				ampSettingsWave[0][23][i] = tds.ScaleFactor
+				ampSettingsWave[0][24][i] = tds.ScaleFactorUnits
+				ampSettingsWave[0][25][i] = tds.LPFCutoff
+				ampSettingsWave[0][26][i] = (tds.MembraneCap * 1e+12) // converts F to pF
+				ampSettingsWave[0][27][i] = tds.ExtCmdSens
+				ampSettingsWave[0][28][i] = tds.RawOutSignal
+				ampSettingsWave[0][29][i] = tds.RawScaleFactor
+				ampSettingsWave[0][30][i] = tds.RawScaleFactorUnits
+				ampSettingsWave[0][31][i] = tds.HardwareType
+				ampSettingsWave[0][32][i] = tds.SecondaryAlpha
+				ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
+				ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
 			endif
 		endif
 	endfor
