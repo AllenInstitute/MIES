@@ -521,6 +521,9 @@ Constant samplingInterval = 0.2
 /// Fitting range in seconds
 Constant fittingRange     = 5
 
+/// Units MOhm
+static Constant MAX_VALID_RESISTANCE = 50000
+
 /// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
@@ -555,14 +558,16 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
 		numCols = DimSize(TPStorage, COLS)
-		if( numCols != DimSize(BaselineSSAvg, COLS) || numCols != DimSize(InstResistance, COLS) || numCols != DimSize(SSResistance, COLS) )
-			print "BUG! The column count of TPStorage, BaselineSSAvg, InstResistance, SSResistance do not match"
+		// the columns of the TPStorage wave and the right-hand side waves of the below assignments have to match only for column counts
+		// greater than 1. This avoids false error reports with 1D waves vs 2D waves with 0 and 1 column.
+		if( numCols > 1 && ( numCols != DimSize(BaselineSSAvg, COLS) || numCols != DimSize(InstResistance, COLS) || numCols != DimSize(SSResistance, COLS) ))
+			printf "BUG! The column count of TPStorage (%d), BaselineSSAvg (%d), InstResistance (%d), SSResistance (%d) do not match\r", numCols, DimSize(BaselineSSAvg, COLS), DimSize(InstResistance, COLS), DimSize(SSResistance, COLS)
 			return NaN
 		endif
 
 		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]        = InstResistance[0][q][0]
-		TPStorage[count][][%SteadyStateResistance] = SSResistance[0][q][0]
+		TPStorage[count][][%PeakResistance]        = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance] = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
 		TPStorage[count][][%TimeInSeconds]         = now
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
 		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
@@ -631,9 +636,8 @@ End
 
 /// @brief Resets the TP storage wave
 ///
-/// - Remove excess rows
 /// - Store the TP record if requested by the user
-/// - Kill the wave to start with a pristine storage wave
+/// - Clear the wave to start with a pristine storage wave
 Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
 
@@ -642,16 +646,16 @@ Function TP_ResetTPStorage(panelTitle)
 	string name
 
 	if(count > 0)
-		dfref dfr = GetDeviceTestPulse(panelTitle)
-		Redimension/N=(count, -1, -1, -1) TPStorage
 		if(GetCheckBoxState(panelTitle, "check_Settings_TP_SaveTPRecord"))
+			dfref dfr = GetDeviceTestPulse(panelTitle)
+			Redimension/N=(count, -1, -1, -1) TPStorage
 			name = NameOfWave(TPStorage)
 			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, name + "_\d+"))))
-			// reset counters in wave note in case the wave can not be killed
-			SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
-			SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
-			KillWaves/Z TPStorage
 		endif
+
+		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
+		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+		TPStorage = NaN
 	endif
 End
 
