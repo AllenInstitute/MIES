@@ -2234,7 +2234,7 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
 	SetVariable setvar_DataAcq_IbiasMax,pos={310,209},size={120,20},proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",value= _NUM:0
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",disable=1,value= _NUM:0
 	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={46,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
