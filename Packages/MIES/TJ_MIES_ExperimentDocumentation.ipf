@@ -89,7 +89,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	// see if the wave exists....if so, append to it...if not, create it
 	if (!WaveExists(settingsHistory) )
 		// create the wave...just set the dimensions to give it something to build on
-		make/N = (0,2,0) $settingsHistoryPath
+		make/D/N = (0,2,0) $settingsHistoryPath
 		// Col 0 - Sweep Number
 		// Col 1 - Time Stamp
 		Wave settingsHistory = $settingsHistoryPath
