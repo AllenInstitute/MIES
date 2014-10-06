@@ -5,6 +5,7 @@
 #include "ACL_TabUtilities"
 #include "ACL_UserdataEditor"
 #include "Arduino_Sequencer_Vs1"
+#include "FixScrolling"
 
 // our includes
 #include "TJ_MIES_AmplifierInteraction"
