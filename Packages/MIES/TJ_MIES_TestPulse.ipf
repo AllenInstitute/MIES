@@ -558,8 +558,10 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
 		numCols = DimSize(TPStorage, COLS)
-		if( numCols != DimSize(BaselineSSAvg, COLS) || numCols != DimSize(InstResistance, COLS) || numCols != DimSize(SSResistance, COLS) )
-			print "BUG! The column count of TPStorage, BaselineSSAvg, InstResistance, SSResistance do not match"
+		// the columns of the TPStorage wave and the right-hand side waves of the below assignments have to match only for column counts
+		// greater than 1. This avoids false error reports with 1D waves vs 2D waves with 0 and 1 column.
+		if( numCols > 1 && ( numCols != DimSize(BaselineSSAvg, COLS) || numCols != DimSize(InstResistance, COLS) || numCols != DimSize(SSResistance, COLS) ))
+			printf "BUG! The column count of TPStorage (%d), BaselineSSAvg (%d), InstResistance (%d), SSResistance (%d) do not match\r", numCols, DimSize(BaselineSSAvg, COLS), DimSize(InstResistance, COLS), DimSize(SSResistance, COLS)
 			return NaN
 		endif
 
