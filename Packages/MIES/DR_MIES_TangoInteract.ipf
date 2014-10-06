@@ -8,7 +8,7 @@ Menu "Mies Panels"
 		"Start Polling WSE queue", StartTestTask()
 		"Stop Polling WSE queue", StopTestTask()
 		"Open HDF5 Browser", CreateNewHDF5Browser()
-		"Save HDF5 File", TangoHDF5Save()
+		"Save HDF5 File", TangoHDF5Save("menuSaveFile.h5")
 End
 
 Function writeLog(logMessage)
@@ -374,24 +374,30 @@ Function TangoSave(saveFileName)
 	print "Packed Experiment Save Success!"
 End
 
-Function TangoHDF5Save()
-	convert_to_hdf5("dummyFilename.h5")
+/// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
+Function TangoHDF5Save(saveFilename)
+	string saveFilename
+
+	convert_to_hdf5(saveFilename)
 End
 
 /// @brief dump all experiment data to HDF5 file
 Function convert_to_hdf5(filename)
     String filename
     Variable root_id, h5_id
+    
     SetDataFolder root:
     HDF5CreateFile /O /Z h5_id as filename
     if (V_Flag != 0 ) // HDF5CreateFile failed
-    	print "HDF5Create File failed..."
+    	print "HDF5Create File failed for ", filename
+    	print "Check file name format..."
     	return -1
     endif
     HDF5CreateGroup /Z h5_id, "/", root_id
     HDF5SaveGroup /O /R  :, root_id, "/"
     HDF5CloseGroup root_id
     HDF5CloseFile h5_id
+    print "HDF5 file save complete for ", filename
 end
 
 
