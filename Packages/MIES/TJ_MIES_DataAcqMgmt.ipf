@@ -17,10 +17,8 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 	string followerPanelTitle = ""
-	variable DataAcqOrTP = 0 // data acq, not TP
-	DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	SCOPE_UpdateGraph(ITCDataWave, panelTitle)
-
 	
 	if(DeviceType == 2) // starts data acquisition for ITC1600 devices
 		controlinfo /w = $panelTitle setvar_Hardware_Status
@@ -40,7 +38,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 					do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 						//print followerpaneltitle
-						DC_ConfigureDataForITC(followerPanelTitle, DataAcqOrTP)
+						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 						wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 						SCOPE_UpdateGraph(ITCDataWave, followerPanelTitle)
@@ -511,7 +509,6 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string TestPulsePath
-	variable DataAcqOrTP = 1
 	
 		DAP_StoreTTLState(panelTitle)
 		print "TTL state of:", panelTitle, "stored" 
@@ -550,7 +547,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 		TP_ClampModeString(panelTitle)
 		
 		// configures data for ITC with testpulse wave selected
-		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 		// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
 		wave ITCDataWave = $WavePath + ":ITCDataWave"
 		variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))

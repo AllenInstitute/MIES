@@ -3963,7 +3963,6 @@ Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
 	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
 	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, ADGain)
 	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
-
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 //=========================================================================================

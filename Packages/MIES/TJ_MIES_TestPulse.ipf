@@ -212,7 +212,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	setdatafolder root:
 	getwindow kwTopWin activesw
 
-	variable DataAcqOrTP = 1
 	panelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	if(SearchResult != -1)
@@ -265,7 +264,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	TP_StoreDAScale(SelectedDACScale,panelTitle)
 	TP_SetDAScaleToOne(panelTitle)
 	
-	DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 
@@ -294,8 +293,6 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	
 	// make sure data folder is correct
 	setdatafolder root:
-	
-	//variable DataAcqOrTP = 1
 	
 	// Check if panel is locked to a DAC
 	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1

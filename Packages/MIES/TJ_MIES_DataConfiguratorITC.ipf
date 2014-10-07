@@ -1,23 +1,31 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+///@name Constants for DC_ConfigureDataForITC
+///@{
+CONSTANT DATA_ACQUISITION_MODE = 0
+CONSTANT TEST_PULSE_MODE       = 1
+///@}
 
-//=========================================================================================
-// DC_ConfigureDataForITC
-Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// data acq = 0
+/// @brief Prepare test pulse/data acquisition
+///
+/// @param panelTitle  panel title
+/// @param dataAcqOrTP one of DATA_ACQUISITION_MODE or TEST_PULSE_MODE
+Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable DataAcqOrTP
-	//Variable start = stopmstimer(-2)
+
+	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
+
 	DC_MakeITCConfigAllConfigWave(panelTitle)  
 	DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)  
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
-	
+
 	DC_PlaceDataInITCChanConfigWave(panelTitle)
 	DC_PlaceDataInITCDataWave(panelTitle)
 	DC_PDInITCFIFOPositionAllCW(panelTitle)// PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
-	//print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End // Function
+End
 
 //==========================================================================================
 
