@@ -411,15 +411,20 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 End
 
 /// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
-Function HSU_CreateITCFollowerList(panelTitle)
+/// @todo merge with GetFollowerList once the doNotCreateSVAR-hack is removed
+static Function/S HSU_CreateITCFollowerList(panelTitle)
 	string panelTitle
 
-	string path = HSU_DataFullFolderPathString(panelTitle)
-	SVAR/SDFR=$path/Z ListOfFollowerITC1600s
-
-	if(!SVAR_Exists(ListOfFollowerITC1600s))
-		string/G $(path + ":ListOfFollowerITC1600s") = ""
+	// ensure that the device folder exists
+	dfref dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	SVAR/Z/SDFR=dfr list = ListOfFollowerITC1600s
+	if(!SVAR_Exists(list))
+		string/G dfr:ListOfFollowerITC1600s = ""
 	endif
+
+	// now we can return the absolute path to the SVAR
+	// as we know it exists
+	return GetFollowerList(doNotCreateSVAR=1)
 End
 
 //==================================================================================================
@@ -429,18 +434,16 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 
 	string cmd
 	string followerPath = HSU_DataFullFolderPathString(followerDAC)
-	string leadPath     = HSU_DataFullFolderPathString(leadDAC)
 
-	HSU_CreateITCFollowerList(leadDAC)
-	SVAR ListOfFollowerITC1600s    = $(leadPath + ":ListOfFollowerITC1600s")
+	SVAR listOfFollowerDevices = $HSU_CreateITCFollowerList(leadDAC)
 	NVAR FollowerITCDeviceIDGlobal = $(followerPath + ":ITCDeviceIDGlobal")
 	
-	if(WhichListItem(followerDAC,ListOfFollowerITC1600s) == -1)
-		ListOfFollowerITC1600s = AddListItem(followerDAC,ListOfFollowerITC1600s,";",inf)
+	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
+		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
 		sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
 		Execute cmd
 		Execute "ITCInitialize /M = 1"
-		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:ListOfFollowerITC1600s, disable = 0
+		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
 	// TB: what does this comment mean?
 	// set the internal clock of the device

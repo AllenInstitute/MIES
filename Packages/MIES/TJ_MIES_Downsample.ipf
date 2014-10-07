@@ -114,15 +114,15 @@ Function/S GetPopupMenuDeviceListWithData()
 
 			str = BuildDeviceString(deviceType, deviceNumber)
 
-			SVAR/Z/SDFR=$path ListOfFollowerITC1600s
-			if(SVAR_Exists(ListOfFollowerITC1600s))
-				allFollowerDevices = AddListItem(ListOfFollowerITC1600s, allFollowerDevices, ";", inf)
+			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+			if(SVAR_Exists(listOfFollowerDevices))
+				allFollowerDevices = AddListItem(listOfFollowerDevices, allFollowerDevices, ";", inf)
 
-				numFollower = ItemsInList(ListOfFollowerITC1600s)
+				numFollower = ItemsInList(listOfFollowerDevices)
 
 				followerDeviceIDList = ""
 				for(k=0; k<numFollower ;k+=1)
-					follower = StringFromList(k, ListOfFollowerITC1600s)
+					follower = StringFromList(k, listOfFollowerDevices)
 					ParseDeviceString(follower, followerDeviceType, followerDeviceNumber)
 					followerDeviceIDList = AddListItem(followerDeviceNumber, followerDeviceIDList, ",", inf)
 				endfor

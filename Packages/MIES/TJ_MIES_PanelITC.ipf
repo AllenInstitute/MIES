@@ -4278,29 +4278,31 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	string panelToDeYoke
 	
 	string leadPanel = ITC1600_FIRST_DEVICE
+	string str
 
 	if(!windowExists(leadPanel))
 		return 0
 	endif
 
-	string str
-	SVAR/SDFR=$HSU_DataFullFolderPathString(leadPanel)/Z ListOfFollowerITC1600s
-	
-	if(!SVAR_Exists(ListOfFollowerITC1600s))
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(!SVAR_Exists(listOfFollowerDevices))
 		return 0
 	endif
 	
-	if(WhichListItem(panelToDeYoke,ListOfFollowerITC1600s) == -1)
+	if(WhichListItem(panelToDeYoke, listOfFollowerDevices) == -1)
 		return 0
 	endif
-	ListOfFollowerITC1600s = RemoveFromList(panelToDeYoke, ListOfFollowerITC1600s)
 
-	str = ListOfFollowerITC1600s
-	if(ItemsInList(ListOfFollowerITC1600s) == 0 )
+	listOfFollowerDevices = RemoveFromList(panelToDeYoke, listOfFollowerDevices)
+
+	str = listOfFollowerDevices
+	if(ItemsInList(listOfFollowerDevices) == 0 )
 		// there are no more followers, disable the release button and its popup menu
 		DisableControl(leadPanel,"popup_Hardware_YokedDACs")
 		DisableControl(leadPanel,"button_Hardware_RemoveYoke")
-		KillStrings ListOfFollowerITC1600s
+		/// @todo don't rely on the svar existence
+		/// instead query the contents only
+		KillStrings listOfFollowerDevices
 		str = "No Yoked Devices"
 	endif
 	SetVariable setvar_Hardware_YokeList Win=$leadPanel, value=_STR:str
@@ -4321,18 +4323,15 @@ End
 Function DAP_RemoveAllYokedDACs(panelTitle)
 	string panelTitle
 
-	string path = HSU_DataFullFolderPathString(panelTitle)
-
 	string panelToDeYoke, list
 	variable i, listNum
 
-	SVAR/SDFR=$path/Z ListOfFollowerITC1600s
-
-	if(!SVAR_Exists(ListOfFollowerITC1600s))
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(!SVAR_Exists(listOfFollowerDevices))
 		return 0
 	endif
 
-	list = ListOfFollowerITC1600s
+	list = listOfFollowerDevices
 
 	// we have to operate on a copy of ListOfFollowerITC1600s as
 	// DAP_RemoveYokedDAC modifies it.

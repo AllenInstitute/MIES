@@ -346,14 +346,13 @@ Function RA_StartMD(panelTitle)
 	// if the device is an ITC1600 it will handle follower or independent devices
 	if(DeviceType == 2)
 
-		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
 		
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 1)  // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)  // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) 
 				string followerPanelTitle
 				variable followerTotTrials
@@ -483,24 +482,17 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 	
 	if(DeviceType == 2)
 	
-//		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-		
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 1)
-			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
+			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) 
 				string followerPanelTitle
 				variable followerTotTrials
 				
 				do
-					
-					
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					print "follower panel title =", followerPanelTitle
 					
@@ -601,18 +593,13 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	endif
 
 	if(DeviceType == 2) // handling of  yoked ITC1600 
-	
-//		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-		
+
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 0)
-			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 0)
+			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // there are followers
 				string followerPanelTitle
 				variable followerTotTrials
@@ -673,23 +660,16 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		print "**************************Killing count on:", panelTitle
 		Killvariables Count
 		ITC_StopITCDeviceTimer(panelTitle)
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-//		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
 		
-//		controlinfo /w = $panelTitle setvar_Hardware_Status
-//		string ITCDACStatus = s_value	
-		
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 1)
-			//numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
 			print "*****************path to list of follower devices exists"
-			numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+			numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // there are followers
 				// string followerPanelTitle
 				// variable followerTotTrials
 				i = 0
 				do
-					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+					followerPanelTitle = stringfromlist(i,listOfFollowerDevices, ";")
 					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 					sprintf CountPathString, "%s:Count" WavePath
 					NVAR /z FollowerCount = $CountPathString
