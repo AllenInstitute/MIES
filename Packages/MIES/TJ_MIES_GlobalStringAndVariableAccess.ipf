@@ -128,3 +128,12 @@ static Function/S CreateMiesVersion()
 
 	return version
 End
+
+/// @brief Returns the absolute path to the variable `DataAcqState`
+///
+/// The variable holds 1 if a data acquisition is currently running, 0 if not
+Function/S GetDataAcqState(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(HSU_GetDevicePathFromTitle(panelTitle), "DataAcqState", initialValue=0)
+End

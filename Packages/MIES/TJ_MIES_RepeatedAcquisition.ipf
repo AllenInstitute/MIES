@@ -206,7 +206,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 			else
 				DAP_StopButtonToAcqDataButton(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
-				NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+				NVAR DataAcqState = $GetDataAcqState(panelTitle)
 				DataAcqState = 0
 				print "Repeated acquisition is complete"
 				Killvariables Count
@@ -296,7 +296,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
 		ITC_StopITCDeviceTimer(panelTitle)
-		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+		NVAR DataAcqState = $GetDataAcqState(panelTitle)
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		Killvariables Count
@@ -670,8 +670,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	else
 		ITC_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
-		DAP_StopButtonToAcqDataButton(panelTitle) // 
-		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+		DAP_StopButtonToAcqDataButton(panelTitle)
+		NVAR DataAcqState = $GetDataAcqState(panelTitle)
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		print "**************************Killing count on:", panelTitle

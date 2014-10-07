@@ -148,7 +148,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 			YokedRA_StartMD(panelTitle)
 		else
 			DAP_StopButtonToAcqDataButton(panelTitle)
-			NVAR /z DataAcqState = $wavepath + ":DataAcqState"
+			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 			DataAcqState = 0
 		endif
 	else
@@ -176,11 +176,9 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	string CountPathString
 	sprintf CountPathString, "%s:Count" ITCDeviceFolderPathString
 	NVAR /z Count = $CountPathString
-	
-	string DataAcqStatePathString
-	sprintf DataAcqStatePathString, "%s:DataAcqState" ITCDeviceFolderPathString
-	NVAR DataAcqState = $DataAcqStatePathString
-	
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList
 
 	// stop data acq on device passsed in
