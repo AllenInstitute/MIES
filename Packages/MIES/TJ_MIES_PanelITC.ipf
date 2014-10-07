@@ -3219,7 +3219,9 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 		else
 			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", varstr,"\")"
-			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
+			searchString = varStr
+			listOfWaves = wavelist(searchstring,";","")
+			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = listOfWaves
 			controlupdate /w =  $panelTitle $DAPopUpMenuName
 			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", varStr,"\")"			
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
