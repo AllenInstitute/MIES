@@ -76,3 +76,55 @@ static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 
 	return GetDataFolder(1, dfr) + globalStrName
 End
+
+/// @brief Returns the full path to the mies-igor version string. Creating it when necessary.
+///
+/// Never ever write this string!
+Function/S GetMiesVersion()
+
+	string path = GetSVARAsString(createDFWithAllParents(Path_MiesFolder("")), "version")
+	SVAR str = $path
+
+	if(!CmpStr(str,""))
+		str = CreateMiesVersion()
+	endif
+
+	return path
+End
+
+/// @brief Return the version string for the mies-igor project
+///
+/// @returns the mies version (e.g. Release_0.3.0.0_20141007-3-gdf4bb1e-dirty) or "unknown version"
+static Function/S CreateMiesVersion()
+
+	string path, cmd, topDir, gitPath, version
+	variable refNum
+
+	// set path to the toplevel directory in the mies folder structure
+	path = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
+	gitPath = "c:\\Program Files (x86)\\Git\\bin\\git.exe"
+	GetFileFolderInfo/Z/Q gitPath
+	if(!V_flag) // git is installed, try to regenerate version.txt
+		topDir = ParseFilePath(5, path, "*", 0, 0)
+		GetFileFolderInfo/Z/Q topDir + ".git"
+		if(!V_flag) // topDir is a git repository
+			sprintf cmd "\"%stools\\gitVersion.bat\"", topDir
+			ExecuteScriptText/Z/B/W=5 cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+		endif
+	endif
+
+	open/R/Z refNum as path + "version.txt"
+	if(V_flag != 0)
+		return "unknown version"
+	endif
+
+	FReadLine refNum, version
+	Close refNum
+
+	if(IsEmpty(version))
+		return "unknown version"
+	endif
+
+	return version
+End

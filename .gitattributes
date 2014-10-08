@@ -1,0 +1,8 @@
+*.bat whitespace=cr-at-eol
+*.bat eol=CRLF
+
+*.bat        export-ignore
+*.sh         export-ignore
+tools        export-ignore
+Packages/ITC export-ignore
+Packages/doc export-ignore

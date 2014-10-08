@@ -162,10 +162,27 @@ Function/S GetListOfYokedDACs()
 End
 //=========================================================================================
 
+/// @brief Remove all strings/variables/waves which should not
+/// survive experiment reload/quit/saving
+///
+/// Mainly useful for temporaries which you want to recreate on initialization
+static Function KillTemporaries()
+
+	KillStrings/Z root:mies:version
+End
+
+Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
+	Variable rN, kind
+	String fileName, path, type, creator
+
+	KillTemporaries()
+End
+
 static Function IgorBeforeQuitHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	DAP_UnlockAllDevices()
+	KillTemporaries()
 	return 0
 End
 
@@ -173,5 +190,6 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	DAP_UnlockAllDevices()
+	KillTemporaries()
 	return 0
 End
