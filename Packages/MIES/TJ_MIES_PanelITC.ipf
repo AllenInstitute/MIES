@@ -3733,7 +3733,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	string panelTitle
 
 	variable numActiveDAChannels, maxITI
-	maxITI = IDX_LongestITIAcrossSets(panelTitle, numActiveDAChannels)
+	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1))
@@ -3747,6 +3747,10 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	else
 		DisableControl(panelTitle, "SetVar_DataAcq_ITI")
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
+	endif
+
+	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
+		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
 	endif
 End
 

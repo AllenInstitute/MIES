@@ -433,34 +433,54 @@ static Function IDX_GetITIFromWaveNote(wv)
 	return NumberByKey("ITI",str,"=",";")
 End
 
-Function IDX_LongestITIAcrossSets(panelTitle, numActiveDAChannels)
+/// @brief Calculates the maximum ITI of a lead panel and all its followers
+///
+/// @param[in] panelTitle panel title
+/// @param[out] numActiveDAChannels returns the number of active DACs of panelTitle
+Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	string panelTitle
 	variable& numActiveDAChannels
 
-	variable numEntries, i, iti, maxITI
-	string ctrl, name, str
+	variable numEntries, i, j, iti, maxITI, numDACs
+	string name, str, list
 
-	Wave DAChannelStatus = DC_ControlStatusWave("DA", panelTitle)
-	numActiveDAChannels = sum(DAChannelStatus)
-	numEntries = DimSize(DAChannelStatus, ROWS)
+	list = panelTitle
+
+	if(DAP_DeviceCanLead(panelTitle))
+		/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
+		SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s")
+		if(SVAR_Exists(listOfFollowerDevices))
+			list = AddListItem(list, listOfFollowerDevices, ";", inf)
+		endif
+	endif
 
 	maxITI = -INF
+	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
-		if(!DAChannelStatus[i])
-			continue
+		panelTitle = StringFromList(i, list)
+
+		Wave DAChannelStatus = DC_ControlStatusWave("DA", panelTitle)
+		if(i == 0) // this is either the lead panel or the first and only panel
+			numActiveDAChannels = sum(DAChannelStatus)
 		endif
 
-		ctrl = IDX_GetDAControl(panelTitle, i)
-		name = GetPopupMenuString(panelTitle, ctrl)
-		Wave/Z/SDFR=GetWBSvdStimSetDAPath() wv = $name
-		if(!WaveExists(wv))
-			continue
-		endif
-		iti = IDX_GetITIFromWaveNote(wv)
+		numDACs = DimSize(DAChannelStatus, ROWS)
+		for(j = 0; j < numDACs; j += 1)
+			if(!DAChannelStatus[j])
+				continue
+			endif
 
-		if(IsFinite(iti))
-			maxITI = max(maxITI, iti)
-		endif
+			name = GetPopupMenuString(panelTitle, IDX_GetDAControl(panelTitle, j))
+			Wave/Z/SDFR=GetWBSvdStimSetDAPath() wv = $name
+			if(!WaveExists(wv))
+				continue
+			endif
+			iti = IDX_GetITIFromWaveNote(wv)
+
+			if(IsFinite(iti))
+				maxITI = max(maxITI, iti)
+			endif
+		endfor
 	endfor
 
 	if(!IsFinite(maxITI))
