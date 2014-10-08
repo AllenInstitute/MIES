@@ -66,12 +66,12 @@ static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 	SVAR/Z/SDFR=dfr str = $globalStrName
 	if(!SVAR_Exists(str))
 		String/G dfr:$globalStrName
-	endif
 
-	SVAR/SDFR=dfr str = $globalStrName
+		SVAR/SDFR=dfr str = $globalStrName
 
-	if(!ParamIsDefault(initialValue))
-		str = initialValue
+		if(!ParamIsDefault(initialValue))
+			str = initialValue
+		endif
 	endif
 
 	return GetDataFolder(1, dfr) + globalStrName
