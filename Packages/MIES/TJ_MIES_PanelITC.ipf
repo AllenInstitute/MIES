@@ -3551,22 +3551,33 @@ Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 End
 //=========================================================================================
 
-Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle = DAP_ReturnPanelName()
-	WBP_UpdateITCPanelPopUps(panelTitle) // makes sure user data for controls is up to date
-	// updates sweeps in cycle value - when indexing is off, only the start set is counted, whend indexing is on all sets between start and end set are counted
-	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value == 0)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-	elseif(v_value ==1)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
-	endif
+Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle
+	variable setRepeats
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+
+		panelTitle = cba.win
+		// makes sure user data for controls is up to date
+		WBP_UpdateITCPanelPopUps(panelTitle)
+
+		setRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+		// updates sweeps in cycle value - when indexing is off, only the start set is counted,
+		// when indexing is on, all sets between start and end set are counted
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * setRepeats)
+		else
+			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle, 0) * setRepeats)
+		endif
+		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle, 1)
+
+		DAP_UpdateITIAcrossSets(panelTitle)
+		break
+	endswitch
+
+	return 0
 End
 //=========================================================================================
 

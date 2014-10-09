@@ -410,14 +410,40 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	return MaxNoOfSweeps
 End
 
-Function/S IDX_GetDAControl(panelTitle, idx)
+/// @name Parameters for IDX_GetChannelControl and friends
+/// @{
+Constant CHANNEL_TYPE_DAC          = 0x00
+Constant CHANNEL_TYPE_TTL          = 0x01
+Constant CHANNEL_CONTROL_WAVE      = 0x02
+Constant CHANNEL_CONTROL_INDEX_END = 0x04
+/// @}
+
+/// @brief Returns the name of the channel control
+Function/S IDX_GetChannelControl(panelTitle, idx, channelType, controlType)
 	string panelTitle
-	variable idx
+	variable idx, channelType, controlType
 
 	string ctrl
 
+	if(channelType == CHANNEL_TYPE_DAC)
+		ctrl = "DA"
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		ctrl = "TTL"
+	else
+		ASSERT(0, "Invalid channelType")
+	endif
+
+	if(controlType == CHANNEL_CONTROL_WAVE)
+		ctrl = "Wave_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_INDEX_END)
+		ctrl = "Popup_" + ctrl + "_IndexEnd"
+	else
+		ASSERT(0, "Invalid controlType")
+	endif
+
 	ASSERT(idx >= 0 && idx < 100, "invalid idx")
-	sprintf ctrl, "Wave_DA_%02d", idx
+	sprintf ctrl, "%s_%02d", ctrl, idx
+
 	return ctrl
 End
 
@@ -433,7 +459,7 @@ static Function IDX_GetITIFromWaveNote(wv)
 	return NumberByKey("ITI",str,"=",";")
 End
 
-/// @brief Calculates the maximum ITI of a lead panel and all its followers
+/// @brief Calculates the maximum ITI of a lead panel and all its followers, honours indexing
 ///
 /// @param[in] panelTitle panel title
 /// @param[out] numActiveDAChannels returns the number of active DACs of panelTitle
@@ -441,23 +467,24 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	string panelTitle
 	variable& numActiveDAChannels
 
-	variable numEntries, i, j, iti, maxITI, numDACs
-	string name, str, list
+	variable numPanels, i, j, k, iti, maxITI, numDACs, lockedIndexing, numSets
+	string panelList, setName, setList
 
-	list = panelTitle
+	panelList = panelTitle
 
 	if(DAP_DeviceCanLead(panelTitle))
 		/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
 		SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s")
 		if(SVAR_Exists(listOfFollowerDevices))
-			list = AddListItem(list, listOfFollowerDevices, ";", inf)
+			panelList = AddListItem(panelList, listOfFollowerDevices, ";", inf)
 		endif
 	endif
 
+	lockedIndexing = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	maxITI = -INF
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-		panelTitle = StringFromList(i, list)
+	numPanels = ItemsInList(panelList)
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, panelList)
 
 		Wave DAChannelStatus = DC_ControlStatusWave("DA", panelTitle)
 		if(i == 0) // this is either the lead panel or the first and only panel
@@ -470,16 +497,21 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 				continue
 			endif
 
-			name = GetPopupMenuString(panelTitle, IDX_GetDAControl(panelTitle, j))
-			Wave/Z/SDFR=GetWBSvdStimSetDAPath() wv = $name
-			if(!WaveExists(wv))
-				continue
-			endif
-			iti = IDX_GetITIFromWaveNote(wv)
+			setList = IDX_GetSetsInRange(panelTitle, j, CHANNEL_TYPE_DAC, lockedIndexing)
+			numSets = ItemsInList(setList)
+			for(k = 0; k < numSets; k += 1)
+				setName = StringFromList(k, setList)
+				Wave/Z/SDFR=IDX_GetSetFolder(CHANNEL_TYPE_DAC) wv = $setName
 
-			if(IsFinite(iti))
-				maxITI = max(maxITI, iti)
-			endif
+				if(!WaveExists(wv))
+					continue
+				endif
+
+				iti = IDX_GetITIFromWaveNote(wv)
+				if(IsFinite(iti))
+					maxITI = max(maxITI, iti)
+				endif
+			endfor
 		endfor
 	endfor
 
@@ -490,81 +522,107 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	return maxITI
 End
 
-Function IDX_NumberOfTrialsAcrossSets(panelTitle, PopUpMenuNumber, DAorTTL, IndexOverRide)// determines the number of trials for a DA or TTL channel
+Function/S IDX_GetSet(panelTitle, channel, channelType)
 	string panelTitle
-	variable PopUpMenuNumber, DAorTTL, IndexOverRide//DA = 0, TTL = 1	
-	variable NumberOfTrialsAcrossSets
-	variable IndexStart, IndexEnd, ListOffset
-	string DAorTTL_cntrlName = "", DAorTTL_indexEndName = "", setname = ""
-	string DAorTTLString
-	
-	if(DAorTTL == 0)// determine control names based on DA or TTL 
-		DAorTTL_cntrlName = "Wave_DA_0" + num2str(PopUpMenuNumber)
-		DAorTTL_indexEndName = "Popup_DA_IndexEnd_0" + num2str(PopUpMenuNumber)
-		ListOffset = 3// accounts for first two options in DA popup menu list
-	//	sprintf DAorTTLString, "%s" "DA"
-	endif
-
-	if(DAorTTL == 1)
-		DAorTTL_cntrlName = "Wave_TTL_0" + num2str(PopUpMenuNumber)
-		DAorTTL_indexEndName = "Popup_TTL_IndexEnd_0" + num2str(PopUpMenuNumber)
-		ListOffset = 2
-	//	sprintf DAorTTLString, "%s" "TTL"
-	endif
-	
-	controlinfo /w = $panelTitle $DAorTTL_cntrlName// check if indexing is activated
-	IndexStart = v_value
-	print "index start =", indexStart
-	
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing// checks to if indexing is activated
-	if(v_value == 0)
-		IndexEnd = indexStart
-	else
-		controlinfo /w = $panelTitle $DAorTTL_indexEndName
-		IndexEnd = v_value  + 1 // " +1 " is added to compensate for the fact that the index end wave list does not have the test pulse listed. ***********************
-		print "indexing on", "index  end =", indexend
-	endif
-	
-	If(IndexOverRide == 1)
-		IndexEnd = indexStart
-	endIF
-	
-	string setList  = getuserdata(panelTitle, DAorTTL_cntrlName, "menuexp")
-	//sprintf setLIst, "%s" WBP_ITCPanelPopUps(0, DAorTTLString) 
-	variable i = (min(indexstart, indexend) - ListOffset)
-	
-	do
-		Setname = stringfromlist(i, setList, ";")
-		print "set name =", setname
-		NumberOfTrialsAcrossSets += IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
-		i += 1
-	while(i < (max(indexstart, indexend) - (ListOffset - 1)))
-	return NumberOfTrialsAcrossSets
+	variable channel, channelType
 
 End
 
-Function IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)// set name is the wave name, does not include wave path
-	string panelTitle, SetName
-	variable DAorTTL//DA = 0, TTL = 1
-	string WavePath 
-	
-	if(DAorTTL == 0)// to determine location
-		WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:" // root:MIES:WaveBuilder:SavedStimulusSets:DA
-	endif
-	
-	if(DAorTTL == 1)
-		WavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
-	endif
-	
-	if(stringmatch(setname, "") == 1)
-		variable NumberOfTrialsInSet = 0
+/// @brief Returns a ";" seperated list of selected set names
+/// @param panelTitle panel
+/// @param channel channel
+/// @param channelType  CHANNEL_TYPE_DAC or CHANNEL_TYPE_TTL
+/// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
+Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+	string panelTitle
+	variable channel, channelType, lockedIndexing
+
+	variable listOffset, first, last, indexStart, indexEnd
+	string waveCtrl, lastCtrl, list
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		// Additional entries not in menuExp: None, TestPulse
+		listOffset = 2
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		// Additional entries not in menuExp: None
+		listOffset = 1
 	else
-		string NameOfWaveSelectedInPopUP = WavePath + setName
-		NumberOfTrialsInSet = DimSize($NameOfWaveSelectedInPopUP, 1)
+		ASSERT(0, "Invalid channelType")
+	endif
+	
+	waveCtrl = IDX_GetChannelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_WAVE)
+	lastCtrl = IDX_GetChannelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_INDEX_END)
+	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
+
+	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset
+
+	if(lockedIndexing)
+		return DEBUGPRINTs(StringFromList(first, list))
 	endif
 
-	return NumberOfTrialsInSet
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+		last = GetPopupMenuIndex(panelTitle, lastCtrl) - 1
+		if(last < 0) // - None - is selected
+			last = first
+		endif
+	else // without indexing
+		last = first
+	endif
 
+	indexStart = min(first, last)
+	indexEnd   = max(first, last)
+
+	DEBUGPRINT("Control ", str=waveCtrl)
+	DEBUGPRINT("UserData(MenuExp) ", str=list)
+
+	if(indexStart == indexEnd) // only one element
+		return DEBUGPRINTs(StringFromList(indexStart, list))
+	elseif(indexEnd + 1 == ItemsInList(list))
+		return DEBUGPRINTs(list[FindListItem(StringFromList(indexStart, list), list), strlen(list) - 2])
+	else // return the part of list from indexStart to indexEnd + 1
+		return DEBUGPRINTs(list[FindListItem(StringFromList(indexStart, list), list), FindListItem(StringFromList(indexEnd + 1, list), list) - 2])
+	endif
+End
+
+/// @brief Determine the number of trials for a DA or TTL channel
+Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIndexing)
+	string panelTitle
+	variable channel, channelType, lockedIndexing
+
+	variable numTrials, numEntries, i
+	string setList, set
+
+	setList = IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+
+	numEntries = ItemsInList(setList)
+	for(i = 0; i < numEntries; i += 1)
+		set = StringFromList(i, setList)
+		numTrials += IDX_NumberOfTrialsInSet(panelTitle, set, channelType)
+	endfor
+
+	return numTrials
+End
+
+Function/DF IDX_GetSetFolder(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return GetWBSvdStimSetDAPath()
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return GetWBSvdStimSetTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Return the number of trials
+Function IDX_NumberOfTrialsInSet(panelTitle, setName, channelType)
+	string panelTitle, setName
+	variable channelType
+
+	ASSERT(!isEmpty(setname), "Got empty set name")
+	Wave/SDFR=IDX_GetSetFolder(channelType) wv = $setName
+	return DimSize(wv, COLS)
 End
 
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
