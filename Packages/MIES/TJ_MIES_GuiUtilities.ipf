@@ -145,13 +145,28 @@ Constant CONTROL_TYPE_SLIDER      = 7
 /// @}
 
 /// @brief Returns one if the checkbox is selected, zero if it is unselected
-Function GetCheckBoxState(win, control)
+/// and, if allowMissingControl is true, NaN for non existing controls.
+///
+/// Checking non existing controls is useful to support old panels
+/// stored in experiments which don't have a the control.
+Function GetCheckBoxState(win, control, [allowMissingControl])
 	string win, control
+	variable allowMissingControl
 
 	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-	return V_Value
+	if(ParamIsDefault(allowMissingControl) || allowMissingControl == 0)
+		ASSERT(V_flag != 0, "Non-existing control or window")
+		ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+		return V_Value
+	else
+		if(V_flag == 0) // control/window is missing
+			ASSERT(windowExists(win), "missing window")
+			return NaN
+		else
+			ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+			return V_Value
+		endif
+	endif
 End
 
 /// @brief Set the internal number in a setvariable control
@@ -283,4 +298,23 @@ Function SetValDisplaySingleVariable(win, control, var, [format])
 	endif
 
 	ValDisplay $control win=$win, value=#formattedString
+End
+
+/// @brief Change the active tab of a panel
+///
+/// @param panel    window name, tabs must be managed with Adam's Tab Control procedures
+/// @param ctrl     name of the TabControl
+/// @param tabID    tab index (zero-based)
+Function ChangeTab(panel, ctrl, tabID)
+	string panel, ctrl
+	variable tabID
+
+	Struct WMTabControlAction tca
+
+	tca.win	= panel
+	tca.ctrlName = ctrl
+	tca.eventCode = 2
+	tca.tab = tabID
+
+	return ACL_DisplayTab(tca)
 End

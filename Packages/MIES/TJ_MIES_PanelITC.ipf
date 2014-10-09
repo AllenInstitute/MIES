@@ -1,5 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Constant DATA_ACQU_TAB_NUM               = 0
 Constant HARDWARE_TAB_NUM                = 6
 StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
@@ -2335,6 +2336,16 @@ Window da_ephys() : Panel
 	CheckBox Check_Settings_InsertTP,help={"Inserts a test pulse at the front of each sweep in a set."}
 	CheckBox Check_Settings_InsertTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_InsertTP,userdata(tabcontrol)=  "ADC",value= 0
+
+	CheckBox Check_Settings_Override_Set_ITI,pos={243,162},size={165,14},title="Allow to override the calculated ITI"
+	CheckBox Check_Settings_Override_Set_ITI,help={"The total ITI is calculated as the minimum of all ITIs involved in the aquisition. Checking allows the user to override the calculated value."}
+	CheckBox Check_Settings_Override_Set_ITI,userdata(tabnum)= "5"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo)= A"!!,H.!!#A1!!#A4!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_Override_Set_ITI,value= 0, proc=DAP_CheckProc_Override_ITI
+
 	SetVariable setvar_Settings_TPBuffer,pos={173,106},size={103,16},title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
@@ -3120,6 +3131,12 @@ Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
 	DAP_UpdateYokeControls(tca.win)
+
+	// Maybe the user changed the stimulus ITI behind our back
+	// here we try to catch that case
+	if(tca.tab == DATA_ACQU_TAB_NUM)
+		DAP_UpdateITIAcrossSets(tca.win)
+	endif
 End
 
 /// This is a function that gets run by ACLight's tab control function every time a tab is selected,
@@ -3242,9 +3259,11 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 	
 	controlinfo /w = $panelTitle $DACWave
 	if(stringmatch(s_value,"- none -") == 1)
-	checkbox $ctrlName win = $panelTitle, value = 0
-	print "Select " + DACwave[5,7] + " Wave"
+		checkbox $ctrlName win = $panelTitle, value = 0
+		print "Select " + DACwave[5,7] + " Wave"
 	endif
+
+	DAP_UpdateITIAcrossSets(panelTitle)
 
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:MinSampInt
@@ -3532,22 +3551,33 @@ Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
 End
 //=========================================================================================
 
-Function DAP_CheckProc_IndexingState(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle = DAP_ReturnPanelName()
-	WBP_UpdateITCPanelPopUps(panelTitle) // makes sure user data for controls is up to date
-	// updates sweeps in cycle value - when indexing is off, only the start set is counted, whend indexing is on all sets between start and end set are counted
-	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value == 0)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-	elseif(v_value ==1)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
-	endif
+Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle
+	variable setRepeats
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+
+		panelTitle = cba.win
+		// makes sure user data for controls is up to date
+		WBP_UpdateITCPanelPopUps(panelTitle)
+
+		setRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+		// updates sweeps in cycle value - when indexing is off, only the start set is counted,
+		// when indexing is on, all sets between start and end set are counted
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * setRepeats)
+		else
+			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle, 0) * setRepeats)
+		endif
+		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle, 1)
+
+		DAP_UpdateITIAcrossSets(panelTitle)
+		break
+	endswitch
+
+	return 0
 End
 //=========================================================================================
 
@@ -3709,54 +3739,73 @@ Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
 	DAP_TurnOffAllTTLs(panelTitle)
 End
 //=========================================================================================
-/// DAP_PopMenuChkProc_StimSetList
-Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl//Procedure for DA popupmenu's that show DA waveslist from wavebuilder
+
+Function DAP_UpdateITIAcrossSets(panelTitle)
+	string panelTitle
+
+	variable numActiveDAChannels, maxITI
+	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
+	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
+
+	if(GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1))
+		EnableControl(panelTitle, "SetVar_DataAcq_ITI")
+	elseif(maxITI == 0 && numActiveDAChannels > 0)
+		EnableControl(panelTitle, "SetVar_DataAcq_ITI")
+		ControlInfo/W=$panelTitle Check_Settings_Override_Set_ITI
+		if(V_flag != 0)
+			SetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", CHECKBOX_SELECTED)
+		endif
+	else
+		DisableControl(panelTitle, "SetVar_DataAcq_ITI")
+		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
+	endif
+
+	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
+		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
+	endif
+End
+
+/// @brief Procedure for DA/TTL popupmenus including indexing wave popupmenus
+Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
+
 	string CheckBoxName = ctrlName
 	string ListOfWavesInFolder
 	string folderPath
 	string folder
 	string panelTitle = DAP_ReturnPanelName()
 	DFREF saveDFR = GetDataFolderDFR()
-	
-	if(stringmatch(ctrlName,"*indexEnd*") != 1)//makes sure it is the index start wave
-		if(popnum == 1)//if the user selects "none" the channel is automatically turned off
-		CheckBoxName[0,3] = "check"
-		Checkbox $Checkboxname win = $panelTitle, value = 0
+
+	if(StringMatch(ctrlName, "*indexEnd*") != 1)
+		if(popnum == 1) //if the user selects "none" the channel is automatically turned off
+			CheckBoxName[0,3] = "check"
+			Checkbox $Checkboxname win = $panelTitle, value = 0
 		endif
 	endif
-	
-	if(stringmatch(ctrlname,"Wave_DA_*") == 1)
+
+	if(StringMatch(ctrlname, "Wave_DA_*"))
 		if(popnum == 2)
-			popupmenu $ctrlname win = $panelTitle, mode = 3// prevents the user from selecting the testpulse
+			// prevents the user from selecting the testpulse
+			PopupMenu $ctrlname win = $panelTitle, mode = 3
 		endif
 	endif
-//	if(stringmatch(ctrlName, "*_DA_*") == 1) // determines wether to a DA or TTL popup menu needs to be populated
-//		FolderPath = "root:MIES:waveBuilder:savedStimulusSets:DA"
-//		folder = "*DA*"
-//		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-//		ListOfWavesInFolder = "\"- none -;TestPulse;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""// DA popups have testpulse listed as option
-//	else
-//		FolderPath = "root:MIES:waveBuilder:savedStimulusSets:TTL"
-//		folder = "*TTL*"
-//		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-//		ListOfWavesInFolder = "\"- none -;\"" + "+" + "\"" + Wavelist(Folder,";","") + "\""
-//	endif
-//	
-//	PopupMenu  $ctrlName win = $panelTitle, value = #ListOfWavesInFolder, userdata(MenExp) = ListOfWavesInFolder
-	setdatafolder saveDFR// makes sure data acq starts in the correct folder!!
+
+	DAP_UpdateITIAcrossSets(panelTitle)
+
+	// makes sure data acq starts in the correct folder!!
+	SetDataFolder saveDFR
 	
-	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
+	ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
 	if(v_value == 0)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+		ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+		ValDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	else
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
+		ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
+		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
 	endif
 End
 //=========================================================================================
@@ -3846,6 +3895,22 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 			DAP_FindConnectedAmps(ba.win)
 			break
 	endswitch
+End
+//=========================================================================================
+Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			if(!cba.checked)
+				DAP_UpdateITIAcrossSets(cba.win)
+			endif
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
 //=========================================================================================
 Function DAP_FindConnectedAmps(panelTitle)
@@ -4077,6 +4142,8 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 			else
 				DAP_ApplyClmpModeSavdSettngs(headStageNo, clampMode, panelTitle)
 			endif
+
+			DAP_UpdateITIAcrossSets(panelTitle)
 
 			variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
 			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
@@ -4479,19 +4546,12 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	return 0
 End
 
-/// DAP_ExecuteAdamsTabcontrolAmp
-Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
+static Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
 	string panelTitle
 	variable tabID
 
-	Struct WMTabControlAction tca
-	
-	tca.ctrlName = "tab_DataAcq_Amp"	
-	tca.win	= panelTitle	
-	tca.eventCode = 2	
-	tca.tab = tabID
 
-	ACL_DisplayTab(tca)
+	return ChangeTab(panelTitle, "tab_DataAcq_Amp", tabID)
 End
 
 //=========================================================================================
