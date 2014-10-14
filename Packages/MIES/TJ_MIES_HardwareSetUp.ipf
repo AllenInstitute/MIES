@@ -316,14 +316,14 @@ End
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
 
-	Variable HeadStageNo, SweepNo, i
-	wave /z W_TelegraphServers = root:MIES:Amplifiers:W_TelegraphServers
+	Variable HeadStageNo, SweepNo, i, amplifierIdx
+	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
 	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
 
-	duplicate /free ChanAmpAssign ChanAmpAssignOrig
+	Duplicate/free ChanAmpAssign ChanAmpAssignOrig
 
 	// Assigns V-clamp settings for a particular headstage
 	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
@@ -353,19 +353,16 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ControlInfo /w = $panelTitle SetVar_Hardware_IC_AD_Unit	
 	ChanAmpAssignUnit[3][HeadStageNo] = s_value
 	
-	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
-	if(waveexists(root:MIES:Amplifiers:W_telegraphServers))
-		ControlInfo /w = $panelTitle popup_Settings_Amplifier
-
-		if(v_value > 1)
-			ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0] // serial number
-			ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1] // channel ID
-		else
-			ChanAmpAssign[8][HeadStageNo] = nan
-			ChanAmpAssign[9][HeadStageNo] = nan
-		endif
-
-		ChanAmpAssign[10][HeadStageNo] = v_value
+	// Assigns amplifier to a particular headstage - sounds weird because this relationship is predetermined in hardware
+	// but now you are telling the software what it is
+	amplifierIdx = GetPopupMenuIndex(panelTitle, "popup_Settings_Amplifier")
+	if(WaveExists(W_TelegraphServers) && amplifierIdx >= 1)
+		ChanAmpAssign[8][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][0] // serial number
+		ChanAmpAssign[9][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][1] // channel ID
+		ChanAmpAssign[10][HeadStageNo] = amplifierIdx
+	else
+		ChanAmpAssign[8][HeadStageNo] = nan
+		ChanAmpAssign[9][HeadStageNo] = nan
 	endif
 
 	//Duplicate ChanampAssign wave and add sweep number if the wave is changed

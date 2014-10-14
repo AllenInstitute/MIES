@@ -3778,7 +3778,7 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 
 	switch( pa.eventCode )
 		case 2: // mouse up
-			HSU_UpdateChanAmpAssignStorWv(pa.win)
+			DAP_UpdateHeadStage(pa.win, str2num(GetPopupMenuString(pa.win, "Popup_Settings_HeadStage")))
 			break
 		case -1: // control being killed
 			break
@@ -3793,7 +3793,7 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	switch( sva.eventCode )
 		case 1: // mouse up
 		case 2: // Enter key
-			HSU_UpdateChanAmpAssignStorWv(sva.win)
+			DAP_UpdateHeadStage(sva.win, str2num(GetPopupMenuString(sva.win, "Popup_Settings_HeadStage")))
 			break
 		case 3: // Live update
 			break
@@ -4041,6 +4041,27 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
+
+static Function DAP_UpdateHeadstage(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	string ctrl
+	variable enabled
+
+	ctrl  = "Check_DataAcq_HS_0" + num2str(headstage)
+	enabled = GetCheckBoxState(panelTitle, ctrl)
+
+	if(!enabled)
+		HSU_UpdateChanAmpAssignStorWv(panelTitle)
+		return NaN
+	endif
+
+	DAP_ChangeHeadstageState(panelTitle, ctrl, 0)
+	HSU_UpdateChanAmpAssignStorWv(panelTitle)
+	DAP_ChangeHeadstageState(panelTitle, ctrl, 1)
+End
+
 //=========================================================================================
 static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	string panelTitle
@@ -4157,31 +4178,33 @@ End
 Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string panelTitle, control
-	variable mode, headStage, ctrlNo
-
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
-			control    = cba.ctrlName
-			panelTitle = cba.win
-			DAP_GetInfoFromControl(panelTitle, control, ctrlNo, mode, headStage)
-
-			If(!cba.checked)
-				DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
-			elseif(DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode))
-				// without valid settings we turn the control checkbox off
-				SetCheckboxState(panelTitle, control, CHECKBOX_UNSELECTED)
-				return 1
-			endif
-
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
-			DAP_UpdateITIAcrossSets(panelTitle)
-
+			DAP_ChangeHeadstageState(cba.win, cba.ctrlName, cba.checked)
 			break
 	endswitch
 
 	return 0
 End
+
+static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
+	string panelTitle, headStageCtrl
+	variable enabled
+
+	variable mode, headStage, ctrlNo
+
+	DAP_GetInfoFromControl(panelTitle, headStageCtrl, ctrlNo, mode, headStage)
+
+	If(!enabled)
+		DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
+	else
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
+	endif
+
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAP_UpdateITIAcrossSets(panelTitle)
+End
+
 //=========================================================================================
 /// DAP_StopOngoingDataAcquisition
 Function DAP_StopOngoingDataAcquisition(panelTitle)
