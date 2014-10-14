@@ -375,7 +375,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	if(SweepNo > 0)
 		ChanAmpAssignOrig -= ChanAmpAssign//used to see if settings have changed
 		if((wavemax(ChanAmpAssignOrig)) != 0 || (wavemin(ChanAmpAssignOrig)) != 0)
-		ED_MakeSettingsHistoryWave(panelTitle)
+			ED_MakeSettingsHistoryWave(panelTitle)
 		endif
 	endif
 End

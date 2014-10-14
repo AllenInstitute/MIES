@@ -3759,7 +3759,6 @@ Function DAP_FindConnectedAmps(panelTitle)
 	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + list + "\"")
 End
 //=========================================================================================
-/// DAP_PopMenuProc_Headstage
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 	
@@ -3774,10 +3773,9 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	return 0
 End
 //=========================================================================================
-///  DAP_PopMenuProc_CAA
 Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
-	
+
 	switch( pa.eventCode )
 		case 2: // mouse up
 			HSU_UpdateChanAmpAssignStorWv(pa.win)
@@ -3789,7 +3787,6 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	return 0
 End
 //=========================================================================================
-/// DAP_SetVarProc_CAA
 Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
@@ -4010,7 +4007,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
-	If(clampMode == V_CLAMP_MODE)
+	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
 		ADCchannel = ChanAmpAssign[2][headStage]
 		DAGain     = ChanAmpAssign[1][headStage]
@@ -4080,9 +4077,9 @@ End
 /// @brief Return information readout from various gui controls
 ///
 /// @param[in]  panelTitle  panel
-/// @param[in]  ctrl 		control can be either Radio_ClampMode_ or Check_DataAcq_HS_
-/// @param[out] ctrlNo      number of the control (everything behind the last _ of ctrl)
-/// @param[out] mode  	    I_CLAMP_MODE or V_CLAMP_MODE
+/// @param[in]  ctrl        control can be either Radio_ClampMode_ or Check_DataAcq_HS_
+/// @param[out] ctrlNo      number of the control (everything behind the last "_" of ctrl)
+/// @param[out] mode        I_CLAMP_MODE or V_CLAMP_MODE
 /// @param[out] headStage   number of the headstage
 static Function DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
 	string panelTitle, ctrl
