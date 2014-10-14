@@ -3743,7 +3743,7 @@ Function DAP_FindConnectedAmps(panelTitle)
 	endif
 
 	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder root:MIES:Amplifiers
+	SetDataFolder GetAmplifierFolder()
 
 	// old axon interface settings wave
 	Make/O/N=0       W_TelegraphServers
