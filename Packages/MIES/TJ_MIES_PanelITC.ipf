@@ -4143,6 +4143,10 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 				AI_SwitchClampMode(panelTitle, headStage, mode)
 			endif
 
+			AI_UpdateAmpView(panelTitle, headStage)
+			// chooses the amp tab accoding to the MIES headstage clamp mode
+			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
+
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 		break
 	endswitch
