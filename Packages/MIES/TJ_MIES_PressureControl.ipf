@@ -125,6 +125,12 @@ Function P_MethodSeal(panelTitle, headStage)
 		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= -1 // remove the seal mode
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		
+				// apply holding potential of -70 mV 	 	
+		SetCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", 1) 	 	
+		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage) 	 	
+		SetSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", -70) 	 	
+		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage)  
+		
 		print "Seal on head stage:", headstage
 		
 	else // no seal, start, hold, or increment negative pressure
@@ -156,7 +162,7 @@ Function P_MethodSeal(panelTitle, headStage)
 			endif
 			PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 		endif
-		//P_ApplyNegV(panelTitle, headStage) // apply negative voltage
+		P_ApplyNegV(panelTitle, headStage) // apply negative voltage
 	endif
 End
 
@@ -206,7 +212,7 @@ Function P_ApplyNegV(panelTitle, headStage)
 	variable 	headStage
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	variable 	resistance 		=  PressureDataWv[headStage][22]
-	variable 	vCom 			= -100 * resistance
+	variable 	vCom 			= -0.200 * resistance
 // determine command voltage that will result in a holding pA of -100 pA	
 // if V = -100 * resistance is greater than target voltage, apply target voltage, otherwise apply calculated voltage
 	if(vCom > -70)
@@ -221,12 +227,10 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	variable 	headStage
 	
 	// make sure holding is enabled
-	if(!GetCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC"))
 		SetCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", 1)
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage)
-	endif
 	// apply holding
-	SetSetVariable(panelTitle, "check_DatAcq_HoldEnableVC", vCom)
+	SetSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", vCom)
 	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage) // used to set holding
 
 End
@@ -1272,10 +1276,8 @@ Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	variable headStage
 	string headStageCheckboxName
 	sprintf headStageCheckboxName, "Check_DataAcq_HS_%0.2d" headStage
-	string TPClampModeString = TP_ClampModeString(panelTitle)
-	// Check_DataAcq_HS_00
-	// Radio_ClampMode_0
-	if(!str2num(stringfromlist(headStage, TPClampModeString)) && getcheckboxstate(panelTitle, headStageCheckboxName))
+
+	if(!AI_MIESHeadstageMode(panelTitle, headStage) && getcheckboxstate(panelTitle, headStageCheckboxName))
 		return 1
 	endif
 	
