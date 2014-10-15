@@ -2697,19 +2697,6 @@ Function DAP_WindowHook(s)
 End
 //=========================================================================================
 
-Function DAP_SetVarProc_DownSampLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	string cmd
-	variable minsampint
-	string panelTitle = DAP_ReturnPanelName()
-	MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	SetVariable SetVar_DownSamp limits = {MinSampInt,inf,1}, win = $panelTitle
-End
-//=========================================================================================
-
 Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
