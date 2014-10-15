@@ -5,6 +5,24 @@ Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 
+static Function/S ConvertAmplifierModeToString(mode)
+	variable mode
+
+	switch(mode)
+		case V_CLAMP_MODE:
+			return "V_CLAMP_MODE"
+			break
+		case I_CLAMP_MODE:
+			return "I_CLAMP_MODE"
+			break
+		case V_CLAMP_MODE:
+			return "I_EQUAL_ZERO_MODE"
+			break
+		default:
+			ASSERT(0, "invalid mode")
+	endswitch
+End
+
 Function/S AI_ReturnListOf700BChannels(panelTitle)
 	string panelTitle
 
@@ -255,13 +273,19 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string panelTitle
 	variable headStage, mode, func, value
 
-	variable ret, channel
-	string serial
+	variable ret, channel, headstageMode
+	string serial, str
 
 	ASSERT(headStage >= 0 && headStage <= 7, "invalid headStage index")
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
-	if(AI_MIESHeadstageMode(panelTitle, headStage) != mode && !AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+	headstageMode = AI_MIESHeadstageMode(panelTitle, headStage)
+
+	if(headstageMode != mode)
+		printf "Headstage %d is in %s but the required one is %s\r", headstage, ConvertAmplifierModeToString(headstageMode), ConvertAmplifierModeToString(mode)
+		return NaN
+	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+		printf "Headstage %d has different modes stored and set\r", headstage
 		return NaN
 	endif
 
@@ -271,6 +295,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	if(!AI_IsValidSerialAndChannel(mccserial=serial, channel=channel))
 		return NaN
 	endif
+
+	sprintf str, "headStage=%d, mode=%d, func=%d, value=%g", headStage, mode, func, value
+	DEBUGPRINT(str)
 
 	MCC_SelectMultiClamp700B(serial, channel)
 
