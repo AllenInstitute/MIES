@@ -12,10 +12,9 @@ static StrConstant LEADER                = "Leader"
 StrConstant DEVICE_TYPES      = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
-Window da_ephys() : Panel
+Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(1598,758,2068,1524)
-	SetWindow $s_name, hook(cleanup)=DAP_WindowHook
+	NewPanel /W=(500,80,970,846)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -454,7 +453,7 @@ Window da_ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 0
-	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=3,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1086,7 +1085,7 @@ Window da_ephys() : Panel
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,G8!!#As!!#Ao!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
+	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;\""
 	PopupMenu Popup_Settings_IC_DA,pos={212,423},size={53,21},disable=1,proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
@@ -2105,7 +2104,7 @@ Window da_ephys() : Panel
 	SetVariable setvar_Hardware_YokeList,userdata(tabnum)=  "6"
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
-	SetVariable setvar_Hardware_YokeList,value= _STR:"Device is not yokeable",noedit= 1
+	SetVariable setvar_Hardware_YokeList,value= _STR:"No Yoked Devices",noedit= 1
 	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=3,proc=DAP_ButtonProc_YokeRelease,title="Release"
 	Button button_Hardware_RemoveYoke,userdata(tabnum)=  "6"
 	Button button_Hardware_RemoveYoke,userdata(tabcontrol)=  "ADC"
@@ -2169,14 +2168,13 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,userdata(tabnum)=  "1"
 	CheckBox check_DataAcq_AutoBias,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
-	SetVariable setvar_DataAcq_IbiasMax,pos={310,209},size={120,20},proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
+	SetVariable setvar_DataAcq_IbiasMax,pos={310,209},size={120,20},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",disable=1,value= _NUM:0
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",value= _NUM:0
 	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={46,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
-	SetVariable setvar_DataAcq_AutoBiasVrange,value= _NUM:0
-	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1}
+	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1},value= _NUM:0
 	TitleBox Title_DataAcq_Hold_VC,pos={70,172},size={60,13},disable=1,title="Holding (mV)"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
@@ -2230,8 +2228,7 @@ Window da_ephys() : Panel
 	CheckBox check_DataAcq_IzeroEnable,pos={52,185},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DataAcq_IzeroEnable,value= 0
-	CheckBox check_DataAcq_IzeroEnable,fColor=(65280,43520,0)
+	CheckBox check_DataAcq_IzeroEnable,fColor=(65280,43520,0),value= 0
 	CheckBox Check_Settings_AlarmPauseAcq,pos={34,411},size={166,14},title="\\JCPause acquisition in alarm state"
 	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
@@ -2272,16 +2269,14 @@ Window da_ephys() : Panel
 	CheckBox Check_Settings_InsertTP,help={"Inserts a test pulse at the front of each sweep in a set."}
 	CheckBox Check_Settings_InsertTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_InsertTP,userdata(tabcontrol)=  "ADC",value= 0
-
-	CheckBox Check_Settings_Override_Set_ITI,pos={243,162},size={165,14},title="Allow to override the calculated ITI"
+	CheckBox Check_Settings_Override_Set_ITI,pos={243,162},size={182,14},proc=DAP_CheckProc_Override_ITI,title="Allow to override the calculated ITI"
 	CheckBox Check_Settings_Override_Set_ITI,help={"The total ITI is calculated as the minimum of all ITIs involved in the aquisition. Checking allows the user to override the calculated value."}
-	CheckBox Check_Settings_Override_Set_ITI,userdata(tabnum)= "5"
+	CheckBox Check_Settings_Override_Set_ITI,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_Override_Set_ITI,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo)= A"!!,H.!!#A1!!#A4!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_Override_Set_ITI,value= 0, proc=DAP_CheckProc_Override_ITI
-
+	CheckBox Check_Settings_Override_Set_ITI,value= 0
 	SetVariable setvar_Settings_TPBuffer,pos={173,106},size={103,16},title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
@@ -2295,11 +2290,12 @@ Window da_ephys() : Panel
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:1
-	CheckBox check_Settings_TP_SaveTPRecord,pos={309,107},size={93,14},disable=1,title="Save TP record"
+	CheckBox check_Settings_TP_SaveTPRecord,pos={309,107},size={93,14},title="Save TP record"
 	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
+	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -2318,7 +2314,6 @@ EndMacro
 
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
-/// restoreDA_EphysPanelSettings
 Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, Modified by Tim Jarsky 06/10/2014
 	string panelTitle
 
@@ -2374,14 +2369,14 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	SetVariable Gain_DA_06 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_DA_07 WIN = $panelTitle, value = _NUM:0.00
 	
-	PopupMenu Wave_DA_00 WIN = $panelTitle,mode=1 //,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_01 WIN = $panelTitle,mode=1 //,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_02 WIN = $panelTitle,mode=1 //,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_03 WIN = $panelTitle,mode=1 //,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_04 WIN = $panelTitle,mode=1 //,popvalue="deltat4st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_05 WIN = $panelTitle,mode=1 //,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=1 //,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=1 //,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
+	PopupMenu Wave_DA_00 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_01 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_02 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_03 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_04 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_05 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 
 	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1
@@ -2412,26 +2407,21 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	CheckBox Check_TTL_06 Win = $panelTitle, value = 0
 	CheckBox Check_TTL_07 Win = $panelTitle, value = 0
 	
-	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_02 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_03 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_04 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_05 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_06 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Wave_TTL_07 Win = $panelTitle ,mode=1 //,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
+	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_02 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_03 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_04 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_05 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_06 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_07 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
 	
 	CheckBox Check_Settings_TrigOut Win = $panelTitle, value = 0
 	CheckBox Check_Settings_TrigIn Win = $panelTitle, value = 0
 
 	SetVariable SetVar_DataAcq_SetRepeats WIN = $panelTitle,value= _NUM:1
 
-	CheckBox Check_Settings_DownSamp WIN = $panelTitle,value= 0
-	SetVariable SetVar_DownSamp WIN = $panelTitle, value= _NUM:5
-	SetVariable SetVar_Sweep WIN = $panelTitle, value= _NUM:0
-
 	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
-
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
 	CheckBox Check_AsyncAD_01 WIN = $panelTitle,value= 0
 	CheckBox Check_AsyncAD_02 WIN = $panelTitle,value= 0
@@ -2503,12 +2493,12 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	SetVariable SetVar_Settings_VC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
 	SetVariable SetVar_Settings_IC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
 
-	PopupMenu Popup_Settings_VC_DA WIN = $panelTitle, mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu Popup_Settings_VC_AD WIN = $panelTitle, mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_IC_AD WIN = $panelTitle, mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
-	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1 // ,popvalue=" - none - ",value= #"\" - none - ;AmpNo 834000 Chan 1;AmpNo 834000 Chan 2;\""
-	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_VC_DA WIN = $panelTitle, mode=1
+	PopupMenu Popup_Settings_VC_AD WIN = $panelTitle, mode=1
+	PopupMenu Popup_Settings_IC_AD WIN = $panelTitle, mode=1
+	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1
+	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1, value= #"\" - none - ;\""
+	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 
 	SetVariable SetVar_Settings_IC_DAgain WIN = $panelTitle, value= _NUM:400
 
@@ -2534,23 +2524,23 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 
 	CheckBox SearchUniversal_TTL_00 WIN = $panelTitle, value= 0
 
-	PopupMenu Popup_DA_IndexEnd_00 WIN = $panelTitle, mode=1 //,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_01 WIN = $panelTitle, mode=1 // ,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_02 WIN = $panelTitle,mode=1 // ,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_03 WIN = $panelTitle, mode=1 // ,popvalue="DeltaT3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_04 WIN = $panelTitle, mode=1 // ,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_05 WIN = $panelTitle,mode=1 // ,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_06 WIN = $panelTitle,mode=1 // ,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
-	PopupMenu Popup_DA_IndexEnd_07 WIN = $panelTitle,mode=1 // ,popvalue="Ramp3st_DA_0",value= #"\"- none -;TestPulse;\"+ WBP_ITCPanelPopUps(0,\"DA\") "
+	PopupMenu Popup_DA_IndexEnd_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_03 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_04 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_DA_IndexEnd_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 
-	PopupMenu Popup_TTL_IndexEnd_00 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_01 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_02 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_03 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_04 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_05 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_06 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
-	PopupMenu Popup_TTL_IndexEnd_07 WIN = $panelTitle,mode=1 // ,popvalue="- none -",value= #"\"- none -;\"+ WBP_ITCPanelPopUps(1,\"TTL\") "
+	PopupMenu Popup_TTL_IndexEnd_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_03 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_04 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu Popup_TTL_IndexEnd_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 
 	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle,value= 0
 
@@ -2652,6 +2642,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	SetVariable SetVar_DataAcq_CN WIN = $panelTitle,limits={-8,16,1},value= _NUM:0
 
 	CheckBox check_DatAcq_HoldEnable WIN = $panelTitle,value= 0
+	CheckBox check_DatAcq_RsCompEnable WIN = $panelTitle,value= 0
 	CheckBox check_DatAcq_CNEnable WIN = $panelTitle,value= 0
 
 	Slider slider_DataAcq_ActiveHeadstage  WIN = $panelTitle,value= 0
@@ -2672,8 +2663,10 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	CheckBox check_Settings_AmpMCCdefault WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
-	CheckBox check_Settings_MD WIN = $panelTitle,value= 1
-	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 1
+	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
+	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 0
+	CheckBox Check_Settings_Override_Set_ITI WIN = $panelTitle,value= 0
+	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle,value= 0
 	
 	string oscilloscopeFullWindowName
 	sprintf oscilloscopeFullWindowName, "%s#Oscilloscope" panelTitle
