@@ -2255,7 +2255,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_AmpMIESdefault,userdata(tabnum)=  "5"
 	CheckBox check_Settings_AmpMIESdefault,userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_AmpMIESdefault,fColor=(65280,43520,0),value= 0
-	CheckBox check_DataAcq_Amp_Chain,pos={324,222},size={45,14},disable=1,title="Chain"
+	CheckBox check_DataAcq_Amp_Chain,pos={324,222},size={45,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Chain"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)= "tab_DataAcq_Amp",value= 0
 	GroupBox group_Settings_MDSupport,pos={21,26},size={421,40},title="Multiple Device Support"

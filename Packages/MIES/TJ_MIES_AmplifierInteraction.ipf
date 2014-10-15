@@ -338,6 +338,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 		case MCC_SETNEUTRALIZATIONCAP_FUNC:
 			ret = MCC_SetNeutralizationCap(value)
 			break
+		case MCC_SETNEUTRALIZATIONENABL_FUNC:
+			ret = MCC_SetNeutralizationEnable(value)
+			break
 		default:
 			ASSERT(0, "Unknown function")
 			break
@@ -433,7 +436,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 		// I-Clamp controls
 		case "setvar_DataAcq_Hold_IC":
 			AmpStorageWave[16][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, v_value * 1e-12)
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, v_value * 1e-12)
 			break
 		case "check_DatAcq_HoldEnable":
 			AmpStorageWave[17][0][headStage] = v_value
