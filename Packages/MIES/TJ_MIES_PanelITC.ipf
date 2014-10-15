@@ -2119,32 +2119,32 @@ Window DA_Ephys() : Panel
 	TitleBox Title_DataAcq_Hold_IC,pos={70,174},size={58,13},disable=1,title="Holding (pA)"
 	TitleBox Title_DataAcq_Hold_IC,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_Hold_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
-	TitleBox Title_DataAcq_Bridge,pos={55,193},size={72,13},disable=1,title="Bridge Balance"
+	TitleBox Title_DataAcq_Bridge,pos={42,193},size={100,15},disable=1,title="Bridge Balance (M\\F'Symbol'W\\F]0)"
 	TitleBox Title_DataAcq_Bridge,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_Bridge,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
-	SetVariable setvar_DataAcq_Hold_IC,pos={135,173},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
+	SetVariable setvar_DataAcq_Hold_IC,pos={152,173},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_Hold_IC,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_Hold_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Hold_IC,value= _NUM:0
-	SetVariable setvar_DataAcq_BB,pos={135,192},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
+	SetVariable setvar_DataAcq_BB,pos={152,192},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_BB,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_BB,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_BB,limits={0,inf,1},value= _NUM:0
-	SetVariable setvar_DataAcq_CN,pos={135,211},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
+	SetVariable setvar_DataAcq_CN,pos={152,211},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_CN,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_CN,limits={-8,16,1},value= _NUM:0
-	CheckBox check_DatAcq_HoldEnable,pos={178,174},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
+	CheckBox check_DatAcq_HoldEnable,pos={195,174},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_HoldEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_HoldEnable,value= 0
-	CheckBox check_DatAcq_BBEnable,pos={178,193},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
+	CheckBox check_DatAcq_BBEnable,pos={195,193},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_BBEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
-	CheckBox check_DatAcq_CNEnable,pos={178,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
+	CheckBox check_DatAcq_CNEnable,pos={195,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
-	TitleBox Title_DataAcq_CN,pos={41,211},size={86,13},disable=1,title="Cap Neutralization"
+	TitleBox Title_DataAcq_CN,pos={41,211},size={107,13},disable=1,title="Cap Neutralization (pF)"
 	TitleBox Title_DataAcq_CN,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
 	Slider slider_DataAcq_ActiveHeadstage,pos={144,129},size={255,19},disable=1,proc=DAP_SliderProc_MIESHeadStage
@@ -2221,6 +2221,7 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_ForwardHold,help={"Sets the I-clamp holding current based on the V-clamp holding potential"}
 	Button button_DataAcq_ForwardHold,userdata(tabnum)=  "0"
 	Button button_DataAcq_ForwardHold,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	Button button_DataAcq_ForwardHold,valueColor=(65280,43520,0)
 	Button button_Hardware_AutoGainAndUnit,pos={385,421},size={31,47},disable=1,proc=DAP_ButtonProc_AutoFillGain,title="Auto\rFill"
 	Button button_Hardware_AutoGainAndUnit,help={"A amplifier channel needs to be selected from the popup menu prior to auto filling gain and units."}
 	Button button_Hardware_AutoGainAndUnit,userdata(tabnum)=  "6"
@@ -2257,7 +2258,8 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_AmpMIESdefault,fColor=(65280,43520,0),value= 0
 	CheckBox check_DataAcq_Amp_Chain,pos={324,222},size={45,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Chain"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabnum)=  "0"
-	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)= "tab_DataAcq_Amp",value= 0
+	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox check_DataAcq_Amp_Chain,fColor=(65280,43520,0),value= 0
 	GroupBox group_Settings_MDSupport,pos={21,26},size={421,40},title="Multiple Device Support"
 	GroupBox group_Settings_MDSupport,help={"Multiple device support includes yoking and multiple independent devices"}
 	GroupBox group_Settings_MDSupport,userdata(tabnum)=  "5"
