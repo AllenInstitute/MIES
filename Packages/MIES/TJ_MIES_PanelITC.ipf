@@ -3473,6 +3473,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 
 	return 0
 End
+
 //=========================================================================================
 Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
