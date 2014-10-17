@@ -2755,18 +2755,18 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	String SearchString
 	String panelTitle = DAP_ReturnPanelName()
-	String DAPopUpMenuName// = "Wave_DA_"
+	String DAPopUpMenuName
 	String IndexEndPopUpMenuName
 	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
 	String SearchSetVarName
 	String ListOfWaves
-	
+
 	Variable i = 0
-	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
-	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:DA:
-	
+	String popupValue
+
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder GetWBSvdStimSetDAPath()
+
 	if(checked == 0)
 		SearchString = "*da*"
 		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
@@ -2782,26 +2782,23 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 			endif
 			i += 1
 		while(i < NUM_DA_TTL_CHANNELS)
-		
+
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
 		do
 			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 
-	
 			i += 1	
 		while(i < NUM_DA_TTL_CHANNELS)
 	elseif(checked == 1)
-		
-		
+
 		controlinfo /w = $panelTitle Search_DA_00
 		if(strlen(s_value) == 0)
 			SearchString = "*da*"
 		else
 			SearchString = s_value
 		endif
-		
 
 		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
 		ListOfWaves = wavelist(searchstring,";","")
@@ -2826,8 +2823,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 		
 		
 	endif
-		setdatafolder saveDFR
-
+	Setdatafolder saveDFR
 End
 //=========================================================================================
 
@@ -2850,7 +2846,7 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 	string panelTitle = DAP_ReturnPanelName()
 	
 	DFREF saveDFR = GetDataFolderDFR()
-	setdatafolder root:MIES:WaveBuilder:savedStimulusSets:TTL
+	SetDataFolder GetWBSvdStimSetTTLPath()
 	controlinfo /w = $panelTitle SearchUniversal_TTL_00	
 	
 	if(v_value == 1)
@@ -2916,7 +2912,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
+	SetDataFolder GetWBSvdStimSetTTLPath()
 	
 	if(checked == 0)
 		SearchString = "*TTL*"
@@ -3164,13 +3160,13 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String SearchString
 	string popupValue, ListOfWaves
 	variable i = 0
-	
+
 	string panelTitle = DAP_ReturnPanelName()
-	
+
 	DFREF saveDFR = GetDataFolderDFR()
-	setdatafolder root:MIES:WaveBuilder:savedStimulusSets:DA
+	SetDataFolder GetWBSvdStimSetDAPath()
 	controlinfo /w = $panelTitle SearchUniversal_DA_00	
-	
+
 	if(v_value == 1) // apply search string to all channels
 		controlinfo /w = $panelTitle Search_DA_00
 		If(strlen(s_value) == 0)
