@@ -471,7 +471,6 @@ Window databrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepNo,limits={0,inf,1},value= _NUM:0,live= 1
 	DefineGuide UGV0={FR,-193},UGV1={FR,-148},UGH0={FB,-317},UGH1={FB,-101}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(DataFolderPath)= A"Ec5l<3_`17;`[KL6UYL/Bk(^q3_<:<0fC^>3^dP&Bk(^."
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ET5QF1Z5QCcazzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
