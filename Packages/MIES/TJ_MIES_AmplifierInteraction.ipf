@@ -509,7 +509,13 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
 	string panelTitle
 	variable MIESHeadStageNo
 
-	Variable Param
+	variable Param
+
+	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		print "Associate the panel with a DAC prior to using panel"
+		return 0
+	endif
+
 	Wave AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
 
 	// V-Clamp controls
