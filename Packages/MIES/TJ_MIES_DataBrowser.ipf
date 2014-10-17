@@ -20,25 +20,25 @@ Function DB_LockDBPanel(panelTitle)
 End
 
 //==============================================================================================================================
-Function /C DB_FirstAndLastSweepAcquired(panelTitle) // returns first and last sweep acquired in a complex number
+Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	string panelTitle
+	variable &first, &last
+
+	first = NaN
+	last  = NaN
+
 	string ListOfAcquiredWaves
-	variable LastSweepAcquired
-	variable /C FirstAndLastSweepAcquired
-	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
-	DFREF saveDFR = GetDataFolderDFR()
-	setDataFolder $DataPath
-	
-	ListOfAcquiredWaves = wavelist("sweep_*", ";", "MINCOLS:2")
-	variable firstSweepAcquired = numberbykey("sweep", ListOfAcquiredWaves, "_")
-	LastSweepAcquired = (itemsinlist(ListOfAcquiredWaves, ";")) - 1 + firstSweepAcquired
-	valdisplay valdisp_DataBrowser_LastSweep win = $panelTitle, value = _num:LastSweepAcquired
-	setvariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {firstSweepAcquired, LastSweepAcquired, 1}
-	SetDataFolder saveDFR
-	
-	FirstAndLastSweepAcquired = cmplx(firstSweepAcquired, LastSweepAcquired)
-	
-	return FirstAndLastSweepAcquired
+	dfref dfr = $(GetUserData(panelTitle, "", "DataFolderPath") + ":Data")
+
+	if(!DataFolderExistsDFR(dfr))
+		return NaN
+	endif
+
+	ListOfAcquiredWaves = GetListOfWaves(dfr, DATA_SWEEP_REGEXP, options="MINCOLS:2")
+	first = NumberByKey("Sweep", ListOfAcquiredWaves, "_")
+	last = ItemsInList(ListOfAcquiredWaves) - 1 + first
+	valdisplay valdisp_DataBrowser_LastSweep win = $panelTitle, value = _num:last
+	setvariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {first, last, 1}
 End
 
 //==============================================================================================================================
@@ -210,8 +210,8 @@ Function DB_ButtonProc_NextSweep(ctrlName) : ButtonControl
 	variable SweepToPlot
 	string SweepToPlotName
 	string panelTitle = DB_ReturnDBPanelName()	
-	variable LastSweep = imag(DB_FirstAndLastSweepAcquired(panelTitle))
-	variable FirstSweep = real(DB_FirstAndLastSweepAcquired(panelTitle))
+	variable firstSweep, lastSweep
+	DB_FirstAndLastSweepAcquired(panelTitle, firstSweep, lastSweep)
 	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	controlinfo check_DataBrowser_SweepOverlay
 	if(v_value == 1)
@@ -271,8 +271,8 @@ Function DB_ButtonProc_PrevSweep(ctrlName) : ButtonControl
 	string panelTitle = DB_ReturnDBPanelName()	
 	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	
-	variable lastSweep = imag(DB_FirstAndLastSweepAcquired(panelTitle))
-	variable FirstSweep = real(DB_FirstAndLastSweepAcquired(panelTitle))
+	variable firstSweep, lastSweep
+	DB_FirstAndLastSweepAcquired(panelTitle, firstSweep, lastSweep)
 	controlinfo /w = $panelTitle check_DataBrowser_SweepOverlay
 	if(v_value == 1)
 		Button button_DataBrowser_nextSweep win = $panelTitle, disable = 2// need to add code here for role back state!!
@@ -326,9 +326,8 @@ Function DB_CheckProc_DADisplay(ctrlName,checked) : CheckBoxControl
 	panelTitle = DB_ReturnDBPanelName()	
 	string DataPath = getuserdata(panelTitle, "", "DataFolderPath") + ":Data"
 	
-	variable LastSweep = imag(DB_FirstAndLastSweepAcquired(panelTitle))
-	variable FirstSweep = real(DB_FirstAndLastSweepAcquired(panelTitle))
-//	controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
+	variable firstSweep, lastSweep
+	DB_FirstAndLastSweepAcquired(panelTitle, firstSweep, lastSweep)
 	controlinfo /w = $panelTitle setvar_DataBrowser_SweepNo
 	SweepNo = v_value
 	SweepToPlot = SweepNo
@@ -507,9 +506,8 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 			Variable dval = sva.dval
 			String sval = sva.sval
 				
-				variable LastSweep = imag(DB_FirstAndLastSweepAcquired(sva.win))
-				variable FirstSweep = real(DB_FirstAndLastSweepAcquired(sva.win))
-
+			variable firstSweep, lastSweep
+			DB_FirstAndLastSweepAcquired(sva.win, firstSweep, lastSweep)
 
 			controlinfo /w = $sva.win check_DataBrowser_SweepOverlay
 			if(v_value)
