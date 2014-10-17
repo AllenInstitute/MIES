@@ -89,7 +89,7 @@ Function/S GetPopupMenuDeviceListWithData()
 
 	variable i, j, k
 	string path, deviceType, deviceNumber, str, yokedList = "", list = ""
-	string follower, followerDeviceIDList, allFollowerDevices = ""
+	string follower, followerDeviceIDList, allFollowerDevices = "", deviceString
 
 	string followerDeviceType, followerDeviceNumber
 	variable numFollower
@@ -106,13 +106,13 @@ Function/S GetPopupMenuDeviceListWithData()
 
 		for(j=0; j < numDevices; j+=1)
 			deviceNumber = StringFromList(j, DEVICE_NUMBERS)
-			path         = GetDevicePathAsString(deviceType, deviceNumber)
+			deviceString = BuildDeviceString(deviceType, deviceNumber)
+			path         = GetDevicePathAsString(deviceString)
 
 			if(!DataFolderExists(path))
 				continue
 			endif
 
-			str = BuildDeviceString(deviceType, deviceNumber)
 
 			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			if(SVAR_Exists(listOfFollowerDevices))
@@ -184,7 +184,7 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 
 	string listOfDataWaves, name
 	variable numWaves, i, idx, convrate, samplingInterval
-	dfref deviceDFR = GetDeviceDataPath(deviceType, deviceNumber)
+	dfref deviceDFR = GetDeviceDataPath(BuildDeviceString(deviceType, deviceNumber))
 
 	listOfDataWaves = GetListOfWaves(deviceDFR, DATA_SWEEP_REGEXP)
 	numWaves = ItemsInList(listOfDataWaves)

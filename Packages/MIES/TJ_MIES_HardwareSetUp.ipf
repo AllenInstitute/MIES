@@ -147,35 +147,11 @@ End
 
 //==================================================================================================
 
-///@deprecated new code should use GetDeviceTestPulse(...) from TJ_MIES_WaveDataFolderGetters.ipf
-Function/DF HSU_GetDeviceTestPulseFromTitle(panelTitle)
-	string panelTitle
-
-	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle) + ":TestPulse")
-End
-
-Function/DF HSU_GetDevicePathFromTitle(panelTitle)
-	string panelTitle
-
-	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle))
-End
-
-///@todo rename
+///@todo remove
 Function/S HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
 
-	string deviceType, deviceNumber, path
-	variable ret
-
-	if(windowExists(panelTitle))
-		deviceType   = HSU_GetDeviceType(panelTitle)
-		deviceNumber = HSU_GetDeviceNumber(panelTitle)
-	else  // we can't query the panel here, so we just split the device string
-		ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
-		ASSERT(ret,"Could not parse the panelTitle")
-	endif
-
-	return GetDevicePathAsString(deviceType, deviceNumber)
+	return GetDevicePathAsString(panelTitle)
 End
 //==================================================================================================
 
@@ -215,7 +191,7 @@ Function HSU_UnlockDevice(panelTitle)
 	variable locked = 0
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
-	NVAR/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDeviceIDGlobal
+	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 	string cmd
 	sprintf cmd, "ITCSelectDevice/Z %d" ITCDeviceIDGlobal
 	Execute cmd
@@ -413,7 +389,7 @@ static Function/S HSU_CreateITCFollowerList(panelTitle)
 	string panelTitle
 
 	// ensure that the device folder exists
-	dfref dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	dfref dfr = GetDevicePath(panelTitle)
 	SVAR/Z/SDFR=dfr list = ListOfFollowerITC1600s
 	if(!SVAR_Exists(list))
 		string/G dfr:ListOfFollowerITC1600s = ""

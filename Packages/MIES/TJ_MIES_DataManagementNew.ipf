@@ -53,7 +53,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	dfref testPulseDFR = GetDeviceTestPulse(panelTitle)
 
 	NVAR/SDFR=testPulseDFR duration
-	Wave/Z/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDataWave
+	Wave/Z/SDFR=GetDevicePath(panelTitle) ITCDataWave
 
 	ASSERT(WaveExists(ITCDataWave), "ITCDataWave is missing")
 	ASSERT(Duration > 0, "duration is not strictly positive")
@@ -196,7 +196,6 @@ Function DM_DeleteSettingsHistoryWaves(SweepNo,panelTitle)// deletes setting his
 End
 //=============================================================================================================	
 Function DM_ReturnLastSweepAcquired(panelTitle)
-	//LastSweep
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":data"
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder

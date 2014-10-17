@@ -19,7 +19,7 @@
 Function/Wave GetChanAmpAssign(panelTitle)
 	string panelTitle
 
-	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/SDFR=dfr wv = ChanAmpAssign
 
@@ -47,7 +47,7 @@ End
 Function/Wave GetChanAmpAssignUnit(panelTitle)
 	string panelTitle
 
-	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/T/Z/SDFR=dfr wv = ChanAmpAssignUnit
 
@@ -138,7 +138,7 @@ End
 Function/Wave GetChannelClampMode(panelTitle)
 	string panelTitle
 
-	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/SDFR=dfr wv = ChannelClampMode
 
@@ -174,7 +174,7 @@ End
 Function/Wave DC_SweepDataWvRef(panelTitle)
 	string panelTitle
 	
-	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/SDFR=dfr wv = SweepData
 
@@ -202,7 +202,7 @@ End
 Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 	string panelTitle
 	
-	DFREF dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = SweepTxtData
 
@@ -616,31 +616,40 @@ Function/S GetDeviceTypePathAsString(deviceType)
 End
 
 /// @brief Return a datafolder reference to the device folder
-Function/DF GetDevicePath(deviceType, deviceNumber)
-	string deviceType, deviceNumber
+Function/DF GetDevicePath(panelTitle)
+	string panelTitle
 
-	return createDFWithAllParents(GetDevicePathAsString(deviceType, deviceNumber))
+	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0
-Function/S GetDevicePathAsString(deviceType, deviceNumber)
+Function/S GetDevicePathAsString(panelTitle)
+	string panelTitle
+
 	string deviceType, deviceNumber
+
+	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
+		DEBUGPRINT("Invalid/Non-locked paneltitle, falling back to querying the GUI.")
+
+		deviceType   = HSU_GetDeviceType(panelTitle)
+		deviceNumber = HSU_GetDeviceNumber(panelTitle)
+	endif
 
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
 End
 
 /// @brief Return a datafolder reference to the device data folder
-Function/DF GetDeviceDataPath(deviceType, deviceNumber)
-	string deviceType, deviceNumber
+Function/DF GetDeviceDataPath(panelTitle)
+	string panelTitle
 
-	return createDFWithAllParents(GetDeviceDataPathAsString(deviceType, deviceNumber))
+	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
-Function/S GetDeviceDataPathAsString(deviceType, deviceNumber)
-	string deviceType, deviceNumber
+Function/S GetDeviceDataPathAsString(panelTitle)
+	string panelTitle
 
-	return GetDevicePathAsString(deviceType, deviceNumber) + ":Data"
+	return GetDevicePathAsString(panelTitle) + ":Data"
 End
 
 /// @brief Return the datafolder reference to the amplifier
