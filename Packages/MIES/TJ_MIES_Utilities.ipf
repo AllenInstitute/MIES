@@ -126,14 +126,15 @@ End
 
 /// @brief Alternative implementation for WaveList which honours a dfref and thus
 /// does not require SetDataFolder calls.
+///
 /// @returns list of wave names matching regExpStr located in dfr
-Function/S GetListOfWaves(dfr, regExpStr)
+Function/S GetListOfWaves(dfr, regExpStr, [options])
 	dfref dfr
-	string regExpStr
+	string regExpStr, options
 
-	variable i, numWaves
+	variable i, j, numOptions, numWaves, matches, val
 	// todo think about using PadString here for increased speed
-	string list = "", name
+	string list = "", name, str, opt
 
 	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
 	ASSERT(!isEmpty(regExpStr),"regexpStr is empty or null")
@@ -143,8 +144,40 @@ Function/S GetListOfWaves(dfr, regExpStr)
 		Wave wv = WaveRefIndexedDFR(dfr, i)
 		name = NameOfWave(wv)
 
-		if(GrepString(name,regExpStr))
-			list = AddListItem(name,list,";",Inf)
+		if(!GrepString(name,regExpStr))
+			continue
+		endif
+
+		matches = 1
+		if(!ParamIsDefault(options) && !isEmpty(options))
+			numOptions = ItemsInList(options)
+			for(j = 0; j < numOptions; j += 1)
+				str = StringFromList(j, options)
+				opt = StringFromList(0, str, ":")
+				val = str2num(StringFromList(1, str, ":"))
+				ASSERT(IsFinite(val), "non finite value")
+				ASSERT(!IsEmpty(opt), "empty option")
+
+				strswitch(opt)
+					case "MINCOLS":
+						matches = matches & DimSize(wv, COLS) >= val
+						break
+					case "TEXT":
+						matches = matches & (WaveType(wv, 1) == 2) == !!val
+						break
+					default:
+						ASSERT(0, "property not implemented")
+						break
+				endswitch
+
+				if(!matches) // no need to check the other properties
+					break
+				endif
+			endfor
+		endif
+
+		if(matches)
+			list = AddListItem(name, list, ";", Inf)
 		endif
 	endfor
 
