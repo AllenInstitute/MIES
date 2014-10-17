@@ -1006,7 +1006,6 @@ static Function WBP_UpdateListOfWaves()
 		searchPattern = S_Value
 	endif
 
-	///@todo replace with an improved GetListOfWaves which understands some of the WaveList flags
 	dfref saveDFR = GetDataFolderDFR()
 	SetDataFolder dfr
 	string ListOfWavesInFolder = "\"" + NONE + ";" + Wavelist(searchPattern, ";", "TEXT:0,MAXCOLS:1") + "\""

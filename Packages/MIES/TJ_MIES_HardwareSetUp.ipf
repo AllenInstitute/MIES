@@ -160,7 +160,7 @@ Function/DF HSU_GetDevicePathFromTitle(panelTitle)
 	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle))
 End
 
-///@todo rename to HSU_GetDevicePathFromTitleAsString
+///@todo rename
 Function/S HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
 

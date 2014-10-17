@@ -14,14 +14,9 @@ Function DB_LockDBPanel(panelTitle)
 	if(v_value > 1)// makes sure "- none -" isn't selected
 		dowindow /W = $panelTitle /C $"DB_" + s_value
 		SetWindow $"DB_" + s_value, userdata(DataFolderPath) = HSU_DataFullFolderPathString(s_value)
-//		print "DB_" + s_value
-//		SetVariable setvar_dataBrowser_SweepNo, win = $("DB_" + s_value), limits={real(DB_FirstAndLastSweepAcquired(panelTitle)),imag(DB_FirstAndLastSweepAcquired(panelTitle)),1}
-
 	else
 		print "Please choose a device assingment for the data browser"
 	endif
-	
-	
 End
 
 //==============================================================================================================================
@@ -221,14 +216,12 @@ Function DB_ButtonProc_NextSweep(ctrlName) : ButtonControl
 	controlinfo check_DataBrowser_SweepOverlay
 	if(v_value == 1)
 		Button button_DataBrowser_Previous disable = 2
-//		controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
 		controlinfo /w = $panelTitle setvar_DataBrowser_SweepNo
 		SweepNo = V_value
 		controlinfo /w = $panelTitle setvar_DataBrowser_OverlaySkip
 		SweepToPlot = SweepNo + v_value
 	else
 		Button button_DataBrowser_Previous disable = 0
-//		controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
 		controlinfo /w = $panelTitle setvar_DataBrowser_SweepNo
 		SweepNo = V_value
 		SweepToPlot = SweepNo + 1
@@ -236,9 +229,7 @@ Function DB_ButtonProc_NextSweep(ctrlName) : ButtonControl
 	
 	if(SweepToPlot <= LastSweep && SweepToPlot >= FirstSweep)
 		SweepToPlotName = DataPath + ":Sweep_" + num2str(SweepToPlot)
-//		valdisplay valdisp_DataBrowser_Sweep win = $panelTitle, value = _num:SweepToPlot
 		setvariable setvar_DataBrowser_SweepNo win = $panelTitle, value = _num:SweepToPlot
-//		SetVariable setvar_DataBrowser_WaveNote value= _STR:DBP_ReturnWaveNote($SweepToPlotName)
 		DB_PlotDataBrowserWave(panelTitle, $SweepToPlotName)
 		
 	elseif(SweepToPlot < FirstSweep) // handles situation where data sweep number starts at a value greater than the controls number - usually occurs after locking when control is set to zero
@@ -367,8 +358,6 @@ Function /T DBP_ReturnWaveNote(SweepName)
 	
 	return WaveNote
 End
-root:MIES:ITCDevices:ITC1600:Device0:Data:Sweep_3
-DBP_ReturnWaveNote("root:MIES:ITCDevices:ITC1600:Device0:Data:Sweep_3")
 //==============================================================================================================================
 
 Window databrowser() : Panel
@@ -503,21 +492,19 @@ Window databrowser() : Panel
 	SetActiveSubwindow ##
 EndMacro
 
-
-
 Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
-//	print  sva.ctrlName // name of control
-//	print sva.win // window that contains control
-//	print sva.dval // value in control after update
-//	print sva.eventCode
+	//	print  sva.ctrlName // name of control
+	//	print sva.win // window that contains control
+	//	print sva.dval // value in control after update
+	//	print sva.eventCode
 	switch( sva.eventCode )
 		case 1: // mouse up - when the scroll wheel is used on the mouse - "up or down" , case 1 also includes case 2 and 3
-//		print "mouse up"
+			//		print "mouse up"
 		case 2: // Enter key - when a number is manually entered
-//		print " enter key"
+			//		print " enter key"
 		case 3: // Live update - happens when you hit the arrow keys associated with the set variable
-//		print "live update"
+			//		print "live update"
 			Variable dval = sva.dval
 			String sval = sva.sval
 				
@@ -525,39 +512,36 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 				variable FirstSweep = real(DB_FirstAndLastSweepAcquired(sva.win))
 
 
-				controlinfo /w = $sva.win check_DataBrowser_SweepOverlay
-				if(v_value)
-					controlinfo /w = $sva.win valdisp_DataBrowser_Sweep
-					variable LastSweepDisplayed = v_value
-					if(dval > LastSweepDisplayed)
-						setvariable setvar_DataBrowser_SweepNo win =$sva.win, limits = {dval,LastSweep , 1}
-						controlupdate /w = $sva.win setvar_DataBrowser_SweepNo
-					elseif(dval < LastSweepDisplayed)
-						setvariable setvar_DataBrowser_SweepNo win = $sva.win, limits = {FirstSweep,dval , 1}
-					endif
-				else
-					setvariable setvar_DataBrowser_SweepNo win = $sva.win, limits = {FirstSweep,LastSweep , 1}
-					valdisplay valdisp_DataBrowser_Sweep win = $sva.win, value =_NUM:dval
+			controlinfo /w = $sva.win check_DataBrowser_SweepOverlay
+			if(v_value)
+				controlinfo /w = $sva.win valdisp_DataBrowser_Sweep
+				variable LastSweepDisplayed = v_value
+				if(dval > LastSweepDisplayed)
+					setvariable setvar_DataBrowser_SweepNo win =$sva.win, limits = {dval,LastSweep , 1}
+					controlupdate /w = $sva.win setvar_DataBrowser_SweepNo
+				elseif(dval < LastSweepDisplayed)
+					setvariable setvar_DataBrowser_SweepNo win = $sva.win, limits = {FirstSweep,dval , 1}
 				endif
+			else
+				setvariable setvar_DataBrowser_SweepNo win = $sva.win, limits = {FirstSweep,LastSweep , 1}
+				valdisplay valdisp_DataBrowser_Sweep win = $sva.win, value =_NUM:dval
+			endif
 				
-				variable SweepNo
-				variable SweepToPlot
-				string SweepToPlotName
-				string panelTitle
-				panelTitle = DB_ReturnDBPanelName()	
-				string DataPath = getuserdata(sva.win, "", "DataFolderPath") + ":Data"
-				
+			variable SweepNo
+			variable SweepToPlot
+			string SweepToPlotName
+			string panelTitle
+			panelTitle = DB_ReturnDBPanelName()
+			string DataPath = getuserdata(sva.win, "", "DataFolderPath") + ":Data"
 
-			//	controlinfo /w = $panelTitle valdisp_DataBrowser_Sweep
-			//	controlinfo /w = $panelTitle setvar_DataBrowser_SweepNo
-			//	SweepNo = v_value
-				SweepToPlot = dval
-				if(SweepToPlot <= LastSweep && SweepToPlot >= FirstSweep)
-					SweepToPlotName = DataPath + ":Sweep_" + num2str(SweepToPlot)
-			//		valdisplay valdisp_DataBrowser_Sweep win = $panelTitle, value = _num:SweepToPlot
-					setvariable setvar_DataBrowser_SweepNo win = $sva.win, value = _num:SweepToPlot
-					DB_PlotDataBrowserWave(sva.win, $SweepToPlotName)
-				endif
+
+			SweepToPlot = dval
+			if(SweepToPlot <= LastSweep && SweepToPlot >= FirstSweep)
+				SweepToPlotName = DataPath + ":Sweep_" + num2str(SweepToPlot)
+				//		valdisplay valdisp_DataBrowser_Sweep win = $panelTitle, value = _num:SweepToPlot
+				setvariable setvar_DataBrowser_SweepNo win = $sva.win, value = _num:SweepToPlot
+				DB_PlotDataBrowserWave(sva.win, $SweepToPlotName)
+			endif
 				
 				
 			break
