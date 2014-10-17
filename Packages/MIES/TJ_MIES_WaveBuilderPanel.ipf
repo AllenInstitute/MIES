@@ -1409,9 +1409,9 @@ Function/S WBP_ITCPanelPopUps(DAorTTL, searchString)
 	DFREF saveDFR = GetDataFolderDFR()
 
 	if(!DAorTTL)
-		SetDataFolder $GetWBSvdStimSetDAPathAsString()
+		SetDataFolder GetWBSvdStimSetDAPath()
 	else
-		SetDataFolder $GetWBSvdStimSetTTLPathAsString()
+		SetDataFolder GetWBSvdStimSetTTLPath()
 	endif
 
 	stimulusSetList = Wavelist(searchstring, ";", "")
