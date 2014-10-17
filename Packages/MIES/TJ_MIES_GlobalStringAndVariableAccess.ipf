@@ -82,7 +82,7 @@ End
 /// Never ever write this string!
 Function/S GetMiesVersion()
 
-	string path = GetSVARAsString(createDFWithAllParents(Path_MiesFolder("")), "version")
+	string path = GetSVARAsString(GetMiesPath(), "version")
 	SVAR str = $path
 
 	if(!CmpStr(str,""))

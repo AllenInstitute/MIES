@@ -48,36 +48,11 @@ End
 //=========================================================================================
 // FUNCTION BELOW WITH THE PATH PREFIX RETURN PATHS TO ALL MIES FOLDERS AS WELL AS A FEW SPECIAL CASE PATHS
 //=========================================================================================
-///@deprecated use @ref GetMiesPathAsString() instead
-Function /T Path_MIESfolder(panelTitle)
-	string panelTitle
-	string pathToMIES // = "root:MIES"
-	sprintf pathToMIES, "root:MIES"
-	return pathToMIES
-End
-//=========================================================================================
-///@deprecated use GetAmplifierFolderAsString() or GetAmplifierFolder()
-Function /T Path_AmpFolder(panelTitle)
-	string panelTitle
-	string pathToAmpFolder =Path_MIESfolder(panelTitle) + ":Amplifiers"
-	return pathToAmpFolder
-End
-//=========================================================================================
-///@deprecated use GetAmpSettingsFolderAsString() or GetAmpSettingsFolder()
-Function /T Path_AmpSettingsFolder(panelTitle)
-	string panelTitle
-	string pathToAmpSettingsFolder
-	sprintf pathToAmpSettingsFolder, "%s:Settings" Path_AmpFolder(panelTitle)
-	return pathToAmpSettingsFolder
-End
-//=========================================================================================
-
 /// @todo take no argument as it is not used
 Function /T Path_ITCDevicesFolder(panelTitle)
 	string panelTitle
-	string pathToITCDevicesFolder // = Path_MIESfolder(panelTitle) + ":ITCDevices"
-	sprintf pathToITCDevicesFolder, "%s:ITCDevices" Path_MIESfolder(panelTitle)
-	return pathToITCDevicesFolder
+
+	return GetMiesPathAsString() + ":ITCDevices"
 End
 //=========================================================================================
 Function /T Path_ActiveITCDevicesFolder(panelTitle)

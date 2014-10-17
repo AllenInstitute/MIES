@@ -230,7 +230,7 @@ End
 Function/S GetLabNotebookFolderAsString(panelTitle)
 	string panelTitle
 
-	return Path_MIESfolder(panelTitle) + ":LabNoteBook"
+	return GetMiesPathAsString() + ":LabNoteBook"
 End
 
 /// @brief Return the data folder reference to the device specific lab notebook
@@ -650,7 +650,7 @@ End
 
 /// @brief Return the path to the amplifierm e.g. root:mies:Amplifiers"
 Function/S GetAmplifierFolderAsString()
-	return Path_MIESfolder("") + ":Amplifiers"
+	return GetMiesPathAsString() + ":Amplifiers"
 End
 
 /// @brief Return the datafolder reference to the amplifier settings
@@ -724,6 +724,11 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 30, IZeroEnable           , wv
 
 	return wv
+End
+
+/// @brief Returns a data folder reference to the mies base folder
+Function/DF GetMiesPath()
+	return createDFWithAllParents(GetMiesPathAsString())
 End
 
 /// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
