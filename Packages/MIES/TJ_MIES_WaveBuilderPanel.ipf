@@ -2,8 +2,10 @@
 #include <Resize Controls>
 #include <FilterDialog> menus=0
 
-StrConstant panel = "WaveBuilder"
-StrConstant WaveBuilderGraph = "WaveBuilder#WaveBuilderGraph"
+StrConstant panel                     = "WaveBuilder"
+StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
+StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
+StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 
 static Function WBP_InitiateWaveBuilder()
 
@@ -1378,29 +1380,21 @@ End
 Function WBP_UpdateITCPanelPopUps(panelTitle)
 	string panelTitle
 
-	string ctrlName0, ctrlName1, WB_WaveType, ctrlName0d, ctrlName1d, DAorTTLt
-	variable NoOfControls, i, DAorTTL
-
-	WB_WaveType = GetPopupMenuString(panel, "popup_WaveBuilder_OutputType")
-
-	if(!CmpStr(WB_WaveType,"DA"))
-		ctrlName0 = "Wave_DA_"
-		ctrlName1 = "Popup_DA_IndexEnd_"
-		DAorTTL = 0
-		DAorTTLt = "*DA*"
-	else
-		ctrlName0 = "Wave_TTL_"
-		ctrlName1 = "Popup_TTL_IndexEnd_"
-		DAorTTL = 1
-		DAorTTLt = "*TTL*"
-	endif
+	variable i
+	string ctrlWave, ctrlIndexEnd, list
 
 	for(i=0; i < NUM_DA_TTL_CHANNELS; i+=1)
-		sprintf ctrlName0d, "%s%02d", ctrlName0, i
-		sprintf ctrlName1d, "%s%02d", ctrlName1, i
+		ctrlWave     = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrlIndexEnd = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
+		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
+		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
 
-		PopupMenu  $ctrlName0d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
-		PopupMenu  $ctrlName1d win = $panelTitle, userdata(MenuExp) = WBP_ITCPanelPopUps(DAorTTL, DAorTTLt)
+		ctrlWave     = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrlIndexEnd = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
+		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
 	endfor
 End
 
