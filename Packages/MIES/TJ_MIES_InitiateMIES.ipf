@@ -7,6 +7,9 @@ Function IM_InitiateMIES()
 	// stores lists of data that the background timer uses
 	createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:Timer")
 
+	// the arduino sequencer does not handle datafolder creation reliable
+	createDFWithAllParents("root:ImageHardware:Arduino")
+
 	// stores lists of data related to ITC devices actively running a test pulse
 	createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:TestPulse")
 	createDFWithAllParents("root:MIES:LabNoteBook")
