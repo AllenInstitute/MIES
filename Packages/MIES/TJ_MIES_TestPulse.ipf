@@ -589,32 +589,35 @@ End
 Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterval, fittingRange)
 	string panelTitle
 	variable ADChanCount
-	wave TPStorage
+	Wave/Z TPStorage
 	variable endRow, samplingInterval, fittingRange
 
-	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode, debuggerState
+	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
 
 	startRow = endRow - ceil(fittingRange / samplingInterval)
 
-	if(startRow < 0)
+	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS) || ADChanCount >= DimSize(TPStorage, COLS))
 		return NaN
 	endif
 
 	V_FitOptions = 4
-	debuggerState = DisableDebugger()
 
 	for(i = 0; i < ADChanCount; i += 1)
+		try
 			V_FitError  = 0
 			V_AbortCode = 0
-		try
-			CurveFit/Q/N=1/NTHR=1/M=2/W=2 line, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
 			Wave W_coef
 			TPStorage[startRow,endRow][i][%Vm_Slope] = W_coef[1]
 
-			CurveFit/Q/N=1/NTHR=1/M=2/W=2 line, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
+			V_FitError  = 0
+			V_AbortCode = 0
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
 			TPStorage[startRow,endRow][i][%Rpeak_Slope] = W_coef[1]
 
-			CurveFit/Q/N=1/NTHR=1/M=2/W=2 line, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
+			V_FitError  = 0
+			V_AbortCode = 0
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
 			TPStorage[startRow,endRow][i][%Rss_Slope] = W_coef[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
@@ -630,8 +633,6 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 			endif
 		endtry
 	endfor
-
-	ResetDebuggerState(debuggerState)
 End
 
 /// @brief Resets the TP storage wave
