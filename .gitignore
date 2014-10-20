@@ -4,6 +4,9 @@ Packages/MIES/backup
 *.rej
 *.T0
 
+# mies version file
+version.txt
+
 # temp files created by Visual Studio
 *.aps
 *.obj
