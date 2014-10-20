@@ -3660,20 +3660,65 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 	endif
 End
 //=========================================================================================
-/// DAP_SetVarProc_NextSweepLimit
-Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	string panelTitle = DAP_ReturnPanelName()
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	DFREF saveDFR = GetDataFolderDFR()
-	setDataFolder $WavePath + ":data"
-	string ListOfDataWaves = wavelist("Sweep_*",";","MINCOLS:2")
-	setDataFolder saveDFR
-	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
+Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1:
+		case 2:
+		case 3:
+			DAP_UpdateSweepLimitsAndDisplay(sva.win)
+			break
+	endswitch
+
+	return 0
 End
+
+Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
+	string panelTitle
+
+	string panelList
+	variable sweep, maxNextSweep, numPanels, i
+
+	panelList = panelTitle
+
+	if(!CmpStr(panelTitle, ITC1600_FIRST_DEVICE) && DAP_DeviceIsLeader(panelTitle))
+		/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
+		SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder("") + ":ITC1600:Device0:ListOfFollowerITC1600s")
+		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
+			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
+		endif
+		sweep = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_Sweep")
+	else
+		sweep = -INF
+	endif
+
+	// query maximum next sweep
+	// the next sweep equals the number of data waves as these start counting with zero
+	maxNextSweep = -INF
+	numPanels = ItemsInList(panelList)
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, panelList)
+
+		if(IsFinite(sweep) && i > 0) // panelTitle is a follower and we were called by the leader
+			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
+		endif
+
+		dfref dfr = GetDeviceDataPath(panelTitle)
+		maxNextSweep = max(maxNextSweep, ItemsInList(GetListOfWaves(dfr, DATA_SWEEP_REGEXP, options="MINCOLS:2")))
+	endfor
+
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, panelList)
+
+		if(DAP_DeviceIsFollower(panelTitle))
+			SetVariable SetVar_Sweep win = $panelTitle, noEdit=1, limits = {0, maxNextSweep, 0}
+		else
+			SetVariable SetVar_Sweep win = $panelTitle, noEdit=0, limits = {0, maxNextSweep, 1}
+		endif
+	endfor
+End
+
 //=========================================================================================
 
 Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
@@ -4436,7 +4481,8 @@ Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	
 	HSU_SetITCDACasFollower(panelTitle, panelToYoke)
 	DAP_UpdateFollowerControls(panelTitle, panelToYoke)
-	
+
+	DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	DisableListOfControls(panelToYoke,"StartTestPulseButton;DataAcquireButton")
 	EnableControl(panelTitle,"button_Hardware_RemoveYoke")
 	EnableControl(panelTitle,"popup_Hardware_YokedDACs")
