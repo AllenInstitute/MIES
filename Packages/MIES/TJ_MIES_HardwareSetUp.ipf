@@ -60,14 +60,14 @@ Function HSU_LockDevice(panelTitle)
 		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use."
 	endif
 
-	locked = 1
-	HSU_UpdateDataFolderDisplay(panelTitle, locked)
-
 	DisableListOfControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
 
 	DoWindow/W=$panelTitle/C $panelTitleLocked
+
+	locked = 1
+	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
 	IM_MakeGlobalsAndWaves(panelTitleLocked)
 	HSU_UpdateListOfITCPanels()
@@ -82,7 +82,7 @@ End
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
 	string panelTitle
 	variable locked
-	//print "HSU_UpdateDataFolderDisplay", panelTitle
+
 	string title
 	if(locked)
 		title = "Data folder path = " + HSU_DataFullFolderPathString(panelTitle)
