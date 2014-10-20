@@ -450,7 +450,7 @@ Window da_ephys() : Panel
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Button DataAcquireButton,labelBack=(60928,60928,60928)
-	CheckBox Check_DataAcq1_RepeatAcq,pos={38,507},size={119,14},disable=1,title="Repeated Acquisition"
+	CheckBox Check_DataAcq1_RepeatAcq,pos={38,507},size={119,14},disable=1,proc=DAP_CheckProc_RepeatedAcq,title="Repeated Acquisition"
 	CheckBox Check_DataAcq1_RepeatAcq,help={"Determines number of times a set is repeated, or if indexing is on, the number of times a group of sets in repeated"}
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(tabcontrol)=  "ADC"
@@ -458,7 +458,7 @@ Window da_ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 0
-	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=3,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3595,6 +3595,12 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	string panelTitle
 
 	variable numActiveDAChannels, maxITI
+
+	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
+		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
+		return 0
+	endif
+
 	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
@@ -3611,8 +3617,8 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	endif
 
-	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
-		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
+	if(DAP_DeviceIsLeader(panelTitle))
+		DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	endif
 End
 
@@ -3799,7 +3805,10 @@ Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
 		case EVENT_MOUSE_UP:
 			if(!cba.checked)
 				DAP_UpdateITIAcrossSets(cba.win)
+			else
+				DAP_SyncGuiFromLeaderToFollower(cba.win)
 			endif
+
 			break
 		case -1: // control being killed
 			break
@@ -4461,32 +4470,81 @@ Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
 End
 
 //=========================================================================================
-Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
-	String ctrlName
+Function DAP_ButtonProc_Follow(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	string panelTitle = DAP_ReturnPanelName()
-	string panelToYoke
+	string leadPanel, panelToYoke
 
-	ControlUpdate/W=$panelTitle popup_Hardware_AvailITC1600s
-	ControlInfo/W=$panelTitle popup_Hardware_AvailITC1600s
-	if(V_flag > 0 && V_Value >= 1)
-		panelToYoke = S_Value
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+
+			leadPanel = ba.win
+
+			ControlUpdate/W=$leadPanel popup_Hardware_AvailITC1600s
+			ControlInfo/W=$leadPanel popup_Hardware_AvailITC1600s
+			if(V_flag > 0 && V_Value >= 1)
+				panelToYoke = S_Value
+			endif
+
+			if(!windowExists(panelToYoke))
+				break
+			endif
+
+			ASSERT(CmpStr(panelToYoke, ITC1600_FIRST_DEVICE) != 0, "Can't follow the lead device")
+
+			HSU_SetITCDACasFollower(leadPanel, panelToYoke)
+			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
+
+			DAP_UpdateITIAcrossSets(leadPanel)
+			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;Check_Settings_Override_Set_ITI")
+			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
+			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
+			EnableControl(leadPanel, "title_hardware_Release")
+			break
+	endswitch
+
+	return 0
+End
+
+static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
+	string panelTitle
+
+	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderOverrrideITI
+	variable numPanels, i
+	string panelList, leadPanel
+
+	if(!windowExists(panelTitle) || !DAP_DeviceIsLeader(panelTitle))
+		return NaN
 	endif
 
-	if(!windowExists(panelToYoke))
-		return 0
+	leadPanel = panelTitle
+	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
+
+	panelList = leadPanel
+	/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
+	SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder("") + ":ITC1600:Device0:ListOfFollowerITC1600s")
+	if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
+		panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 	endif
 
-	ASSERT(cmpstr(panelToYoke,ITC1600_FIRST_DEVICE)!=0,"Can't follow the lead device")
-	
-	HSU_SetITCDACasFollower(panelTitle, panelToYoke)
-	DAP_UpdateFollowerControls(panelTitle, panelToYoke)
+	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
+	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
+	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1)
+	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
 
-	DAP_UpdateSweepLimitsAndDisplay(panelTitle)
-	DisableListOfControls(panelToYoke,"StartTestPulseButton;DataAcquireButton")
-	EnableControl(panelTitle,"button_Hardware_RemoveYoke")
-	EnableControl(panelTitle,"popup_Hardware_YokedDACs")
-	EnableControl(panelTitle,"title_hardware_Release")
+	numPanels = ItemsInList(panelList)
+	for(i = 1; i < numPanels; i += 1)
+		// i = 1 so that we don't set the values
+		// for the lead panel again
+		panelTitle = StringFromList(i, panelList)
+
+		SetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq", leaderRepeatAcq)
+		SetCheckBoxState(panelTitle, "Check_DataAcq_Indexing", leaderIndexing)
+		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
+		if(IsFinite(leaderOverrrideITI))
+			SetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", leaderOverrrideITI)
+		endif
+	endfor
 End
 
 //=========================================================================================
@@ -4547,7 +4605,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
-	EnableListOfControls(panelToDeYoke,"StartTestPulseButton;DataAcquireButton")
+	EnableListOfControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;Check_Settings_Override_Set_ITI")
+	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
@@ -4812,4 +4871,32 @@ Function DAP_UnlockAllDevices()
 	endfor
 
 	ASSERT(ItemsInList(DAP_ListOfLockedDevs()) == 0, "Missed to unlock some devices")
+End
+
+Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			DAP_SyncGuiFromLeaderToFollower(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_SetVarProc_ITI(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			DAP_SyncGuiFromLeaderToFollower(sva.win)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End
