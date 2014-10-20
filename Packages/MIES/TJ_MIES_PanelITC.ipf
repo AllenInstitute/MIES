@@ -4437,6 +4437,7 @@ Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
 	HSU_SetITCDACasFollower(panelTitle, panelToYoke)
 	DAP_UpdateFollowerControls(panelTitle, panelToYoke)
 	
+	DisableListOfControls(panelToYoke,"StartTestPulseButton;DataAcquireButton")
 	EnableControl(panelTitle,"button_Hardware_RemoveYoke")
 	EnableControl(panelTitle,"popup_Hardware_YokedDACs")
 	EnableControl(panelTitle,"title_hardware_Release")
@@ -4500,6 +4501,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
+	EnableListOfControls(panelToDeYoke,"StartTestPulseButton;DataAcquireButton")
+
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
 	string cmd
