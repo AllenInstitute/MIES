@@ -601,10 +601,9 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	wave /z ampSettingsWave = $ampSettingsWavePath
 	if (!WaveExists(ampSettingsWave))
 		// create the 3 dimensional wave
-		make /o /n = (1, 35, noHeadStages ) $ampSettingsWavePath = 0
+		make /o /n = (1, 36, noHeadStages ) $ampSettingsWavePath = 0
 		Wave /z ampSettingsWave = $ampSettingsWavePath
 	endif	
-	//Redimension/N=(1, 15, noHeadStages ) ampSettingsWave
 		
 	// make the amp settings key wave
 	String ampSettingsKeyPath
@@ -615,7 +614,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	if (!WaveExists(ampSettingsKey))
 		//print "making settingsKey Wave...."
 		// create the 2 dimensional wave
-		make /T /o  /n = (3, 35) $ampSettingsKeyPath
+		make /T /o  /n = (3, 36) $ampSettingsKeyPath
 		Wave/T ampSettingsKey = $ampSettingsKeyPath
 	
 		// Row 0: Parameter
@@ -768,8 +767,12 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 		ampSettingsKey[0][34] =   "Series Resistance"
 		ampSettingsKey[1][34] =   "MOhms"
 		ampSettingsKey[2][34] =   "0.9"		
+
+		ampSettingsKey[0][35] =   "Pipette Offset"
+		ampSettingsKey[1][35] =   "mV"
+		ampSettingsKey[2][35] =   ""
 	endif
-	
+
 	// Now populate the Settings Wave
 	// the wave is 1 row, 35 columns, and headstage number layers
 	// first...determine if the head stage is being controlled
@@ -864,13 +867,15 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 				ampSettingsWave[0][32][i] = tds.SecondaryAlpha
 				ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
 				ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
+
+				// new parameters
+				ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
 			endif
 		endif
 	endfor
 	
 	// now call the function that will create the wave notes	
 	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
-	
 END
 
 ////==================================================================================================
