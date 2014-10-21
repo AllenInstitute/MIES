@@ -686,7 +686,8 @@ Function ResetDebuggerState(debuggerState)
 	endif
 End
 
-/// @brief Returns the numeric value of `key` found in the wave note
+/// @brief Returns the numeric value of `key` found in the wave note,
+/// returns NaN if it could not be found
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
 Function GetNumberFromWaveNote(wv, key)
