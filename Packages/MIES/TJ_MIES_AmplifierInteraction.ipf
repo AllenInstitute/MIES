@@ -246,19 +246,22 @@ End
 
 /// @name Possible values for the function parameter of AI_SendToAmp()
 /// @{
-Constant MCC_SETHOLDING_FUNC             = 0x01
-Constant MCC_GETHOLDING_FUNC             = 0x02
-Constant MCC_SETHOLDINGENABLE_FUNC       = 0x04
-Constant MCC_SETWHOLECELLCOMPCAP_FUNC    = 0x08
-Constant MCC_SETWHOLECELLCOMPRESIST_FUNC = 0x10
-Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x20
-Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x30
-Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x40
-Constant MCC_SETRSCOMPENABLE_FUNC        = 0x50
-Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x60
-Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x70
-Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x80
-Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x90
+Constant MCC_SETHOLDING_FUNC             = 0x001
+Constant MCC_GETHOLDING_FUNC             = 0x002
+Constant MCC_SETHOLDINGENABLE_FUNC       = 0x004
+Constant MCC_SETWHOLECELLCOMPCAP_FUNC    = 0x008
+Constant MCC_SETWHOLECELLCOMPRESIST_FUNC = 0x010
+Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x020
+Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x030
+Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x040
+Constant MCC_SETRSCOMPENABLE_FUNC        = 0x050
+Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x060
+Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x070
+Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x080
+Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x090
+Constant MCC_AUTOPIPETTEOFFSET_FUNC      = 0x100
+Constant MCC_SETPIPETTEOFFSET_FUNC       = 0x200
+Constant MCC_GETPIPETTEOFFSET_FUNC       = 0x300
 /// @}
 
 /// @brief Generic interface to call MCC amplifier functions
@@ -267,7 +270,8 @@ Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x90
 /// @param headStage  number of the headStage, must be between 0 and 7
 /// @param mode       one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func       Function to call
-/// @param value      Numerical value to send, ignored for MCC_GETHOLDING_FUNC
+/// @param value      Numerical value to send, ignored by getter functions (MCC_GETHOLDING_FUNC and MCC_GETPIPETTEOFFSET_FUNC)
+///
 /// @returns return value or error condition. An error is indicated by a return value of NaN.
 Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string panelTitle
@@ -340,6 +344,15 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
+			break
+		case MCC_AUTOPIPETTEOFFSET_FUNC:
+			ret = MCC_AutoPipetteOffset()
+			break
+		case MCC_SETPIPETTEOFFSET_FUNC:
+			ret = MCC_SetPipetteOffset(value)
+			break
+		case MCC_GETPIPETTEOFFSET_FUNC:
+			ret = MCC_GetPipetteOffset()
 			break
 		default:
 			ASSERT(0, "Unknown function")
@@ -433,6 +446,10 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 			AmpStorageWave[7][0][headStage] = v_value
 			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, v_value)
 			break
+		case "setvar_DataAcq_PipetteOffset_VC":
+			AmpStorageWave[8][0][headStage] = v_value
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, v_value * 1e-3)
+			break
 		// I-Clamp controls
 		case "setvar_DataAcq_Hold_IC":
 			AmpStorageWave[16][0][headStage] = v_value
@@ -506,6 +523,8 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
 	setvariable setvar_DataAcq_RsPred WIN = $panelTitle, value= _NUM:Param
 	Param = AmpStorageWave[7][0][MIESHeadStageNo]
 	checkbox check_DatAcq_RsCompEnable WIN = $panelTitle, Value = Param
+	Param = AmpStorageWave[8][0][MIESHeadStageNo]
+	setvariable setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, Value = _NUM:Param
 
 	// I-Clamp controls
 	Param = AmpStorageWave[16][0][MIESHeadStageNo]

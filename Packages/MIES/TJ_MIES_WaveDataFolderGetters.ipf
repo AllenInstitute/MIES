@@ -636,7 +636,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 5 , Correction            , wv
 	SetDimLabel ROWS  , 6 , Prediction            , wv
 	SetDimLabel ROWS  , 7 , RsCompEnable          , wv
-	SetDimLabel ROWS  , 8 , VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 8 , PipetteOffset         , wv
 	SetDimLabel ROWS  , 9 , VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 10, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 11, VClampPlaceHolder     , wv

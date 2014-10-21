@@ -12,7 +12,7 @@ static StrConstant LEADER                = "Leader"
 StrConstant DEVICE_TYPES      = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
-Window DA_Ephys() : Panel
+Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(500,80,970,846)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
@@ -2182,6 +2182,14 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
+	TitleBox Title_DataAcq_PipOffset_VC,pos={267,170},size={88,13},disable=1,title="Pipette Offset (mV)"
+	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabnum)=  "0"
+	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	TitleBox Title_DataAcq_PipOffset_VC,frame=0
+	SetVariable setvar_DataAcq_PipetteOffset_VC,pos={359,170},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
+	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(tabnum)=  "0"
+	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_DataAcq_PipetteOffset_VC,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2190,7 +2198,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR,value= _NUM:0
-	CheckBox check_DatAcq_WholeCellEnable,pos={82,191},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
+	CheckBox check_DatAcq_WholeCellEnable,pos={82,192},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_WholeCellEnable,value= 0
@@ -2205,7 +2213,7 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_RsCompensation,pos={210,192},size={168,61},disable=1,title="       Rs Compensation"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DatAcq_RsCompEnable,pos={232,191},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
+	CheckBox check_DatAcq_RsCompEnable,pos={231,192},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_RsCompEnable,value= 0
@@ -2660,7 +2668,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
 	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=GUIListOfYokedDACs()
 
-	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
 	SetVariable SetVar_DataAcq_BB WIN = $panelTitle,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_DataAcq_CN WIN = $panelTitle,limits={-8,16,1},value= _NUM:0
 
