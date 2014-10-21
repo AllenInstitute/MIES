@@ -108,21 +108,21 @@ End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
 ///
-/// @param channelType  one of DA, AD, or TTL
-/// @param panelTitle   panel title
-Function/Wave DC_ControlStatusWave(channelType, panelTitle)
-	string channelType
+/// @param type        one of DA, AD, TTL or DataAcq_HS
+/// @param panelTitle  panel title
+Function/Wave DC_ControlStatusWave(panelTitle, type)
+	string type
 	string panelTitle
 
 	string controlType = "CHECK"
 	string ctrl
-	variable numChannels = DC_TotNoOfControlType(controlType, channelType, panelTitle)
+	variable numChannels = DC_TotNoOfControlType(controlType, type, panelTitle)
 	variable i
 
 	Make/FREE/U/B/N=(numChannels) wv = 0
 
 	for(i = 0; i < numChannels; i += 1)
-		sprintf ctrl, "%s_%s_%.2d", controlType, channelType, i
+		sprintf ctrl, "%s_%s_%.2d", controlType, type, i
 		wv[i] = GetCheckboxState(panelTitle, ctrl)
 	endfor
 
