@@ -4165,8 +4165,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			endif
 
 			AI_UpdateAmpView(panelTitle, headStage)
-			// chooses the amp tab accoding to the MIES headstage clamp mode
-			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
+			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 		break
@@ -4546,17 +4545,16 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	variable mode, headStage
 
 	if(sc.eventCode & 0x1)
-			panelTitle = sc.win
-			headStage  = sc.curVal
+		panelTitle = sc.win
+		headStage  = sc.curVal
 
-			AI_UpdateAmpView(panelTitle, headStage)
-			mode = AI_MIESHeadstageMode(panelTitle, headStage)
-			// chooses the amp tab accoding to the MIES headstage clamp mode
-			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
+		AI_UpdateAmpView(panelTitle, headStage)
+		mode = AI_MIESHeadstageMode(panelTitle, headStage)
+		// chooses the amp tab according to the MIES headstage clamp mode
+		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif
 
 	return 0
-	
 End
 
 Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
@@ -4596,14 +4594,6 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	endswitch
 
 	return 0
-End
-
-static Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
-	string panelTitle
-	variable tabID
-
-
-	return ChangeTab(panelTitle, "tab_DataAcq_Amp", tabID)
 End
 
 //=========================================================================================
