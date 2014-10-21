@@ -402,7 +402,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		Wave DAChannelStatus = DC_ControlStatusWave("DA", panelTitle)
+		Wave DAChannelStatus = DC_ControlStatusWave(panelTitle, "DA")
 		if(i == 0) // this is either the lead panel or the first and only panel
 			numActiveDAChannels = sum(DAChannelStatus)
 		endif
