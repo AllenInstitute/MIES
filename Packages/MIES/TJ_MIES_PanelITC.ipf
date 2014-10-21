@@ -2316,8 +2316,26 @@ EndMacro
 
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
-Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, Modified by Tim Jarsky 06/10/2014
+Function DAP_EphysPanelStartUpSettings(panelTitle)
 	string panelTitle
+
+	if(!windowExists(panelTitle))
+		print "Panel has to exist"
+		return NaN
+	endif
+
+	if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		print "The Panel has to be unlocked"
+		return NaN
+	endif
+
+	// remove tools
+	HideTools/A
+
+	ChangeTab(panelTitle, "ADC", 0)
+	ChangeTab(panelTitle, "tab_DataAcq_Amp", 0)
+	ChangeTab(panelTitle, "ADC", 5)
+	DoUpdate/W=$panelTitle
 
 	CheckBox Check_AD_00 Win = $panelTitle, value = 0
 	CheckBox Check_AD_01 Win = $panelTitle, value = 0
@@ -2601,6 +2619,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 
 	CheckBox check_DataAcq_IndexRandom WIN = $panelTitle, fColor=(65280,43520,0),value= 0
 	SetVariable SetVar_DataAcq_TotalStepOveride WIN = $panelTitle,fColor=(65280,43520,0),value= _NUM:0
+
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:0
 
 	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:-50
 	SetVariable SetVar_Hardware_VC_DA_Unit WIN = $panelTitle,value= _STR:"mV"
