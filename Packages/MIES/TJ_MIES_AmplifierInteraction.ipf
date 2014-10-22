@@ -410,101 +410,122 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 		return 0
 	endif
 
-	variable headStage  = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	variable headStage, i, numHS, value
 	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
+	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	numHS = DimSize(statusHS, ROWS)
+
+	// we don't use a wrapper here as we want to be able to query different control types
 	ControlInfo /w = $panelTitle $cntrlName
 	ASSERT(V_flag != 0, "non-existing window or control")
+	value = v_value
 
-	strswitch(cntrlName)
-		//V-clamp controls
-		case "setvar_DataAcq_Hold_VC":
-			AmpStorageWave[0][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, v_value * 1e-3)
-			break
-		case "check_DatAcq_HoldEnableVC":
-			AmpStorageWave[1][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, v_value)
-			break
-		case "setvar_DataAcq_WCC":
-			AmpStorageWave[2][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, v_value * 1e-12)
-			break
-		case "setvar_DataAcq_WCR":
-			AmpStorageWave[3][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, v_value * 1e6)
-			break
-		case "check_DatAcq_WholeCellEnable":
-			AmpStorageWave[4][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, v_value)
-			break
-		case "setvar_DataAcq_RsCorr":
-			AmpStorageWave[5][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, v_value)
-			break
-		case "setvar_DataAcq_RsPred":
-			AmpStorageWave[6][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, v_value)
-			break
-		case "check_DatAcq_RsCompEnable":
-			AmpStorageWave[7][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, v_value)
-			break
-		case "setvar_DataAcq_PipetteOffset_VC":
-			AmpStorageWave[8][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, v_value * 1e-3)
-			break
-		case "button_DataAcq_AutoPipOffset_VC":
-			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
-			break
-		// I-Clamp controls
-		case "setvar_DataAcq_Hold_IC":
-			AmpStorageWave[16][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, v_value * 1e-12)
-			break
-		case "check_DatAcq_HoldEnable":
-			AmpStorageWave[17][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, v_value)
-			break
-		case "setvar_DataAcq_BB":
-			AmpStorageWave[18][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, v_value * 1e6)
-			break
-		case "check_DatAcq_BBEnable":
-			AmpStorageWave[19][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, v_value)
-			break
-		case "setvar_DataAcq_CN":
-			AmpStorageWave[20][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, v_value * 1e-12)
-			break
-		case "check_DatAcq_CNEnable":
-			AmpStorageWave[21][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, v_value)
-			break
-		case "setvar_DataAcq_AutoBiasV":
-			AmpStorageWave[22][0][headStage] = v_value
-			break
-		case "setvar_DataAcq_AutoBiasVrange":
-			AmpStorageWave[23][0][headStage] = v_value
-			break
-		case "setvar_DataAcq_IbiasMax":
-			AmpStorageWave[24][0][headStage] = v_value
-			break
-		case "check_DataAcq_AutoBias":
-			AmpStorageWave[25][0][headStage] = v_value
-			break
-		case "button_DataAcq_AutoBridgeBal_IC":
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
-			break
-		// I Zero controls
-		case "check_DataAcq_IzeroEnable":
-			AmpStorageWave[30][0][headStage] = v_value
-			break
-		default:
-			printf "BUG: unknown control %s\r", cntrlName
-			break
-	endswitch
+	if(!GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp"))
+		headStage  = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+		statusHS[] = (p == headStage ? 1 : 0)
+	endif
+
+	for(i = 0; i < numHS; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		string str
+		sprintf str, "headstage %d, cntrl %s, value %g", i, cntrlName, value
+		DEBUGPRINT(str)
+
+		strswitch(cntrlName)
+			//V-clamp controls
+			case "setvar_DataAcq_Hold_VC":
+				AmpStorageWave[0][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value * 1e-3)
+				break
+			case "check_DatAcq_HoldEnableVC":
+				AmpStorageWave[1][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value)
+				break
+			case "setvar_DataAcq_WCC":
+				AmpStorageWave[2][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, value * 1e-12)
+				break
+			case "setvar_DataAcq_WCR":
+				AmpStorageWave[3][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value * 1e6)
+				break
+			case "check_DatAcq_WholeCellEnable":
+				AmpStorageWave[4][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value)
+				break
+			case "setvar_DataAcq_RsCorr":
+				AmpStorageWave[5][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
+				break
+			case "setvar_DataAcq_RsPred":
+				AmpStorageWave[6][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
+				break
+			case "check_DatAcq_RsCompEnable":
+				AmpStorageWave[7][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, value)
+				break
+			case "setvar_DataAcq_PipetteOffset_VC":
+				AmpStorageWave[8][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value * 1e-3)
+				break
+			case "button_DataAcq_AutoPipOffset_VC":
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
+				break
+			// I-Clamp controls
+			case "setvar_DataAcq_Hold_IC":
+				AmpStorageWave[16][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value * 1e-12)
+				break
+			case "check_DatAcq_HoldEnable":
+				AmpStorageWave[17][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value)
+				break
+			case "setvar_DataAcq_BB":
+				AmpStorageWave[18][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, value * 1e6)
+				break
+			case "check_DatAcq_BBEnable":
+				AmpStorageWave[19][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, value)
+				break
+			case "setvar_DataAcq_CN":
+				AmpStorageWave[20][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, value * 1e-12)
+				break
+			case "check_DatAcq_CNEnable":
+				AmpStorageWave[21][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, value)
+				break
+			case "setvar_DataAcq_AutoBiasV":
+				AmpStorageWave[22][0][i] = value
+				break
+			case "setvar_DataAcq_AutoBiasVrange":
+				AmpStorageWave[23][0][i] = value
+				break
+			case "setvar_DataAcq_IbiasMax":
+				AmpStorageWave[24][0][i] = value
+				break
+			case "check_DataAcq_AutoBias":
+				AmpStorageWave[25][0][i] = value
+				break
+			case "button_DataAcq_AutoBridgeBal_IC":
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
+				break
+			// I Zero controls
+			case "check_DataAcq_IzeroEnable":
+				AmpStorageWave[30][0][i] = value
+				break
+			default:
+				printf "BUG: unknown control %s\r", cntrlName
+				break
+		endswitch
+	endfor
 End
 //==================================================================================================
 

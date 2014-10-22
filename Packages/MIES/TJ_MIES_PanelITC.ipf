@@ -2315,6 +2315,9 @@ Window da_ephys() : Panel
 	Button button_DataAcq_AutoBridgeBal_IC,help={"Automatically calculate the bridge balance"}
 	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabnum)=  "1"
 	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Check_DataAcq_SendToAllAmp,pos={345,147},size={97,14},disable=1,title="Send to all Amps"
+	CheckBox Check_DataAcq_SendToAllAmp,userdata(tabnum)=  "0"
+	CheckBox Check_DataAcq_SendToAllAmp,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2527,6 +2530,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Radio_ClampMode_13 WIN = $panelTitle, value= 0,mode=1
 	CheckBox Radio_ClampMode_14 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_15 WIN = $panelTitle, value= 0,mode=1
+
+	CheckBox Check_DataAcq_SendToAllAmp WIN = $panelTitle, value= 0
 
 	SetVariable SetVar_Settings_VC_DAgain WIN = $panelTitle, value= _NUM:20
 	SetVariable SetVar_Settings_VC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
