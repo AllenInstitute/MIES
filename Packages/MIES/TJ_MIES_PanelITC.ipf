@@ -453,7 +453,7 @@ Window da_ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 0
-	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=3,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2140,7 +2140,7 @@ Window da_ephys() : Panel
 	CheckBox check_DatAcq_HoldEnable,value= 0
 	CheckBox check_DatAcq_BBEnable,pos={195,193},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_BBEnable,userdata(tabnum)=  "1"
-	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
+	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 1
 	CheckBox check_DatAcq_CNEnable,pos={195,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
@@ -2311,6 +2311,10 @@ Window da_ephys() : Panel
 	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC",value= 0
+	Button button_DataAcq_AutoBridgeBal_IC,pos={251,194},size={40,15},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
+	Button button_DataAcq_AutoBridgeBal_IC,help={"Automatically calculate the bridge balance"}
+	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabnum)=  "1"
+	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"

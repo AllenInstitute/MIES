@@ -255,13 +255,14 @@ Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x020
 Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x030
 Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x040
 Constant MCC_SETRSCOMPENABLE_FUNC        = 0x050
-Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x060
-Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x070
-Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x080
-Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x090
-Constant MCC_AUTOPIPETTEOFFSET_FUNC      = 0x100
-Constant MCC_SETPIPETTEOFFSET_FUNC       = 0x200
-Constant MCC_GETPIPETTEOFFSET_FUNC       = 0x300
+Constant MCC_AUTOBRIDGEBALANCE_FUNC      = 0x060
+Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x070
+Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x080
+Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x090
+Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x100
+Constant MCC_AUTOPIPETTEOFFSET_FUNC      = 0x110
+Constant MCC_SETPIPETTEOFFSET_FUNC       = 0x120
+Constant MCC_GETPIPETTEOFFSET_FUNC       = 0x130
 /// @}
 
 /// @brief Generic interface to call MCC amplifier functions
@@ -332,6 +333,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 			break
 		case MCC_SETRSCOMPENABLE_FUNC:
 			ret = MCC_SetRsCompEnable(value)
+			break
+		case MCC_AUTOBRIDGEBALANCE_FUNC:
+			ret = MCC_AutoBridgeBal()
 			break
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
@@ -489,6 +493,9 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 			break
 		case "check_DataAcq_AutoBias":
 			AmpStorageWave[25][0][headStage] = v_value
+			break
+		case "button_DataAcq_AutoBridgeBal_IC":
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
 			break
 		// I Zero controls
 		case "check_DataAcq_IzeroEnable":
