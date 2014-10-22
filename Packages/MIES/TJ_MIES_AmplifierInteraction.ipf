@@ -450,6 +450,9 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 			AmpStorageWave[8][0][headStage] = v_value
 			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, v_value * 1e-3)
 			break
+		case "button_DataAcq_AutoPipOffset_VC":
+			AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
+			break
 		// I-Clamp controls
 		case "setvar_DataAcq_Hold_IC":
 			AmpStorageWave[16][0][headStage] = v_value

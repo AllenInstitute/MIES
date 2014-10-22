@@ -2182,14 +2182,21 @@ Window da_ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
-	TitleBox Title_DataAcq_PipOffset_VC,pos={267,170},size={88,13},disable=1,title="Pipette Offset (mV)"
+	TitleBox Title_DataAcq_PipOffset_VC,pos={267,173},size={88,13},disable=1,title="Pipette Offset (mV)"
 	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	TitleBox Title_DataAcq_PipOffset_VC,frame=0
-	SetVariable setvar_DataAcq_PipetteOffset_VC,pos={359,170},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
+	SetVariable setvar_DataAcq_PipetteOffset_VC,pos={359,172},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_PipetteOffset_VC,value= _NUM:0
+	Button button_DataAcq_AutoPipOffset_VC,pos={398,172},size={40,15},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
+	Button button_DataAcq_AutoPipOffset_VC,help={"Automatically calculate the pipette offset"}
+	Button button_DataAcq_AutoPipOffset_VC,userdata(tabnum)=  "0"
+	Button button_DataAcq_AutoPipOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	GroupBox group_pipette_offset,pos={261,168},size={179,24},disable=1
+	GroupBox group_pipette_offset,userdata(tabnum)=  "0"
+	GroupBox group_pipette_offset,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -4600,6 +4607,25 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 			AI_UpdateAmpModel(panelTitle, ctrl)
 			break
 		case 3: // Live update
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle, ctrl
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			panelTitle = ba.win
+			ctrl       = ba.ctrlName
+
+			AI_UpdateAmpModel(panelTitle, ctrl)
 			break
 		case -1: // control being killed
 			break
