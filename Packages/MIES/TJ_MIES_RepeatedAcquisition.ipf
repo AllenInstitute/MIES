@@ -64,12 +64,11 @@ Function RA_Start(panelTitle)
 		make /free /n = 8 SelectedDACWaveList
 		TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
 		TP_SelectTestPulseWave(panelTitle)
-	
+
 		make /free /n = 8 SelectedDACScale
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
-		variable DataAcqOrTP = 1
-		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 		
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -159,8 +158,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	endif
 	
 	if(Count < TotTrials)
-		variable DataAcqOrTP = 0
-		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
@@ -183,8 +181,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				make /free /n = 8 SelectedDACScale
 				TP_StoreDAScale(SelectedDACScale, panelTitle)
 				TP_SetDAScaleToOne(panelTitle)
-				DataAcqOrTP = 1
-				DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+				DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 				SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 				
 				controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -206,7 +203,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 			else
 				DAP_StopButtonToAcqDataButton(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
-				NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+				NVAR DataAcqState = $GetDataAcqState(panelTitle)
 				DataAcqState = 0
 				print "Repeated acquisition is complete"
 				Killvariables Count
@@ -271,8 +268,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		make /free /n = 8 SelectedDACScale
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
-		variable DataAcqOrTP = 1
-		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
 		
 		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
@@ -296,7 +292,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
 		ITC_StopITCDeviceTimer(panelTitle)
-		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+		NVAR DataAcqState = $GetDataAcqState(panelTitle)
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		Killvariables Count
@@ -306,107 +302,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	endif
 End
 //====================================================================================================
-
-//Function RA_StartMD(panelTitle)
-//	string panelTitle
-//	variable ITI
-//	// variable IndexingState
-//	variable i = 0
-//	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-//	wave ITCDataWave = $WavePath + ":ITCDataWave"
-//	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
-//	string CountPathString
-//	sprintf  CountPathString, "%s:Count"  WavePath
-//	variable /g $CountPathString = 0
-//	print "count global variable was created here:",CountPathString
-//	NVAR Count = $CountPathString
-//	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
-//	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-//	variable /g $ActiveSetCountPath = v_value
-//	NVAR ActiveSetCount = $ActiveSetCountPath
-//	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-//	ActiveSetCount *= v_value
-//	//ActiveSetCount -= 1
-//	variable TotTrials
-//	
-//	
-//	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-//	variable DeviceType = v_value - 1
-//	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-//	variable DeviceNum = v_value - 1
-//	
-//	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-//	if(v_value == 0)
-//		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-//		TotTrials = v_value
-//		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-//		TotTrials = (TotTrials * v_value) // + 1
-//	else
-//		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-//		TotTrials = v_value
-//	endif
-//
-//	if(DeviceType == 2)
-//
-//			string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//			SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-//			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
-//			if(numberOfFollowerDevices != 0) 
-//				string followerPanelTitle
-//				variable followerTotTrials
-//				
-//				do // handles status update of variables that are used for indexing on follower devices
-//					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-//					print "follower panel title =", followerPanelTitle
-//					
-//					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
-//					if(v_value == 0)
-//						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
-//						followerTotTrials = v_value
-//						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-//						followerTotTrials = (followerTotTrials * v_value) // + 1
-//					else
-//						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
-//						followerTotTrials = v_value
-//					endif
-//				
-//					TotTrials = max(TotTrials, followerTotTrials)
-//					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count)) // updates a status value on follower panels
-//					
-//					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
-//					sprintf  CountPathString, "%s:Count"  WavePath
-//					variable /g $CountPathString = 0
-//					NVAR /z followerCount = $CountPathString
-//					
-//					i += 1
-//			
-//				while(i < numberOfFollowerDevices)
-//				
-//			
-//			endif
-//		endif
-//	endif
-//	
-//	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count)) // updates trials remaining in panel
-//	
-//	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-//	ITI = v_value
-//	
-////	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-////	IndexingState = v_value
-////	Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
-//	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-//	StartTestPulse(deviceType, deviceNum, panelTitle)  // 
-//	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
-//	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
-//	// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
-//	// wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-//	// wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
-//	// TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-//	// TP_RestoreDAScale(SelectedDACScale,panelTitle)	
-//
-//End
 
 Function RA_StartMD(panelTitle)
 	string panelTitle
@@ -451,14 +346,13 @@ Function RA_StartMD(panelTitle)
 	// if the device is an ITC1600 it will handle follower or independent devices
 	if(DeviceType == 2)
 
-		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
 		
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 1)  // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)  // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
+			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) 
 				string followerPanelTitle
 				variable followerTotTrials
@@ -588,24 +482,17 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 	
 	if(DeviceType == 2)
 	
-//		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-		
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 1)
-			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
+			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) 
 				string followerPanelTitle
 				variable followerTotTrials
 				
 				do
-					
-					
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 					print "follower panel title =", followerPanelTitle
 					
@@ -706,18 +593,13 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	endif
 
 	if(DeviceType == 2) // handling of  yoked ITC1600 
-	
-//		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
-		
+
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 0)
-			variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 0)
+			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // there are followers
 				string followerPanelTitle
 				variable followerTotTrials
@@ -771,30 +653,23 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	else
 		ITC_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
-		DAP_StopButtonToAcqDataButton(panelTitle) // 
-		NVAR/z DataAcqState = $wavepath + ":DataAcqState"
+		DAP_StopButtonToAcqDataButton(panelTitle)
+		NVAR DataAcqState = $GetDataAcqState(panelTitle)
 		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		print "**************************Killing count on:", panelTitle
 		Killvariables Count
 		ITC_StopITCDeviceTimer(panelTitle)
-//		if(exists(pathToListOfFollowerDevices) == 2) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-//		string pathToListOfFollowerDevices = Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s"
-//		SVAR /z ListOfFollowerDevices = $pathToListOfFollowerDevices
 		
-//		controlinfo /w = $panelTitle setvar_Hardware_Status
-//		string ITCDACStatus = s_value	
-		
-		if(exists(pathToListOfFollowerDevices) == 2 && stringmatch(ITCDACStatus, "Independent") != 1)
-			//numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
 			print "*****************path to list of follower devices exists"
-			numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
+			numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // there are followers
 				// string followerPanelTitle
 				// variable followerTotTrials
 				i = 0
 				do
-					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+					followerPanelTitle = stringfromlist(i,listOfFollowerDevices, ";")
 					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 					sprintf CountPathString, "%s:Count" WavePath
 					NVAR /z FollowerCount = $CountPathString

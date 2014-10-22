@@ -2501,6 +2501,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1
 	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1, value= #"\" - none - ;\""
 	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
+	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 
 	SetVariable SetVar_Settings_IC_DAgain WIN = $panelTitle, value= _NUM:400
 
@@ -3079,8 +3080,7 @@ Function DAP_TabTJHook1(tca)
 		numItems = ItemsInList(ITCPanelTitleList)
 		for(i=0; i < numItems; i+=1)
 			panelTitle = StringFromList(i, ITCPanelTitleList,";")
-			minSampInt = DC_ITCMinSamplingInterval(panelTitle)
-			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value=_NUM:minSampInt
+			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
 		endfor
 	endif
@@ -3183,8 +3183,6 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 
 	DAP_UpdateITIAcrossSets(panelTitle)
 
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:MinSampInt
 	
 	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
@@ -3192,263 +3190,151 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 End
 //=========================================================================================
 
-Function DAP_ButtonProc_AcquireData(ctrlName) : ButtonControl
-	String ctrlName
-	setdatafolder root:
-	string panelTitle = DAP_ReturnPanelName()
-	variable DataAcqOrTP = 0
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1  // prevents initiation of data acquisition if panel is not locked to a device
-	
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string DataAcqStatePath = WavePath + ":DataAcqState"
-	//print DataAcqStatePath
-	if(exists(DataAcqStatePath) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
-		variable /G $DataAcqStatePath = 0
-	endif
-	
-	NVAR /z DataAcqState = $DataAcqStatePath 
+Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-		
-	if(DataAcqState == 0) // data aquistion is stopped
-		
-		// check if active channels all have output set selected
-		controlinfo /w = $panelTitle Check_DataAcq_Indexing
-		variable IndexingOnOff = v_value
-		AbortOnValue DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff), 1
-		
-		 // stops test pulse if it is running
-		if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1)
-			ITC_STOPTestPulse(panelTitle)
-		endif
-		
-		wave /z ITCDataWave = $WavePath + ":ITCDataWave"
-		
-		string CountPath = WavePath + ":count"
-		if(exists(CountPath) == 2)
-			killvariables $CountPath
-		endif
-		
-		controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-		variable DeviceType = v_value - 1
-		controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-		variable DeviceNum = v_value - 1
-		
-		//History management
-		controlinfo check_Settings_Overwrite
-		if(v_value == 1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
-			
-			if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle) == 1)//Checks for manual roll back of Next Sweep
-				controlinfo SetVar_Sweep
-				variable NextSweep = v_value
-				DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
-				DM_DeleteDataWaves(panelTitle, NextSweep)
-				ED_MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
-			endif
-		
-		endif
-		
-		//Data collection
-		//Function that assess how many 1d waves in set??
-		//Function that passes column to configdataForITCfunction?
-		//If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
-		//
-		DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
-		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
-		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq// determines if end user wants back for fore groud acquisition
-		If(v_value == 0)
-		ITC_DataAcq(DeviceType,DeviceNum, panelTitle) // start fore ground data acq
-			controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq// checks for repeated acquisition
-			if(v_value == 1)//repeated aquisition is selected
-				DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
-				DAP_AcqDataButtonToStopButton(panelTitle)	// when RA code is modified to have foreground TP during RA, this will not be needed
-				RA_Start(panelTitle)
-			endif
-		else // background data acq
-			DataAcqState = 1
-			DAP_AcqDataButtonToStopButton(panelTitle)
-			ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle) // initiates background aquisition
-		endif
-	else // data aquistion is ongoing
-		DataAcqState = 0
-		DAP_StopOngoingDataAcquisition(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
-		DAP_StopButtonToAcqDataButton(panelTitle)
-	endif		
-		
-		//print "device type = ", devicetype, " Device Number = ", devicenum		
-End
-//=========================================================================================
-// DAP_ButtonProc_AcquireDataMD.
-Function DAP_ButtonProc_AcquireDataMD(ctrlName) : ButtonControl
-	String ctrlName
-	// set the data folder to the root folder
-	setdatafolder root:
-	
-	// get the panel title of the panel that the button is on
 	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()
-	
-	// used for functions that produce different results depending on wether a sweep is being acquired or a TP
-	variable DataAcqOrTP = 0
-	
-	// prevents initiation of data acquisition if panel is not locked to a device
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
-	
-	string ITCDeviceFolderPathString
-	sprintf ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
-	
-	string DataAcqStatePathString
-	sprintf DataAcqStatePathString, "%s:DataAcqState" ITCDeviceFolderPathString
 
-	if(exists(DataAcqStatePathString) == 0) // creates the global variable that it used to determine the state of data aquistion for the particular device
-		variable /G $DataAcqStatePathString = 0
-	endif
-	
-	NVAR /z DataAcqState = $DataAcqStatePathString 
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			SetDataFolder root:
+			panelTitle = ba.win
 
-		
-	if(DataAcqState == 0) // data aquistion is stopped, initiate data acq
-		
-		// check if active channels all have output set selected
-		controlinfo /w = $panelTitle Check_DataAcq_Indexing
-		variable IndexingOnOff = v_value
-		AbortOnValue DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff), 1
-		
-		 // stops test pulse if it is running
-		if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD") == 1) // it is running
-			WAVE/Z /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
-			variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
-			variable i = 0
-			for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
-				if(stringmatch(ActiveDeviceTextList[i], panelTitle) == 1)
-					 ITC_StopTPMD(panelTitle)
+			AbortOnValue DAP_CheckSettings(panelTitle),1
+
+			NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
+			if(!DataAcqState) // data aquisition is stopped
+
+				// stops test pulse if it is running
+				if(TP_IsBackgrounOpRunning(panelTitle, "testpulse"))
+					ITC_STOPTestPulse(panelTitle)
 				endif
-			endfor
-		endif
-		
-		string ITCDataWavePathString
-		sprintf ITCDataWavePathString, "%s:ITCDataWave" ITCDeviceFolderPathString
-		wave /z ITCDataWave = $ITCDataWavePathString
-		
-		// checks if the global variable count exists (it shouldn't exist at the onset of data acq, so it gets killed if it does)
-		string CountPath
-		sprintf CountPath, "%s:Count" ITCDeviceFolderPathString
-		if(exists(CountPath) == 2)
-			killvariables $CountPath
-		endif
-		
-		// determine the type of device
-		controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-		variable DeviceType = v_value - 1
-		controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-		variable DeviceNum = v_value - 1
-		
-		//History management
-		controlinfo check_Settings_Overwrite
-		if(v_value == 1)//if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave 
-			
-			if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle) == 1)//Checks for manual roll back of Next Sweep
-				controlinfo SetVar_Sweep
-				variable NextSweep = v_value
-				DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
-				DM_DeleteDataWaves(panelTitle, NextSweep)
-				ED_MakeSettingsHistoryWave(panelTitle)// generates new settings history wave
+
+				string wavePath = HSU_DataFullFolderPathString(panelTitle)
+				Wave/SDFR=$wavePath ITCDataWave
+
+				string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
+				if(exists(CountPath) == 2)
+					KillVariables $CountPath
+				endif
+
+				/// @todo passing the device type and number *index* should not be required
+				/// panelTitle holds all required information
+				controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+				variable DeviceType = v_value - 1
+				controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+				variable DeviceNum = v_value - 1
+
+				// History management
+				// if overwrite old waves is checked in datapro panel, the following
+				// code will delete the old waves and generate a new settings history wave
+				if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
+
+					// Checks for manual roll back of Next Sweep
+					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
+						controlinfo SetVar_Sweep
+						variable NextSweep = v_value
+						DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
+						DM_DeleteDataWaves(panelTitle, NextSweep)
+						ED_MakeSettingsHistoryWave(panelTitle)
+					endif
+				endif
+
+				// Data collection
+				// Function that assess how many 1d waves in set??
+				// Function that passes column to configdataForITCfunction?
+				// If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
+				DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+				SCOPE_UpdateGraph(ITCDataWave, panelTitle)
+				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+					ITC_DataAcq(DeviceType,DeviceNum, panelTitle)
+					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+						DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
+						DAP_AcqDataButtonToStopButton(panelTitle) // when RA code is modified to have foreground TP during RA, this will not be needed
+						RA_Start(panelTitle)
+					endif
+				else
+					DataAcqState = 1
+					DAP_AcqDataButtonToStopButton(panelTitle)
+					ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle)
+				endif
+			else // data aquistion is ongoing
+				DataAcqState = 0
+				DAP_StopOngoingDataAcquisition(panelTitle)
+				ITC_StopITCDeviceTimer(panelTitle)
+				DAP_StopButtonToAcqDataButton(panelTitle)
 			endif
-		
-		endif
-		
-		//Data collection
-		DataAcqState = 1
-		DAP_AcqDataButtonToStopButton(panelTitle)
-		FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
-	
-	else // data aquistion is ongoing, stop data acq
-		DataAcqState = 0
-		// DAP_StopOngoingDataAcqMD(panelTitle)
-		Yoked_ITCStopDataAcq(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
-		DAP_StopButtonToAcqDataButton(panelTitle)
-	endif		
-		
-		//print "device type = ", devicetype, " Device Number = ", devicenum		
-End // Function
-//=========================================================================================
-Function DAP_CheckAllActChanSelec(panelTitle, IndexingOnOff) // returns 1 if any active channel does not have a wave selected
-	string panelTitle
-	variable IndexingOnOff
-	variable ActiveChanWithoutOutputSelected
-	
-	if(DAP_CheckForSetOnActiveChannel(panelTitle, "DA", "Wave", "DA") == 1)
-		print "An active DA channel does not have a output wave selected"
-		ActiveChanWithoutOutputSelected = 1
-		return ActiveChanWithoutOutputSelected
-	endif
-	
-	if(DAP_CheckForSetOnActiveChannel(panelTitle,"TTL", "Wave", "TTL") == 1)
-		print "An active TTL channel does not have a output wave selected"
-		ActiveChanWithoutOutputSelected = 1
-		return ActiveChanWithoutOutputSelected
-	endif
-	
-	if(IndexingOnOFF == 1)
-		if(DAP_CheckForSetOnActiveChannel(panelTitle, "DA", "Popup", "DA_IndexEnd") == 1)
-			print "An active DA channel does not have a indexing end wave selected"
-			ActiveChanWithoutOutputSelected = 1
-			return ActiveChanWithoutOutputSelected
-		endif
-		
-		if(DAP_CheckForSetOnActiveChannel(panelTitle, "TTL", "Popup", "TTL_IndexEnd") == 1)
-			print "An active TTL  channel does not have indexing end wave selected"
-			ActiveChanWithoutOutputSelected = 1
-			return ActiveChanWithoutOutputSelected
-		endif
-	
-	endif
-	
-	ActiveChanWithoutOutputSelected = 0
+		break
+	endswitch
+
 	return 0
 End
 //=========================================================================================
+Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-Function DAP_CheckForSetOnActiveChannel(panelTitle, DAorTTL, WaveOrPopup, ChannelType) // Channel Type = DA, TTL, DA_IndexEnd, TTL_IndexEnd
 	string panelTitle
-	string DAorTTL
-	string WaveorPopup
-	string ChannelType
-	string ControlType
-	variable ChannelWithoutSetYesOrNo
-	variable i
-	variable channelStatus
-	variable channelSelection
-	// DA cross checking
-	string ChannelStatusLIst = DC_ControlStatusListString(DAorTTL, "Check",panelTitle)  // controltype, channeltype
-	string ListNoOfPopupSelections = DC_ControlStatusListString(ChannelType, WaveOrPopup, panelTitle)
-	
-	variable MinChanSelection
-	if(stringmatch(DAorTTL, "DA") == 1)
-		MinChanSelection = 3
-		if(cmpstr(WaveorPopup,"popup") == 0)
-			MinChanSelection -= 1 // handles the fact that test pulse isn't listed in index end wave
-		endif
-	elseif(stringmatch(DAorTTL, "TTL") == 1)
-		MinChanSelection = 2
-	endif 
-	
-	variable ListSize =  itemsinlist(ChannelStatusLIst)
-//	print waveorpopup
-	for(i = 0; i < ListSize; i += 1)
-		channelStatus = str2num(stringfromlist(i, ChannelStatusLIst, ";"))
-		channelSelection =  str2num(stringfromlist(i, ListNoOfPopupSelections, ";"))
-//		print "channel selection =", channelSelection
-//		print "channel status =", channelStatus
-		if(ChannelStatus == 1 && ChannelSelection < MinChanSelection)
-			ChannelWithoutSetYesOrNo = 1
-			return ChannelWithoutSetYesOrNo
-		endif				
-	endfor
-	
-	ChannelWithoutSetYesOrNo = 0
-	return ChannelWithoutSetYesOrNo
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			SetDataFolder root:
+			panelTitle = ba.win
+
+			AbortOnValue DAP_CheckSettings(panelTitle),1
+
+			NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
+			if(!DataAcqState)
+
+				 // stops test pulse if it is running
+				if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD"))
+					WAVE/Z /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
+					variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
+					variable i = 0
+					for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
+						if(stringmatch(ActiveDeviceTextList[i], panelTitle) == 1)
+							 ITC_StopTPMD(panelTitle)
+						endif
+					endfor
+				endif
+
+				// checks if the global variable count exists (it shouldn't exist at the onset of data acq, so it gets killed if it does)
+				string CountPath
+				sprintf CountPath, "%s:Count" HSU_DataFullFolderPathString(panelTitle)
+				if(exists(CountPath) == 2)
+					killvariables $CountPath
+				endif
+
+				// determine the type of device
+				controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+				variable DeviceType = v_value - 1
+				controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+				variable DeviceNum = v_value - 1
+
+				// History management
+				if(GetCheckBoxState(panelTitle, "check_Settings_Overwrite")) // if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave
+
+					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle)) // checks for manual roll back of Next Sweep
+						controlinfo SetVar_Sweep
+						variable NextSweep = v_value
+						DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
+						DM_DeleteDataWaves(panelTitle, NextSweep)
+						ED_MakeSettingsHistoryWave(panelTitle) // generates new settings history wave
+					endif
+				endif
+
+				//Data collection
+				DataAcqState = 1
+				DAP_AcqDataButtonToStopButton(panelTitle)
+				FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
+			else // data aquistion is ongoing, stop data acq
+				DataAcqState = 0
+				Yoked_ITCStopDataAcq(panelTitle)
+				ITC_StopITCDeviceTimer(panelTitle)
+				DAP_StopButtonToAcqDataButton(panelTitle)
+			endif
+		break
+	endswitch
 End
 //=========================================================================================
 
@@ -3637,24 +3523,36 @@ End
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
 
-	variable i, NoOfHeadstages
+	variable i, NoOfHeadstages, ctrlNo, mode, headStage
 	string ctrl
-	
+
 	NoOfHeadstages = DC_TotNoOfControlType("check", "DataAcq_HS", panelTitle)
-	
+
 	for(i = 0; i < NoOfHeadstages; i += 1)
 		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
+		ASSERT(i == ctrlNo, "invalid index")
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		if(!HSU_DeviceIsUnLocked(panelTitle, silentCheck=1))
+			DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
+		endif
 	endfor
 End
 //=========================================================================================
-Function DAP_ButtonProc_AllChanOff(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	DAP_TurnOffAllHeadstages(panelTitle)
-	DAP_TurnOffAllDACs(panelTitle)
-	DAP_TurnOffAllADCs(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
+Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			panelTitle = ba.win
+			DAP_TurnOffAllHeadstages(panelTitle)
+			DAP_TurnOffAllDACs(panelTitle)
+			DAP_TurnOffAllADCs(panelTitle)
+			DAP_TurnOffAllTTLs(panelTitle)
+			break
+	endswitch
 End
 //=========================================================================================
 
@@ -3742,19 +3640,18 @@ Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVari
 	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
 End
 //=========================================================================================
-/// DAP_UpdateITCMinSampIntDisplay
-Function DAP_UpdateITCMinSampIntDisplay()
-	getwindow kwTopWin wtitle
-	string panelTitle = DAP_ReturnPanelName()
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+
+Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	string panelTitle
+
+	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DC_ITCMinSamplingInterval(panelTitle))
 End
 //=========================================================================================
-/// DAP_CheckProc_UnpdateMinSampInt
-Function DAP_CheckProc_UnpdateMinSampInt(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	DAP_UpdateITCMinSampIntDisplay()
+
+Function DAP_CheckProc_UnpdateMinSampInt(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	DAP_UpdateITCMinSampIntDisplay(cba.win)
 End
 //=========================================================================================
 /// DAP_SetVarProc_TotSweepCount
@@ -3846,7 +3743,7 @@ Function DAP_FindConnectedAmps(panelTitle)
 	endif
 
 	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder root:MIES:Amplifiers
+	SetDataFolder GetAmplifierFolder()
 
 	// old axon interface settings wave
 	Make/O/N=0       W_TelegraphServers
@@ -3862,7 +3759,6 @@ Function DAP_FindConnectedAmps(panelTitle)
 	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + list + "\"")
 End
 //=========================================================================================
-/// DAP_PopMenuProc_Headstage
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 	
@@ -3877,13 +3773,12 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	return 0
 End
 //=========================================================================================
-///  DAP_PopMenuProc_CAA
 Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
-	
+
 	switch( pa.eventCode )
 		case 2: // mouse up
-			HSU_UpdateChanAmpAssignStorWv(pa.win)
+			DAP_UpdateHeadStage(pa.win, str2num(GetPopupMenuString(pa.win, "Popup_Settings_HeadStage")))
 			break
 		case -1: // control being killed
 			break
@@ -3892,14 +3787,13 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	return 0
 End
 //=========================================================================================
-/// DAP_SetVarProc_CAA
 Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	switch( sva.eventCode )
 		case 1: // mouse up
 		case 2: // Enter key
-			HSU_UpdateChanAmpAssignStorWv(sva.win)
+			DAP_UpdateHeadStage(sva.win, str2num(GetPopupMenuString(sva.win, "Popup_Settings_HeadStage")))
 			break
 		case 3: // Live update
 			break
@@ -3910,18 +3804,210 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	return 0
 End
 //=========================================================================================
-Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
-	variable headStage, clampMode
+Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices)
+	string listOfFollowerDevices
+
 	string panelTitle
+	variable leaderRepeatAcq, leaderIndexing, leaderITI
+	string leaderSampInt
+	leaderRepeatAcq = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_RepeatAcq")
+	leaderIndexing  = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq_Indexing")
+	leaderITI       = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_ITI")
+	leaderSampInt   = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
+
+	variable i, numEntries
+
+	numEntries = ItemsInList(listOfFollowerDevices)
+
+	for(i = 0; i < numEntries; i += 1)
+		panelTitle = StringFromList(i, listOfFollowerDevices)
+		if(leaderRepeatAcq != GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+			printf "(%s) Repeat acquisition setting does not match leader panel\r", panelTitle
+			return 1
+		endif
+		if(leaderIndexing != GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+			printf "(%s) Indexing setting does not match leader panel\r", panelTitle
+			return 1
+		endif
+		if(leaderITI != GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
+			printf "(%s) ITI does not match leader panel\r", panelTitle
+			return 1
+		endif
+		if(CmpStr(leaderSampInt,GetValDisplayAsString(panelTitle, "ValDisp_DataAcq_SamplingInt")))
+			// this is no fatal error, we just inform the user
+			printf "(%s) Sampling interval does not match leader panel\r", panelTitle
+			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,65280,33024)
+		else
+			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,0,0)
+		endif
+	endfor
+
+	return 0
+End
+
+/// @brief Check if all settings are valid to send a test pulse or acquire data
+///
+/// For invalid settings an informative message is printed into the history area
+/// @return 0 for valid settings, 1 for invalid settings
+Function DAP_CheckSettings(panelTitle)
+	string panelTitle
+
+	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
+	variable mode, headStage, ctrlNo
+	string ctrl, endWave, ttlWave
+	string list = panelTitle
+
+	if(DAP_DeviceCanLead(panelTitle))
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices))
+			if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices))
+				return 1
+			endif
+			list = AddListItem(list, listOfFollowerDevices, ";", inf)
+		endif
+	endif
+	DEBUGPRINT("Checking the panelTitle list: ", str=list)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+
+		panelTitle = StringFromList(i, list)
+
+		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+
+		numHS = sum(DC_ControlStatusWave(panelTitle, "DataAcq_HS"))
+		if(!numHS)
+			printf "(%s) Please activate at least one headstage\r", panelTitle
+			return 1
+		endif
+
+		numDACs = sum(DC_ControlStatusWave(panelTitle, "DA"))
+		if(!numDACS)
+			printf "(%s) Please activate at least one DA channel\r", panelTitle
+			return 1
+		endif
+
+		numADCs = sum(DC_ControlStatusWave(panelTitle, "AD"))
+		if(!numADCs)
+			printf "(%s) Please activate at least one AD channel\r", panelTitle
+			return 1
+		endif
+
+		// check all selected TTLs
+		indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+		Wave statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
+		numEntries = DimSize(statusTTL, ROWS)
+		for(i=0; i < numEntries; i+=1)
+			if(!statusTTL[i])
+				continue
+			endif
+
+			ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ttlWave = GetPopupMenuString(panelTitle, ctrl)
+			if(!CmpStr(ttlWave, NONE))
+				printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
+				return 1
+			endif
+
+			if(indexingEnabled)
+				ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+				endWave = GetPopupMenuString(panelTitle, ctrl)
+				if(!CmpStr(endWave, NONE))
+					printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
+					return 1
+				elseif(!CmpStr(ttlWave, endWave))
+					printf "(%s) Please select a indexing end wave different as the main wave for TTL channel %d\r", panelTitle, i
+					return 1
+				endif
+			endif
+		endfor
+
+		// check all active headstages
+		Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+		numEntries = DimSize(statusHS, ROWS)
+		for(i=0; i < numEntries; i+=1)
+			if(!statusHS[i])
+				continue
+			endif
+			sprintf ctrl, "Check_DataAcq_HS_%02d", i
+			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
+			if(DAP_CheckHeadStage(panelTitle, headStage, mode))
+				return 1
+			endif
+		endfor
+	endfor
+	return 0
+End
+
+/// @brief Returns 1 if the headstage has invalid settings, and zero if everything is okay
+Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
+	string panelTitle
+	variable headStage, clampMode
+
+	string ctrl, dacWave, endWave
+	variable DACchannel, ADCchannel
+
+	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
+		return 1
+	endif
+
+	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	if(headStage >= DimSize(ChanAmpAssign, COLS))
+		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
+		return 1
+	endif
+
+	if(clampMode == V_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[0][headStage]
+	elseif(clampMode == I_CLAMP_MODE)
+		DACchannel = ChanAmpAssign[4][headStage]
+	else
+		printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
+		return 1
+	endif
+
+	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
+		printf "(%s) Please select a valid DA and AD channel in \"DAC Channel and Device Associations\" in the Hardware tab.\r", panelTitle
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	dacWave = GetPopupMenuString(panelTitle, ctrl)
+	if(!CmpStr(dacWave, NONE) || !CmpStr(dacWave, "TestPulse"))
+		printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+		return 1
+	endif
+
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+		ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		endWave = GetPopupMenuString(panelTitle, ctrl)
+		if(!CmpStr(endWave, NONE))
+			printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+			return 1
+		elseif(!CmpStr(dacWave, endWave))
+			printf "(%s) Please select a different indexing end wave than the DAC wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+			return 1
+		endif
+	endif
+
+	return 0
+End
+
+/// @brief Reads the channel amp waves and inserts that info into the DA_EPHYS panel
+static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
+	string panelTitle
+	variable headStage, clampMode
 
 	string ctrlSuffix, ADUnit, DAUnit
 	variable DAGain, ADGain
 	variable DACchannel, ADCchannel
-	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
-	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+
+	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
+	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
-	If(clampMode == V_CLAMP_MODE)
+	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
 		ADCchannel = ChanAmpAssign[2][headStage]
 		DAGain     = ChanAmpAssign[1][headStage]
@@ -3935,14 +4021,9 @@ Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
 		ADGain     = ChanAmpAssign[7][headStage]
 		DAUnit     = ChanAmpAssignUnit[2][headStage]
 		ADUnit     = ChanAmpAssignUnit[3][headStage]
-	else
-		ASSERT(0, "unhandled mode")
-	endIf
+	endif
 
-	/// @todo this should be an assertion, but it is currently triggered
-	/// to often
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
-		printf "BUG: neither DACchannel=%s nor ADCchannel=%s can be NaN\r", num2str(DACchannel), num2str(ADCchannel)
 		return NaN
 	endif
 
@@ -3951,7 +4032,6 @@ Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
 	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
 	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, DaGain)
 	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, DaUnit)
-
 	ChannelClampMode[DACchannel][%DAC] = clampMode
 
 	// ADC channels
@@ -3959,13 +4039,33 @@ Function DAP_ApplyClmpModeSavdSettngs(headStage, clampMode, panelTitle)
 	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
 	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, ADGain)
 	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
-
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
-//=========================================================================================
-Function DAP_RemoveClampModeSettings(headStage, clampMode, panelTitle)
-	variable headStage, clampMode
+
+static Function DAP_UpdateHeadstage(panelTitle, headStage)
 	string panelTitle
+	variable headStage
+
+	string ctrl
+	variable enabled
+
+	ctrl  = "Check_DataAcq_HS_0" + num2str(headstage)
+	enabled = GetCheckBoxState(panelTitle, ctrl)
+
+	if(!enabled)
+		HSU_UpdateChanAmpAssignStorWv(panelTitle)
+		return NaN
+	endif
+
+	DAP_ChangeHeadstageState(panelTitle, ctrl, 0)
+	HSU_UpdateChanAmpAssignStorWv(panelTitle)
+	DAP_ChangeHeadstageState(panelTitle, ctrl, 1)
+End
+
+//=========================================================================================
+static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
+	string panelTitle
+	variable headStage, clampMode
 
 	string ctrl
 	variable DACchannel, ADCchannel
@@ -3981,10 +4081,7 @@ Function DAP_RemoveClampModeSettings(headStage, clampMode, panelTitle)
 		ADCchannel = ChanAmpAssign[6][headStage]
 	endIf
 
-	/// @todo this should be an assertion, but it is currently triggered
-	/// to often
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
-		printf "BUG: neither DACchannel=%s nor ADCchannel=%s can be NaN\r", num2str(DACchannel), num2str(ADCchannel)
 		return NaN
 	endif
 
@@ -3997,79 +4094,117 @@ Function DAP_RemoveClampModeSettings(headStage, clampMode, panelTitle)
 	ChannelClampMode[ADCchannel][%ADC] = nan
 End
  //=========================================================================================
-Function DAP_CheckProc_ClampMode(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	String PairedRadioButton = "Radio_ClampMode_"
-	Variable RadioButtonNo = str2num(ctrlName[16,inf])
-	string HeadStageCheckBox = "Check_DataAcq_HS_0"
-	
-	getwindow kwTopWin wtitle
-	string panelTitle = s_value
 
-	if(mod(RadioButtonNo,2) == 0)//even numbers = VC
-		PairedRadioButton += (num2str(RadioButtonNo + 1))
-		checkbox $PairedRadioButton value=0
-		
-		HeadStageCheckBox += num2str((RadioButtonNo / 2))
-		//print headstagecheckbox
-		controlinfo/w = $panelTitle $HeadStageCheckBox
-		
-		if(v_value == 1)//checks to see if headstage is "ON"
-			DAP_RemoveClampModeSettings((RadioButtonNo / 2), 1,panelTitle)
-			DAP_ApplyClmpModeSavdSettngs((RadioButtonNo / 2), 0,panelTitle)//Applies VC settings for headstage
-			AI_SwitchClampMode(panelTitle, (RadioButtonNo / 2), 0)
-		endif
-		
-	else // ODD = IC
-		HeadStageCheckBox = "Check_DataAcq_HS_0"
-		PairedRadioButton += (num2str(RadioButtonNo - 1))
-		checkbox $PairedRadioButton value = 0
-		HeadStageCheckBox += num2str(((RadioButtonNo - 1) / 2))
-		controlinfo /w = $panelTitle $HeadStageCheckBox
-		
-		if(v_value == 1)//checks to see if headstage is "ON"
-			DAP_RemoveClampModeSettings(((RadioButtonNo - 1) / 2), 0, panelTitle)
-			DAP_ApplyClmpModeSavdSettngs(((RadioButtonNo - 1) / 2), 1,panelTitle)//Applies IC settings for headstage
-			AI_SwitchClampMode(panelTitle, ((RadioButtonNo - 1) / 2), 1)
-		endif
+/// @brief Return information readout from various gui controls
+///
+/// @param[in]  panelTitle  panel
+/// @param[in]  ctrl        control can be either Radio_ClampMode_ or Check_DataAcq_HS_
+/// @param[out] ctrlNo      number of the control (everything behind the last "_" of ctrl)
+/// @param[out] mode        I_CLAMP_MODE or V_CLAMP_MODE
+/// @param[out] headStage   number of the headstage
+static Function DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
+	string panelTitle, ctrl
+	variable &ctrlNo, &mode, &headStage
 
+	string clampMode     = "Radio_ClampMode_"
+	string headStageCtrl = "Check_DataAcq_HS_"
+	variable id, pos1, pos2
+
+	ctrlNo    = NaN
+	mode      = NaN
+	headStage = NaN
+
+	ASSERT(!isEmpty(ctrl), "Empty control")
+
+	pos1 = strsearch(ctrl, clampMode, 0)
+	pos2 = strsearch(ctrl, headStageCtrl, 0)
+
+	if(pos1 != -1)
+		ctrlNo = str2num(ctrl[pos1 + strlen(clampMode), inf])
+		ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
+		if(mod(ctrlNo, 2) == 0)
+			mode = V_CLAMP_MODE
+			headStage = ctrlNo / 2
+		else
+			mode = I_CLAMP_MODE
+			headStage = (ctrlNo - 1) / 2
+		endif
+	elseif(pos2 != -1)
+		ctrlNo = str2num(ctrl[pos2 + strlen(headStageCtrl), inf])
+		ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
+		headStage = ctrlNo
+		// this is the current clamp control, if it is selected mode equals I_CLAMP_MODE, if not it equals V_CLAMP_MODE
+		mode = GetCheckBoxState(panelTitle, "Radio_ClampMode_" + num2str(headStage * 2 + 1))
+	else
+		DEBUGPRINT("control", str=ctrl)
+		ASSERT(0, "unhandled control")
 	endif
-	
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+
+	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE, "unexpected mode")
+ End
+
+Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle
+	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo
+
+	switch( cba.eventCode )
+		case EVENT_MOUSE_UP:
+			panelTitle = cba.win
+
+			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
+			pairedRadioButtonNo = mode == V_CLAMP_MODE ? ctrlNo + 1 : ctrlNo - 1
+			SetCheckboxState(panelTitle, "Radio_ClampMode_" + num2str(pairedRadioButtonNo), CHECKBOX_UNSELECTED)
+			oppositeMode = mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE
+
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage)))
+				DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
+				DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
+				AI_SwitchClampMode(panelTitle, headStage, mode)
+			endif
+
+			AI_UpdateAmpView(panelTitle, headStage)
+			// chooses the amp tab accoding to the MIES headstage clamp mode
+			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
+
+			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+		break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
 
 Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string panelTitle, ctrlClampMode, control
-	variable checked, clampMode, headStageNo
-
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
-			control    = cba.ctrlName
-			panelTitle = cba.win
-			headStageNo = str2num(control[18])
-			ctrlClampMode = "Radio_ClampMode_" + num2str(HeadStageNo * 2 + 1)
-			clampMode = GetCheckBoxState(panelTitle, ctrlClampMode)
-
-			If(!cba.checked)
-				DAP_RemoveClampModeSettings(headStageNo, clampMode, panelTitle)
-			else
-				DAP_ApplyClmpModeSavdSettngs(headStageNo, clampMode, panelTitle)
-			endif
-
-			DAP_UpdateITIAcrossSets(panelTitle)
-
-			variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-			ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+			DAP_ChangeHeadstageState(cba.win, cba.ctrlName, cba.checked)
 			break
 	endswitch
 
 	return 0
 End
+
+static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
+	string panelTitle, headStageCtrl
+	variable enabled
+
+	variable mode, headStage, ctrlNo
+
+	DAP_GetInfoFromControl(panelTitle, headStageCtrl, ctrlNo, mode, headStage)
+
+	If(!enabled)
+		DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
+	else
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
+	endif
+
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAP_UpdateITIAcrossSets(panelTitle)
+End
+
 //=========================================================================================
 /// DAP_StopOngoingDataAcquisition
 Function DAP_StopOngoingDataAcquisition(panelTitle)
@@ -4276,29 +4411,31 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	string panelToDeYoke
 	
 	string leadPanel = ITC1600_FIRST_DEVICE
+	string str
 
 	if(!windowExists(leadPanel))
 		return 0
 	endif
 
-	string str
-	SVAR/SDFR=$HSU_DataFullFolderPathString(leadPanel)/Z ListOfFollowerITC1600s
-	
-	if(!SVAR_Exists(ListOfFollowerITC1600s))
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(!SVAR_Exists(listOfFollowerDevices))
 		return 0
 	endif
 	
-	if(WhichListItem(panelToDeYoke,ListOfFollowerITC1600s) == -1)
+	if(WhichListItem(panelToDeYoke, listOfFollowerDevices) == -1)
 		return 0
 	endif
-	ListOfFollowerITC1600s = RemoveFromList(panelToDeYoke, ListOfFollowerITC1600s)
 
-	str = ListOfFollowerITC1600s
-	if(ItemsInList(ListOfFollowerITC1600s) == 0 )
+	listOfFollowerDevices = RemoveFromList(panelToDeYoke, listOfFollowerDevices)
+
+	str = listOfFollowerDevices
+	if(ItemsInList(listOfFollowerDevices) == 0 )
 		// there are no more followers, disable the release button and its popup menu
 		DisableControl(leadPanel,"popup_Hardware_YokedDACs")
 		DisableControl(leadPanel,"button_Hardware_RemoveYoke")
-		KillStrings ListOfFollowerITC1600s
+		/// @todo don't rely on the svar existence
+		/// instead query the contents only
+		KillStrings listOfFollowerDevices
 		str = "No Yoked Devices"
 	endif
 	SetVariable setvar_Hardware_YokeList Win=$leadPanel, value=_STR:str
@@ -4319,18 +4456,15 @@ End
 Function DAP_RemoveAllYokedDACs(panelTitle)
 	string panelTitle
 
-	string path = HSU_DataFullFolderPathString(panelTitle)
-
 	string panelToDeYoke, list
 	variable i, listNum
 
-	SVAR/SDFR=$path/Z ListOfFollowerITC1600s
-
-	if(!SVAR_Exists(ListOfFollowerITC1600s))
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(!SVAR_Exists(listOfFollowerDevices))
 		return 0
 	endif
 
-	list = ListOfFollowerITC1600s
+	list = listOfFollowerDevices
 
 	// we have to operate on a copy of ListOfFollowerITC1600s as
 	// DAP_RemoveYokedDAC modifies it.

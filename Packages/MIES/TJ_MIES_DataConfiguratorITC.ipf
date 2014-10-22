@@ -1,31 +1,30 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+///@name Constants for DC_ConfigureDataForITC
+///@{
+CONSTANT DATA_ACQUISITION_MODE = 0
+CONSTANT TEST_PULSE_MODE       = 1
+///@}
 
-//=========================================================================================
-// DC_ConfigureDataForITC
-Function DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)// data acq = 0
+/// @brief Prepare test pulse/data acquisition
+///
+/// @param panelTitle  panel title
+/// @param dataAcqOrTP one of DATA_ACQUISITION_MODE or TEST_PULSE_MODE
+Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable DataAcqOrTP
-	//Variable start = stopmstimer(-2)
+
+	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
+
 	DC_MakeITCConfigAllConfigWave(panelTitle)  
 	DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)  
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
-	
+
 	DC_PlaceDataInITCChanConfigWave(panelTitle)
 	DC_PlaceDataInITCDataWave(panelTitle)
 	DC_PDInITCFIFOPositionAllCW(panelTitle)// PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
-	//print "Data configuration took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End // Function
-
-//==========================================================================================
-
-Function DC_TotalChannelsSelected(panelTitle) //DA_00 - DA_07 and AD_00-AD_15, // THIS FUNCTION PROBABLY ISN'T IN USE!!!
-	string panelTitle
-	variable TotalNumOfChanSelected
-	TotalNumOfChanSelected = DC_NoOfChannelsSelected("DA", "Check",panelTitle) + DC_NoOfChannelsSelected("AD", "Check",panelTitle) + DC_NoOfChannelsSelected("TTL", "Check",panelTitle)
-	return TotalNumOfChanSelected
 End
 
 //==========================================================================================
@@ -127,6 +126,59 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 	endfor
 
 	return wv
+End
+
+//==========================================================================================
+
+/// @brief Check if all settings are valid to send a test pulse or acquire data
+///
+/// For invalid settings an informative message is printed into the history area
+/// @return 0 for valid settings, 1 for invalid settings
+Function DC_CheckSettings(panelTitle)
+	string panelTitle
+
+	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
+
+	// build a list of all panels to check
+	// iterate over that list
+	// check each active headstage with DAP_CheckHeadStage
+
+	numHS = sum(DC_ControlStatusWave(panelTitle, "DataAcq_HS"))
+	if(!numHS)
+		printf "(%s) Please activate at least one headstage\r", panelTitle
+		return 1
+	endif
+
+	numDACs = sum(DC_ControlStatusWave(panelTitle, "DA"))
+	if(!numDACS)
+		printf "(%s) Please activate at least one DA channel\r", panelTitle
+		return 1
+	endif
+
+	numADCs = sum(DC_ControlStatusWave(panelTitle, "AD"))
+	if(!numADCs)
+		printf "(%s) Please activate at least one AD channel\r", panelTitle
+		return 1
+	endif
+
+	indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+	Wave status = DC_ControlStatusWave(panelTitle, "TTL")
+	numEntries = DimSize(status, ROWS)
+	for(i=0; i < numEntries; i+=1)
+		if(!status[i])
+			continue
+		endif
+		if(!CmpStr(GetPopupMenuString(panelTitle, "Wave_TTL_0" + num2str(i)), NONE))
+			printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
+			return 1
+		endif
+		if(indexingEnabled && !CmpStr(GetPopupMenuString(panelTitle, "Popup_TTL_IndexEnd_0" + num2str(i)), NONE))
+			printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
+			return 1
+		endif
+	endfor
+
+	return 0
 End
 
 //==========================================================================================

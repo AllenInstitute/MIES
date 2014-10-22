@@ -102,14 +102,9 @@ End
 // As always checking if the folder exists is error-prone
 Function/S GetListOfYokedDACs()
 
-	dfref dfr = $HSU_DataFullFolderPathString(ITC1600_FIRST_DEVICE)
-	if(!DataFolderExistsDFR(dfr))
-		return ""
-	endif
-
-	SVAR/Z/SDFR=dfr ListOfFollowerITC1600s
-	if(SVAR_Exists(ListOfFollowerITC1600s))
-		return ListOfFollowerITC1600s
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices))
+		return listOfFollowerDevices
 	endif
 
 	return ""

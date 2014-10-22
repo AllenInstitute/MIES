@@ -145,7 +145,7 @@ Function ITC_StopDataAcq()
 			RA_Start(PanelTitleG)
 		else
 			DAP_StopButtonToAcqDataButton(panelTitleG)
-			NVAR /z DataAcqState = $wavepath + ":DataAcqState"
+			NVAR DataAcqState = $GetDataAcqState(panelTitleG)
 			DataAcqState = 0
 		endif
 	else

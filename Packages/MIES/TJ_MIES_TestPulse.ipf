@@ -212,14 +212,13 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	setdatafolder root:
 	getwindow kwTopWin activesw
 
-	variable DataAcqOrTP = 1
 	panelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	if(SearchResult != -1)
 		panelTitle = panelTitle[0,SearchResult - 2]//SearchResult+1]
 	endif
 	
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle),1
 		
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	if(v_value == 0)
@@ -234,10 +233,9 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	if(exists(CountPath) == 2)
 		killvariables $CountPath
 	endif
-	
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
-	
+
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+
 	variable DeviceType = HSU_GetDeviceTypeIndex(panelTitle)
 	variable DeviceNum  = HSU_GetDeviceNumberIndex(panelTitle)
 	
@@ -266,7 +264,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	TP_StoreDAScale(SelectedDACScale,panelTitle)
 	TP_SetDAScaleToOne(panelTitle)
 	
-	DC_ConfigureDataForITC(panelTitle, DataAcqOrTP)
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
 	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
 
@@ -296,10 +294,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	// make sure data folder is correct
 	setdatafolder root:
 	
-	//variable DataAcqOrTP = 1
-	
-	// Check if panel is locked to a DAC
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle),1
 	
 	// *** need to modify for yoked devices becuase it is only looking at the lead device
 	// Check if TP uduration is greater than 0 ms	
@@ -327,11 +322,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	
 	// update TP buffer size global
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	
-	
-	// update the miniumum sampling interval
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value = _NUM:MinSampInt
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
 	
 	// determine the device type and device number
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType

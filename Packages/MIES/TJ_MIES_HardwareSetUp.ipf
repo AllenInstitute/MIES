@@ -316,14 +316,14 @@ End
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
 
-	Variable HeadStageNo, SweepNo, i
-	wave /z W_TelegraphServers = root:MIES:Amplifiers:W_TelegraphServers
+	Variable HeadStageNo, SweepNo, i, amplifierIdx
+	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
 	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
 
-	duplicate /free ChanAmpAssign ChanAmpAssignOrig
+	Duplicate/free ChanAmpAssign ChanAmpAssignOrig
 
 	// Assigns V-clamp settings for a particular headstage
 	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
@@ -353,19 +353,16 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ControlInfo /w = $panelTitle SetVar_Hardware_IC_AD_Unit	
 	ChanAmpAssignUnit[3][HeadStageNo] = s_value
 	
-	//Assigns amplifier to a particualr headstage - sounds weird because this relationship is predetermined in hardware but now you are telling the software what it is
-	if(waveexists(root:MIES:Amplifiers:W_telegraphServers))
-		ControlInfo /w = $panelTitle popup_Settings_Amplifier
-
-		if(v_value > 1)
-			ChanAmpAssign[8][HeadStageNo] = W_TelegraphServers[v_value-2][0] // serial number
-			ChanAmpAssign[9][HeadStageNo] = W_TelegraphServers[v_value-2][1] // channel ID
-		else
-			ChanAmpAssign[8][HeadStageNo] = nan
-			ChanAmpAssign[9][HeadStageNo] = nan
-		endif
-
-		ChanAmpAssign[10][HeadStageNo] = v_value
+	// Assigns amplifier to a particular headstage - sounds weird because this relationship is predetermined in hardware
+	// but now you are telling the software what it is
+	amplifierIdx = GetPopupMenuIndex(panelTitle, "popup_Settings_Amplifier")
+	if(WaveExists(W_TelegraphServers) && amplifierIdx >= 1)
+		ChanAmpAssign[8][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][0] // serial number
+		ChanAmpAssign[9][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][1] // channel ID
+		ChanAmpAssign[10][HeadStageNo] = amplifierIdx
+	else
+		ChanAmpAssign[8][HeadStageNo] = nan
+		ChanAmpAssign[9][HeadStageNo] = nan
 	endif
 
 	//Duplicate ChanampAssign wave and add sweep number if the wave is changed
@@ -375,7 +372,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	if(SweepNo > 0)
 		ChanAmpAssignOrig -= ChanAmpAssign//used to see if settings have changed
 		if((wavemax(ChanAmpAssignOrig)) != 0 || (wavemin(ChanAmpAssignOrig)) != 0)
-		ED_MakeSettingsHistoryWave(panelTitle)
+			ED_MakeSettingsHistoryWave(panelTitle)
 		endif
 	endif
 End
@@ -411,15 +408,20 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 End
 
 /// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
-Function HSU_CreateITCFollowerList(panelTitle)
+/// @todo merge with GetFollowerList once the doNotCreateSVAR-hack is removed
+static Function/S HSU_CreateITCFollowerList(panelTitle)
 	string panelTitle
 
-	string path = HSU_DataFullFolderPathString(panelTitle)
-	SVAR/SDFR=$path/Z ListOfFollowerITC1600s
-
-	if(!SVAR_Exists(ListOfFollowerITC1600s))
-		string/G $(path + ":ListOfFollowerITC1600s") = ""
+	// ensure that the device folder exists
+	dfref dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	SVAR/Z/SDFR=dfr list = ListOfFollowerITC1600s
+	if(!SVAR_Exists(list))
+		string/G dfr:ListOfFollowerITC1600s = ""
 	endif
+
+	// now we can return the absolute path to the SVAR
+	// as we know it exists
+	return GetFollowerList(doNotCreateSVAR=1)
 End
 
 //==================================================================================================
@@ -429,18 +431,16 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 
 	string cmd
 	string followerPath = HSU_DataFullFolderPathString(followerDAC)
-	string leadPath     = HSU_DataFullFolderPathString(leadDAC)
 
-	HSU_CreateITCFollowerList(leadDAC)
-	SVAR ListOfFollowerITC1600s    = $(leadPath + ":ListOfFollowerITC1600s")
+	SVAR listOfFollowerDevices = $HSU_CreateITCFollowerList(leadDAC)
 	NVAR FollowerITCDeviceIDGlobal = $(followerPath + ":ITCDeviceIDGlobal")
 	
-	if(WhichListItem(followerDAC,ListOfFollowerITC1600s) == -1)
-		ListOfFollowerITC1600s = AddListItem(followerDAC,ListOfFollowerITC1600s,";",inf)
+	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
+		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
 		sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
 		Execute cmd
 		Execute "ITCInitialize /M = 1"
-		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:ListOfFollowerITC1600s, disable = 0
+		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
 	// TB: what does this comment mean?
 	// set the internal clock of the device
