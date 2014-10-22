@@ -5,6 +5,24 @@ Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 
+static Function/S ConvertAmplifierModeToString(mode)
+	variable mode
+
+	switch(mode)
+		case V_CLAMP_MODE:
+			return "V_CLAMP_MODE"
+			break
+		case I_CLAMP_MODE:
+			return "I_CLAMP_MODE"
+			break
+		case V_CLAMP_MODE:
+			return "I_EQUAL_ZERO_MODE"
+			break
+		default:
+			ASSERT(0, "invalid mode")
+	endswitch
+End
+
 Function/S AI_ReturnListOf700BChannels(panelTitle)
 	string panelTitle
 
@@ -255,13 +273,19 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string panelTitle
 	variable headStage, mode, func, value
 
-	variable ret, channel
-	string serial
+	variable ret, channel, headstageMode
+	string serial, str
 
 	ASSERT(headStage >= 0 && headStage <= 7, "invalid headStage index")
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
-	if(AI_MIESHeadstageMode(panelTitle, headStage) != mode && !AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+	headstageMode = AI_MIESHeadstageMode(panelTitle, headStage)
+
+	if(headstageMode != mode)
+		printf "Headstage %d is in %s but the required one is %s\r", headstage, ConvertAmplifierModeToString(headstageMode), ConvertAmplifierModeToString(mode)
+		return NaN
+	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+		printf "Headstage %d has different modes stored and set\r", headstage
 		return NaN
 	endif
 
@@ -271,6 +295,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	if(!AI_IsValidSerialAndChannel(mccserial=serial, channel=channel))
 		return NaN
 	endif
+
+	sprintf str, "headStage=%d, mode=%d, func=%d, value=%g", headStage, mode, func, value
+	DEBUGPRINT(str)
 
 	MCC_SelectMultiClamp700B(serial, channel)
 
@@ -310,6 +337,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 			break
 		case MCC_SETNEUTRALIZATIONCAP_FUNC:
 			ret = MCC_SetNeutralizationCap(value)
+			break
+		case MCC_SETNEUTRALIZATIONENABL_FUNC:
+			ret = MCC_SetNeutralizationEnable(value)
 			break
 		default:
 			ASSERT(0, "Unknown function")
@@ -406,7 +436,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName)
 		// I-Clamp controls
 		case "setvar_DataAcq_Hold_IC":
 			AmpStorageWave[16][0][headStage] = v_value
-			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, v_value * 1e-12)
+			AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, v_value * 1e-12)
 			break
 		case "check_DatAcq_HoldEnable":
 			AmpStorageWave[17][0][headStage] = v_value

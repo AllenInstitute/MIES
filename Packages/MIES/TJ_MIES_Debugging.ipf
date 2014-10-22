@@ -2,13 +2,17 @@
 
 /// @file TJ_MIES_Debugging.ipf
 /// This file holds debug helpers.
+///
+/// Enable debugging with
+/// @code
+/// SetIgorOption poundDefine=DEBUGGING_ENABLED
+/// @endcode
+/// and disable it with
+/// @code
+/// SetIgorOption poundUnDefine=DEBUGGING_ENABLED
+/// @endcode
 
-// Define to control debugging
-// must be uncommented for debug purposes
-// and commented out for production code
-// #define DEBUGGING_ENABLED
-
-#ifdef DEBUGGING_ENABLED
+#if defined(DEBUGGING_ENABLED)
 
 static StrConstant functionReturnMessage = "return value"
 
