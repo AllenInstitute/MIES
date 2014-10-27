@@ -284,8 +284,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 	
 	// Enable pressure buttons
-	//variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-	//P_LoadPressureButtonState(panelTitle, headStage)
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
 //=============================================================================================

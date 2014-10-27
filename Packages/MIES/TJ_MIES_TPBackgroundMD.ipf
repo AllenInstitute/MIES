@@ -223,6 +223,10 @@ Function ITC_FinishTestPulseMD(panelTitle)
 	endif
 	
 	DAP_RestoreTTLState(panelTitle)
+	
+	// Update pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 	// killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
 	// killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
@@ -258,7 +262,7 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 		if (dimsize(ActiveDeviceTextList, 0) == 0) 
 			CtrlNamedBackground TestPulseMD, stop
 			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
-			ITC_FinishTestPulseMD(panelTitle) // makes appropriate updated to locked DA ephys panel following termination of the TP, ex. enables TP button
+			ITC_FinishTestPulseMD(panelTitle) // makes appropriate updates to locked DA ephys panel following termination of the TP, ex. enables TP button
 		endif
 	endif
 End
@@ -365,6 +369,8 @@ Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) //
 	endif
 	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End
+	
+
 
 //======================================================================================
 /// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function

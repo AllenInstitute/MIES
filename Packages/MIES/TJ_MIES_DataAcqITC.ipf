@@ -366,6 +366,10 @@ Function ITC_STOPTestPulse(panelTitle)
 	endif
 	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
 	killstrings /z root:MIES:ITCDevices:PanelTitleG
+	
+	// Update pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
@@ -545,6 +549,10 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	DAP_RestoreTTLState(panelTitle)
 	ITC_TPDocumentation(panelTitle)
 	EnableControl(panelTitle,"StartTestPulseButton")
+	
+	// Update pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 END
 //======================================================================================
 
