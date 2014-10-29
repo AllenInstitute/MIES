@@ -125,7 +125,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
-	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
+	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	PulseDuration = (v_value) // duration of the TP in ms
 	// PulseDuration = (v_value / 0.005)
@@ -161,7 +161,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable DataAcqOrTP = 1 // test pulse function
 	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
-	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)	
+	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	variable /g  $TPGlobalPath + ":Duration"
 	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
 	variable /g $TPGlobalPath + ":AmplitudeVC"
@@ -171,7 +171,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
-	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", "check", panelTitle)
+	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	variable TPDurInms = v_value
 	//print "tp dur in ms=",tpdurinms

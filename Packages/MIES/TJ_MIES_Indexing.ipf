@@ -4,10 +4,8 @@
 Function IDX_MakeIndexingStorageWaves(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)// determines ITC device 
-	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL",panelTitle)
-	variable NoOfDACs = DC_TotNoOfControlType("check", "DA",panelTitle)
-	make /o /n = (4,NoOfTTLs) $WavePath + ":TTLIndexingStorageWave"
-	make /o /n = (4,NoOfDACs) $WavePath + ":DACIndexingStorageWave"
+	make /o /n = (4, NUM_DA_TTL_CHANNELS) $WavePath + ":TTLIndexingStorageWave"
+	make /o /n = (4, NUM_DA_TTL_CHANNELS) $WavePath + ":DACIndexingStorageWave"
 End
 
 Function IDX_StoreStartFinishForIndexing(panelTitle)
@@ -16,11 +14,9 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	variable i 
-	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL",panelTitle)
-	variable NoOfDACs = DC_TotNoOfControlType("check", "DA",panelTitle)
 	string TTLPopUpNameIndexStart, DACPopUpNameIndexStart, TTLPopUpNameIndexEnd, DACPopUpNameIndexEnd
 	
-	For(i = 0; i < NoOfDACS; i += 1)
+	For(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(i < 10)
 			DACPopUpNameIndexStart = "Wave_DA_0"+num2str(i)
 			controlInfo /w = $panelTitle $DACPopUpNameIndexStart
@@ -38,7 +34,7 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
 	endfor 
 		
-	For(i = 0; i < NoOfTTLs; i += 1)
+	For(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(i < 10)
 			TTLPopUpNameIndexStart = "Wave_TTL_0"+num2str(i)
 			controlInfo /w = $panelTitle $TTLPopUpNameIndexStart
@@ -60,15 +56,14 @@ End
 /// @brief Locked indexing, indexes all active channels at once
 Function IDX_IndexingDoIt(panelTitle)
 	string panelTitle
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	variable i
-	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
-	variable NoOfDACs = DC_TotNoOfControlType("check", "DA", panelTitle)
 	string ctrl
 
-	for(i = 0; i < NoOfDACS; i += 1)
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
@@ -90,7 +85,7 @@ Function IDX_IndexingDoIt(panelTitle)
 		endif
 	endfor
 
-	for(i = 0; i < NoOfTTLS; i += 1)
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
 			ControlInfo /w = $panelTitle $ctrl
@@ -513,6 +508,18 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIn
 	return numTrials
 End
 
+Function/DF IDX_GetSetFolderFromString(channelType)
+	string channelType
+
+	if(!CmpStr(channelType, "DA"))
+		return GetWBSvdStimSetDAPath()
+	elseif(!CmpStr(channelType, "TTL"))
+		return GetWBSvdStimSetTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
 Function/DF IDX_GetSetFolder(channelType)
 	variable channelType
 
@@ -727,8 +734,6 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
 	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
 	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
-	variable NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
-	variable NoOfDAs = DC_TotNoOfControlType("check", "DA",panelTitle)
 	variable i, StepsInSummedSets, ListOffset, TotalListSteps
 	
 	if(DAorTTL==0)
@@ -743,16 +748,15 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
-		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
-		PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
-		TotalListSteps=IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+	TotalListSteps=IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		
 	do
 		if(count>TotalListSteps)
 			count-=totalListsteps
 		endif
 	while(count>totalListSteps)
-		
 		
 		if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
 			i=0

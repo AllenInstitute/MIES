@@ -5,8 +5,7 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	string panelTitle
 	string cmd
 	variable i = 0
-	//variable StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4 // + DC_ReturnTotalLengthIncrease(panelTitle)/4)
-	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
@@ -74,7 +73,7 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable i = 0
 	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
 	doupdate
 	
@@ -252,7 +251,7 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", "Check", panelTitle)
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", panelTitle)
 	variable /G root:MIES:ITCDevices:BackgroundTPCount   = 0
 
 	DoUpdate
@@ -479,7 +478,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	string cmd
 	variable i = 0
 	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
-	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 

@@ -2,6 +2,11 @@
 
 Constant DATA_ACQU_TAB_NUM               = 0
 Constant HARDWARE_TAB_NUM                = 6
+
+Constant NUM_DA_TTL_CHANNELS             = 8
+Constant NUM_HEADSTAGES                  = 8
+Constant NUM_AD_CHANNELS                 = 16
+
 StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
 StrConstant ITC1600_FIRST_DEVICE         = "ITC1600_Dev_0"
@@ -2776,7 +2781,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 				PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set		
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
@@ -2786,7 +2791,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 
 	
 			i += 1	
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	elseif(checked == 1)
 		
 		
@@ -2809,7 +2814,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
@@ -2817,7 +2822,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		
 	endif
@@ -2867,7 +2872,7 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	
 	else
 		If(strlen(varstr) == 0)
@@ -2927,7 +2932,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 				PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves				
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
@@ -2937,7 +2942,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 	
 			i += 1	
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	elseif(checked == 1)
 		
 		
@@ -2960,7 +2965,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
@@ -2968,7 +2973,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		
 	endif
@@ -3185,7 +3190,7 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	
 	else // apply search string to associated channel
 		If(strlen(varstr) == 0)
@@ -3440,7 +3445,7 @@ Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 		CompleteName = Basename + num2str(i)
 		PopupMenu $CompleteName disable = state, win = $panelTitle
 		i += 1
-	while(i < 8)
+	while(i < NUM_DA_TTL_CHANNELS)
 End
 //=========================================================================================
 
@@ -3480,13 +3485,12 @@ End
 
 Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
-	variable i, NoOfTTLs
+
+	variable i
 	string TTLCheckBoxName
-	
-	NoOfTTLs=DC_TotNoOfControlType("check", "TTL", panelTitle)
-	
-	for(i = 0; i < NoOfTTLs; i += 1)
-		TTLCheckBoxName = "Check_TTL_0"+num2str(i)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
@@ -3506,15 +3510,11 @@ Function DAP_RestoreTTLState(panelTitle)
 	variable i, NoOfTTLs, CheckBoxState
 	string TTLCheckBoxName
 	
-	NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
-	
-	for(i = 0; i < NoOfTTLs; i += 1)
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
 		CheckBoxState = str2num(stringfromlist(i , StoredTTLState,";"))
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
-
-	// killstrings StoredTTLState
 End
 //=========================================================================================
 /// DAP_ButtonProc_TTLOff
@@ -3528,12 +3528,10 @@ End
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 
-	variable i, NoOfDACs
+	variable i
 	string ctrl
-	
-	NoOfDACs = DC_TotNoOfControlType("check", "DA", panelTitle)
-	
-	for(i = 0; i < NoOfDACs; i += 1)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		sprintf ctrl, "Check_DA_%02d", i
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
@@ -3548,12 +3546,10 @@ End
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 
-	variable i, NoOfADCs
+	variable i
 	string ctrl
 
-	NoOfADCs = DC_TotNoOfControlType("check", "AD", panelTitle)
-
-	for(i = 0; i < NoOfADCs;i += 1)
+	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
 		sprintf ctrl, "Check_AD_%02d", i
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
@@ -3568,12 +3564,10 @@ End
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
 
-	variable i, NoOfHeadstages, ctrlNo, mode, headStage
+	variable i, ctrlNo, mode, headStage
 	string ctrl
 
-	NoOfHeadstages = DC_TotNoOfControlType("check", "DataAcq_HS", panelTitle)
-
-	for(i = 0; i < NoOfHeadstages; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		sprintf ctrl, "Check_DataAcq_HS_%02d", i
 		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
 		ASSERT(i == ctrlNo, "invalid index")
@@ -4553,20 +4547,6 @@ Function DAP_UpdateFollowerControls(panelTitle, panelToYoke)
 	EnableControl(panelToYoke,"setvar_Hardware_YokeList")
 	SetVariable setvar_Hardware_YokeList  win=$panelToYoke, value = _STR:"Lead device = " + panelTitle
 	DAP_UpdateYokeControls(panelToYoke)
-End
-//=========================================================================================
-Function /S DAP_HeadstageStateList(panelTitle)
-	string panelTitle
-	variable i = 0
-	string HeadstageState =""
-	string HedstageCheckBoxName
-	for(i = 0; i <= 7 ; i += 1)
-		sprintf HedstageCheckBoxName, "Check_DataAcq_HS_%0.2d" i
-		controlinfo /w = $panelTitle $HedstageCheckBoxName
-		HeadstageState = addlistitem(num2str(v_value), HeadstageState,";", i)
-	endfor 
-	
-	return HeadstageState
 End
 
 Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl

@@ -1061,7 +1061,7 @@ function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	// the wave is 1 row, 15 columns, and headstage number layers
 	// first...determine if the head stage is being controlled
 	variable headStageControlledCounter
-	for(headStageControlledCounter = 0;headStageControlledCounter < 8 ;headStageControlledCounter += 1)
+	for(headStageControlledCounter = 0;headStageControlledCounter < NUM_HEADSTAGES ;headStageControlledCounter += 1)
 		dummySettingsWave[0][0][headStageControlledCounter] = sweepCount*.1 
 		dummySettingsWave[0][1][headStageControlledCounter] = sweepCount*.2
 		dummySettingsWave[0][2][headStageControlledCounter] = sweepCount*.3 
