@@ -61,6 +61,69 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	return wv
 End
 
+/// @name Wave versioning support
+///
+/// The wave getter functions always return an existing wave.
+/// This can result in problems if the layout of the wave changes.
+///
+/// Layout in this context means:
+/// - Sizes of all dimensions
+/// - Labels of all dimensions
+/// - Wave data type
+///
+/// In order to enable smooth upgrades between old and new wave layouts the following
+/// code pattern can be used:
+/// @code
+/// Function/Wave GetMyWave(panelTitle)
+/// 	string panelTitle
+///
+/// 	DFREF dfr = GetMyPath(panelTitle)
+/// 	variable versionOfNewWave = 1
+///
+/// 	Wave/Z/SDFR=dfr wv = myWave
+///
+/// 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+/// 		return wv
+/// 	endif
+///
+/// 	Make/O/N=(1,2) dfr:myWave/Wave=wv
+/// 	SetWaveVersion(wv, versionOfNewWave)
+///
+/// 	return wv
+/// End
+/// @endcode
+///
+/// Now everytime the layout of `myWave` changes, you just raise `versionOfNewWave` by 1.
+/// When `GetMyWave` is called the first time, the wave is recreated, and on successive calls
+/// the newly recreated wave is just returned.
+///
+/// Some Hints:
+/// - Wave layout versioning is *mandatory* if you change the layout of the wave
+/// - Wave layout versions start with 1 and are integers
+/// - Rule of thumb: Raise the version if you change anything in or below the `Make` line above
+/// - Wave versioning needs a special wave note style, see @ref GetNumberFromWaveNote
+/// @{
+static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
+
+/// @brief Check if wv exists and has the correct version
+static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
+	Wave/Z wv
+	variable versionOfNewWave
+
+	// The equality check ensures that you can also downgrade, e.g. from version 5 to 4, although this is *strongly* discouraged.
+	return WaveExists(wv) && GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY) == versionOfNewWave
+End
+
+/// @brief Set the wave layout version of wave
+static Function SetWaveVersion(wv, val)
+	Wave wv
+	variable val
+
+	ASSERT(val > 0 && IsInteger(val), "val must be a positive and non-zero integer")
+	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
+End
+/// @}
+
 /// @brief Return a wave reference to the channel clamp mode wave
 ///
 /// Rows:
