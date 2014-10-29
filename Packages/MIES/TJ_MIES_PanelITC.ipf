@@ -4487,20 +4487,6 @@ Function DAP_UpdateFollowerControls(panelTitle, panelToYoke)
 	SetVariable setvar_Hardware_YokeList  win=$panelToYoke, value = _STR:"Lead device = " + panelTitle
 	DAP_UpdateYokeControls(panelToYoke)
 End
-//=========================================================================================
-Function /S DAP_HeadstageStateList(panelTitle)
-	string panelTitle
-	variable i = 0
-	string HeadstageState =""
-	string HedstageCheckBoxName
-	for(i = 0; i <= 7 ; i += 1)
-		sprintf HedstageCheckBoxName, "Check_DataAcq_HS_%0.2d" i
-		controlinfo /w = $panelTitle $HedstageCheckBoxName
-		HeadstageState = addlistitem(num2str(v_value), HeadstageState,";", i)
-	endfor 
-	
-	return HeadstageState
-End
 
 Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 	struct WMButtonAction &ba

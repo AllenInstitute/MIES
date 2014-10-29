@@ -536,8 +536,6 @@ Function ITC_TPDocumentation(panelTitle)
 	wave /SDFR = TPDataFolderRef InstResistance // wave that contains the peak resistance calculation result from the TP, each column is a different headstage
 	wave /SDFR = TPDataFolderRef SSResistance // wave that contains the steady state resistance calculation result from the TP, each column is a different headstage
 
-	string HeadStageStateList = DAP_HeadstageStateList(panelTitle)
-	
 	make /o /T /n =(3,3,1) TPDataFolderRef:TPKeyWave // 3 rows to hold: Name of parameter; unit of parameter; tolerance of parameter. 3 columns for: BaselineSSAvg; InstResistance; SSResistance.
 	wave /T /SDFR = TPDataFolderRef TPKeyWave
 	make /o /n =(1,3,8) TPDataFolderRef:TPSettingsWave = nan // 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance. A layer for each headstage.
@@ -561,17 +559,20 @@ Function ITC_TPDocumentation(panelTitle)
 			
 	// add data to TPSettingsWave
 	variable i = 0
-	variable j = 0
-	for(i = 0; i <= 7; i += 1)
-		if(str2num(stringfromlist(i, HeadStageStateList))) 
-			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
-			TPSettingsWave[0][1][i] = InstResistance[0][j]
-			TPSettingsWave[0][2][i] = SSResistance[0][j]
-			j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active heastage (no place holder columns), j only increments for active headstages.
+	variable j
+	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	variable numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+		if(!statusHS[i])
+			continue
 		endif
-	
+
+		TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+		TPSettingsWave[0][1][i] = InstResistance[0][j]
+		TPSettingsWave[0][2][i] = SSResistance[0][j]
+		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active heastage (no place holder columns), j only increments for active headstages.
 	endfor
-	
+
 	controlinfo /w = $panelTitle SetVar_Sweep // Determine the number of the next sweep to be acquired.
 	ASSERT(V_Flag > 0, "Non-existing control or window")
 	
