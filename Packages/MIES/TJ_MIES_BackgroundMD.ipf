@@ -9,7 +9,7 @@ Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if
 	string panelTitle
 //	Variable start = stopmstimer(-2)
 	string cmd
-	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle))
+	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
 	variable StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)

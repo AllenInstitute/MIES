@@ -46,36 +46,12 @@ Function DC_ITCMinSamplingInterval(panelTitle)
 	return max(max(Rack0DAMinInt,Rack1DAMinInt), max(Rack0ADMinInt,Rack1ADMinInt))
 End
 
-
 //==========================================================================================
-Function DC_NoOfChannelsSelected(ChannelType, ControlType, panelTitle)//ChannelType = DA, AD, or TTL; Control Type = check or wave
-	string ChannelType, ControlType,panelTitle
-	variable TotalPossibleChannels = DC_TotNoOfControlType(ControlType, ChannelType,panelTitle)
-	variable i = 0
-	variable DC_NoOfChannelsSelected = 0
-	string CheckBoxName
-	string controlname
-		do
-			//CheckBoxName = "Check_"+ ChannelType +"_"
-			sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
-//			if(i < 10)
-//				CheckBoxName += "0"+num2str(i)
-				ControlInfo /w = $panelTitle $ControlName
-				DC_NoOfChannelsSelected += v_value
-//			endif
-//	
-//			if(i >= 10)
-//				CheckBoxName += num2str(i)
-//				ControlInfo /w = $panelTitle $CheckBoxName
-//				DC_NoOfChannelsSelected += v_value
-//			endif
-		
-		i += 1
-		while(i <= (TotalPossibleChannels - 1))
-	return DC_NoOfChannelsSelected
+Function DC_NoOfChannelsSelected(channelType, panelTitle) // channelType = DA, AD, or TTL
+	string channelType, panelTitle
+
+	return sum(DC_ControlStatusWave(panelTitle, channelType))
 End
-
-//==========================================================================================
 
 /// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
 ///
@@ -182,11 +158,10 @@ Function DC_CheckSettings(panelTitle)
 End
 
 //==========================================================================================
-
 Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 	string panelTitle
-	Variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", "Check",panelTitle)
-	Variable NoOfADChannelsSelected = DC_NoOfChannelsSelected("AD", "Check",panelTitle)
+	Variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)
+	Variable NoOfADChannelsSelected = DC_NoOfChannelsSelected("AD", panelTitle)
 	Variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(0,panelTitle)
 	Variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(1,panelTitle)
 	Variable ChannelCount

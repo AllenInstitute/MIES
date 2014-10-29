@@ -34,10 +34,10 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	YaxisLow = YaxisHigh-YaxisSpacing + spacer
 	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
-		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][(i+((DC_NoOfChannelsSelected("da", "check", panelTitle))))]
+		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][i + DC_NoOfChannelsSelected("da", panelTitle)]
 		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName) = {YaxisLow,YaxisHigh}, freepos($ADChannelName) = {0, kwFraction}
 		SetAxis /w = $oscilloscopeSubWindow /A =2 /N =2 $ADchannelName // this line should autoscale only the visible data; /N makes the autoscaling range larger
-		Unit = stringfromlist(i + DC_NoOfChannelsSelected("da", "check", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+		Unit = stringfromlist(i + DC_NoOfChannelsSelected("da", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
 		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"

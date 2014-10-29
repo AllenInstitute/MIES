@@ -88,8 +88,8 @@ string panelTitle
 string WavePath = HSU_DataFullFolderPathString(panelTitle)
 wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
 string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-variable NoOfADColumns = DC_NoOfChannelsSelected("ad", "check", panelTitle)
-variable StartOfADColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
+variable NoOfADColumns = DC_NoOfChannelsSelected("ad", panelTitle)
+variable StartOfADColumns = DC_NoOfChannelsSelected("da", panelTitle)
 string ADGainControlName
 variable gain, i
 Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
@@ -133,7 +133,7 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	variable NoOfDAColumns = DC_NoOfChannelsSelected("da", "check", panelTitle)
+	variable NoOfDAColumns = DC_NoOfChannelsSelected("da", panelTitle)
 	string DAChannelList  =  SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
 	string DAGainControlName
 	variable gain, i

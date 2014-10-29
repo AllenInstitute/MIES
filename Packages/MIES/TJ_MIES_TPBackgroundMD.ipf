@@ -17,7 +17,7 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
 	sprintf cmd, ""
 	
 	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle) // used to determine when a sweep should terminate
-	variable ADChannelToMonitor = (DC_NoOfChannelsSelected("DA", "Check", panelTitle)) // channel that is monitored to determine when a sweep should terminate
+	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle) // channel that is monitored to determine when a sweep should terminate
 	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPath
 	
 	WAVE ITCDataWave = $ITCDataWavePath // ITC data wave is the wave that is uploaded to the DAC and contains the DA (output) data and place holder for the input data
