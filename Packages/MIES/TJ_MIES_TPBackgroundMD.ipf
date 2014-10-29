@@ -383,7 +383,7 @@ Function ITC_TPDocumentation(panelTitle)
 
 	make /o /T /n =(3,3,1) TPDataFolderRef:TPKeyWave // 3 rows to hold: Name of parameter; unit of parameter; tolerance of parameter. 3 columns for: BaselineSSAvg; InstResistance; SSResistance.
 	wave /T /SDFR = TPDataFolderRef TPKeyWave
-	make /o /n =(1,3,8) TPDataFolderRef:TPSettingsWave = nan // 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance. A layer for each headstage.
+	make /o /n =(1, 3, NUM_HEADSTAGES) TPDataFolderRef:TPSettingsWave = nan // 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance. A layer for each headstage.
 	wave /SDFR = TPDataFolderRef TPSettingsWave
 	
 	// add data to TPKeyWave

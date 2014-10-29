@@ -61,11 +61,11 @@ Function RA_Start(panelTitle)
 		SetScale /P x 0, 0.005, "ms", TestPulse
 		TP_UpdateTestPulseWave(TestPulse,panelTitle)
 
-		make /free /n = 8 SelectedDACWaveList
+		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
 		TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
 		TP_SelectTestPulseWave(panelTitle)
 
-		make /free /n = 8 SelectedDACScale
+		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
@@ -174,11 +174,11 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				SetScale /P x 0, 0.005, "ms", TestPulse
 				TP_UpdateTestPulseWave(TestPulse, panelTitle)
 				
-				make /free /n = 8 SelectedDACWaveList
+				make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
 				TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_SelectTestPulseWave(panelTitle)
 			
-				make /free /n = 8 SelectedDACScale
+				make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
 				TP_StoreDAScale(SelectedDACScale, panelTitle)
 				TP_SetDAScaleToOne(panelTitle)
 				DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
@@ -261,11 +261,11 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		SetScale/P x 0, 0.005, "ms", TestPulse
 		TP_UpdateTestPulseWave(TestPulse, panelTitle)
 		
-		make /free /n = 8 SelectedDACWaveList
+		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
 		TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_SelectTestPulseWave(panelTitle)
 	
-		make /free /n = 8 SelectedDACScale
+		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)

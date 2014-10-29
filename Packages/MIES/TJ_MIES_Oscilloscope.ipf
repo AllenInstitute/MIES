@@ -29,7 +29,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
 	YaxisSpacing = 1 / ((itemsinlist(ADChannelList)))
 	Spacer = 0.025
-	
+
 	YaxisHigh = 1
 	YaxisLow = YaxisHigh-YaxisSpacing + spacer
 	variable numActiveDACs = DC_NoOfChannelsSelected("da", panelTitle)

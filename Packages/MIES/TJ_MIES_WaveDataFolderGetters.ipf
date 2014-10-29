@@ -27,7 +27,7 @@ Function/Wave GetChanAmpAssign(panelTitle)
 		return wv
 	endif
 
-	Make/N=(12,8) dfr:ChanAmpAssign/Wave=wv
+	Make/N=(12, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
 	wv = NaN
 
 	return wv
@@ -55,7 +55,7 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(4,8) dfr:ChanAmpAssignUnit/Wave=wv
+	Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
 	wv = ""
 
 	return wv
@@ -119,7 +119,7 @@ Function/Wave DC_SweepDataWvRef(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, 6, 8) dfr:SweepData/Wave=wv
+	Make/N=(1, 6, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
 	wv = NaN
 
 	return wv
@@ -147,7 +147,7 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(1,1,8) dfr:SweepTxtData/Wave=wv
+	Make/T/N=(1, 1, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
 	wv = ""
 
 	return wv
@@ -504,7 +504,7 @@ Function/Wave GetTPStorage(panelTitle)
 		return wv
 	endif
 
-	Make/N=(128,8,8) dfr:TPStorage/Wave=wv
+	Make/N=(128, NUM_HEADSTAGES, 8) dfr:TPStorage/Wave=wv
 	wv = NaN
 
 	SetDimLabel COLS,  -1, HeadStage            , wv
@@ -625,7 +625,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(31, 1, 8) dfr:$panelTitle/Wave=wv
+	Make/N=(31, 1, NUM_HEADSTAGES) dfr:$panelTitle/Wave=wv
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
 	SetDimLabel ROWS  , 0 , HoldingPotential      , wv

@@ -2736,7 +2736,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 				PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set		
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
@@ -2746,7 +2746,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 
 	
 			i += 1	
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	elseif(checked == 1)
 		
 		
@@ -2769,7 +2769,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
@@ -2777,7 +2777,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		
 	endif
@@ -2827,7 +2827,7 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	
 	else
 		If(strlen(varstr) == 0)
@@ -2887,7 +2887,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 				PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves				
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
@@ -2897,7 +2897,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 	
 			i += 1	
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	elseif(checked == 1)
 		
 		
@@ -2920,7 +2920,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
 			endif
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
@@ -2928,7 +2928,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 		
 		
 	endif
@@ -3145,7 +3145,7 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 			i += 1
-		while(i < 8)
+		while(i < NUM_DA_TTL_CHANNELS)
 	
 	else // apply search string to associated channel
 		If(strlen(varstr) == 0)
@@ -3400,7 +3400,7 @@ Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 		CompleteName = Basename + num2str(i)
 		PopupMenu $CompleteName disable = state, win = $panelTitle
 		i += 1
-	while(i < 8)
+	while(i < NUM_DA_TTL_CHANNELS)
 End
 //=========================================================================================
 
