@@ -23,30 +23,6 @@ static Function/S ConvertAmplifierModeToString(mode)
 	endswitch
 End
 
-Function/S AI_ReturnListOf700BChannels(panelTitle)
-	string panelTitle
-
-	variable numRows
-	variable i
-	string str
-	string list = ""
-
-	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
-
-	numRows = DimSize(W_TelegraphServers, ROWS)
-	if(!numRows)
-		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		return "MC not available;"
-	endif
-
-	for(i=0; i < numRows; i+=1)
-		sprintf str, "AmpNo %d Chan %d", W_TelegraphServers[i][0], W_TelegraphServers[i][1]
-		list = AddListItem(str, list, ";", inf)
-	endfor
-
-	return list
-End
-
 //==================================================================================================
 /// @returns AD gain of amp in selected mode
 /// Gain is returned in V/pA for V-Clamp, V/mV for I-Clamp

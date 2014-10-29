@@ -3773,10 +3773,32 @@ Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
 	return 0
 End
 //=========================================================================================
-Function DAP_FindConnectedAmps(panelTitle)
+static Function/S DAP_FormatAmplifierChannelList(panelTitle)
 	string panelTitle
 
-	string list
+	variable numRows
+	variable i
+	string str
+	string list = ""
+
+	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
+
+	numRows = DimSize(W_TelegraphServers, ROWS)
+	if(!numRows)
+		print "Activate Multiclamp Commander software to populate list of available amplifiers"
+		return "MC not available;"
+	endif
+
+	for(i=0; i < numRows; i+=1)
+		sprintf str, "AmpNo %d Chan %d", W_TelegraphServers[i][0], W_TelegraphServers[i][1]
+		list = AddListItem(str, list, ";", inf)
+	endfor
+
+	return list
+End
+//=========================================================================================
+Function DAP_FindConnectedAmps(panelTitle)
+	string panelTitle
 
 	// compatibility fix
 	// Old panels, created before this change, use
@@ -3791,8 +3813,10 @@ Function DAP_FindConnectedAmps(panelTitle)
 	SetDataFolder GetAmplifierFolder()
 
 	// old axon interface settings wave
-	Make/O/N=0       W_TelegraphServers
+	Make/O/N=0 W_TelegraphServers
 	AxonTelegraphFindServers
+
+	MDSort(W_TelegraphServers, 0)
 
 	// new mcc interface settings wave
 	Make/O/N=(0,0)/I W_MultiClamps
@@ -3800,8 +3824,7 @@ Function DAP_FindConnectedAmps(panelTitle)
 
 	SetDataFolder saveDFR
 
-	list = " - none - ;" + AI_ReturnListOf700BChannels(panelTitle)
-	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + list + "\"")
+	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + NONE + ";" + DAP_FormatAmplifierChannelList(panelTitle) + "\"")
 End
 //=========================================================================================
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
