@@ -64,8 +64,8 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	String ChannelType, panelTitle
 	string ControlType
 
-	variable TotalPossibleChannels = DC_TotNoOfControlType(ControlType, ChannelType,panelTitle)
-	
+	variable TotalPossibleChannels = DC_GetNumberFromType(channelType)
+
 	String ControlStatusList = ""
 	String ControlName
 	variable i
@@ -81,6 +81,28 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	return ControlStatusList
 End
 
+Function DC_GetNumberFromType(channelType)
+	string channelType
+
+	strswitch(channelType)
+		case "DA":
+		case "TTL":
+			return NUM_DA_TTL_CHANNELS
+			break
+		case "DataAcq_HS":
+			return NUM_HEADSTAGES
+			break
+		case "AD":
+			return NUM_AD_CHANNELS
+			break
+		default:
+			ASSERT(0, "invalid type")
+			break
+	endswitch
+
+	return 0
+End
+
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
 ///
 /// @param type        one of DA, AD, TTL or DataAcq_HS
@@ -89,15 +111,15 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 	string type
 	string panelTitle
 
-	string controlType = "CHECK"
 	string ctrl
-	variable numChannels = DC_TotNoOfControlType(controlType, type, panelTitle)
-	variable i
+	variable i, numEntries
 
-	Make/FREE/U/B/N=(numChannels) wv = 0
+	numEntries = DC_GetNumberFromType(type)
 
-	for(i = 0; i < numChannels; i += 1)
-		sprintf ctrl, "%s_%s_%.2d", controlType, type, i
+	Make/FREE/U/B/N=(numEntries) wv
+
+	for(i = 0; i < numEntries; i += 1)
+		sprintf ctrl, "CHECK_%s_%.2d", type, i
 		wv[i] = GetCheckboxState(panelTitle, ctrl)
 	endfor
 
@@ -204,17 +226,6 @@ End
 
 //=========================================================================================
 
-Function DC_TotNoOfControlType(ControlType, ChannelType, panelTitle) // Ex. ChannelType = "DA", ControlType = "Check"
-	string  ControlType, ChannelType, panelTitle
-	string SearchString = ControlType + "_" + ChannelType + "_*"
-	string ListString
-	variable CatTot //Category Total
-	
-	ListString = ControlNameList(panelTitle,";",SearchString)
-	return ItemsInlist(ListString,";")
-End
-
-
 //=========================================================================================
 // 1. TTL 1;0;0;0
 // 2. TTL 0;1;0;0
@@ -266,71 +277,45 @@ End
 
 Function/s DC_PopMenuStringList(ChannelType, ControlType, panelTitle)// returns the list of selected waves in pop up menus
 	string ChannelType, ControlType, panelTitle
-	variable TotalPossibleChannels = DC_TotNoOfControlType(ControlType, ChannelType, panelTitle)
+
 	String ControlWaveList = ""
 	String ControlName
-	variable i = 0
-	
-		do
-			//ControlName = ControlType + "_" + ChannelType + "_"		
-			sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+	variable i, numEntries
 
-			//if(i < 10)
-			//	ControlName += "0" + num2str(i)
-				ControlInfo /w = $panelTitle $ControlName
-				//ControlWaveList += s_value + ";"
-				ControlWaveList = AddlistItem(s_value, ControlWaveList, ";",i)
+	numEntries = DC_GetNumberFromType(channelType)
+	for(i = 0; i < numEntries; i += 1)
+		sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+		ControlInfo /w = $panelTitle $ControlName
+		ControlWaveList = AddlistItem(s_value, ControlWaveList, ";", i)
+	endfor
 
-			//endif
-	
-//			if(i >= 10)
-//				ControlName += num2str(i)
-//				ControlInfo /w = $panelTitle $ControlName
-//				ControlWaveList += s_value + ";"
-//			endif
-			
-		i += 1
-		while(i <= (TotalPossibleChannels - 1))
-	
 	return ControlWaveList
-
 End
 
 //=========================================================================================
-Function DC_LongestOutputWave(ChannelType, panelTitle)//ttl and da channel types need to be passed into this and compared to determine longest wave
-	string ChannelType, panelTitle
-	string ControlType = "Check"
-	variable TotalPossibleChannels = DC_TotNoOfControlType(ControlType, ChannelType, panelTitle)
-	variable wavelength = 0, i = 0
-	string ControlTypeStatus = DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
-	string WaveNameString
-	ControlType = "Wave"
-	string ChannelTypeWaveList = DC_PopMenuStringList(ChannelType, ControlType, panelTitle)
-	//if da or ttl channels is active, query the wavelength of the active channel
-	i = 0
-	wavelength = 0
-	
-	do
-	
-	if((str2num(stringfromlist(i,ControlTypeStatus,";"))) == 1)
-		WaveNameString = stringfromlist(i,ChannelTypeWaveList,";")
-		if(stringmatch(WaveNameString,"-none-") == 0)//prevents error where check box is checked but no wave is selected. Update: the panel code actually prevents this possibility but I am leaving the code because I don't think the redundancy is harmful
-			WaveNameString = "root:MIES:WaveBuilder:savedStimulusSets:" + ChannelType + ":" + WaveNameString
-//			if(cmpstr(WaveNameString, "root:WaveBuilder:savedStimulusSets:DA:TestPulse") == 0)// checks to see if test pulse is the wave being run, if yes, changes path
-//			WaveNameString = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse:TestPulse"
-//			endif
-			if(DimSize($WaveNameString, 0 ) > WaveLength)
-				WaveLength = DimSize($WaveNameString, 0 )
-			endif
+/// ttl and da channel types need to be passed into this and compared to determine longest wave
+Function DC_LongestOutputWave(channelType, panelTitle)
+	string channelType, panelTitle
+
+	variable maxNumRows = 0, i, numEntries
+	string channelTypeWaveList = DC_PopMenuStringList(channelType, "Wave", panelTitle)
+
+	Wave statusHS = DC_ControlStatusWave(panelTitle, channelType)
+	numEntries = DimSize(statusHS, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		if(!statusHS[i])
+			continue
 		endif
-	endif
-	
-	i += 1
-	while(i <= (TotalPossibleChannels - 1))
-	return WaveLength
+
+		Wave/Z/SDFR=IDX_GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
+
+		if(WaveExists(wv))
+			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
+		endif
+	endfor
+
+	return maxNumRows
 End
-
-
 
 //==========================================================================================
 Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)// determines the longest output DA or DO wave. Divides it by the min sampling interval and quadruples its length (to prevent buffer overflow).

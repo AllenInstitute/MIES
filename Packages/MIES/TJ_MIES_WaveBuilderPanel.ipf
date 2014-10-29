@@ -1386,18 +1386,16 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)
 	if(!CmpStr(WB_WaveType,"DA"))
 		ctrlName0 = "Wave_DA_"
 		ctrlName1 = "Popup_DA_IndexEnd_"
-		NoOfControls = WBP_TotNoOfControlType("Wave", "DA", panelTitle)
 		DAorTTL = 0
 		DAorTTLt = "*DA*"
 	else
 		ctrlName0 = "Wave_TTL_"
 		ctrlName1 = "Popup_TTL_IndexEnd_"
-		NoOfControls = WBP_TotNoOfControlType("Wave", "TTL", panelTitle)
 		DAorTTL = 1
 		DAorTTLt = "*TTL*"
 	endif
 
-	for(i=0; i < noOfControls; i+=1)
+	for(i=0; i < NUM_DA_TTL_CHANNELS; i+=1)
 		sprintf ctrlName0d, "%s%02d", ctrlName0, i
 		sprintf ctrlName1d, "%s%02d", ctrlName1, i
 
@@ -1435,7 +1433,6 @@ static Function/S WBP_PopupMenuWaveNameList(DAorTTL, StartOrEnd, panelTitle)
 
 	string ListOfSelectedWaveNames = ""
 	string popupMenuName
-	variable noOfPopups = WBP_TotNoOfControlType("Wave", DAorTTL, panelTitle)
 	variable i
 	DelayUpdate
 	do
@@ -1450,7 +1447,7 @@ static Function/S WBP_PopupMenuWaveNameList(DAorTTL, StartOrEnd, panelTitle)
 		ControlInfo /w = $panelTitle $popupMenuName
 		ListOfSelectedWaveNames += s_value + ";"
 		i += 1
-	while(i < noOfPopups)
+	while(i < NUM_DA_TTL_CHANNELS)
 
 	return ListOfSelectedWaveNames
 End
@@ -1460,18 +1457,17 @@ static Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOr
 	variable StartOrEnd
 	string popupMenuName
 	string CheckBoxName
-	variable noOfPopups = WBP_TotNoOfControlType("Wave",DAorTTL, panelTitle)
 	variable i
 	DelayUpdate
 
 	do
 		switch(StartOrEnd)
 			case 0:
-			popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
-			break
+				popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
+				break
 			case 1:
-			popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
-			break
+				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
+				break
 			endswitch
 		ControlInfo /w = $panelTitle $popupMenuName
 		if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";")) == 1 || cmpstr(s_value,"")==0)
@@ -1484,20 +1480,8 @@ static Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOr
 			endif
 		endif
 		i += 1
-	while(i < noOfPopups)
+	while(i < NUM_DA_TTL_CHANNELS)
 	DoUpdate /W = $panelTitle
-End
-
-// Ex. ChannelType = "DA", ControlType = "Check"
-static Function WBP_TotNoOfControlType(ControlType, ChannelType, panelTitle)
-	string  ControlType, ChannelType, panelTitle
-
-	if(!windowExists(panelTitle))
-		return 0
-	endif
-
-	string searchString = ControlType + "_" + ChannelType + "_*"
-	return ItemsInList(ControlNameList(panelTitle, ";", searchString))
 End
 
 Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl

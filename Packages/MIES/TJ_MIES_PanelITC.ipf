@@ -2,6 +2,11 @@
 
 Constant DATA_ACQU_TAB_NUM               = 0
 Constant HARDWARE_TAB_NUM                = 6
+
+Constant NUM_DA_TTL_CHANNELS             = 8
+Constant NUM_HEADSTAGES                  = 8
+Constant NUM_AD_CHANNELS                 = 16
+
 StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
 StrConstant ITC1600_FIRST_DEVICE         = "ITC1600_Dev_0"
@@ -3435,13 +3440,12 @@ End
 
 Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
-	variable i, NoOfTTLs
+
+	variable i
 	string TTLCheckBoxName
-	
-	NoOfTTLs=DC_TotNoOfControlType("check", "TTL", panelTitle)
-	
-	for(i = 0; i < NoOfTTLs; i += 1)
-		TTLCheckBoxName = "Check_TTL_0"+num2str(i)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
@@ -3461,15 +3465,11 @@ Function DAP_RestoreTTLState(panelTitle)
 	variable i, NoOfTTLs, CheckBoxState
 	string TTLCheckBoxName
 	
-	NoOfTTLs = DC_TotNoOfControlType("check", "TTL", panelTitle)
-	
-	for(i = 0; i < NoOfTTLs; i += 1)
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
 		CheckBoxState = str2num(stringfromlist(i , StoredTTLState,";"))
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
-
-	// killstrings StoredTTLState
 End
 //=========================================================================================
 /// DAP_ButtonProc_TTLOff
@@ -3483,12 +3483,10 @@ End
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 
-	variable i, NoOfDACs
+	variable i
 	string ctrl
-	
-	NoOfDACs = DC_TotNoOfControlType("check", "DA", panelTitle)
-	
-	for(i = 0; i < NoOfDACs; i += 1)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		sprintf ctrl, "Check_DA_%02d", i
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
@@ -3503,12 +3501,10 @@ End
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 
-	variable i, NoOfADCs
+	variable i
 	string ctrl
 
-	NoOfADCs = DC_TotNoOfControlType("check", "AD", panelTitle)
-
-	for(i = 0; i < NoOfADCs;i += 1)
+	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
 		sprintf ctrl, "Check_AD_%02d", i
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
@@ -3523,12 +3519,10 @@ End
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
 
-	variable i, NoOfHeadstages, ctrlNo, mode, headStage
+	variable i, ctrlNo, mode, headStage
 	string ctrl
 
-	NoOfHeadstages = DC_TotNoOfControlType("check", "DataAcq_HS", panelTitle)
-
-	for(i = 0; i < NoOfHeadstages; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		sprintf ctrl, "Check_DataAcq_HS_%02d", i
 		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
 		ASSERT(i == ctrlNo, "invalid index")
