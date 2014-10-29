@@ -787,3 +787,55 @@ Function RemoveAndKillTracesOnGraph(graph)
 		KillWaves/F/Z wv
 	endfor
 End
+
+/// @brief Sort 2D waves in-place with one column being the key
+///
+/// By default an alphanumeric sorting is done.
+/// @param w        wave of arbitrary type
+/// @param keycol   column of the key for the sorting
+/// @param reversed [optional] Do an descending sort instead of an ascending one
+///
+/// Taken from http://www.igorexchange.com/node/599 with some cosmetic changes
+Function MDsort(w, keycol, [reversed])
+	Wave w
+	variable keycol, reversed
+
+	variable numRows, type
+
+	type = WaveType(w)
+	numRows = DimSize(w, 0)
+
+	if(numRows == 0) // nothing to do
+		return NaN
+	endif
+
+	Make/Y=(type)/Free/n=(numRows) key
+	Make/Free/n=(numRows) valindex
+
+	if(type == 0)
+		Wave/t indirectSource = w
+		Wave/t output = key
+		output[] = indirectSource[p][keycol]
+	else
+		Wave indirectSource2 = w
+		MultiThread key[] = indirectSource2[p][keycol]
+	endif
+
+	valindex = p
+	if(reversed)
+		Sort/A/R key, key, valindex
+	else
+		Sort/A key, key, valindex
+	endif
+
+	if(type == 0)
+		Duplicate/free indirectSource, M_newtoInsert
+		Wave/t output = M_newtoInsert
+		output[][] = indirectSource[valindex[p]][q]
+		indirectSource = output
+	else
+		Duplicate/free indirectSource2, M_newtoInsert
+		MultiThread M_newtoinsert[][] = indirectSource2[valindex[p]][q]
+		MultiThread indirectSource2 = M_newtoinsert
+	endif
+End

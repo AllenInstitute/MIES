@@ -12,7 +12,7 @@ static StrConstant LEADER                = "Leader"
 StrConstant DEVICE_TYPES      = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
-Window DA_Ephys() : Panel
+Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(500,80,970,846)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
@@ -453,7 +453,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 0
-	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=3,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2140,7 +2140,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_HoldEnable,value= 0
 	CheckBox check_DatAcq_BBEnable,pos={195,193},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_BBEnable,userdata(tabnum)=  "1"
-	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
+	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 1
 	CheckBox check_DatAcq_CNEnable,pos={195,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
@@ -2182,6 +2182,21 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
+	TitleBox Title_DataAcq_PipOffset_VC,pos={267,173},size={88,13},disable=1,title="Pipette Offset (mV)"
+	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabnum)=  "0"
+	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	TitleBox Title_DataAcq_PipOffset_VC,frame=0
+	SetVariable setvar_DataAcq_PipetteOffset_VC,pos={359,172},size={36,16},disable=1,proc=DAP_SetVarProc_AmpCntrls
+	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(tabnum)=  "0"
+	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	SetVariable setvar_DataAcq_PipetteOffset_VC,value= _NUM:0
+	Button button_DataAcq_AutoPipOffset_VC,pos={398,172},size={40,15},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
+	Button button_DataAcq_AutoPipOffset_VC,help={"Automatically calculate the pipette offset"}
+	Button button_DataAcq_AutoPipOffset_VC,userdata(tabnum)=  "0"
+	Button button_DataAcq_AutoPipOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	GroupBox group_pipette_offset,pos={261,168},size={179,24},disable=1
+	GroupBox group_pipette_offset,userdata(tabnum)=  "0"
+	GroupBox group_pipette_offset,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_HoldEnableVC,pos={178,172},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2190,7 +2205,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR,value= _NUM:0
-	CheckBox check_DatAcq_WholeCellEnable,pos={82,191},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
+	CheckBox check_DatAcq_WholeCellEnable,pos={82,192},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_WholeCellEnable,value= 0
@@ -2205,7 +2220,7 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_RsCompensation,pos={210,192},size={168,61},disable=1,title="       Rs Compensation"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DatAcq_RsCompEnable,pos={232,191},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
+	CheckBox check_DatAcq_RsCompEnable,pos={231,192},size={16,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_RsCompEnable,value= 0
@@ -2296,6 +2311,13 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC",value= 0
+	Button button_DataAcq_AutoBridgeBal_IC,pos={251,194},size={40,15},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
+	Button button_DataAcq_AutoBridgeBal_IC,help={"Automatically calculate the bridge balance"}
+	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabnum)=  "1"
+	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Check_DataAcq_SendToAllAmp,pos={345,147},size={97,14},disable=1,title="Send to all Amps"
+	CheckBox Check_DataAcq_SendToAllAmp,userdata(tabnum)=  "0"
+	CheckBox Check_DataAcq_SendToAllAmp,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2316,8 +2338,26 @@ EndMacro
 
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
-Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, Modified by Tim Jarsky 06/10/2014
+Function DAP_EphysPanelStartUpSettings(panelTitle)
 	string panelTitle
+
+	if(!windowExists(panelTitle))
+		print "Panel has to exist"
+		return NaN
+	endif
+
+	if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		print "The Panel has to be unlocked"
+		return NaN
+	endif
+
+	// remove tools
+	HideTools/A
+
+	ChangeTab(panelTitle, "ADC", 0)
+	ChangeTab(panelTitle, "tab_DataAcq_Amp", 0)
+	ChangeTab(panelTitle, "ADC", 5)
+	DoUpdate/W=$panelTitle
 
 	CheckBox Check_AD_00 Win = $panelTitle, value = 0
 	CheckBox Check_AD_01 Win = $panelTitle, value = 0
@@ -2491,6 +2531,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	CheckBox Radio_ClampMode_14 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_15 WIN = $panelTitle, value= 0,mode=1
 
+	CheckBox Check_DataAcq_SendToAllAmp WIN = $panelTitle, value= 0
+
 	SetVariable SetVar_Settings_VC_DAgain WIN = $panelTitle, value= _NUM:20
 	SetVariable SetVar_Settings_VC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
 	SetVariable SetVar_Settings_IC_ADgain WIN = $panelTitle, value= _NUM:0.00999999977648258
@@ -2602,6 +2644,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	CheckBox check_DataAcq_IndexRandom WIN = $panelTitle, fColor=(65280,43520,0),value= 0
 	SetVariable SetVar_DataAcq_TotalStepOveride WIN = $panelTitle,fColor=(65280,43520,0),value= _NUM:0
 
+	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:0
+
 	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:-50
 	SetVariable SetVar_Hardware_VC_DA_Unit WIN = $panelTitle,value= _STR:"mV"
 	SetVariable SetVar_Hardware_IC_DA_Unit WIN = $panelTitle,value= _STR:"pA"
@@ -2640,7 +2684,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle) // By Dave Reid 06/10/2014, M
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
 	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=GUIListOfYokedDACs()
 
-	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
 	SetVariable SetVar_DataAcq_BB WIN = $panelTitle,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_DataAcq_CN WIN = $panelTitle,limits={-8,16,1},value= _NUM:0
 
@@ -3728,10 +3773,32 @@ Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
 	return 0
 End
 //=========================================================================================
-Function DAP_FindConnectedAmps(panelTitle)
+static Function/S DAP_FormatAmplifierChannelList(panelTitle)
 	string panelTitle
 
-	string list
+	variable numRows
+	variable i
+	string str
+	string list = ""
+
+	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
+
+	numRows = DimSize(W_TelegraphServers, ROWS)
+	if(!numRows)
+		print "Activate Multiclamp Commander software to populate list of available amplifiers"
+		return "MC not available;"
+	endif
+
+	for(i=0; i < numRows; i+=1)
+		sprintf str, "AmpNo %d Chan %d", W_TelegraphServers[i][0], W_TelegraphServers[i][1]
+		list = AddListItem(str, list, ";", inf)
+	endfor
+
+	return list
+End
+//=========================================================================================
+Function DAP_FindConnectedAmps(panelTitle)
+	string panelTitle
 
 	// compatibility fix
 	// Old panels, created before this change, use
@@ -3746,8 +3813,10 @@ Function DAP_FindConnectedAmps(panelTitle)
 	SetDataFolder GetAmplifierFolder()
 
 	// old axon interface settings wave
-	Make/O/N=0       W_TelegraphServers
+	Make/O/N=0 W_TelegraphServers
 	AxonTelegraphFindServers
+
+	MDSort(W_TelegraphServers, 0)
 
 	// new mcc interface settings wave
 	Make/O/N=(0,0)/I W_MultiClamps
@@ -3755,8 +3824,7 @@ Function DAP_FindConnectedAmps(panelTitle)
 
 	SetDataFolder saveDFR
 
-	list = " - none - ;" + AI_ReturnListOf700BChannels(panelTitle)
-	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + list + "\"")
+	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + NONE + ";" + DAP_FormatAmplifierChannelList(panelTitle) + "\"")
 End
 //=========================================================================================
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
@@ -4165,8 +4233,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			endif
 
 			AI_UpdateAmpView(panelTitle, headStage)
-			// chooses the amp tab accoding to the MIES headstage clamp mode
-			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
+			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 		break
@@ -4546,17 +4613,16 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	variable mode, headStage
 
 	if(sc.eventCode & 0x1)
-			panelTitle = sc.win
-			headStage  = sc.curVal
+		panelTitle = sc.win
+		headStage  = sc.curVal
 
-			AI_UpdateAmpView(panelTitle, headStage)
-			mode = AI_MIESHeadstageMode(panelTitle, headStage)
-			// chooses the amp tab accoding to the MIES headstage clamp mode
-			DAP_ExecuteAdamsTabcontrolAmp(panelTitle, mode)
+		AI_UpdateAmpView(panelTitle, headStage)
+		mode = AI_MIESHeadstageMode(panelTitle, headStage)
+		// chooses the amp tab according to the MIES headstage clamp mode
+		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif
 
 	return 0
-	
 End
 
 Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
@@ -4581,6 +4647,25 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 	return 0
 End
 
+Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle, ctrl
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			panelTitle = ba.win
+			ctrl       = ba.ctrlName
+
+			AI_UpdateAmpModel(panelTitle, ctrl)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
 Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	struct WMCheckboxAction &cba
 
@@ -4596,14 +4681,6 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	endswitch
 
 	return 0
-End
-
-static Function DAP_ExecuteAdamsTabcontrolAmp(panelTitle, tabID)
-	string panelTitle
-	variable tabID
-
-
-	return ChangeTab(panelTitle, "tab_DataAcq_Amp", tabID)
 End
 
 //=========================================================================================

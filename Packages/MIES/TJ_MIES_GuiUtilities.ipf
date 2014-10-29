@@ -148,7 +148,7 @@ Constant CONTROL_TYPE_SLIDER      = 7
 /// and, if allowMissingControl is true, NaN for non existing controls.
 ///
 /// Checking non existing controls is useful to support old panels
-/// stored in experiments which don't have a the control.
+/// stored in experiments which don't have the control.
 Function GetCheckBoxState(win, control, [allowMissingControl])
 	string win, control
 	variable allowMissingControl
