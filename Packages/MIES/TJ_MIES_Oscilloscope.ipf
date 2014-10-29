@@ -32,12 +32,13 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	
 	YaxisHigh = 1
 	YaxisLow = YaxisHigh-YaxisSpacing + spacer
+	variable numActiveDACs = DC_NoOfChannelsSelected("da", panelTitle)
 	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
 		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
-		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][i + DC_NoOfChannelsSelected("da", panelTitle)]
+		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][i + numActiveDACs]
 		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName) = {YaxisLow,YaxisHigh}, freepos($ADChannelName) = {0, kwFraction}
 		SetAxis /w = $oscilloscopeSubWindow /A =2 /N =2 $ADchannelName // this line should autoscale only the visible data; /N makes the autoscaling range larger
-		Unit = stringfromlist(i + DC_NoOfChannelsSelected("da", panelTitle), UnitWaveNote, ";")// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+		Unit = stringfromlist(i + numActiveDACs, UnitWaveNote, ";") // extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
 		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
 		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
@@ -62,7 +63,6 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	endfor
 	if(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
 		SetAxis /w = $oscilloscopeSubWindow bottom 0, (ITC_CalcDataAcqStopCollPoint(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
-	
 	elseif(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 1) // determines if the wave is a test pulse
 		string TPDurationGlobalPath
 		sprintf TPDurationGlobalPath, "%sTestPulse:Duration" WavePath
