@@ -179,7 +179,7 @@ Function HSU_UnlockDevice(panelTitle)
 
 	EnableListOfControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	DisableControl(panelTitle,"button_SettingsPlus_unLockDevic")
-	EnableListOfControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;Check_Settings_Override_Set_ITI")
+	EnableListOfControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 
 	string panelTitleUnlocked = BASE_WINDOW_TITLE
