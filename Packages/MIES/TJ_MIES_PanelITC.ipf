@@ -4509,6 +4509,8 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 
 			HSU_SetITCDACasFollower(leadPanel, panelToYoke)
 			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
+			DAP_BackgroundDA_EnableDisable(leadpanel, 1)
+			DAP_BackgroundDA_EnableDisable(panelToYoke, 1)
 
 			DAP_UpdateITIAcrossSets(leadPanel)
 			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
