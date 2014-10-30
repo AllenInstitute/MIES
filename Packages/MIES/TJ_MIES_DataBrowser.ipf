@@ -386,7 +386,6 @@ Window databrowser() : Panel
 	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DB_DispADChan,fColor=(65280,43520,0),value= 0
 	Button button_DataBrowser_setaxis,pos={19,517},size={150,23},proc=DB_ButtonProc_AutoScale,title="Autoscale"
-	Button button_DataBrowser_setaxis,userdata(tabcontrol)=  "WBP_WaveType"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BQ!!#Cf5QF.e!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
