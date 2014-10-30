@@ -4790,38 +4790,42 @@ End
 //	When multiple device support is enabled there are no options for DAC operation: it is always in the background
 //	When multiple device support is enabled, and there are more than two ITC1600s, yoking controls are enabled.
 
-/// DAP_CheckProc_MDEnable(ctrlName,checked)
 /// Check box procedure for multiple device (MD) support
-Function DAP_CheckProc_MDEnable(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	DAP_BackgroundDA_EnableDisable(panelTitle, checked)
+Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			DAP_BackgroundDA_EnableDisable(cba.win, cba.checked)
+			break
+	endswitch
+
+	return 0
 End
 
-/// DAP_BackgroundDA_EnableDisable
-/// This function assigns the appropriate procedure to the TP and DataAcq buttons in the Data Acquisition tab of the DA_Ephys panel
-
-Function DAP_BackgroundDA_EnableDisable(panelTitle, Enable) // 0 = disable, 1 = Enable
+/// @brief This function assigns the appropriate procedure to the TP and DataAcq
+/// buttons in the Data Acquisition tab of the DA_Ephys panel
+///
+/// @param panelTitle device
+/// @param disableOrEnable disable(0) or enable(1) the multi device support
+Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 	string panelTitle
-	variable Enable
-	variable disableState
+	variable disableOrEnable
 
-	If(Enable == 0)
-		//controlinfo /w = $panelTitle StartTestPulseButton
-		//disableState= v_disable
-		checkbox Check_Settings_BkgTP WIN = $panelTitle, disable = 0
-		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, disable = 0
-		button StartTestPulseButton WIN = $panelTitle, proc = TP_ButtonProc_DataAcq_TestPulse
-		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireData
-	elseif(Enable == 1)
-		checkbox Check_Settings_BkgTP WIN = $panelTitle, value =1, disable = 2
-		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value =1, disable = 2
-		button StartTestPulseButton WIN = $panelTitle, proc = TP_ButtonProc_DataAcq_TPMD
-		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireDataMD
+	SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", disableOrEnable)
+	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", disableOrEnable)
+	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", disableOrEnable)
+	SetCheckBoxState(panelTitle, "check_Settings_MD", disableOrEnable)
+
+	if(disableOrEnable)
+		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TPMD
+		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireDataMD
+	else
+		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TestPulse
+		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireData
 	endif
-	
 End
 
 //=========================================================================================
