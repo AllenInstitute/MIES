@@ -450,7 +450,7 @@ Window da_ephys() : Panel
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Button DataAcquireButton,labelBack=(60928,60928,60928)
-	CheckBox Check_DataAcq1_RepeatAcq,pos={38,507},size={119,14},disable=1,title="Repeated Acquisition"
+	CheckBox Check_DataAcq1_RepeatAcq,pos={38,507},size={119,14},disable=1,proc=DAP_CheckProc_RepeatedAcq,title="Repeated Acquisition"
 	CheckBox Check_DataAcq1_RepeatAcq,help={"Determines number of times a set is repeated, or if indexing is on, the number of times a group of sets in repeated"}
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(tabcontrol)=  "ADC"
@@ -458,7 +458,7 @@ Window da_ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 0
-	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=1,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,563},size={77,16},bodyWidth=35,disable=3,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2755,18 +2755,18 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	String SearchString
 	String panelTitle = DAP_ReturnPanelName()
-	String DAPopUpMenuName// = "Wave_DA_"
+	String DAPopUpMenuName
 	String IndexEndPopUpMenuName
 	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
 	String SearchSetVarName
 	String ListOfWaves
-	
+
 	Variable i = 0
-	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
-	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:DA:
-	
+	String popupValue
+
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder GetWBSvdStimSetDAPath()
+
 	if(checked == 0)
 		SearchString = "*da*"
 		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
@@ -2782,26 +2782,23 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 			endif
 			i += 1
 		while(i < NUM_DA_TTL_CHANNELS)
-		
+
 		i = 0
 		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
 		do
 			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 
-	
 			i += 1	
 		while(i < NUM_DA_TTL_CHANNELS)
 	elseif(checked == 1)
-		
-		
+
 		controlinfo /w = $panelTitle Search_DA_00
 		if(strlen(s_value) == 0)
 			SearchString = "*da*"
 		else
 			SearchString = s_value
 		endif
-		
 
 		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
 		ListOfWaves = wavelist(searchstring,";","")
@@ -2826,8 +2823,7 @@ Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
 		
 		
 	endif
-		setdatafolder saveDFR
-
+	Setdatafolder saveDFR
 End
 //=========================================================================================
 
@@ -2850,7 +2846,7 @@ Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableC
 	string panelTitle = DAP_ReturnPanelName()
 	
 	DFREF saveDFR = GetDataFolderDFR()
-	setdatafolder root:MIES:WaveBuilder:savedStimulusSets:TTL
+	SetDataFolder GetWBSvdStimSetTTLPath()
 	controlinfo /w = $panelTitle SearchUniversal_TTL_00	
 	
 	if(v_value == 1)
@@ -2916,7 +2912,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder root:MIES:WaveBuilder:SavedStimulusSets:TTL:
+	SetDataFolder GetWBSvdStimSetTTLPath()
 	
 	if(checked == 0)
 		SearchString = "*TTL*"
@@ -3164,13 +3160,13 @@ Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableCo
 	String SearchString
 	string popupValue, ListOfWaves
 	variable i = 0
-	
+
 	string panelTitle = DAP_ReturnPanelName()
-	
+
 	DFREF saveDFR = GetDataFolderDFR()
-	setdatafolder root:MIES:WaveBuilder:savedStimulusSets:DA
+	SetDataFolder GetWBSvdStimSetDAPath()
 	controlinfo /w = $panelTitle SearchUniversal_DA_00	
-	
+
 	if(v_value == 1) // apply search string to all channels
 		controlinfo /w = $panelTitle Search_DA_00
 		If(strlen(s_value) == 0)
@@ -3599,6 +3595,12 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	string panelTitle
 
 	variable numActiveDAChannels, maxITI
+
+	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
+		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
+		return 0
+	endif
+
 	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
@@ -3615,8 +3617,8 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	endif
 
-	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
-		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
+	if(DAP_DeviceIsLeader(panelTitle))
+		DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	endif
 End
 
@@ -3664,20 +3666,65 @@ Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuContr
 	endif
 End
 //=========================================================================================
-/// DAP_SetVarProc_NextSweepLimit
-Function DAP_SetVarProc_NextSweepLimit(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	string panelTitle = DAP_ReturnPanelName()
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	DFREF saveDFR = GetDataFolderDFR()
-	setDataFolder $WavePath + ":data"
-	string ListOfDataWaves = wavelist("Sweep_*",";","MINCOLS:2")
-	setDataFolder saveDFR
-	SetVariable SetVar_Sweep win = $panelTitle, limits = {0,itemsinlist(ListOfDataWaves),1}
+Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1:
+		case 2:
+		case 3:
+			DAP_UpdateSweepLimitsAndDisplay(sva.win)
+			break
+	endswitch
+
+	return 0
 End
+
+Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
+	string panelTitle
+
+	string panelList
+	variable sweep, maxNextSweep, numPanels, i
+
+	panelList = panelTitle
+
+	if(!CmpStr(panelTitle, ITC1600_FIRST_DEVICE) && DAP_DeviceIsLeader(panelTitle))
+
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
+			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
+		endif
+		sweep = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_Sweep")
+	else
+		sweep = -INF
+	endif
+
+	// query maximum next sweep
+	// the next sweep equals the number of data waves as these start counting with zero
+	maxNextSweep = -INF
+	numPanels = ItemsInList(panelList)
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, panelList)
+
+		if(IsFinite(sweep) && i > 0) // panelTitle is a follower and we were called by the leader
+			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
+		endif
+
+		dfref dfr = GetDeviceDataPath(panelTitle)
+		maxNextSweep = max(maxNextSweep, ItemsInList(GetListOfWaves(dfr, DATA_SWEEP_REGEXP, options="MINCOLS:2")))
+	endfor
+
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, panelList)
+
+		if(DAP_DeviceIsFollower(panelTitle))
+			SetVariable SetVar_Sweep win = $panelTitle, noEdit=1, limits = {0, maxNextSweep, 0}
+		else
+			SetVariable SetVar_Sweep win = $panelTitle, noEdit=0, limits = {0, maxNextSweep, 1}
+		endif
+	endfor
+End
+
 //=========================================================================================
 
 Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
@@ -3692,26 +3739,37 @@ Function DAP_CheckProc_UnpdateMinSampInt(cba) : CheckBoxControl
 
 	DAP_UpdateITCMinSampIntDisplay(cba.win)
 End
-//=========================================================================================
-/// DAP_SetVarProc_TotSweepCount
-Function DAP_SetVarProc_TotSweepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	string panelTitle = DAP_ReturnPanelName()	
 
-	controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value == 0)
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-	else
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		valDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)	
-	endif
+//=========================================================================================
+Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	string panelTitle
+	variable numSetRepeats
+
+	switch(sva.eventCode)
+		case 1:
+		case 2:
+		case 3:
+			panelTitle = sva.win
+			numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+				numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
+			else
+				numSetRepeats *= IDX_MaxNoOfSweeps(panelTitle, 0)
+			endif
+
+			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsInSet", numSetRepeats)
+			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", IDX_MaxNoOfSweeps(panelTitle, 1))
+			DAP_SyncGuiFromLeaderToFollower(panelTitle)
+
+			break
+	endswitch
+
+	return 0
 End
+
 //=========================================================================================
 ///  DAP_ReturnPanelName
 Function /T DAP_ReturnPanelName()	
@@ -3758,7 +3816,10 @@ Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
 		case EVENT_MOUSE_UP:
 			if(!cba.checked)
 				DAP_UpdateITIAcrossSets(cba.win)
+			else
+				DAP_SyncGuiFromLeaderToFollower(cba.win)
 			endif
+
 			break
 		case -1: // control being killed
 			break
@@ -3870,17 +3931,17 @@ Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices)
 	string listOfFollowerDevices
 
 	string panelTitle
-	variable leaderRepeatAcq, leaderIndexing, leaderITI
-	string leaderSampInt
-	leaderRepeatAcq = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_RepeatAcq")
-	leaderIndexing  = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq_Indexing")
-	leaderITI       = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_ITI")
-	leaderSampInt   = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
-
+	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderRepeatSets
 	variable i, numEntries
+	string leaderSampInt
+
+	leaderRepeatAcq  = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_RepeatAcq")
+	leaderIndexing   = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq_Indexing")
+	leaderITI        = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_ITI")
+	leaderRepeatSets = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_SetRepeats")
+	leaderSampInt    = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
 
 	numEntries = ItemsInList(listOfFollowerDevices)
-
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, listOfFollowerDevices)
 		if(leaderRepeatAcq != GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
@@ -3893,6 +3954,10 @@ Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices)
 		endif
 		if(leaderITI != GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
 			printf "(%s) ITI does not match leader panel\r", panelTitle
+			return 1
+		endif
+		if(leaderRepeatSets != GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats"))
+			printf "(%s) Repeat sets does not match leader panel\r", panelTitle
 			return 1
 		endif
 		if(CmpStr(leaderSampInt,GetValDisplayAsString(panelTitle, "ValDisp_DataAcq_SamplingInt")))
@@ -4420,30 +4485,84 @@ Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
 End
 
 //=========================================================================================
-Function DAP_ButtonProc_Follow(ctrlName) : ButtonControl
-	String ctrlName
+Function DAP_ButtonProc_Follow(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	string panelTitle = DAP_ReturnPanelName()
-	string panelToYoke
+	string leadPanel, panelToYoke
 
-	ControlUpdate/W=$panelTitle popup_Hardware_AvailITC1600s
-	ControlInfo/W=$panelTitle popup_Hardware_AvailITC1600s
-	if(V_flag > 0 && V_Value >= 1)
-		panelToYoke = S_Value
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+
+			leadPanel = ba.win
+
+			ControlUpdate/W=$leadPanel popup_Hardware_AvailITC1600s
+			ControlInfo/W=$leadPanel popup_Hardware_AvailITC1600s
+			if(V_flag > 0 && V_Value >= 1)
+				panelToYoke = S_Value
+			endif
+
+			if(!windowExists(panelToYoke))
+				break
+			endif
+
+			ASSERT(CmpStr(panelToYoke, ITC1600_FIRST_DEVICE) != 0, "Can't follow the lead device")
+
+			HSU_SetITCDACasFollower(leadPanel, panelToYoke)
+			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
+			DAP_BackgroundDA_EnableDisable(leadpanel, 1)
+			DAP_BackgroundDA_EnableDisable(panelToYoke, 1)
+
+			DAP_UpdateITIAcrossSets(leadPanel)
+			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
+			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
+			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
+			EnableControl(leadPanel, "title_hardware_Release")
+			break
+	endswitch
+
+	return 0
+End
+
+static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
+	string panelTitle
+
+	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderOverrrideITI, leaderRepeatSets
+	variable numPanels, i
+	string panelList, leadPanel
+
+	if(!windowExists(panelTitle) || !DAP_DeviceIsLeader(panelTitle))
+		return NaN
 	endif
 
-	if(!windowExists(panelToYoke))
-		return 0
+	leadPanel = panelTitle
+	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
+
+	panelList = leadPanel
+	SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
+		panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 	endif
 
-	ASSERT(cmpstr(panelToYoke,ITC1600_FIRST_DEVICE)!=0,"Can't follow the lead device")
-	
-	HSU_SetITCDACasFollower(panelTitle, panelToYoke)
-	DAP_UpdateFollowerControls(panelTitle, panelToYoke)
-	
-	EnableControl(panelTitle,"button_Hardware_RemoveYoke")
-	EnableControl(panelTitle,"popup_Hardware_YokedDACs")
-	EnableControl(panelTitle,"title_hardware_Release")
+	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
+	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
+	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1)
+	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
+	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
+
+	numPanels = ItemsInList(panelList)
+	for(i = 1; i < numPanels; i += 1)
+		// i = 1 so that we don't set the values
+		// for the lead panel again
+		panelTitle = StringFromList(i, panelList)
+
+		SetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq", leaderRepeatAcq)
+		SetCheckBoxState(panelTitle, "Check_DataAcq_Indexing", leaderIndexing)
+		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
+		SetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats", leaderRepeatSets)
+		if(IsFinite(leaderOverrrideITI))
+			SetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", leaderOverrrideITI)
+		endif
+	endfor
 End
 
 //=========================================================================================
@@ -4504,6 +4623,9 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
+	EnableListOfControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
+	DAP_UpdateITIAcrossSets(panelToDeYoke)
+
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
 	string cmd
@@ -4670,38 +4792,42 @@ End
 //	When multiple device support is enabled there are no options for DAC operation: it is always in the background
 //	When multiple device support is enabled, and there are more than two ITC1600s, yoking controls are enabled.
 
-/// DAP_CheckProc_MDEnable(ctrlName,checked)
 /// Check box procedure for multiple device (MD) support
-Function DAP_CheckProc_MDEnable(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	DAP_BackgroundDA_EnableDisable(panelTitle, checked)
+Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			DAP_BackgroundDA_EnableDisable(cba.win, cba.checked)
+			break
+	endswitch
+
+	return 0
 End
 
-/// DAP_BackgroundDA_EnableDisable
-/// This function assigns the appropriate procedure to the TP and DataAcq buttons in the Data Acquisition tab of the DA_Ephys panel
-
-Function DAP_BackgroundDA_EnableDisable(panelTitle, Enable) // 0 = disable, 1 = Enable
+/// @brief This function assigns the appropriate procedure to the TP and DataAcq
+/// buttons in the Data Acquisition tab of the DA_Ephys panel
+///
+/// @param panelTitle device
+/// @param disableOrEnable disable(0) or enable(1) the multi device support
+Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 	string panelTitle
-	variable Enable
-	variable disableState
+	variable disableOrEnable
 
-	If(Enable == 0)
-		//controlinfo /w = $panelTitle StartTestPulseButton
-		//disableState= v_disable
-		checkbox Check_Settings_BkgTP WIN = $panelTitle, disable = 0
-		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, disable = 0
-		button StartTestPulseButton WIN = $panelTitle, proc = TP_ButtonProc_DataAcq_TestPulse
-		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireData
-	elseif(Enable == 1)
-		checkbox Check_Settings_BkgTP WIN = $panelTitle, value =1, disable = 2
-		checkbox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value =1, disable = 2
-		button StartTestPulseButton WIN = $panelTitle, proc = TP_ButtonProc_DataAcq_TPMD
-		button DataAcquireButton WIN = $panelTitle, proc = DAP_ButtonProc_AcquireDataMD
+	SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", disableOrEnable)
+	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", disableOrEnable)
+	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", disableOrEnable)
+	SetCheckBoxState(panelTitle, "check_Settings_MD", disableOrEnable)
+
+	if(disableOrEnable)
+		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TPMD
+		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireDataMD
+	else
+		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TestPulse
+		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireData
 	endif
-	
 End
 
 //=========================================================================================
@@ -4767,4 +4893,32 @@ Function DAP_UnlockAllDevices()
 	endfor
 
 	ASSERT(ItemsInList(DAP_ListOfLockedDevs()) == 0, "Missed to unlock some devices")
+End
+
+Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			DAP_SyncGuiFromLeaderToFollower(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_SetVarProc_ITI(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			DAP_SyncGuiFromLeaderToFollower(sva.win)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End

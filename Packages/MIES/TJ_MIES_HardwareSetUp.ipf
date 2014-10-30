@@ -60,14 +60,14 @@ Function HSU_LockDevice(panelTitle)
 		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use."
 	endif
 
-	locked = 1
-	HSU_UpdateDataFolderDisplay(panelTitle, locked)
-
 	DisableListOfControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
 
 	DoWindow/W=$panelTitle/C $panelTitleLocked
+
+	locked = 1
+	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
 	IM_MakeGlobalsAndWaves(panelTitleLocked)
 	HSU_UpdateListOfITCPanels()
@@ -82,7 +82,7 @@ End
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
 	string panelTitle
 	variable locked
-	//print "HSU_UpdateDataFolderDisplay", panelTitle
+
 	string title
 	if(locked)
 		title = "Data folder path = " + HSU_DataFullFolderPathString(panelTitle)
@@ -147,35 +147,11 @@ End
 
 //==================================================================================================
 
-///@deprecated new code should use GetDeviceTestPulse(...) from TJ_MIES_WaveDataFolderGetters.ipf
-Function/DF HSU_GetDeviceTestPulseFromTitle(panelTitle)
-	string panelTitle
-
-	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle) + ":TestPulse")
-End
-
-Function/DF HSU_GetDevicePathFromTitle(panelTitle)
-	string panelTitle
-
-	return createDFWithAllParents(HSU_DataFullFolderPathString(panelTitle))
-End
-
-///@todo rename to HSU_GetDevicePathFromTitleAsString
+///@todo remove
 Function/S HSU_DataFullFolderPathString(panelTitle)
 	string panelTitle
 
-	string deviceType, deviceNumber, path
-	variable ret
-
-	if(windowExists(panelTitle))
-		deviceType   = HSU_GetDeviceType(panelTitle)
-		deviceNumber = HSU_GetDeviceNumber(panelTitle)
-	else  // we can't query the panel here, so we just split the device string
-		ret = ParseDeviceString(panelTitle,deviceType,deviceNumber)
-		ASSERT(ret,"Could not parse the panelTitle")
-	endif
-
-	return GetDevicePathAsString(deviceType, deviceNumber)
+	return GetDevicePathAsString(panelTitle)
 End
 //==================================================================================================
 
@@ -203,7 +179,7 @@ Function HSU_UnlockDevice(panelTitle)
 
 	EnableListOfControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	DisableControl(panelTitle,"button_SettingsPlus_unLockDevic")
-	EnableControl(panelTitle,"StartTestPulseButton")
+	EnableListOfControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 
 	string panelTitleUnlocked = BASE_WINDOW_TITLE
@@ -215,7 +191,7 @@ Function HSU_UnlockDevice(panelTitle)
 	variable locked = 0
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
-	NVAR/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDeviceIDGlobal
+	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 	string cmd
 	sprintf cmd, "ITCSelectDevice/Z %d" ITCDeviceIDGlobal
 	Execute cmd
@@ -413,7 +389,7 @@ static Function/S HSU_CreateITCFollowerList(panelTitle)
 	string panelTitle
 
 	// ensure that the device folder exists
-	dfref dfr = HSU_GetDevicePathFromTitle(panelTitle)
+	dfref dfr = GetDevicePath(panelTitle)
 	SVAR/Z/SDFR=dfr list = ListOfFollowerITC1600s
 	if(!SVAR_Exists(list))
 		string/G dfr:ListOfFollowerITC1600s = ""

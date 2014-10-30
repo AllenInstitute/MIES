@@ -53,7 +53,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	dfref testPulseDFR = GetDeviceTestPulse(panelTitle)
 
 	NVAR/SDFR=testPulseDFR duration
-	Wave/Z/SDFR=HSU_GetDevicePathFromTitle(panelTitle) ITCDataWave
+	Wave/Z/SDFR=GetDevicePath(panelTitle) ITCDataWave
 
 	ASSERT(WaveExists(ITCDataWave), "ITCDataWave is missing")
 	ASSERT(Duration > 0, "duration is not strictly positive")
@@ -172,12 +172,12 @@ end
 Function DM_DeleteSettingsHistoryWaves(SweepNo,panelTitle)// deletes setting history waves "older" than SweepNo
 	variable SweepNo
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable i = 0
 	
 	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
 	
-	SetDataFolder $WavePath
+	SetDataFolder GetDevicePath(panelTitle)
+	string WavePath = GetDevicePathAsString(panelTitle)
 	string ListOf_ChanAmpAssign_Sweep_x_Wv = wavelist("ChanAmpAssign_Sweep_*", ";","")
 	string WaveNameUnderConsideration
 	do
@@ -196,20 +196,12 @@ Function DM_DeleteSettingsHistoryWaves(SweepNo,panelTitle)// deletes setting his
 End
 //=============================================================================================================	
 Function DM_ReturnLastSweepAcquired(panelTitle)
-	//LastSweep
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":data"
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder $WavePath
 	
-	string AcquiredWaveList
-	AcquiredWaveList = wavelist("Sweep_*", ";", "MINCOLS:2")
-	variable LastSweep
-	LastSweep = itemsinlist(AcquiredWaveList, ";") - 1
-	return LastSweep
-	
-	SetDataFolder saveDFR
+	string list
 
+	list = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, options="MINCOLS:2")
+	return ItemsInList(list) - 1
 End
 //=============================================================================================================
 Function DM_IsLastSwpGreatrThnNxtSwp(panelTitle)
@@ -229,32 +221,31 @@ Function DM_DeleteDataWaves(panelTitle, SweepNo)
 	string panelTitle
 	variable SweepNo
 	variable i = SweepNo
-	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":data"
-	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder $WavePath
-	
+
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder GetDeviceDataPath(panelTitle)
+
 	string ListOfDataWaves = wavelist("Sweep_*", ";", "MINCOLS:2")
 	string WaveNameUnderConsideration
-		do
-			WaveNameUnderConsideration = stringfromlist(i, ListOfDataWaves, ";")
-			if(itemsinlist(ListOfDataWaves) > 0)
-					killwaves /z /f $WaveNameUnderConsideration
-			endif
-			i+=1
-		while(i < itemsinlist(ListOfDataWaves))
-	
+	do
+		WaveNameUnderConsideration = stringfromlist(i, ListOfDataWaves, ";")
+		if(itemsinlist(ListOfDataWaves) > 0)
+			killwaves /z /f $WaveNameUnderConsideration
+		endif
+		i+=1
+	while(i < itemsinlist(ListOfDataWaves))
+
 	i = SweepNo
 	ListOfDataWaves = wavelist("Config_Sweep_*", ";", "MINCOLS:2")
 	do
 		WaveNameUnderConsideration = stringfromlist(i, ListOfDataWaves, ";")
 		if(itemsinlist(ListOfDataWaves) > 0)
-				killwaves /z /f $WaveNameUnderConsideration
+			killwaves /z /f $WaveNameUnderConsideration
 		endif
 		i += 1
 	while(i < itemsinlist(ListOfDataWaves))
-SetDataFolder saveDFR
 
+	SetDataFolder saveDFR
 End
 
 //=============================================================================================================

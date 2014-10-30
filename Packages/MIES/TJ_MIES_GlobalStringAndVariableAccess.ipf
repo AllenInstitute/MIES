@@ -82,7 +82,7 @@ End
 /// Never ever write this string!
 Function/S GetMiesVersion()
 
-	string path = GetSVARAsString(createDFWithAllParents(Path_MiesFolder("")), "version")
+	string path = GetSVARAsString(GetMiesPath(), "version")
 	SVAR str = $path
 
 	if(!CmpStr(str,""))
@@ -135,7 +135,7 @@ End
 Function/S GetDataAcqState(panelTitle)
 	string panelTitle
 
-	return GetNVARAsString(HSU_GetDevicePathFromTitle(panelTitle), "DataAcqState", initialValue=0)
+	return GetNVARAsString(GetDevicePath(panelTitle), "DataAcqState", initialValue=0)
 End
 
 /// @brief Returns the list of follower devices of a ITC1600 Device 0, aka the Lead Device

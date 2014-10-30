@@ -318,3 +318,17 @@ Function ChangeTab(panel, ctrl, tabID)
 
 	return ACL_DisplayTab(tca)
 End
+
+/// @brief Set value as the user data named key
+///
+/// @param win     window name
+/// @param control name of the control
+/// @param key     user data identifier
+/// @param value   user data value
+Function SetControlUserData(win, control, key, value)
+	string win, control, key, value
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ModifyControl $control win=$win, userdata($key)=value
+End

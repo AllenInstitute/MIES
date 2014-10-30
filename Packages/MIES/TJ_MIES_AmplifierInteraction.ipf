@@ -93,7 +93,7 @@ static Function AI_SwitchAxonMode(panelTitle, mccSerial, channel, mode)
 	errorCode = MCC_SetMode(mode)
 	if(!IsFinite(errorCode))
 		DFREF saveDFR = GetDataFolderDFR()
-		SetDataFolder $Path_AmpFolder(panelTitle)
+		SetDataFolder GetAmplifierFolder()
 		MCC_FindServers/Z=1
 		SetDataFolder saveDFR
 		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
@@ -509,7 +509,13 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo)
 	string panelTitle
 	variable MIESHeadStageNo
 
-	Variable Param
+	variable Param
+
+	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		print "Associate the panel with a DAC prior to using panel"
+		return 0
+	endif
+
 	Wave AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
 
 	// V-Clamp controls
@@ -579,50 +585,35 @@ End
 /// Incoming parameters
 /// @param panelTitle -- the calling panel name, used for finding the right folder to save data in.
 /// @param SavedDataWaveName -- the wave name that the wavenotes will be amended to.
-/// @param SweepNo -- the current data wave sweep number
+/// @param SweepCount -- the current data wave sweep number
 ///
 /// The function is called from DM_SaveITCData function, if the saveAmpSettingsCheck box is checked on the DA_Ephys panel.
 /// 
 /// The function will call the MC700B and query it for the settings and will be added to the Settings wave before it is sent off to the 
 /// ED_createWaveNotes function.
-function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepCount)
 	string panelTitle
 	string SavedDataWaveName
-	Variable SweepNo
+	Variable SweepCount
 		
 	Wave/SDFR=$HSU_DataFullFolderPathString(panelTitle) ChannelClampMode
+	dfref ampdfr = GetAmpSettingsFolder()
 		
 	// get all the Amp connection information
 	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)  	
 	// get the number of headStages...used for building up the ampSettingsWave
 	variable noHeadStages = itemsinlist(controlledHeadStage, ";")
 		
-	// sweep count
-	Variable sweepCount = SweepNo
-	
-	// Location for the settings wave
-	String ampSettingsWavePath
-	sprintf ampSettingsWavePath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "ampSettings"
-	
-	// see if the wave exists....if so, append to it...if not, create it
-	wave /z ampSettingsWave = $ampSettingsWavePath
+	Wave/Z/SDFR=ampdfr ampSettingsWave = ampSettings
 	if (!WaveExists(ampSettingsWave))
 		// create the 3 dimensional wave
-		make /o /n = (1, 36, noHeadStages ) $ampSettingsWavePath = 0
-		Wave /z ampSettingsWave = $ampSettingsWavePath
+		make /o /n = (1, 36, noHeadStages ) ampdfr:ampSettings/Wave=ampSettingsWave
 	endif	
 		
-	// make the amp settings key wave
-	String ampSettingsKeyPath
-	sprintf ampSettingsKeyPath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "ampSettingsKey"
-	
-	// see if the wave exists....if so, skip this part..if not, create it
-	wave/Z/T ampSettingsKey = $ampSettingsKeyPath
+	Wave/Z/T/SDFR=ampDFR ampSettingsKey
 	if (!WaveExists(ampSettingsKey))
-		//print "making settingsKey Wave...."
 		// create the 2 dimensional wave
-		make /T /o  /n = (3, 36) $ampSettingsKeyPath
-		Wave/T ampSettingsKey = $ampSettingsKeyPath
+		make /T /o  /n = (3, 36) ampdfr:ampSetttingsKey/Wave=ampSettingsKey
 	
 		// Row 0: Parameter
 		// Row 1: Units	
@@ -904,49 +895,33 @@ END
 /// Incoming parameters
 /// @param panelTitle -- the calling panel name, used for finding the right folder to save data in.
 /// @param SavedDataWaveName -- the wave name that the wavenotes will be amended to.
-/// @param SweepNo -- the current data wave sweep number
+/// @param SweepCount -- the current data wave sweep number
 /// 
 /// The function will take text input from the user, in a manner yet to be determined, and append them to the savedDataWave
-function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepNo)
+function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepCount)
 	string panelTitle
 	string SavedDataWaveName
-	Variable SweepNo	
+	Variable SweepCount
 	
+	dfref ampdfr = GetAmpSettingsFolder()
 	// Location for the text documentation wave
-	String ampTextDocWavePath
-	sprintf ampTextDocWavePath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "ampTextDoc"
-	
-	// sweep count
-	Variable sweepCount = SweepNo
 	
 	// get all the Amp connection information
 	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)  	
 	// get the number of headStages...used for building up the ampSettingsWave
 	variable noHeadStages = itemsinlist(controlledHeadStage, ";")
 	
-	// see if the wave exists....if so, append to it...if not, create it
-	wave /z /t ampTextDocWave = $ampTextDocWavePath
-	//print "Does the settings wave exist?..."
+	Wave/Z/T/SDFR=ampdfr ampTextDocWave = ampTextDoc
 	if (!WaveExists(ampTextDocWave))
-		//print "making ampSettingsWave..."
-		// create the 3 dimensional wave
-		make /T /o /n = (1, 16, noHeadStages ) $ampTextDocWavePath
-		Wave /T /z ampTextDocWave = $ampTextDocWavePath
+		make /T /o /n = (1, 16, noHeadStages ) ampdfr:ampTextDoc/Wave=ampTextDocWave
 	endif
 	
-	// make the amp settings text doc key wave
-	String ampTextDocKeyPath
-	sprintf ampTextDocKeyPath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "ampTextDocKey"
-	
-	// see if the wave exists....if so, skip this part..if not, create it
-	//print "Does the key wave exist?"
-	wave/T ampTextDocKey = $ampTextDocKeyPath
+	Wave/T/SDFR=ampdfr ampTextDocKey
 	if (!WaveExists(ampTextDocKey))
 		//print "making settingsKey Wave...."
 		// create the 2 dimensional wave
-		make /T /o  /n = (3, 16) $ampTextDocKeyPath
-		Wave/T ampTextDocKey = $ampTextDocKeyPath
-	
+		make /T /o  /n = (3, 16) ampdfr:ampTextDocKey/Wave=ampTextDocKey
+
 		// Row 0: Parameter
 			
 		// Add dimension labels to the ampSettingsKey wave
@@ -987,40 +962,23 @@ function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepNo)
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
-function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepCount)
 	string panelTitle
 	string SavedDataWaveName
-	Variable SweepNo
+	Variable SweepCount
 
-	// sweep count
-	Variable sweepCount = SweepNo
-	
 	// Location for the settings wave
-	String dummySettingsWavePath
-	sprintf dummySettingsWavePath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "dummySettings"
-	
-	// see if the wave exists....if so, append to it...if not, create it
-	wave /z dummySettingsWave = $dummySettingsWavePath
-	//print "Does the settings wave exist?..."
+	dfref ampdfr = GetAmpSettingsFolder()
+
+	Wave/Z/SDFR=ampdfr dummySettingsWave = dummySettings
 	if (!WaveExists(dummySettingsWave))
-		//print "making ampSettingsWave..."
 		// create the 3 dimensional wave
-		make /o /n = (1, 6, 8) $dummySettingsWavePath = 0
-		Wave /z dummySettingsWave = $dummySettingsWavePath
-	endif	
-		
-	// make the amp settings key wave
-	String dummySettingsKeyPath
-	sprintf dummySettingsKeyPath, "%s:%s" Path_AmpSettingsFolder(panelTitle), "dummySettingsKey"
-	
-	// see if the wave exists....if so, skip this part..if not, create it
-	//print "Does the key wave exist?"
-	wave/T dummySettingsKey = $dummySettingsKeyPath
+		make /o /n = (1, 6, 8) ampdfr:dummySettings/Wave=dummySettingsWave
+	endif
+
+	Wave/T/SDFR=ampdfr dummySettingsKey
 	if (!WaveExists(dummySettingsKey))
-		//print "making settingsKey Wave...."
-		// create the 2 dimensional wave
-		make /T /o  /n = (3, 6) $dummySettingsKeyPath
-		Wave/T dummySettingsKey = $dummySettingsKeyPath
+		make /T /o  /n = (3, 6) ampdfr:dummySettingsKey/Wave=dummySettingsKey
 	
 		// Row 0: Parameter
 		// Row 1: Units	
