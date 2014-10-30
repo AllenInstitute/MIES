@@ -384,8 +384,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	panelList = panelTitle
 
 	if(DAP_DeviceCanLead(panelTitle))
-		/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
-		SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder(panelTitle) + ":ITC1600:Device0:ListOfFollowerITC1600s")
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices))
 			panelList = AddListItem(panelList, listOfFollowerDevices, ";", inf)
 		endif

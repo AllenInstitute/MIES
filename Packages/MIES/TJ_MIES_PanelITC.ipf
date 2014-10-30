@@ -3689,8 +3689,8 @@ Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	panelList = panelTitle
 
 	if(!CmpStr(panelTitle, ITC1600_FIRST_DEVICE) && DAP_DeviceIsLeader(panelTitle))
-		/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
-		SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder("") + ":ITC1600:Device0:ListOfFollowerITC1600s")
+
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
 			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 		endif
@@ -4521,8 +4521,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
 
 	panelList = leadPanel
-	/// @todo replace with GetFollowerList(doNotCreateSVAR=1) once we have it
-	SVAR/Z listOfFollowerDevices = $(Path_ITCDevicesFolder("") + ":ITC1600:Device0:ListOfFollowerITC1600s")
+	SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 	if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
 		panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 	endif
