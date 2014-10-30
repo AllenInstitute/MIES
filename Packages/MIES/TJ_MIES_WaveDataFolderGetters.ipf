@@ -1,5 +1,7 @@
 #pragma rtGlobals=3
 
+static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17 
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -309,31 +311,33 @@ Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation"
 End
 
-/// @brief Returns device specific data folder reference for pressure automation
-Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
+/// @breif Returns device specific pressure folder as string
+Function/S P_GetDevicePressureFolderAS(panelTitle)
 	string panelTitle
-	return P_GetDevicePressureFolder(panelTitle)
-End
-
-/// @breif Creates ITC device specific pressure folder - used to store data for pressure regulators
-Function/DF P_GetDevicePressureFolder(panelTitle)
-	string 	panelTitle
 	string 	DeviceNumber 	
 	string 	DeviceType 	
 	ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	string 	FolderPathString
-	sprintf FolderPathString, "root:MIES:Pressure:%s:Device_%s" DeviceType, DeviceNumber
-	return CreateDFWithAllParents(FolderPathString)
+	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" Path_MIESfolder(panelTitle), DeviceType, DeviceNumber
+	return FolderPathString
 End
 
-/// @brief Creates the data folder: root:MIES:Pressure
-Function P_CreatePressureDataFolder()
-	CreateDFWithAllParents("root:MIES:Pressure:")
+/// @breif Creates ITC device specific pressure folder - used to store data for pressure regulators
+Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
+	string 	panelTitle
+	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
+End
+
+/// @breif Returns pressure folder as string
+Function/S P_GetPressureFolderAS(panelTitle)
+	string panelTitle
+	return Path_MIESfolder(panelTitle) + ":Pressure:"
 End
 
 /// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
-Function/DF P_PressureFolderReference()
-	return CreateDFWithAllParents("root:MIES:Pressure:")
+Function/DF P_PressureFolderReference(panelTitle)
+	string panelTitle
+	return CreateDFWithAllParents(Path_MIESfolder(panelTitle) + ":Pressure:")
 End
 
 /// @brief Returns a wave reference to the textDocWave
@@ -617,35 +621,30 @@ End
 /// @brief Return a datafolder reference to the test pulse folder
 Function/DF GetDeviceTestPulse(panelTitle)
 	string panelTitle
-
 	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
 End
 
 /// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
-
 	return HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 End
 
 /// @brief Return a datafolder reference to the device type folder
 Function/DF GetDeviceTypePath(deviceType)
 	string deviceType
-
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
 /// @brief Return the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
 Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
-
 	return Path_ITCDevicesFolder("") + ":" + deviceType
 End
 
 /// @brief Return a datafolder reference to the device folder
 Function/DF GetDevicePath(panelTitle)
 	string panelTitle
-
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
@@ -654,7 +653,6 @@ Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-
 	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
 		DEBUGPRINT("Invalid/Non-locked paneltitle, falling back to querying the GUI.")
 
@@ -668,14 +666,12 @@ End
 /// @brief Return a datafolder reference to the device data folder
 Function/DF GetDeviceDataPath(panelTitle)
 	string panelTitle
-
 	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(panelTitle)
 	string panelTitle
-
 	return GetDevicePathAsString(panelTitle) + ":Data"
 End
 
@@ -1451,7 +1447,6 @@ Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	
 	return wv
 End
-
 /// @brief Returns a wave reference to a DA data wave used for pressure pulses
 ///
 /// Rows:
@@ -1469,7 +1464,7 @@ Function/WAVE P_ITCDataDA(panelTitle)
 		return ITCDataDA
 	endif
 
-	make /w /o /n =(2^17) dfr:ITCDataDA/WAVE = Wv
+	make /w /o /n =(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataDA/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1492,7 +1487,7 @@ Function/WAVE P_ITCDataAD(panelTitle)
 		return ITCDataAD
 	endif
 
-	make /w /o /n =(2^17) dfr:ITCDataAD/WAVE = Wv
+	make /w /o /n =(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataAD/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1515,7 +1510,7 @@ Function/WAVE P_ITCDataTTLRz(panelTitle)
 		return ITCDataTTLRz
 	endif
 
-	make /w /o /n =(2^17) dfr:ITCDataTTLRz/WAVE = Wv
+	make /w /o /n =(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRz/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1538,7 +1533,7 @@ Function/WAVE P_ITCDataTTLRo(panelTitle)
 		return ITCDataTTLRo
 	endif
 
-	make /w /o /n =(2^17) dfr:ITCDataTTLRo/WAVE = Wv
+	make /w /o /n =(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRo/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1591,7 +1586,6 @@ Function/WAVE P_ITCState(panelTitle)
 	return Wv
 End
 
-
 /// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
 ///
 /// Rows:
@@ -1613,7 +1607,7 @@ Function/WAVE P_GetITCData(panelTitle)
 		return P_ITCData
 	endif
 	
-	make /w /o /n = (2^17, 4) dfr:P_ITCData/WAVE = Wv
+	make /w /o /n = (PRESSURE_WAVE_DATA_SIZE, 4) dfr:P_ITCData/WAVE = Wv
 	
 	SetDimLabel COLS, 0, DA, 		Wv
 	SetDimLabel COLS, 1, AD, 		Wv
@@ -1670,7 +1664,6 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	SetDimLabel COLS, 2, Samp_int, 	Wv
 
 	return Wv
-
 End
 
 /// @brief Returns a wave reference to the ITCFIFOAvailConfig wave used for pressure pulses
@@ -1708,8 +1701,6 @@ Function/WAVE P_GetITCFIFOConfig(panelTitle)
 	
 	Wv[][2]	= -1 // reset the FIFO
 	
-	
-	
 	SetDimLabel ROWS, 0, DA, 			Wv
 	SetDimLabel ROWS, 1, AD, 			Wv
 	SetDimLabel ROWS, 2, TTL_R0, 		Wv
@@ -1720,6 +1711,7 @@ Function/WAVE P_GetITCFIFOConfig(panelTitle)
 	SetDimLabel COLS, 2, FIFO_advance, 	Wv
 	return Wv
 End
+
 /// @brief Returns a wave reference to the ITCFIFOAvail wave used for pressure pulses
 ///
 /// Rows:
@@ -1764,7 +1756,6 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 	
 	return Wv
 End
-
 
 /// @breif Returns wave reference of wave used to store data used in functions that run pressure regulators
 /// creates the wave if it does not exist
@@ -1853,9 +1844,9 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 22, 	LastResistanceValue,			PressureData // last steady state resistance value
 	SetDimLabel COLS, 23, 	PeakResistanceSlope,		PressureData // Slope of the peak TP resistance value over the last 5 seconds
 	SetDimLabel COLS, 24, 	ActiveTP,					PressureData // Indicates if the TP is active on the headStage
-															/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
-															/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
-															/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
+	/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
+	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
+	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
 	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, 	PressureData // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
 	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck, 		PressureData // The time in ticks of the last check of the resistance slopes
 	SetDimLabel COLS, 26, LastPressureCommand, 		PressureData 

@@ -40,9 +40,8 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode  // Trigger mode 256 = use external trigger
 		Execute cmd	
 	endif
-
 End
-
+//======================================================================================
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT WMBackgroundStruct &s
 	String cmd, Keyboard, panelTitle
@@ -62,10 +61,8 @@ Function ITC_BkrdTPFuncMD(s)
 	variable startPoint
 	variable PointsInTP
 	string TPDurationGlobalPath 
-	//NVAR FifoOffset = root:FifoOffset
 	variable PointsInTPITCDataWave
 
-	
 	do // works through list of active devices
 		// update parameters for a particular active device
 		panelTitle = ActiveDeviceTextList[i]
@@ -77,13 +74,10 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCDataWave = ActiveDeviceWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
 		WAVE ITCFIFOPositionAllConfigWavePth = ActiveDeviceWavePathWave[i][2] //  ActiveDeviceWavePathWave contains wave references
-		// WAVE ResultsWavePath = ActiveDeviceWavePathWave[i][3]
-		//ITCFIFOAvailAllConfigWave[][2] = 0
 		CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + "count"
 		oscilloscopeSubWindow = ActiveDeviceTextList[i] + "#oscilloscope"
 		ADChannelToMonitor = ActiveDeviceList[i][1]
 		StopCollectionPoint = ActiveDeviceList[i][2]
-//		PointsInTP = (GlobalTPDurationVariable * 2) //
 		PointsInTP = (GlobalTPDurationVariable * 3) //
 		PointsInTPITCDataWave = dimsize(ITCDataWave,0)
 		//print "PointsInTP =",PointsInTP
@@ -94,8 +88,6 @@ Function ITC_BkrdTPFuncMD(s)
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
 		Execute cmd	
 		variable TPSweepCount = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
-//		print "TPSweepCount =", TPSweepCount
-//		variable PointsCompletedInITCDataWave = PointsInTPITCDataWave - (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave))
 		variable PointsCompletedInITCDataWave = (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave))
 //		print PointsCompletedInITCDataWave
 		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .05)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
@@ -165,8 +157,6 @@ Function ITC_BkrdTPFuncMD(s)
 			endif
 			
 			ActiveDeviceList[i][3] += 1
-			//ActiveDeviceList[i][4] = 1 // resets the test pulse chunk to use back to 1 every time the DA wave loops
-		//endif
 		
 		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
@@ -175,18 +165,8 @@ Function ITC_BkrdTPFuncMD(s)
 				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
 					beep 
-//					sprintf cmd, "ITCStopAcq"
-//					execute cmd
-//					ITC_MakeOrUpdateTPDevLstWave(panelTitle, ActiveDeviceList[i][0], 0, 0, -1) // ActiveDeviceList[i][0] = device ID global
-//					ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
-//					ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
-//					if (dimsize(ActiveDeviceTextList, 0) == 0) 
-//						CtrlNamedBackground TestPulseMD, stop
-//						print "Stopping test pulse"
-//						ITC_FinishTestPulseMD(panelTitle) // stops the test pulse on the top data acq panel
-//					endif
-				   ITCStopTP(panelTitle)
-				   ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values for manual termination of the TP.
+				  	 ITCStopTP(panelTitle)
+				  	 ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values for manual termination of the TP.
 				endif
 			endif
 		endif
@@ -198,14 +178,10 @@ Function ITC_BkrdTPFuncMD(s)
 	return 0
 End
 //======================================================================================
-
 Function ITC_FinishTestPulseMD(panelTitle)
 	string panelTitle
 	string cmd
-	// CtrlNamedBackground TestPulse, stop
-	// sprintf cmd, "ITCCloseAll" 
-	// execute cmd
-	//print "PT=",panelTitle
+
 	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
 	if(v_value == 0)
 		DAP_SmoothResizePanel(-340, panelTitle)
@@ -227,10 +203,7 @@ Function ITC_FinishTestPulseMD(panelTitle)
 	// Update pressure buttons
 	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
 	P_LoadPressureButtonState(panelTitle, headStage)
-	// killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	// killstrings /z root:MIES:ITCDevices:PanelTitleG
 End
-
 //======================================================================================
 Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test pulse on a particular panel
 	string panelTitle
@@ -307,14 +280,13 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
 	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
-End // Function 	ITC_MakeOrUpdateTPDevLstWave(panelTitle)
+End 
 //=============================================================================================================================
 
  Function ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
  	string panelTitle
  	Variable AddOrRemoveDevice
  	//Variable start = stopmstimer(-2)
-
  	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
  	WAVE /z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
  	if (AddOrRemoveDevice == 1) // Add a device
@@ -332,11 +304,10 @@ End // Function 	ITC_MakeOrUpdateTPDevLstWave(panelTitle)
  		Variable RowToRemove = v_value
  		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
  	endif
- 	 		//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+ 	 //print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 
  	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
-
- End // ITC_MakeOrUpdtTPDevListTxtWv(panelTitle)
+ End
 //=============================================================================================================================
 
 Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) // creates wave that contains wave references
@@ -369,7 +340,6 @@ Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) //
 	endif
 	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End
-	
 
 
 //======================================================================================
@@ -448,7 +418,6 @@ Function ITC_TPDocumentation(panelTitle)
 		print sweepname
 		ED_createWaveNotes(TPSettingsWave, TPKeyWave, SweepName , lastSweep, panelTitle)
 	endif
-	
 End
 
 

@@ -115,7 +115,6 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	string 		panelTitle
 	variable 		PulseDuration
 	string 		TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
-	//print TPGlobalPath
 	variable /g  	$TPGlobalPath + ":Duration"
 	NVAR 		GlobalTPDurationVariable 				= $(TPGlobalPath + ":Duration")
 	variable /g 	$TPGlobalPath + ":AmplitudeVC"
@@ -126,30 +125,20 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	wave /z 		ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g 		$(TPGlobalPath + ":ADChannelList") 	= SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-				PulseDuration 						= (v_value) // duration of the TP in ms
-	// PulseDuration = (v_value / 0.005)
-	// PulseDuration = (v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
-				GlobalTPDurationVariable = (PulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
-				print "here, tp global dur =", GlobalTPDurationVariable
-	
-	variable 		PointsInTPWave 					= (2 * PulseDuration) 
-				PointsInTPWave 					*= 200
-				redimension /n = (PointsInTPWave) TestPulse
-				//redimension /n = ((8 * PulseDuration)) TestPulse
-				// need to deal with units here to ensure that resistance is calculated correctly
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude // the scaling converts the V-clamp TP to an I-clamp TP as appropriate (i.e. it is not done here)
-	variable 		TPamp 							= v_value
-				print "TP amp =",v_value
-
-				PulseDuration *= 2
-				print "startpoint = ", (0.25*PointsInTPWave)
-				TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = TPamp
-
- 				GlobalTPAmplitudeVariableVC 		= TPamp
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-				GlobalTPAmplitudeVariableIC = v_value
-	//print v_value
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
+	PulseDuration = (v_value) // duration of the TP in ms
+	GlobalTPDurationVariable = (PulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
+	variable 		PointsInTPWave 	= (2 * PulseDuration) 
+	PointsInTPWave *= 200
+	redimension /n = (PointsInTPWave) TestPulse
+	// need to deal with units here to ensure that resistance is calculated correctly
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude // the scaling converts the V-clamp TP to an I-clamp TP as appropriate (i.e. it is not done here)
+	variable 		TPamp = v_value
+	PulseDuration *= 2
+	TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = TPamp
+	GlobalTPAmplitudeVariableVC 	= TPamp
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
+	GlobalTPAmplitudeVariableIC = v_value
 End
 
 // TP_UpdateTestPulseWaveChunks  
@@ -174,35 +163,20 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	controlinfo /w 									= $panelTitle SetVar_DataAcq_TPDuration
 	variable 		TPDurInms 							= v_value
-				//print "tp dur in ms=",tpdurinms
-				// print "min samp int = ", minsampint
-				PulseDuration 						= (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
-				// print "pulse points = ", PulseDuration
-				GlobalTPDurationVariable 				= PulseDuration
+	PulseDuration 									= (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
+	GlobalTPDurationVariable 							= PulseDuration
 	variable 		ITCdataWaveLength 					= DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
-	
-				//redimension /n = (200 * PulseDuration) TestPulse // makes room in wave for 100 TPs
-				// need to deal with units here to ensure that resistance is calculated correctly
+	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	variable 		Amplitude 							= v_value
-//	print "TP amp =", v_value 
-//	print pulseduration
 	variable 		Frequency 							= 1000 / (TPDurInms * 2)
-	// print "frequency = ",frequency
 	variable /g 	$(TPGlobalPath + ":TPPulseCount")
 	NVAR 		TPPulseCount 						= $(TPGlobalPath + ":TPPulseCount")
-				TPPulseCount						= TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
-//	do
-//		TestPulse[((PulseDuration / 2) + (i * PulseDuration * 2)), ((Pulseduration + (PulseDuration / 2))  + (i * PulseDuration * 2))] = v_value
-//		
-//		i += 1
-//	while (i < 100)
-				GlobalTPAmplitudeVariableVC 			= v_value
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-				GlobalTPAmplitudeVariableIC 			= v_value
+	TPPulseCount									= TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
+	GlobalTPAmplitudeVariableVC 						= v_value
+	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
+	GlobalTPAmplitudeVariableIC 						= v_value
 End
-
-
 // mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
@@ -210,10 +184,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 
 	pauseupdate
 	setdatafolder root:
-//	getwindow kwTopWin activesw
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()
+	paneltitle = DAP_ReturnPanelName()
 	
-//	panelTitle = s_value
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	if(SearchResult != -1)
 		panelTitle = panelTitle[0,SearchResult - 2]//SearchResult+1]
@@ -254,7 +226,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	SetScale /P x 0,0.005,"ms", TestPulse
 	
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	//print testpulsepath
 	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	DM_CreateScaleTPHoldingWave(panelTitle)
 	make /free /n = 8 SelectedDACWaveList
@@ -277,7 +248,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 			DAP_SmoothResizePanel(-340, panelTitle)
 			setwindow $panelTitle +"#oscilloscope", hide = 1
 		endif
-		// killwaves /f TestPulse
 	endif
 	
 	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
@@ -287,15 +257,12 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
 	P_LoadPressureButtonState(panelTitle, headStage)
 End
-
 //=============================================================================================
 /// @brief  Test pulse button call function
 Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
-	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()
-	// pauseupdate
-	
+	string panelTitle = DAP_ReturnPanelName()
+
 	// make sure data folder is correct
 	setdatafolder root:
 	
@@ -313,7 +280,6 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	if(V_disable == 0)
 		Button $ctrlName, win = $panelTitle, disable = 2
 	endif
-
 	
 	// Determine the data folder path for the DAC
 	string WavePath
@@ -341,8 +307,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	// Enable pressure buttons
 	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
 	P_LoadPressureButtonState(panelTitle, headStage)
-
-End // Function
+End
 //=============================================================================================
 /// @brief Updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
 /// n determines the number of TP cycles to average
@@ -381,8 +346,8 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	sprintf 	stringPath,  "%s:AmplitudeVC"	InputDataPath
 	NVAR 	AmplitudeVC	= $StringPath
 
-			AmplitudeIC 	= abs(AmplitudeIC)
-			AmplitudeVC	=  abs(AmplitudeVC)
+	AmplitudeIC 	= abs(AmplitudeIC)
+	AmplitudeVC	=  abs(AmplitudeVC)
 
 	sprintf 	stringPath,  "%s:TestPulseITC"	InputDataPath
 	wave 	TPWave 	= $stringPath
