@@ -804,21 +804,29 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
 End
 
 /// @brief Remove all traces from a graph and try to kill their waves
-Function RemoveAndKillTracesOnGraph(graph)
+Function RemoveTracesFromGraph(graph, [kill])
 	string graph
+	variable kill
 
 	variable i, numEntries
 	string traceList, trace
 
-	traceList  = TraceNameList(graph, ";", 0 + 1 )
+	if(ParamIsDefault(kill))
+		kill = 0
+	endif
+
+	traceList  = TraceNameList(graph, ";", 1 )
 	numEntries = ItemsInList(traceList)
 
-	for(i = 0; i < numEntries; i += 1)
+	// iterating backwards is required, see http://www.igorexchange.com/node/1677#comment-2315
+	for(i = numEntries - 1; i >= 0; i -= 1)
 		trace = StringFromList(i, traceList)
-		Wave wv = TraceNameToWaveRef(graph, trace)
+		Wave/Z wv = TraceNameToWaveRef(graph, trace)
+		RemoveFromGraph/W=$graph $trace
 
-		RemoveFromGraph/Z/W=$graph $trace
-		KillWaves/F/Z wv
+		if(kill)
+			KillWaves/F/Z wv
+		endif
 	endfor
 End
 

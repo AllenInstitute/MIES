@@ -83,7 +83,7 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 			Notebook $subWindow selection={startOfFile, endOfFile}
 			Notebook $subWindow text = "Sweep does not exist."
 			if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				RemoveAndKillTracesOnGraph(panelTitle + "#DataBrowserGraph")
+				RemoveTracesFromGraph(panelTitle + "#DataBrowserGraph")
 			endif			
 		endif		
 	else
@@ -117,7 +117,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 	string graph = panelTitle + "#DataBrowserGraph"
 
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-		RemoveAndKillTracesOnGraph(graph)
+		RemoveTracesFromGraph(graph)
 	endif
 
 	DisplayDAChan = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
@@ -149,9 +149,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 
 			axis = "DA" + StringFromList(i, DAChannelList)
 			trace = NameOfWave(sweep) + "_" + axis
-			/// @todo this duplicate call might be expensive
-			Duplicate/O/R=(0,inf)(i) sweep dfr:$trace/Wave=wv
-			AppendToGraph/W=$graph /L=$axis wv
+			AppendToGraph/W=$graph /L=$axis sweep[][i]
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i, configNote)
 			Label/W=$graph $axis, axis + " (" + unit + ")"
@@ -166,8 +164,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 		if(i < NumberOfADchannels)
 			axis = "AD" + StringFromList(i, ADChannelList)
 			trace = NameOfWave(sweep) + "_" + axis
-			Duplicate/O/R=(0, inf)(i + NumberOfDAchannels) sweep dfr:$trace/Wave=wv
-			AppendToGraph/W=$graph /L=$axis wv
+			AppendToGraph/W=$graph /L=$axis sweep[][i + NumberOfDAchannels]
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i + NumberOfDAchannels, configNote)
 			Label/W=$graph $axis, axis + " (" + unit + ")"
