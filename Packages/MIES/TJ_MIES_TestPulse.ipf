@@ -587,7 +587,7 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 
 	startRow = endRow - ceil(fittingRange / samplingInterval)
 
-	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS) || ADChanCount >= DimSize(TPStorage, COLS))
+	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS) || ADChanCount > DimSize(TPStorage, COLS))
 		return NaN
 	endif
 
