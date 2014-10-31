@@ -152,7 +152,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 			AppendToGraph/W=$graph /L=$axis sweep[][i]
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i, configNote)
-			Label/W=$graph $axis, axis + " (" + unit + ")"
+			Label/W=$graph $axis, axis + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 		endif
@@ -167,7 +167,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 			AppendToGraph/W=$graph /L=$axis sweep[][i + NumberOfDAchannels]
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i + NumberOfDAchannels, configNote)
-			Label/W=$graph $axis, axis + " (" + unit + ")"
+			Label/W=$graph $axis, axis + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 		endif
