@@ -80,30 +80,6 @@ Function AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
 	endif
 End
 //==================================================================================================
-static Function AI_SwitchAxonMode(panelTitle, mccSerial, channel, mode)
-	string panelTitle
-	string mccSerial
-	variable channel
-	variable mode
-
-	variable errorCode
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
-
-	MCC_SelectMultiClamp700B(mccSerial, channel)
-	errorCode = MCC_SetMode(mode)
-	if(!IsFinite(errorCode))
-		DFREF saveDFR = GetDataFolderDFR()
-		SetDataFolder GetAmplifierFolder()
-		MCC_FindServers/Z=1
-		SetDataFolder saveDFR
-		if(V_flag == 0) // checks to see if MCC_FindServers worked without error
-			MCC_SetMode(mode)
-		else
-			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is longer present\r", mode
-		endif
-	endif
-End
-//==================================================================================================
 Function Init_AxonTelegraph_DataStruct(tds)
 	struct AxonTelegraph_DataStruct& tds
 
@@ -177,21 +153,35 @@ Function AI_GetAmpChannel(panelTitle, headStage)
 	return ChanAmpAssign[9][headStage]
 End
 //==================================================================================================
-/// @brief changes mode of user linked MCC based on headstage number
-Function AI_SwitchClampMode(panelTitle, headStage, mode)
+/// @brief Set the clamp mode of user linked MCC based on the headstage number
+Function AI_SetClampMode(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage
 	variable mode
 
-	string serial    = AI_GetAmpMCCSerial(panelTitle, headStage)
-	variable channel = AI_GetAmpChannel(panelTitle, headStage)
+	variable channel, errorCode
+	string mccSerial
+	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
-	if(!AI_IsValidSerialAndChannel(mccSerial=serial, channel=channel))
+	mccSerial = AI_GetAmpMCCSerial(panelTitle, headStage)
+	channel   = AI_GetAmpChannel(panelTitle, headStage)
+
+	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, channel=channel))
 		print "No Amp is linked with this headstage"
 		return NaN
 	endif
 
-	AI_SwitchAxonMode(panelTitle, serial, channel, mode)
+	try
+		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
+	catch
+		errorCode = GetRTError(1)
+		printf "Could not find any connected amplifiers, please call \"Query connected Amps\" from the Hardware Tab\r"
+		return NaN
+	endtry
+
+	if(!IsFinite(MCC_SetMode(mode)))
+		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is longer present\r", mode
+	endif
 End
 //==================================================================================================
 Function AI_IsValidSerialAndChannel([mccSerial, axonSerial, channel])
