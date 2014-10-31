@@ -380,7 +380,7 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
 	
-	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo]
+	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo] + 1
 End
 
 /// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
