@@ -235,7 +235,11 @@ Function P_ApplyNegV(panelTitle, headStage)
 // determine command voltage that will result in a holding pA of -100 pA	
 // if V = -100 * resistance is greater than target voltage, apply target voltage, otherwise apply calculated voltage
 
-	if(vCom > -70 && (vCom < (lastVcom + 3) || vCom > (lastVcom - 3)))
+ 	if(!isFinite(lastVcom))
+		lastVcom = 0
+	endif
+	
+	if(vCom > -70 && (vCom > (lastVcom + 2) || vCom < (lastVcom - 2)))
 		print "vcom=",vcom
 		P_UpdateVcom(panelTitle, vCom, headStage)
 		PressureDataWv[headStage][%LastVcom] = vCom
