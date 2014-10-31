@@ -14,6 +14,7 @@ static Constant 	P_METHOD_0_APPROACH 				= 0
 static Constant 	P_METHOD_1_SEAL 					= 1
 static Constant 	P_METHOD_2_BREAKIN					= 2
 static Constant 	P_METHOD_3_CLEAR 					= 3
+static Constant 	P_METHOD_4_MANUAL					= 4
 static Constant	RACK_ZERO							= 0
 static Constant	RACK_ONE								= 3 // 3 is defined by the ITCWriteDigital command instructions.
 static Constant	BITS_PER_VOLT							= 3200
@@ -390,31 +391,14 @@ Function/S P_ITCDevToOpen()
 		for(i = 0; i <= NUMBER_OF_HEADSTAGES; i += 1)
 			wave/T 	pressureDataTxtWave = P_PressureDataTxtWaveRef(stringfromList(j, ListOfLockedDevices))
 			if(cmpstr(pressureDataTxtWave[i][0],"") != 0 && cmpstr(pressureDataTxtWave[i][0],"- none -") != 0) // prevent blanks from being inserted into list
-				alreadyInList = WhichListItem(pressureDataTxtWave[i][0], deviceList)
-				if(alreadyInList == -1) // prevent duplicates from being inserted into list
+				if(WhichListItem(pressureDataTxtWave[i][0], deviceList) == -1) // prevent duplicates from being inserted into list
 					deviceList = AddListItem(pressureDataTxtWave[i][0], deviceList)
 				endif
 			endif	
 		endfor
 	endfor
 	
-	deviceList = sortlist(deviceList) // sort the list so that the devices are opened in the correct sequence (low devID to high devID)
-	return 	DeviceList
-End
-
-/// @brief Returns the wave reference for the pressure data wave
-Function/Wave P_GetPressureDataWvRef()
-
-	dfref dfr = holder
-	Wave/Wave/Z/SDFR=dfr dataRef
-
-	if(WaveExists(dataRef))
-		return dataRef
-	endif
-
-	Make/Wave/N=(0) dfr:dataRef/Wave=dataRef
-
-	return dataRef
+	return sortlist(deviceList) // sort the list so that the devices are opened in the correct sequence (low devID to high devID)
 End
 
 /// @brief Sets the pressure on a headStage
@@ -453,8 +437,7 @@ Function P_GetPressure(panelTitle, headStage)
 	string 	panelTitle
 	variable 	headStage
 	WAVE 	pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable 	Pressure = P_ReadADC(panelTitle, pressureDataWv[headStage][%DAC_DevID], pressureDataWv[headStage][%ADC], pressureDataWv[headStage][%ADC_Gain])
-	return 	Pressure
+	return P_ReadADC(panelTitle, pressureDataWv[headStage][%DAC_DevID], pressureDataWv[headStage][%ADC], pressureDataWv[headStage][%ADC_Gain])
 End
 
 /// @brief Gets the pressure using a single AD channel on a ITC device
@@ -467,7 +450,7 @@ Function P_ReadADC(panelTitle, ITCDeviceIDGlobal, ADC, AD_ScaleFactor)
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal	
 	execute 	ITCCommand	
 	
-	sprintf 	ITCCommand, "ITCReadADC/C=1 %d, %s" ADC, getWavesDataFolder(ADV, 2) // /C=1
+	sprintf 	ITCCommand, "ITCReadADC/C=1 %d, %s" ADC, getWavesDataFolder(ADV, 2)
 	execute 	ITCCommand	
 	ADV[0] -= 5
 	ADV[0] /= AD_ScaleFactor
@@ -490,9 +473,9 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 	variable 	Channel 				= PressureDataWv[headStage][%TTL]
 	variable 	rack 				= 0
 	
-	If(Channel >= 4)
-		rack =3
-		Channel -=4
+	If(Channel >= 4) // channel is on rack 1 of two racks (rack 0 and rack 1).
+		rack = 3 // rack 1 TTLs front = 3 in the ITC XOP
+		Channel -=4 // channels on each rack are numbered 0 through 3
 	endif 	
 	
 	string 	ITCCommand
@@ -545,6 +528,7 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	for(i = 0; i < ColumnsInTPStorageWave; i += 1) // 
 		ADC = str2num(stringfromlist(i, ADChannelList))
 		Row = TP_HeadstageUsingADC(panelTitle, ADC)
+		ASSERT(TPCycleCount > 0, "Expecting a strictly positive TPCycleCount") 
 		PressureDataWv[Row][%PeakR] = TPStorageWave[TPCycleCount - 1 ][i][1] // update the peak resistance value
 		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[TPCycleCount - 1 ][i][2]	// update the steady state resistance value
 		PressureDataWv[Row][%PeakResistanceSlope] = TPStorageWave[0][i][5] 	// Layer 5 of the TP storage wave contains the slope of the steady state resistance values of the TP
@@ -1300,13 +1284,16 @@ End
 /// @brief Sets the pressure on the active headstage or all headstages.
 Function P_ManSetPressure(panelTitle)
 	string panelTitle
-	variable headStage
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable psi = PressureDataWv[0][%ManSSPressure]
 	variable ONorOFF = 1
+	 
+	PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_4_MANUAL
 	
 	if(psi == 0)
 		ONorOFF = 0
+		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
 	endif
 
 	if(GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll"))
@@ -1317,7 +1304,6 @@ Function P_ManSetPressure(panelTitle)
 			PressureDataWv[headStage][%LastPressureCommand] = psi // save the pressure command
 		endfor
 	else
-		headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 		P_SetPressure(panelTitle, headStage, psi)
 		P_UpdateTTLstate(panelTitle, headStage, ONorOFF) 
 		SetValDisplaySingleVariable(panelTitle, stringfromlist(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f") // update the pressure display
