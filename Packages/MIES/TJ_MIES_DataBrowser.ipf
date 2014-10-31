@@ -27,7 +27,8 @@ static Function DB_LockDBPanel(panelTitle)
 	panelTitleNew = "DB_" + device
 	DoWindow/W=$panelTitle/C $panelTitleNew
 
-	SetWindow $panelTitleNew, userdata(DataFolderPath) = HSU_DataFullFolderPathString(device)
+	SetWindow $panelTitleNew, userdata(DataFolderPath) = GetDevicePathAsString(device)
+	DB_PlotSweep(panelTitleNew, 0)
 End
 
 //==============================================================================================================================
