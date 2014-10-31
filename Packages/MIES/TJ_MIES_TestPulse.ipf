@@ -14,7 +14,7 @@ Function TP_SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for 
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 End
-
+//=============================================================================================
 Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave 	SelectedDACWaveList
 	string 	panelTitle
@@ -31,7 +31,7 @@ Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	wave 	SelectedDACWaveList
 	string 	panelTitle
@@ -45,9 +45,8 @@ Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		endif
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
-
 End
-
+//=============================================================================================
 Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	wave 	SelectedDACScale
 	string 	panelTitle
@@ -64,7 +63,7 @@ Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_SetDAScaleToOne(panelTitle)
 	string 	panelTitle
 
@@ -94,7 +93,7 @@ Function TP_SetDAScaleToOne(panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	wave 	SelectedDACScale
 	string 	panelTitle
@@ -109,7 +108,7 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	wave 		TestPulse
 	string 		panelTitle
@@ -140,8 +139,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 	GlobalTPAmplitudeVariableIC = v_value
 End
-
-// TP_UpdateTestPulseWaveChunks  
+//=============================================================================================
 Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^17)
 	wave 		TestPulse											// this function is only used with MD functions
 	string 		panelTitle
@@ -177,6 +175,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 	GlobalTPAmplitudeVariableIC 						= v_value
 End
+//=============================================================================================
 // mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
@@ -481,7 +480,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, NoOfActiveDA)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
-
+//=============================================================================================
 /// Sampling interval in seconds
 Constant samplingInterval = 0.2
 /// Fitting range in seconds
@@ -543,7 +542,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		P_PressureControl(panelTitle) // Call pressure functions
 	endif
 End
-
+//=============================================================================================
 /// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
 /// over a user defined window (in seconds)
 ///
@@ -558,11 +557,11 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 	variable ADChanCount
 	Wave/Z TPStorage
 	variable endRow, samplingInterval, fittingRange
-
+	
 	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
 
 	startRow = endRow - ceil(fittingRange / samplingInterval)
-
+	
 	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS) || ADChanCount > DimSize(TPStorage, COLS))
 		return NaN
 	endif
@@ -575,17 +574,16 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
 			Wave W_coef
-			TPStorage[startRow,endRow][i][%Vm_Slope] = W_coef[1]
-
+			TPStorage[0][i][%Vm_Slope] = W_coef[1]
 			V_FitError  = 0
 			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			TPStorage[startRow,endRow][i][%Rpeak_Slope] = W_coef[1]
+			TPStorage[0][i][%Rpeak_Slope] = W_coef[1]
 
 			V_FitError  = 0
 			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			TPStorage[startRow,endRow][i][%Rss_Slope] = W_coef[1]
+			TPStorage[0][i][%Rss_Slope] = W_coef[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
 			TPStorage[startRow,endRow][i][%Vm_Slope]    = NaN
@@ -601,7 +599,7 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 		endtry
 	endfor
 End
-
+//=============================================================================================
 /// @brief Resets the TP storage wave
 ///
 /// - Store the TP record if requested by the user
@@ -626,7 +624,7 @@ Function TP_ResetTPStorage(panelTitle)
 		TPStorage = NaN
 	endif
 End
-
+//=============================================================================================
 /// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
 ///
 /// In the order of the ADchannels in ITCDataWave - i.e. numerical order
@@ -650,7 +648,7 @@ Function/S TP_ClampModeString(panelTitle)
 
 	return ClampModeString
 End
-
+//=============================================================================================
 ///@brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
@@ -671,7 +669,7 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 
 	return NaN
 End
-
+//=============================================================================================
 ///@brief Find the headstage using a particular DA channel
 Function TP_HeadstageUsingDAC(panelTitle, DA)
 	string 	panelTitle
@@ -691,14 +689,14 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 
 	return NaN
 End
-
+//=============================================================================================
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string 	panelTitle, OpName
 
 	CtrlNamedBackground $OpName, status
 	return ( str2num(StringFromList(2, s_info, ";")[4]) != 0 )
 End
-
+//=============================================================================================
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
 /// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
 Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
@@ -741,5 +739,5 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 		numberOfSquarePulses -= 1
 		return (numberOfSquarePulses / 2)
 	endif
-	
 End
+//=============================================================================================

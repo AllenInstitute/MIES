@@ -21,12 +21,13 @@ static Constant	NEG_PRESSURE_PULSE_INCREMENT	= 0.2 // psi
 static Constant	POS_PRESSURE_PULSE_INCREMENT	= 0.1 // psi
 static Constant	PRESSURE_PULSE_STARTpt				= 1 // 12000
 static Constant	PRESSURE_PULSE_ENDpt				= 35000
-static Constant	SAMPLE_INT_MICRO						= 5
 static Constant 	SAMPLE_INT_MILLI						= 0.005
 static Constant	GIGA_SEAL								= 1000
 static Constant	PRESSURE_OFFSET					= 5
 static Constant 	MIN_NEG_PRESSURE_PULSE			= -1
 static Constant	NUMBER_OF_HEADSTAGES 				= 7 // 0 base 
+Constant		SAMPLE_INT_MICRO							= 5
+
 /// @}
 
 /// @file TJ_MIES_PressureControl
@@ -130,13 +131,14 @@ Function P_MethodSeal(panelTitle, headStage)
 			PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, PressureDataWv[headStage][%PSI_SealInitial]) // column 26 is the last pressure command, column 13 is the starting seal pressure
 			pressure = PressureDataWv[headStage][%PSI_SealInitial] 
 			PressureDataWv[headStage][%LastPressureCommand] = PressureDataWv[headStage][%PSI_SealInitial]
-			print "no neg pressure"
+			print "starting seal"
 		endif	
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
-		if(ElapsedTimeInSeconds > 10) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
+		print ElapsedTimeInSeconds
+		if(ElapsedTimeInSeconds > 2) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
 			RSlope = PressureDataWv[headStage][%PeakResistanceSlope]
+			print "slope", rslope, "thres", RSlopeThreshold
 			if(RSlope < RSlopeThreshold) // if the resistance is not going up quickly enough increase the negative pressure
-				print "slope", rslope, "thres", RSlopeThreshold
 				// what is the pressure
 				//pressure = P_GetPressure(panelTitle, headStage)
 				if(pressure > (0.98 *PressureDataWv[headStage][%PSI_SealMax])) // is the pressure beign applied less than the maximum allowed?
@@ -205,7 +207,6 @@ Function P_MethodClear(panelTitle, headStage)
 		PressureDataWv[headStage][%TimePeakRcheck] = ticks
 		PressureDataWv[headStage][%LastPeakR] = PressureDataWv[headStage][%PeakR] // sets the last peak R = to the current peak R
 	endif
-	 print "elapsed time", ElapsedTimeInSeconds
 
 	if(PressureDataWv[headStage][%peakR] > (0.9 * PressureDataWv[headStage][%LastPeakR]))
 		if(ElapsedTimeInSeconds > 2.5)
@@ -235,8 +236,8 @@ Function P_ApplyNegV(panelTitle, headStage)
 // determine command voltage that will result in a holding pA of -100 pA	
 // if V = -100 * resistance is greater than target voltage, apply target voltage, otherwise apply calculated voltage
 
-	if(vCom > -70 && vCom < (lastVcom + 3) || vCom > (lastVcom - 3))
-		print "vcom",vcom
+	if(vCom > -70 && (vCom < (lastVcom + 3) || vCom > (lastVcom - 3)))
+		print "vcom=",vcom
 		P_UpdateVcom(panelTitle, vCom, headStage)
 		PressureDataWv[headStage][%LastVcom] = vCom
 	endif
@@ -964,12 +965,16 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				SetControlTitleColor(panelTitle, stringfromlist(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 0, 0, 0)
 			endif
 			
-			if(PressureMode == 0) // On approach, apply the mode			
+			if(PressureMode == P_METHOD_0_APPROACH) // On approach, apply the mode			
 				SetControlTitle(panelTitle, pressureControlName, ("Stop " + stringfromlist(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
 			elseif(PressureMode)
 				if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
+//					print "check box state", getCheckBoxState(panelTitle, stringfromlist(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)) 
+//					if(PressureMode == P_METHOD_3_CLEAR && !getCheckBoxState(panelTitle, stringfromlist(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
+//						return 0
+//					endif
 					SetControlTitle(panelTitle, pressureControlName, ("Stop " + stringfromlist(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 					PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
@@ -1021,7 +1026,7 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 		variable SavedPressureMode = PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear]
 		
 		if(SavedPressureMode != P_METHOD_neg1_ATM) // there is an active pressure mode
-			if(SavedPressureMode == 0) // On approach, apply the mode
+			if(SavedPressureMode == P_METHOD_0_APPROACH) // On approach, apply the mode
 				SetControlTitle(panelTitle, stringfromlist(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), ("Stop " + stringfromlist(SavedPressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, stringfromlist(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 			elseif(SavedPressureMode) // other pressure modes
@@ -1040,15 +1045,26 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 	P_PressureDisplayHighlite(panelTitle, headStageNo) // highlites specific headStage
 End
 
+// getCheckBoxState(panelTitle, stringfromlist(P_METHOD_3_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)
+
 /// @brief Checks if the Approach button can be enabled or all pressure mode buttons can be enabled. Enables buttons that pass checks.
 Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
+	string PRESSURE_CONTROLS_BUTTON_subset = removeListItem(0, PRESSURE_CONTROLS_BUTTON_LIST)
 	
 	if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
-		EnableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
+		if(getCheckBoxState(panelTitle, stringfromlist(P_METHOD_3_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
+			EnableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
+		else
+			DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
+			EnableControl(panelTitle, stringfromlist(0, PRESSURE_CONTROLS_BUTTON_LIST)) // approach button
+			EnableControl(panelTitle, stringfromlist(1, PRESSURE_CONTROLS_BUTTON_LIST))
+			EnableControl(panelTitle, stringfromlist(2, PRESSURE_CONTROLS_BUTTON_LIST))
+			EnableControl(panelTitle, stringfromlist(4, PRESSURE_CONTROLS_BUTTON_LIST))
+			EnableControl(panelTitle, stringfromlist(5, PRESSURE_CONTROLS_BUTTON_LIST))
+		endif
 	else
-		string PRESSURE_CONTROLS_BUTTON_subset = removeListItem(0, PRESSURE_CONTROLS_BUTTON_LIST)
 		DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
 		EnableControl(panelTitle, stringfromlist(0, PRESSURE_CONTROLS_BUTTON_LIST)) // approach button
 		EnableControl(panelTitle, stringfromlist(4, PRESSURE_CONTROLS_BUTTON_LIST))
@@ -1380,7 +1396,7 @@ Function ButtonProc_Clear(ba) : ButtonControl
 	switch( ba.eventCode )
 		case 2: // mouse up
 			variable PressureMode = 3
-			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
+			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 0)
 			break
 		case -1: // control being killed
 			break
@@ -1397,7 +1413,9 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 		case 2: // mouse up
 			Variable checked = cba.checked
 			if(checked)
-				EnableControl(cba.win, "button_DataAcq_Clear")
+				if(P_IsTPActive(cba.win) && P_IsHSActiveAndInVClamp(cba.win, GetSliderPositionIndex(cba.win, "slider_DataAcq_ActiveHeadstage")))
+					EnableControl(cba.win, "button_DataAcq_Clear")
+				endif
 			else
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
