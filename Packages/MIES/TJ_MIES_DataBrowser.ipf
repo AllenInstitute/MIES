@@ -36,8 +36,8 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	string panelTitle
 	variable &first, &last
 
-	first = NaN
-	last  = NaN
+	first = 0
+	last  = 0
 
 	string ListOfAcquiredWaves
 	dfref dfr = GetDataPath(panelTitle)
@@ -47,8 +47,10 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	endif
 
 	ListOfAcquiredWaves = GetListOfWaves(dfr, DATA_SWEEP_REGEXP, options="MINCOLS:2")
-	first = NumberByKey("Sweep", ListOfAcquiredWaves, "_")
-	last = ItemsInList(ListOfAcquiredWaves) - 1 + first
+	if(!isEmpty(ListOfAcquiredWaves))
+		first = NumberByKey("Sweep", ListOfAcquiredWaves, "_")
+		last = ItemsInList(ListOfAcquiredWaves) - 1 + first
+	endif
 	SetValDisplaySingleVariable(panelTitle, "valdisp_DataBrowser_LastSweep", last)
 	SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {first, last, 1}
 End
