@@ -28,7 +28,6 @@ static Constant	PRESSURE_OFFSET					= 5
 static Constant 	MIN_NEG_PRESSURE_PULSE			= -1
 static Constant	NUMBER_OF_HEADSTAGES 				= 7 // 0 base 
 Constant		SAMPLE_INT_MICRO							= 5
-
 /// @}
 
 /// @file TJ_MIES_PressureControl
@@ -85,10 +84,9 @@ Function P_MethodApproach(panelTitle, headStage)
 	variable 	headStage
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable 	targetP = PressureDataWv[headStage][%PSI_solution] 	// Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
-	//variable 	actualP = P_GetPressure(panelTitle, headStage)
 	variable	ONorOFF = 1
-	// Open the TTL
-	P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
+	
+	P_UpdateTTLstate(panelTitle, headStage, ONorOFF) // Open the TTL
 	PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 End
 
@@ -628,7 +626,6 @@ Function P_NegPressurePulse(panelTitle, headStage)
 	string 	panelTitle
 	variable	headStage
 
-
 	P_DAforNegPpulse(panelTitle, Headstage) 	// update DA data
 	P_ADforPpulse(panelTitle, Headstage) 	// update AD data
 	P_TTLforPpulse(panelTitle, Headstage) 	// update TTL data
@@ -639,7 +636,6 @@ End
 Function P_PosPressurePulse(panelTitle, headStage)
 	string 	panelTitle
 	variable	headStage
-
 
 	P_DAforPosPpulse(panelTitle, Headstage) 	// update DA data
 	P_ADforPpulse(panelTitle, Headstage) 	// update AD data
@@ -773,7 +769,6 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 		ITCConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]	= pressureDataWv[headStage][%DAC]
-	
 	
 		pressureDataWv[Headstage][%LastPressureCommand] =  (PressureCom)
 		print "pulse amp",(PressureCom)
@@ -955,10 +950,6 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
 			elseif(PressureMode)
 				if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
-//					print "check box state", getCheckBoxState(panelTitle, stringfromlist(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)) 
-//					if(PressureMode == P_METHOD_3_CLEAR && !getCheckBoxState(panelTitle, stringfromlist(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
-//						return 0
-//					endif
 					SetControlTitle(panelTitle, pressureControlName, ("Stop " + stringfromlist(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 					PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
@@ -1028,8 +1019,6 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 	P_PressureDisplayUnhighlite(panelTitle) // remove highlite from val displays that show pressure for each headStage
 	P_PressureDisplayHighlite(panelTitle, headStageNo) // highlites specific headStage
 End
-
-// getCheckBoxState(panelTitle, stringfromlist(P_METHOD_3_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)
 
 /// @brief Checks if the Approach button can be enabled or all pressure mode buttons can be enabled. Enables buttons that pass checks.
 Function P_EnableButtonsIfValid(panelTitle, headStageNo)
