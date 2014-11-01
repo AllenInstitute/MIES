@@ -27,7 +27,6 @@ static Constant 	SAMPLE_INT_MILLI						= 0.005
 static Constant	GIGA_SEAL								= 1000
 static Constant	PRESSURE_OFFSET					= 5
 static Constant 	MIN_NEG_PRESSURE_PULSE			= -1
-static Constant	NUMBER_OF_HEADSTAGES 				= 7 // 0 base 
 Constant		SAMPLE_INT_MICRO							= 5
 /// @}
 
@@ -39,7 +38,7 @@ Function P_PressureControl(panelTitle)
 	string 	panelTitle
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable 	headStage
-	for(headStage = 0; headStage <= NUMBER_OF_HEADSTAGES; headStage += 1)
+	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
@@ -389,7 +388,7 @@ Function/S P_ITCDevToOpen()
 	variable 	alreadyInList
 	
 	for(j = 0; j < itemsInList(ListOfLockedDevices); j += 1)
-		for(i = 0; i <= NUMBER_OF_HEADSTAGES; i += 1)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			wave/T 	pressureDataTxtWave = P_PressureDataTxtWaveRef(stringfromList(j, ListOfLockedDevices))
 			if(cmpstr(pressureDataTxtWave[i][0],"") != 0 && cmpstr(pressureDataTxtWave[i][0],"- none -") != 0) // prevent blanks from being inserted into list
 				if(WhichListItem(pressureDataTxtWave[i][0], deviceList) == -1) // prevent duplicates from being inserted into list
@@ -736,7 +735,7 @@ Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
 	for(i = 0; i < itemsInList(ListOfLockedDevices); i += 1)
 		panelTitle = stringfromlist(i, ListOfLockedDevices)
 		Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-		for(headStage = 0; headstage <= NUMBER_OF_HEADSTAGES; headStage += 1)
+		for(headStage = 0; headstage < NUM_HEADSTAGES; headStage += 1)
 			if(pressureDataWv[headStage][%OngoingPessurePulse])
 				DevID = pressureDataWv[headStage][%DAC_DevID]
 				return 1
@@ -978,7 +977,7 @@ Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 		endif
 	else	
 		if(getCheckboxState(panelTitle, stringfromlist(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
-			for(headStage = 0; headStage <= NUMBER_OF_HEADSTAGES; headStage += 1)
+			for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 				if(P_ValidatePressureSetHeadstage(panelTitle, headStage))
 					if(pressureMode && P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
 						PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
@@ -1289,7 +1288,7 @@ Function P_ManSetPressure(panelTitle)
 	endif
 
 	if(GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll"))
-		for(headStage = 0; headStage <= NUMBER_OF_HEADSTAGES; headStage += 1)
+		for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 			P_SetPressure(panelTitle, headStage, psi)
 			P_UpdateTTLstate(panelTitle, headStage, ONorOFF) 
 			SetValDisplaySingleVariable(panelTitle, stringfromlist(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f") // update the pressure display
