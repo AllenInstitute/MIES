@@ -311,7 +311,7 @@ Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation"
 End
 
-/// @breif Returns device specific pressure folder as string
+/// @brief Returns device specific pressure folder as string
 Function/S P_GetDevicePressureFolderAS(panelTitle)
 	string panelTitle
 
@@ -323,13 +323,13 @@ Function/S P_GetDevicePressureFolderAS(panelTitle)
 	return FolderPathString
 End
 
-/// @breif Creates ITC device specific pressure folder - used to store data for pressure regulators
+/// @brief Creates ITC device specific pressure folder - used to store data for pressure regulators
 Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
 	string 	panelTitle
 	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
 End
 
-/// @breif Returns pressure folder as string
+/// @brief Returns pressure folder as string
 Function/S P_GetPressureFolderAS(panelTitle)
 	string panelTitle
 	return GetMiesPathAsString() + ":Pressure"
@@ -1758,7 +1758,7 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 	return Wv
 End
 
-/// @breif Returns wave reference of wave used to store data used in functions that run pressure regulators
+/// @brief Returns wave reference of wave used to store data used in functions that run pressure regulators
 /// creates the wave if it does not exist
 ///
 /// Rows:
@@ -1912,3 +1912,4 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	
 	return PressureDataTextWv
 End
+

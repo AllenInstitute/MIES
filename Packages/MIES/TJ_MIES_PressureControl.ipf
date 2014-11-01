@@ -1,4 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+
 /// @file TJ_MIES_PressureControl.ipf
 /// @brief Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette.
 /// @todo TPbackground can crash while operating pressure regulators if called in the middel of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
@@ -29,8 +30,6 @@ static Constant 	MIN_NEG_PRESSURE_PULSE			= -1
 static Constant	NUMBER_OF_HEADSTAGES 				= 7 // 0 base 
 Constant		SAMPLE_INT_MICRO							= 5
 /// @}
-
-/// @file TJ_MIES_PressureControl
 
 /// @brief Applies pressure methods based on data in PressureDataWv
 ///
@@ -69,7 +68,7 @@ Function P_PressureControl(panelTitle)
 	endfor
 End
 
-/// @ brief Sets the pressure to atmospheric
+/// @brief Sets the pressure to atmospheric
 Function P_MethodAtmospheric(panelTitle, headstage)
 	string 	panelTitle
 	variable 	headStage
@@ -434,7 +433,7 @@ Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_Scal
 	execute 	ITCCommand
 End
 
-/// @breif Gets the pressure on a headStage
+/// @brief Gets the pressure on a headStage
 Function P_GetPressure(panelTitle, headStage)
 	string 	panelTitle
 	variable 	headStage
@@ -1368,7 +1367,7 @@ Function ButtonProc_BreakIn(ba) : ButtonControl
 	return 0
 End
 
-/// @breif Clear button.
+/// @brief Clear button.
 Function ButtonProc_Clear(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1384,7 +1383,7 @@ Function ButtonProc_Clear(ba) : ButtonControl
 	return 0
 End
 
-/// @breif Clear all check box.
+/// @brief Clear all check box.
 Function CheckProc_ClearEnable(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
