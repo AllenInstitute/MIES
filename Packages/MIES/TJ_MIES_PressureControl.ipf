@@ -369,7 +369,7 @@ Function/S P_HeadstageUsingITCDevice(panelTitle, ITCDevice)
 	WAVE/T 	PressureDataTxtWv 	= P_PressureDataTxtWaveRef(panelTitle)
 	variable i
 	string 		ListString 			= ""
-	for(i = 0; i <= 7; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(cmpstr(ITCDevice, PressureDataTxtWv[i][0]) == 0)
 			ListString = addlistItem(num2str(i), ListString)
 		endif
