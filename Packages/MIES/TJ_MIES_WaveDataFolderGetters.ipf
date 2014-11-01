@@ -314,11 +314,12 @@ End
 /// @breif Returns device specific pressure folder as string
 Function/S P_GetDevicePressureFolderAS(panelTitle)
 	string panelTitle
+
 	string 	DeviceNumber 	
 	string 	DeviceType 	
 	ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	string 	FolderPathString
-	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" Path_MIESfolder(panelTitle), DeviceType, DeviceNumber
+	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" GetMiesPathAsString(), DeviceType, DeviceNumber
 	return FolderPathString
 End
 
@@ -331,13 +332,13 @@ End
 /// @breif Returns pressure folder as string
 Function/S P_GetPressureFolderAS(panelTitle)
 	string panelTitle
-	return Path_MIESfolder(panelTitle) + ":Pressure:"
+	return GetMiesPathAsString() + ":Pressure"
 End
 
 /// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
 Function/DF P_PressureFolderReference(panelTitle)
 	string panelTitle
-	return CreateDFWithAllParents(Path_MIESfolder(panelTitle) + ":Pressure:")
+	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
 End
 
 /// @brief Returns a wave reference to the textDocWave

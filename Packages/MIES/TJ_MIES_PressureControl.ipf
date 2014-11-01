@@ -510,9 +510,9 @@ End
 /// param 
 Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	string 	panelTitle
+
 	wave 	TPStorageWave 		= GetTPStorage(panelTitle)
 	wave 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
-	string 	HeadStageStateList	= DAP_HeadstageStateList(panelTitle)
 	DFREF 	dfr 				= $HSU_DataFullFolderPathString(panelTitle)
 	/// @todo Make wave reference function for ITCChanConfigWave
 	Wave/SDFR = dfr  ITCChanConfigWave
@@ -526,8 +526,8 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	endif
 	
 	variable ADC
-	variable i = 0
-	for(i = 0; i < ColumnsInTPStorageWave; i += 1) // 
+	variable i
+	for(i = 0; i < ColumnsInTPStorageWave; i += 1)
 		ADC = str2num(stringfromlist(i, ADChannelList))
 		Row = TP_HeadstageUsingADC(panelTitle, ADC)
 		ASSERT(TPCycleCount > 0, "Expecting a strictly positive TPCycleCount") 

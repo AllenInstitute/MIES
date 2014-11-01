@@ -4949,13 +4949,15 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle, ctrl
+	variable headStage
 
 	switch( ba.eventCode )
 		case 2: // mouse up
 			panelTitle = ba.win
 			ctrl       = ba.ctrlName
 
-			AI_UpdateAmpModel(panelTitle, ctrl)
+			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+			AI_UpdateAmpModel(panelTitle, ctrl, headstage)
 			break
 		case -1: // control being killed
 			break
@@ -4974,6 +4976,7 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 			ctrl       = cba.ctrlName
+
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 			break
