@@ -6,28 +6,28 @@
 
 ///@name Constants Used by pressure control
 /// @{
-static StrConstant 	PRESSURE_CONTROLS_BUTTON_LIST 	= "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan;button_DataAcq_PPSetPressureMan"
-static StrConstant 	PRESSURE_CONTROL_TITLE_LIST 		= "Approach;Seal;Break In;Clear"
-static StrConstant 	PRESSURE_CONTROL_CHECKBOX_LIST	= "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable"
-static StrConstant 	PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
-static Constant	P_METHOD_neg1_ATM					= -1
-static Constant 	P_METHOD_0_APPROACH 				= 0
-static Constant 	P_METHOD_1_SEAL 					= 1
-static Constant 	P_METHOD_2_BREAKIN					= 2
-static Constant 	P_METHOD_3_CLEAR 					= 3
-static Constant 	P_METHOD_4_MANUAL					= 4
-static Constant	RACK_ZERO							= 0
-static Constant	RACK_ONE								= 3 // 3 is defined by the ITCWriteDigital command instructions.
-static Constant	BITS_PER_VOLT							= 3200
-static Constant	NEG_PRESSURE_PULSE_INCREMENT	= 0.2 // psi
-static Constant	POS_PRESSURE_PULSE_INCREMENT	= 0.1 // psi
-static Constant	PRESSURE_PULSE_STARTpt				= 1 // 12000
-static Constant	PRESSURE_PULSE_ENDpt				= 35000
-static Constant 	SAMPLE_INT_MILLI						= 0.005
-static Constant	GIGA_SEAL								= 1000
-static Constant	PRESSURE_OFFSET					= 5
-static Constant 	MIN_NEG_PRESSURE_PULSE			= -1
-Constant		SAMPLE_INT_MICRO							= 5
+static StrConstant PRESSURE_CONTROLS_BUTTON_LIST  = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan;button_DataAcq_PPSetPressureMan"
+static StrConstant PRESSURE_CONTROL_TITLE_LIST    = "Approach;Seal;Break In;Clear"
+static StrConstant PRESSURE_CONTROL_CHECKBOX_LIST = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable"
+static StrConstant PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
+static Constant P_METHOD_neg1_ATM                 = -1
+static Constant P_METHOD_0_APPROACH               = -1
+static Constant P_METHOD_1_SEAL                   = 1
+static Constant P_METHOD_2_BREAKIN                = 2
+static Constant P_METHOD_3_CLEAR                  = 3
+static Constant P_METHOD_4_MANUAL                 = 4
+static Constant RACK_ZERO                         = 0
+static Constant RACK_ONE                          = 3 // 3 is defined by the ITCWriteDigital command instructions.
+static Constant BITS_PER_VOLT                     = 3200
+static Constant NEG_PRESSURE_PULSE_INCREMENT      = 0.2 // psi
+static Constant POS_PRESSURE_PULSE_INCREMENT      = 0.1 // psi
+static Constant PRESSURE_PULSE_STARTpt            = 1 // 12000
+static Constant PRESSURE_PULSE_ENDpt              = 35000
+static Constant SAMPLE_INT_MILLI                  = 0.005
+static Constant GIGA_SEAL                         = 1000
+static Constant PRESSURE_OFFSET                   = 5
+static Constant MIN_NEG_PRESSURE_PULSE            = -1
+Constant SAMPLE_INT_MICRO                         = 5
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
