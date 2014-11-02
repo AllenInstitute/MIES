@@ -1,18 +1,26 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function DB_ButtonProc_LockDBtoDevice(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+static Constant GRAPH_DIV_SPACING = 0.03
 
-	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-			DB_LockDBPanel(ba.win)
-			break
-	endswitch
+static Function/DF DB_GetDataPath(panelTitle)
+	string panelTitle
 
-	return 0
+	return $GetUserData(panelTitle, "", "DataFolderPath") + ":Data"
 End
 
-//==============================================================================================================================
+static Function/S DB_GetNotebookSubWindow(panelTitle)
+	string panelTitle
+
+	return panelTitle + "#WaveNoteDisplay"
+End
+
+static Function/S DB_GetMainGraph(panelTitle)
+	string panelTitle
+
+	return panelTitle + "#DataBrowserGraph"
+End
+End
+
 static Function DB_LockDBPanel(panelTitle)
 	string panelTitle
 
@@ -20,7 +28,14 @@ static Function DB_LockDBPanel(panelTitle)
 
 	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
 	if(!CmpStr(device,NONE))
+		panelTitleNew = "DataBrowser"
+
+		if(windowExists(panelTitleNew))
+			panelTitleNew = UniqueName("DataBrowser", 9, 1)
+		endif
+
 		print "Please choose a device assignment for the data browser"
+		DoWindow/W=$panelTitle/C $panelTitleNew
 		return NaN
 	endif
 
@@ -31,7 +46,6 @@ static Function DB_LockDBPanel(panelTitle)
 	DB_PlotSweep(panelTitleNew, 0)
 End
 
-//==============================================================================================================================
 static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	string panelTitle
 	variable &first, &last
@@ -40,7 +54,7 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	last  = 0
 
 	string ListOfAcquiredWaves
-	dfref dfr = GetDataPath(panelTitle)
+	dfref dfr = DB_GetDataPath(panelTitle)
 
 	if(!DataFolderExistsDFR(dfr))
 		return NaN
@@ -55,13 +69,18 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {first, last, 1}
 End
 
-//==============================================================================================================================
 static Function DB_PlotSweep(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	string subWindow = panelTitle + "#WaveNoteDisplay"
+	string subWindow = DB_GetNotebookSubWindow(panelTitle)
 	variable firstSweep, lastSweep
+
+	DFREF dfr = DB_GetDataPath(panelTitle)
+
+	if(!DataFolderExistsDFR(dfr))
+		return NaN
+	endif
 
 	DB_FirstAndLastSweepAcquired(panelTitle, firstSweep, lastSweep)
 
@@ -74,7 +93,7 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 	endif
 
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", sweepNo)
-	Wave/Z/SDFR=GetDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
+	Wave/Z/SDFR=dfr wv = $("Sweep_" + num2str(sweepNo))
 
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_Overlay")) // normal plotting
 		if(WaveExists(wv))
@@ -85,7 +104,7 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 			Notebook $subWindow selection={startOfFile, endOfFile}
 			Notebook $subWindow text = "Sweep does not exist."
 			if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				RemoveTracesFromGraph(panelTitle + "#DataBrowserGraph")
+				RemoveTracesFromGraph(DB_GetMainGraph(panelTitle))
 			endif			
 		endif		
 	else
@@ -93,12 +112,11 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 	endif
 End
 
-//==============================================================================================================================
 static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 	string panelTitle
 	wave sweep
 
-	dfref dfr = GetDataPath(panelTitle)
+	dfref dfr = DB_GetDataPath(panelTitle)
 	if(!DataFolderExistsDFR(dfr))
 		printf "Datafolder for %s does not exist\r", panelTitle
 		return NaN
@@ -109,14 +127,15 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 	string DAChannelList = SCOPE_RefToPullDatafrom2DWave(1, 0, 1, config)
 	variable NumberOfDAchannels = ItemsInList(DAChannelList)
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
+	// the max allows for uneven number of AD and DA channels
 	variable numChannels = max(NumberOfDAchannels, NumberOfADchannels)
 	variable i
 	variable DisplayDAChan
-	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, Spacer,DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
-	string axis, trace
+	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
+	string axis
 	string configNote = note(config)
 	string unit
-	string graph = panelTitle + "#DataBrowserGraph"
+	string graph = DB_GetMainGraph(panelTitle)
 
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
 		RemoveTracesFromGraph(graph)
@@ -124,24 +143,20 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 
 	DisplayDAChan = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
 	if(DisplayDAChan)
-		// the max allows for uneven number of AD and DA channels
 		ADYaxisSpacing = 0.8 / numChannels
 		DAYaxisSpacing = 0.2 / numChannels
 	else
 		ADYaxisSpacing = 1 / NumberOfADchannels
 	endif
 
-	// Tiledplot
-	Spacer = 0.03
-
 	if(DisplayDAChan)
 		DAYaxisHigh = 1
-		DAYaxisLow  = DAYaxisHigh - DAYaxisSpacing + spacer
-		ADYaxisHigh = DAYaxisLow - spacer
-		ADYaxisLow  = ADYaxisHigh - ADYaxisSpacing + spacer
+		DAYaxisLow  = DAYaxisHigh - DAYaxisSpacing + GRAPH_DIV_SPACING
+		ADYaxisHigh = DAYaxisLow - GRAPH_DIV_SPACING
+		ADYaxisLow  = ADYaxisHigh - ADYaxisSpacing + GRAPH_DIV_SPACING
 	else
 		ADYaxisHigh = 1
-		ADYaxisLow  = 1 - ADYaxisSpacing + spacer
+		ADYaxisLow  = 1 - ADYaxisSpacing + GRAPH_DIV_SPACING
 	endif
 
 	for(i = 0; i < numChannels; i += 1)
@@ -150,7 +165,6 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 			YaxisLow = DAYaxisLow
 
 			axis = "DA" + StringFromList(i, DAChannelList)
-			trace = NameOfWave(sweep) + "_" + axis
 			AppendToGraph/W=$graph /L=$axis sweep[][i]
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i, configNote)
@@ -165,7 +179,6 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 
 		if(i < NumberOfADchannels)
 			axis = "AD" + StringFromList(i, ADChannelList)
-			trace = NameOfWave(sweep) + "_" + axis
 			AppendToGraph/W=$graph /L=$axis sweep[][i + NumberOfDAchannels]
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i + NumberOfDAchannels, configNote)
@@ -192,98 +205,6 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 	endfor
 End
 
-//==============================================================================================================================
-static Function/DF GetDataPath(panelTitle)
-	string panelTitle
-
-	return $GetUserData(panelTitle, "", "DataFolderPath") + ":Data"
-End
-
-//==============================================================================================================================
-Function DB_ButtonProc_NextSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string panelTitle
-	variable sweepNo
-	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-			panelTitle = ba.win
-			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-
-			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				DisableControl(panelTitle, "button_DataBrowser_Previous")
-				sweepNo += GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
-			else
-				EnableControl(panelTitle, "button_DataBrowser_Previous")
-				sweepNo += 1
-			endif
-
-			DB_PlotSweep(panelTitle, sweepNo)
-			break
-	endswitch
-
-	return 0
-End
-
-//==============================================================================================================================
-Function DB_ButtonProc_AutoScale(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-			SetAxis/A/W=$ba.win
-			break
-	endswitch
-
-	return 0
-End
-
-//==============================================================================================================================
-Function DB_ButtonProc_PrevSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	variable sweepNo
-	string panelTitle
-	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-			panelTitle = ba.win
-			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-
-			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				DisableControl(panelTitle, "button_DataBrowser_nextSweep")
-				sweepNo -= GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
-			else
-				EnableControl(panelTitle, "button_DataBrowser_nextSweep")
-				sweepNo -= 1
-			endif
-
-			DB_PlotSweep(panelTitle, sweepNo)
-			break
-	endswitch
-
-	return 0
-End
-
-//==============================================================================================================================
-Function DB_CheckProc_DADisplay(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	variable sweepNo
-	string panelTitle
-
-	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
-			panelTitle = cba.win
-
-			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-			DB_PlotSweep(panelTitle, sweepNo)
-			break
-	endswitch
-
-	return 0
-End
-
-//==============================================================================================================================
 Window databrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(1200,321,2426,874)
@@ -414,6 +335,101 @@ Window databrowser() : Panel
 	RenameWindow #,WaveNoteDisplay
 	SetActiveSubwindow ##
 EndMacro
+
+Function DB_ButtonProc_NextSweep(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+	variable sweepNo
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			panelTitle = ba.win
+			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+
+			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+				DisableControl(panelTitle, "button_DataBrowser_Previous")
+				sweepNo += GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
+			else
+				EnableControl(panelTitle, "button_DataBrowser_Previous")
+				sweepNo += 1
+			endif
+
+			DB_PlotSweep(panelTitle, sweepNo)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_ButtonProc_AutoScale(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle = ba.win
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			panelTitle = ba.win
+			SetAxis/A/W=$(panelTitle + "#DataBrowserGraph")
+			SetAxis/A/W=$(panelTitle + "#LabNotebook")
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_ButtonProc_PrevSweep(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	variable sweepNo
+	string panelTitle
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			panelTitle = ba.win
+			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+
+			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+				DisableControl(panelTitle, "button_DataBrowser_nextSweep")
+				sweepNo -= GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
+			else
+				EnableControl(panelTitle, "button_DataBrowser_nextSweep")
+				sweepNo -= 1
+			endif
+
+			DB_PlotSweep(panelTitle, sweepNo)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_CheckProc_DADisplay(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	variable sweepNo
+	string panelTitle
+
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			panelTitle = cba.win
+
+			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+			DB_PlotSweep(panelTitle, sweepNo)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_ButtonProc_LockDBtoDevice(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case EVENT_MOUSE_UP:
+			DB_LockDBPanel(ba.win)
+			break
+	endswitch
+
+	return 0
+End
 
 Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
