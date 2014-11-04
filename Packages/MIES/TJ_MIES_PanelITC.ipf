@@ -4288,7 +4288,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage)))
 				DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
 				DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
-				AI_SwitchClampMode(panelTitle, headStage, mode)
+				AI_SetClampMode(panelTitle, headStage, mode)
 			endif
 
 			AI_UpdateAmpView(panelTitle, headStage)
