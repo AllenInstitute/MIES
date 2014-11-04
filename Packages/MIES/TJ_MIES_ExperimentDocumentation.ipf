@@ -556,20 +556,18 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	string SavedDataWaveName
 	Variable sweepCount
 
-	string ctrl
+	variable i, numHeadstages
 
-	// get all the Amp connection information
-	String controlledHeadStage = DC_ControlStatusListString("DataAcq_HS", "check",panelTitle)
-	// get the number of headStages...used for building up the ampSettingsWave
-	variable noHeadStages = ItemsInList(controlledHeadStage)
+	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	numHeadstages = DimSize(statusHS, ROWS)
 
 	// Create the numerical wave for saving the settings
-	Wave sweepSettingsWave = GetSweepSettingsWave(panelTitle, noHeadStages)
+	Wave sweepSettingsWave = GetSweepSettingsWave(panelTitle, numHeadstages)
 	Wave/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
 
 	// Create the txt wave to be used for saving the sweep set name
-	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle, noHeadStages)
-	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
+	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle, numHeadstages)
+	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle, numHeadstages)
 
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  "Stim Wave Name"
@@ -578,29 +576,26 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	Wave sweepDataWave = DC_SweepDataWvRef(panelTitle)
 	Wave/T sweepSetName = DC_SweepDataTxtWvRef(panelTitle)
 
-	// Now populate the Settings Wave
-	// first...determine if the head stage is being controlled
-	variable headStageControlledCounter
-	for(headStageControlledCounter = 0;headStageControlledCounter < noHeadStages ;headStageControlledCounter += 1)
-		// build up the string to get the DA check box to see if the DA is enabled
-		sprintf ctrl, "Check_DA_0%d" headStageControlledCounter
-		if (GetCheckBoxState(panelTitle, ctrl))
-			// Save info into the stimSettingsWave
-			// wave name
-			sweepSettingsTxtWave[0][0][headStageControlledCounter] = sweepSetName[0][0][headStageControlledCounter]
-			// scale factor
-			sweepSettingsWave[0][0][headStageControlledCounter] = sweepDataWave[0][4][headStageControlledCounter]
-			// DAC
-			sweepSettingsWave[0][1][headStageControlledCounter] = sweepDataWave[0][0][headStageControlledCounter]
-			// ADC
-			sweepSettingsWave[0][2][headStageControlledCounter] = sweepDataWave[0][1][headStageControlledCounter]
-			// DA Gain
-			sweepSettingsWave[0][3][headStageControlledCounter] = sweepDataWave[0][2][headStageControlledCounter]
-			// AD Gain
-			sweepSettingsWave[0][4][headStageControlledCounter] = sweepDataWave[0][3][headStageControlledCounter]
-			// Set Sweep Count
-			sweepSettingsWave[0][5][headStageControlledCounter] = sweepDataWave[0][5][headStageControlledCounter]
+	for(i = 0; i < numHeadstages; i += 1)
+		if (!statusHS[i])
+			continue
 		endif
+
+		// Save info into the stimSettingsWave
+		// wave name
+		sweepSettingsTxtWave[0][0][i] = sweepSetName[0][0][i]
+		// scale factor
+		sweepSettingsWave[0][0][i] = sweepDataWave[0][4][i]
+		// DAC
+		sweepSettingsWave[0][1][i] = sweepDataWave[0][0][i]
+		// ADC
+		sweepSettingsWave[0][2][i] = sweepDataWave[0][1][i]
+		// DA Gain
+		sweepSettingsWave[0][3][i] = sweepDataWave[0][2][i]
+		// AD Gain
+		sweepSettingsWave[0][4][i] = sweepDataWave[0][3][i]
+		// Set Sweep Count
+		sweepSettingsWave[0][5][i] = sweepDataWave[0][5][i]
 	endfor
 
 	// call the function that will create the text wave notes
@@ -608,6 +603,19 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+
+	// document active headstages
+	Make/FREE/N=(3, 1)/T headstagesKey
+	headstagesKey = ""
+
+	headstagesKey[0][0] =  "Headstage Active"
+	headstagesKey[1][0] =  "On/Off"
+	headstagesKey[2][0] =  "-"
+
+	Make/FREE/N=(1, 1, numHeadstages) headstagesWave
+	headStagesWave[0][0][] = statusHS[r]
+
+	ED_createWaveNotes(headstagesWave, headstagesKey, SavedDataWaveName, SweepCount, panelTitle)
 End
 
 //======================================================================================
