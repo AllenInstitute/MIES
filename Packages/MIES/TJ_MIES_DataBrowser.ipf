@@ -1,6 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-static Constant GRAPH_DIV_SPACING = 0.03
+static Constant GRAPH_DIV_SPACING       = 0.03
+static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
 static Function/DF DB_GetDataPath(panelTitle)
 	string panelTitle
@@ -100,6 +101,7 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 			DB_TilePlotForDataBrowser(panelTitle, wv)
 			Notebook $subWindow selection={startOfFile, endOfFile} // select entire contents of notebook
 			Notebook $subWindow text = "Sweep note: \r " + note(wv) // replaces selected notebook content with new wave note.
+			SetControlUserData(panelTitle, "setvar_DataBrowser_SweepNo", LAST_SWEEP_USER_DATA, num2str(sweepNo))
 		else
 			Notebook $subWindow selection={startOfFile, endOfFile}
 			Notebook $subWindow text = "Sweep does not exist."
@@ -211,13 +213,6 @@ Window databrowser() : Panel
 	SetDrawLayer UserBack
 	DrawText 100,100,"ListBox_DataBrowser_NoteDisplay"
 	DrawText 100,100,"ListBox_DataBrowser_NoteDisplay"
-	ValDisplay valdisp_DataBrowser_Sweep,pos={447,512},size={60,30},disable=1
-	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo)= A"!!,IH!!#CP!!#?)!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	ValDisplay valdisp_DataBrowser_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ValDisplay valdisp_DataBrowser_Sweep,fSize=24,fStyle=1
-	ValDisplay valdisp_DataBrowser_Sweep,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataBrowser_Sweep,value= _NUM:0
 	Button button_DataBrowser_NextSweep,pos={616,464},size={425,43},proc=DB_ButtonProc_NextSweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J%!!#CM!!#C9J,hnez!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -435,32 +430,33 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	string panelTitle
-	variable dval, firstSweep, lastSweep, lastSweepDisplayed, sweepNo
+	variable firstSweep, lastSweep, lastSweepDisplayed, sweepNo
 
 	switch(sva.eventCode)
 		case 1: // mouse up - when the scroll wheel is used on the mouse - "up or down"
 		case 2: // Enter key - when a number is manually entered
 		case 3: // Live update - happens when you hit the arrow keys associated with the set variable
-			dval = sva.dval
+			sweepNo = sva.dval
 			paneltitle = sva.win
 
 			DB_FirstAndLastSweepAcquired(panelTitle, firstSweep, lastSweep)
 
 			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				lastSweepDisplayed = GetCheckBoxState(panelTitle, "check_DataBrowser_Sweep")
-				if(dval > lastSweepDisplayed)
-					SetVariable setvar_DataBrowser_SweepNo win =$panelTitle, limits = {dval, lastSweep , 1}
+				lastSweepDisplayed = str2num(GetUserData(panelTitle, "setvar_DataBrowser_SweepNo", LAST_SWEEP_USER_DATA))
+
+				if(sweepNo > lastSweepDisplayed)
+					SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {sweepNo, lastSweep , 1}
 					ControlUpdate/W=$panelTitle setvar_DataBrowser_SweepNo
-				elseif(dval < lastSweepDisplayed)
-					SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {firstSweep, dval , 1}
+				elseif(sweepNo < lastSweepDisplayed)
+					SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {firstSweep, sweepNo , 1}
 				endif
 			else
 				SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {firstSweep, lastSweep , 1}
-				ValDisplay valdisp_DataBrowser_Sweep win = $panelTitle, value =_NUM:dval
 			endif
 
 			DB_PlotSweep(panelTitle, sweepNo)
 			break
 	endswitch
+
 	return 0
 End
