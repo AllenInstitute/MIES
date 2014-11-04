@@ -302,8 +302,8 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	variable dimLabelCounter
 	for (dimLabelCounter = 0; dimLabelCounter < colCount; dimLabelCounter += 1)
 		string dimLabelText = 	keyWave[0][dimLabelCounter]
-		SetDimLabel 1, dimLabelCounter, dimLabelText, keyWave
-		SetDimLabel 1, dimLabelCounter, dimLabelText, settingsHistory
+		SetDimLabel 1, dimLabelCounter, $dimLabelText, keyWave
+		SetDimLabel 1, dimLabelCounter, $dimLabelText, settingsHistory
 	endfor
 	
 	// since we have now de-coupled the row number from the sweep number to facilitate the addition of factors from other places besides the amp settings (like the test pulse, for example)
