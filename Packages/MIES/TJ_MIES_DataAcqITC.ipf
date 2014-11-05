@@ -588,7 +588,7 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	DeviceType = v_value - 1
 	variable DeviceChannelOffset // used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
 	If(DeviceType == 2)
-		DeviceChannelOffset = 15
+		DeviceChannelOffset = 16
 	else
 		DeviceChannelOffset = 0
 	endif
