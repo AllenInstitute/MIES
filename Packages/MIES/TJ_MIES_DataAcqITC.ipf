@@ -577,6 +577,13 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	string SetVar_Unit, Unit
 	string WaveNote = ""
 	
+	// Check all active headstages
+	Wave statusHS = DC_ControlStatusWave(panelTitle, "DA")
+	variable noHeadStages = DimSize(statusHS, ROWS)
+	
+	// Create the measurement wave that will hold the measurement values
+	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
+	
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
 	DeviceType = v_value - 1
 	variable DeviceChannelOffset // used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
@@ -606,12 +613,10 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 			controlInfo /w = $panelTitle $SetVar_title
 			title = s_value
 			controlInfo /w = $panelTitle $SetVar_gain
-			Measurement = num2str(RawChannelValue / v_value)//(v_value * RawChannelValue)
-			ITC_SupportSystemAlarm(i, v_value * RawChannelValue, title, panelTitle)
-			controlInfo /w = $panelTitle $SetVar_Unit
-			Unit = s_value
-			WaveNote = title + " " + Measurement + " " + Unit
-			note DataWave, WaveNote
+			
+			// put the measurement value into the async settings wave for creation of wave notes
+			asyncMeasurementWave[0][i] = RawChannelValue / v_value // put the measurement value into the async settings wave for creation of wave notes
+			ITC_SupportSystemAlarm(i, RawChannelValue / v_value, title, panelTitle)
 		endif
 		i += 1 
 	while(i < TotAsyncChannels)

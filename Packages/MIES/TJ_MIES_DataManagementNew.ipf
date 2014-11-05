@@ -45,6 +45,10 @@ Function DM_SaveITCData(panelTitle)
 
 	//Add wave notes for the stim wave name and scale factor
 	ED_createWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
+	
+	//Add wave notes for the factors on the Asyn tab
+	ED_createAsyncWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
+		
 End
 
 Function DM_CreateScaleTPHoldingWave(panelTitle)

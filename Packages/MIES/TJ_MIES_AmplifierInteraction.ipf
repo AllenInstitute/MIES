@@ -857,7 +857,7 @@ function AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepCount
 				ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
 
 				// new parameters
-				ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
+				//ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
 			endif
 		endif
 	endfor

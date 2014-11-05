@@ -221,16 +221,72 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	
 	settingsHistory[rowIndex][1] = datetime
 	
+	// Adding this section to handle the changing off the parameter names, units, and tolerances for the async factors
+	// see if the incoming wave is the async wave
+	if (stringmatch(incomingKeyWave[0][0], "Async AD 0*") == 1)	// this never changes...shows that the incoming keyWave is the Async stuff	
+		// build up a string for comparison purposes
+		string asyncParameterString
+		variable adUnitCounter
+		variable factorFound 
+		for (adUnitCounter = 0; adUnitCounter < 8; adUnitCounter += 1)
+			sprintf asyncParameterString, "Async AD %d*" adUnitCounter
+			factorFound = 0
+			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
+				if (stringmatch(keyWave[0][keyColCounter], incomingKeyWave[0][adUnitCounter]) == 1) // the factor already exists
+					factorFound = 1
+					// copy the units and tol factors over into the keyWave...they can change without changing the parameter name...always do this since copying is more
+					// time efficient then doing string matches
+					keyWave[1][keyColCounter] = incomingKeyWave[1][adUnitCounter]  // units
+					keyWave[2][keyColCounter] = incomingKeyWave[2][adUnitCounter]  // tolerance factor
+				endif
+			endfor
+			if (factorFound == 0)
+				// if the parameter name has changed, we need to create a new column for this
+				// find the dimensions again for the keyWave (cols) and settingsHistory(rows, cols)
+				keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
+				colCount = DimSize(settingsHistory, 1) // same with this
+				rowCount = DimSize(settingsHistory, 1) // same with this
+				// Need to resize the column part of the keyWave to accomodate the new factor being monitored...unlike above, need to do this one factor at a time
+				Redimension/N=(-1, (keyColCount + 1), -1) keyWave
+				// Also need to redimension the row size of the settingsHistory
+				Redimension/N=((rowCount + 1), -1, -1) settingsHistory
+				// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors
+				Redimension/N=(-1, (colCount + 1), -1, -1) settingsHistory
+				// need to fill the newly created row with NAN's....redimension autofills them with zeros
+				newSettingsHistoryRowSize = DimSize(settingsHistory, 0)
+				settingsHistory[newSettingsHistoryRowSize - 1][][] = NAN
+		
+				// put the new incoming factor at the end of keyWave
+				keyWave[0][keyColCount] = incomingKeyWave[0][adUnitCounter]
+				keyWave[1][keyColCount] = incomingKeyWave[1][adUnitCounter]
+				keyWave[2][keyColCount] = incomingKeyWave[2][adUnitCounter]
+			endif							
+		endfor
+	endif
+	
+	// after doing all that, get the new dimension for the keyColCounter and the Settings History wave
+	keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
+	colCount = DimSize(settingsHistory, 1) // same with this
+	rowCount = DimSize(settingsHistory, 0) // same with this
+	
+	// need to make sure the incomingKeyColCount is correct
+	incomingKeyColCount = DimSize(incomingKeyWave, 1)
+	
 	// Use the keyWave to see where to add the incomingWave factors to the ampSettingsHistory wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
 			if (stringmatch(incomingKeyWave[0][incomingKeyColCounter], keyWave[0][keyColCounter]) == 1)
 			// found the string match
-				variable insertionPoint = keyColCounter		
-				for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
-					// add all the values in that column to the settingsHistory wave
-					settingsHistory[rowIndex][insertionPoint][layerCounter] = incomingSettingsWave[0][incomingkeyColCounter][layerCounter]
-				endfor
+				variable insertionPoint = keyColCounter
+				// put this in to handle the async stuff that only has one layer
+				if (incomingLayerCount == 0)
+					settingsHistory[rowCount - 1][insertionPoint][0] = incomingSettingsWave[0][incomingkeyColCounter]
+				else		
+					for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
+						// add all the values in that column to the settingsHistory wave
+						settingsHistory[rowCount - 1][insertionPoint][layerCounter] = incomingSettingsWave[0][incomingkeyColCounter][layerCounter]
+					endfor
+				endif
 			endif
 		endfor
 	endfor
@@ -553,4 +609,99 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+End
+
+//======================================================================================
+/// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
+function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
+	string panelTitle
+	string SavedDataWaveName
+	Variable sweepCount
+
+	string ctrl
+	
+	// Check all active headstages
+	//Wave statusHS = DC_ControlStatusWave(panelTitle, "DA")
+	//variable noHeadStages = DimSize(statusHS, ROWS)
+
+	// Create the numerical wave for saving the numerical settings
+	Wave asyncSettingsWave = GetAsyncSettingsWave(panelTitle)
+	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave(panelTitle)
+
+	// Create the txt wave to be used for saving the txt settings
+	Wave/T asyncSettingsTxtWave = GetAsyncSettingsTextWave(panelTitle)
+	Wave/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave(panelTitle)
+	
+	// Create the measurement wave that will hold the measurement values
+	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
+	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave(panelTitle)
+
+	// Now populate the aync Settings and measurement Waves
+	// first...determine if the head stage is being controlled
+	variable asyncVariablesCounter
+	for(asyncVariablesCounter = 0;asyncVariablesCounter < 8 ;asyncVariablesCounter += 1)
+	// build up the string to get the DA check box to see if the DA is enabled
+		sprintf ctrl, "Check_AsyncAD_0%d" asyncVariablesCounter
+		variable adOnOffValue = GetCheckBoxState(panelTitle, ctrl)
+		if (adOnOffValue == 1)
+			// Save info into the ayncSettingsWave
+			// Async AD OnOff
+			sprintf ctrl, "Check_AsyncAD_0%d" asyncVariablesCounter
+			asyncSettingsWave[0][asyncVariablesCounter] = GetCheckBoxState(panelTitle, ctrl)
+			
+			// Async AD Gain
+			sprintf ctrl, "SetVar_AsyncAD_Gain_0%d" asyncVariablesCounter
+			asyncSettingsWave[0][asyncVariablesCounter + 8] = GetSetVariable(panelTitle, ctrl)
+			
+			// Async Alarm OnOff
+			sprintf ctrl, "Check_Async_Alarm_0%d" asyncVariablesCounter
+			asyncSettingsWave[0][asyncVariablesCounter + 16] = GetCheckBoxState(panelTitle, ctrl)
+			
+			// Async Alarm Min
+			sprintf ctrl, "SetVar_Async_Min_0%d" asyncVariablesCounter
+			variable maxSettingValue = GetSetVariable(panelTitle, ctrl)
+			asyncSettingsWave[0][asyncVariablesCounter + 24] = maxSettingValue
+			
+			// Async Alarm Max
+			sprintf ctrl, "SetVar_Async_Max_0%d" asyncVariablesCounter
+			variable minSettingValue = GetSetVariable(panelTitle, ctrl)
+			asyncSettingsWave[0][asyncVariablesCounter + 32] = minSettingValue
+	
+			// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
+			variable tolSettingValue = (maxSettingValue - minSettingValue)/2
+			asyncMeasurementKey[%Tolerance][asyncVariablesCounter] = num2str(abs(tolSettingValue))
+	
+			//Now do the text stuff...
+			// Async Title
+			sprintf ctrl, "SetVar_Async_Title_0%d" asyncVariablesCounter
+			string titleStringValue = GetSetVariableString(panelTitle, ctrl)
+			string adTitleStringValue 
+			sprintf adTitleStringValue, "Async AD %d: %s" asyncVariablesCounter, titleStringValue
+			asyncSettingsTxtWave[0][asyncVariablesCounter] = titleStringValue
+			// add the text unit value into the measurementKey Wave
+			asyncMeasurementKey[%Parameter][asyncVariablesCounter] = adTitleStringValue
+			
+			// Async Unit
+			sprintf ctrl, "SetVar_Async_Unit_0%d" asyncVariablesCounter
+			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
+			string adUnitStringValue
+			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue
+			asyncSettingsTxtWave[0][asyncVariablesCounter + 8] = adUnitStringValue
+			// add the unit value into the settingsKey Wave
+			asyncMeasurementKey[%Units][asyncVariablesCounter] = adUnitStringValue
+		endif
+	endfor
+
+	// call the function that will create the text wave notes
+	//ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, SavedDataWaveName, SweepCount, panelTitle)
+
+	// create the async wave notes if the Append Async readings to wave note
+	variable appendAsync = GetCheckBoxState(panelTitle, "Check_Settings_Append")
+	if (appendAsync == 1)
+		// call the function that will create the numerical wave notes
+		ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+	
+		// call the function that will create the measurement wave notes
+		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SavedDataWaveName, SweepCount, panelTitle)
+	endif
 End

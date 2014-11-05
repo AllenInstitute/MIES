@@ -53,6 +53,7 @@ Function DC_NoOfChannelsSelected(channelType, panelTitle) // channelType = DA, A
 	return sum(DC_ControlStatusWave(panelTitle, channelType))
 End
 
+
 /// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
 ///
 /// @deprecated use @ref DC_ControlStatusWave() instead
@@ -85,6 +86,9 @@ Function DC_GetNumberFromType(channelType)
 	string channelType
 
 	strswitch(channelType)
+		case "AsyncAD":
+			return NUM_ASYNC_CHANNELS
+			break
 		case "DA":
 		case "TTL":
 			return NUM_DA_TTL_CHANNELS
