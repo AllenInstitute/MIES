@@ -242,12 +242,13 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 				// find the dimensions again for the keyWave (cols) and settingsHistory(rows, cols)
 				keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
 				colCount = DimSize(settingsHistory, 1) // same with this
-				rowCount = DimSize(settingsHistory, 1) // same with this
+				rowCount = DimSize(settingsHistory, 0) // same with this
 				// Need to resize the column part of the keyWave to accomodate the new factor being monitored...unlike above, need to do this one factor at a time
 				Redimension/N=(-1, (keyColCount + 1), -1) keyWave
 				// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors...fill it with nan's
 				Redimension/N=(-1, (colCount + 1), -1, -1) settingsHistory
-				settingsHistory[][colCount][] = NAN
+				variable newSettingsColCount = DimSize(settingsHistory, 1)
+				settingsHistory[][newSettingsColCount-1][] = NAN
 		
 				// put the new incoming factor at the end of keyWave
 				keyWave[0][keyColCount] = incomingKeyWave[0][adUnitCounter]
@@ -634,6 +635,9 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	// Create the measurement wave that will hold the measurement values
 	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
 	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave(panelTitle)
+	
+	// fill the settings and measurement waves with NAN's
+	asyncSettingsWave[0][] = NAN
 
 	// Now populate the aync Settings and measurement Waves
 	// first...determine if the head stage is being controlled

@@ -583,6 +583,7 @@ Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
 	
 	// Create the measurement wave that will hold the measurement values
 	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
+	asyncMeasurementWave[0][] = NAN
 	
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
 	DeviceType = v_value - 1
