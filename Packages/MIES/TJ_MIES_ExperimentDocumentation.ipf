@@ -186,7 +186,12 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		// Need to resize the column part of the keyWave to accomodate the new factors being monitored
 		Redimension/N=(-1, (keyColCount + incomingKeyColCount), -1) keyWave
 		// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors
-		Redimension/N=(-1, (colCount + incomingColCount), -1, -1) settingsHistory
+		Redimension/N=(-1, (colCount + incomingColCount), -1) settingsHistory
+	
+		variable nanInsertCounter
+		for (nanInsertCounter = colCount; nanInsertCounter < (colCount + incomingColCount); nanInsertCounter += 1)
+			settingsHistory[][nanInsertCounter][] = NAN
+		endfor
 		
 		variable keyWaveInsertPoint = keyColCount
 		variable insertCounter 
@@ -242,8 +247,6 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 				Redimension/N=(-1, (keyColCount + 1), -1) keyWave
 				// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors
 				Redimension/N=(-1, (colCount + 1), -1, -1) settingsHistory
-				// and fill that new column with NAN's
-				settingsHistory[][colCount][] = NAN
 		
 				// put the new incoming factor at the end of keyWave
 				keyWave[0][keyColCount] = incomingKeyWave[0][adUnitCounter]
@@ -252,7 +255,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 			endif							
 		endfor
 	endif
-	
+	 
 	// Now need to redimension the row size of the settingsHistory
 	Redimension/N=((rowCount + incomingRowCount), -1, -1) settingsHistory
 	// need to fill the newly created row with NAN's....redimension autofills them with zeros
