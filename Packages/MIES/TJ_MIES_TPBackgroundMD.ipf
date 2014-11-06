@@ -424,7 +424,7 @@ Function ITC_TPDocumentation(panelTitle)
 		
 		TPSettingsWave[0][2][i] = InstResistance[0][j]
 		TPSettingsWave[0][3][i] = SSResistance[0][j]
-		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active heastage (no place holder columns), j only increments for active headstages.
+		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active headstage (no place holder columns), j only increments for active headstages.
 	endfor
 
 	controlinfo /w = $panelTitle SetVar_Sweep // Determine the number of the next sweep to be acquired.

@@ -213,11 +213,6 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	variable settingsRowCount = (DimSize(settingsHistory, 0))  // the new settingsRowCount
 	variable rowIndex = settingsRowCount - 1 
 	
-	// put the sweep number in col 0
-	settingsHistory[rowIndex][0] = sweepNo
-	
-	settingsHistory[rowIndex][1] = datetime
-	
 	// Adding this section to handle the changing off the parameter names, units, and tolerances for the async factors
 	// see if the incoming wave is the async wave
 	if (stringmatch(incomingKeyWave[0][0], "Async AD 0*") == 1)	// this never changes...shows that the incoming keyWave is the Async stuff	
@@ -263,6 +258,10 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	// need to fill the newly created row with NAN's....redimension autofills them with zeros
 	newSettingsHistoryRowSize = DimSize(settingsHistory, 0)
 	settingsHistory[newSettingsHistoryRowSize - 1][][] = NAN
+	
+	// put the sweep number in col 0
+	settingsHistory[newSettingsHistoryRowSize - 1][0] = sweepNo
+	settingsHistory[newSettingsHistoryRowSize - 1][1] = datetime
 	
 	// after doing all that, get the new dimension for the keyColCounter and the Settings History wave
 	keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
@@ -636,7 +635,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
 	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave(panelTitle)
 	
-	// fill the settings and measurement waves with NAN's
+	// fill the settings wave with NAN's...the asyncMeasurementWave will be filled with NAN's in another function
 	asyncSettingsWave[0][] = NAN
 
 	// Now populate the aync Settings and measurement Waves
