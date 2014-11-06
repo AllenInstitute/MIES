@@ -245,8 +245,9 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 				rowCount = DimSize(settingsHistory, 1) // same with this
 				// Need to resize the column part of the keyWave to accomodate the new factor being monitored...unlike above, need to do this one factor at a time
 				Redimension/N=(-1, (keyColCount + 1), -1) keyWave
-				// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors
+				// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors...fill it with nan's
 				Redimension/N=(-1, (colCount + 1), -1, -1) settingsHistory
+				settingsHistory[][colCount][] = NAN
 		
 				// put the new incoming factor at the end of keyWave
 				keyWave[0][keyColCount] = incomingKeyWave[0][adUnitCounter]
