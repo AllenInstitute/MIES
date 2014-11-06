@@ -415,11 +415,15 @@ Function ITC_TPDocumentation(panelTitle)
 			continue
 		endif
 
-		string clampMode = TP_ClampModeString(panelTitle)
-		if (str2num(clampMode) == 0)
-			TPSettingsWave[0][1][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
-		else
-			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+		string clampModeString = TP_ClampModeString(panelTitle)
+		variable numClampMode = itemsinlist(clampModeString, ";")
+		if (i < numClampMode)  // make sure the headstage is actually on so you don't try to read past the end of the clampModeString
+			variable clampMode = str2num(stringfromlist(i, clampModeString))
+			if ((clampMode) == 0)
+				TPSettingsWave[0][1][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+			else
+				TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+			endif
 		endif
 		
 		TPSettingsWave[0][2][i] = InstResistance[0][j]
