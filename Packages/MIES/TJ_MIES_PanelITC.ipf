@@ -6,6 +6,7 @@ Constant HARDWARE_TAB_NUM                = 6
 Constant NUM_DA_TTL_CHANNELS             = 8
 Constant NUM_HEADSTAGES                  = 8
 Constant NUM_AD_CHANNELS                 = 16
+Constant NUM_ASYNC_CHANNELS		= 8
 
 StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"

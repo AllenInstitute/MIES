@@ -381,26 +381,29 @@ Function ITC_TPDocumentation(panelTitle)
 	wave /SDFR = TPDataFolderRef InstResistance // wave that contains the peak resistance calculation result from the TP, each column is a different headstage
 	wave /SDFR = TPDataFolderRef SSResistance // wave that contains the steady state resistance calculation result from the TP, each column is a different headstage
 
-	make /o /T /n =(3,3,1) TPDataFolderRef:TPKeyWave // 3 rows to hold: Name of parameter; unit of parameter; tolerance of parameter. 3 columns for: BaselineSSAvg; InstResistance; SSResistance.
+	make /o /T /n =(3,4,1) TPDataFolderRef:TPKeyWave // 3 rows to hold: Name of parameter; unit of parameter; tolerance of parameter. 3 columns for: BaselineSSAvg; InstResistance; SSResistance.
 	wave /T /SDFR = TPDataFolderRef TPKeyWave
-	make /o /n =(1, 3, NUM_HEADSTAGES) TPDataFolderRef:TPSettingsWave = nan // 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance. A layer for each headstage.
+	make /o /n =(1, 4, NUM_HEADSTAGES) TPDataFolderRef:TPSettingsWave = nan // 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance. A layer for each headstage.
 	wave /SDFR = TPDataFolderRef TPSettingsWave
 	
 	// add data to TPKeyWave
-	TPKeyWave[0][0] = "TP Baseline Vm"
-	TPKeyWave[0][1] = "TP Peak Resistance"
-	TPKeyWave[0][2] = "TP Steady State Resistance"
+	TPKeyWave[0][0] = "TP Baseline Vm"  // current clamp
+	TPKeyWave[0][1] = "TP Baseline pA"  // voltage clamp
+	TPKeyWave[0][2] = "TP Peak Resistance"
+	TPKeyWave[0][3] = "TP Steady State Resistance"
 	
 	TPKeyWave[1][0] = "mV"
-	TPKeyWave[1][1] = "Mohm"
+	TPKeyWave[1][1] = "pA"
 	TPKeyWave[1][2] = "Mohm"
+	TPKeyWave[1][3] = "Mohm"
 	
 	controlinfo /w = $panelTitle setvar_Settings_TP_RTolerance // get tolerances from locked DA_Ephys GUI
 	ASSERT(V_Flag > 0, "Non-existing control or window")
 	variable RTolerance = v_value
 	TPKeyWave[2][0] = "1" // Assume a tolerance of 1 mV for V rest
-	TPKeyWave[2][1] = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
-	TPKeyWave[2][2] = num2str(RTolerance)
+	TPKeyWave[2][1] = "50" // Assume a tolerance of 50pA for I rest
+	TPKeyWave[2][2] = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
+	TPKeyWave[2][3] = num2str(RTolerance)
 			
 	// add data to TPSettingsWave
 	variable i = 0
@@ -412,10 +415,20 @@ Function ITC_TPDocumentation(panelTitle)
 			continue
 		endif
 
-		TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
-		TPSettingsWave[0][1][i] = InstResistance[0][j]
-		TPSettingsWave[0][2][i] = SSResistance[0][j]
-		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active heastage (no place holder columns), j only increments for active headstages.
+		string clampModeString = TP_ClampModeString(panelTitle)
+		variable numClampMode = itemsinlist(clampModeString, ";")
+		if (i < numClampMode)  // make sure the headstage is actually on so you don't try to read past the end of the clampModeString
+			variable clampMode = str2num(stringfromlist(i, clampModeString))
+			if ((clampMode) == 0)
+				TPSettingsWave[0][1][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+			else
+				TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+			endif
+		endif
+		
+		TPSettingsWave[0][2][i] = InstResistance[0][j]
+		TPSettingsWave[0][3][i] = SSResistance[0][j]
+		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active headstage (no place holder columns), j only increments for active headstages.
 	endfor
 
 	controlinfo /w = $panelTitle SetVar_Sweep // Determine the number of the next sweep to be acquired.
