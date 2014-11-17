@@ -116,12 +116,11 @@ End
 Function windowExists(win)
 	string win
 
-	if(isNull(win) || cmpstr(CleanupName(win,0),win) != 0)
+	if(isNull(win) || WinType(win) == 0)
 		return 0
 	endif
 
-	DoWindow $win
-	return V_flag != 0
+	return 1
 End
 
 /// @brief Alternative implementation for WaveList which honours a dfref and thus
