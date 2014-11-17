@@ -332,3 +332,54 @@ Function SetControlUserData(win, control, key, value)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ModifyControl $control win=$win, userdata($key)=value
 End
+
+/// @brief Get a nice trace color for a given index
+///
+/// Holds ten different trace colors, borrowed from KBColorizeTraces.ipf
+Function GetTraceColor(index, red, green, blue)
+	variable index
+	variable &red, &green, &blue
+
+	index = mod(index, 10) // Wrap after 10 traces.
+	switch(index)
+		case 0:
+			red = 0; green = 0; blue = 0;
+			break
+
+		case 1:
+			red = 65535; green = 16385; blue = 16385;
+			break
+
+		case 2:
+			red = 2; green = 39321; blue = 1;
+			break
+
+		case 3:
+			red = 0; green = 0; blue = 65535;
+			break
+
+		case 4:
+			red = 39321; green = 1; blue = 31457;
+			break
+
+		case 5:
+			red = 48059; green = 48059; blue = 48059;
+			break
+
+		case 6:
+			red = 65535; green = 32768; blue = 32768;
+			break
+
+		case 7:
+			red = 0; green = 65535; blue = 0;
+			break
+
+		case 8:
+			red = 16385; green = 65535; blue = 65535;
+			break
+
+		case 9:
+			red = 65535; green = 32768; blue = 58981;
+			break
+	endswitch
+End

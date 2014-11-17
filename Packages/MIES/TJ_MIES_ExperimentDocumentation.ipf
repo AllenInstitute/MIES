@@ -27,13 +27,28 @@ Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 	endif
 End
 //=============================================================================================================
-Function ED_AppendTPparamToDataWave(panelTitle, DataWaveName)
-	string panelTitle
-	wave DataWaveName
+
+Function/WAVE ED_GetSettingsHistoryDateTime(settingsHistory)
+	WAVE settingsHistory
+
+	DFREF dfr = GetWavesDataFolderDFR(settingsHistory)
+	WAVE/Z/SDFR=dfr settingsHistoryDat
+
+	if(!WaveExists(settingsHistoryDat))
+		Duplicate/R=[0, DimSize(settingsHistory, ROWS)][1][-1][-1] settingsHistory, dfr:settingsHistoryDat/Wave=settingsHistoryDat
+		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
+		Redimension/N=-1 settingsHistoryDat
+		// redimension has the odd behaviour to change a wave with zero rows to one with 1 row and then initializes that point to zero
+		// we need to fix that
+		if(DimSize(settingsHistoryDat, ROWS) == 1)
+			settingsHistoryDat = NaN
+		endif
+		SetScale d, 0, 0, "dat" settingsHistoryDat
+		SetDimLabel ROWS, -1, TimeStamp, settingsHistoryDat
+	endif
 	
-	
+	return settingsHistoryDat
 End
-//=============================================================================================================
 
 /// @brief Add notation of settings to an experiment DataWave.  This function
 /// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
@@ -53,59 +68,41 @@ End
 /// @param incomingSettingsWave -- the settingsWave sent by the each reporting subsystem
 /// @param incomingKeyWave -- the key wave that is used to reference the incoming settings wave
 /// @param SaveDataWavePath -- the path to the data wave that will have the wave notes added to it
-/// @param SweepCounter -- the sweep number
+/// @param SweepNo -- the sweep number
 /// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
 ///
 /// After the key wave and history settings waves are created and have new information appended to them, this function
 /// will compare the new settings to the most recent settings, and will create the wave note indicating the change in states
 ///
 //=============================================================================================================
-Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWavePath, SweepCounter, panelTitle)
+Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWavePath, SweepNo, panelTitle)
 	wave incomingSettingsWave
 	wave/T incomingKeyWave
 	string saveDataWavePath
 	string panelTitle
-	variable SweepCounter
+	variable SweepNo
 	
 	// Location for the saved datawave
-	wave /z saveDataWave = $saveDataWavePath //  " /z " allow for no path to be provided
+	WAVE/Z saveDataWave = $saveDataWavePath
+	variable idx
 	
-	// local variable for the sweep number
-	variable SweepNo = SweepCounter
-	
-	string FullFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	string DeviceType = stringfromlist(itemsinlist(FullFolderPath, ":") - 2,  FullFolderPath, ":")
-	string DeviceNum = stringfromlist(itemsinlist(FullFolderPath, ":") - 1,  FullFolderPath, ":")
-	
-	// New place for all the data wave
-	string labNoteBookFolder 
-	sprintf labNoteBookFolder, "root:mies:LabNoteBook:%s:%s" DeviceType, DeviceNum
-	
-	// Location for the settings wave
-	String settingsHistoryPath
-	sprintf settingsHistoryPath, "%s:%s" labNoteBookFolder, "settingsHistory:settingsHistory"
-	
-	wave/Z settingsHistory = $settingsHistoryPath
-	// see if the wave exists....if so, append to it...if not, create it
-	if (!WaveExists(settingsHistory) )
-		// create the wave...just set the dimensions to give it something to build on
-		make/D/N = (0,2,0) $settingsHistoryPath
-		// Col 0 - Sweep Number
-		// Col 1 - Time Stamp
-		Wave settingsHistory = $settingsHistoryPath
-		SetDimLabel 1, 0, SweepNumber, settingsHistory
-		SetDimLabel 1, 1, TimeStamp, settingsHistory
+	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
+	WAVE/D/Z/SDFR=settingsHistoryDFR settingsHistory
+
+	if(!WaveExists(settingsHistory))
+		make/D/N=(0, 2) settingsHistoryDFR:settingsHistory/Wave=settingsHistory
+
+		SetDimLabel COLS, 0, SweepNum, settingsHistory
+		SetDimLabel COLS, 1, TimeStamp, settingsHistory
 	endif
-	
-	// Locating for the keyWave
-	String keyWavePath
-	sprintf keyWavePath, "%s:%s"  labNoteBookFolder, "keyWave:keyWave"
-	
-	// see if the wave exists....if so, append to it...if not, create it
-	Wave/T /Z keyWave = $keyWavePath
+
+	WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
+
+	DFREF keyWaveDFR = GetDevSpecLabNBSettKeyFolder(panelTitle)
+	Wave/T/Z/SDFR=keyWaveDFR keyWave
+
 	if (!WaveExists(keyWave))
-		// create the wave...just set the dimensions to give it something to build on
-		make /T /N=(4,2,0)  $keyWavePath		
+		Make/T/N=(4, 2) keyWaveDFR:keyWave/Wave=keyWave
 		// row 0 - Parameter name
 		// row 1 - Unit
 		// row 2 - Tolerance
@@ -114,12 +111,9 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		// Col 0 - Sweep #		
 		// Col 1 - Time
 		
-		Wave/t keyWave = $keyWavePath
 		keyWave[0][0] = "SweepNum"
 		keyWave[0][1] = "TimeStamp"
 	endif
-	
-	
 	
 	// get the size of the settingsHistory wave
 	variable rowCount = DimSize(settingsHistory, 0)		// sweep
@@ -252,17 +246,22 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 			endif							
 		endfor
 	endif
-	 
+
 	// Now need to redimension the row size of the settingsHistory
-	Redimension/N=((rowCount + incomingRowCount), -1, -1) settingsHistory
+	newSettingsHistoryRowSize = rowCount + incomingRowCount
+	Redimension/N=(newSettingsHistoryRowSize, -1, -1) settingsHistory
+	idx = newSettingsHistoryRowSize - 1
+
 	// need to fill the newly created row with NAN's....redimension autofills them with zeros
-	newSettingsHistoryRowSize = DimSize(settingsHistory, 0)
-	settingsHistory[newSettingsHistoryRowSize - 1][][] = NAN
-	
-	// put the sweep number in col 0
-	settingsHistory[newSettingsHistoryRowSize - 1][0] = sweepNo
-	settingsHistory[newSettingsHistoryRowSize - 1][1] = datetime
-	
+	settingsHistory[rowCount,][][] = NAN
+
+	settingsHistory[idx][0] = sweepNo
+	settingsHistory[idx][1] = datetime
+
+	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=idx, dimension=ROWS, initialValue=NaN)
+
+	settingsHistoryDat[idx] = settingsHistory[idx][1]
+
 	// after doing all that, get the new dimension for the keyColCounter and the Settings History wave
 	keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
 	colCount = DimSize(settingsHistory, 1) // same with this
