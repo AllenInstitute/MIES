@@ -471,7 +471,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		current += actualCurrent
 		// only use 80% of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= 0.80
+		current *= 0.50
 
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent

@@ -98,7 +98,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	variable 	lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
 	variable 	timeInSec 				= ticks / 60
 	variable 	ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
-
+	
 	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
@@ -131,8 +131,8 @@ Function P_MethodSeal(panelTitle, headStage)
 			print "starting seal"
 		endif	
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
-		print ElapsedTimeInSeconds
-		if(ElapsedTimeInSeconds > 2) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
+		// print ElapsedTimeInSeconds
+		if(ElapsedTimeInSeconds > 5) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
 			RSlope = PressureDataWv[headStage][%PeakResistanceSlope]
 			print "slope", rslope, "thres", RSlopeThreshold
 			if(RSlope < RSlopeThreshold) // if the resistance is not going up quickly enough increase the negative pressure
@@ -228,7 +228,7 @@ Function P_ApplyNegV(panelTitle, headStage)
 	variable 	headStage
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	variable 	resistance 		=  PressureDataWv[headStage][%LastResistanceValue]
-	variable 	vCom 			= -0.200 * resistance
+	variable 	vCom 			= floor(-0.200 * resistance)
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
 	if(getCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
