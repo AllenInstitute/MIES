@@ -95,7 +95,11 @@ End
 /// Mainly useful for temporaries which you want to recreate on initialization
 static Function KillTemporaries()
 
-	KillStrings/Z root:mies:version
+	DFREF dfr = GetMiesPath()
+
+	KillStrings/Z dfr:version
+
+	RemoveEmptyDataFolder(dfr)
 End
 
 Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
