@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+static Constant FLOAT_32BIT = 0x02
+static Constant FLOAT_64BIT = 0x04
+
 Function DM_SaveITCData(panelTitle)
 	string panelTitle
 
@@ -32,7 +35,7 @@ Function DM_SaveITCData(panelTitle)
 
 	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
-	Redimension/D dataWave
+	Redimension/Y=(FLOAT_64BIT) dataWave
 
 	DM_ADScaling(dataWave, panelTitle)
 	DM_DAScaling(dataWave, panelTitle)
