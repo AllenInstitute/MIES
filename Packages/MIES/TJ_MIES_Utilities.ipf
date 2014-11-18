@@ -651,7 +651,7 @@ Function RemoveEmptyDataFolder(dfr)
     return 0
 end
 
-/// @brief Recursively removes the all folders from the datafolder path,
+/// @brief Recursively remove all folders from the datafolder path,
 /// if and only if all are empty.
 Function RecursiveRemoveEmptyDataFolder(dfr)
     dfref dfr
