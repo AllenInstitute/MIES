@@ -368,15 +368,23 @@ Function DC_MakeITCConfigAllConfigWave(panelTitle)
 	ITCChanConfigWave = 0
 End
 //==========================================================================================
+
 Function DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)// config all refers to configuring all the channels at once
 	string panelTitle
 	variable DataAcqOrTP
-	string ITCDataWavePath = HSU_DataFullFolderPathString(panelTitle) + ":ITCDataWave"
-	make /w /o /n = (DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP), DC_ChanCalcForITCChanConfigWave(panelTitle)) $ITCDataWavePath
-	wave/z ITCDataWave = $ITCDataWavePath
+
+	variable numRows, numCols
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	numRows   = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)
+	numCols   = DC_ChanCalcForITCChanConfigWave(panelTitle)
+
+	Make/W/O/N=(numRows, numCols) dfr:ITCDataWave/Wave=ITCDataWave
+
 	FastOp ITCDataWave = 0
-	SetScale/P x 0,(DC_ITCMinSamplingInterval(panelTitle)) / 1000,"ms", ITCDataWave
+	SetScale/P x 0, DC_ITCMinSamplingInterval(panelTitle) / 1000, "ms", ITCDataWave
 End
+
 //==========================================================================================
 Function DC_MakeITCFIFOPosAllConfigWave(panelTitle)//MakeITCUpdateFIFOPosAllConfigWave
 	string panelTitle

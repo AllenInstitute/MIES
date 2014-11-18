@@ -69,47 +69,45 @@ End
 Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
+
 	string cmd
-	variable i = 0
-	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(panelTitle)
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
-	doupdate
-	
-	wave ITCDataWave = $WavePath+ ":ITCDataWave"
-	//variable /G root:MIES:ITCDevices:StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
-	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	
-	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
+	DoUpdate
+
+	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
+	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
+
+	string ITCDataWavePath                 = WavePath + ":ITCDataWave"
+	string ITCFIFOAvailAllConfigWavePath   = WavePath + ":ITCFIFOAvailAllConfigWave"
+	string ITCChanConfigWavePath           = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	// open ITC device
-	
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-		//Execute cmd	
+
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd	
-		
+	Execute cmd
+
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-		execute cmd
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		execute cmd// this also seems necessary to update the DA channel data to the board!!
-	
-	
-	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
-	variable RepeatedAcqOnOrOff = v_value
-	if(RepeatedAcqOnOrOff == 1)
+	Execute cmd
+
+	// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	// this also seems necessary to update the DA channel data to the board!!
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth
+	Execute cmd
+
+	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
-	
+
 	sprintf cmd, "ITCStartAcq" 
-		Execute cmd	
+	Execute cmd
+
 	ITC_StartBckgrdFIFOMonitor()
-	
-	End
+End
 //======================================================================================
 Function ITC_StopDataAcq()
 	variable DeviceType, DeviceNum
@@ -162,23 +160,29 @@ End
 
 Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:ADChannelToMonitor
+
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
+	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	String cmd
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
-	Wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
+	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
+	WAVE ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
+
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 	Execute cmd	
-	ITCDataWave[0][0] += 0//forces on screen update
+
+	ITCDataWave[0][0] += 0 //forces on screen update
 	string OscilloscopeSubWindow = panelTitleG + "#oscilloscope"
-	doupdate /w = $OscilloscopeSubWindow
+	DoUpdate/W=$OscilloscopeSubWindow
+
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		print "stopped data acq"
 		ITC_StopDataAcq()
 		ITC_STOPFifoMonitor()
 	endif
-				
+
 	return 0
 End
 
@@ -468,8 +472,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
 	endfor
 End
-
-//ITC_StartBackgroundTestPulse();ITC_StartBackgroundTimer(20, "ITC_STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
 
 Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
