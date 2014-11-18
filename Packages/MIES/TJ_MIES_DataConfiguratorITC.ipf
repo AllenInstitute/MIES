@@ -109,7 +109,7 @@ End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
 ///
-/// @param type        one of DA, AD, TTL or DataAcq_HS
+/// @param type        one of DA, AD, TTL, DataAcq_HS or AsyncAD
 /// @param panelTitle  panel title
 Function/Wave DC_ControlStatusWave(panelTitle, type)
 	string type
