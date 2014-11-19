@@ -1,10 +1,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 Function TP_SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
-	string panelTitle
-	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string DAPopUpMenu
-	variable i
+	string 	panelTitle
+	string 	ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
+	string 	DAPopUpMenu
+	variable 	i
 	
 	do
 		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
@@ -14,13 +14,13 @@ Function TP_SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for 
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 End
-
+//=============================================================================================
 Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	wave SelectedDACWaveList
-	string panelTitle
-	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string DAPopUpMenu
-	variable i
+	wave 	SelectedDACWaveList
+	string 	panelTitle
+	string 	ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
+	string 	DAPopUpMenu
+	variable 	i
 	
 	do
 		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
@@ -31,13 +31,13 @@ Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	wave SelectedDACWaveList
-	string panelTitle
-	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string DAPopUpMenu
-	variable i = 0
+	wave 	SelectedDACWaveList
+	string 	panelTitle
+	string 	ListOfCheckedDA 	= DC_ControlStatusListString("DA", "Check", panelTitle)
+	string 	DAPopUpMenu
+	variable 	i 					= 0
 	do
 		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
 			DAPopUpMenu = "Wave_DA_0"+num2str(i)
@@ -45,15 +45,14 @@ Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		endif
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
-
 End
-
+//=============================================================================================
 Function TP_StoreDAScale(SelectedDACScale, panelTitle)
-	wave SelectedDACScale
-	string panelTitle
-	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string DAPopUpMenu
-	variable i
+	wave 	SelectedDACScale
+	string 	panelTitle
+	string 	ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
+	string 	DAPopUpMenu
+	variable 	i
 	
 	do
 		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
@@ -64,15 +63,15 @@ Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_SetDAScaleToOne(panelTitle)
-	string panelTitle
+	string 	panelTitle
 
-	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string DASetVariable
-	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
-	variable ScalingFactor
-	variable i
+	string 	ListOfCheckedDA 	= DC_ControlStatusListString("DA", "Check", panelTitle)
+	string 	DASetVariable
+	Wave 	ChannelClampMode 	= GetChannelClampMode(panelTitle)
+	variable 	ScalingFactor
+	variable 	i
 	
 	do
 		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
@@ -94,13 +93,13 @@ Function TP_SetDAScaleToOne(panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
-	wave SelectedDACScale
-	string panelTitle
-	string ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string DASetVariable
-	variable i = 0
+	wave 	SelectedDACScale
+	string 	panelTitle
+	string 	ListOfCheckedDA 	= DC_ControlStatusListString("DA", "Check", panelTitle)
+	string 	DASetVariable
+	variable 	i 					= 0
 	do
 		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
 		DASetVariable = "Scale_DA_0"+num2str(i)
@@ -109,100 +108,74 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	i += 1
 	while(i < itemsinlist(ListOfCheckedDA))
 end
-
+//=============================================================================================
 Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
-	wave TestPulse
-	string panelTitle
-	variable PulseDuration
-	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
-	//print TPGlobalPath
-	variable /g  $TPGlobalPath + ":Duration"
-	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
-	variable /g $TPGlobalPath + ":AmplitudeVC"
-	NVAR GlobalTPAmplitudeVariableVC = $(TPGlobalPath + ":AmplitudeVC")
-	variable /g $TPGlobalPath + ":AmplitudeIC"
-	NVAR GlobalTPAmplitudeVariableIC = $(TPGlobalPath + ":AmplitudeIC")	
+	wave 		TestPulse
+	string 		panelTitle
+	variable 		PulseDuration
+	string 		TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
+	variable /g  	$TPGlobalPath + ":Duration"
+	NVAR 		GlobalTPDurationVariable 				= $(TPGlobalPath + ":Duration")
+	variable /g 	$TPGlobalPath + ":AmplitudeVC"
+	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
+	variable /g 	$TPGlobalPath + ":AmplitudeIC"
+	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
-	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
-	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	wave /z 		ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
+	string /g 		$(TPGlobalPath + ":ADChannelList") 	= SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	PulseDuration = (v_value) // duration of the TP in ms
-	// PulseDuration = (v_value / 0.005)
-	// PulseDuration = (v_value / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
 	GlobalTPDurationVariable = (PulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
-	print "here, tp global dur =", GlobalTPDurationVariable
-	
-	variable PointsInTPWave = (2 * PulseDuration) 
+	variable 		PointsInTPWave 	= (2 * PulseDuration) 
 	PointsInTPWave *= 200
 	redimension /n = (PointsInTPWave) TestPulse
-	//redimension /n = ((8 * PulseDuration)) TestPulse
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude // the scaling converts the V-clamp TP to an I-clamp TP as appropriate (i.e. it is not done here)
-	variable TPamp = v_value
-	print "TP amp =",v_value
-
+	variable 		TPamp = v_value
 	PulseDuration *= 2
-	print "startpoint = ", (0.25*PointsInTPWave)
 	TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = TPamp
-
- 	GlobalTPAmplitudeVariableVC = TPamp
+	GlobalTPAmplitudeVariableVC 	= TPamp
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
 	GlobalTPAmplitudeVariableIC = v_value
-	//print v_value
 End
-
-// TP_UpdateTestPulseWaveChunks  
+//=============================================================================================
 Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^17)
-	wave TestPulse											// this function is only used with MD functions
-	string panelTitle
-	variable i = 0
-	variable PulseDuration
-	variable DataAcqOrTP = 1 // test pulse function
-	string TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
-	variable MinSampInt = DC_ITCMinSamplingInterval(panelTitle)
+	wave 		TestPulse											// this function is only used with MD functions
+	string 		panelTitle
+	variable 		i 									= 0
+	variable 		PulseDuration
+	variable 		DataAcqOrTP 						= 1 // test pulse function
+	string 		TPGlobalPath 						= HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
+	variable 		MinSampInt 							= DC_ITCMinSamplingInterval(panelTitle)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
-	variable /g  $TPGlobalPath + ":Duration"
-	NVAR GlobalTPDurationVariable = $(TPGlobalPath + ":Duration")
-	variable /g $TPGlobalPath + ":AmplitudeVC"
-	NVAR GlobalTPAmplitudeVariableVC = $(TPGlobalPath + ":AmplitudeVC")
-	variable /g $TPGlobalPath + ":AmplitudeIC"
-	NVAR GlobalTPAmplitudeVariableIC = $(TPGlobalPath + ":AmplitudeIC")	
+	variable /g  	$TPGlobalPath + ":Duration"
+	NVAR 		GlobalTPDurationVariable 				= $(TPGlobalPath + ":Duration")
+	variable /g 	$TPGlobalPath + ":AmplitudeVC"
+	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
+	variable /g 	$TPGlobalPath + ":AmplitudeIC"
+	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
-	wave /z ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
-	string /g $(TPGlobalPath + ":ADChannelList") = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	wave /z 		ITCChanConfigWave 					= $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
+	string /g 		$(TPGlobalPath + ":ADChannelList") 	= SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-	variable TPDurInms = v_value
-	//print "tp dur in ms=",tpdurinms
-	// print "min samp int = ", minsampint
-	PulseDuration = (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
-	// print "pulse points = ", PulseDuration
-	GlobalTPDurationVariable = PulseDuration
-	variable ITCdataWaveLength = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
-	
-	//redimension /n = (200 * PulseDuration) TestPulse // makes room in wave for 100 TPs
+	controlinfo /w 									= $panelTitle SetVar_DataAcq_TPDuration
+	variable 		TPDurInms 							= v_value
+	PulseDuration 									= (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
+	GlobalTPDurationVariable 							= PulseDuration
+	variable 		ITCdataWaveLength 					= DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-	variable Amplitude = v_value
-//	print "TP amp =", v_value 
-//	print pulseduration
-	variable Frequency = 1000 / (TPDurInms * 2)
-	// print "frequency = ",frequency
-	variable /g $(TPGlobalPath + ":TPPulseCount")
-	NVAR TPPulseCount = $(TPGlobalPath + ":TPPulseCount")
-	TPPulseCount = TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
-//	do
-//		TestPulse[((PulseDuration / 2) + (i * PulseDuration * 2)), ((Pulseduration + (PulseDuration / 2))  + (i * PulseDuration * 2))] = v_value
-//		
-//		i += 1
-//	while (i < 100)
-	GlobalTPAmplitudeVariableVC = v_value
+	variable 		Amplitude 							= v_value
+	variable 		Frequency 							= 1000 / (TPDurInms * 2)
+	variable /g 	$(TPGlobalPath + ":TPPulseCount")
+	NVAR 		TPPulseCount 						= $(TPGlobalPath + ":TPPulseCount")
+	TPPulseCount									= TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
+	GlobalTPAmplitudeVariableVC 						= v_value
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-	GlobalTPAmplitudeVariableIC = v_value
+	GlobalTPAmplitudeVariableIC 						= v_value
 End
-
-
+//=============================================================================================
 // mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
@@ -210,9 +183,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 
 	pauseupdate
 	setdatafolder root:
-	getwindow kwTopWin activesw
-
-	panelTitle = s_value
+	paneltitle = DAP_ReturnPanelName()
+	
 	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
 	if(SearchResult != -1)
 		panelTitle = panelTitle[0,SearchResult - 2]//SearchResult+1]
@@ -253,7 +225,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 	SetScale /P x 0,0.005,"ms", TestPulse
 	
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	//print testpulsepath
 	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	DM_CreateScaleTPHoldingWave(panelTitle)
 	make /free /n = 8 SelectedDACWaveList
@@ -276,21 +247,21 @@ Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that
 			DAP_SmoothResizePanel(-340, panelTitle)
 			setwindow $panelTitle +"#oscilloscope", hide = 1
 		endif
-		// killwaves /f TestPulse
 	endif
 	
 	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
 	TP_RestoreDAScale(SelectedDACScale,panelTitle)
+	
+	// Enable pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
-
 //=============================================================================================
 /// @brief  Test pulse button call function
 Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
 	String ctrlName
-	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()
-	// pauseupdate
-	
+	string panelTitle = DAP_ReturnPanelName()
+
 	// make sure data folder is correct
 	setdatafolder root:
 	
@@ -313,7 +284,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	string WavePath
 	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
 	
-	// *** need to modify for yoked devices
+	// @todo Need to modify (killing count global) for yoked devices
 	// Kill the global variable Count if it exists - if it was allowed to exist the user would not be able to stop the TP using the space bar
 	string CountPath = WavePath + ":count"
 	if(exists(CountPath) == 2)
@@ -331,8 +302,11 @@ Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that star
 	variable DeviceNum = v_value - 1
 	
 	StartTestPulse(deviceType, deviceNum, panelTitle)
-
-End // Function
+	
+	// Enable pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
+End
 //=============================================================================================
 /// @brief Updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
 /// n determines the number of TP cycles to average
@@ -358,48 +332,48 @@ End
 // The wave contains the steady state difference between the baseline and the TP response
 // In order to allow TP_Delta to be threadsafe it uses global variables (controlinfo is not threadsafe).
 Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
-	string panelTitle
-	string InputDataPath
+	string 	panelTitle
+	string 	InputDataPath
 
-	string StringPath
-	sprintf StringPath, "%s:Duration" InputDataPath
-	NVAR DurationG = $StringPath
+	string 	StringPath
+	sprintf 	StringPath, "%s:Duration" 		InputDataPath
+	NVAR 	DurationG 	= $StringPath
 
-	sprintf stringPath,  "%s:AmplitudeIC" InputDataPath
-	NVAR AmplitudeIC = $StringPath
+	sprintf 	stringPath,  "%s:AmplitudeIC" 	InputDataPath
+	NVAR 	AmplitudeIC 	= $StringPath
 
-	sprintf stringPath,  "%s:AmplitudeVC" InputDataPath
-	NVAR AmplitudeVC = $StringPath
+	sprintf 	stringPath,  "%s:AmplitudeVC"	InputDataPath
+	NVAR 	AmplitudeVC	= $StringPath
 
-	AmplitudeIC = abs(AmplitudeIC)
-	AmplitudeVC =  abs(AmplitudeVC)
+	AmplitudeIC 	= abs(AmplitudeIC)
+	AmplitudeVC	=  abs(AmplitudeVC)
 
-	sprintf stringPath,  "%s:TestPulseITC" InputDataPath
-	wave TPWave = $stringPath
+	sprintf 	stringPath,  "%s:TestPulseITC"	InputDataPath
+	wave 	TPWave 	= $stringPath
 
-	sprintf stringPath,  "%s:n" InputDataPath
-	NVAR RowsInBufferWaves = $stringPath
+	sprintf 	stringPath,  "%s:n" 			InputDataPath
+	NVAR 	RowsInBufferWaves = $stringPath
 
-	variable Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
-	variable BaselineSteadyStateStartTime =(0.1 * duration)
-	variable BaselineSteadyStateEndTime = (0.24 * Duration)
-	variable TPSSEndTime = (0.74 * duration)
-	variable TPInstantaneouseOnsetTime = (0.252 * Duration)
-	variable DimOffsetVar = DimOffset(TPWave, 0)
-	variable DimDeltaVar = DimDelta(TPWave, 0)
-	variable PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
-	variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
-	variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
-	variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
-	variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-	variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
-	sprintf StringPath, "%s:NoOfActiveDA" InputDataPath
-	NVAR NoOfActiveDA = $StringPath
-	sprintf StringPath, "%s:ClampModeString" InputDataPath
-	SVAR ClampModeString = $StringPath
+	variable 	Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
+	variable 	BaselineSteadyStateStartTime =(0.1 * duration)
+	variable 	BaselineSteadyStateEndTime = (0.24 * Duration)
+	variable 	TPSSEndTime = (0.74 * duration)
+	variable 	TPInstantaneouseOnsetTime = (0.252 * Duration)
+	variable 	DimOffsetVar = DimOffset(TPWave, 0)
+	variable 	DimDeltaVar = DimDelta(TPWave, 0)
+	variable 	PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
+	variable 	BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
+	variable 	BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
+	variable 	TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
+	variable 	TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
+	variable 	TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+	sprintf 	StringPath, "%s:NoOfActiveDA" InputDataPath
+	NVAR 	NoOfActiveDA = $StringPath
+	sprintf 	StringPath, "%s:ClampModeString" InputDataPath
+	SVAR 	ClampModeString = $StringPath
 //	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
-	duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, BaselineSS
-	duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, TPSS
+	duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, 	BaselineSS
+	duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, 			TPSS
 	duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
 //	average the steady state wave
 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
@@ -411,22 +385,22 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	AvgBaselineSS /= dimsize(BaselineSS, 0)
 	sprintf StringPath, "%s:BaselineSSAvg" InputDataPath
 	duplicate /o / r = [][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS $StringPath
-	wave BaselineSSAvg = $StringPath
+	wave 	BaselineSSAvg = $StringPath
 //	calculate the difference between the steady state and the baseline
 	duplicate /free AvgTPSS, AvgDeltaSS
 	AvgDeltaSS -= AvgBaselineSS
 	AvgDeltaSS = abs(AvgDeltaSS)
 
 //	create wave that will hold instantaneous average
-	variable i = 0
-	variable columnsInWave = dimsize(Instantaneous, 1)
+	variable 	i = 0
+	variable 	columnsInWave = dimsize(Instantaneous, 1)
 	if(columnsInWave == 0)
 		columnsInWave = 1
 	endif
 
 	make /FREE /n = (1, columnsInWave) InstAvg
-	variable OneDInstMax
-	variable OndDBaseline
+	variable 	OneDInstMax
+	variable 	OndDBaseline
 
 	do
 		matrixOp /Free Instantaneous1d = col(Instantaneous, i + NoOfActiveDA)
@@ -447,17 +421,17 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 
 	sprintf StringPath, "%s:SSResistance" InputDataPath
 	duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS $StringPath
-	wave SSResistance = $StringPath
+	wave 	SSResistance = $StringPath
 	SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
 
 	sprintf StringPath, "%s:InstResistance" InputDataPath
 	duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg $StringPath
-	wave InstResistance = $StringPath
+	wave 	InstResistance = $StringPath
 	SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
 
 	sprintf StringPath, "%s:ClampModeString" InputDataPath
-	SVAR ClampModeString = $StringPath
-	string decimalAdjustment
+	SVAR 	ClampModeString = $StringPath
+	string 	decimalAdjustment
 
 	i = 0
 	do
@@ -483,7 +457,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 		matrixop /o TPBaselineBuffer =  rotaterows(TPBaselineBuffer, 1)
 		TPBaselineBuffer[0][] = BaselineSSAvg[0][q]
 		matrixop /o BaselineSSAvg = sumcols(TPBaselineBuffer)
-		BaselineSSAvg /= RowsInBufferWaves
+		BaselineSSAvg /= RowsInBufferWaves // *
 
 		sprintf stringPath,  "%s:TPInstBuffer" InputDataPath
 		make /o /n = (RowsInBufferWaves, columns) $stringPath
@@ -506,7 +480,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, NoOfActiveDA)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
-
+//=============================================================================================
 /// Sampling interval in seconds
 Constant samplingInterval = 0.2
 /// Fitting range in seconds
@@ -565,9 +539,10 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, count, samplingInterval, fittingRange)
+		P_PressureControl(panelTitle) // Call pressure functions
 	endif
 End
-
+//=============================================================================================
 /// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
 /// over a user defined window (in seconds)
 ///
@@ -582,11 +557,11 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 	variable ADChanCount
 	Wave/Z TPStorage
 	variable endRow, samplingInterval, fittingRange
-
+	
 	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
 
 	startRow = endRow - ceil(fittingRange / samplingInterval)
-
+	
 	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS) || ADChanCount > DimSize(TPStorage, COLS))
 		return NaN
 	endif
@@ -599,17 +574,16 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
 			Wave W_coef
-			TPStorage[startRow,endRow][i][%Vm_Slope] = W_coef[1]
-
+			TPStorage[0][i][%Vm_Slope] = W_coef[1]
 			V_FitError  = 0
 			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			TPStorage[startRow,endRow][i][%Rpeak_Slope] = W_coef[1]
+			TPStorage[0][i][%Rpeak_Slope] = W_coef[1]
 
 			V_FitError  = 0
 			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			TPStorage[startRow,endRow][i][%Rss_Slope] = W_coef[1]
+			TPStorage[0][i][%Rss_Slope] = W_coef[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
 			TPStorage[startRow,endRow][i][%Vm_Slope]    = NaN
@@ -625,7 +599,7 @@ Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterv
 		endtry
 	endfor
 End
-
+//=============================================================================================
 /// @brief Resets the TP storage wave
 ///
 /// - Store the TP record if requested by the user
@@ -650,22 +624,22 @@ Function TP_ResetTPStorage(panelTitle)
 		TPStorage = NaN
 	endif
 End
-
+//=============================================================================================
 /// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
 ///
 /// In the order of the ADchannels in ITCDataWave - i.e. numerical order
 Function/S TP_ClampModeString(panelTitle)
-	string panelTitle
+	string 	panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	string 	WavePath 			= HSU_DataFullFolderPathString(panelTitle)
 	string /g $WavePath + ":TestPulse:ADChannelList"
-	SVAR ADChannelList = $WavePath + ":TestPulse:ADChannelList"
-	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	ADChannelList = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
-	variable i = 0
+	SVAR 	ADChannelList		= $WavePath + ":TestPulse:ADChannelList"
+	wave 	ITCChanConfigWave 	= $WavePath + ":ITCChanConfigWave"
+			ADChannelList		= SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	variable 	i 					= 0
 	string /g $WavePath + ":TestPulse:ClampModeString"
-	SVAR ClampModeString = $WavePath + ":TestPulse:ClampModeString"
-	ClampModeString = ""
+	SVAR 	ClampModeString 	= $WavePath + ":TestPulse:ClampModeString"
+			ClampModeString 	= ""
 	
 	do
 		ClampModeString += (num2str(AI_MIESHeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
@@ -674,7 +648,7 @@ Function/S TP_ClampModeString(panelTitle)
 
 	return ClampModeString
 End
-
+//=============================================================================================
 ///@brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
@@ -695,10 +669,10 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 
 	return NaN
 End
-
+//=============================================================================================
 ///@brief Find the headstage using a particular DA channel
 Function TP_HeadstageUsingDAC(panelTitle, DA)
-	string panelTitle
+	string 	panelTitle
 	variable DA
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
@@ -715,26 +689,25 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 
 	return NaN
 End
-
+//=============================================================================================
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
-	string panelTitle, OpName
+	string 	panelTitle, OpName
 
 	CtrlNamedBackground $OpName, status
 	return ( str2num(StringFromList(2, s_info, ";")[4]) != 0 )
 End
-
+//=============================================================================================
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
 /// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
 Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
-	string panelTitle
-	variable frequency
-	variable amplitude
-	Wave TPWave
-
-	variable numberOfSquarePulses
-	variable  longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
+	string 	panelTitle
+	variable 	frequency
+	variable 	amplitude
+	Wave 	TPWave
+	variable 	numberOfSquarePulses
+	variable  	longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
 	//print "longest sweep =", longestSweepPoints
-	variable exponent = ceil(log(longestSweepPoints)/log(2))
+	variable 	exponent = ceil(log(longestSweepPoints)/log(2))
 	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
 		exponent = 17
 	endif 
@@ -766,5 +739,5 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 		numberOfSquarePulses -= 1
 		return (numberOfSquarePulses / 2)
 	endif
-	
 End
+//=============================================================================================

@@ -11,7 +11,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	variable i =  0
 	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":"
 	wave ITCDataWave = $WavePath + "ITCDataWave"
-	wave TestPulseITC = $WavePath+"TestPulse:TestPulseITC", ITCChanConfigWave =$WavePath + "ITCChanConfigWave"
+	wave TestPulseITC = $WavePath + "TestPulse:TestPulseITC", ITCChanConfigWave = $WavePath + "ITCChanConfigWave"
 	wave ChannelClampMode = $WavePath + "ChannelClampMode"
 	wave /z SSResistanceWave = $WavePath + "TestPulse:SSResistance"
 	wave /z InstResistanceWave = $WavePath + "TestPulse:InstResistance"
@@ -100,24 +100,22 @@ Function/s SCOPE_FindValueInColumnof2Dwave(Value, Column, TwoDWave)//DA = 1, AD 
 End
 
 //=========================================================================================
-Function/s SCOPE_RefToPullDatafrom2DWave(Value,RefColumn, DataColumn, TwoDWave)// Returns the data from the data column based on matched values in the ref column
+Function/s SCOPE_RefToPullDatafrom2DWave(Value, RefColumn, DataColumn, TwoDWave) // Returns the data from the data column based on matched values in the ref column
 	wave TwoDWave// For ITCDataWave 0 (value) in Ref column = AD channel, 1 = DA channel,
 	variable Value,RefColumn, DataColumn
 	variable i = 0
 	string Values = ""
 	string RowList = SCOPE_FindValueInColumnof2Dwave(Value, RefColumn, TwoDWave)
-	
-//	do
-//		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
-//		i += 1
-//	while(i < (itemsinlist(RowList,";")))
+
 	variable stopPoint = (itemsinlist(RowList,";")
 	for(i = 0; i < stopPoint; i += 1)
-		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
+//		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
+		values = AddListItem(num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn]), values, ";", i)
 	endfor
 	
 	return Values
 End
+AddListItem
 //=========================================================================================
 
 Function SCOPE_RemoveTracesOnGraph(GraphName)

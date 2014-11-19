@@ -104,7 +104,7 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	endif
 
 	sprintf cmd, "ITCStartAcq" 
-	Execute cmd
+	Execute cmd	
 
 	ITC_StartBckgrdFIFOMonitor()
 End
@@ -117,7 +117,10 @@ Function ITC_StopDataAcq()
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string CountPath = WavePath + ":count"
-
+	NVAR DeviceID = $(wavePath + ":ITCDeviceIDGlobal")
+	sprintf cmd, "ITCSelectDevice %d" DeviceID
+	execute cmd
+	
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
 
@@ -169,7 +172,9 @@ Function ITC_FIFOMonitor(s)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	WAVE ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-
+	NVAR DeviceID = $(wavePath + ":ITCDeviceIDGlobal")
+	sprintf cmd, "ITCSelectDevice %d" DeviceID
+	execute cmd
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 	Execute cmd	
 
@@ -277,7 +282,6 @@ End
 ///@brief Background execution function for the test pulse data acquisition
 Function ITC_TestPulseFunc(s)
 	STRUCT WMBackgroundStruct &s
-
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
 	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
 	NVAR BackgroundTPCount   = root:MIES:ITCDevices:BackgroundTPCount
@@ -294,7 +298,10 @@ Function ITC_TestPulseFunc(s)
 	Wave ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	string CountPath = WavePath + ":count"
-
+	NVAR DeviceID = $(wavePath + ":ITCDeviceIDGlobal")
+	sprintf cmd, "ITCSelectDevice %d" DeviceID
+	execute cmd
+	
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	execute cmd // this also seems necessary to update the DA channel data to the board!!
 	sprintf cmd, "ITCStartAcq"
@@ -359,6 +366,10 @@ Function ITC_STOPTestPulse(panelTitle)
 	endif
 	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
 	killstrings /z root:MIES:ITCDevices:PanelTitleG
+	
+	// Update pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
@@ -458,9 +469,9 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		current += actualCurrent
-		// only use 80% of the calculated current, as BaselineSSAvg holds
+		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= 0.80
+		current *= 0.50
 
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
@@ -484,6 +495,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 
 	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
 
+
 	TP_ResetTPStorage(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -499,10 +511,7 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
-	
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd
+
 	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
@@ -540,6 +549,10 @@ Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	DAP_RestoreTTLState(panelTitle)
 	ITC_TPDocumentation(panelTitle)
 	EnableControl(panelTitle,"StartTestPulseButton")
+	
+	// Update pressure buttons
+	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	P_LoadPressureButtonState(panelTitle, headStage)
 END
 //======================================================================================
 

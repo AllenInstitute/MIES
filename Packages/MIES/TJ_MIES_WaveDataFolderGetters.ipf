@@ -1,5 +1,7 @@
 #pragma rtGlobals=3
 
+static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17 
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -309,6 +311,36 @@ Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation"
 End
 
+/// @brief Returns device specific pressure folder as string
+Function/S P_GetDevicePressureFolderAS(panelTitle)
+	string panelTitle
+
+	string 	DeviceNumber 	
+	string 	DeviceType 	
+	ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	string 	FolderPathString
+	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" GetMiesPathAsString(), DeviceType, DeviceNumber
+	return FolderPathString
+End
+
+/// @brief Creates ITC device specific pressure folder - used to store data for pressure regulators
+Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
+	string 	panelTitle
+	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
+End
+
+/// @brief Returns pressure folder as string
+Function/S P_GetPressureFolderAS(panelTitle)
+	string panelTitle
+	return GetMiesPathAsString() + ":Pressure"
+End
+
+/// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
+Function/DF P_PressureFolderReference(panelTitle)
+	string panelTitle
+	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
+End
+
 /// @brief Returns a wave reference to the textDocWave
 ///
 /// textDocWave is used to save settings for each data sweep and
@@ -590,35 +622,30 @@ End
 /// @brief Return a datafolder reference to the test pulse folder
 Function/DF GetDeviceTestPulse(panelTitle)
 	string panelTitle
-
 	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
 End
 
 /// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
-
 	return HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
 End
 
 /// @brief Return a datafolder reference to the device type folder
 Function/DF GetDeviceTypePath(deviceType)
 	string deviceType
-
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
 /// @brief Return the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
 Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
-
 	return Path_ITCDevicesFolder("") + ":" + deviceType
 End
 
 /// @brief Return a datafolder reference to the device folder
 Function/DF GetDevicePath(panelTitle)
 	string panelTitle
-
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
@@ -627,7 +654,6 @@ Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-
 	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
 		DEBUGPRINT("Invalid/Non-locked paneltitle, falling back to querying the GUI.")
 
@@ -641,14 +667,12 @@ End
 /// @brief Return a datafolder reference to the device data folder
 Function/DF GetDeviceDataPath(panelTitle)
 	string panelTitle
-
 	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(panelTitle)
 	string panelTitle
-
 	return GetDevicePathAsString(panelTitle) + ":Data"
 End
 
@@ -1423,5 +1447,480 @@ Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	wv[0][15] = "Async AD7 Unit"
 	
 	return wv
+End
+/// @brief Returns a wave reference to a DA data wave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: DA data
+Function/WAVE P_ITCDataDA(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataDA
+
+	if(WaveExists(ITCDataDA))
+		return ITCDataDA
+	endif
+
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataDA/WAVE=wv
+
+	wv = 0
+	return wv
+End
+
+/// @brief Returns a wave reference to a AD data wave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: AD data
+Function/WAVE P_ITCDataAD(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataAD
+
+	if(WaveExists(ITCDataAD))
+		return ITCDataAD
+	endif
+
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataAD/WAVE=wv
+
+	wv = 0
+	return wv
+End
+
+/// @brief Returns a wave reference to a TTL data wave used for pressure pulses on rack 0
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: TTL data
+Function/WAVE P_ITCDataTTLRz(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataTTLRz
+
+	if(WaveExists(ITCDataTTLRz))
+		return ITCDataTTLRz
+	endif
+
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRz/WAVE=wv
+
+	wv = 0
+	return wv
+End
+
+/// @brief Returns a wave reference to a TTL data wave used for pressure pulses on rack 1
+///
+/// Rows:
+/// - data points (@ 5 microsecond intervals)
+///
+/// Columns:
+/// - 0: TTL data
+Function/WAVE P_ITCDataTTLRo(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCDataTTLRo
+
+	if(WaveExists(ITCDataTTLRo))
+		return ITCDataTTLRo
+	endif
+
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRo/WAVE=wv
+
+	wv = 0
+	return wv
+End
+
+/// @brief Returns a wave reference to the data wave for the ITC TTL state
+///
+/// Rows:
+/// - one row
+///
+/// Columns:
+/// - one column
+Function/WAVE P_DIO(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr DIO
+
+	if(WaveExists(DIO))
+		return DIO
+	endif
+
+	Make/N=1/W dfr:DIO/WAVE=wv
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the wave used to store the ITC device state
+///
+/// Rows:
+/// - 1: State
+/// - 2: Overflow / Underrun
+/// - 3: Clipping conditions
+/// - 4: Error code
+///
+/// Columns:
+/// - 1: State
+Function/WAVE P_ITCState(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr ITCState
+
+	if(WaveExists(ITCState))
+		return ITCState
+	endif
+
+	Make/I/N=4 dfr:ITCState/WAVE=wv
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
+///
+/// Rows:
+/// - data points (@ 50 microsecond intervals)
+///
+/// Columns:
+/// - 0: DA data
+/// - 1: AD data
+/// - 2: TTL data rack 0
+/// - 3: TTL data rack 1
+Function/WAVE P_GetITCData(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ITCData
+
+	if(WaveExists(P_ITCData))
+		return P_ITCData
+	endif
+
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE, 4) dfr:P_ITCData/WAVE=wv
+
+	SetDimLabel COLS, 0, DA, 		wv
+	SetDimLabel COLS, 1, AD, 		wv
+	SetDimLabel COLS, 2, TTL_R0, 	wv
+	SetDimLabel COLS, 3, TTL_R1, 	wv
+	wv = 0
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the ITCChanConfig wave used for pressure pulses
+///
+/// Rows:
+/// - 0: DA channel specifications
+/// - 1: AD channel specifications
+/// - 2: TTL rack 0 specifications
+/// - 3: TTL rack 1 specifications
+///
+/// Columns:
+/// - 0: Channel Type
+/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 2: Sampling interval
+/// - 3: Decimation
+Function/WAVE P_GetITCChanConfig(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ChanConfig
+
+	if(WaveExists(P_ChanConfig))
+		return P_ChanConfig
+	endif
+
+	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE=wv
+
+	wv = 0
+	wv[0][0] = 1 // DA
+	wv[1][0] = 0 // AD
+	wv[2][0] = 3 // TTL
+	wv[3][0] = 3 // TTL
+
+	wv[2][1] = 0 // TTL rack 0
+	wv[3][1] = 3 // TTL rack 1
+
+	wv[][2] = SAMPLE_INT_MICRO // 5 micro second sampling interval
+
+	SetDimLabel ROWS, 0, DA, 		wv
+	SetDimLabel ROWS, 1, AD, 		wv
+	SetDimLabel ROWS, 2, TTL_R0, 	wv
+	SetDimLabel ROWS, 3, TTL_R1, 	wv
+
+	SetDimLabel COLS, 0, Chan_Type, wv
+	SetDimLabel COLS, 1, Chan_num, 	wv
+	SetDimLabel COLS, 2, Samp_int, 	wv
+
+	return wv
+End
+
+/// @brief Returns a wave reference to the ITCFIFOAvailConfig wave used for pressure pulses
+///
+/// Rows:
+/// - 0: DA channel specifications
+/// - 1: AD channel specifications
+/// - 2: TTL rack 0 specifications
+/// - 3: TTL rack 1 specifications
+/// Columns:
+/// - 0: Channel Type
+/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 2: FIFO advance
+/// - 3: Reserved
+Function/WAVE P_GetITCFIFOConfig(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ITCFIFOConfig
+
+	if(WaveExists(P_ITCFIFOConfig))
+		return P_ITCFIFOConfig
+	endif
+
+	Make/I/N=(4, 4) dfr:P_ITCFIFOConfig/WAVE=wv
+
+	wv = 0
+	wv[0][0] = 1 // DA
+	wv[1][0] = 0 // AD
+	wv[2][0] = 3 // TTL
+	wv[3][0] = 3 // TTL
+
+	wv[2][1] = 0 // TTL rack 0
+	wv[3][1] = 3 // TTL rack 1
+
+	wv[][2]	= -1 // reset the FIFO
+
+	SetDimLabel ROWS, 0, DA, 			wv
+	SetDimLabel ROWS, 1, AD, 			wv
+	SetDimLabel ROWS, 2, TTL_R0, 		wv
+	SetDimLabel ROWS, 3, TTL_R1, 		wv
+
+	SetDimLabel COLS, 0, Chan_Type,	 	wv
+	SetDimLabel COLS, 1, Chan_num, 		wv
+	SetDimLabel COLS, 2, FIFO_advance, 	wv
+	return wv
+End
+
+/// @brief Returns a wave reference to the ITCFIFOAvail wave used for pressure pulses
+///
+/// Rows:
+/// - 0: DA channel specifications
+/// - 1: AD channel specifications
+/// - 2: TTL rack 0 specifications
+/// - 3: TTL rack 1 specifications
+/// Columns:
+/// - 0: Channel Type
+/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 2: FIFO available
+/// - 3: Reserved
+Function/WAVE P_GetITCFIFOAvail(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr P_ITCFIFOAvail
+
+	if(WaveExists(P_ITCFIFOAvail))
+		return P_ITCFIFOAvail
+	endif
+
+	Make/I/N=(4, 4) dfr:P_ITCFIFOAvail/WAVE=wv
+
+	SetDimLabel ROWS, 0, DA        , wv
+	SetDimLabel ROWS, 1, AD        , wv
+	SetDimLabel ROWS, 2, TTL_R0    , wv
+	SetDimLabel ROWS, 3, TTL_R1    , wv
+
+	SetDimLabel COLS, 0, Chan_Type , wv
+	SetDimLabel COLS, 1, Chan_num  , wv
+	SetDimLabel COLS, 2, FIFO_avail, wv
+
+	wv = 0
+	wv[0][0] = 1 // DA
+	wv[1][0] = 0 // AD
+	wv[2][0] = 3 // TTL
+	wv[3][0] = 3 // TTL
+
+	wv[2][1] = 0 // TTL rack 0
+	wv[3][1] = 3 // TTL rack 1
+
+	return wv
+End
+
+/// @brief Returns wave reference of wave used to store data used in functions that run pressure regulators
+/// creates the wave if it does not exist
+///
+/// Rows:
+/// - 0 - 7: Headstage 0 through 7
+///
+/// Columns:
+/// - 0: Pressure method. -1 = none, 0 = Approach, 1 = Seal, 2 = Break In, 3 = Clear
+/// - 1: List position of DAC (used for presssure control) selected for headstage .
+/// - 2: Type of Instrutech DAC.
+/// - 3: Device ID used by Instrutech DACs.
+/// - 4: DA channel used for pressure regulation.
+/// - 5: Gain of DA channel used for presssure regulation.
+/// - 6: AD channel used for pressure regulation.
+/// - 7: Gain of AD channel used for pressure regulation.
+/// - 8: TTL chanel used for pressure regulation.
+/// - 9: Pipette pressure setting while pipette is positioned in air/outside of bath.
+/// - 10: Pipette pressure setting for pipette positioned in the bath.
+/// - 11: Pipette pressure setting for pipette positioned in the slice.
+/// - 12: Pipette pressure setting for pipette positioned near the target cell.
+/// - 13: Pipette pressure setting for pipette at the initialization of seal formation.
+/// - 14: Maximum Pipette pressure setting for seal formation.
+/// - 15: Distance between the bottom of the recording chamber to the surface of the bath solution.
+/// - 16: Distance between the bottom of the recording chamber and the top of the tissue slice.
+/// - 17: Distance between the bottom of the recording chamber and the soma of the target cell.
+/// - 18: X position (in the stage frame) of the soma of the target cell.
+/// - 19: Y position (in the stage frame) of the soma of the target cell.
+/// - 20: Place holder for future data.
+/// - 21: Place holder for future data.
+/// - 22: Last steady state resistance value.
+/// - 23: Slope of the peak TP resistance over the last 5 seconds.
+/// - 24: State of the TP (0 = OFF, 1 = ON).
+/// - 25: Slope threshold. Used to determine if pressure should be incremented during sealing.
+/// - 26: Last pressure command.
+/// - 27: State of pressure pulse (0 = OFF, 1 = ON).
+/// - 28: Last amplifier voltage command.
+/// - 29: Manual pressure command amplitude in psi.
+/// - 30: Manual pressure pulse command amplitude in psi.
+/// - 31: Manual pressure pulse duation in ms.
+/// - 32: Peak resistance on previous method cycle.
+/// - 33: Peak resistance on active method cycle.
+/// - 34: Time of last peak resistance check.
+
+Function/WAVE P_GetPressureDataWaveRef(panelTitle)
+	string	panelTitle
+
+	dfref 	dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/SDFR=dfr PressureData
+
+	if(WaveExists(PressureData))
+		return PressureData
+	endif
+
+	Make/N=(8,35,1) dfr:PressureData/Wave=PressureData
+
+	PressureData 	= nan
+	PressureData[][0]	= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
+	PressureData[][1]	= 0
+	PressureData[][4]	= 0
+	PressureData[][6]	= 0
+	PressureData[][8]	= 0
+
+	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear   , PressureData // -1 = atmospheric pressure; 0 = approach; 1 = Seal; Break in = 2     , Clear = 3
+	SetDimLabel COLS, 1 , DAC_List_Index              , PressureData // The position in the popup menu list of attached ITC devices
+	SetDimLabel COLS, 2 , DAC_Type                    , PressureData // type of ITC DAC
+	SetDimLabel COLS, 3 , DAC_DevID                   , PressureData // ITC DAC number
+	SetDimLabel COLS, 4 , DAC                         , PressureData // DA channel
+	SetDimLabel COLS, 5 , DAC_Gain                    , PressureData
+	SetDimLabel COLS, 6 , ADC                         , PressureData
+	SetDimLabel COLS, 7 , ADC_Gain                    , PressureData
+	SetDimLabel COLS, 8 , TTL                         , PressureData // TTL channel
+	SetDimLabel COLS, 9 , PSI_air                     , PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 10, PSI_solution                , PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 11, PSI_slice                   , PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 12, PSI_nearCell                , PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 13, PSI_SealInitial             , PressureData // used to set the minium negative pressure for sealing
+	SetDimLabel COLS, 14, PSI_SealMax                 , PressureData // used to set the maximum negative pressure for sealing
+	SetDimLabel COLS, 15, solutionZaxis               , PressureData // solution height in microns (as measured from bottom of the chamber).
+	SetDimLabel COLS, 16, sliceZaxis                  , PressureData // top of slice in microns (as measured from bottom of the chamber).
+	SetDimLabel COLS, 17, cellZaxis                   , PressureData // height of cell (as measured from bottom of the chamber).
+	SetDimLabel COLS, 18, cellXaxis                   , PressureData // cell position data
+	SetDimLabel COLS, 19, cellYaxis                   , PressureData // cell position data
+	SetDimLabel COLS, 20, PlaceHolderZero             , PressureData // used to store pressure method currently being used on cell
+	SetDimLabel COLS, 21, PlaceHolderOne              , PressureData // numbe of times current state has been cycled through
+	SetDimLabel COLS, 22, LastResistanceValue         , PressureData // last steady state resistance value
+	SetDimLabel COLS, 23, PeakResistanceSlope         , PressureData // Slope of the peak TP resistance value over the last 5 seconds
+	SetDimLabel COLS, 24, ActiveTP                    , PressureData // Indicates if the TP is active on the headStage
+	/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
+	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
+	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
+	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, PressureData // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
+	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck       , PressureData // The time in ticks of the last check of the resistance slopes
+	SetDimLabel COLS, 26, LastPressureCommand         , PressureData
+	SetDimLabel COLS, 27, OngoingPessurePulse         , PressureData
+	SetDimLabel COLS, 28, LastVcom                    , PressureData
+	SetDimLabel COLS, 29, ManSSPressure               , PressureData
+	SetDimLabel COLS, 30, ManPPPressure               , PressureData
+	SetDimLabel COLS, 31, ManPPDuration               , PressureData
+	SetDimLabel COLS, 32, LastPeakR                   , PressureData
+	SetDimLabel COLS, 33, PeakR                       , PressureData
+	SetDimLabel COLS, 34, TimePeakRcheck              , PressureData
+
+	SetDimLabel ROWS, 0, Headstage_0, PressureData
+	SetDimLabel ROWS, 1, Headstage_1, PressureData
+	SetDimLabel ROWS, 2, Headstage_2, PressureData
+	SetDimLabel ROWS, 3, Headstage_3, PressureData
+	SetDimLabel ROWS, 4, Headstage_4, PressureData
+	SetDimLabel ROWS, 5, Headstage_5, PressureData
+	SetDimLabel ROWS, 6, Headstage_6, PressureData
+	SetDimLabel ROWS, 7, Headstage_7, PressureData
+
+	return PressureData
+End
+
+/// @brief Returns wave reference for wave used to store text used in pressure control.
+///
+/// creates the text storage wave if it doesn't already exist.
+///
+/// Rows:
+/// - 0 - 7: Headstage 0 through 7
+///
+/// Columns:
+/// - 0: Digitial to analog converter device type string.
+/// - 1: DA unit.
+/// - 2: AD unit.
+Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
+	string panelTitle
+
+	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	Wave/Z/T/SDFR=dfr PressureDataTextWv
+
+	if(WaveExists(PressureDataTextWv))
+		return PressureDataTextWv
+	endif
+
+	Make/T/N=(8, 3, 1) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
+
+	SetDimLabel COLS, 0, ITC_Device, PressureDataTextWv
+	SetDimLabel COLS, 1, DA_Unit, 	PressureDataTextWv
+	SetDimLabel COLS, 2, AD_Unit, 	PressureDataTextWv
+
+	SetDimLabel ROWS, 0, Headstage_0, PressureDataTextWv
+	SetDimLabel ROWS, 1, Headstage_1, PressureDataTextWv
+	SetDimLabel ROWS, 2, Headstage_2, PressureDataTextWv
+	SetDimLabel ROWS, 3, Headstage_3, PressureDataTextWv
+	SetDimLabel ROWS, 4, Headstage_4, PressureDataTextWv
+	SetDimLabel ROWS, 5, Headstage_5, PressureDataTextWv
+	SetDimLabel ROWS, 6, Headstage_6, PressureDataTextWv
+	SetDimLabel ROWS, 7, Headstage_7, PressureDataTextWv
+
+	PressureDataTextWv[][0] = "- none -"
+
+	return PressureDataTextWv
 End
 

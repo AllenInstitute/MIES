@@ -135,6 +135,78 @@ Function SetControlTitleColor(win, controlName, R, G, B)
 	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
 End
 
+/// @brief Change color of a control
+Function ChangeControlColor(win, controlName, R, G, B)
+	string win, controlName
+	variable R, G, B
+	
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")	
+	
+	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
+
+End
+
+/// @brief Change the font color of a control
+Function ChangeControlValueColor(win, controlName, R, G, B)
+	string win, controlName
+	variable R, G, B
+	
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")	
+	
+	ModifyControl $ControlName WIN = $win, valueColor = (R,G,B)
+
+End
+
+/// @brief Change the font color of a list of controls
+Function ChangeListOfControlValueColor(win, controlList, R, G, B)
+	string win, controlList
+	variable R, G, B
+	variable i
+	variable numItems = ItemsInList(controlList)
+	string ctrl
+	for(i=0; i < numItems; i+=1)
+		ctrl = StringFromList(i,controlList)
+		ControlInfo/W=$win $ctrl
+		ASSERT(V_flag != 0, "Non-existing control or window")	
+	//	ChangeControlValueColor(win, ctrl, R, G, B)
+	endfor
+	
+	ModifyControlList controlList, WIN = $win, valueColor = (R,G,B)
+	
+End
+
+/// @brief Changes the background color of a control
+Function ChangeControlBckgColor(win, controlName, R, G, B)
+	string win, controlName
+	variable R, G, B
+	
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")	
+	
+	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B)
+
+End
+
+/// @brief Change the background color of a list of controls
+Function ChangeListOfControlBckgColor(win, controlList, R, G, B)
+	string win, controlList
+	variable R, G, B
+	variable i
+	variable numItems = ItemsInList(controlList)
+	string ctrl
+	for(i=0; i < numItems; i+=1)
+		ctrl = StringFromList(i,controlList)
+		ControlInfo/W=$win $ctrl
+		ASSERT(V_flag != 0, "Non-existing control or window")	
+	//	ChangeControlValueColor(win, ctrl, R, G, B)
+	endfor
+	
+	ModifyControlList controlList, WIN = $win, valueBackColor = (R,G,B)
+	
+End
+
 /// @name Control types from ControlInfo
 /// @{
 Constant CONTROL_TYPE_CHECKBOX    = 2
@@ -143,6 +215,15 @@ Constant CONTROL_TYPE_VALDISPLAY  = 4
 Constant CONTROL_TYPE_SETVARIABLE = 5
 Constant CONTROL_TYPE_SLIDER      = 7
 /// @}
+
+/// @brief Returns control disable state
+Function GetControlDisable(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	return V_disable
+End
 
 /// @brief Returns one if the checkbox is selected, zero if it is unselected
 /// and, if allowMissingControl is true, NaN for non existing controls.
@@ -255,6 +336,20 @@ Function SetPopupMenuIndex(win, control, index)
 	ASSERT(index >= 0,"Invalid index")
 	PopupMenu $control win=$win, mode=(index+1)
 End
+
+/// @brief Sets the popupmenu value
+Function SetPopupMenuVal(win, control, List)
+	string win, control
+	string List
+	string outputList
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	sprintf outputList, "\"%s\"" List
+	ASSERT(strlen(outputList) < 400, "Popop menu list is greater than 400 characters")
+	PopupMenu $control win=$win, value = #outputList
+End	
 
 /// @brief Returns the contents of a ValDisplay
 Function/S GetValDisplayAsString(win, control)

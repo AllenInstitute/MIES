@@ -367,16 +367,17 @@ Function AI_MIESHeadstageMode(panelTitle, headStage)
 	return GetCheckBoxState(panelTitle, ctrl) == CHECKBOX_SELECTED ? V_CLAMP_MODE : I_CLAMP_MODE
 End
 //==================================================================================================
-Function AI_UpdateAmpModel(panelTitle, cntrlName)
+Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 	string panelTitle
 	string cntrlName
+	variable headStage
 
 	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
 
-	variable headStage, i, numHS, value
+	variable i, numHS, value
 	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
@@ -1070,7 +1071,7 @@ Function AI_OpenAllMCC (isHidden)
 	ExecuteScriptText "nircmd.exe win center title \"11&12\""
 /// This function closes all of the MCC windows. A window may be closed normally and this will still work.
 	//1&2
-	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00834380 /T1&2"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834380.mcc\""
+	ExecuteScriptText "\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\MC700B.exe\" /S00836059 /T1&2"// /C\"C:\Program Files (x86)\Molecular Devices\MultiClamp 700B Commander\Configurations\Config00834380.mcc\""
 	ExecuteScriptText "nircmd.exe win center title \"1&2\""
 	
 	String/G curMCC = "1&2"
