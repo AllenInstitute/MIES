@@ -1466,7 +1466,7 @@ Function/WAVE P_ITCDataDA(panelTitle)
 		return ITCDataDA
 	endif
 
-	Make/W/O/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataDA/WAVE = Wv
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataDA/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1490,7 +1490,7 @@ Function/WAVE P_ITCDataAD(panelTitle)
 		return ITCDataAD
 	endif
 
-	Make/W/O/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataAD/WAVE = Wv
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataAD/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1514,7 +1514,7 @@ Function/WAVE P_ITCDataTTLRz(panelTitle)
 		return ITCDataTTLRz
 	endif
 
-	Make/W/O/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRz/WAVE = Wv
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRz/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1538,7 +1538,7 @@ Function/WAVE P_ITCDataTTLRo(panelTitle)
 		return ITCDataTTLRo
 	endif
 
-	Make/W/O/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRo/WAVE = Wv
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRo/WAVE = Wv
 	
 	Wv = 0
 	return Wv
@@ -1562,7 +1562,7 @@ Function/WAVE P_DIO(panelTitle)
 		return DIO
 	endif
 
-	Make/N=1/W/O dfr:DIO/WAVE = Wv
+	Make/N=1/W dfr:DIO/WAVE = Wv
 	
 	return Wv
 End
@@ -1588,7 +1588,7 @@ Function/WAVE P_ITCState(panelTitle)
 		return ITCState
 	endif
 
-	Make/I/O/N=4 dfr:ITCState/WAVE = Wv
+	Make/I/N=4 dfr:ITCState/WAVE = Wv
 	
 	return Wv
 End
@@ -1614,7 +1614,7 @@ Function/WAVE P_GetITCData(panelTitle)
 		return P_ITCData
 	endif
 	
-	Make/W/O/N=(PRESSURE_WAVE_DATA_SIZE, 4) dfr:P_ITCData/WAVE = Wv
+	Make/W/N=(PRESSURE_WAVE_DATA_SIZE, 4) dfr:P_ITCData/WAVE = Wv
 	
 	SetDimLabel COLS, 0, DA, 		Wv
 	SetDimLabel COLS, 1, AD, 		Wv
@@ -1648,7 +1648,7 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 		return P_ChanConfig
 	endif
 	
-	Make/I/O/N=(4, 4) dfr:P_ChanConfig/WAVE = Wv
+	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE = Wv
 	
 	Wv = 0
 	Wv[0][0] = 1 // DA
@@ -1695,7 +1695,7 @@ Function/WAVE P_GetITCFIFOConfig(panelTitle)
 		return P_ITCFIFOConfig
 	endif
 	
-	Make/I/O/N=(4, 4) dfr:P_ITCFIFOConfig/WAVE = Wv
+	Make/I/N=(4, 4) dfr:P_ITCFIFOConfig/WAVE = Wv
 	
 	Wv = 0
 	Wv[0][0] = 1 // DA
@@ -1741,7 +1741,7 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 		return P_ITCFIFOAvail
 	endif
 	
-	Make/I/O/N=(4, 4) dfr:P_ITCFIFOAvail/WAVE = Wv
+	Make/I/N=(4, 4) dfr:P_ITCFIFOAvail/WAVE = Wv
 	
 	SetDimLabel ROWS, 0, DA, 			Wv
 	SetDimLabel ROWS, 1, AD, 			Wv
@@ -1817,7 +1817,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		return PressureData
 	endif
 
-	Make/O/N=(8,35,1) dfr:PressureData/Wave=PressureData
+	Make/N=(8,35,1) dfr:PressureData/Wave=PressureData
 	
 	PressureData 	= nan
 	PressureData[][0]	= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
@@ -1899,7 +1899,7 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 		return PressureDataTextWv
 	endif
 
-	Make/O/T/N=(8, 3, 1) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
+	Make/T/N=(8, 3, 1) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
 	
 	SetDimLabel COLS, 0, ITC_Device, PressureDataTextWv
 	SetDimLabel COLS, 1, DA_Unit, 	PressureDataTextWv
