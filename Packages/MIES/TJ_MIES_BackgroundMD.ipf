@@ -285,14 +285,14 @@ End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
 Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	String panelTitle
 	Variable AddOrRemoveDevice, RowToRemove
-	//Variable start = stopmstimer(-2)
+
 	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
-	if (AddOrRemoveDevice == 1) 
+	if(AddOrRemoveDevice == 1)
 		if (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave) == 0)
 			Make /WAVE /n = (1,2) root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
 			WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
-			// print devicefolderpath + ":itcdatawave"
+
 			ActiveDevWavePathWave[0][0] = $(DeviceFolderPath + ":ITCDataWave") 
 			ActiveDevWavePathWave[0][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
 		elseif (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave) == 1)
@@ -304,40 +304,4 @@ Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	elseif (AddOrRemoveDevice == -1)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave
 	endif
-	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
-End // Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddorRemoveDevice)
-//=============================================================================================================================
-
-//Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
-// 	String panelTitle
-// 	Variable TPorDataAcq
-// 	Variable Add_Remove // 1 to add a device; -1 to remove a device
-// 	
-// 	if (TPorDataAcq == 0) 
-// 		if(NVAR_Exists(ActiveTPDevices)==0) // creates global if it does not exist.
-// 			Variable /G ActiveTPDevices = 0
-// 		endif
-// 	
-// 		NVAR ActiveTPDevices
-// 		ActiveTPDevices += Add_Remove // Updates global to reflect the number of active devices
-// 		
-// 		if (ActiveTPDevices < 0) // Check to ensure the number of active devices is never less than 0
-// 			ActiveTPDevices = 0
-// 		endif
-// 	
-// 	elseif (TPorDataAcq == 1)
-// 			if(NVAR_Exists(ActiveDataAcqDevices)==0) // creates global if it does not exist.
-// 			Variable /G ActiveDataAcqDevices = 0
-// 		endif
-// 	
-// 		NVAR ActiveDataAcqDevices
-// 		ActiveDataAcqDevices += Add_Remove // Updates global to reflect the number of active devices
-// 		
-// 		if (ActiveDataAcqDevices < 0) // Check to ensure the number of active devices is never less than 0
-// 			ActiveDataAcqDevices = 0
-// 		endif
-// 	endif
-// 	
-// End // Function GlobalActiveDevCountUpdate(panelTitle)
-//=============================================================================================================================
-
+End
