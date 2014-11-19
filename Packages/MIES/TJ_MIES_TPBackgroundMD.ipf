@@ -346,6 +346,8 @@ End
 /// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function
 Function ITC_TPDocumentation(panelTitle) 
 	string panelTitle
+
+	variable sweepNo
 	string DataFolderPath = HSU_DataFullFolderPathString(panelTitle)
 	dfref TPDataFolderRef = $DataFolderPath + ":TestPulse"
 	
@@ -402,21 +404,15 @@ Function ITC_TPDocumentation(panelTitle)
 		TPSettingsWave[0][3][i] = SSResistance[0][j]
 		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active headstage (no place holder columns), j only increments for active headstages.
 	endfor
-
-	controlinfo /w = $panelTitle SetVar_Sweep // Determine the number of the next sweep to be acquired.
-	ASSERT(V_Flag > 0, "Non-existing control or window")
 	
-	variable NextSweep = v_value
-	variable lastSweep = NextSweep - 1
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) sweepData = $("Sweep_" + num2str(sweepNo))
 	
-	if(NextSweep == 0) // adds to settings history wave if no data has been acquired
-		ED_createWaveNotes(TPSettingsWave, TPKeyWave, "", nan, panelTitle)
-	else // adds to settings history wave if data has been acquired
-		string SweepName //= DataFolderPath + ":Sweep+_" + num2str(LastSweep)
-		sprintf SweepName, "%s:Data:Sweep_%d" DataFolderPath, LastSweep
-		ASSERT(waveexists($SweepName) > 0, "Sweep/Wave does not exist")
-		print sweepname
-		ED_createWaveNotes(TPSettingsWave, TPKeyWave, SweepName , lastSweep, panelTitle)
+	if(!WaveExists(SweepData))
+		// adds to settings history wave if no data has been acquired
+		ED_createWaveNotes(TPSettingsWave, TPKeyWave, "", NaN, panelTitle)
+	else
+		ED_createWaveNotes(TPSettingsWave, TPKeyWave, GetWavesDataFolder(sweepData, 2), sweepNo, panelTitle)
 	endif
 End
 
