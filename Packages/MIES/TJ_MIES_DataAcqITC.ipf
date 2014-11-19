@@ -69,47 +69,45 @@ End
 Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
+
 	string cmd
-	variable i = 0
-	//variable /G StopCollectionPoint = (DC_CalculateITCDataWaveLength(panelTitle)/4) + DC_ReturnTotalLengthIncrease(panelTitle)
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
-	doupdate
-	
-	wave ITCDataWave = $WavePath+ ":ITCDataWave"
-	//variable /G root:MIES:ITCDevices:StopCollectionPoint = dimsize(ITCDataWave, 0) / 5 
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
-	wave ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	
-	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
+	DoUpdate
+
+	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
+	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
+
+	string ITCDataWavePath                 = WavePath + ":ITCDataWave"
+	string ITCFIFOAvailAllConfigWavePath   = WavePath + ":ITCFIFOAvailAllConfigWave"
+	string ITCChanConfigWavePath           = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	// open ITC device
-	
-	//sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-		//Execute cmd	
+
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd	
-		
+	Execute cmd
+
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-		execute cmd
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		execute cmd// this also seems necessary to update the DA channel data to the board!!
-	
-	
-	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
-	variable RepeatedAcqOnOrOff = v_value
-	if(RepeatedAcqOnOrOff == 1)
+	Execute cmd
+
+	// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	// this also seems necessary to update the DA channel data to the board!!
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth
+	Execute cmd
+
+	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
-	
+
 	sprintf cmd, "ITCStartAcq" 
-		Execute cmd	
+	Execute cmd
+
 	ITC_StartBckgrdFIFOMonitor()
-	
-	End
+End
 //======================================================================================
 Function ITC_StopDataAcq()
 	variable DeviceType, DeviceNum
@@ -162,23 +160,29 @@ End
 
 Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:ADChannelToMonitor
+
+	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
+	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	String cmd
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
-	Wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
+	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
+	WAVE ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
+
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 	Execute cmd	
-	ITCDataWave[0][0] += 0//forces on screen update
+
+	ITCDataWave[0][0] += 0 //forces on screen update
 	string OscilloscopeSubWindow = panelTitleG + "#oscilloscope"
-	doupdate /w = $OscilloscopeSubWindow
+	DoUpdate/W=$OscilloscopeSubWindow
+
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		print "stopped data acq"
 		ITC_StopDataAcq()
 		ITC_STOPFifoMonitor()
 	endif
-				
+
 	return 0
 End
 
@@ -469,8 +473,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endfor
 End
 
-//ITC_StartBackgroundTestPulse();ITC_StartBackgroundTimer(20, "ITC_STOPTestPulse()")  This line of code starts the tests pulse and runs it for 20 seconds
-
 Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
 	string panelTitle
@@ -558,75 +560,50 @@ Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch cha
 	return ChannelValue
 End 
 
-//======================================================================================
-
-Function ITC_ADDataBasedWaveNotes(DataWave, DeviceType, DeviceNum,panelTitle)
-	Wave DataWave
-	variable DeviceType, DeviceNum
+Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
+	WAVE dataWave
 	string panelTitle
+
 	// This function takes about 0.9 seconds to run
 	// this is the wave that the note gets appended to. The note contains the async ad channel value and info
-	//variable starttime=ticks
-	string AsyncChannelState = DC_ControlStatusListString("AsyncAD", "check", panelTitle)
-	variable i
-	variable TotAsyncChannels = itemsinlist(AsyncChannelState,";")
-	variable RawChannelValue
-	string cmd
-	string SetVar_Title, Title
-	string SetVar_gain, Measurement
-	string SetVar_Unit, Unit
-	string WaveNote = ""
-	
-	// Check all active headstages
-	Wave statusHS = DC_ControlStatusWave(panelTitle, "DA")
-	variable noHeadStages = DimSize(statusHS, ROWS)
-	
-	// Create the measurement wave that will hold the measurement values
-	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
-	asyncMeasurementWave[0][] = NAN
-	
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType // "ITC16" (0), "ITC18" (1), "ITC1600" (2), "ITC00" (3), "ITC16USB" (4), "ITC18USB" (5) 
-	DeviceType = v_value - 1
-	variable DeviceChannelOffset // used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
-	If(DeviceType == 2)
-		DeviceChannelOffset = 16
-	else
-		DeviceChannelOffset = 0
-	endif
-	
-	// sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNum
-	// Execute cmd	
-	
-	do
-		if(str2num(stringfromlist(i, AsyncChannelState,";")) == 1)
-		RawChannelValue=ITC_SingleADReading(i +DeviceChannelOffset, panelTitle)//Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
-		
-			if(i < 10)
-				 SetVar_title = "SetVar_Async_Title_0" + num2str(i)
-				 SetVar_gain = "SetVar_AsyncAD_Gain_0" + num2str(i)
-				 SetVar_Unit = "SetVar_Async_Unit_0" + num2str(i)
-			else
-				 SetVar_title = "SetVar_Async_Title_" + num2str(i)
-				 SetVar_gain = "SetVar_AsyncAD_Gain_" + num2str(i)
-				 SetVar_Unit = "SetVar_Async_Unit_" + num2str(i)
-			endif 
-			
-			controlInfo /w = $panelTitle $SetVar_title
-			title = s_value
-			controlInfo /w = $panelTitle $SetVar_gain
-			
-			// put the measurement value into the async settings wave for creation of wave notes
-			asyncMeasurementWave[0][i] = RawChannelValue / v_value // put the measurement value into the async settings wave for creation of wave notes
-			ITC_SupportSystemAlarm(i, RawChannelValue / v_value, title, panelTitle)
-		endif
-		i += 1 
-	while(i < TotAsyncChannels)
-	
-	// sprintf cmd, "ITCCloseAll" 
-	// execute cmd
-	//print (ticks - starttime) / 60
+	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
+	string setvarTitle, setvarGain, title
 
+	// Create the measurement wave that will hold the measurement values
+	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
+	asyncMeasurementWave[0][] = NaN
+
+	// used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
+	if(HSU_GetDeviceTypeIndex(panelTitle) == 2)
+		deviceChannelOffset = 16
+	else
+		deviceChannelOffset = 0
+	endif
+
+	WAVE asyncChannelState = DC_ControlStatusWave(panelTitle, "AsyncAD")
+
+	numEntries = DimSize(asyncChannelState, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!asyncChannelState[i])
+			continue
+		endif
+
+		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+		rawChannelValue = ITC_SingleADReading(i + deviceChannelOffset, panelTitle)
+
+		sprintf setvarTitle, "SetVar_Async_Title_%02d", i
+		sprintf setvarGain,  "SetVar_AsyncAD_Gain_%02d", i
+
+		title = GetSetVariableString(panelTitle, setvarTitle)
+		gain  = GetSetVariable(panelTitle, setvarGain)
+
+		// put the measurement value into the async settings wave for creation of wave notes
+		asyncMeasurementWave[0][i] = rawChannelValue / gain // put the measurement value into the async settings wave for creation of wave notes
+		ITC_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
+	endfor
 End
+
 //======================================================================================
 Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
 variable Channel, Measurement

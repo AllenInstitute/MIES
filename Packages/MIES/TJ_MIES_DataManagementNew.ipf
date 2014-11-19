@@ -1,54 +1,50 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+static Constant FLOAT_32BIT = 0x02
+static Constant FLOAT_64BIT = 0x04
+
 Function DM_SaveITCData(panelTitle)
 	string panelTitle
-	variable DeviceType, DeviceNum
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	Variable SweepNo
-	ControlInfo /w = $panelTitle SetVar_Sweep
-	SweepNo = v_value
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	DeviceNum = v_value - 1
-	
-	string SavedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(SweepNo)
-	string SavedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(SweepNo)
-	//variable RowsToCopy = dimsize(ITCDataWave, 0) / 5
-	variable RowsToCopy = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
-	Duplicate /o /r = [0,RowsToCopy][] ITCDataWave $SavedDataWaveName
-	Duplicate /o ITCChanConfigWave $SavedSetUpWaveName
-	note $savedDataWaveName, Time()// adds time stamp to wave note
+	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+
+	string savedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(sweepNo)
+	string savedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(sweepNo)
+
+	variable rowsToCopy = ITC_CalcDataAcqStopCollPoint(panelTitle)
+
+	Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
+	Duplicate/O ITCChanConfigWave $savedSetUpWaveName
+	note dataWave, Time() // adds time stamp to wave note
 	getwindow kwFrameOuter wtitle 
-	note $savedDataWaveName, s_value
-	ED_AppendCommentToDataWave($SavedDataWaveName, panelTitle)//adds user comments as wave note
-	
-	//Do this if checked on the DA_Ephys panel
-	ControlInfo /w = $panelTitle check_Settings_SaveAmpSettings
-	variable saveAmpSettingsCheck = v_value
-	if (saveAmpSettingsCheck == 1)
-		AI_createAmpliferSettingsWave(panelTitle, SavedDataWaveName, SweepNo)
-		// this is a test function....to be deleted in production version
+	note dataWave, s_value
+	ED_AppendCommentToDataWave(dataWave, panelTitle) // adds user comments as wave note
+
+	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
+		AI_createAmpliferSettingsWave(panelTitle, savedDataWaveName, SweepNo)
+		// function for debugging
 		// createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	endif
-	
-	controlinfo /w = $panelTitle Check_Settings_Append
-	if(v_value == 1)// if option is checked, wave note containing single readings from (async) ADs is made
-		ITC_ADDataBasedWaveNotes($SavedDataWaveName, DeviceType,DeviceNum, panelTitle)
-	endif	
-	SetVariable SetVar_Sweep, Value = _NUM:(SweepNo+1), limits={0, SweepNo + 1,1},win = $panelTitle
-	redimension/d $SavedDataWaveName
-	DM_ADScaling($SavedDataWaveName, panelTitle)
-	DM_DAScaling($SavedDataWaveName, panelTitle)
+
+	if(GetCheckboxState(panelTitle, "Check_Settings_Append")) // if option is checked, wave note containing single readings from (async) ADs is made
+		ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
+	endif
+
+	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
+
+	Redimension/Y=(FLOAT_64BIT) dataWave
+
+	DM_ADScaling(dataWave, panelTitle)
+	DM_DAScaling(dataWave, panelTitle)
 
 	//Add wave notes for the stim wave name and scale factor
-	ED_createWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
-	
+	ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepNo)
+
 	//Add wave notes for the factors on the Asyn tab
-	ED_createAsyncWaveNoteTags(panelTitle, SavedDataWaveName, SweepNo)
-		
+	ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepNo)
 End
 
 Function DM_CreateScaleTPHoldingWave(panelTitle)
@@ -143,34 +139,37 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	variable gain, i
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 
-for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
-	if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)
-		DAGainControlName = "Gain_DA_0" + stringfromlist(i, DAChannelList, ";")
-	else
-		DAGainControlName = "Gain_DA_" + stringfromlist(i, DAChannelList, ";")
-	endif
-	controlinfo /w = $panelTitle $DAGainControlName
-	gain = v_value
-	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == V_CLAMP_MODE)
-		WaveToScale[][i] /= 3200
-		WaveToScale[][i] *= gain
-	endif
-	
-	if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == I_CLAMP_MODE)
-		WaveToScale[][i] /= 3200
-		WaveToScale[][i] *= gain
-	endif	
-endfor
+	for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
+		if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)
+			DAGainControlName = "Gain_DA_0" + stringfromlist(i, DAChannelList, ";")
+		else
+			DAGainControlName = "Gain_DA_" + stringfromlist(i, DAChannelList, ";")
+		endif
+		controlinfo /w = $panelTitle $DAGainControlName
+		gain = v_value
+
+		if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == V_CLAMP_MODE)
+			WaveToScale[][i] /= 3200
+			WaveToScale[][i] *= gain
+		endif
+
+		if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == I_CLAMP_MODE)
+			WaveToScale[][i] /= 3200
+			WaveToScale[][i] *= gain
+		endif
+	endfor
 
 end
 
-Function DM_ScaleITCDataWave(panelTitle)// used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
-string panelTitle
-string WavePath = HSU_DataFullFolderPathString(panelTitle)
-wave ITCDataWave = $WavePath + ":ITCDataWave"
-redimension/d ITCDataWave
-DM_ADScaling(ITCDataWave,panelTitle)
+// Used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
+Function DM_ScaleITCDataWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/SDFR=dfr ITCDataWave
+	Redimension/D ITCDataWave
+
+	DM_ADScaling(ITCDataWave,panelTitle)
 end
 
 Function DM_DeleteSettingsHistoryWaves(SweepNo,panelTitle)// deletes setting history waves "older" than SweepNo
