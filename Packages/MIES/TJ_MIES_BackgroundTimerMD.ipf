@@ -36,10 +36,10 @@ End
 
 Function ITC_TimerMD(s)
 	STRUCT WMBackgroundStruct &s
-	
-	WAVE ActiveDevTimeParam = root:MIES:ITCDevices:ActiveITCDevices:Timer:ActiveDevTimeParam
+
+	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
 	// column 0 = ITCDeviceIDGlobal; column 1 = Start time; column 2 = run time; column 3 = end time
-	WAVE /T TimerFunctionListWave = root:MIES:ITCDevices:ActiveITCDevices:Timer:TimerFunctionListWave
+	WAVE/T/SDFR=GetActiveITCDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
 	Variable i = 0
@@ -81,11 +81,10 @@ End
 // start and end time are calculated at function call 
 
 //=============================================================================================================================
-
-
 Function ITC_StopTimerForDeviceMD(panelTitle)
 	string panelTitle
-	WAVE ActiveDevTimeParam = root:MIES:ITCDevices:ActiveITCDevices:Timer:ActiveDevTimeParam	
+
+	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
 
 	ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
@@ -99,25 +98,25 @@ End
 
 Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, AddOrRemoveDevice)
 	string panelTitle, ListOfFunctions
-Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
-	Variable start = stopmstimer(-2)
+	variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
+
+	variable start = stopmstimer(-2)
 
 	// get device ID global
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	DFREF activeDevicesTimer = GetActiveITCDevicesTimerFolder()
 
-	WavePath = "root:MIES:ITCDevices:ActiveITCDevices:Timer"
-	WAVE /z ActiveDevTimeParam = $WavePath + ":ActiveDevTimeParam"
+	WAVE/Z/SDFR=activeDevicesTimer ActiveDevTimeParam
 	if (AddorRemoveDevice == 1) // add a ITC device
-		if (waveexists($WavePath + ":ActiveDevTimeParam") == 0) 
-			Make /o /n = (1,5) $WavePath + ":ActiveDevTimeParam"
-			WAVE /Z ActiveDevTimeParam = $WavePath + ":ActiveDevTimeParam"
+		if(!WaveExists(ActiveDevTimeParam))
+			Make/N=(1, 5) activeDevicesTimer:ActiveDevTimeParam/Wave=ActiveDevTimeParam
 			ActiveDevTimeParam[0][0] = ITCDeviceIDGlobal
 			ActiveDevTimeParam[0][1] = startTime
 			ActiveDevTimeParam[0][2] = RunTime
 			ActiveDevTimeParam[0][3] = EndTime
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
-		elseif (waveexists($WavePath + ":ActiveDevTimeParam") == 1)
+		else
 			variable numberOfRows = DimSize(ActiveDevTimeParam, 0)
 			// print numberofrows
 			Redimension /n = (numberOfRows + 1, 5) ActiveDevTimeParam
@@ -129,8 +128,6 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDevTimeParam ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		// wavestats ListOfITCDeviceIDGlobal
-		// print "ITCDeviceIDGlobal = ", ITCDeviceIDGlobal
 		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		variable rowToRemove = v_value
 		DeletePoints /m = 0 rowToRemove, 1, ActiveDevTimeParam // removes the row that contains the device 
@@ -138,92 +135,73 @@ Variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a devic
 	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 	
 	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
-End // Function 	ITC_MakeOrUpdateTimerParamWave
+End
 //=============================================================================================================================
 
- Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
- 	string panelTitle, ListOfFunctions
- 	Variable RowToRemove, AddOrRemoveDevice
- 	
- 	Variable start = stopmstimer(-2)
+Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
+	string panelTitle, ListOfFunctions
+	Variable RowToRemove, AddOrRemoveDevice
 
- 	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices:Timer"
- 	WAVE /z /T TimerFunctionListWave = $WavePath + ":TimerFunctionListWave"
- 	if (AddOrRemoveDevice == 1) // Add a device
- 		if(WaveExists($WavePath + ":TimerFunctionListWave") == 0)
- 			Make /t /o /n = (1,2) $WavePath + ":TimerFunctionListWave"
- 			WAVE /Z /T TimerFunctionListWave = $WavePath + ":TimerFunctionListWave"
- 			TimerFunctionListWave[0][0] = panelTitle
- 			TimerFunctionListWave[0][1] = ListOfFunctions
- 		elseif (WaveExists($WavePath + ":TimerFunctionListWave") == 1)
- 			Variable numberOfRows = dimSize(TimerFunctionListWave, 0)
- 			//print numberofrows
- 			Redimension /n = (numberOfRows + 1, 2) TimerFunctionListWave
- 			TimerFunctionListWave[numberOfRows][0] = panelTitle
- 			TimerFunctionListWave[numberOfRows][1] = ListOfFunctions
- 		endif
- 	elseif (AddOrRemoveDevice == -1) // remove a device 
- 		DeletePoints /m = 0 RowToRemove, 1, TimerFunctionListWave
- 	endif
- 	 	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	Variable start = stopmstimer(-2)
+	DFREF activeDevices = GetActiveITCDevicesTimerFolder()
 
- End // IITC_MakeOrUpdtDevTimerTxtWv
+	WAVE/Z/T/SDFR=activeDevices TimerFunctionListWave
+	if(AddOrRemoveDevice == 1) // Add a device
+		if(!WaveExists(TimerFunctionListWave))
+			Make/T/N=(1, 2) activeDevices:TimerFunctionListWave/Wave=TimerFunctionListWave
+			TimerFunctionListWave[0][0] = panelTitle
+			TimerFunctionListWave[0][1] = ListOfFunctions
+		else
+			Variable numberOfRows = dimSize(TimerFunctionListWave, 0)
+			Redimension /n = (numberOfRows + 1, 2) TimerFunctionListWave
+			TimerFunctionListWave[numberOfRows][0] = panelTitle
+			TimerFunctionListWave[numberOfRows][1] = ListOfFunctions
+		endif
+	elseif(AddOrRemoveDevice == -1) // remove a device
+		DeletePoints /m = 0 RowToRemove, 1, TimerFunctionListWave
+	endif
+
+	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+End
  
 //=============================================================================================================================
-/// Stores the timer number in a wave where the row number corresponds to the Device ID global.
+/// @brief Stores the timer number in a wave where the row number corresponds to the Device ID global.
+///
 /// This function and ITC_StopITCDeviceTimer are used to correct the ITI for the time it took to collect data, and pre and post processing of data. 
 /// It allows for a real time, start to start, ITI
 Function ITC_StartITCDeviceTimer(panelTitle)
 	string panelTitle
-	//TimerStart = startmstimer
-	
-	string wavePath
-	sprintf wavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
-	string ITCDeviceIDGlobalPathString 
-	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
-	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
-	string CycleTimeStorageWavePathString
-	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
-	
-	wave /z CycleTimeStorageWave = $CycleTimeStorageWavePathString
-	if(waveexists($CycleTimeStorageWavePathString) == 0)
-		make /o /n =10 $CycleTimeStorageWavePathString // the size of the wave is limited by the number of igor timers. This will also limit the number of simultaneously active devices possible to 10
-		wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
-//		setDimLabel 1, 0, TimerNumber, CycleTimeStorageWave
-//		setDimLabel 0, -1, DeviceIDGlobal, CycleTimeStorageWave
+
+	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
+	DFREF timer = GetActiveITCDevicesTimerFolder()
+
+	WAVE/Z/SDFR=timer CycleTimeStorageWave
+	if(!WaveExists(CycleTimeStorageWave))
+		// the size of the wave is limited by the number of igor timers.
+		// This will also limit the number of simultaneously active devices possible to 10
+		Make/N=10 timer:CycleTimeStorageWave/Wave=CycleTimeStorageWave
 	endif
-	
-	variable TimerNumber = startmstimer
-	ASSERT(TimerNumber != -1, "No more ms timers available, Run: ITC_StopAllMSTimers() to reset")
-	CycleTimeStorageWave[ITCDeviceIDGlobal] = TimerNumber // inserts the timer number into the row that corresponds to the device ID global
-	
+
+	variable timerID = startmstimer
+	ASSERT(timerID != -1, "No more ms timers available, Run: ITC_StopAllMSTimers() to reset")
+	CycleTimeStorageWave[ITCDeviceIDGlobal] = timerID
 End
-//=============================================================================================================================
-/// Stops the timer associated with a particular device
+
+/// @brief Stops the timer associated with a particular device
 Function ITC_StopITCDeviceTimer(panelTitle)
 	string panelTitle
-	string CycleTimeStorageWavePathString
 
-	sprintf CycleTimeStorageWavePathString, "%s:CycleTimeStorageWave" Path_ActITCDevTestTimerFolder(panelTitle)
-	wave CycleTimeStorageWave = $CycleTimeStorageWavePathString
-	string wavePath
-	sprintf wavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
-	string ITCDeviceIDGlobalPathString 
-	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" wavePath
-	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
-	
-	variable runTime = stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
-	// print "RUN TIME=", runtime
-	return runTime
+	WAVE/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
+	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 
+	return stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
 End
-//=============================================================================================================================
-/// Stops all ms timers
+
+/// @brief Stops all ms timers
 Function ITC_StopAllMSTimers()
 	variable i
+
 	for(i = 0; i < 10; i += 1)
 		print "ms timer", i, "stopped.", "Elapsed time:", stopmstimer(i)
 	endfor
 End
-//=============================================================================================================================
-

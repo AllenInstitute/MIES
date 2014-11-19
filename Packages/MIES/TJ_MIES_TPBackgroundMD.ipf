@@ -246,24 +246,23 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
 	//Variable start = stopmstimer(-2)
 
-	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices:TestPulse"
-	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
+	DFREF activeDevicesTestPulse = createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:TestPulse")
+	WAVE/Z/SDFR=activeDevicesTestPulse ActiveDeviceList
+
 	string TPFolderPath
 	sprintf TPFolderPath, "%s:TestPulse:TPPulseCount" HSU_DataFullFolderPathString(panelTitle)
 	NVAR TPPulseCount = $TPFolderPath
 	if (AddorRemoveDevice == 1) // add a ITC device
-		if (waveexists($WavePath + ":ActiveDeviceList") == 0) 
-			Make /o /n = (1,6) $WavePath + ":ActiveDeviceList"
-			WAVE /Z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
+		if(!WaveExists(ActiveDeviceList))
+			Make/N=(1, 6) activeDevicesTestPulse:ActiveDeviceList/Wave=ActiveDeviceList
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] =  0 // FIFO advance from last background cycle
 			ActiveDeviceList[0][4] = 1 // TP count
 			ActiveDeviceList[0][5] = TPPulseCount // pulses in TP ITC data wave
-		elseif (waveexists($WavePath + ":ActiveDeviceList") == 1)
+		else
 			variable numberOfRows = DimSize(ActiveDeviceList, 0)
-			// print numberofrows
 			Redimension /n = (numberOfRows + 1, 6) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
@@ -274,12 +273,9 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		// wavestats ListOfITCDeviceIDGlobal
-		// print "ITCDeviceIDGlobal = ", ITCDeviceIDGlobal
 		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
-	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End 
 //=============================================================================================================================
 

@@ -622,7 +622,7 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 		return 0
 	endif
 
-	SVAR/Z ITCPanelTitleList = $Path_ITCDevicesFolder("") + ":ITCPanelTitleList"
+	SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
 	if(SVAR_Exists(ITCPanelTitleList))
 		numPanels = ItemsInList(ITCPanelTitleList)
 		for(i = 0; i < numPanels; i += 1)
@@ -756,7 +756,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleSetName(), 1, "")
 	WBP_SaveSetParam()
 
-	SVAR/Z ITCPanelTitleList = $Path_ITCDevicesFolder("") + ":ITCPanelTitleList"
+	SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
 	if(SVAR_Exists(ITCPanelTitleList))
 		numPanels = ItemsInList(ITCPanelTitleList)
 		for(i = 0; i < numPanels; i += 1)

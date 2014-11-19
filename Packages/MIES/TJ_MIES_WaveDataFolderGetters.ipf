@@ -341,6 +341,42 @@ Function/DF P_PressureFolderReference(panelTitle)
 	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
 End
 
+/// @brief Return the ITC devices folder "root:mies:ITCDevices"
+Function/DF GetITCDevicesFolder()
+
+	return createDFWithAllParents(GetITCDevicesFolderAsString())
+End
+
+/// @brief Return a data folder reference to the ITC devices folder
+Function/S GetITCDevicesFolderAsString()
+
+	return GetMiesPathAsString() + ":ITCDevices"
+End
+
+/// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
+Function/DF GetActiveITCDevicesTimerFolder()
+
+	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
+End
+
+/// @brief Return a data folder reference to the active ITC devices timer folder
+Function/S GetActiveITCDevicesTimerAS()
+
+	return GetActiveITCDevicesFolderAS() + ":Timer"
+End
+
+/// @brief Return the active ITC devices folder "root:mies:ITCDevices:ActiveITCDevices"
+Function/DF GetActiveITCDevicesFolder()
+
+	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
+End
+
+/// @brief Return a data folder reference to the active ITC devices folder
+Function/S GetActiveITCDevicesFolderAS()
+
+	return GetITCDevicesFolderAsString() + ":ActiveITCDevices"
+End
+
 /// @brief Returns a wave reference to the textDocWave
 ///
 /// textDocWave is used to save settings for each data sweep and
@@ -640,7 +676,8 @@ End
 /// @brief Return the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
 Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
-	return Path_ITCDevicesFolder("") + ":" + deviceType
+
+	return GetITCDevicesFolderAsString() + ":" + deviceType
 End
 
 /// @brief Return a datafolder reference to the device folder
@@ -1923,4 +1960,3 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 
 	return PressureDataTextWv
 End
-
