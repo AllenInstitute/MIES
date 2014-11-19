@@ -1467,7 +1467,7 @@ Function/WAVE P_ITCDataDA(panelTitle)
 	endif
 
 	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataDA/WAVE = Wv
-	
+
 	Wv = 0
 	return Wv
 End
@@ -1491,7 +1491,7 @@ Function/WAVE P_ITCDataAD(panelTitle)
 	endif
 
 	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataAD/WAVE = Wv
-	
+
 	Wv = 0
 	return Wv
 End
@@ -1515,7 +1515,7 @@ Function/WAVE P_ITCDataTTLRz(panelTitle)
 	endif
 
 	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRz/WAVE = Wv
-	
+
 	Wv = 0
 	return Wv
 End
@@ -1539,7 +1539,7 @@ Function/WAVE P_ITCDataTTLRo(panelTitle)
 	endif
 
 	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRo/WAVE = Wv
-	
+
 	Wv = 0
 	return Wv
 End
@@ -1563,7 +1563,7 @@ Function/WAVE P_DIO(panelTitle)
 	endif
 
 	Make/N=1/W dfr:DIO/WAVE = Wv
-	
+
 	return Wv
 End
 
@@ -1589,7 +1589,7 @@ Function/WAVE P_ITCState(panelTitle)
 	endif
 
 	Make/I/N=4 dfr:ITCState/WAVE = Wv
-	
+
 	return Wv
 End
 
@@ -1609,19 +1609,19 @@ Function/WAVE P_GetITCData(panelTitle)
 	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 
 	Wave/Z/T/SDFR=dfr P_ITCData
-	
+
 	if(WaveExists(P_ITCData))
 		return P_ITCData
 	endif
-	
+
 	Make/W/N=(PRESSURE_WAVE_DATA_SIZE, 4) dfr:P_ITCData/WAVE = Wv
-	
+
 	SetDimLabel COLS, 0, DA, 		Wv
 	SetDimLabel COLS, 1, AD, 		Wv
 	SetDimLabel COLS, 2, TTL_R0, 	Wv
 	SetDimLabel COLS, 3, TTL_R1, 	Wv
 	Wv = 0
-	
+
 	return Wv
 End
 
@@ -1647,25 +1647,25 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	if(WaveExists(P_ChanConfig))
 		return P_ChanConfig
 	endif
-	
+
 	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE = Wv
-	
+
 	Wv = 0
 	Wv[0][0] = 1 // DA
 	Wv[1][0] = 0 // AD
 	Wv[2][0] = 3 // TTL
 	Wv[3][0] = 3 // TTL
-	
+
 	Wv[2][1] = 0 // TTL rack 0
 	Wv[3][1] = 3 // TTL rack 1
-	
+
 	Wv[][2] = SAMPLE_INT_MICRO // 5 micro second sampling interval
-	
+
 	SetDimLabel ROWS, 0, DA, 		Wv
 	SetDimLabel ROWS, 1, AD, 		Wv
 	SetDimLabel ROWS, 2, TTL_R0, 	Wv
 	SetDimLabel ROWS, 3, TTL_R1, 	Wv
-	
+
 	SetDimLabel COLS, 0, Chan_Type, Wv
 	SetDimLabel COLS, 1, Chan_num, 	Wv
 	SetDimLabel COLS, 2, Samp_int, 	Wv
@@ -1694,25 +1694,25 @@ Function/WAVE P_GetITCFIFOConfig(panelTitle)
 	if(WaveExists(P_ITCFIFOConfig))
 		return P_ITCFIFOConfig
 	endif
-	
+
 	Make/I/N=(4, 4) dfr:P_ITCFIFOConfig/WAVE = Wv
-	
+
 	Wv = 0
 	Wv[0][0] = 1 // DA
 	Wv[1][0] = 0 // AD
 	Wv[2][0] = 3 // TTL
 	Wv[3][0] = 3 // TTL
-	
+
 	Wv[2][1] = 0 // TTL rack 0
 	Wv[3][1] = 3 // TTL rack 1
-	
+
 	Wv[][2]	= -1 // reset the FIFO
-	
+
 	SetDimLabel ROWS, 0, DA, 			Wv
 	SetDimLabel ROWS, 1, AD, 			Wv
 	SetDimLabel ROWS, 2, TTL_R0, 		Wv
 	SetDimLabel ROWS, 3, TTL_R1, 		Wv
-	
+
 	SetDimLabel COLS, 0, Chan_Type,	 	Wv
 	SetDimLabel COLS, 1, Chan_num, 		Wv
 	SetDimLabel COLS, 2, FIFO_advance, 	Wv
@@ -1740,27 +1740,27 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 	if(WaveExists(P_ITCFIFOAvail))
 		return P_ITCFIFOAvail
 	endif
-	
+
 	Make/I/N=(4, 4) dfr:P_ITCFIFOAvail/WAVE = Wv
-	
+
 	SetDimLabel ROWS, 0, DA, 			Wv
 	SetDimLabel ROWS, 1, AD, 			Wv
 	SetDimLabel ROWS, 2, TTL_R0, 		Wv
 	SetDimLabel ROWS, 3, TTL_R1, 		Wv
-	
+
 	SetDimLabel COLS, 0, Chan_Type,	 	Wv
 	SetDimLabel COLS, 1, Chan_num, 		Wv
 	SetDimLabel COLS, 2, FIFO_avail, 	Wv
-	
+
 	Wv = 0
 	Wv[0][0] = 1 // DA
 	Wv[1][0] = 0 // AD
 	Wv[2][0] = 3 // TTL
 	Wv[3][0] = 3 // TTL
-	
+
 	Wv[2][1] = 0 // TTL rack 0
-	Wv[3][1] = 3 // TTL rack 1	
-	
+	Wv[3][1] = 3 // TTL rack 1
+
 	return Wv
 End
 
@@ -1769,7 +1769,7 @@ End
 ///
 /// Rows:
 /// - 0 - 7: Headstage 0 through 7
-/// 
+///
 /// Columns:
 /// - 0: Pressure method. -1 = none, 0 = Approach, 1 = Seal, 2 = Break In, 3 = Clear
 /// - 1: List position of DAC (used for presssure control) selected for headstage .
@@ -1810,7 +1810,7 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 	dfref 	dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-	
+
 	Wave/Z/SDFR=dfr PressureData
 
 	if(WaveExists(PressureData))
@@ -1818,22 +1818,22 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	endif
 
 	Make/N=(8,35,1) dfr:PressureData/Wave=PressureData
-	
+
 	PressureData 	= nan
 	PressureData[][0]	= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
 	PressureData[][1]	= 0
 	PressureData[][4]	= 0
 	PressureData[][6]	= 0
 	PressureData[][8]	= 0
-	
+
 	SetDimLabel COLS, 0, 	Approach_Seal_BrkIn_Clear, 	PressureData // -1 = atmospheric pressure; 0 = approach; 1 = Seal; Break in = 2, Clear = 3
 	SetDimLabel COLS, 1, 	DAC_List_Index, 				PressureData // The position in the popup menu list of attached ITC devices
 	SetDimLabel COLS, 2, 	DAC_Type, 					PressureData // type of ITC DAC
 	SetDimLabel COLS, 3,  	DAC_DevID, 					PressureData // ITC DAC number
 	SetDimLabel COLS, 4,  	DAC, 						PressureData // DA channel
-	SetDimLabel COLS, 5,  	DAC_Gain, 					PressureData 
-	SetDimLabel COLS, 6,  	ADC, 						PressureData 
-	SetDimLabel COLS, 7,  	ADC_Gain, 					PressureData 
+	SetDimLabel COLS, 5,  	DAC_Gain, 					PressureData
+	SetDimLabel COLS, 6,  	ADC, 						PressureData
+	SetDimLabel COLS, 7,  	ADC_Gain, 					PressureData
 	SetDimLabel COLS, 8,  	TTL, 						PressureData // TTL channel
 	SetDimLabel COLS, 9,  	PSI_air, 						PressureData // used to set pipette pressure on approach
 	SetDimLabel COLS, 10, 	PSI_solution, 				PressureData // used to set pipette pressure on approach
@@ -1856,7 +1856,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
 	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, 	PressureData // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
 	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck, 		PressureData // The time in ticks of the last check of the resistance slopes
-	SetDimLabel COLS, 26, LastPressureCommand, 		PressureData 
+	SetDimLabel COLS, 26, LastPressureCommand, 		PressureData
 	SetDimLabel COLS, 27, OngoingPessurePulse,			PressureData
 	SetDimLabel COLS, 28, LastVcom,						PressureData
 	SetDimLabel COLS, 29, ManSSPressure,				PressureData
@@ -1865,7 +1865,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 32, LastPeakR,					PressureData
 	SetDimLabel COLS, 33, PeakR,						PressureData
 	SetDimLabel COLS, 34, TimePeakRcheck				PressureData
-	
+
 	SetDimLabel ROWS, 0, Headstage_0, PressureData
 	SetDimLabel ROWS, 1, Headstage_1, PressureData
 	SetDimLabel ROWS, 2, Headstage_2, PressureData
@@ -1874,7 +1874,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel ROWS, 5, Headstage_5, PressureData
 	SetDimLabel ROWS, 6, Headstage_6, PressureData
 	SetDimLabel ROWS, 7, Headstage_7, PressureData
-	
+
 	return PressureData
 End
 
@@ -1884,7 +1884,7 @@ End
 ///
 /// Rows:
 /// - 0 - 7: Headstage 0 through 7
-/// 
+///
 /// Columns:
 /// - 0: Digitial to analog converter device type string.
 /// - 1: DA unit.
@@ -1892,7 +1892,7 @@ End
 Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	string panelTitle
 	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-	
+
 	Wave/Z/T/SDFR=dfr PressureDataTextWv
 
 	if(WaveExists(PressureDataTextWv))
@@ -1900,11 +1900,11 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	endif
 
 	Make/T/N=(8, 3, 1) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
-	
+
 	SetDimLabel COLS, 0, ITC_Device, PressureDataTextWv
 	SetDimLabel COLS, 1, DA_Unit, 	PressureDataTextWv
 	SetDimLabel COLS, 2, AD_Unit, 	PressureDataTextWv
-	
+
 	SetDimLabel ROWS, 0, Headstage_0, PressureDataTextWv
 	SetDimLabel ROWS, 1, Headstage_1, PressureDataTextWv
 	SetDimLabel ROWS, 2, Headstage_2, PressureDataTextWv
@@ -1913,9 +1913,9 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	SetDimLabel ROWS, 5, Headstage_5, PressureDataTextWv
 	SetDimLabel ROWS, 6, Headstage_6, PressureDataTextWv
 	SetDimLabel ROWS, 7, Headstage_7, PressureDataTextWv
-	
+
 	PressureDataTextWv[][0] = "- none -"
-	
+
 	return PressureDataTextWv
 End
 
