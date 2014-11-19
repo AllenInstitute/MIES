@@ -469,7 +469,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		current += actualCurrent
-		// only use 80% of the calculated current, as BaselineSSAvg holds
+		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
 		current *= 0.50
 
