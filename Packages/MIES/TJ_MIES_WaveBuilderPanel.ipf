@@ -547,7 +547,7 @@ static Function WBP_DisplaySetInPanel()
 	variable i, numWaves, setNumber
 	string list, basename, outputWaveType, searchPattern, entry
 
-	RemoveAndKillTracesOnGraph(waveBuilderGraph)
+	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
 	WB_MakeStimSet()
 
 	controlinfo setvar_WaveBuilder_baseName
@@ -752,7 +752,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	ListOfTracesOnGraph = TraceNameList(WaveBuilderGraph, ";", 0+1 )
 
 	WBP_Transfer1DsTo2D(ListOfTracesOnGraph)
-	RemoveAndKillTracesOnGraph(WaveBuilderGraph)
+	RemoveTracesFromGraph(WaveBuilderGraph, kill=1)
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleSetName(), 1, "")
 	WBP_SaveSetParam()
 
