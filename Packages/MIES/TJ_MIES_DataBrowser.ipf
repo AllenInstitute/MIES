@@ -280,18 +280,38 @@ static Function DB_UpdateLegend(graph, [traceList])
 	TextBox/C/W=$graph/N=text0/F=2 str
 End
 
+static Function DB_XAxisOfTracesIsTime(graph)
+	string graph
+
+	string list, trace, dataUnits
+
+	list = TraceNameList(graph, ";", 0 + 1)
+
+	// default is time axis
+	if(isEmpty(list))
+		return 1
+	endif
+
+	trace = StringFromList(0, list)
+	dataUnits = WaveUnits(XWaveRefFromTrace(graph, trace), -1)
+
+	return !cmpstr(dataUnits, "dat")
+End
+
 static Function DB_GetKeyWaveParameterAndUnit(panelTitle, entry, parameter, unit, col)
 	string panelTitle, entry
 	string &parameter, &unit
 	variable &col
 
 	variable row, numRows
+	string device
 
 	parameter = ""
 	unit      = ""
 	col       = NaN
 
-	Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(panelTitle) keyWave
+	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
 
 	if(!WaveExists(keyWave))
 		printf "Could not find keyWave of %s\r", panelTitle
@@ -323,9 +343,33 @@ static Function DB_ClearGraph(panelTitle)
 	DB_UpdateLegend(graph)
 End
 
-Window DataBrowser() : Panel
+static Function/WAVE DB_GetSettingsHistory(panelTitle)
+	string panelTitle
+
+	string device
+
+	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	WAVE/SDFR=GetDevSpecLabNBSettHistFolder(device) settingsHistory
+
+	return settingsHistory
+End
+
+/// @brief Set the appropriate label for the bottom axis
+///
+/// Assumes that wave data units are equal for all traces
+static Function DB_SetLabNotebookBottomLabel(graph)
+	string graph
+
+	if(DB_XAxisOfTracesIsTime(graph))
+		Label/W=$graph bottom LABNOTEBOOK_BOTTOM_AXIS_TIME
+	else
+		Label/W=$graph bottom LABNOTEBOOK_BOTTOM_AXIS_SWEEP
+	endif
+End
+
+Window dataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(37,70,1250,790) as "DataBrowser"
+	NewPanel /W=(14,118,1227,838) as "DataBrowser"
 	SetDrawLayer UserBack
 	Button button_DataBrowser_NextSweep,pos={628,628},size={395,36},proc=DB_ButtonProc_NextSweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-!!#C*J,hnIz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
@@ -430,14 +474,18 @@ Window DataBrowser() : Panel
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	PopupMenu popup_labenotebookViewableCols,mode=1,popvalue="- none -",value= #"\"- none -\""
-	Button button_clearlabnotebookgraph,pos={1084,479},size={73,23},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KCJ,ht*J,hp!!!#<pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_clearlabnotebookgraph,pos={1072,495},size={80,20},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KB!!#C\\J,hp/!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={1036,439},size={169,74},title="Settings History Column"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=J,hskJ,hqc!!#?Mz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_ctrls,pos={1036,439},size={169,47},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=J,hskJ,hqc!!#>Jz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	Button button_switchxaxis,pos={1074,522},size={80,20},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,KB5QF1RJ,hp/!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
@@ -609,30 +657,30 @@ static StrConstant axisBaseName = "col"
 Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string device, graph, unit, lbl, axis, trace, popStr, panelTitle
+	string graph, unit, lbl, axis, trace, popStr, panelTitle
 	string traceList = ""
 	variable sweepNo, i, numEntries, row, col
-	variable red, green, blue
+	variable red, green, blue, isTimeAxis
 
 	switch(pa.eventCode)
 		case 2: // mouse up
 			panelTitle = pa.win
 			graph      = DB_GetLabNoteBookGraph(panelTitle)
-			device     = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
 			popStr     = pa.popStr
 
 			if(!CmpStr(popStr, NONE))
 				break
 			endif
 
-			if(DB_GetKeyWaveParameterAndUnit(device, popStr, lbl, unit, col))
+			if(DB_GetKeyWaveParameterAndUnit(panelTitle, popStr, lbl, unit, col))
 				break
 			endif
 
 			lbl = LineBreakingIntoParWithMinWidth(lbl)
 
-			WAVE/SDFR=GetDevSpecLabNBSettHistFolder(device) settingsHistory
+			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 			WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
+			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 
 			axis = DB_GetNextFreeAxisName(graph, axisBaseName)
 
@@ -641,7 +689,12 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 
 				trace = CleanupName(lbl + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
 				traceList = AddListItem(trace, traceList, ";", inf)
-				AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistoryDat
+
+				if(isTimeAxis)
+					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistoryDat
+				else
+					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistory[][%SweepNum][0]
+				endif
 
 				GetTraceColor(i, red, green, blue)
 				ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
@@ -652,10 +705,12 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			endif
 
 			Label/W=$graph $axis lbl
-			Label/W=$graph bottom "Timestamp"
+
 			ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
 			ModifyGraph/W=$graph mode = 3
+			ModifyGraph/W=$graph nticks(bottom) = 10
 
+			DB_SetLabNotebookBottomLabel(graph)
 			DB_EvenlySpaceAxes(graph, axisBaseName)
 			DB_UpdateLegend(graph, traceList=traceList)
 		break
@@ -663,6 +718,9 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 
 	return 0
 End
+
+static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
+static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
 Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
@@ -739,4 +797,44 @@ Function/S DB_GetLabNotebookViewAbleCols(panelTitle)
 	endfor
 
 	return SortList(list)
+End
+
+Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle, graph, trace, dataUnits, list
+	variable i, numTraces, isTimeAxis
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			panelTitle = ba.win
+			graph      = DB_GetLabNoteBookGraph(panelTitle)
+
+			list = TraceNameList(graph, ";", 0 + 1)
+
+			if(isEmpty(list))
+				break
+			endif
+
+			WAVE settingsHistory = DB_GetSettingsHistory(panelTitle)
+			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
+
+			numTraces = ItemsInList(list)
+			for(i = 0; i < numTraces; i += 1)
+				trace = StringFromList(i, list)
+
+				// change from timestamps to sweepNums
+				if(isTimeAxis)
+					ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][%SweepNum][0]
+				else // other direction
+					Wave xWave = ED_GetSettingsHistoryDateTime(settingsHistory)
+					ReplaceWave/W=$graph/X trace=$trace, xWave
+				endif
+			endfor
+
+			DB_SetLabNotebookBottomLabel(graph)
+			break
+	endswitch
+
+	return 0
 End
