@@ -24,14 +24,14 @@ Function ITC_DataAcq(panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 
-	do
+	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
+	variable RepeatedAcqOnOrOff = v_value
 
+	do
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		execute cmd// this also seems necessary to update the DA channel data to the board!!
 
-		controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
-		variable RepeatedAcqOnOrOff = v_value
-		if(RepeatedAcqOnOrOff == 1)
+		if(RepeatedAcqOnOrOff)
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
 
