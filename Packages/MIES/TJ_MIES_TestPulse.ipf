@@ -557,6 +557,7 @@ Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRa
 		return NaN
 	endif
 
+	Make/FREE/D/N=2 coefWave
 	V_FitOptions = 4
 
 	numADCs = DimSize(TPStorage, COLS)
@@ -564,18 +565,18 @@ Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRa
 		try
 			V_FitError  = 0
 			V_AbortCode = 0
-			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			Wave W_coef
-			TPStorage[0][i][%Vm_Slope] = W_coef[1]
-			V_FitError  = 0
-			V_AbortCode = 0
-			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			TPStorage[0][i][%Rpeak_Slope] = W_coef[1]
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/AD=0/AR=0; AbortOnRTE
+			TPStorage[0][i][%Vm_Slope] = coefWave[1]
 
 			V_FitError  = 0
 			V_AbortCode = 0
-			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/D; AbortOnRTE
-			TPStorage[0][i][%Rss_Slope] = W_coef[1]
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/AD=0/AR=0; AbortOnRTE
+			TPStorage[0][i][%Rpeak_Slope] = coefWave[1]
+
+			V_FitError  = 0
+			V_AbortCode = 0
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/AD=0/AR=0; AbortOnRTE
+			TPStorage[0][i][%Rss_Slope] = coefWave[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
 			TPStorage[startRow,endRow][i][%Vm_Slope]    = NaN
