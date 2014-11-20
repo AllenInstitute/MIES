@@ -212,7 +212,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 			endif
 		else //background aquisition is on
 				print "about in initate bkcrdDataAcq"
-				ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle)					
+				ITC_BkrdDataAcq(panelTitle)
 		endif
 	endif
 End

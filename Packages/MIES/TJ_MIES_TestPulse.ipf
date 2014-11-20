@@ -207,9 +207,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
-			variable DeviceType = HSU_GetDeviceTypeIndex(panelTitle)
-			variable DeviceNum  = HSU_GetDeviceNumberIndex(panelTitle)
-
 			DAP_StoreTTLState(panelTitle)
 			DAP_TurnOffAllTTLs(panelTitle)
 
@@ -241,7 +238,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 			if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))// runs background TP
 				ITC_StartBackgroundTestPulse(panelTitle)
 			else // runs TP
-				ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
+		ITC_StartTestPulse(panelTitle)
 				if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow"))
 					DAP_SmoothResizePanel(-340, panelTitle)
 					SetWindow $panelTitle + "#oscilloscope", hide = 1

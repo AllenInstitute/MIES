@@ -3489,7 +3489,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 				else
 					DataAcqState = 1
 					DAP_AcqDataButtonToStopButton(panelTitle)
-					ITC_BkrdDataAcq(DeviceType,DeviceNum, panelTitle)
+					ITC_BkrdDataAcq(panelTitle)
 				endif
 			else // data aquistion is ongoing
 				DataAcqState = 0

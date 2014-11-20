@@ -85,12 +85,10 @@ Function ITC_CalculateDevChannelOffset(panelTitle)
 End
 
 //======================================================================================
-Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
-	variable DeviceType, DeviceNum
+Function ITC_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	string cmd
-
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
@@ -129,7 +127,6 @@ Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 End
 //======================================================================================
 Function ITC_StopDataAcq()
-	variable DeviceType, DeviceNum
 	string cmd
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:StopCollectionPoint
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
@@ -503,8 +500,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endfor
 End
 
-Function ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
-	variable DeviceType, DeviceNum
+Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 
 	string cmd
