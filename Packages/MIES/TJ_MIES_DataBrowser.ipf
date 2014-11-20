@@ -629,6 +629,8 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 				break
 			endif
 
+			lbl = LineBreakingIntoParWithMinWidth(lbl)
+
 			WAVE/SDFR=GetDevSpecLabNBSettHistFolder(device) settingsHistory
 			WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
 

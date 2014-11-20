@@ -880,3 +880,43 @@ Function MDsort(w, keycol, [reversed])
 		MultiThread indirectSource2 = M_newtoinsert
 	endif
 End
+
+/// @brief Breaking a string into multiple lines
+///
+/// Currently all spaces and tabs which are not followed by numbers are
+/// replace by carriage returns (\r). Therefore the algorithm creates
+/// a paragraph with minimum width.
+///
+/// A generic solution would either implement the real deal
+///
+/// Knuth, Donald E.; Plass, Michael F. (1981),
+/// Breaking paragraphs into lines
+/// Software: Practice and Experience 11 (11):
+/// 1119-1184, doi:10.1002/spe.4380111102.
+///
+/// or translate [1] from C++ to Igor Pro.
+///
+/// [1]: http://api.kde.org/4.x-api/kdelibs-apidocs/kdeui/html/classKWordWrap.html
+Function/S LineBreakingIntoParWithMinWidth(str)
+	string str
+
+	variable len, i
+	string output = ""
+	string curr, next
+
+	len = strlen(str)
+	for(i = 0; i < len; i += 1)
+		curr = str[i]
+		next = SelectString(i < len, "", str[i + 1])
+
+		// str2num skips leading spaces and tabs
+		if((!cmpstr(curr, " ") || !cmpstr(curr, "\t")) && !IsFinite(str2num(next)) && cmpstr(next, " ") && cmpstr(next, "\t"))
+			output += "\r"
+			continue
+		endif
+
+		output += curr
+	endfor
+
+	return output
+End
