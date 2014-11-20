@@ -3480,7 +3480,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 				DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 				SCOPE_UpdateGraph(ITCDataWave, panelTitle)
 				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
-					ITC_DataAcq(DeviceType,DeviceNum, panelTitle)
+					ITC_DataAcq(panelTitle)
 					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 						DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
 						DAP_AcqDataButtonToStopButton(panelTitle) // when RA code is modified to have foreground TP during RA, this will not be needed

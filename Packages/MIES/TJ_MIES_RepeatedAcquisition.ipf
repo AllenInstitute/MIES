@@ -163,7 +163,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value == 0)//No background aquisition
-			ITC_DataAcq(DeviceType,DeviceNum, panelTitle)
+			ITC_DataAcq(panelTitle)
 			if(Count < (TotTrials - 1)) //prevents test pulse from running after last trial is acquired
 				DAP_StoreTTLState(panelTitle)
 				DAP_TurnOffAllTTLs(panelTitle)

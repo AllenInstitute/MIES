@@ -1,15 +1,15 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
-	variable DeviceType, DeviceNum
+Function ITC_DataAcq(panelTitle)
 	string panelTitle
+
 	string cmd
-	variable i = 0
+	variable i
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	variable stopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // dimsize(ITCDataWave, 0) / 4
+	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
+	variable stopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -22,7 +22,6 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 	execute cmd
 		
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-	//print cmd
 	execute cmd
 
 	do
@@ -36,33 +35,34 @@ Function ITC_DataAcq(DeviceType, DeviceNum, panelTitle)
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
 
-		sprintf cmd, "ITCStartAcq"// /f/r=0/z=0 -1,0,1,1"//   
-		Execute cmd	
-			do
-				sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
-				Execute cmd	
-				ITCDataWave[0][0] += 0
-				doupdate /w = $oscilloscopeSubwindow
-				//doxopidle
-			while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 
+		sprintf cmd, "ITCStartAcq"
+		Execute cmd
+
+		do
+			sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
+			Execute cmd
+			ITCDataWave[0][0] += 0
+			doupdate /w = $oscilloscopeSubwindow
+		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
+
 		//Check Status
 		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
 		Execute cmd
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-		itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
+		itcdatawave[0][0] += 0 //runs arithmatic on data wave to force onscreen update
 		doupdate
-		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+		sprintf cmd, "ITCConfigChannelUpload /f /z = 0" //as long as this command is within the do-while loop the number of cycles can be repeated
 		Execute cmd
 		i += 1
-	while (i < 1)// 
-	
+	while(i < 1)
+
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
-	If(v_value == 0)
+	if(v_value == 0)
 		DM_SaveITCData(panelTitle)
 	endif
-	
-	 DM_ScaleITCDataWave(panelTitle)
+
+	DM_ScaleITCDataWave(panelTitle)
 End
 
 //======================================================================================
