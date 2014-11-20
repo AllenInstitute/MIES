@@ -16,7 +16,7 @@ Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
 	wave /z SSResistanceWave = $WavePath + "TestPulse:SSResistance"
 	wave /z InstResistanceWave = $WavePath + "TestPulse:InstResistance"
 	string ADChannelName= "AD"
-	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	string ADChannelList = ITC_GetADCList(ITCChanConfigWave)
 	string UnitWaveNote = note(ITCChanConfigWave)
 	string Unit
 	string SSResistanceTraceName = "SSResistance"
