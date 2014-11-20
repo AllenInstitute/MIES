@@ -65,6 +65,25 @@ Function ITC_DataAcq(panelTitle)
 	DM_ScaleITCDataWave(panelTitle)
 End
 
+/// @brief Returns the device channel offset for the given device
+///
+/// @returns 16 for ITC1600 and 0 for all other types
+Function ITC_CalculateDevChannelOffset(panelTitle)
+	string panelTitle
+
+	variable ret
+	string deviceType, deviceNum
+
+	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
+	ASSERT(ret, "Could not parse device string")
+
+	if(!cmpstr(deviceType, "2")) // ITC1600
+		return 16
+	endif
+
+	return 0
+End
+
 //======================================================================================
 Function ITC_BkrdDataAcq(DeviceType, DeviceNum, panelTitle)
 	variable DeviceType, DeviceNum
@@ -586,14 +605,8 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
 	asyncMeasurementWave[0][] = NaN
 
-	// used to select asych ad channels on itc 1600 and standard ad channels on other itc devices.
-	if(HSU_GetDeviceTypeIndex(panelTitle) == 2)
-		deviceChannelOffset = 16
-	else
-		deviceChannelOffset = 0
-	endif
-
 	WAVE asyncChannelState = DC_ControlStatusWave(panelTitle, "AsyncAD")
+	deviceChannelOffset = ITC_CalculateDevChannelOffset(panelTitle)
 
 	numEntries = DimSize(asyncChannelState, ROWS)
 	for(i = 0; i < numEntries; i += 1)
