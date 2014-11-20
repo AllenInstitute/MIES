@@ -628,15 +628,17 @@ Function/S TP_ClampModeString(panelTitle)
 	SVAR 	ADChannelList		= $WavePath + ":TestPulse:ADChannelList"
 	wave 	ITCChanConfigWave 	= $WavePath + ":ITCChanConfigWave"
 			ADChannelList		= SCOPE_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
-	variable 	i 					= 0
+
+	variable i, numChannels, headstage
 	string /g $WavePath + ":TestPulse:ClampModeString"
 	SVAR 	ClampModeString 	= $WavePath + ":TestPulse:ClampModeString"
 			ClampModeString 	= ""
 	
-	do
-		ClampModeString += (num2str(AI_MIESHeadstageMode(panelTitle, TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList, ";"))))) + ";")
-		i += 1
-	while(i < itemsinlist(ADChannelList))
+	numChannels = ItemsInList(ADChannelList)
+	for(i = 0; i < numChannels; i += 1)
+		headstage = TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList)))
+		ClampModeString += num2str(AI_MIESHeadstageMode(panelTitle, headstage)) + ";"
+	endfor
 
 	return ClampModeString
 End
