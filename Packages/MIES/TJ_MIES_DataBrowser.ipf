@@ -280,6 +280,32 @@ static Function DB_UpdateLegend(graph, [traceList])
 	TextBox/C/W=$graph/N=text0/F=2 str
 End
 
+static Function DB_GetSweepColumn(settingsHistory)
+	Wave settingsHistory
+
+	variable sweepCol
+
+	// new label
+	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNum")
+
+	if(sweepCol >= 0)
+		return sweepCol
+	endif
+
+	// Old label prior to 276b5cf6
+	// was normally overwritten by SweepNum later in the code
+	// but not always as it turned out
+	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNumber")
+
+	if(sweepCol >= 0)
+		return sweepCol
+	endif
+
+	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
+
+	return 0
+End
+
 static Function DB_XAxisOfTracesIsTime(graph)
 	string graph
 
@@ -660,7 +686,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	string graph, unit, lbl, axis, trace, popStr, panelTitle
 	string traceList = ""
 	variable sweepNo, i, numEntries, row, col
-	variable red, green, blue, isTimeAxis
+	variable red, green, blue, isTimeAxis, sweepCol
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -681,6 +707,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 			WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
+			sweepCol   = DB_GetSweepColumn(settingsHistory)
 
 			axis = DB_GetNextFreeAxisName(graph, axisBaseName)
 
@@ -693,7 +720,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 				if(isTimeAxis)
 					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistoryDat
 				else
-					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistory[][%SweepNum][0]
+					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistory[][sweepCol][0]
 				endif
 
 				GetTraceColor(i, red, green, blue)
@@ -803,7 +830,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle, graph, trace, dataUnits, list
-	variable i, numTraces, isTimeAxis
+	variable i, numTraces, isTimeAxis, sweepCol
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -818,6 +845,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 
 			WAVE settingsHistory = DB_GetSettingsHistory(panelTitle)
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
+			sweepCol   = DB_GetSweepColumn(settingsHistory)
 
 			numTraces = ItemsInList(list)
 			for(i = 0; i < numTraces; i += 1)
@@ -825,7 +853,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 
 				// change from timestamps to sweepNums
 				if(isTimeAxis)
-					ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][%SweepNum][0]
+					ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][sweepCol][0]
 				else // other direction
 					Wave xWave = ED_GetSettingsHistoryDateTime(settingsHistory)
 					ReplaceWave/W=$graph/X trace=$trace, xWave
