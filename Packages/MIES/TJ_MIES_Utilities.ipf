@@ -920,3 +920,151 @@ Function/S LineBreakingIntoParWithMinWidth(str)
 
 	return output
 End
+
+/// @brief Returns the numerical index for the sweep number column
+/// in the settings history wave
+Function GetSweepColumn(settingsHistory)
+	Wave settingsHistory
+
+	variable sweepCol
+
+	// new label
+	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNum")
+
+	if(sweepCol >= 0)
+		return sweepCol
+	endif
+
+	// Old label prior to 276b5cf6
+	// was normally overwritten by SweepNum later in the code
+	// but not always as it turned out
+	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNumber")
+
+	if(sweepCol >= 0)
+		return sweepCol
+	endif
+
+	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
+
+	return 0
+End
+
+/// @brief Find the first and last point index of a consecutive range of values
+///
+/// @param[in]  wv                wave to search
+/// @param[in]  col               column to look for
+/// @param[in]  val               value to search
+/// @param[in]  forwardORBackward find the first(1) or last(0) range
+/// @param[out] first             point index of the beginning of the range
+/// @param[out] last              point index of the end of the range
+Function FindRange(wv, col, val, forwardORBackward, first, last)
+	WAVE wv
+	variable col, val, forwardORBackward
+	variable &first, &last
+
+	variable numRows, i
+
+	first = NaN
+	last  = NaN
+
+	Make/FREE/B/U/N=(DimSize(wv, ROWS)) matches = wv[p][col] == val
+
+	Make/FREE levels
+	FindLevels/P/Q/DEST=levels matches, 1
+
+	if(V_flag == 2)
+		return NaN
+	endif
+
+	numRows = DimSize(levels, ROWS)
+
+	if(numRows == 1)
+		first = levels[0]
+		last  = levels[0]
+		return NaN
+	endif
+
+	if(forwardORBackward)
+
+		first = levels[0]
+		last  = levels[0]
+
+		for(i = 1; i < numRows; i += 1)
+			// a forward search stops after the end of the first sequence
+			if(levels[i] > last + 1)
+				return NaN
+			endif
+
+			last = levels[i]
+		endfor
+	else
+
+		first = levels[numRows - 1]
+		last  = levels[numRows - 1]
+
+		for(i = numRows - 2; i >= 0; i -= 1)
+			// a backward search stops when the beginning of the last sequence was found
+			if(levels[i] < first - 1)
+				return NaN
+			endif
+
+			first = levels[i]
+		endfor
+
+	endif
+End
+
+/// @brief Returns a wave with all values of a setting from the settingsHistory wave
+/// for a given sweep number.
+///
+/// Entries which are NaN for all headstages are ignored.
+/// @returns a 2D wave where the columns are the setting for each headstage and the rows the different values. In case
+/// the setting could not be found a invalid wave reference is returned.
+Function/WAVE GetHistoryOfSetting(settingsHistory, sweepNo, setting)
+	Wave settingsHistory
+	variable sweepNo
+	string setting
+
+	variable settingCol, numHeadstages, i, sweepCol, entries
+	variable first, last
+
+	numHeadstages = DimSize(settingsHistory, LAYERS)
+
+	settingCol = FindDimLabel(settingsHistory, COLS, setting)
+
+	if(settingCol <= 0)
+		DEBUGPRINT("Could not find the setting", str=setting)
+		return $""
+	endif
+
+	sweepCol = GetSweepColumn(settingsHistory)
+	FindRange(settingsHistory, sweepCol, sweepNo, 0, first, last)
+
+	if(!IsFinite(first) || !IsFinite(last)) // sweep number is unknown
+		return $""
+	endif
+
+	Make/FREE/D/N=(last - first + 1, numHeadstages) status = NaN
+	Make/FREE/D/N=(numHeadstages) singleLayer
+
+	SetDimLabel COLS, -1, Headstage, status
+
+	for(i = first; i <= last; i += 1)
+
+		singleLayer[] = settingsHistory[i][settingCol][p]
+		WaveStats/Q/M=1 singleLayer
+
+		// only add a new row to the result wave if the setting in question
+		// was set in that row, which means that at least one value is not NaN
+		if(V_numNaNs == numHeadstages)
+			continue
+		endif
+
+		status[entries][] = singleLayer[q]
+		entries += 1
+	endfor
+
+	Redimension/N=(entries, -1) status
+
+	return status
+End

@@ -114,7 +114,7 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_Overlay")) // normal plotting
 		if(WaveExists(wv))
-			DB_TilePlotForDataBrowser(panelTitle, wv)
+			DB_TilePlotForDataBrowser(panelTitle, wv, sweepNo)
 			Notebook $subWindow selection={startOfFile, endOfFile} // select entire contents of notebook
 			Notebook $subWindow text = "Sweep note: \r " + note(wv) // replaces selected notebook content with new wave note.
 			SetControlUserData(panelTitle, "setvar_DataBrowser_SweepNo", LAST_SWEEP_USER_DATA, num2str(sweepNo))
@@ -130,9 +130,23 @@ static Function DB_PlotSweep(panelTitle, sweepNo)
 	endif
 End
 
-static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
+static Function DB_GetRowIndex(wv, value)
+	Wave wv
+	variable value
+
+	FindValue/V=(value) wv
+
+	if(V_Value == -1)
+		return NaN
+	endif
+
+	return V_Value
+End
+
+static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	string panelTitle
 	wave sweep
+	variable sweepNo
 
 	dfref dfr = DB_GetDataPath(panelTitle)
 	if(!DataFolderExistsDFR(dfr))
@@ -150,7 +164,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 	variable i
 	variable DisplayDAChan
 	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
-	string axis
+	variable headstage, red, green, blue
+	string axis, trace, adc, dac
 	string configNote = note(config)
 	string unit
 	string graph = DB_GetMainGraph(panelTitle)
@@ -179,18 +194,36 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 		ADYaxisLow  = 1 - ADYaxisSpacing + GRAPH_DIV_SPACING
 	endif
 
+	Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
+
+	///@todo what should happen if we find multiple entries for one sweep
+	WAVE statusDAC = GetHistoryOfSetting(settingsHistory, sweepNo, "DAC")
+	WAVE statusADC = GetHistoryOfSetting(settingsHistory, sweepNo, "ADC")
+
 	for(i = 0; i < numChannels; i += 1)
 		if(DisplayDAChan && i < NumberOfDAchannels)
 			YaxisHigh = DAYaxisHigh
 			YaxisLow = DAYaxisLow
+			dac = StringFromList(i, DAChannelList)
+			axis = "DA" + dac
+			trace = axis
 
-			axis = "DA" + StringFromList(i, DAChannelList)
-			AppendToGraph/W=$graph /L=$axis sweep[][i]
+			AppendToGraph/W=$graph/L=$axis sweep[][i]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i, configNote)
 			Label/W=$graph $axis, axis + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+
+			headstage = DB_GetRowIndex(statusDAC, str2num(dac))
+			if(!IsFinite(headstage))
+				// use a different color to tell the user that we can't query the headstage information
+				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+			else
+				GetTraceColor(headstage, red, green, blue)
+			endif
+
+			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 		endif
 
 		//AD wave to plot
@@ -198,18 +231,31 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 		YaxisLow  = ADYaxisLow
 
 		if(i < NumberOfADchannels)
-			axis = "AD" + StringFromList(i, ADChannelList)
-			AppendToGraph/W=$graph /L=$axis sweep[][i + NumberOfDAchannels]
+			adc = StringFromList(i, ADChannelList)
+			axis = "AD" + adc
+			trace = axis
+
+			AppendToGraph/W=$graph/L=$axis sweep[][i + NumberOfDAchannels]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i + NumberOfDAchannels, configNote)
 			Label/W=$graph $axis, axis + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+
+			headstage = DB_GetRowIndex(statusADC, str2num(adc))
+			if(!IsFinite(headstage))
+				// use a different color to tell the user that we can't query the headstage information
+				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+			else
+				GetTraceColor(headstage, red, green, blue)
+			endif
+
+			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 		endif
 
 		if(i >= NumberOfDAchannels)
 			DAYaxisSpacing = 0
-		endif	
+		endif
 
 		if(i >= NumberOfADchannels)
 			ADYaxisSpacing = 0
@@ -282,32 +328,6 @@ static Function DB_UpdateLegend(graph, [traceList])
 
 	str = RemoveEnding(str, "\r")
 	TextBox/C/W=$graph/N=text0/F=2 str
-End
-
-static Function DB_GetSweepColumn(settingsHistory)
-	Wave settingsHistory
-
-	variable sweepCol
-
-	// new label
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNum")
-
-	if(sweepCol >= 0)
-		return sweepCol
-	endif
-
-	// Old label prior to 276b5cf6
-	// was normally overwritten by SweepNum later in the code
-	// but not always as it turned out
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNumber")
-
-	if(sweepCol >= 0)
-		return sweepCol
-	endif
-
-	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
-
-	return 0
 End
 
 static Function DB_XAxisOfTracesIsTime(graph)
@@ -711,7 +731,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 			WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
-			sweepCol   = DB_GetSweepColumn(settingsHistory)
+			sweepCol   = GetSweepColumn(settingsHistory)
 
 			axis = DB_GetNextFreeAxisName(graph, axisBaseName)
 
@@ -849,7 +869,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 
 			WAVE settingsHistory = DB_GetSettingsHistory(panelTitle)
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
-			sweepCol   = DB_GetSweepColumn(settingsHistory)
+			sweepCol   = GetSweepColumn(settingsHistory)
 
 			numTraces = ItemsInList(list)
 			for(i = 0; i < numTraces; i += 1)
