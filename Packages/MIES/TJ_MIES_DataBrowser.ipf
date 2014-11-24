@@ -854,7 +854,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle, graph, trace, dataUnits, list
-	variable i, numTraces, isTimeAxis, sweepCol
+	variable i, numEntries, isTimeAxis, sweepCol
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -871,8 +871,8 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 			sweepCol   = GetSweepColumn(settingsHistory)
 
-			numTraces = ItemsInList(list)
-			for(i = 0; i < numTraces; i += 1)
+			numEntries = ItemsInList(list)
+			for(i = 0; i < numEntries; i += 1)
 				trace = StringFromList(i, list)
 
 				// change from timestamps to sweepNums
@@ -885,6 +885,15 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 			endfor
 
 			DB_SetLabNotebookBottomLabel(graph)
+
+			// autoscale all axis after a switch
+			list = AxisList(graph)
+
+			numEntries = ItemsInList(list)
+			for(i = 0; i < numEntries; i += 1)
+				SetAxis/W=$graph/A $StringFromList(i, list)
+			endfor
+
 			break
 	endswitch
 
