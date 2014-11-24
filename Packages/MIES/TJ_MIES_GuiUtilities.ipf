@@ -478,3 +478,90 @@ Function GetTraceColor(index, red, green, blue)
 			break
 	endswitch
 End
+
+/// @brief Query the axis minimum and maximum values
+///
+/// For none existing graph, axis or an autoscaled axis
+/// NaN is returned for minimum and high.
+///
+/// @param[in]  graph    graph name
+/// @param[in]  axis     axis name
+/// @param[out] minimum  minimum value of the axis range
+/// @param[out] maximum  maximum value of the axis range
+Function GetAxisRange(graph, axis, minimum, maximum)
+	string graph, axis
+	variable &minimum, &maximum
+
+	string info, flags
+
+	minimum  = NaN
+	maximum = NaN
+
+	if(!windowExists(graph))
+		return NaN
+	endif
+
+	info  = AxisInfo(graph, axis)
+	flags = StringByKey("SETAXISFLAGS", info)
+
+	// only set the axis range
+	// - if the specified axis exists
+	// - it is not autoscaled
+	if(!isEmpty(info) && isEmpty(flags))
+		GetAxis/W=$graph/Q $axis
+		minimum = V_min
+		maximum = V_max
+	endif
+End
+
+/// @brief Returns a wave with the minimum and maximum
+/// values of each axis
+///
+/// Use SetAxesRanges to set the minimum and maximum values
+/// @see GetAxisRange
+Function/Wave GetAxesRanges(graph)
+	string graph
+
+	string list, axes
+	variable numAxes, i, minimum, maximum
+
+	list    = AxisList(graph)
+	numAxes = ItemsInList(list)
+
+	Make/FREE/D/N=(2, numAxes) ranges
+	SetDimLabel ROWS, 0, minimum, ranges
+	SetDimLabel ROWS, 1, maximum, ranges
+
+	for(i = 0; i < numAxes; i += 1)
+		axes = StringFromList(i, list)
+		SetDimLabel COLS, i, $axes, ranges
+		GetAxisRange(graph, axes, minimum, maximum)
+		ranges[%minimum][i] = minimum
+		ranges[%maximum][i] = maximum
+	endfor
+
+	return ranges
+End
+
+/// @brief Set the range of all axes as stored by GetAxesRange
+///
+/// @see GetAxisRange
+Function SetAxesRanges(graph, ranges)
+	string graph
+	Wave ranges
+
+	variable numCols, i, minimum, maximum
+	string axes
+
+	ASSERT(windowExists(graph), "Graph does not exist")
+	numCols = DimSize(ranges, COLS)
+
+	for(i = 0; i < numCols; i += 1)
+		minimum = ranges[%minimum][i]
+		maximum = ranges[%maximum][i]
+		if(IsFinite(minimum) && IsFinite(maximum))
+			axes = GetDimLabel(ranges, COLS, i)
+			SetAxis/W=$graph $axes, minimum, maximum
+		endif
+	endfor
+End

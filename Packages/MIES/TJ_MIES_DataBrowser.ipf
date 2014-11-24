@@ -155,6 +155,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 	string unit
 	string graph = DB_GetMainGraph(panelTitle)
 
+	Wave ranges = GetAxesRanges(graph)
+
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
 		RemoveTracesFromGraph(graph)
 	endif
@@ -221,6 +223,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep)
 		ADYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
 		ADYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
 	endfor
+
+	SetAxesRanges(graph, ranges)
 End
 
 static Function/S DB_GetNextFreeAxisName(graph, axesBaseName)
