@@ -83,48 +83,38 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 End
 
 Function DM_ADScaling(WaveToScale, panelTitle)
-wave WaveToScale
-string panelTitle
-string WavePath = HSU_DataFullFolderPathString(panelTitle)
-wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
-variable NoOfADColumns = DC_NoOfChannelsSelected("ad", panelTitle)
-variable StartOfADColumns = DC_NoOfChannelsSelected("da", panelTitle)
-string ADGainControlName
-variable gain, i
-Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
-Wave SweepData = DC_SweepDataWvRef(panelTitle)
-variable Headstage
+	wave WaveToScale
+	string panelTitle
 
-for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
-//Gain_AD_00
-	if(str2num(stringfromlist(i, ADChannelList, ";")) < 10)
-		ADGainControlName = "Gain_AD_0" + stringfromlist(i, ADChannelList, ";")
-	else
-		ADGainControlName = "Gain_AD_" + stringfromlist(i, ADChannelList, ";")
-	endif
-	
-	gain = getSetVariable(panelTitle, ADGainControlName)
-	
-	// document AD parameters into SweepData wave
-	Headstage = TP_HeadstageUsingADC(panelTitle, i)
-	if(IsFinite(Headstage))
-		SweepData[0][1][HeadStage] = i // document the AD channel
-		SweepData[0][3][HeadStage] = gain // document the AD gain
-	endif
-	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == V_CLAMP_MODE)
-		gain *= 3200 // itc output will be multiplied by 1000 to convert to pA then divided by the gain
-		WaveToScale[][(StartOfADColumns + i)] /= gain
-	endif
-	
-	if(ChannelClampMode[str2num(stringfromlist(i, ADChannelList, ";"))][1] == I_CLAMP_MODE)
-		gain *=3200
-		WaveToScale[][(StartOfADColumns + i)]/=gain
-	endif
-	
-endfor
+	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	variable StartOfADColumns = DC_NoOfChannelsSelected("da", panelTitle)
+	variable gain, i, numEntries, adc
+	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
+	Wave SweepData = DC_SweepDataWvRef(panelTitle)
+	variable headstage
+	string ctrl
 
+	numEntries = ItemsInList(ADChannelList)
+	for(i = 0; i < numEntries; i += 1)
+		adc = str2num(StringFromList(i, ADChannelList))
+		headstage = TP_HeadstageUsingADC(panelTitle, i)
+	
+		sprintf ctrl, "Gain_AD_%02d", i
+		gain = GetSetVariable(panelTitle, ctrl)
+	
+		// document AD parameters into SweepData wave
+		if(IsFinite(Headstage))
+			SweepData[0][1][HeadStage] = i // document the AD channel
+			SweepData[0][3][HeadStage] = gain // document the AD gain
+		endif
+
+		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
+			gain *= 3200
+			WaveToScale[][(StartOfADColumns + i)] /= gain
+		endif
+	endfor
 end
 
 Function DM_DAScaling(WaveToScale, panelTitle)
