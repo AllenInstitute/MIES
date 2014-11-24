@@ -100,15 +100,14 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		adc = str2num(StringFromList(i, ADChannelList))
 		headstage = TP_HeadstageUsingADC(panelTitle, adc)
+		ASSERT(IsFinite(headstage), "Non-finite headstage")
 	
 		sprintf ctrl, "Gain_AD_%02d", i
 		gain = GetSetVariable(panelTitle, ctrl)
-	
+
 		// document AD parameters into SweepData wave
-		if(IsFinite(Headstage))
-			SweepData[0][1][HeadStage] = adc // document the AD channel
-			SweepData[0][3][HeadStage] = gain // document the AD gain
-		endif
+		SweepData[0][1][HeadStage] = adc // document the AD channel
+		SweepData[0][3][HeadStage] = gain // document the AD gain
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
 			gain *= 3200

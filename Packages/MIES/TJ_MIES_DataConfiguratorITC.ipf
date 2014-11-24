@@ -508,32 +508,29 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	// print ChanTypeWaveNameList
 	do
 		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
-			HeadStage = TP_HeadstageUsingDAC(panelTitle, i) // Determine the headstage
+			HeadStage = TP_HeadstageUsingDAC(panelTitle, i)
+			ASSERT(IsFinite(headstage), "Non-finite headstage")
 			
-			if(isFinite(HeadStage))
-				SweepData[0][0][HeadStage] = i // document the DA channel
-			endif
+			SweepData[0][0][HeadStage] = i // document the DA channel
+
 			sprintf SetVarDAGain, "Gain_DA_0%s"  num2str(i)
 			sprintf SetVarDAScale, "Scale_DA_0%s" num2str(i)
 
 			ControlInfo /w = $panelTitle $SetVarDAGain
 			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
-			if(isFinite(HeadStage))
-				SweepData[0][2][HeadStage] = v_value // document the DA gain
-			endif
+
+			SweepData[0][2][HeadStage] = v_value // document the DA gain
 			
 			ControlInfo /w = $panelTitle $SetVarDAScale
 			DAScale = v_value
 			
-			if(isFinite(HeadStage))
-				SweepData[0][4][HeadStage] = v_value // document the DA scale
-			endif
+			SweepData[0][4][HeadStage] = v_value // document the DA scale
+
 			//get the wave name
 			ChanTypeWaveName = GetWBSvdStimSetDAPathAsString() + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
-			// print "chan type wave name =", ChanTypeWaveName 
-			if(isFinite(HeadStage))
-				SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name
-			endif
+
+			SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name
+
 			//check to see if it is a test pulse or user specified da wave
 			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
 				// print "chan type wave name =", ChanTypeWaveName
@@ -566,10 +563,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
 			//print cmd
 			Wave/z StimSetSweep = $ChanTypeWaveName
-			// print "Column =", column
-			if(isFinite(HeadStage))
-				SweepData[0][5][HeadStage] = Column // document the set column
-			endif
+			SweepData[0][5][HeadStage] = Column // document the set column
 			
 			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
 			//print "dascale =", dascale
