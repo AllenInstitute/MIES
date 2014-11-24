@@ -884,7 +884,7 @@ End
 /// @brief Breaking a string into multiple lines
 ///
 /// Currently all spaces and tabs which are not followed by numbers are
-/// replace by carriage returns (\r). Therefore the algorithm creates
+/// replace by carriage returns (\\r). Therefore the algorithm creates
 /// a paragraph with minimum width.
 ///
 /// A generic solution would either implement the real deal
