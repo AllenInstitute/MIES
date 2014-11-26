@@ -470,162 +470,147 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 End
 //==========================================================================================
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave. 
-/// Also records certain DA_Ephys GUI settings into SweepData and SweepTxtData
+/// Also records certain DA_Ephys GUI settings into sweepData and sweepTxTData
 Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
-	variable i = 0// 
-	variable j = 0//
+
+	variable i, col, headstage, numEntries
 	string ChannelStatus
-	string WavePath // = HSU_DataFullFolderPathString(panelTitle)
-	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $(WavePath + ":ITCDataWave")
-	string ITCDataWavePath = WavePath + ":ITCDataWave"
-	//string testPulsePath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse:TestPulse"
-	string ChanTypeWaveNameList, ChanTypeWaveName
-	string ResampledWaveName = "ResampledWave"
-	string cmd
-	string SetvarDAGain, SetVarDAScale
-	variable DAGain, DAScale,column, insertStart, insertEnd, EndRow
-	string CountPath = HSU_DataFullFolderPathString(panelTitle)+":count" //%%
-	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
+	DFREF deviceDFR = GetDevicePath(panelTitle)
+	WAVE/SDFR=deviceDFR ITCDataWave = ITCDataWave
+
+	string setNameList, setName, setNameFullPath
+	string ctrl
+	variable DAGain, DAScale, setColumn, insertStart, insertEnd, endRow, oneFullCycle
+	variable/C ret
+	string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
 	// waves below are used to document the settings for each sweep
-	Wave SweepData = DC_SweepDataWvRef(panelTitle)
-	Wave/T SweepTxtData = DC_SweepDataTxtWvRef(panelTitle)
-	SweepData = nan // empty the waves on each new sweep
-	SweepTxtData = ""
-	Variable HeadStage
+	Wave sweepData = DC_SweepDataWvRef(panelTitle)
+	Wave/T sweepTxTData = DC_SweepDataTxtWvRef(panelTitle)
+	sweepData = nan // empty the waves on each new sweep
+	sweepTxTData = ""
+
 	if(exists(CountPath) == 2)
 		NVAR count = $CountPath
-		column = count-1
+		setColumn = count - 1
 	else
-		column = 0
+		setColumn = 0
 	endif
-	
+
 	//Place DA waves into ITCDataWave
-	variable DecimationFactor = (DC_ITCMinSamplingInterval(panelTitle) / 5)
-	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
-	ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
-	// print ChanTypeWaveNameList
-	do
-		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)//Checks if DA channel checkbox is checked (ON)
-			HeadStage = TP_HeadstageUsingDAC(panelTitle, i)
-			ASSERT(IsFinite(headstage), "Non-finite headstage")
-			
-			SweepData[0][0][HeadStage] = i // document the DA channel
+	variable DecimationFactor = DC_ITCMinSamplingInterval(panelTitle) / 5
+	setNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
 
-			sprintf SetVarDAGain, "Gain_DA_0%s"  num2str(i)
-			sprintf SetVarDAScale, "Scale_DA_0%s" num2str(i)
+	numEntries = DimSize(statusDA, ROWS)
+	for(i = 0; i < numEntries; i += 1)
 
-			ControlInfo /w = $panelTitle $SetVarDAGain
-			DAGain = (3200 / v_value) // 3200 = 1V, 3200/gain = bits per unit
+		if(!statusDA[i])
+			continue
+		endif
 
-			SweepData[0][2][HeadStage] = v_value // document the DA gain
-			
-			ControlInfo /w = $panelTitle $SetVarDAScale
-			DAScale = v_value
-			
-			SweepData[0][4][HeadStage] = v_value // document the DA scale
+		headstage = TP_HeadstageUsingDAC(panelTitle, i)
+		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
-			//get the wave name
-			ChanTypeWaveName = GetWBSvdStimSetDAPathAsString() + ":" +stringfromlist(i,ChanTypeWaveNameList,";")
+		sweepData[0][0][HeadStage] = i // document the DA channel
 
-			SweepTxtData[0][0][HeadStage] = stringfromlist(i,ChanTypeWaveNameList,";") // Document the Set name
+		sprintf ctrl, "Gain_DA_%02d", i
+		ControlInfo/W=$panelTitle $ctrl
+		DAGain = 3200 / v_value // 3200 = 1V, 3200/gain = bits per unit
 
-			//check to see if it is a test pulse or user specified da wave
-			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 1)
-				// print "chan type wave name =", ChanTypeWaveName
-				column = 0
-				insertStart = 0
-				insertEnd = 0
-			else
-				column = real(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"), i,0))// DC_CalculateChannelColumnNo also returns a 0 or 1 in the imaginary componet. 1 = set has cycled once already
-				if(j == 0) // (i == 0)
-					InsertStart = DC_GlobalChangesToITCDataWave(panelTitle) 
-					// print "insert start =", InsertStart
-					InsertEnd = InsertStart 
-				endif
+		sweepData[0][2][HeadStage] = v_value // document the DA gain
+
+		sprintf ctrl, "Scale_DA_%02d", i
+		DAScale = GetSetVariable(panelTitle, ctrl)
+
+		sweepData[0][4][HeadStage] = DAScale // document the DA scale
+
+		// get the wave name
+		setName = StringFromList(i, setNameList)
+		setNameFullPath = GetWBSvdStimSetDAPathAsString() + ":" + setName
+
+		sweepTxTData[0][0][HeadStage] = setName // document the Set name
+
+		ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, 0)
+		oneFullCycle = imag(ret)
+
+		if(!cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse"))
+			setColumn   = 0
+			insertStart = 0
+			insertEnd   = 0
+		else
+			setColumn   = real(ret)
+			if(col == 0)
+				insertStart = DC_GlobalChangesToITCDataWave(panelTitle)
+				insertEnd   = insertStart
 			endif
+		endif
+
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
-		ControlInfo /w = $panelTitle check_Settings_ScalingZero 
-		if(v_value == 1)
-			ControlInfo /w = $panelTitle Check_DataAcq_Indexing
-			variable IndexingOnOrOff = v_value // indexing state
-			ControlInfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 1 || IndexingOnOrOff == 0)// locked indexing or no indexing
-				if(cmpstr(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)// makes sure test pulse wave scaling is maintained
-					if(imag(DC_CalculateChannelColumnNo(panelTitle, stringfromlist(i,ChanTypeWaveNameList,";"),i,0)) == 1) // checks if set has completed one full cycle
-						DAScale = 0
-					endif
+		if(GetCheckboxState(panelTitle,  "check_Settings_ScalingZero") && (GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked") || !GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")))
+			// makes sure test pulse wave scaling is maintained
+			if(cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)
+				if(oneFullCycle) // checks if set has completed one full cycle
+					DAScale = 0
 				endif
 			endif
 		endif
-			//resample the wave to min samp interval and place in ITCDataWave
-			EndRow = (((round(dimsize($ChanTypeWaveName, 0)) / DecimationFactor) - 1) + InsertEnd)
-			//print cmd
-			Wave/z StimSetSweep = $ChanTypeWaveName
-			SweepData[0][5][HeadStage] = Column // document the set column
-			
-			Multithread ITCDataWave[InsertStart, EndRow][j] = (DAGain * DAScale) * StimSetSweep[DecimationFactor * (p - InsertStart)][Column]
-			//print "dascale =", dascale
-			// check if TP is being configured
-			if(stringmatch(ChanTypeWaveName,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") == 0) // prevents insertion of TP into TP
-				// check if global TP insertion is active
-				controlinfo /w = $panelTitle Check_Settings_InsertTP
-				variable Check_Settings_InsertTP = v_value
-				if(Check_Settings_InsertTP == 1)
-					variable TPAmp
-					controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
-					variable TPDuration = 2 * v_value
-					// print tpduration
-					variable TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
-					variable TPEndPoint = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
-					string ChannelClampModePathString
-					sprintf ChannelClampModePathString, "%s:ChannelClampMode" WavePath
-					Wave ChannelClampMode = $ChannelClampModePathString
-					variable ChannelMode = ChannelClampMode[i][0]
-					if(ChannelMode == V_CLAMP_MODE)
-						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-						TPAmp = v_value
-					elseif(ChannelMode == I_CLAMP_MODE)
-						controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-						TPAmp = v_value
-					endif
-					ITCDataWave[TPStartPoint, TPEndPoint][j] = TPAmp * DAGain
-				endif
 
+		// resample the wave to min samp interval and place in ITCDataWave
+		Wave stimSet = $setNameFullPath
+		endRow = (DimSize(stimSet, ROWS) / DecimationFactor - 1) + insertEnd
+		sweepData[0][5][HeadStage] = setColumn // document the set column
+
+		Multithread ITCDataWave[insertStart, endRow][col] = (DAGain * DAScale) * stimSet[DecimationFactor * (p - insertStart)][setColumn]
+
+		// check if TP is being configured
+		if(cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0 && GetCheckboxState(panelTitle, "Check_Settings_InsertTP"))
+			variable TPAmp
+			variable TPDuration   = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+			variable TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
+			variable TPEndPoint   = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
+
+			Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+			variable channelMode  = ChannelClampMode[i][0]
+
+			if(channelMode == V_CLAMP_MODE)
+				TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+			elseif(channelMode == I_CLAMP_MODE)
+				TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 			endif
-			// i is the DA channel number 
-			j += 1// j determines what column of the ITCData wave the DAC wave is inserted into 
+
+			ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmp * DAGain
 		endif
-		i += 1
-	while(i < (itemsinlist(ChannelStatus,";")))
-		
-	//Leave room for AD data 
-		i = 0
-		ChannelStatus = DC_ControlStatusListString("AD", "Check", panelTitle)
-	
-	do
-		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
-			
-			j += 1
+
+		col += 1 // col determines what column of the ITCData wave the DAC wave is inserted into
+	endfor
+
+	WAVE statusAD = DC_ControlStatusWave(panelTitle, "AD")
+
+	numEntries = DimSize(statusAD, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!statusAD[i])
+			continue
 		endif
-		i += 1
-	while(i < (itemsinlist(ChannelStatus,";")))
-	
-	//Place TTL waves into ITCDataWave
-	i = 0
-	wave /z TTLwave = $HSU_DataFullFolderPathString(panelTitle) + ":TTLwave"//= root:MIES:WaveBuilder:SavedStimulusSets:TTL:TTLWave
-	if(DC_AreTTLsInRackChecked(0, panelTitle) == 1)
+
+		// do nothing
+	endfor
+
+	// Place TTL waves into ITCDataWave
+	if(DC_AreTTLsInRackChecked(0, panelTitle))
 		DC_MakeITCTTLWave(0, panelTitle)
-		ITCDataWave[InsertStart, round((dimsize(TTLWave,0) / DecimationFactor)) - 1 + InsertEnd][j] = TTLWave[(DecimationFactor) * (p - InsertStart)]		
-		//ITCDataWave[0,round((dimsize(TTLWave,0) / DecimationFactor)) - 1][j] = TTLWave[(DecimationFactor) * p]
-		j += 1
+		WAVE/SDFR=deviceDFR TTLwave
+		endRow = round(DimSize(TTLWave, ROWS) / DecimationFactor) - 1 + insertEnd
+		ITCDataWave[insertStart, endRow][col] = TTLWave[DecimationFactor * (p - insertStart)]
+		col += 1
 	endif
-	
-	if(DC_AreTTLsInRackChecked(1, panelTitle) == 1)
+
+	if(DC_AreTTLsInRackChecked(1, panelTitle))
 		DC_MakeITCTTLWave(1, panelTitle)
-		ITCDataWave[InsertStart,round((dimsize(TTLWave,0) / DecimationFactor)) - 1 + InsertEnd][j]=TTLWave[(DecimationFactor) * (p - insertStart)]
-		//ITCDataWave[0,round((dimsize(TTLWave,0) / DecimationFactor)) - 1][j]=TTLWave[(DecimationFactor) * p]
+		WAVE/SDFR=deviceDFR TTLwave
+		endRow = round(DimSize(TTLWave, ROWS) / DecimationFactor) - 1 + insertEnd
+		ITCDataWave[insertStart, endRow][col] = TTLWave[DecimationFactor * (p - insertStart)]
 	endif
 End
 
