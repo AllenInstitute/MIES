@@ -594,7 +594,14 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			continue
 		endif
 
-		// do nothing
+		headstage = TP_HeadstageUsingADC(panelTitle, i)
+		ASSERT(IsFinite(headstage), "Non-finite headstage")
+
+		// document AD parameters into SweepData wave
+		sweepData[0][1][headStage] = i // document the AD channel
+
+		sprintf ctrl, "Gain_AD_%02d", i
+		sweepData[0][3][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
 	endfor
 
 	// Place TTL waves into ITCDataWave
