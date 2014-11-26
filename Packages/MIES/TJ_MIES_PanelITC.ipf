@@ -4295,6 +4295,16 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 		return 1
 	endif
 
+	if(!IsFinite(TP_HeadstageUsingADC(panelTitle, ADCchannel)))
+		printf "(%s) Could not determine the headstage for the ADChannel %d.\r", panelTitle, ADCchannel
+		return 1
+	endif
+
+	if(!IsFinite(TP_HeadstageUsingDAC(panelTitle, DACchannel)))
+		printf "(%s) Could not determine the headstage for the DACchannel %d.\r", panelTitle, DACchannel
+		return 1
+	endif
+
 	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	dacWave = GetPopupMenuString(panelTitle, ctrl)
 	if(!CmpStr(dacWave, NONE) || !CmpStr(dacWave, "TestPulse"))
