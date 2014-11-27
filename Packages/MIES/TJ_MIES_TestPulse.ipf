@@ -225,7 +225,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 
 			TP_UpdateTPBufferSizeGlobal(panelTitle)
 			TP_UpdateTestPulseWave(TestPulse, panelTitle)
-			DM_CreateScaleTPHoldingWave(panelTitle)
 
 			Make/FREE/N=8 SelectedDACWaveList
 			TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
