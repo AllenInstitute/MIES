@@ -21,6 +21,8 @@ Function DM_SaveITCData(panelTitle)
 	note dataWave, Time() // adds time stamp to wave note
 	getwindow kwFrameOuter wtitle 
 	note dataWave, s_value
+	SVAR miesVersion = $GetMiesVersion()
+	Note dataWave, "MiesVersion: " + miesVersion
 	ED_AppendCommentToDataWave(dataWave, panelTitle) // adds user comments as wave note
 
 	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))

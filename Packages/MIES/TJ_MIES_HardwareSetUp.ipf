@@ -76,6 +76,10 @@ Function HSU_LockDevice(panelTitle)
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(panelTitleLocked)
 	WBP_UpdateITCPanelPopUps(panelTitleLocked)
+
+	// the first time call of this function is expensive
+	// call it here, in order to avoid problems later on
+	GetMiesVersion()
 End
 //==================================================================================================
 
