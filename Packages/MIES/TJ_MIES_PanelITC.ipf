@@ -4178,7 +4178,14 @@ Function DAP_CheckSettings(panelTitle)
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
 	variable mode, headStage, ctrlNo
 	string ctrl, endWave, ttlWave
-	string list = panelTitle
+	string list
+
+	if(isEmpty(panelTitle))
+		print "Invalid empty string for panelTitle, can not proceed"
+		return 1
+	endif
+
+	list = panelTitle
 
 	if(DAP_DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
