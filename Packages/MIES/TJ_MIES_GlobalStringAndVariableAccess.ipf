@@ -126,7 +126,7 @@ static Function/S CreateMiesVersion()
 		return "unknown version"
 	endif
 
-	return version
+	return RemoveEnding(version, "\r")
 End
 
 /// @brief Returns the absolute path to the variable `DataAcqState`
