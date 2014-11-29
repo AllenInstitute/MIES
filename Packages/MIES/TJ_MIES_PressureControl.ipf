@@ -28,6 +28,11 @@ static Constant GIGA_SEAL                    = 1000
 static Constant PRESSURE_OFFSET              = 5
 static Constant MIN_NEG_PRESSURE_PULSE       = -1
 Constant        SAMPLE_INT_MICRO             = 5
+
+static Constant 	MANIPULATOR_0_P_OFFSET = 0.135
+static Constant 	MANIPULATOR_1_P_OFFSET = 0.04
+static Constant 	MANIPULATOR_6_P_OFFSET = 0.096
+static Constant 	MANIPULATOR_7_P_OFFSET = 0.223
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -111,7 +116,9 @@ Function P_MethodSeal(panelTitle, headStage)
 	// if the seal resistance is greater that 1 giga ohm set pressure to atmospheric AND stop sealing process
 	if(Resistance >= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
- 		P_UpdatePressureMode(panelTitle, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
+ 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
+ 			P_UpdatePressureMode(panelTitle, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
+ 		endif	
 		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 
@@ -174,7 +181,11 @@ Function P_MethodBreakIn(panelTitle, headStage)
 	// if the seal resistance is less that 1 giga ohm set pressure to atmospheric AND break in process
 	if(Resistance <= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
-		P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
+		
+		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
+ 			P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
+ 		endif			
+		
 		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
@@ -214,7 +225,10 @@ Function P_MethodClear(panelTitle, headStage)
 		endif
 	else
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
-		P_UpdatePressureMode(panelTitle, 3, StringFromList(3,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
+		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
+			P_UpdatePressureMode(panelTitle, 3, StringFromList(3,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
+		endif
+		
 		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
 		PressureDataWv[headStage][%TimePeakRcheck]			= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
@@ -559,6 +573,11 @@ Function P_UpdatePressureDataStorageWv(panelTitle)
 	PressureDataWv[headStageNo][%TTL]  				= GetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_TTL")
 	PressureDataWv[][%PSI_air]   						= GetSetVariable			(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution] 					= GetSetVariable			(panelTitle, "setvar_Settings_InBathP")
+	PressureDataWv[0][%PSI_solution] 				+= MANIPULATOR_0_P_OFFSET
+	PressureDataWv[1][%PSI_solution] 				+= MANIPULATOR_1_P_OFFSET
+	PressureDataWv[6][%PSI_solution] 				+= MANIPULATOR_6_P_OFFSET
+	PressureDataWv[7][%PSI_solution] 				+= MANIPULATOR_7_P_OFFSET
+	
 	PressureDataWv[][%PSI_slice] 					= GetSetVariable			(panelTitle, "setvar_Settings_InSliceP")
 	PressureDataWv[][%PSI_nearCell] 					= GetSetVariable			(panelTitle, "setvar_Settings_NearCellP")
 	PressureDataWv[][%PSI_SealInitial] 				= GetSetVariable			(panelTitle, "setvar_Settings_SealStartP")
