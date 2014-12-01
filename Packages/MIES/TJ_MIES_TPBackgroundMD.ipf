@@ -346,6 +346,8 @@ End
 /// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function
 Function ITC_TPDocumentation(panelTitle) 
 	string panelTitle
+
+	variable sweepNo
 	string DataFolderPath = HSU_DataFullFolderPathString(panelTitle)
 	dfref TPDataFolderRef = $DataFolderPath + ":TestPulse"
 	
@@ -378,10 +380,10 @@ Function ITC_TPDocumentation(panelTitle)
 	TPKeyWave[2][3] = num2str(RTolerance)
 			
 	// add data to TPSettingsWave
-	variable i = 0
-	variable j
+	variable i, j
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
 	variable numHS = DimSize(statusHS, ROWS)
+
 	for(i = 0; i < numHS; i += 1)
 		if(!statusHS[i])
 			continue
@@ -389,34 +391,26 @@ Function ITC_TPDocumentation(panelTitle)
 
 		string clampModeString = TP_ClampModeString(panelTitle)
 		variable numClampMode = itemsinlist(clampModeString, ";")
-		if (i < numClampMode)  // make sure the headstage is actually on so you don't try to read past the end of the clampModeString
-			variable clampMode = str2num(stringfromlist(i, clampModeString))
-			if ((clampMode) == 0)
-				TPSettingsWave[0][1][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
-			else
-				TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
-			endif
+		variable clampMode = str2num(stringfromlist(j, clampModeString))
+		if ((clampMode) == 0)
+			TPSettingsWave[0][1][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
+		else
+			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
 		endif
 		
 		TPSettingsWave[0][2][i] = InstResistance[0][j]
 		TPSettingsWave[0][3][i] = SSResistance[0][j]
 		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active headstage (no place holder columns), j only increments for active headstages.
 	endfor
-
-	controlinfo /w = $panelTitle SetVar_Sweep // Determine the number of the next sweep to be acquired.
-	ASSERT(V_Flag > 0, "Non-existing control or window")
 	
-	variable NextSweep = v_value
-	variable lastSweep = NextSweep - 1
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) sweepData = $("Sweep_" + num2str(sweepNo))
 	
-	if(NextSweep == 0) // adds to settings history wave if no data has been acquired
-		ED_createWaveNotes(TPSettingsWave, TPKeyWave, "", nan, panelTitle)
-	else // adds to settings history wave if data has been acquired
-		string SweepName //= DataFolderPath + ":Sweep+_" + num2str(LastSweep)
-		sprintf SweepName, "%s:Data:Sweep_%d" DataFolderPath, LastSweep
-		ASSERT(waveexists($SweepName) > 0, "Sweep/Wave does not exist")
-		print sweepname
-		ED_createWaveNotes(TPSettingsWave, TPKeyWave, SweepName , lastSweep, panelTitle)
+	if(!WaveExists(SweepData))
+		// adds to settings history wave if no data has been acquired
+		ED_createWaveNotes(TPSettingsWave, TPKeyWave, "", NaN, panelTitle)
+	else
+		ED_createWaveNotes(TPSettingsWave, TPKeyWave, GetWavesDataFolder(sweepData, 2), sweepNo, panelTitle)
 	endif
 End
 
