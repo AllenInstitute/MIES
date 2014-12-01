@@ -54,9 +54,11 @@ End
  
  Function ITC_FIFOMonitorMD(s) // MD = Multiple Devices 
 	STRUCT WMBackgroundStruct &s
-	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 3 = StopCollectionPoint
-	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList
-	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
+
+	DFREF activeDevices = GetActiveITCDevicesFolder()
+	WAVE/SDFR=activeDevices ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 3 = StopCollectionPoint
+	WAVE/SDFR=activeDevices/T ActiveDeviceTextList
+	WAVE/WAVE/SDFR=activeDevices ActiveDevWavePathWave
 	String cmd = ""
 	Variable NumberOfActiveDevices // = numpnts(ActiveDeviceTextList)
 	Variable DeviceIDGlobal
@@ -70,8 +72,8 @@ End
 		//print "Number of Active Devices = ",NumberOfActiveDevices
 		panelTitle = ActiveDeviceTextList[i]
 		//print "panel Title = ", panelTitle
-		WAVE /Z ITCDataWave = ActiveDeviceWavePathWave[i][0] 
-		WAVE /Z ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
+		WAVE /Z ITCDataWave = ActiveDevWavePathWave[i][0]
+		WAVE /Z ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
 			//print "AD channel to monitor = ", ActiveDeviceList[i][1]
 			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
 			
@@ -178,8 +180,7 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	NVAR /z Count = $CountPathString
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-
-	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList
+	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceTextList
 
 	// stop data acq on device passsed in
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -223,18 +224,16 @@ END
 Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
-	//Variable start = stopmstimer(-2)
-	//print "ITC Device ID global = ", itcdeviceidglobal, "In  ITC_MakeOrUpdateActivDevLstWave"
-	string WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
-	WAVE /z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
+
+	DFREF activeDevices = GetActiveITCDevicesFolder()
+	WAVE/Z/SDFR=activeDevices ActiveDeviceList
 	if (AddorRemoveDevice == 1) // add a ITC device
-		if (waveexists($WavePath + ":ActiveDeviceList") == 0) 
-			Make /o /n = (1,4) $WavePath + ":ActiveDeviceList"
-			WAVE /Z ActiveDeviceList = $WavePath + ":ActiveDeviceList"
+		if (!WaveExists(ActiveDeviceList))
+			Make/N=(1, 4) activeDevices:ActiveDeviceList/WAVE=ActiveDeviceList
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
-		elseif (waveexists($WavePath + ":ActiveDeviceList") == 1)
+		else
 			variable numberOfRows = DimSize(ActiveDeviceList, 0)
 			// print numberofrows
 			Redimension /n = (numberOfRows + 1, 4) ActiveDeviceList
@@ -249,95 +248,54 @@ Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChanne
 		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
-	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
-End // Function 	ITC_MakeOrUpdateActivDevLstWave(panelTitle)
+End
 //=============================================================================================================================
 
- Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, AddorRemoveDevice)
- 	string panelTitle
- 	Variable AddOrRemoveDevice
- 	//Variable start = stopmstimer(-2)
+Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, AddorRemoveDevice)
+	string panelTitle
+	Variable AddOrRemoveDevice
 
- 	String WavePath = "root:MIES:ITCDevices:ActiveITCDevices"
- 	WAVE /z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
- 	if (AddOrRemoveDevice == 1) // Add a device
- 		if(WaveExists($WavePath + ":ActiveDeviceTextList") == 0)
- 			Make /t /o /n = 1 $WavePath + ":ActiveDeviceTextList"
- 			WAVE /Z /T ActiveDeviceTextList = $WavePath + ":ActiveDeviceTextList"
- 			ActiveDeviceTextList = panelTitle
- 		elseif (WaveExists($WavePath + ":ActiveDeviceTextList") == 1)
- 			Variable numberOfRows = numpnts(ActiveDeviceTextList)
- 			Redimension /n = (numberOfRows + 1) ActiveDeviceTextList
- 			ActiveDeviceTextList[numberOfRows] = panelTitle
- 		endif
- 	elseif (AddOrRemoveDevice == -1) // remove a device 
- 		FindValue /Text = panelTitle ActiveDeviceTextList
- 		Variable RowToRemove = v_value
- 		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
- 	endif
- 	 		//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
+	DFREF activeDevices = GetActiveITCDevicesFolder()
+	WAVE/Z/T/SDFR=activeDevices ActiveDeviceTextList
+	if(AddOrRemoveDevice == 1) // Add a device
+		if(!WaveExists(ActiveDeviceTextList))
+			Make/T/N=1 activeDevices:ActiveDeviceTextList/Wave=ActiveDeviceTextList
+			ActiveDeviceTextList = panelTitle
+		else
+			Variable numberOfRows = numpnts(ActiveDeviceTextList)
+			Redimension /n = (numberOfRows + 1) ActiveDeviceTextList
+			ActiveDeviceTextList[numberOfRows] = panelTitle
+		endif
+	elseif(AddOrRemoveDevice == -1) // remove a device
+		FindValue /Text = panelTitle ActiveDeviceTextList
+		Variable RowToRemove = v_value
+		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
+	endif
 
- 	ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
-
- End // ITC_MakeOrUpdtActivDevListTxtWv(panelTitle)
+	ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
+End
 //=============================================================================================================================
 
 Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	String panelTitle
 	Variable AddOrRemoveDevice, RowToRemove
-	//Variable start = stopmstimer(-2)
-	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
-	if (AddOrRemoveDevice == 1) 
-		if (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave) == 0)
-			Make /WAVE /n = (1,2) root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
-			WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave
-			// print devicefolderpath + ":itcdatawave"
+
+	string DeviceFolderPath = GetDevicePathAsString(panelTitle)
+	DFREF activeDevices = GetActiveITCDevicesFolder()
+	WAVE/Z/WAVE/SDFR=activeDevices ActiveDevWavePathWave
+	if(AddOrRemoveDevice == 1)
+		if(!WaveExists(ActiveDevWavePathWave))
+			Make/WAVE/N=(1, 2) activeDevices:ActiveDevWavePathWave/Wave=ActiveDevWavePathWave
+
 			ActiveDevWavePathWave[0][0] = $(DeviceFolderPath + ":ITCDataWave") 
 			ActiveDevWavePathWave[0][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
-		elseif (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:ActiveDevWavePathWave) == 1)
+		else
 			Variable numberOfRows = DimSize(ActiveDevWavePathWave, 0)
 			Redimension /n = (numberOfRows + 1,2) ActiveDevWavePathWave
 			ActiveDevWavePathWave[numberOfRows][0] = $(DeviceFolderPath + ":ITCDataWave") 
 			ActiveDevWavePathWave[numberOfRows][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
 		endif
-	elseif (AddOrRemoveDevice == -1)
+	elseif(AddOrRemoveDevice == -1)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave
 	endif
-	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
-End // Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddorRemoveDevice)
-//=============================================================================================================================
-
-//Function ITC_GlobalActiveDevCountUpdate(panelTitle, TPorDataAcq, Add_Remove) // TP = TestPulse = 0, DataAcq = Data acquistion = 1
-// 	String panelTitle
-// 	Variable TPorDataAcq
-// 	Variable Add_Remove // 1 to add a device; -1 to remove a device
-// 	
-// 	if (TPorDataAcq == 0) 
-// 		if(NVAR_Exists(ActiveTPDevices)==0) // creates global if it does not exist.
-// 			Variable /G ActiveTPDevices = 0
-// 		endif
-// 	
-// 		NVAR ActiveTPDevices
-// 		ActiveTPDevices += Add_Remove // Updates global to reflect the number of active devices
-// 		
-// 		if (ActiveTPDevices < 0) // Check to ensure the number of active devices is never less than 0
-// 			ActiveTPDevices = 0
-// 		endif
-// 	
-// 	elseif (TPorDataAcq == 1)
-// 			if(NVAR_Exists(ActiveDataAcqDevices)==0) // creates global if it does not exist.
-// 			Variable /G ActiveDataAcqDevices = 0
-// 		endif
-// 	
-// 		NVAR ActiveDataAcqDevices
-// 		ActiveDataAcqDevices += Add_Remove // Updates global to reflect the number of active devices
-// 		
-// 		if (ActiveDataAcqDevices < 0) // Check to ensure the number of active devices is never less than 0
-// 			ActiveDataAcqDevices = 0
-// 		endif
-// 	endif
-// 	
-// End // Function GlobalActiveDevCountUpdate(panelTitle)
-//=============================================================================================================================
-
+End

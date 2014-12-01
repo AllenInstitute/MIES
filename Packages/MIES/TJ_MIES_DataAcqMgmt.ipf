@@ -344,9 +344,7 @@ End
 Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
 	string panelTitle					// if devices are not yoked, it is the same as it would be if RA_StartMD was called directly
 
-
-	variable i = 0
-	variable deviceType = 0
+	variable i, deviceType
 
 	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
 	if(ITC1600True == 1)
@@ -365,20 +363,17 @@ Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only
 			if(SVAR_Exists(listOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 				if(numberOfFollowerDevices != 0) // There are follower devices
-					string ActiveDeviceListStringPath
-					sprintf ActiveDeviceListStringPath, "%s:ActiveDeviceList" Path_ActiveITCDevicesFolder(panelTitle)
-					Wave / z ActiveDeviceList = $ActiveDeviceListStringPath
+					Wave/Z/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 					if(dimsize(ActiveDeviceList, 0) > 0) // if list is empty, there are no active devices.
 						// so the list isn't empty (Active devices could included yoked ITC1600s or independent ITC devices of other types)
 						string ActiveDeviListDevIDGlobPathStr
-						sprintf ActiveDeviListDevIDGlobPathStr, "%s:ActiveDeviceListDeviceIDGlobals"  Path_ActiveITCDevicesFolder(panelTitle)
+						sprintf ActiveDeviListDevIDGlobPathStr, "%s:ActiveDeviceListDeviceIDGlobals"  GetActiveITCDevicesFolderAS()
 						if(waveexists($ActiveDeviListDevIDGlobPathStr) == 1) // if the wave exists, redimension to 0
 							redimension /N = 0 $ActiveDeviListDevIDGlobPathStr
 						endif
 						
 						duplicate /o /r = [][0] ActiveDeviceList $ActiveDeviListDevIDGlobPathStr
 						Wave ActiveDeviceListDeviceIDGlobals = $ActiveDeviListDevIDGlobPathStr
-					
 					
 						// Make sure yoked devices have all completed data acq.  If all devices have completed data acq start RA_StartMD(panelTitle) on the lead device (ITC1600_dev_0)
 						// root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList NEED to make sure all yoked devices are inactive !!!!!!!!!!!!
@@ -443,11 +438,9 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 	
 				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 				if(numberOfFollowerDevices != 0) 
-					string ActiveDeviceListStringPath
-					sprintf ActiveDeviceListStringPath, "%s:ActiveDeviceList" Path_ActiveITCDevicesFolder(panelTitle)
-					Wave / z ActiveDeviceList = $ActiveDeviceListStringPath
+					Wave/Z/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 					string ActiveDeviListDevIDGlobPathStr
-					sprintf ActiveDeviListDevIDGlobPathStr, "%s:ActiveDeviceListDeviceIDGlobals"  Path_ActiveITCDevicesFolder(panelTitle)
+					sprintf ActiveDeviListDevIDGlobPathStr, "%s:ActiveDeviceListDeviceIDGlobals"  GetActiveITCDevicesFolderAS()
 					if(waveexists($ActiveDeviListDevIDGlobPathStr) == 1)
 						redimension /N = 0 $ActiveDeviListDevIDGlobPathStr
 					endif
