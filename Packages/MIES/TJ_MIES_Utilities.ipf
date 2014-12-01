@@ -1068,3 +1068,47 @@ Function/WAVE GetHistoryOfSetting(settingsHistory, sweepNo, setting)
 
 	return status
 End
+
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
+Function/S GetAllDevicesWithData()
+
+	variable i, j, numTypes, numNumbers
+	string type, number, device
+	string path, list = ""
+
+	path = GetITCDevicesFolderAsString()
+
+	if(!DataFolderExists(path))
+		return ""
+	endif
+
+	numTypes   = ItemsInList(DEVICE_TYPES)
+	numNumbers = ItemsInList(DEVICE_NUMBERS)
+	for(i = 0; i < numTypes; i += 1)
+		type = StringFromList(i, DEVICE_TYPES)
+
+		path = GetDeviceTypePathAsString(type)
+
+		if(!DataFolderExists(path))
+			continue
+		endif
+
+		for(j = 0; j < numNumbers ; j += 1)
+			number = StringFromList(j, DEVICE_NUMBERS)
+			device = BuildDeviceString(type, number)
+			path   = GetDeviceDataPathAsString(device)
+
+			if(!DataFolderExists(path))
+				continue
+			endif
+
+			if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
+				continue
+			endif
+
+			list = AddListItem(device, list, ";", inf)
+		endfor
+	endfor
+
+	return list
+End

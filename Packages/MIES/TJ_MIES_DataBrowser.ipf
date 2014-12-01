@@ -494,7 +494,7 @@ Window dataBrowser() : Panel
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0^]6bN5QF0*!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"\"- none -;\" + root:MIES:ITCDevices:ITCPanelTitleList"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= DB_GetAllDevicesWithData()
 	Button Button_dataBrowser_lockBrowser,pos={949,673},size={70,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K)5QF2#5QF-0!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -848,6 +848,11 @@ Function/S DB_GetLabNotebookViewAbleCols(panelTitle)
 	endfor
 
 	return SortList(list)
+End
+
+Function/S DB_GetAllDevicesWithData()
+
+	return AddListItem(NONE, GetAllDevicesWithData(), ";", 0)
 End
 
 Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
