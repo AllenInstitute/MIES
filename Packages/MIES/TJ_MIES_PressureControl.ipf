@@ -6,33 +6,33 @@
 
 ///@name Constants Used by pressure control
 /// @{
-static StrConstant PRESSURE_CONTROLS_BUTTON_LIST  = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan;button_DataAcq_PPSetPressureMan"
-static StrConstant PRESSURE_CONTROL_TITLE_LIST    = "Approach;Seal;Break In;Clear"
-static StrConstant PRESSURE_CONTROL_CHECKBOX_LIST = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable"
-static StrConstant PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
-static Constant P_METHOD_neg1_ATM            = -1
-static Constant P_METHOD_0_APPROACH          = 0
-static Constant P_METHOD_1_SEAL              = 1
-static Constant P_METHOD_2_BREAKIN           = 2
-static Constant P_METHOD_3_CLEAR             = 3
-static Constant P_METHOD_4_MANUAL            = 4
-static Constant RACK_ZERO                    = 0
-static Constant RACK_ONE                     = 3 // 3 is defined by the ITCWriteDigital command instructions.
-static Constant BITS_PER_VOLT                = 3200
-static Constant NEG_PRESSURE_PULSE_INCREMENT = 0.2 // psi
-static Constant POS_PRESSURE_PULSE_INCREMENT = 0.1 // psi
-static Constant PRESSURE_PULSE_STARTpt       = 1 // 12000
-static Constant PRESSURE_PULSE_ENDpt         = 35000
-static Constant SAMPLE_INT_MILLI             = 0.005
-static Constant GIGA_SEAL                    = 1000
-static Constant PRESSURE_OFFSET              = 5
-static Constant MIN_NEG_PRESSURE_PULSE       = -1
-Constant        SAMPLE_INT_MICRO             = 5
+static StrConstant 	PRESSURE_CONTROLS_BUTTON_LIST  	= "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan;button_DataAcq_PPSetPressureMan"
+static StrConstant 	PRESSURE_CONTROL_TITLE_LIST    		= "Approach;Seal;Break In;Clear"
+static StrConstant 	PRESSURE_CONTROL_CHECKBOX_LIST 	= "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable"
+static StrConstant 	PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
+static Constant 		P_METHOD_neg1_ATM            			= -1
+static Constant 		P_METHOD_0_APPROACH         			= 0
+static Constant 		P_METHOD_1_SEAL              			= 1
+static Constant 		P_METHOD_2_BREAKIN           			= 2
+static Constant 		P_METHOD_3_CLEAR             			= 3
+static Constant 		P_METHOD_4_MANUAL            			= 4
+static Constant 		RACK_ZERO                    				= 0
+static Constant 		RACK_ONE                     					= 3 // 3 is defined by the ITCWriteDigital command instructions.
+static Constant 		BITS_PER_VOLT                				= 3200
+static Constant 		NEG_PRESSURE_PULSE_INCREMENT 	= 0.2 // psi
+static Constant 		POS_PRESSURE_PULSE_INCREMENT 	= 0.1 // psi
+static Constant 		PRESSURE_PULSE_STARTpt       		= 1 // 12000
+static Constant 		PRESSURE_PULSE_ENDpt         			= 35000
+static Constant 		SAMPLE_INT_MILLI             				= 0.005
+static Constant 		GIGA_SEAL                    					= 1000
+static Constant 		PRESSURE_OFFSET              			= 5
+static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1
+Constant        		SAMPLE_INT_MICRO             				= 5
 
-static Constant 	MANIPULATOR_0_P_OFFSET = 0.135
-static Constant 	MANIPULATOR_1_P_OFFSET = 0.04
-static Constant 	MANIPULATOR_6_P_OFFSET = 0.096
-static Constant 	MANIPULATOR_7_P_OFFSET = 0.223
+static Constant 		HEADSTAGE_0_P_OFFSET 				= 0.135 // contstants are not a good way to handle calibration because it will fail with multiple DA_Ephys panels. - Should probably add a calibration column to the pressure data wave
+static Constant 		HEADSTAGE_1_P_OFFSET 				= 0.04
+static Constant 		HEADSTAGE_6_P_OFFSET 				= 0.096
+static Constant 		HEADSTAGE_7_P_OFFSET 				= 0.223
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -118,9 +118,11 @@ Function P_MethodSeal(panelTitle, headStage)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
  		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
  			P_UpdatePressureMode(panelTitle, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
+ 		else
+ 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM // remove the seal mode
  		endif	
-		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
-		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
+		
+		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 	= 0 // reset the time of last slope R check
 
 		// apply holding potential of -70 mV
 		SetCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", 1)
@@ -183,10 +185,11 @@ Function P_MethodBreakIn(panelTitle, headStage)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
 		
 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
- 			P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
+ 			P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state and sets to atmospheric
+ 		else
+ 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
  		endif			
 		
-		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 		print "Break in on head stage:", headstage,"of", panelTitle
@@ -227,9 +230,9 @@ Function P_MethodClear(panelTitle, headStage)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
 			P_UpdatePressureMode(panelTitle, 3, StringFromList(3,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
+		else
+			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
 		endif
-		
-		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
 		PressureDataWv[headStage][%TimePeakRcheck]			= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 	endif
@@ -573,10 +576,10 @@ Function P_UpdatePressureDataStorageWv(panelTitle)
 	PressureDataWv[headStageNo][%TTL]  				= GetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_TTL")
 	PressureDataWv[][%PSI_air]   						= GetSetVariable			(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution] 					= GetSetVariable			(panelTitle, "setvar_Settings_InBathP")
-	PressureDataWv[0][%PSI_solution] 				+= MANIPULATOR_0_P_OFFSET
-	PressureDataWv[1][%PSI_solution] 				+= MANIPULATOR_1_P_OFFSET
-	PressureDataWv[6][%PSI_solution] 				+= MANIPULATOR_6_P_OFFSET
-	PressureDataWv[7][%PSI_solution] 				+= MANIPULATOR_7_P_OFFSET
+	PressureDataWv[0][%PSI_solution] 				+= HEADSTAGE_0_P_OFFSET
+	PressureDataWv[1][%PSI_solution] 				+= HEADSTAGE_1_P_OFFSET
+	PressureDataWv[6][%PSI_solution] 				+= HEADSTAGE_6_P_OFFSET
+	PressureDataWv[7][%PSI_solution] 				+= HEADSTAGE_7_P_OFFSET
 	
 	PressureDataWv[][%PSI_slice] 					= GetSetVariable			(panelTitle, "setvar_Settings_InSliceP")
 	PressureDataWv[][%PSI_nearCell] 					= GetSetVariable			(panelTitle, "setvar_Settings_NearCellP")
