@@ -4178,7 +4178,14 @@ Function DAP_CheckSettings(panelTitle)
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
 	variable mode, headStage, ctrlNo
 	string ctrl, endWave, ttlWave
-	string list = panelTitle
+	string list
+
+	if(isEmpty(panelTitle))
+		print "Invalid empty string for panelTitle, can not proceed"
+		return 1
+	endif
+
+	list = panelTitle
 
 	if(DAP_DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
@@ -4292,6 +4299,16 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
 		printf "(%s) Please select a valid DA and AD channel in \"DAC Channel and Device Associations\" in the Hardware tab.\r", panelTitle
+		return 1
+	endif
+
+	if(!IsFinite(TP_HeadstageUsingADC(panelTitle, ADCchannel)))
+		printf "(%s) Could not determine the headstage for the ADChannel %d.\r", panelTitle, ADCchannel
+		return 1
+	endif
+
+	if(!IsFinite(TP_HeadstageUsingDAC(panelTitle, DACchannel)))
+		printf "(%s) Could not determine the headstage for the DACchannel %d.\r", panelTitle, DACchannel
 		return 1
 	endif
 

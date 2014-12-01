@@ -177,135 +177,138 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 End
 //=============================================================================================
 // mV and pA = Mohm
-Function TP_ButtonProc_DataAcq_TestPulse(ctrlName) : ButtonControl// Button that starts the test pulse
-	String ctrlName
+Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
 	string panelTitle
 
-	pauseupdate
-	setdatafolder root:
-	paneltitle = DAP_ReturnPanelName()
-	
-	variable SearchResult = strsearch(panelTitle, "Oscilloscope", 2)
-	if(SearchResult != -1)
-		panelTitle = panelTitle[0,SearchResult - 2]//SearchResult+1]
-	endif
-	
-	AbortOnValue DAP_CheckSettings(panelTitle),1
-		
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-	if(v_value == 0)
-		abort "Give test pulse a duration greater than 0 ms"
-	endif
-	
-	DisableControl(panelTitle, ctrlName)
-	
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	
-	string CountPath = WavePath + ":count"
-	if(exists(CountPath) == 2)
-		killvariables $CountPath
-	endif
+	switch(ba.eventcode)
+		case 2:
+			panelTitle = ba.win
 
-	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			AbortOnValue DAP_CheckSettings(panelTitle),1
 
-	variable DeviceType = HSU_GetDeviceTypeIndex(panelTitle)
-	variable DeviceNum  = HSU_GetDeviceNumberIndex(panelTitle)
-	
-	DAP_StoreTTLState(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
-	
-	if(!GetCheckboxState(panelTitle,"check_Settings_ShowScopeWindow"))
-		DAP_SmoothResizePanel(340, panelTitle)
-		setwindow $panelTitle +"#oscilloscope", hide = 0
-	endif
-	
-	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
-	make /o /n = 0 $TestPulsePath
-	wave TestPulse = $TestPulsePath
-	SetScale /P x 0,0.005,"ms", TestPulse
-	
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	TP_UpdateTestPulseWave(TestPulse, panelTitle)
-	DM_CreateScaleTPHoldingWave(panelTitle)
-	make /free /n = 8 SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
+			PauseUpdate
+			SetDataFolder root:
 
-	make /free /n = 8 SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale,panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
-	
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
+			ControlInfo/W=$panelTitle SetVar_DataAcq_TPDuration
+			if(v_value == 0)
+				abort "Give test pulse a duration greater than 0 ms"
+			endif
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))// runs background TP
-		ITC_StartBackgroundTestPulse(panelTitle)
-	else // runs TP
-		ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
-		if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow"))
-			DAP_SmoothResizePanel(-340, panelTitle)
-			setwindow $panelTitle +"#oscilloscope", hide = 1
-		endif
-	endif
-	
-	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	TP_RestoreDAScale(SelectedDACScale,panelTitle)
-	
-	// Enable pressure buttons
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-	P_LoadPressureButtonState(panelTitle, headStage)
+			DisableControl(panelTitle, ba.ctrlName)
+
+			string WavePath = HSU_DataFullFolderPathString(panelTitle)
+
+			string CountPath = WavePath + ":count"
+			if(exists(CountPath) == 2)
+				killvariables $CountPath
+			endif
+
+			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+
+			variable DeviceType = HSU_GetDeviceTypeIndex(panelTitle)
+			variable DeviceNum  = HSU_GetDeviceNumberIndex(panelTitle)
+
+			DAP_StoreTTLState(panelTitle)
+			DAP_TurnOffAllTTLs(panelTitle)
+
+			if(!GetCheckboxState(panelTitle,"check_Settings_ShowScopeWindow"))
+				DAP_SmoothResizePanel(340, panelTitle)
+				SetWindow $panelTitle +"#oscilloscope", hide = 0
+			endif
+
+			string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+			Make/O/N=0 $TestPulsePath
+			WAVE TestPulse = $TestPulsePath
+			SetScale /P x 0,0.005,"ms", TestPulse
+
+			TP_UpdateTPBufferSizeGlobal(panelTitle)
+			TP_UpdateTestPulseWave(TestPulse, panelTitle)
+
+			Make/FREE/N=8 SelectedDACWaveList
+			TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+			TP_SelectTestPulseWave(panelTitle)
+
+			Make/FREE/N=8 SelectedDACScale
+			TP_StoreDAScale(SelectedDACScale,panelTitle)
+			TP_SetDAScaleToOne(panelTitle)
+
+			DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
+			WAVE TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
+			SCOPE_UpdateGraph(TestPulseITC,panelTitle)
+
+			if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))// runs background TP
+				ITC_StartBackgroundTestPulse(panelTitle)
+			else // runs TP
+				ITC_StartTestPulse(DeviceType, DeviceNum, panelTitle)
+				if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow"))
+					DAP_SmoothResizePanel(-340, panelTitle)
+					SetWindow $panelTitle + "#oscilloscope", hide = 1
+				endif
+			endif
+
+			TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+			TP_RestoreDAScale(SelectedDACScale,panelTitle)
+
+			// Enable pressure buttons
+			variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+			P_LoadPressureButtonState(panelTitle, headStage)
+			break
+	endswitch
+
+	return 0
 End
 //=============================================================================================
 /// @brief  Test pulse button call function
-Function TP_ButtonProc_DataAcq_TPMD(ctrlName) : ButtonControl// Button that starts the test pulse
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
+Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	// make sure data folder is correct
-	setdatafolder root:
-	
-	AbortOnValue DAP_CheckSettings(panelTitle),1
-	
-	// *** need to modify for yoked devices becuase it is only looking at the lead device
-	// Check if TP uduration is greater than 0 ms	
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-	if(v_value == 0)
-		abort "Give test pulse a duration greater than 0 ms"
-	endif
-	
-	// Disable the TP start button
-	ControlInfo /w = $panelTitle $ctrlName
-	if(V_disable == 0)
-		Button $ctrlName, win = $panelTitle, disable = 2
-	endif
-	
-	// Determine the data folder path for the DAC
-	string WavePath
-	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
-	
-	// @todo Need to modify (killing count global) for yoked devices
-	// Kill the global variable Count if it exists - if it was allowed to exist the user would not be able to stop the TP using the space bar
-	string CountPath = WavePath + ":count"
-	if(exists(CountPath) == 2)
-		killvariables $CountPath
-	endif
-	
-	// update TP buffer size global
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	DAP_UpdateITCMinSampIntDisplay(panelTitle)
-	
-	// determine the device type and device number
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum = v_value - 1
-	
-	StartTestPulse(deviceType, deviceNum, panelTitle)
-	
-	// Enable pressure buttons
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-	P_LoadPressureButtonState(panelTitle, headStage)
+	string panelTitle
+	switch(ba.eventcode)
+		case 2:
+
+			panelTitle = ba.win
+			AbortOnValue DAP_CheckSettings(panelTitle),1
+
+			SetDataFolder root:
+
+			// *** need to modify for yoked devices becuase it is only looking at the lead device
+			// Check if TP uduration is greater than 0 ms
+			controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
+			if(v_value == 0)
+				Abort "Give test pulse a duration greater than 0 ms"
+			endif
+
+			DisableControl(panelTitle, ba.ctrlName)
+
+			// Determine the data folder path for the DAC
+			string WavePath = HSU_DataFullFolderPathString(panelTitle)
+
+			// @todo Need to modify (killing count global) for yoked devices
+			// Kill the global variable Count if it exists - if it was allowed to exist the user would not be able to stop the TP using the space bar
+			string CountPath = WavePath + ":count"
+			if(exists(CountPath) == 2)
+				killvariables $CountPath
+			endif
+
+			// update TP buffer size global
+			TP_UpdateTPBufferSizeGlobal(panelTitle)
+			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+
+			// determine the device type and device number
+			controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
+			variable DeviceType = v_value - 1
+			controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
+			variable DeviceNum = v_value - 1
+
+			StartTestPulse(deviceType, deviceNum, panelTitle)
+
+			// Enable pressure buttons
+			variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+			P_LoadPressureButtonState(panelTitle, headStage)
+			break
+	endswitch
 End
 //=============================================================================================
 /// @brief Updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
