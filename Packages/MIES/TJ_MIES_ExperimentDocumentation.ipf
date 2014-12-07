@@ -453,7 +453,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	else	 // scan through the keyWave to see where to stick the incomingKeyWave
 		for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-				if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]) == 1)
+				if (!cmpstr(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]))
 					keyMatchFound = 1
 				endif
 			endfor
@@ -495,12 +495,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	// Use the keyWave to see where to add the incomingTextDoc factors to the textDoc wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-			if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]) == 1)
-			// found the string match
-				for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
-					// add all the values in that column to the settingsHistory wave
-					textDocWave[rowIndex][keyColCounter][layerCounter] = incomingTextDocWave[0][incomingKeyColCounter][layerCounter]
-				endfor
+			if (!cmpstr(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]))
+				textDocWave[rowIndex][keyColCounter][0, incomingLayerCount - 1] = incomingTextDocWave[0][incomingKeyColCounter][r]
 			endif
 		endfor
 	endfor
