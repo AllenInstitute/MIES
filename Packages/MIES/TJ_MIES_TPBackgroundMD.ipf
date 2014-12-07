@@ -379,16 +379,17 @@ Function ITC_TPDocumentation(panelTitle)
 	variable i, j
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
 	variable numHS = DimSize(statusHS, ROWS)
-
+	string clampModeString = TP_ClampModeString(panelTitle)
+	variable numClampMode = itemsinlist(clampModeString, ";")
+	variable clampMode
+	
 	for(i = 0; i < numHS; i += 1)
 		if(!statusHS[i])
 			continue
 		endif
-
-		string clampModeString = TP_ClampModeString(panelTitle)
-		variable numClampMode = itemsinlist(clampModeString, ";")
-		variable clampMode = str2num(stringfromlist(j, clampModeString))
-		if ((clampMode) == 0)
+		
+		clampMode = str2num(stringfromlist(j, clampModeString))
+		if (clampMode == 0)
 			TPSettingsWave[0][1][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
 		else
 			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j] // i places data in appropriate layer; layer corresponds to headstage number
