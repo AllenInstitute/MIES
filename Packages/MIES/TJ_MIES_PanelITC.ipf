@@ -2544,7 +2544,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	endif
 
 	// remove tools
-	HideTools/A
+	HideTools/W=$panelTitle/A
 
 	ChangeTab(panelTitle, "ADC", 0)
 	ChangeTab(panelTitle, "tab_DataAcq_Amp", 0)
