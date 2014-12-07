@@ -465,6 +465,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 		Redimension/N=((rowCount + incomingRowCount), -1, -1) textDocWave
 	else		// append the incoming keyWave to the existing keyWave
 		// Need to resize the column part of the wave to accomodate the new factors being monitored
+		Redimension/N=(-1, (keyColCount + incomingKeyColCount), -1) textDocKeyWave
 		Redimension/N=(-1, (colCount + incomingColCount), incomingLayerCount) textDocWave
 		variable keyWaveInsertPoint = keyColCount
 		variable insertCounter
@@ -498,7 +499,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 			// found the string match
 				for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
 					// add all the values in that column to the settingsHistory wave
-					textDocWave[rowIndex][keyColCounter][layerCounter] = incomingTextDocWave[0][keyColCounter-2][layerCounter]
+					textDocWave[rowIndex][keyColCounter][layerCounter] = incomingTextDocWave[0][incomingKeyColCounter][layerCounter]
 				endfor
 			endif
 		endfor
