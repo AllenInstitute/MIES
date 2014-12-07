@@ -521,30 +521,6 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 End
 
 //======================================================================================
-
-Function ED_SetDocumenting(panelTitle)
-	string panelTitle
-	
-	string ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
-	
-	
-	ChannelStatus = DC_ControlStatusListString("TTL", "Check", panelTitle)
-	ChanTypeWaveNameList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
-End
-//======================================================================================
-Function ED_HeadStageDocumenting(panelTitle)
-	string panelTitle
-	string DataFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	dfref DataFolderRef = $DataFolderPath
-	
-	wave /SDFR = DataFolderRef ChanAmpAssign
-End
-//======================================================================================
-Function ED_CommentDocumenting(panelTitle)
-	string panelTitle
-End
-//======================================================================================
 /// always create a WaveNote for each sweep that indicates the Stim Wave Name and the Stim scale factor
 // a function to create waveNote tags for the stim wave name and scale factor
 function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
