@@ -6,6 +6,13 @@ CONSTANT DATA_ACQUISITION_MODE = 0
 CONSTANT TEST_PULSE_MODE       = 1
 ///@}
 
+///@name Constants shared with the ITC XOP
+///@{
+Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
+Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
+Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
+///@}
+
 /// @brief Prepare test pulse/data acquisition
 ///
 /// @param panelTitle  panel title
@@ -354,71 +361,66 @@ Function DC_MakeFIFOAvailAllConfigWave(panelTitle)//MakeITCFIFOAvailAllConfigWav
 End
 //==========================================================================================
 
-
 Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string panelTitle
-	variable i = 0// 
-	variable j = 0//used to keep track of row of ITCChanConfigWave which config data is loaded into
-	variable ChannelType // = 0 for AD, = 1 for DA, = 3 for TTL
-	string ChannelStatus
-	string WavePath = HSU_DataFullFolderPathString(panelTitle) 
-	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
-	string UnitString = ""
-	
-	string UnitSetVarName = "Unit_DA_0"
-	ChannelType = 1
-	ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
-	
-	//Place DA config data
-	do
-		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
-			ITCChanConfigWave[j][0] = ChannelType
-			ITCChanConfigWave[j][1] = i
-			controlinfo /w = $panelTitle $UnitSetVarName + num2str(i)
-			UnitString += s_value + ";"// a string with a unit for each column
-			j += 1
-		endif
-		i += 1
-	while(i < (itemsinlist(ChannelStatus,";")))
-	
-	//Place AD config data
-	i = 0
-	ChannelStatus = DC_ControlStatusListString("AD", "Check", panelTitle)
-	ChannelType = 0
-	UnitSetVarName = "Unit_AD_0"
-	do
-		if(str2num(stringfromlist(i,ChannelStatus,";")) == 1)
-			ITCChanConfigWave[j][0] = ChannelType
-			ITCChanConfigWave[j][1] = i
-			controlinfo /w = $panelTitle $UnitSetVarName + num2str(i)
-			UnitString += s_value + ";"
-			j += 1
-		endif
-		i+=1
-	while(i<(itemsinlist(ChannelStatus,";")))
-	
-	note ITCChanConfigWave, UnitString
-	//Place TTL config data
-	i = 0
-	ChannelType = 3
-	
-	if(DC_AreTTLsInRackChecked(0, panelTitle) == 1)
-		ITCChanConfigWave[j][0] = ChannelType
-		ITCChanConfigWave[j][1] = 0
-	j += 1
-	endif
-	
-	if(DC_AreTTLsInRackChecked(1, panelTitle) == 1)
-		ITCChanConfigWave[j][0] = ChannelType
-		ITCChanConfigWave[j][1] = 3
-	
-	endif
-	
-	ITCChanConfigWave[][2] = DC_ITCMinSamplingInterval(panelTitle)//
-	ITCChanConfigWave[][3] = 0
 
+	variable i, j, numEntries
+	string ctrl, unitList = ""
+
+	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
+
+	// query DA properties
+	WAVE channelStatus = DC_ControlStatusWave(panelTitle, "DA")
+
+	numEntries = DimSize(channelStatus, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!channelStatus[i])
+			continue
+		endif
+
+		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_DAC
+		ITCChanConfigWave[j][1] = i
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
+		j += 1
+	endfor
+
+	// query AD properties
+	WAVE channelStatus = DC_ControlStatusWave(panelTitle, "AD")
+
+	numEntries = DimSize(channelStatus, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!channelStatus[i])
+			continue
+		endif
+
+		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_ADC
+		ITCChanConfigWave[j][1] = i
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
+		j += 1
+	endfor
+
+	Note ITCChanConfigWave, unitList
+
+	// Place TTL config data
+	if(DC_AreTTLsInRackChecked(0, panelTitle))
+		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+		ITCChanConfigWave[j][1] = 0
+		j += 1
+	endif
+
+	if(DC_AreTTLsInRackChecked(1, panelTitle))
+		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+		ITCChanConfigWave[j][1] = 3
+	endif
+
+	ITCChanConfigWave[][2] = DC_ITCMinSamplingInterval(panelTitle)
+	ITCChanConfigWave[][3] = 0
 End
+
 //==========================================================================================
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave. 
 /// Also records certain DA_Ephys GUI settings into sweepData and sweepTxTData
