@@ -100,7 +100,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		adc = str2num(StringFromList(i, ADChannelList))
 
-		sprintf ctrl, "Gain_AD_%02d", i
+		sprintf ctrl, "Gain_AD_%02d", adc
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
