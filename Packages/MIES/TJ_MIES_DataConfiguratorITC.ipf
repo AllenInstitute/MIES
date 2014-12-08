@@ -230,55 +230,6 @@ End
 
 //=========================================================================================
 
-//=========================================================================================
-// 1. TTL 1;0;0;0
-// 2. TTL 0;1;0;0
-// 3. TTL 1;1;0;0
-// 4. TTL 0;0;1;0
-// 5. TTL 1;0;1;0
-// 6. TTL 0;1;1;0
-// 7. TTL 1;1;1;0
-// 8. TTL 0;0;0;1
-// 9. TTL 1;0;0;1
-// 10. TTL 0;1;0;1
-// 11. TTL 1;1;0;1
-// 12. TTL 0;0;1;1
-// 13. TTL1;0;1;1
-// 14. TTL 0;1;1;1
-// 15. TTL 1;1;1;1
-
-
-Function DC_TTLCodeCalculation1(RackNo, panelTitle)// ####### FUNCTION DOES NOT APPEAR TO BE IN USE
-	variable RackNo
-	string panelTitle
-	variable a, i, TTLChannelStatus,Code
-	string TTLStatusString = DC_ControlStatusListString("TTL", "Check",panelTitle)
-	
-	if(RackNo == 0)
-		a = 0
-	endif
-	
-	if(RackNo == 1)
-		a = 4
-	endif
-	
-	code = 0
-	i = 0
-	
-	do 
-		TTLChannelStatus = str2num(stringfromlist(a,TTLStatusString,";"))
-		Code += (((2 ^ i)) * TTLChannelStatus)
-		a += 1
-		i += 1
-	while(i < 4)
-	
-	return Code
-
-End
-
-
-//=========================================================================================
-
 Function/s DC_PopMenuStringList(ChannelType, ControlType, panelTitle)// returns the list of selected waves in pop up menus
 	string ChannelType, ControlType, panelTitle
 
