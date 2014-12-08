@@ -434,7 +434,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 	string setNameList, setName, setNameFullPath
 	string ctrl
-	variable DAGain, DAScale, setColumn, insertStart, insertEnd, endRow, oneFullCycle
+	variable DAGain, DAScale, setColumn, insertStart, insertEnd, endRow, oneFullCycle, val
 	variable/C ret
 	string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
 	// waves below are used to document the settings for each sweep
@@ -467,13 +467,13 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		sweepData[0][0][HeadStage] = i // document the DA channel
 
-		sprintf ctrl, "Gain_DA_%02d", i
-		ControlInfo/W=$panelTitle $ctrl
-		DAGain = 3200 / v_value // 3200 = 1V, 3200/gain = bits per unit
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		val = GetSetVariable(panelTitle, ctrl)
+		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
 
-		sweepData[0][2][HeadStage] = v_value // document the DA gain
+		sweepData[0][2][HeadStage] = val // document the DA gain
 
-		sprintf ctrl, "Scale_DA_%02d", i
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
 		sweepData[0][4][HeadStage] = DAScale // document the DA scale
@@ -553,7 +553,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		// document AD parameters into SweepData wave
 		sweepData[0][1][headStage] = i // document the AD channel
 
-		sprintf ctrl, "Gain_AD_%02d", i
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 		sweepData[0][3][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
 	endfor
 
