@@ -141,7 +141,7 @@ Function P_MethodSeal(panelTitle, headStage)
 		endif
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
 		// print ElapsedTimeInSeconds
-		if(ElapsedTimeInSeconds > 5) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
+		if(ElapsedTimeInSeconds > 15) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
 			RSlope = PressureDataWv[headStage][%PeakResistanceSlope]
 			print "slope", rslope, "thres", RSlopeThreshold
 			if(RSlope < RSlopeThreshold) // if the resistance is not going up quickly enough increase the negative pressure
