@@ -3243,13 +3243,13 @@ Function DAP_GetTabNumber(panelTitle)
 End
 
 Function/S GUIListOfYokedDACs()
-	string list = GetListOfYokedDACs()
 
-	if(isEmpty(list))
-		return "No Yoked Devices"
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices) && cmpstr(listOfFollowerDevices, "") != 0)
+		return listOfFollowerDevices
 	endif
 
-	return list
+	return "No Yoked Devices"
 End
 //=========================================================================================
 

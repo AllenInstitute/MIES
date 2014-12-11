@@ -45,22 +45,6 @@ Function IM_MakeGlobalsAndWaves(panelTitle)// makes the necessary parameters for
 	make /o /n= (1,8) dfr:SSResistance
 End
 
-//=========================================================================================
-//=========================================================================================
-// TB in the long run, I would propose to rewrite data folder returning functions like
-// HSU_DataFullFolderPathString to always return a valid datafolder reference.
-// As always checking if the folder exists is error-prone
-Function/S GetListOfYokedDACs()
-
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(SVAR_Exists(listOfFollowerDevices))
-		return listOfFollowerDevices
-	endif
-
-	return ""
-End
-//=========================================================================================
-
 /// @brief Remove all strings/variables/waves which should not
 /// survive experiment reload/quit/saving
 ///

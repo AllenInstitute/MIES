@@ -453,7 +453,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	else	 // scan through the keyWave to see where to stick the incomingKeyWave
 		for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-				if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]) == 1)
+				if (!cmpstr(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]))
 					keyMatchFound = 1
 				endif
 			endfor
@@ -465,6 +465,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 		Redimension/N=((rowCount + incomingRowCount), -1, -1) textDocWave
 	else		// append the incoming keyWave to the existing keyWave
 		// Need to resize the column part of the wave to accomodate the new factors being monitored
+		Redimension/N=(-1, (keyColCount + incomingKeyColCount), -1) textDocKeyWave
 		Redimension/N=(-1, (colCount + incomingColCount), incomingLayerCount) textDocWave
 		variable keyWaveInsertPoint = keyColCount
 		variable insertCounter
@@ -494,12 +495,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	// Use the keyWave to see where to add the incomingTextDoc factors to the textDoc wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
 		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-			if (stringmatch(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]) == 1)
-			// found the string match
-				for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
-					// add all the values in that column to the settingsHistory wave
-					textDocWave[rowIndex][keyColCounter][layerCounter] = incomingTextDocWave[0][keyColCounter-2][layerCounter]
-				endfor
+			if (!cmpstr(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]))
+				textDocWave[rowIndex][keyColCounter][0, incomingLayerCount - 1] = incomingTextDocWave[0][incomingKeyColCounter][r]
 			endif
 		endfor
 	endfor
@@ -523,30 +520,6 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	endfor
 End
 
-//======================================================================================
-
-Function ED_SetDocumenting(panelTitle)
-	string panelTitle
-	
-	string ChannelStatus = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string ChanTypeWaveNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
-	
-	
-	ChannelStatus = DC_ControlStatusListString("TTL", "Check", panelTitle)
-	ChanTypeWaveNameList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
-End
-//======================================================================================
-Function ED_HeadStageDocumenting(panelTitle)
-	string panelTitle
-	string DataFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	dfref DataFolderRef = $DataFolderPath
-	
-	wave /SDFR = DataFolderRef ChanAmpAssign
-End
-//======================================================================================
-Function ED_CommentDocumenting(panelTitle)
-	string panelTitle
-End
 //======================================================================================
 /// always create a WaveNote for each sweep that indicates the Stim Wave Name and the Stim scale factor
 // a function to create waveNote tags for the stim wave name and scale factor
@@ -615,6 +588,25 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	headStagesWave[0][0][] = statusHS[r]
 
 	ED_createWaveNotes(headstagesWave, headstagesKey, SavedDataWaveName, SweepCount, panelTitle)
+
+	Make/FREE/T/N=(3, 1) followerKeys
+	followerKeys = ""
+
+	followerKeys[0][0] = "Follower Device"
+	followerKeys[1][0] = "On/Off"
+	followerKeys[2][0] = "-"
+
+	Make/FREE/T/N=(1, 1, numHeadstages) followerValues
+	followerValues = ""
+
+	if(DAP_DeviceCanLead(panelTitle))
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices))
+			followerValues[0][0][] = listOfFollowerDevices
+		endif
+	endif
+
+	ED_createTextNotes(followerValues, followerKeys, SavedDataWaveName, SweepCount, panelTitle)
 End
 
 //======================================================================================
