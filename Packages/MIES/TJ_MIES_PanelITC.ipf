@@ -3715,7 +3715,7 @@ Function DAP_TurnOffAllDACs(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		sprintf ctrl, "Check_DA_%02d", i
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
@@ -3733,7 +3733,7 @@ Function DAP_TurnOffAllADCs(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
-		sprintf ctrl, "Check_AD_%02d", i
+		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End

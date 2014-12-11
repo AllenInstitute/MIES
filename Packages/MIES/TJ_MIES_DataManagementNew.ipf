@@ -100,7 +100,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		adc = str2num(StringFromList(i, ADChannelList))
 
-		sprintf ctrl, "Gain_AD_%02d", i
+		ctrl = IDX_GetChannelControl(panelTitle, adc, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
@@ -113,35 +113,25 @@ end
 Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	variable NoOfDAColumns = DC_NoOfChannelsSelected("da", panelTitle)
-	string DAChannelList  =  SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
-	string DAGainControlName
-	variable gain, i
-	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 
-	for(i = 0; i < (itemsinlist(DAChannelList)); i += 1)
-		if(str2num(stringfromlist(i, DAChannelList, ";")) < 10)
-			DAGainControlName = "Gain_DA_0" + stringfromlist(i, DAChannelList, ";")
-		else
-			DAGainControlName = "Gain_DA_" + stringfromlist(i, DAChannelList, ";")
-		endif
-		controlinfo /w = $panelTitle $DAGainControlName
-		gain = v_value
+	string ctrl
+	variable gain, i, dac, numEntries
+	DFREF deviceDFR       = GetDevicePath(panelTitle)
+	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE/SDFR=deviceDFR ITCDataWave, ITCChanConfigWave
+	string DAChannelList  = SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
 
-		if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList,";"))][0] == V_CLAMP_MODE)
-			WaveToScale[][i] /= 3200
-			WaveToScale[][i] *= gain
-		endif
+	numEntries = ItemsInList(DAChannelList)
+	for(i = 0; i < numEntries ; i += 1)
+		dac = str2num(StringFromList(i, DAChannelList))
+		ctrl = IDX_GetChannelControl(panelTitle, dac, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		gain = GetSetVariable(panelTitle, ctrl)
 
-		if(ChannelClampMode[str2num(stringfromlist(i, DAChannelList, ";"))][0] == I_CLAMP_MODE)
+		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)
 			WaveToScale[][i] /= 3200
 			WaveToScale[][i] *= gain
 		endif
 	endfor
-
 end
 
 // Used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC

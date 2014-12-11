@@ -325,11 +325,16 @@ End
 /// @{
 Constant CHANNEL_TYPE_DAC          = 0x00
 Constant CHANNEL_TYPE_TTL          = 0x01
-Constant CHANNEL_CONTROL_WAVE      = 0x02
-Constant CHANNEL_CONTROL_INDEX_END = 0x04
+Constant CHANNEL_TYPE_ADC          = 0x02
+Constant CHANNEL_CONTROL_WAVE      = 0x04
+Constant CHANNEL_CONTROL_INDEX_END = 0x08
+Constant CHANNEL_CONTROL_UNIT      = 0x10
+Constant CHANNEL_CONTROL_GAIN      = 0x20
+Constant CHANNEL_CONTROL_SCALE     = 0x30
+Constant CHANNEL_CONTROL_CHECK     = 0x40
 /// @}
 
-/// @brief Returns the name of the channel control
+/// @brief Returns the name of a channel related control
 Function/S IDX_GetChannelControl(panelTitle, idx, channelType, controlType)
 	string panelTitle
 	variable idx, channelType, controlType
@@ -338,6 +343,8 @@ Function/S IDX_GetChannelControl(panelTitle, idx, channelType, controlType)
 
 	if(channelType == CHANNEL_TYPE_DAC)
 		ctrl = "DA"
+	elseif(channelType == CHANNEL_TYPE_ADC)
+		ctrl = "AD"
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		ctrl = "TTL"
 	else
@@ -348,6 +355,14 @@ Function/S IDX_GetChannelControl(panelTitle, idx, channelType, controlType)
 		ctrl = "Wave_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_INDEX_END)
 		ctrl = "Popup_" + ctrl + "_IndexEnd"
+	elseif(controlType == CHANNEL_CONTROL_UNIT)
+		ctrl = "Unit_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_GAIN)
+		ctrl = "Gain_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_SCALE)
+		ctrl = "Scale_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_CHECK)
+		ctrl = "Check_" + ctrl
 	else
 		ASSERT(0, "Invalid controlType")
 	endif
