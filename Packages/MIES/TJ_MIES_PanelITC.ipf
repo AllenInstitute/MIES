@@ -4283,7 +4283,7 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 
-	if(headStage >= DimSize(ChanAmpAssign, COLS))
+	if(headstage < 0 || headStage >= DimSize(ChanAmpAssign, COLS))
 		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
 		return 1
 	endif
