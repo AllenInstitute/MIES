@@ -4275,7 +4275,7 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 	variable headStage, clampMode
 
 	string ctrl, dacWave, endWave
-	variable DACchannel, ADCchannel
+	variable DACchannel, ADCchannel, DAheadstage, ADheadstage
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -4304,13 +4304,20 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 		return 1
 	endif
 
-	if(!IsFinite(TP_HeadstageUsingADC(panelTitle, ADCchannel)))
+	ADheadstage = TP_HeadstageUsingADC(panelTitle, ADCchannel)
+	if(!IsFinite(ADheadstage))
 		printf "(%s) Could not determine the headstage for the ADChannel %d.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
-	if(!IsFinite(TP_HeadstageUsingDAC(panelTitle, DACchannel)))
+	DAheadstage = TP_HeadstageUsingDAC(panelTitle, DACchannel)
+	if(!IsFinite(DAheadstage))
 		printf "(%s) Could not determine the headstage for the DACchannel %d.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	if(DAheadstage != ADheadstage)
+		printf "(%s) The configured headstages for the DA channel %d and the AD channel %d differ (%d vs %d).\r", panelTitle, DACchannel, ADCchannel, DAheadstage, ADheadstage
 		return 1
 	endif
 
