@@ -5,7 +5,7 @@ Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 
-static Function/S ConvertAmplifierModeToString(mode)
+Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
 
 	switch(mode)
@@ -19,7 +19,8 @@ static Function/S ConvertAmplifierModeToString(mode)
 			return "I_EQUAL_ZERO_MODE"
 			break
 		default:
-			ASSERT(0, "invalid mode")
+			return "Unknown mode (" + num2str(mode) + ")"
+			break
 	endswitch
 End
 
@@ -253,7 +254,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	headstageMode = AI_MIESHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
-		printf "Headstage %d is in %s but the required one is %s\r", headstage, ConvertAmplifierModeToString(headstageMode), ConvertAmplifierModeToString(mode)
+		printf "Headstage %d is in %s but the required one is %s\r", headstage, AI_ConvertAmplifierModeToString(headstageMode), AI_ConvertAmplifierModeToString(mode)
 		return NaN
 	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
 		printf "Headstage %d has different modes stored and set\r", headstage
