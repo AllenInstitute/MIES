@@ -4275,13 +4275,14 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 	variable headStage, clampMode
 
 	string ctrl, dacWave, endWave
-	variable DACchannel, ADCchannel, DAheadstage, ADheadstage
+	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
 	endif
 
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
+	Wave channelClampMode = GetChannelClampMode(panelTitle)
 
 	if(headstage < 0 || headStage >= DimSize(ChanAmpAssign, COLS))
 		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
@@ -4301,6 +4302,18 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
 		printf "(%s) Please select a valid DA and AD channel in \"DAC Channel and Device Associations\" in the Hardware tab.\r", panelTitle
+		return 1
+	endif
+
+	realMode = channelClampMode[DACchannel][%DAC]
+	if(realMode != clampMode)
+		printf "(%s) The clamp mode of DA %d is %s and differs from the requested mode %s.\r", panelTitle, DACchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		return 1
+	endif
+
+	realMode = channelClampMode[ADCchannel][%ADC]
+	if(realMode != clampMode)
+		printf "(%s) The clamp mode of AD %d is %s and differs from the requested mode %s.\r", panelTitle, ADCchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
 		return 1
 	endif
 
