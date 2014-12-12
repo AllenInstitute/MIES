@@ -4290,8 +4290,10 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
+		ADCchannel = ChanAmpAssign[2][headStage]
 	elseif(clampMode == I_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[4][headStage]
+		ADCchannel = ChanAmpAssign[6][headStage]
 	else
 		printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
 		return 1
