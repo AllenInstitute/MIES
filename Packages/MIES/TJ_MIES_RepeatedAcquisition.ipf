@@ -69,25 +69,16 @@ Function RA_Start(panelTitle)
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
-		
-		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-		if(v_value == 0)
-			DAP_SmoothResizePanel(340, panelTitle)
-			setwindow $panelTitle + "#oscilloscope", hide = 0
-		endif
 
-		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
+		SCOPE_CreateGraph(TestPulseITC, panelTitle)
+
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
-
 
 		ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
 		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_RestoreDAScale(SelectedDACScale,panelTitle)
-		//killwaves /f TestPulse
-
 End
 //====================================================================================================
 
@@ -159,7 +150,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	
 	if(Count < TotTrials)
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-		SCOPE_UpdateGraph(ITCDataWave, panelTitle)
+		SCOPE_CreateGraph(ITCDataWave, panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value == 0)//No background aquisition
@@ -182,24 +173,14 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				TP_StoreDAScale(SelectedDACScale, panelTitle)
 				TP_SetDAScaleToOne(panelTitle)
 				DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-				SCOPE_UpdateGraph(TestPulseITC,panelTitle)
+				SCOPE_CreateGraph(TestPulseITC,panelTitle)
 				
-				controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-				if(v_value == 0)
-					DAP_SmoothResizePanel(340, panelTitle)
-					setwindow $panelTitle + "#oscilloscope", hide = 0
-				endif
-				
-				//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 				ITI -= ITC_StopITCDeviceTimer(panelTitle)
 				ITC_StartBackgroundTestPulse(panelTitle)
-				//ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse()", "RA_Counter()", "", panelTitle)
 				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 				
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale, panelTitle)
-				
-				//killwaves/f TestPulse
 			else
 				DAP_StopButtonToAcqDataButton(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
@@ -269,25 +250,15 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TP_StoreDAScale(SelectedDACScale, panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-		SCOPE_UpdateGraph(TestPulseITC, panelTitle)
-		
-		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-		if(v_value == 0)
-			DAP_SmoothResizePanel(340, panelTitle)
-			setwindow $panelTitle + "#oscilloscope", hide = 0
-		endif
+		SCOPE_CreateGraph(TestPulseITC, panelTitle)
 		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
-		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTestPulse(panelTitle)
-		//print ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_RestoreDAScale(SelectedDACScale, panelTitle)
-		
-		//killwaves/f TestPulse
 	else
 		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 		DAP_StopButtonToAcqDataButton(panelTitle) // 

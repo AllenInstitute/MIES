@@ -18,7 +18,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 	string followerPanelTitle = ""
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-	SCOPE_UpdateGraph(ITCDataWave, panelTitle)
+	SCOPE_CreateGraph(ITCDataWave, panelTitle)
 	
 	if(DeviceType == 2) // starts data acquisition for ITC1600 devices
 		controlinfo /w = $panelTitle setvar_Hardware_Status
@@ -40,7 +40,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 						wave /z ITCDataWave = $WavePath + ":ITCDataWave"
-						SCOPE_UpdateGraph(ITCDataWave, followerPanelTitle)
+						SCOPE_CreateGraph(ITCDataWave, followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
 					i = 0
@@ -538,13 +538,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
 
 	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	SCOPE_UpdateGraph(TestPulseITC,panelTitle)
+	SCOPE_CreateGraph(TestPulseITC,panelTitle)
 	ITC_ConfigUploadDAC(panelTitle)
-
-	// open scope window
-	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-	if(v_value == 0)
-		DAP_SmoothResizePanel(340, panelTitle)
-		setwindow $panelTitle + "#oscilloscope", hide = 0
-	endif
+	SCOPE_OpenScopeWindow(panelTitle)
 End

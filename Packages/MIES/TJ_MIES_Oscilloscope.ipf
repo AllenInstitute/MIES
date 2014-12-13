@@ -1,138 +1,212 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-// SCOPE_UpdateGraph
-Function SCOPE_UpdateGraph(WaveToPlot, panelTitle)
-	wave WaveToPlot
+
+static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
+static Constant SCOPE_GREEN                     = 26122
+static Constant SCOPE_BLUE                      = 39168
+static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)R\\B%s\\M(\\Z10M\\F'Symbol'W\\M)\\]1\K(0, 0, 0) = \\{\"%%.01#f\", TagVal(2)}"
+
+Function/S SCOPE_GetGraph(panelTitle)
 	string panelTitle
-//	Variable start = stopmstimer(-2)
-	string NameOfWaveBeingPlotted = nameOfwave(WaveToPlot)
-	// print "name of wave being plotted =", NameOfWaveBeingPlotted
-	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
-	//ModifyGraph /w = $oscilloscopeSubWindow Live = 0
-	variable i =  0
-	string WavePath = HSU_DataFullFolderPathString(panelTitle) + ":"
-	wave ITCDataWave = $WavePath + "ITCDataWave"
-	wave TestPulseITC = $WavePath + "TestPulse:TestPulseITC", ITCChanConfigWave = $WavePath + "ITCChanConfigWave"
-	wave ChannelClampMode = $WavePath + "ChannelClampMode"
-	wave /z SSResistanceWave = $WavePath + "TestPulse:SSResistance"
-	wave /z InstResistanceWave = $WavePath + "TestPulse:InstResistance"
-	string ADChannelName= "AD"
-	string ADChannelList = ITC_GetADCList(ITCChanConfigWave)
-	string UnitWaveNote = note(ITCChanConfigWave)
-	string Unit
-	string SSResistanceTraceName = "SSResistance"
-	string InstResistanceTraceName = "InstResistance"
-	SCOPE_RemoveTracesOnGraph(oscilloscopeSubWindow)
-	variable Yoffset = 40/(itemsinlist(ADChannelList))
-	string cmd
-	ModifyGraph /w = $oscilloscopeSubWindow freePos=0
 
-	variable YaxisLow, YaxisHigh, YaxisSpacing, Spacer
-	YaxisSpacing = 1 / ((itemsinlist(ADChannelList)))
-	Spacer = 0.025
+	return SCOPE_GetPanel(panelTitle) + "#oscilloscope"
+End
 
-	YaxisHigh = 1
-	YaxisLow = YaxisHigh-YaxisSpacing + spacer
-	variable numActiveDACs = DC_NoOfChannelsSelected("da", panelTitle)
-	for(i = 0; i < (itemsinlist(ADChannelList)); i += 1)
-		ADChannelName ="AD"+stringfromlist(i, ADChannelList,";")
-		appendtograph /W = $oscilloscopeSubWindow /L = $ADChannelName WaveToPlot[][i + numActiveDACs]
-		ModifyGraph/w=$oscilloscopeSubWindow axisEnab($ADChannelName) = {YaxisLow,YaxisHigh}, freepos($ADChannelName) = {0, kwFraction}
-		SetAxis /w = $oscilloscopeSubWindow /A =2 /N =2 $ADchannelName // this line should autoscale only the visible data; /N makes the autoscaling range larger
-		Unit = stringfromlist(i + numActiveDACs, UnitWaveNote, ";") // extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
-		Label /w = $oscilloscopeSubWindow $ADChannelName, ADChannelName + " (" + Unit + ")"
-		ModifyGraph /w = $oscilloscopeSubWindow lblPosMode = 1
-		Label /w = $oscilloscopeSubWindow bottom "Time (\\U)"
-		
-		if(cmpstr(NameOfWaveBeingPlotted, "TestPulseITC") == 0) // handles plotting of peak and steady state resistance values in the oscilloscope window with the TP
-			appendtograph /W = $oscilloscopeSubWindow /R = $"SSResistance" + num2str(i) SSResistanceWave[][i] , InstResistanceWave[][i]
-			ModifyGraph /W = $oscilloscopeSubWindow noLabel($"SSResistance" + num2str(i)) = 2, axThick($"SSResistance" + num2str(i)) = 0, width = 25
-			ModifyGraph /W = $oscilloscopeSubWindow axisEnab($"SSResistance" + num2str(i)) = {YaxisLow,YaxisHigh}, freepos($"SSResistance" + num2str(i)) = {1, kwFraction}
-			ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance") = 2, lsize($"SSResistance") = 0
-			SetAxis /W = $oscilloscopeSubWindow /A = 2 /N = 2 /E = 2 $"SSResistance" + num2str(i) -20000000, 20000000
-			if(i > 0)
-				SSResistanceTraceName = "SSResistance#"+num2str(i)
-				InstResistanceTraceName = "InstResistance#"+num2str(i)
-				ModifyGraph  /W = $oscilloscopeSubWindow mode($"SSResistance#" + num2str(i)) = 2, lsize($"SSResistance#" + num2str(i)) = 0
-			endif
-			Tag /W = $oscilloscopeSubWindow /C /N = $"SSR" + num2str(i) /F = 0 /X = -5 /Y = (-Yoffset) /B = 1 /L = 0 /Z = 0 /A = MC /I = 1 $SSResistanceTraceName, 0,"R\\Bss\\M\\{\"%.4g\", TagVal(2)} \\Z10(M\\F'Symbol'W\\M)"
-			Tag /W = $oscilloscopeSubWindow /C /N = $"InstR" + num2str(i) /F = 0 /B = 1 /A = LT /X = -15 /Y = (-Yoffset) /L = 0 $InstResistanceTraceName, 5.01, "R\\Bpeak\\M\\{\"%.4g\", TagVal(2)} \\Z10(M\\F'Symbol'W\\M)"
+Function/S SCOPE_GetPanel(panelTitle)
+	string panelTitle
+
+	return panelTitle + "#Scope"
+End
+
+Function SCOPE_OpenScopeWindow(panelTitle)
+	string panelTitle
+
+	string win, graph
+
+	win = SCOPE_GetPanel(panelTitle)
+
+	if(windowExists(win))
+		return NaN
+	endif
+
+	graph = SCOPE_GetGraph(panelTitle)
+
+	NewPanel/EXT=0/W=(0,0,434,784)/HOST=$panelTitle/N=Scope/K=2
+	Display/W=(0,10,358,776)/HOST=$win/N=oscilloscope/FG=(FL,FT,FR,FB)
+	ModifyPanel/W=$win fixedSize=0
+	ModifyGraph/W=$graph wbRGB=(60928,60928,60928),gbRGB=(60928,60928,60928)
+	SetActiveSubWindow $paneltitle
+End
+
+Function SCOPE_KillScopeWindowIfRequest(panelTitle)
+	string panelTitle
+
+	string win = SCOPE_GetPanel(panelTitle)
+
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow") && windowExists(win))
+		KillWindow $win
+	endif
+End
+
+Function SCOPE_UpdateGraph(panelTitle)
+	string panelTitle
+
+	variable latest
+	string graph
+
+	graph = SCOPE_GetGraph(panelTitle)
+
+	GetAxis/W=$graph/Q top
+	if(!V_flag) // axis exists in graph
+		Wave TPStorage = GetTPStorage(panelTitle)
+		variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+		latest = count > 0 ? TPStorage[count - 1][0][%DeltaTimeInSeconds] : 0
+
+		if(latest >= V_max)
+			SetAxis/W=$graph top, latest -  0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE, latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 		endif
+	endif
+
+	ModifyGraph/W=$graph live = 0
+	ModifyGraph/W=$graph live = 1
+End
+
+Function SCOPE_CreateGraph(plotData, panelTitle)
+	wave plotData
+	string panelTitle
+
+	string dataName, graph, tagName
+	variable i, adc, showResistanceCurve, numActiveDACs, numADChannels
+	string leftAxis, rightAxis, tagAxis, ADChannelList, str
+	string tagPeakTrace, tagSteadyStateTrace
+	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
+	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
+	STRUCT RGBColor peakColor
+	STRUCT RGBColor steadyColor
+
+	SCOPE_OpenScopeWindow(panelTitle)
+	graph = SCOPE_GetGraph(panelTitle)
+
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	DFREF dataDFR      = GetDevicePath(panelTitle)
+	WAVE/SDFR=dataDFR ITCChanConfigWave
+	WAVE/SDFR=testPulseDFR SSResistance
+	WAVE/SDFR=testPulseDFR InstResistance
+	Wave TPStorage = GetTPStorage(panelTitle)
+
+	dataName = NameOfWave(plotData)
+	ADChannelList = ITC_GetADCList(ITCChanConfigWave)
+	unitWaveNote = note(ITCChanConfigWave)
+	graph = SCOPE_GetGraph(panelTitle)
+	numADChannels = ItemsInList(ADChannelList)
+	Yoffset = 40 / numADChannels
+	YaxisSpacing = 1 / numADChannels
+	YaxisHigh = 1
+	YaxisLow = YaxisHigh - YaxisSpacing + 0.025
+	peakColor.green = SCOPE_GREEN
+	steadyColor.blue = SCOPE_BLUE
+
+	RemoveTracesFromGraph(graph)
+	RemoveAnnotationsFromGraph(graph)
+
+	numActiveDACs = ItemsInList(ITC_GetDACList(ITCChanConfigWave))
+	showResistanceCurve = GetCheckboxState(panelTitle, "check_settings_TP_show_resist")
+
+	for(i = 0; i < numADChannels; i += 1)
+		adcStr = StringFromList(i, ADChannelList)
+		adc = str2num(adcStr)
+		leftAxis = "AD" + adcStr
+		AppendToGraph/W=$graph/L=$leftAxis plotData[][numActiveDACs + i]
+
+		ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
+		SetAxis/W=$graph/A=2/N=2 $leftAxis
+
+		// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+		unit = StringFromList(numActiveDACs + i, unitWaveNote)
+		Label/W=$graph $leftAxis, leftAxis + " (" + unit + ")"
+
+		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
+		// add the also the trace for the current resistance values from the test pulse
+		if(!cmpstr(dataName, "TestPulseITC"))
+
+			rightAxis = "resistance" + adcStr
+
+			peakTrace = "PeakResistance" + adcStr
+			AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%PeakResistance]/TN=$peakTrace
+			ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
+
+			steadyStateTrace = "SteadyStateResistance" + adcStr
+			AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
+			ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
+
+			ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.2}, freePos($rightAxis)={0, kwFraction}
+			ModifyGraph/W=$graph lblPos($rightAxis) = 70, lblRot($rightAxis) = 180
+
+
+			tagAxis = rightAxis + "_tags"
+
+			tagSteadyStateTrace = "SSR" + adcStr
+			AppendToGraph/W=$graph/R=$tagAxis SSResistance[][i]/TN=$tagSteadyStateTrace
+			ModifyGraph/W=$graph mode($tagSteadyStateTrace) = 2, lsize($tagSteadyStateTrace) = 0
+
+			if(showResistanceCurve)
+				xPos = 50
+				yPos = 5
+				anchor = "RB"
+			else
+				XPos = 0
+				yPos = -yOffset
+				anchor = "MC"
+			endif
+
+			tagName = "SSR" + adcStr
+			sprintf str, TAG_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, "ss"
+			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagSteadyStateTrace, 0, str
+
+			tagPeakTrace = "InstR" + adcStr
+			AppendToGraph/W=$graph/R=$tagAxis InstResistance[][i]/TN=$tagPeakTrace
+			ModifyGraph/W=$graph mode($tagPeakTrace) = 2, lsize($tagPeakTrace) = 0
+
+			if(showResistanceCurve)
+				xPos = 100
+				yPos = 3
+				anchor = "RB"
+			else
+				xPos = -15
+				yPos = -yOffset
+				anchor = "LT"
+			endif
+
+			tagName = "InstR" + adcStr
+			sprintf str, TAG_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, "peak"
+			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagPeakTrace, 0, str
+
+			ModifyGraph/W=$graph noLabel($tagAxis) = 2, axThick($tagAxis) = 0, width = 25
+			ModifyGraph/W=$graph axisEnab($tagAxis) = {YaxisLow, YaxisHigh}, freePos($tagAxis)={1, kwFraction}
+
+			SetAxis/W=$graph/A=2/N=2/E=2 $tagAxis -20000000, 20000000
+
+
+			if(showResistanceCurve)
+				Label/W=$graph $rightAxis "Resistance \\Z10(M\\F'Symbol'W\\M)"
+				Label/W=$graph top "Relative time (s)"
+				SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
+			else
+				ModifyGraph/W=$graph lsize($peakTrace) = 0, lsize($steadyStateTrace) = 0
+				ModifyGraph/W=$graph noLabel($rightAxis) = 2, noLabel(top) = 2
+				ModifyGraph/W=$graph axThick($rightAxis) = 0, axThick(top) = 0
+			endif
+		endif
+
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
-
 	endfor
-	if(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 0)
-		SetAxis /w = $oscilloscopeSubWindow bottom 0, (ITC_CalcDataAcqStopCollPoint(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
-	elseif(stringmatch(NameOfWaveBeingPlotted, "TestPulseITC") == 1) // determines if the wave is a test pulse
-		string TPDurationGlobalPath
-		sprintf TPDurationGlobalPath, "%sTestPulse:Duration" WavePath
-		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // half the number of points in a single test pulse
-		 SetAxis /w = $oscilloscopeSubWindow bottom 0, GlobalTPDurationVariable * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
+
+	Label/W=$graph bottom "Time (\\U)"
+
+	if(!cmpstr(dataName, "TestPulseITC"))
+		NVAR/SDFR=testPulseDFR Duration
+		SetAxis/W=$graph bottom 0, Duration * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
+	else
+		SetAxis/W=$graph bottom 0, (ITC_CalcDataAcqStopCollPoint(panelTitle)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
 	endif
 End
-
-Function/t ReturnStringforTag(panelTitle, waveToconvert, column) // ####DOES NOT APPEAR TO BE IN USE
-	string panelTitle
-	wave waveToConvert
-	variable column
-	string strValue
-	sprintf strValue, "%0.3g", waveToConvert[0][column]
-	return strValue
-End
-//=========================================================================================
-
-Function/s SCOPE_FindValueInColumnof2Dwave(Value, Column, TwoDWave)//DA = 1, AD = 0, DO = 3
-	variable Value, Column
-	wave TwoDwave
-	variable i = 0, a = 2
-	string RowsThatContainValue = ""
-	
-	//duplicate/free/r=[][Column] TwoDwave, F
-		do
-			if(TwoDWave[i][Column] == Value)
-			RowsThatContainValue += num2str(i) + ";"
-			endif
-		i += 1
-		while (i < (DimSize(TwoDWave,0)))
-	
-	return RowsThatContainValue
- 
-End
-
-//=========================================================================================
-Function/s SCOPE_RefToPullDatafrom2DWave(Value, RefColumn, DataColumn, TwoDWave) // Returns the data from the data column based on matched values in the ref column
-	wave TwoDWave// For ITCDataWave 0 (value) in Ref column = AD channel, 1 = DA channel,
-	variable Value,RefColumn, DataColumn
-	variable i = 0
-	string Values = ""
-	string RowList = SCOPE_FindValueInColumnof2Dwave(Value, RefColumn, TwoDWave)
-
-	variable stopPoint = (itemsinlist(RowList,";")
-	for(i = 0; i < stopPoint; i += 1)
-//		values += (num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn])) + ";"
-		values = AddListItem(num2str(TwoDwave[str2num(stringfromlist(i,RowList,";"))][DataColumn]), values, ";", i)
-	endfor
-	
-	return Values
-End
-AddListItem
-//=========================================================================================
-
-Function SCOPE_RemoveTracesOnGraph(GraphName)
-	string GraphName
-	variable i = 0
-	string cmd, WaveNameFromList
-	string ListOfTracesOnGraph
-	string Tracename
-	
-	ListOfTracesOnGraph = TraceNameList(GraphName, ";", 0 + 1)
-	if(itemsinlist(ListOfTracesOnGraph,";") > 0)
-	do
-	TraceName = "\"#0\""
-	sprintf cmd, "removefromgraph/w=%s $%s" GraphName, TraceName
-	execute cmd
-	i += 1
-	while(i < (itemsinlist(ListOfTracesOnGraph,";")))
-	endif
-End
-

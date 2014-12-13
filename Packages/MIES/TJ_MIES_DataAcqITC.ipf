@@ -1,5 +1,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// Interval in iterations between the switch from live update false to true
+Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 50
+
+Structure BackgroundStruct
+	STRUCT WMBackgroundStruct wmbs
+	int32 count ///< Number of invocations of background function
+EndStructure
+
 Function ITC_DataAcq(panelTitle)
 	string panelTitle
 
@@ -13,7 +21,7 @@ Function ITC_DataAcq(panelTitle)
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	string oscilloscopeSubwindow = panelTitle + "#oscilloscope"
+	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
@@ -42,7 +50,7 @@ Function ITC_DataAcq(panelTitle)
 			sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
 			Execute cmd
 			ITCDataWave[0][0] += 0
-			doupdate /w = $oscilloscopeSubwindow
+			DoUpdate/W=$oscilloscopeSubwindow
 		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
 
 		//Check Status
@@ -195,8 +203,7 @@ Function ITC_FIFOMonitor(s)
 	Execute cmd	
 
 	ITCDataWave[0][0] += 0 //forces on screen update
-	string OscilloscopeSubWindow = panelTitleG + "#oscilloscope"
-	DoUpdate/W=$OscilloscopeSubWindow
+	DoUpdate/W=$SCOPE_GetGraph(panelTitleG)
 
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		print "stopped data acq"
@@ -208,7 +215,7 @@ Function ITC_FIFOMonitor(s)
 End
 
 Function ITC_STOPFifoMonitor()
-CtrlNamedBackground ITC_FIFOMonitor, stop
+	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 //======================================================================================
 
@@ -277,7 +284,6 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	TP_ResetTPStorage(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", panelTitle)
-	variable /G root:MIES:ITCDevices:BackgroundTPCount   = 0
 
 	DoUpdate
 	string  ITCDataWavePath = WavePath + ":ITCDataWave"
@@ -297,14 +303,21 @@ End
 
 ///@brief Background execution function for the test pulse data acquisition
 Function ITC_TestPulseFunc(s)
-	STRUCT WMBackgroundStruct &s
+	STRUCT BackgroundStruct &s
+
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
 	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
-	NVAR BackgroundTPCount   = root:MIES:ITCDevices:BackgroundTPCount
 	SVAR panelTitleG         = root:MIES:ITCDevices:PanelTitleG
 	// create a copy as panelTitleG is killed in ITC_STOPTestPulse
 	// but we still need it afterwards
 	string panelTitle        = panelTitleG
+
+	if(s.wmbs.started)
+		s.wmbs.started = 0
+		s.count  = 0
+	else
+		s.count += 1
+	endif
 
 	String cmd, Keyboard
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
@@ -338,10 +351,8 @@ Function ITC_TestPulseFunc(s)
 	TP_ClampModeString(panelTitle)
 	TP_Delta(panelTitle, WavePath + ":TestPulse")
 
-	BackgroundTPCount += 1
-
-	if(mod(BackgroundTPCount,30) == 0 || BackgroundTPCount == 1)
-		// debug output at every nth step
+	if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
+		SCOPE_UpdateGraph(panelTitle)
 	endif
 
 	if(!exists(countPath)) // uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
@@ -361,14 +372,7 @@ Function ITC_STOPTestPulse(panelTitle)
 	string panelTitle
 	string cmd
 	CtrlNamedBackground TestPulse, stop
-	//sprintf cmd, "ITCCloseAll" 
-	//execute cmd
-//	ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values.
-	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-	if(v_value == 0)
-		DAP_SmoothResizePanel(-340, panelTitle)
-		setwindow $panelTitle + "#oscilloscope", hide = 1
-	endif
+	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	DAP_RestoreTTLState(panelTitle)
 	//killwaves /z root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
@@ -508,9 +512,6 @@ Function ITC_StartTestPulse(panelTitle)
 	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 
-	string oscilloscopeSubWindow = panelTitle + "#oscilloscope"
-
-
 	TP_ResetTPStorage(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
@@ -527,7 +528,6 @@ Function ITC_StartTestPulse(panelTitle)
 	make /O /I /N = 4 $ResultsWavePath 
 	doupdate
 
-	
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
 	do
@@ -553,10 +553,11 @@ Function ITC_StartTestPulse(panelTitle)
 		doupdate
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
-		if(mod(i, 50) == 0)
-			ModifyGraph /w = $oscilloscopeSubWindow Live = 0
-			ModifyGraph /w = $oscilloscopeSubWindow Live = 1
+
+		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
+			SCOPE_UpdateGraph(panelTitle)
 		endif
+
 		i += 1	
 		Keyboard = KeyboardState("")
 	while (cmpstr(Keyboard[9], " ") != 0)

@@ -829,6 +829,20 @@ Function RemoveTracesFromGraph(graph, [kill])
 	endfor
 End
 
+///@brief Removes all annotations from the graph
+Function RemoveAnnotationsFromGraph(graph)
+	string graph
+
+	variable i, numEntries
+	string list
+
+	list = AnnotationList(graph)
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		Textbox/W=$graph/K/N=$StringFromList(i, list)
+	endfor
+End
+
 /// @brief Sort 2D waves in-place with one column being the key
 ///
 /// By default an alphanumeric sorting is done.

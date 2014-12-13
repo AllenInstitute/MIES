@@ -210,11 +210,6 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 			DAP_StoreTTLState(panelTitle)
 			DAP_TurnOffAllTTLs(panelTitle)
 
-			if(!GetCheckboxState(panelTitle,"check_Settings_ShowScopeWindow"))
-				DAP_SmoothResizePanel(340, panelTitle)
-				SetWindow $panelTitle +"#oscilloscope", hide = 0
-			endif
-
 			string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 			Make/O/N=0 $TestPulsePath
 			WAVE TestPulse = $TestPulsePath
@@ -233,16 +228,13 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 
 			DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 			WAVE TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-			SCOPE_UpdateGraph(TestPulseITC,panelTitle)
+			SCOPE_CreateGraph(TestPulseITC,panelTitle)
 
 			if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))// runs background TP
 				ITC_StartBackgroundTestPulse(panelTitle)
 			else // runs TP
-		ITC_StartTestPulse(panelTitle)
-				if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow"))
-					DAP_SmoothResizePanel(-340, panelTitle)
-					SetWindow $panelTitle + "#oscilloscope", hide = 1
-				endif
+				ITC_StartTestPulse(panelTitle)
+				SCOPE_KillScopeWindowIfRequest(panelTitle)
 			endif
 
 			TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
