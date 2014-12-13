@@ -1415,8 +1415,8 @@ Function/S WBP_ITCPanelPopUps(DAorTTL, searchString)
 
 	stimulusSetList = Wavelist(searchstring, ";", "")
 	SetDataFolder saveDFR
-
-	return stimulusSetList
+	
+	return sortlist(stimulusSetList,";",16)
 End
 
 /// @brief Returns the names of the items in the popmenu controls in a list

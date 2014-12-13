@@ -26,7 +26,7 @@ static Constant 		PRESSURE_PULSE_ENDpt         			= 35000
 static Constant 		SAMPLE_INT_MILLI             				= 0.005
 static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
-static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1
+static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
 Constant        		SAMPLE_INT_MICRO             				= 5
 
 static Constant 		HEADSTAGE_0_P_OFFSET 				= 0.135 // contstants are not a good way to handle calibration because it will fail with multiple DA_Ephys panels. - Should probably add a calibration column to the pressure data wave
@@ -116,7 +116,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	// if the seal resistance is greater that 1 giga ohm set pressure to atmospheric AND stop sealing process
 	if(Resistance >= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
- 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
+ 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
  			P_UpdatePressureMode(panelTitle, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
  		else
  			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM // remove the seal mode
@@ -184,7 +184,7 @@ Function P_MethodBreakIn(panelTitle, headStage)
 	if(Resistance <= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
 		
-		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
+		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
  			P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state and sets to atmospheric
  		else
  			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
@@ -228,7 +228,7 @@ Function P_MethodClear(panelTitle, headStage)
 		endif
 	else
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
-		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage) // only update buttons if selected headstage matches headstage with seal
+		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
 			P_UpdatePressureMode(panelTitle, 3, StringFromList(3,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
 		else
 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
@@ -270,13 +270,12 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	string 	panelTitle
 	variable 	vCom
 	variable 	headStage
-
+	 
 	// make sure holding is enabled
-		SetCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", 1)
-		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage)
+	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
+	
 	// apply holding
-	SetSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", vCom)
-	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage) // used to set holding
+	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, vCom * 1e-3)
 End
 
 /// @brief Opens ITC devices used for pressure regulation
