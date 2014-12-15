@@ -4274,8 +4274,9 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 	string panelTitle
 	variable headStage, clampMode
 
-	string ctrl, dacWave, endWave
+	string ctrl, dacWave, endWave, unit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
+	variable gain, scale
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -4331,6 +4332,42 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 
 	if(DAheadstage != ADheadstage)
 		printf "(%s) The configured headstages for the DA channel %d and the AD channel %d differ (%d vs %d).\r", panelTitle, DACchannel, ADCchannel, DAheadstage, ADheadstage
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	unit = GetSetVariableString(panelTitle, ctrl)
+	if(isEmpty(unit))
+		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	gain = GetSetVariable(panelTitle, ctrl)
+	if(!isFinite(gain) || gain == 0)
+		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	// we allow the scale being zero
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	scale = GetSetVariable(panelTitle, ctrl)
+	if(!isFinite(scale))
+		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	unit = GetSetVariableString(panelTitle, ctrl)
+	if(isEmpty(unit))
+		printf "(%s) The unit for ADCchannel %d is empty.\r", panelTitle, ADCchannel
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	gain = GetSetVariable(panelTitle, ctrl)
+	if(!isFinite(gain) || gain == 0)
+		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
