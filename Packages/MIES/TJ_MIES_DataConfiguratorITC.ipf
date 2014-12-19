@@ -534,6 +534,9 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 			ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmp * DAGain
 		endif
+		
+		// put the insert test pulse checkbox status into the sweep data wave
+		sweepData[0][6][HeadStage] = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
 
 		col += 1 // col determines what column of the ITCData wave the DAC wave is inserted into
 	endfor

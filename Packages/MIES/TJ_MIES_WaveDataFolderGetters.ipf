@@ -170,6 +170,7 @@ End
 /// - 3: AD Gain
 /// - 4: DA Scale
 /// - 5: Set sweep count 
+/// - 6: TP Insert On/Off
 ///
 /// Layers:
 /// - Headstage
@@ -184,7 +185,7 @@ Function/Wave DC_SweepDataWvRef(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, 6, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
+	Make/N=(1, 7, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
 	wv = NaN
 
 	return wv
@@ -472,7 +473,7 @@ Function/Wave GetSweepSettingsWave(panelTitle, noHeadStages)
 		return wv
 	endif
 
-	Make/N=(1,6,noHeadStages) dfr:sweepSettingsWave/Wave=wv
+	Make/N=(1,7,noHeadStages) dfr:sweepSettingsWave/Wave=wv
 	wv = Nan
 
 	return wv
@@ -495,6 +496,7 @@ End
 /// - 3: DA Gain
 /// - 4: AD Gain
 /// - 5: Set sweep count
+/// - 6: Insert TP on/off
 ///
 /// Layers:
 /// - Headstage
@@ -509,7 +511,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(3,6) dfr:sweepSettingsKeyWave/Wave=wv
+	Make/T/N=(3,7) dfr:sweepSettingsKeyWave/Wave=wv
 	wv = ""
 
 	SetDimLabel 0, 0, Parameter, wv
@@ -539,6 +541,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][5] = "Set Sweep Count"
 	wv[%Units][5]     = ""
 	wv[%Tolerance][5] = ".0001"
+	
+	wv[%Parameter][6] = "TP Insert Checkbox"
+	wv[%Units][6] = "On/Off"
+	wv[%Tolerance][6] = "-"
 
 	return wv
 End
