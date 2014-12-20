@@ -511,6 +511,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 			endif
 		endfor
 	endfor
+
+	SetDimLabels(textDocKeyWave, textDocWave)
 End
 
 //======================================================================================
