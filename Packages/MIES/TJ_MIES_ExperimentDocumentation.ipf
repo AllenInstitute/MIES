@@ -295,15 +295,8 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	colCount = DimSize(settingsHistory, 1)
 		
 	rowIndex = rowCount - 1
-	
-	// set dimlabels for every column of the settingsHistory wave and the key wave
-	// define dimLabel counter
-	variable dimLabelCounter
-	for (dimLabelCounter = 0; dimLabelCounter < colCount; dimLabelCounter += 1)
-		string dimLabelText = 	keyWave[0][dimLabelCounter]
-		SetDimLabel 1, dimLabelCounter, $dimLabelText, keyWave
-		SetDimLabel 1, dimLabelCounter, $dimLabelText, settingsHistory
-	endfor
+
+	SetDimLabels(keyWave, settingsHistory)
 	
 	// since we have now de-coupled the row number from the sweep number to facilitate the addition of factors from other places besides the amp settings (like the test pulse, for example)
 	// we may now have "open" spaces in the settings history.  Because of this we can't just compare the [rowIndex] values against the [rowIndex-1] values.  We have to search back through 
