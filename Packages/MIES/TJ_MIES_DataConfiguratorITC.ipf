@@ -138,59 +138,6 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 End
 
 //==========================================================================================
-
-/// @brief Check if all settings are valid to send a test pulse or acquire data
-///
-/// For invalid settings an informative message is printed into the history area
-/// @return 0 for valid settings, 1 for invalid settings
-Function DC_CheckSettings(panelTitle)
-	string panelTitle
-
-	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
-
-	// build a list of all panels to check
-	// iterate over that list
-	// check each active headstage with DAP_CheckHeadStage
-
-	numHS = sum(DC_ControlStatusWave(panelTitle, "DataAcq_HS"))
-	if(!numHS)
-		printf "(%s) Please activate at least one headstage\r", panelTitle
-		return 1
-	endif
-
-	numDACs = sum(DC_ControlStatusWave(panelTitle, "DA"))
-	if(!numDACS)
-		printf "(%s) Please activate at least one DA channel\r", panelTitle
-		return 1
-	endif
-
-	numADCs = sum(DC_ControlStatusWave(panelTitle, "AD"))
-	if(!numADCs)
-		printf "(%s) Please activate at least one AD channel\r", panelTitle
-		return 1
-	endif
-
-	indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
-	Wave status = DC_ControlStatusWave(panelTitle, "TTL")
-	numEntries = DimSize(status, ROWS)
-	for(i=0; i < numEntries; i+=1)
-		if(!status[i])
-			continue
-		endif
-		if(!CmpStr(GetPopupMenuString(panelTitle, "Wave_TTL_0" + num2str(i)), NONE))
-			printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
-			return 1
-		endif
-		if(indexingEnabled && !CmpStr(GetPopupMenuString(panelTitle, "Popup_TTL_IndexEnd_0" + num2str(i)), NONE))
-			printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
-			return 1
-		endif
-	endfor
-
-	return 0
-End
-
-//==========================================================================================
 Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 	string panelTitle
 	Variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)

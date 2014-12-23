@@ -5,8 +5,8 @@ static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
-/// - 0-3: V-Clamp: DA channel number of amp (0 or 1), DA gain, AD channel, AD gain
-/// - 4-7: I-Clamp: DA channel number of amp (0 or 1), DA gain, AD channel, AD gain
+/// - 0-3: V-Clamp: DA channel, DA gain, AD channel, AD gain
+/// - 4-7: I-Clamp: DA channel, DA gain, AD channel, AD gain
 /// - 8: Amplifier Serial number as returned by `AxonTelegraphFindServers`. This differs
 ///      compared to the ones returned by `MCC_FindServers`, as the latter are strings with leading zeros.
 ///      E.g.: "00000123" vs 123

@@ -651,19 +651,20 @@ Function/S TP_ClampModeString(panelTitle)
 
 	return ClampModeString
 End
-//=============================================================================================
-///@brief Find the headstage using a particular AD channel
+
+/// @brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
 	string panelTitle
-
 	variable AD
 
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	variable i, entries
+	Wave chanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave channelClampMode = GetChannelClampMode(panelTitle)
+	variable i, row, entries
 
-	entries = DimSize(ChanAmpAssign, COLS)
+	entries = DimSize(chanAmpAssign, COLS)
+	row = channelClampMode[AD][%ADC] == V_CLAMP_MODE ? 2 : 2 + 4
 	for(i=0; i < entries; i+=1)
-		if(ChanAmpAssign[2][i] == AD)
+		if(chanAmpAssign[row][i] == AD)
 			return i
 		endif
 	endfor
@@ -672,18 +673,20 @@ Function TP_HeadstageUsingADC(panelTitle, AD)
 
 	return NaN
 End
-//=============================================================================================
-///@brief Find the headstage using a particular DA channel
+
+/// @brief Find the headstage using a particular DA channel
 Function TP_HeadstageUsingDAC(panelTitle, DA)
 	string 	panelTitle
 	variable DA
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	variable i, entries
+	Wave channelClampMode = GetChannelClampMode(panelTitle)
+	variable i, row, entries
 
-	entries = DimSize(ChanAmpAssign, COLS)
+	entries = DimSize(chanAmpAssign, COLS)
+	row = channelClampMode[DA][%DAC] == V_CLAMP_MODE ? 0 : 0 + 4
 	for(i=0; i < entries; i+=1)
-		if(ChanAmpAssign[0][i] == DA)
+		if(chanAmpAssign[row][i] == DA)
 			return i
 		endif
 	endfor
@@ -692,6 +695,7 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 
 	return NaN
 End
+
 //=============================================================================================
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string 	panelTitle, OpName

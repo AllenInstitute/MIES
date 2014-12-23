@@ -5,7 +5,7 @@ Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 
-static Function/S ConvertAmplifierModeToString(mode)
+Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
 
 	switch(mode)
@@ -19,7 +19,8 @@ static Function/S ConvertAmplifierModeToString(mode)
 			return "I_EQUAL_ZERO_MODE"
 			break
 		default:
-			ASSERT(0, "invalid mode")
+			return "Unknown mode (" + num2str(mode) + ")"
+			break
 	endswitch
 End
 
@@ -234,7 +235,7 @@ Constant MCC_GETPIPETTEOFFSET_FUNC       = 0x130
 /// @brief Generic interface to call MCC amplifier functions
 ///
 /// @param panelTitle locked panel name to work on
-/// @param headStage  number of the headStage, must be between 0 and 7
+/// @param headStage  number of the headStage, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode       one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func       Function to call
 /// @param value      Numerical value to send, ignored by getter functions (MCC_GETHOLDING_FUNC and MCC_GETPIPETTEOFFSET_FUNC)
@@ -247,13 +248,13 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	variable ret, channel, headstageMode
 	string serial, str
 
-	ASSERT(headStage >= 0 && headStage <= 7, "invalid headStage index")
+	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
 	headstageMode = AI_MIESHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
-		printf "Headstage %d is in %s but the required one is %s\r", headstage, ConvertAmplifierModeToString(headstageMode), ConvertAmplifierModeToString(mode)
+		printf "Headstage %d is in %s but the required one is %s\r", headstage, AI_ConvertAmplifierModeToString(headstageMode), AI_ConvertAmplifierModeToString(mode)
 		return NaN
 	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
 		printf "Headstage %d has different modes stored and set\r", headstage
@@ -358,8 +359,8 @@ End
 ///          can be V_CLAMP_MODE or I_CLAMP_MODE
 Function AI_MIESHeadstageMode(panelTitle, headStage)
 	string panelTitle
-	variable headStage  // 0 through 7
-						// MIESheadstage 1 has radio buttons 0 and 1
+	variable headStage  // range: [0, NUM_HEADSTAGES[
+						// headstage 1 has radio buttons 0 and 1
 
 	string ctrl
 	sprintf ctrl, "Radio_ClampMode_%d", (headStage * 2)

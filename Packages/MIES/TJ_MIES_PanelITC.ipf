@@ -4274,24 +4274,28 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 	string panelTitle
 	variable headStage, clampMode
 
-	string ctrl, dacWave, endWave
-	variable DACchannel, ADCchannel
+	string ctrl, dacWave, endWave, unit
+	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
+	variable gain, scale
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
 	endif
 
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
+	Wave channelClampMode = GetChannelClampMode(panelTitle)
 
-	if(headStage >= DimSize(ChanAmpAssign, COLS))
+	if(headstage < 0 || headStage >= DimSize(ChanAmpAssign, COLS))
 		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
 		return 1
 	endif
 
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
+		ADCchannel = ChanAmpAssign[2][headStage]
 	elseif(clampMode == I_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[4][headStage]
+		ADCchannel = ChanAmpAssign[6][headStage]
 	else
 		printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
 		return 1
@@ -4302,13 +4306,68 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 		return 1
 	endif
 
-	if(!IsFinite(TP_HeadstageUsingADC(panelTitle, ADCchannel)))
+	realMode = channelClampMode[DACchannel][%DAC]
+	if(realMode != clampMode)
+		printf "(%s) The clamp mode of DA %d is %s and differs from the requested mode %s.\r", panelTitle, DACchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		return 1
+	endif
+
+	realMode = channelClampMode[ADCchannel][%ADC]
+	if(realMode != clampMode)
+		printf "(%s) The clamp mode of AD %d is %s and differs from the requested mode %s.\r", panelTitle, ADCchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		return 1
+	endif
+
+	ADheadstage = TP_HeadstageUsingADC(panelTitle, ADCchannel)
+	if(!IsFinite(ADheadstage))
 		printf "(%s) Could not determine the headstage for the ADChannel %d.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
-	if(!IsFinite(TP_HeadstageUsingDAC(panelTitle, DACchannel)))
+	DAheadstage = TP_HeadstageUsingDAC(panelTitle, DACchannel)
+	if(!IsFinite(DAheadstage))
 		printf "(%s) Could not determine the headstage for the DACchannel %d.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	if(DAheadstage != ADheadstage)
+		printf "(%s) The configured headstages for the DA channel %d and the AD channel %d differ (%d vs %d).\r", panelTitle, DACchannel, ADCchannel, DAheadstage, ADheadstage
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	unit = GetSetVariableString(panelTitle, ctrl)
+	if(isEmpty(unit))
+		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	gain = GetSetVariable(panelTitle, ctrl)
+	if(!isFinite(gain) || gain == 0)
+		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	// we allow the scale being zero
+	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	scale = GetSetVariable(panelTitle, ctrl)
+	if(!isFinite(scale))
+		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	unit = GetSetVariableString(panelTitle, ctrl)
+	if(isEmpty(unit))
+		printf "(%s) The unit for ADCchannel %d is empty.\r", panelTitle, ADCchannel
+		return 1
+	endif
+
+	ctrl = IDX_GetChannelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	gain = GetSetVariable(panelTitle, ctrl)
+	if(!isFinite(gain) || gain == 0)
+		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
