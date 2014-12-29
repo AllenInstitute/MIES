@@ -347,7 +347,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 									onOffText = "On"
 								endif
 								
-								sprintf changedEnableText, "HeadStage#%d:%s: %s" layerCounter, keyWave[0][colCounter], onOffText
+								sprintf changedEnableText, "HS#%d:%s: %s" layerCounter, keyWave[0][colCounter], onOffText
 								Note saveDataWave changedEnableText						
 							endif				
 						elseif (abs(settingsHistory[rowIndex][colCounter][layerCounter] - settingsHistory[recentRowIndex][colCounter][layerCounter]) >= str2num(keyWave[2][colCounter])) // is the change greater then the tolerance?
@@ -355,7 +355,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 							
 							// build up the string for the report
 							String changedFactorText
-							sprintf changedFactorText, "HeadStage#%d:%s: %.2f %s" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter], keyWave[1][colCounter]
+							sprintf changedFactorText, "HS#%d:%s: %.2f %s" layerCounter, keyWave[0][colCounter], settingsHistory[rowIndex][colCounter][layerCounter], keyWave[1][colCounter]
 							//changedFactorText = "Factor Change:Sweep#" + num2str(SweepCounter) + ":" + keyWave[0][colCounter] + ":" + num2str(settingsHistory[rowIndex][colCounter][layerCounter]
 							
 							
@@ -513,7 +513,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 			// build up the string for the report
 			if (StringMatch(textDocWave[rowIndex][colCounter][layerCounter], "!"))
 				String changedDocText
-				sprintf changedDocText, "HeadStage#%d:%s: %s" layerCounter, textDocKeyWave[0][colCounter], textDocWave[rowIndex][colCounter][layerCounter]
+				sprintf changedDocText, "HS#%d:%s: %s" layerCounter, textDocKeyWave[0][colCounter], textDocWave[rowIndex][colCounter][layerCounter]
 				Note saveDataWave changedDocText
 			endif
 		endfor
@@ -568,6 +568,8 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 		sweepSettingsWave[0][4][i] = sweepDataWave[0][3][i]
 		// Set Sweep Count
 		sweepSettingsWave[0][5][i] = sweepDataWave[0][5][i]
+		// TP Insert Checkbox
+		sweepSettingsWave[0][6][i] = sweepDataWave[0][6][i]
 	endfor
 
 	// call the function that will create the text wave notes
