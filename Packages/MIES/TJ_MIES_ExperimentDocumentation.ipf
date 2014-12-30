@@ -296,7 +296,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		
 	rowIndex = rowCount - 1
 
-	SetDimLabels(keyWave, settingsHistory)
+	SetDimensionLabels(keyWave, settingsHistory)
 	
 	// since we have now de-coupled the row number from the sweep number to facilitate the addition of factors from other places besides the amp settings (like the test pulse, for example)
 	// we may now have "open" spaces in the settings history.  Because of this we can't just compare the [rowIndex] values against the [rowIndex-1] values.  We have to search back through 
@@ -512,7 +512,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 		endfor
 	endfor
 
-	SetDimLabels(textDocKeyWave, textDocWave)
+	SetDimensionLabels(textDocKeyWave, textDocWave)
 End
 
 //======================================================================================
