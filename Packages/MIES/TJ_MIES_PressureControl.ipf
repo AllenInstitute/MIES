@@ -828,7 +828,7 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 	// apply calibration constants
 	CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%PosCalConst]
 
-	if((PressureCom) < 10 && PressureCom > 0)
+	if((CalibratedPressureCom) < 10 && CalibratedPressureCom > 0)
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
 		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * BITS_PER_VOLT)
 		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
