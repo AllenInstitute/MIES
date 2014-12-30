@@ -28,11 +28,6 @@ static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
 Constant        		SAMPLE_INT_MICRO             				= 5
-
-static Constant 		HEADSTAGE_0_P_OFFSET 				= 0.135 // contstants are not a good way to handle calibration because it will fail with multiple DA_Ephys panels. - Should probably add a calibration column to the pressure data wave
-static Constant 		HEADSTAGE_1_P_OFFSET 				= 0.04
-static Constant 		HEADSTAGE_6_P_OFFSET 				= 0.096
-static Constant 		HEADSTAGE_7_P_OFFSET 				= 0.223
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -426,7 +421,15 @@ Function P_SetPressure(panelTitle, headStage, psi)
 	string 	panelTitle
 	variable 	headStage, psi
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	P_PressureCommand(panelTitle, PressureDataWv[headStage][%DAC_DevID], PressureDataWv[headStage][%DAC], PressureDataWv[headStage][%ADC], psi, PressureDataWv[headStage][%DAC_Gain])
+	variable calibratedCommand
+	// add calibration constant
+	if(psi && isFinite(psi))
+		calibratedCommand = psi + PressureDataWv[headStage][%PosCalConst]
+	else
+		calibratedCommand = psi + PressureDataWv[headStage][%NegCalConst]
+	endif
+	print calibratedcommand, "on headstage:", headStage	
+	P_PressureCommand(panelTitle, PressureDataWv[headStage][%DAC_DevID], PressureDataWv[headStage][%DAC], PressureDataWv[headStage][%ADC], calibratedCommand, PressureDataWv[headStage][%DAC_Gain])
 	SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f")
 	return 	psi
 End
@@ -438,7 +441,7 @@ Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_Scal
 	variable 	DAC, ADC 				// the DA channel that the pressure regulator recieves its command voltage from
 	variable 	psi 					// the command pressure in pounds per square inch
 	variable 	DA_scaleFactor		// number of volts per psi for the command
-
+	
 	psi /= DA_scaleFactor
 	// psi offset: 0V = -10 psi, 5V = 0 psi, 10V = 10 psi
 	psi += 5
@@ -481,7 +484,7 @@ End
 /// @brief Updates the TTL channel associated with headStage while maintaining existing channel states
 ///
 /// 	When setting TTLs, all channels are set at once. To keep existing TTL state on some channels, active state must be known.
-/// 	This funcition queries the hardware to determine the active state. This requires the TTL out to be looped back to the TTL in on the ITC DAC.
+/// 	This funcition queries the hardware to determine the active state.*****This requires the TTL out to be looped back to the TTL in on the ITC DAC.*****
 Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 	string 	panelTitle
 	variable 	headStage
@@ -575,11 +578,6 @@ Function P_UpdatePressureDataStorageWv(panelTitle)
 	PressureDataWv[headStageNo][%TTL]  				= GetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_TTL")
 	PressureDataWv[][%PSI_air]   						= GetSetVariable			(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution] 					= GetSetVariable			(panelTitle, "setvar_Settings_InBathP")
-	PressureDataWv[0][%PSI_solution] 				+= HEADSTAGE_0_P_OFFSET
-	PressureDataWv[1][%PSI_solution] 				+= HEADSTAGE_1_P_OFFSET
-	PressureDataWv[6][%PSI_solution] 				+= HEADSTAGE_6_P_OFFSET
-	PressureDataWv[7][%PSI_solution] 				+= HEADSTAGE_7_P_OFFSET
-	
 	PressureDataWv[][%PSI_slice] 					= GetSetVariable			(panelTitle, "setvar_Settings_InSliceP")
 	PressureDataWv[][%PSI_nearCell] 					= GetSetVariable			(panelTitle, "setvar_Settings_NearCellP")
 	PressureDataWv[][%PSI_SealInitial] 				= GetSetVariable			(panelTitle, "setvar_Settings_SealStartP")
@@ -783,16 +781,20 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 	variable 	lastPressureCom		= pressureDataWv[Headstage][%LastPressureCommand]
 	variable 	DAGain				= pressureDataWv[Headstage][%DAC_Gain]
 	variable 	PressureCom
+	variable 	CalibratedPressureCom
 
 	if(lastPressureCom > MIN_NEG_PRESSURE_PULSE)
 		PressureCom = lastPressureCom - NEG_PRESSURE_PULSE_INCREMENT + MIN_NEG_PRESSURE_PULSE
 	else
 		PressureCom = lastPressureCom - NEG_PRESSURE_PULSE_INCREMENT
 	endif
+	
+	// apply calibration constants
+	CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%NegCalConst]
 
-	if((PressureCom) > -10)
+	if((CalibratedPressureCom) > -10)
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (PressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (CalibratedPressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]	= pressureDataWv[headStage][%DAC]
@@ -801,10 +803,10 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 		print "pulse amp",(PressureCom)
 	else
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (-2 / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
 
-		pressureDataWv[Headstage][%LastPressureCommand] =  - 2
-		print "pulse amp", -2
+		pressureDataWv[Headstage][%LastPressureCommand] =  MIN_NEG_PRESSURE_PULSE
+		print "pulse amp", MIN_NEG_PRESSURE_PULSE
 	endif
 End
 
@@ -820,12 +822,15 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 	variable 	lastPressureCom		= pressureDataWv[Headstage][%LastPressureCommand]
 	variable 	DAGain				= pressureDataWv[Headstage][%DAC_Gain]
 	variable 	PressureCom
-
+	variable 	CalibratedPressureCom
+	
 	PressureCom = lastPressureCom + POS_PRESSURE_PULSE_INCREMENT
+	// apply calibration constants
+	CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%PosCalConst]
 
 	if((PressureCom) < 10 && PressureCom > 0)
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((((PressureCom) / DAGain) + PRESSURE_OFFSET) * BITS_PER_VOLT)
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * BITS_PER_VOLT)
 		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]											= pressureDataWv[headStage][%DAC]
@@ -834,7 +839,7 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 		print "pulse amp",(PressureCom)
 	else
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (0.1 / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
 
 		pressureDataWv[Headstage][%LastPressureCommand] =  0.1
 		print "pulse amp", 0.1

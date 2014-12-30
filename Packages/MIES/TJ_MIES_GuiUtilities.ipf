@@ -420,6 +420,7 @@ End
 /// @param ctrl	name of the control
 Function GetTabID(win, ctrl)
 	string win, ctrl
+	
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	return V_value
