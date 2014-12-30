@@ -641,10 +641,10 @@ Function/Wave GetTPStorage(panelTitle)
 		return wv
 	endif
 
-	Make/N=(128, NUM_HEADSTAGES, 8) dfr:TPStorage/Wave=wv
+	Make/N=(128, NUM_AD_CHANNELS, 8) dfr:TPStorage/Wave=wv
 	wv = NaN
 
-	SetDimLabel COLS,  -1, HeadStage            , wv
+	SetDimLabel COLS,  -1, ADChannel            , wv
 
 	SetDimLabel LAYERS, 0, Vm                   , wv
 	SetDimLabel LAYERS, 1, PeakResistance       , wv

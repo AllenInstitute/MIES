@@ -480,7 +480,8 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 
 	endif
 
-	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, NoOfActiveDA)
+	variable numADCs = columns
+	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
 //=============================================================================================
@@ -498,20 +499,20 @@ static Constant MAX_VALID_RESISTANCE = 50000
 /// When the TP is initiated by any method, the TP storageWave should be empty
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
-Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, ADchanCount)
+Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	string 	panelTitle
 	wave 	BaselineSSAvg, InstResistance, SSResistance
-	variable ADchanCount
+	variable numADCs
 
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	variable now   = ticks * TICKS_TO_SECONDS
 	variable needsUpdate, numCols
 
-	ASSERT(ADchanCount, "Can not proceed with zero active headstages")
+	ASSERT(numADCs, "Can not proceed with zero ADCs")
 
 	if(!count)
-		Redimension/N=(-1, ADchanCount, -1, -1) TPStorage
+		Redimension/N=(-1, numADCs, -1, -1) TPStorage
 		TPStorage = NaN
 		// time of the first sweep
 		TPStorage[0][][%TimeInSeconds] = now
@@ -525,14 +526,6 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 	if(needsUpdate)
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
-		numCols = DimSize(TPStorage, COLS)
-		// the columns of the TPStorage wave and the right-hand side waves of the below assignments have to match only for column counts
-		// greater than 1. This avoids false error reports with 1D waves vs 2D waves with 0 and 1 column.
-		if( numCols > 1 && ( numCols != DimSize(BaselineSSAvg, COLS) || numCols != DimSize(InstResistance, COLS) || numCols != DimSize(SSResistance, COLS) ))
-			printf "BUG! The column count of TPStorage (%d), BaselineSSAvg (%d), InstResistance (%d), SSResistance (%d) do not match\r", numCols, DimSize(BaselineSSAvg, COLS), DimSize(InstResistance, COLS), DimSize(SSResistance, COLS)
-			return NaN
-		endif
-
 		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
 		TPStorage[count][][%PeakResistance]        = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
 		TPStorage[count][][%SteadyStateResistance] = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
@@ -541,7 +534,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, AD
 		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
-		TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, count, samplingInterval, fittingRange)
+		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
 		P_PressureControl(panelTitle) // Call pressure functions
 	endif
 End
@@ -550,28 +543,27 @@ End
 /// over a user defined window (in seconds)
 ///
 /// @param panelTitle       locked device string
-/// @param ADChanCount      the number of columns that will require slope analysis
 /// @param TPStorage        test pulse storage wave
 /// @param endRow           last valid row index in TPStorage
 /// @param samplingInterval approximate time duration in seconds between data points
 /// @param fittingRange     time duration to use for fitting
-Function TP_AnalyzeTP(panelTitle, ADChanCount, TPStorage, endRow, samplingInterval, fittingRange)
+Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
 	string panelTitle
-	variable ADChanCount
 	Wave/Z TPStorage
 	variable endRow, samplingInterval, fittingRange
-	
-	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
+
+	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode, numADCs
 
 	startRow = endRow - ceil(fittingRange / samplingInterval)
-	
-	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS) || ADChanCount > DimSize(TPStorage, COLS))
+
+	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS))
 		return NaN
 	endif
 
 	V_FitOptions = 4
 
-	for(i = 0; i < ADChanCount; i += 1)
+	numADCs = DimSize(TPStorage, COLS)
+	for(i = 0; i < numADCS; i += 1)
 		try
 			V_FitError  = 0
 			V_AbortCode = 0
