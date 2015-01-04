@@ -50,7 +50,7 @@ End
 Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
-	variable latest
+	variable latest, count
 	string graph
 
 	graph = SCOPE_GetGraph(panelTitle)
@@ -58,8 +58,8 @@ Function SCOPE_UpdateGraph(panelTitle)
 	GetAxis/W=$graph/Q top
 	if(!V_flag) // axis exists in graph
 		Wave TPStorage = GetTPStorage(panelTitle)
-		variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
-		latest = count > 0 ? TPStorage[count - 1][0][%DeltaTimeInSeconds] : 0
+		count  = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+		latest = DimOffset(TPStorage, ROWS) + count * DimDelta(TPStorage, ROWS)
 
 		if(latest >= V_max)
 			SetAxis/W=$graph top, latest -  0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE, latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE

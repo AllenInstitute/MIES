@@ -473,11 +473,14 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
-//=============================================================================================
 /// Sampling interval in seconds
 Constant samplingInterval = 0.2
+
 /// Fitting range in seconds
-Constant fittingRange     = 5
+Constant fittingRange = 5
+
+/// Interval in steps of samplingInterval for recalculating the time axis
+Constant dimensionRescalingInterval = 100
 
 /// Units MOhm
 static Constant MAX_VALID_RESISTANCE = 50000
@@ -493,10 +496,12 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 	wave 	BaselineSSAvg, InstResistance, SSResistance
 	variable numADCs
 
+	variable needsUpdate, delta, numCols
+
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	variable now   = ticks * TICKS_TO_SECONDS
-	variable needsUpdate, numCols
+	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 
 	ASSERT(numADCs, "Can not proceed with zero ADCs")
 
@@ -506,7 +511,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 		// time of the first sweep
 		TPStorage[0][][%TimeInSeconds] = now
 		needsUpdate = 1
-		// % here is used to index the wave using dimension labels, see also
+		// % is used here to index the wave using dimension labels, see also
 		// DisplayHelpTopic "Example: Wave Assignment and Indexing Using Labels"
 	elseif((now - TPStorage[count - 1][0][%TimeInSeconds]) > samplingInterval)
 		needsUpdate = 1
@@ -525,8 +530,28 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
 		P_PressureControl(panelTitle) // Call pressure functions
+
+		// not all rows have the unit seconds, but with
+		// setting up a seconds scale, commands like
+		// Display TPStorage[][0][%PeakResistance]
+		// show the correct units for the bottom axis
+		if((now - lastRescaling) > dimensionRescalingInterval * samplingInterval)
+
+			if(!count) // initial estimate
+				delta = samplingInterval
+			else
+				delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
+			endif
+
+			DEBUGPRINT("Old delta: ", var=DimDelta(TPStorage, ROWS))
+			SetScale/P x, 0.0, delta, "s", TPStorage
+			DEBUGPRINT("New delta: ", var=delta)
+
+			SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now)
+		endif
 	endif
 End
+
 //=============================================================================================
 /// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
 /// over a user defined window (in seconds)
@@ -606,6 +631,7 @@ Function TP_ResetTPStorage(panelTitle)
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
 		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, 0)
 		EnsureSmallEnoughWave(TPStorage)
 		TPStorage = NaN
 	endif
