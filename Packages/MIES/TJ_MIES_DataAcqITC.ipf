@@ -24,7 +24,6 @@ Function ITC_DataAcq(panelTitle)
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	make /O /I /N = 4 $ResultsWavePath 
-	doupdate
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
@@ -58,8 +57,7 @@ Function ITC_DataAcq(panelTitle)
 		Execute cmd
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-		itcdatawave[0][0] += 0 //runs arithmatic on data wave to force onscreen update
-		doupdate
+		itcdatawave[0][0] += 0 // Force onscreen update
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0" //as long as this command is within the do-while loop the number of cycles can be repeated
 		Execute cmd
 		i += 1
@@ -100,7 +98,6 @@ Function ITC_BkrdDataAcq(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
-	DoUpdate
 
 	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
 	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -148,9 +145,8 @@ Function ITC_StopDataAcq()
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
 
-	itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
-	doupdate
-	
+	itcdatawave[0][0] += 0 // Force onscreen update
+
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	Execute cmd	
 	
@@ -203,7 +199,6 @@ Function ITC_FIFOMonitor(s)
 	Execute cmd	
 
 	ITCDataWave[0][0] += 0 //forces on screen update
-	DoUpdate/W=$SCOPE_GetGraph(panelTitleG)
 
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		print "stopped data acq"
@@ -285,7 +280,6 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", panelTitle)
 
-	DoUpdate
 	string  ITCDataWavePath = WavePath + ":ITCDataWave"
 	string  ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 
@@ -513,6 +507,7 @@ Function ITC_StartTestPulse(panelTitle)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
+	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCDataWavePath = WavePath + ":ITCDataWave"
@@ -526,7 +521,6 @@ Function ITC_StartTestPulse(panelTitle)
 	string Keyboard
 
 	make /O /I /N = 4 $ResultsWavePath 
-	doupdate
 
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
 	execute cmd
@@ -550,7 +544,7 @@ Function ITC_StartTestPulse(panelTitle)
 		DM_CreateScaleTPHoldingWave(panelTitle)
 		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle, WavePath + ":TestPulse") 
-		doupdate
+		DoUpdate/W=$oscilloscopeSubwindow
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
 
