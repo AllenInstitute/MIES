@@ -445,6 +445,9 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		// I = U / R
 		current = ( targetVoltage - setVoltage ) / resistance
 		DEBUGPRINT("current=", var=current)
+		// only use part of the calculated current, as BaselineSSAvg holds
+		// an overestimate for small buffer sizes
+		current *= 0.70
 
 		actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
 		DEBUGPRINT("actualCurrent=", var=actualCurrent)
@@ -455,9 +458,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		current += actualCurrent
-		// only use 80% of the calculated current, as BaselineSSAvg holds
-		// an overestimate for small buffer sizes
-		current *= 0.80
 
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
