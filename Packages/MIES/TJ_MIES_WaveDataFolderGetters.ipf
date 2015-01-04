@@ -642,7 +642,7 @@ Function/Wave GetTPStorage(panelTitle)
 		return wv
 	endif
 
-	Make/N=(128, NUM_AD_CHANNELS, 8) dfr:TPStorage/Wave=wv
+	Make/N=(128, NUM_AD_CHANNELS, 9) dfr:TPStorage/Wave=wv
 	wv = NaN
 
 	SetDimLabel COLS,  -1, ADChannel            , wv
@@ -655,6 +655,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 5, Vm_Slope             , wv
 	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
 	SetDimLabel LAYERS, 7, Rss_Slope            , wv
+	SetDimLabel LAYERS, 8, Pressure             , wv
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
@@ -1866,7 +1867,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		return PressureData
 	endif
 
-	Make/N=(8,37,1) dfr:PressureData/Wave=PressureData
+	Make/N=(8,38,1) dfr:PressureData/Wave=PressureData
 
 	PressureData 	= nan
 	PressureData[][0]	= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
@@ -1896,7 +1897,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 18, cellXaxis,						PressureData // cell position data
 	SetDimLabel COLS, 19, cellYaxis,						PressureData // cell position data
 	SetDimLabel COLS, 20, PlaceHolderZero,				PressureData // used to store pressure method currently being used on cell
-	SetDimLabel COLS, 21, PlaceHolderOne,				PressureData // numbe of times current state has been cycled through
+	SetDimLabel COLS, 21, RealTimePressure,				PressureData // // stores the last pressure pulse amplitude in psi. This is used to determine the amplitude of the next pressure pulse.
 	SetDimLabel COLS, 22, LastResistanceValue,			PressureData // last steady state resistance value
 	SetDimLabel COLS, 23, PeakResistanceSlope,			PressureData // Slope of the peak TP resistance value over the last 5 seconds
 	SetDimLabel COLS, 24, ActiveTP,						PressureData // Indicates if the TP is active on the headStage
@@ -1916,7 +1917,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 34, TimePeakRcheck,				PressureData
 	SetDimLabel COLS, 35, PosCalConst,					PressureData
 	SetDimLabel COLS, 36, NegCalConst,					PressureData
-
+	
 	SetDimLabel ROWS, 0, Headstage_0, PressureData
 	SetDimLabel ROWS, 1, Headstage_1, PressureData
 	SetDimLabel ROWS, 2, Headstage_2, PressureData

@@ -2,7 +2,7 @@
 
 /// @file TJ_MIES_PressureControl.ipf
 /// @brief Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette.
-/// @todo TPbackground can crash while operating pressure regulators if called in the middel of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
+/// @todo TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
 
 ///@name Constants Used by pressure control
 /// @{
@@ -27,25 +27,31 @@ static Constant 		SAMPLE_INT_MILLI             				= 0.005
 static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
+static Constant		MAX_REGULATOR_PRESSURE			= 10
+static Constant		MIN_REGULATOR_PRESSURE			= -10
 Constant        		SAMPLE_INT_MICRO             				= 5
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
 ///
-/// This function gets called every 500 ms while the TP is running. It also gets called when the approach button is pushed.
+/// This function gets called by TP_RecordTP. It also gets called when the approach button is pushed.
 /// A key point is that data acquisition used to run pressure pulses cannot be active if the TP is inactive.
 Function P_PressureControl(panelTitle)
 	string 	panelTitle
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable 	headStage
+	Wave TPStorage = GetTPStorage(panelTitle)
+	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+	variable 	headStage, i
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
+			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
+			TPStorage[count - 1][i][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] /// @todo Right now the headStage to AD channel relationship is assumed to be in parallel ascending order. The AD channel - column assocation of the TPStorage should actually be determined before assigning the pressure value to a column.
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
 						P_MethodAtmospheric(panelTitle, headstage)
 					break
 				case P_METHOD_0_APPROACH:
-					P_MethodApproach(panelTitle, headStage)
+						P_MethodApproach(panelTitle, headStage)
 					break
 				case P_METHOD_1_SEAL:
 					if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
@@ -63,6 +69,7 @@ Function P_PressureControl(panelTitle)
 					endif
 					break
 			endswitch
+			i += 1
 		endif
 	endfor
 End
@@ -74,6 +81,7 @@ Function P_MethodAtmospheric(panelTitle, headstage)
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	P_UpdateTTLstate(panelTitle, headStage, 0)
 	PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, 0)
+	PressureDataWv[headStage][%RealTimePressure] = P_SetPressure(panelTitle, headStage, 0)
 End
 
 /// @brief Applies approach pressures
@@ -81,11 +89,22 @@ Function P_MethodApproach(panelTitle, headStage)
 	string 	panelTitle
 	variable 	headStage
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable 	targetP = PressureDataWv[headStage][%PSI_solution] 	// Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
+	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+	variable 	targetP = PressureDataWv[headStage][%PSI_solution] // Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
 	variable	ONorOFF = 1
+	
+	P_UpdateTTLstate(panelTitle, headStage, ONorOFF) // Open the TTL - outside of if statement below because TTL will only update if the state is incorrect.
 
-	P_UpdateTTLstate(panelTitle, headStage, ONorOFF) // Open the TTL
-	PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
+	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
+		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
+		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
+		// Turn off holding
+		AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
+		AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 0
+		if(headStage  == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
+			AI_UpdateAmpView(panelTitle, headStage)
+		endif
+	endif	
 End
 
 /// @brief Applies seal methods
@@ -98,7 +117,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	variable 	lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
 	variable 	timeInSec 				= ticks / 60
 	variable 	ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
-
+	
 	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
@@ -120,11 +139,7 @@ Function P_MethodSeal(panelTitle, headStage)
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 	= 0 // reset the time of last slope R check
 
 		// apply holding potential of -70 mV
-		SetCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", 1)
-		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage)
-		SetSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", -70)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage)
-
+		P_UpdateVcom(panelTitle, -70, headStage)
 		print "Seal on head stage:", headstage
 	else // no seal, start, hold, or increment negative pressure
 		// if there is no neg pressure, apply starting pressure.
@@ -138,15 +153,15 @@ Function P_MethodSeal(panelTitle, headStage)
 		// print ElapsedTimeInSeconds
 		if(ElapsedTimeInSeconds > 15) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
 			RSlope = PressureDataWv[headStage][%PeakResistanceSlope]
-			print "slope", rslope, "thres", RSlopeThreshold
+			print "slope:", rslope, "thres:", RSlopeThreshold
 			if(RSlope < RSlopeThreshold) // if the resistance is not going up quickly enough increase the negative pressure
 				// what is the pressure
 				//pressure = P_GetPressure(panelTitle, headStage)
 				if(pressure > (0.98 *PressureDataWv[headStage][%PSI_SealMax])) // is the pressure beign applied less than the maximum allowed?
 					print "resistance is not going up fast enough"
-					print "pressure =", pressure - 0.1
+					print "updated seal pressure =", pressure - 0.1
 					PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, (pressure - 0.1)) // increase the negative pressure by 0.1 psi
-
+					PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 				else // max neg pressure has been reached and resistance has stabilized
 					print "pressure is at max neg value"
 					// disrupt plateau
@@ -158,7 +173,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	endif
 End
 
-/// @brief Applies break-in methods
+/// @brief Applies break-in method
 Function P_MethodBreakIn(panelTitle, headStage)
 	string 	panelTitle
 	variable 	headStage
@@ -189,6 +204,7 @@ Function P_MethodBreakIn(panelTitle, headStage)
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 		print "Break in on head stage:", headstage,"of", panelTitle
 	else // still need to break - in
+		 PressureDataWv[headStage][%RealTimePressure] 		= 0
 		 if(ElapsedTimeInSeconds > 2.5)
 		 	print "applying negative pressure pulse!"
 		 	P_NegPressurePulse(panelTitle, headStage)
@@ -197,7 +213,7 @@ Function P_MethodBreakIn(panelTitle, headStage)
 	endif
 End
 
-/// @brief Applies pipette clearing methods
+/// @brief Applies pipette clearing method
 Function P_MethodClear(panelTitle, headStage)
 	string 	panelTitle
 	variable 	headStage
@@ -215,6 +231,7 @@ Function P_MethodClear(panelTitle, headStage)
 	endif
 
 	if(PressureDataWv[headStage][%peakR] > (0.9 * PressureDataWv[headStage][%LastPeakR]))
+		PressureDataWv[headStage][%RealTimePressure] = 0
 		if(ElapsedTimeInSeconds > 2.5)
 			print "applying positive pressure pulse!"
 		 	P_PosPressurePulse(panelTitle, headStage)
@@ -265,12 +282,19 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	string 	panelTitle
 	variable 	vCom
 	variable 	headStage
-	 
-	// make sure holding is enabled
-	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
-	
+	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+
 	// apply holding
 	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, vCom * 1e-3)
+	AmpStorageWave[%HoldingPotential][0][headStage] = vCom
+	
+	// make sure holding is enabled
+	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
+	AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 1
+
+	if(headStage  == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
+		AI_UpdateAmpView(panelTitle, headStage)
+	endif
 End
 
 /// @brief Opens ITC devices used for pressure regulation
@@ -423,12 +447,14 @@ Function P_SetPressure(panelTitle, headStage, psi)
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable calibratedCommand
 	// add calibration constant
-	if(psi && isFinite(psi))
+	if(PSI && isFinite(PressureDataWv[headStage][%PosCalConst]))
 		calibratedCommand = psi + PressureDataWv[headStage][%PosCalConst]
-	else
+	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
 		calibratedCommand = psi + PressureDataWv[headStage][%NegCalConst]
+	else
+		calibratedCommand = psi
 	endif
-	print calibratedcommand, "on headstage:", headStage	
+//	print calibratedcommand, "on headstage:", headStage	
 	P_PressureCommand(panelTitle, PressureDataWv[headStage][%DAC_DevID], PressureDataWv[headStage][%DAC], PressureDataWv[headStage][%ADC], calibratedCommand, PressureDataWv[headStage][%DAC_Gain])
 	SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f")
 	return 	psi
@@ -790,21 +816,27 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 	endif
 	
 	// apply calibration constants
-	CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%NegCalConst]
+	if(isFinite(PressureDataWv[headStage][%NegCalConst]))
+		CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%NegCalConst]
+	endif
 
-	if((CalibratedPressureCom) > -10)
+	if((CalibratedPressureCom) > MIN_REGULATOR_PRESSURE)
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
 		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (CalibratedPressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]	= pressureDataWv[headStage][%DAC]
-
-		pressureDataWv[Headstage][%LastPressureCommand] =  (PressureCom)
+		pressureDataWv[Headstage][%RealTimePressure] =  PressureCom
+		pressureDataWv[Headstage][%LastPressureCommand] =  PressureCom
 		print "pulse amp",(PressureCom)
 	else
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
-
+		if(isFinite(PressureDataWv[headStage][%NegCalConst]))
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		else
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (MIN_NEG_PRESSURE_PULSE / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		endif
+		pressureDataWv[Headstage][%RealTimePressure] = MIN_NEG_PRESSURE_PULSE
 		pressureDataWv[Headstage][%LastPressureCommand] =  MIN_NEG_PRESSURE_PULSE
 		print "pulse amp", MIN_NEG_PRESSURE_PULSE
 	endif
@@ -826,22 +858,31 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 	
 	PressureCom = lastPressureCom + POS_PRESSURE_PULSE_INCREMENT
 	// apply calibration constants
-	CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%PosCalConst]
-
-	if((CalibratedPressureCom) < 10 && CalibratedPressureCom > 0)
+	if(isFinite(PressureDataWv[headStage][%PosCalConst]))
+		CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%PosCalConst]
+	else
+		CalibratedPressureCom = PressureCom
+	endif
+	
+	if((CalibratedPressureCom) < MAX_REGULATOR_PRESSURE && CalibratedPressureCom > 0) 
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
 		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * BITS_PER_VOLT)
 		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]											= pressureDataWv[headStage][%DAC]
-
-		pressureDataWv[Headstage][%LastPressureCommand] =  (PressureCom)
+		
+		pressureDataWv[Headstage][%RealTimePressure] = PressureCom
+		pressureDataWv[Headstage][%LastPressureCommand] =  PressureCom
 		print "pulse amp",(PressureCom)
 	else
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
-
+		if(isFinite(PressureDataWv[headStage][%PosCalConst]))
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		else
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (0.1 / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		endif
 		pressureDataWv[Headstage][%LastPressureCommand] =  0.1
+		pressureDataWv[Headstage][%RealTimePressure] = 0.1
 		print "pulse amp", 0.1
 	endif
 End
@@ -860,7 +901,7 @@ Function P_DAforManPpulse(panelTitle, Headstage)
 	variable 	PressureCom		= pressureDataWv[headStage][%ManPPPressure]
 	variable 	PPEndPoint			= PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / 0.005)
 
-	if((PressureCom) < 10 && PressureCom > -10)
+	if((PressureCom) < MAX_REGULATOR_PRESSURE && PressureCom > MIN_REGULATOR_PRESSURE)
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
 		ITCData[PRESSURE_PULSE_STARTpt, PPEndPoint][%DA] 	= (PressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage

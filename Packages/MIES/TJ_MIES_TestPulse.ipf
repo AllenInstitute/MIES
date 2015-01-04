@@ -364,6 +364,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	sprintf 	StringPath, "%s:ClampModeString" InputDataPath
 	SVAR 	ClampModeString = $StringPath
 //	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
+// 	TPwave has the AD columns in the order of active AD channels, not the order of active headstages
 	duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, 	BaselineSS
 	duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, 			TPSS
 	duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
@@ -376,7 +377,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 	AvgBaselineSS /= dimsize(BaselineSS, 0)
 	sprintf StringPath, "%s:BaselineSSAvg" InputDataPath
-	duplicate /o / r = [][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS $StringPath
+	duplicate /o / r = [][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS $StringPath // duplicate only the AD columns - this would error if a TTL was ever active with the TP, at present, however, they should never be coactive
 	wave 	BaselineSSAvg = $StringPath
 //	calculate the difference between the steady state and the baseline
 	duplicate /free AvgTPSS, AvgDeltaSS
@@ -523,12 +524,12 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 	if(needsUpdate)
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
-		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]        = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%SteadyStateResistance] = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%TimeInSeconds]         = now
+		TPStorage[count][][%Vm]                    			= BaselineSSAvg[0][q][0]
+		TPStorage[count][][%PeakResistance]        		= min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance] 	= min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%TimeInSeconds]         		= now
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
-		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+		TPStorage[count][][%DeltaTimeInSeconds]    	= count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
