@@ -1120,7 +1120,7 @@ Window da_ephys() : Panel
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_ChanlAssign_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_ChanlAssign_IC,frame=0
-	Button button_Settings_UpdateAmpStatus,pos={262,358},size={150,20},disable=1,proc=DAP_FindConnectedAmps,title="Query connected Amp(s)"
+	Button button_Settings_UpdateAmpStatus,pos={262,358},size={150,20},disable=1,proc=DAP_ButtonCtrlFindConnectedAmps,title="Query connected Amp(s)"
 	Button button_Settings_UpdateAmpStatus,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateAmpStatus,userdata(tabcontrol)=  "ADC"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HL!!#B8!!#@,!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
