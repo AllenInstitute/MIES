@@ -243,6 +243,28 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	endif
 End
 
+static Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
+
+/// @brief Resize the number of rows to maximumSize if it is larger than that
+///
+/// @param wv          wave to redimension
+/// @param maximumSize maximum number of the rows, defaults to MAXIMUM_SIZE
+Function EnsureSmallEnoughWave(wv, [maximumSize])
+	Wave wv
+	variable maximumSize
+
+	if(ParamIsDefault(maximumSize))
+		maximumSize = MAXIMUM_WAVE_SIZE
+	endif
+
+	Make/FREE/I/N=(MAX_DIMENSION_COUNT) oldSizes
+	oldSizes[] = DimSize(wv, p)
+
+	if(oldSizes[ROWS] > maximumSize)
+		Redimension/N=(maximumSize, -1, -1, -1) wv
+	endif
+End
+
 /// @brief Convert Bytes to MiBs, a mebibyte being 2^20.
 Function ConvertFromBytesToMiB(var)
 	variable var

@@ -606,6 +606,7 @@ Function TP_ResetTPStorage(panelTitle)
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
 		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+		EnsureSmallEnoughWave(TPStorage)
 		TPStorage = NaN
 	endif
 End
