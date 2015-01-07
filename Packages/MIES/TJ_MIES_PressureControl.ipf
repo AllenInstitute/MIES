@@ -45,7 +45,10 @@ Function P_PressureControl(panelTitle)
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
 			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
-			TPStorage[count - 1][i][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] /// @todo Right now the headStage to AD channel relationship is assumed to be in parallel ascending order. The AD channel - column assocation of the TPStorage should actually be determined before assigning the pressure value to a column.
+			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) // this is slow!
+				TPStorage[count - 1][i][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] /// @todo Right now the headStage to AD channel relationship is assumed to be in parallel ascending order. The AD channel - column assocation of the TPStorage should actually be determined before assigning the pressure value to a column.
+				i += 1
+			endif
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
 						P_MethodAtmospheric(panelTitle, headstage)
@@ -69,7 +72,7 @@ Function P_PressureControl(panelTitle)
 					endif
 					break
 			endswitch
-			i += 1
+			
 		endif
 	endfor
 End
@@ -147,6 +150,7 @@ Function P_MethodSeal(panelTitle, headStage)
 			PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, PressureDataWv[headStage][%PSI_SealInitial]) // column 26 is the last pressure command, column 13 is the starting seal pressure
 			pressure = PressureDataWv[headStage][%PSI_SealInitial]
 			PressureDataWv[headStage][%LastPressureCommand] = PressureDataWv[headStage][%PSI_SealInitial]
+			PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 			print "starting seal"
 		endif
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
