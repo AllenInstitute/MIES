@@ -358,6 +358,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	variable 	TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
 	variable 	TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
 	variable 	TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+	variable 	columns
 	sprintf 	StringPath, "%s:NoOfActiveDA" InputDataPath
 	NVAR 	NoOfActiveDA = $StringPath
 	sprintf 	StringPath, "%s:ClampModeString" InputDataPath
@@ -437,11 +438,13 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 		i += 1
 	while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
 
+	/// @todo very crude hack which needs to go
+	columns = DimSize(TPSS, 1) - NoOfActiveDA
+	if(!columns)
+		columns = 1
+	endif
+
 	if(RowsInBufferWaves > 1)
-		variable columns = ((dimsize(TPSS,1)) - NoOfActiveDA)
-		if(!columns)
-			columns = 1
-		endif
 		sprintf stringPath,  "%s:TPBaselineBuffer" InputDataPath
 		make /o /n = (RowsInBufferWaves, columns) $stringPath // ** does not clear TP buffer wave each time TP is started by the user
 		wave /z TPBaselineBuffer = $stringPath // buffer wave for baseline avg - the first row will hold the value of the most recent TP, the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
