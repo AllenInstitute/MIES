@@ -4058,7 +4058,7 @@ Function DAP_FindConnectedAmps(panelTitle)
 	Make/O/N=0 W_TelegraphServers
 	AxonTelegraphFindServers
 
-	MDSort(W_TelegraphServers, 0)
+	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
 
 	// new mcc interface settings wave
 	Make/O/N=(0,0)/I W_MultiClamps
