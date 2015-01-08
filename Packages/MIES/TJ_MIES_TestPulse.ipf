@@ -322,7 +322,6 @@ End
 // The function TPDelta is called by the TP dataaquistion functions
 // It updates a wave in the Test pulse folder for the device
 // The wave contains the steady state difference between the baseline and the TP response
-// In order to allow TP_Delta to be threadsafe it uses global variables (controlinfo is not threadsafe).
 Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
 	string 	panelTitle
 	string 	InputDataPath
@@ -473,6 +472,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 End
+
 /// Sampling interval in seconds
 Constant samplingInterval = 0.2
 
