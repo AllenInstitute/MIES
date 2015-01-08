@@ -671,7 +671,7 @@ End
 /// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
-	return HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
+	return GetDevicePathAsString(panelTitle) + ":TestPulse"
 End
 
 /// @brief Return a datafolder reference to the device type folder
