@@ -1,22 +1,11 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Constant DATA_ACQU_TAB_NUM               = 0
-Constant HARDWARE_TAB_NUM                = 6
+static Constant DATA_ACQU_TAB_NUM        = 0
+static Constant HARDWARE_TAB_NUM         = 6
 
-Constant NUM_DA_TTL_CHANNELS             = 8
-Constant NUM_HEADSTAGES                  = 8
-Constant NUM_AD_CHANNELS                 = 16
-Constant NUM_ASYNC_CHANNELS		= 8
-
-StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
-StrConstant ITC1600_FIRST_DEVICE         = "ITC1600_Dev_0"
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
-
-/// @todo replace all literal occurences of these strings
-StrConstant DEVICE_TYPES      = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
-StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...

@@ -29,7 +29,6 @@ static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
 static Constant		MAX_REGULATOR_PRESSURE			= 10
 static Constant		MIN_REGULATOR_PRESSURE			= -10
-Constant        		SAMPLE_INT_MICRO             				= 5
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv

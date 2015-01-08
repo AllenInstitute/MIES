@@ -10,8 +10,6 @@
 /// Wave         |  $dataPath:rateWave        | Holds all rates in kHz for each wave.                                  | GetDownsampleRateWave()
 /// Wave         |  $dataPath:sweepProperties | Used by the list box to show the properties of each sweep              | GetDownsampleListWave()
 
-/// This regular expression matches all sweep waves
-StrConstant DATA_SWEEP_REGEXP = "(?i)^Sweep_[[:digit:]]+$"
 
 static StrConstant checkbox_equalize      = "checkbox_equalize_id"
 static StrConstant checkbox_downsample    = "checkbox_downsample_id"

@@ -11,6 +11,7 @@
 #include "TJ_MIES_AmplifierInteraction"
 #include "TJ_MIES_BackgroundMD"
 #include "TJ_MIES_BackgroundTimerMD"
+#include "TJ_MIES_Constants"
 #include "TJ_MIES_DataAcqITC"
 #include "TJ_MIES_DataAcqMgmt"
 #include "TJ_MIES_DataBrowser"
