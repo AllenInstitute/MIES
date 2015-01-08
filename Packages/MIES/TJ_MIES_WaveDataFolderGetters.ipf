@@ -223,15 +223,13 @@ End
 /// @{
 
 /// @brief Return the datafolder reference to the lab notebook
-Function/DF GetLabNotebookFolder(panelTitle)
-	string panelTitle
+Function/DF GetLabNotebookFolder()
 
-	return createDFWithAllParents(GetLabNotebookFolderAsString(panelTitle))
+	return createDFWithAllParents(GetLabNotebookFolderAsString())
 End
 
 /// @brief Return the full path to the lab notebook, e.g. root:MIES:LabNoteBook
-Function/S GetLabNotebookFolderAsString(panelTitle)
-	string panelTitle
+Function/S GetLabNotebookFolderAsString()
 
 	return GetMiesPathAsString() + ":LabNoteBook"
 End
@@ -253,7 +251,7 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse the panelTitle")
 
-	return GetLabNotebookFolderAsString(panelTitle) + ":" + deviceType + ":Device" + deviceNumber
+	return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
 End
 
 /// @brief Return the datafolder reference to the device specific settings key
