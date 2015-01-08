@@ -86,7 +86,7 @@ End
 Function/S GetPopupMenuDeviceListWithData()
 
 	variable i, j, k
-	string path, deviceType, deviceNumber, str, yokedList = "", list = ""
+	string path, deviceType, deviceNumber, str, list = ""
 	string follower, followerDeviceIDList, allFollowerDevices = "", deviceString
 
 	string followerDeviceType, followerDeviceNumber
@@ -111,6 +111,7 @@ Function/S GetPopupMenuDeviceListWithData()
 				continue
 			endif
 
+			str = deviceString
 
 			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			if(SVAR_Exists(listOfFollowerDevices))
@@ -130,7 +131,7 @@ Function/S GetPopupMenuDeviceListWithData()
 				endif
 			endif
 
-			if(WhichListItem(str, allFollowerDevices) == -1)
+			if(WhichListItem(deviceString, allFollowerDevices) == -1)
 				list = AddListItem(str, list, ";", inf)
 			endif
 		endfor
