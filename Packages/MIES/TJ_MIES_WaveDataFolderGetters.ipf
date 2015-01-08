@@ -699,10 +699,7 @@ Function/S GetDevicePathAsString(panelTitle)
 
 	string deviceType, deviceNumber
 	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
-		DEBUGPRINT("Invalid/Non-locked paneltitle, falling back to querying the GUI.")
-
-		deviceType   = HSU_GetDeviceType(panelTitle)
-		deviceNumber = HSU_GetDeviceNumber(panelTitle)
+		Abort "Invalid/Non-locked paneltitle"
 	endif
 
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
