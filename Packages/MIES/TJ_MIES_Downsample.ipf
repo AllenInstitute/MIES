@@ -10,6 +10,22 @@
 /// Wave         |  $dataPath:rateWave        | Holds all rates in kHz for each wave.                                  | GetDownsampleRateWave()
 /// Wave         |  $dataPath:sweepProperties | Used by the list box to show the properties of each sweep              | GetDownsampleListWave()
 
+// third party includes
+#include ":ACL_TabUtilities"
+#include ":ACL_UserdataEditor"
+#include ":FixScrolling"
+
+// our includes
+#include ":TJ_MIES_Constants"
+#include ":TJ_MIES_Debugging"
+#include ":TJ_MIES_GlobalStringAndVariableAccess"
+#include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_Utilities"
+#include ":TJ_MIES_WaveDataFolderGetters"
+
+Menu "Mies Panels", dynamic
+	"Open Downsample Panel", /Q, CreateDownsamplePanel()
+End
 
 static StrConstant checkbox_equalize      = "checkbox_equalize_id"
 static StrConstant checkbox_downsample    = "checkbox_downsample_id"

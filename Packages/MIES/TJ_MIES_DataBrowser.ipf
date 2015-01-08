@@ -1,5 +1,23 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+// third party includes
+#include ":ACL_TabUtilities"
+#include ":ACL_UserdataEditor"
+#include ":FixScrolling"
+
+// our includes
+#include ":TJ_MIES_Constants"
+#include ":TJ_MIES_Debugging"
+#include ":TJ_MIES_GlobalStringAndVariableAccess"
+#include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_MiesUtilities"
+#include ":TJ_MIES_Utilities"
+#include ":TJ_MIES_WaveDataFolderGetters"
+
+Menu "Mies Panels", dynamic
+		"Data Browser", /Q, Execute "DataBrowser()"
+End
+
 static Constant GRAPH_DIV_SPACING       = 0.03
 static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
