@@ -155,8 +155,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	endif
 
 	Wave/SDFR=dfr config = GetConfigWave(sweep)
-	string ADChannelList = ITC_GetADCList(config)
-	string DAChannelList = ITC_GetDACList(config)
+	string ADChannelList = GetADCListFromConfig(config)
+	string DAChannelList = GetDACListFromConfig(config)
 	variable NumberOfDAchannels = ItemsInList(DAChannelList)
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
 	// the max allows for uneven number of AD and DA channels
@@ -729,7 +729,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			lbl = LineBreakingIntoParWithMinWidth(lbl)
 
 			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
-			WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
+			WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 			sweepCol   = GetSweepColumn(settingsHistory)
 
@@ -884,7 +884,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 				if(isTimeAxis)
 					ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][sweepCol][0]
 				else // other direction
-					Wave xWave = ED_GetSettingsHistoryDateTime(settingsHistory)
+					Wave xWave = GetSettingsHistoryDateTime(settingsHistory)
 					ReplaceWave/W=$graph/X trace=$trace, xWave
 				endif
 			endfor

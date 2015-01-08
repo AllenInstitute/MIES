@@ -94,7 +94,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	Wave TPStorage = GetTPStorage(panelTitle)
 
 	dataName = NameOfWave(plotData)
-	ADChannelList = ITC_GetADCList(ITCChanConfigWave)
+	ADChannelList = GetADCListFromConfig(ITCChanConfigWave)
 	unitWaveNote = note(ITCChanConfigWave)
 	graph = SCOPE_GetGraph(panelTitle)
 	numADChannels = ItemsInList(ADChannelList)
@@ -108,7 +108,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-	numActiveDACs = ItemsInList(ITC_GetDACList(ITCChanConfigWave))
+	numActiveDACs = ItemsInList(GetDACListFromConfig(ITCChanConfigWave))
 	showResistanceCurve = GetCheckboxState(panelTitle, "check_settings_TP_show_resist")
 
 	for(i = 0; i < numADChannels; i += 1)

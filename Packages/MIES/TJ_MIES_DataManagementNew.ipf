@@ -90,7 +90,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	string ADChannelList   = ITC_GetADCList(ITCChanConfigWave)
+	string ADChannelList   = GetADCListFromConfig(ITCChanConfigWave)
 	variable StartOfADColumns = DC_NoOfChannelsSelected("da", panelTitle)
 	variable gain, i, numEntries, adc
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
@@ -100,7 +100,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		adc = str2num(StringFromList(i, ADChannelList))
 
-		ctrl = IDX_GetChannelControl(panelTitle, adc, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+		ctrl = GetPanelControl(panelTitle, adc, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
@@ -119,12 +119,12 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	DFREF deviceDFR       = GetDevicePath(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave, ITCChanConfigWave
-	string DAChannelList  = ITC_GetDACList(ITCChanConfigWave)
+	string DAChannelList  = GetDACListFromConfig(ITCChanConfigWave)
 
 	numEntries = ItemsInList(DAChannelList)
 	for(i = 0; i < numEntries ; i += 1)
 		dac = str2num(StringFromList(i, DAChannelList))
-		ctrl = IDX_GetChannelControl(panelTitle, dac, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		ctrl = GetPanelControl(panelTitle, dac, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)

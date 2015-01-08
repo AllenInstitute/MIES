@@ -1383,14 +1383,14 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)
 	string ctrlWave, ctrlIndexEnd, list
 
 	for(i=0; i < NUM_DA_TTL_CHANNELS; i+=1)
-		ctrlWave     = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		ctrlIndexEnd = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
 		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
 		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
 
-		ctrlWave     = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		ctrlIndexEnd = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
 		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)

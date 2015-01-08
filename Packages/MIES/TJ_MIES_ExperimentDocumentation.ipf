@@ -28,28 +28,6 @@ Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 End
 //=============================================================================================================
 
-Function/WAVE ED_GetSettingsHistoryDateTime(settingsHistory)
-	WAVE settingsHistory
-
-	DFREF dfr = GetWavesDataFolderDFR(settingsHistory)
-	WAVE/Z/SDFR=dfr settingsHistoryDat
-
-	if(!WaveExists(settingsHistoryDat))
-		Duplicate/R=[0, DimSize(settingsHistory, ROWS)][1][-1][-1] settingsHistory, dfr:settingsHistoryDat/Wave=settingsHistoryDat
-		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
-		Redimension/N=-1 settingsHistoryDat
-		// redimension has the odd behaviour to change a wave with zero rows to one with 1 row and then initializes that point to zero
-		// we need to fix that
-		if(DimSize(settingsHistoryDat, ROWS) == 1)
-			settingsHistoryDat = NaN
-		endif
-		SetScale d, 0, 0, "dat" settingsHistoryDat
-		SetDimLabel ROWS, -1, TimeStamp, settingsHistoryDat
-	endif
-	
-	return settingsHistoryDat
-End
-
 /// @brief Add notation of settings to an experiment DataWave.  This function
 /// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
 ///
@@ -96,7 +74,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		SetDimLabel COLS, 1, TimeStamp, settingsHistory
 	endif
 
-	WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
+	WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
 
 	DFREF keyWaveDFR = GetDevSpecLabNBSettKeyFolder(panelTitle)
 	Wave/T/Z/SDFR=keyWaveDFR keyWave

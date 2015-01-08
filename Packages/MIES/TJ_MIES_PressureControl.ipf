@@ -568,7 +568,7 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	DFREF 	dfr 				= $HSU_DataFullFolderPathString(panelTitle)
 	/// @todo Make wave reference function for ITCChanConfigWave
 	Wave/SDFR = dfr  ITCChanConfigWave
-	string 	ADChannelList = ITC_GetADCList(ITCChanConfigWave)
+	string 	ADChannelList = GetADCListFromConfig(ITCChanConfigWave)
 	variable TPCycleCount = GetNumberFromWaveNote(TPStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent resistance value from TP storage wave
 	variable Row
 	// pull data from TPStorageWave, apply it to headStage using TP_HeadstageUsingADC(panelTitle, AD)

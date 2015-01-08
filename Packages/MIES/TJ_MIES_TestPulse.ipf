@@ -122,7 +122,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z 		ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
-	string /g 		$(TPGlobalPath + ":ADChannelList") 	= ITC_GetADCList(ITCChanConfigWave)
+	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
 	PulseDuration = (v_value) // duration of the TP in ms
@@ -157,7 +157,7 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
 	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z 		ITCChanConfigWave 					= $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
-	string /g 		$(TPGlobalPath + ":ADChannelList") 	= ITC_GetADCList(ITCChanConfigWave)
+	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
 	controlinfo /w 									= $panelTitle SetVar_DataAcq_TPDuration
 	variable 		TPDurInms 							= v_value
@@ -651,7 +651,7 @@ Function/S TP_ClampModeString(panelTitle)
 	string /g $WavePath + ":TestPulse:ADChannelList"
 	SVAR 	ADChannelList		= $WavePath + ":TestPulse:ADChannelList"
 	wave 	ITCChanConfigWave 	= $WavePath + ":ITCChanConfigWave"
-			ADChannelList		= ITC_GetADCList(ITCChanConfigWave)
+			ADChannelList		= GetADCListFromConfig(ITCChanConfigWave)
 
 	variable i, numChannels, headstage
 	string /g $WavePath + ":TestPulse:ClampModeString"

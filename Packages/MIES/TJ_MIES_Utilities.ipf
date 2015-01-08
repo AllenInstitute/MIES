@@ -1180,39 +1180,3 @@ Function SetDimensionLabels(keys, values)
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
 End
-
-/// @brief Returns a list of all active DA channels
-/// @todo change function to return a numeric wave of variable length
-/// and merge with ITC_GetADCList
-Function/S ITC_GetDACList(ITCChanConfigWave)
-	Wave ITCChanConfigWave
-
-	return ITC_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
-End
-
-/// @brief Returns a list of all active AD channels
-Function/S ITC_GetADCList(ITCChanConfigWave)
-	Wave ITCChanConfigWave
-
-	return ITC_RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
-End
-
-/// @brief Returns the data from the data column based on matched values in the ref column
-///
-/// For ITCDataWave 0 (value) in Ref column = AD channel, 1 = DA channel
-static Function/s ITC_RefToPullDatafrom2DWave(refValue, refColumn, dataColumn, twoDWave)
-	wave twoDWave
-	variable refValue, refColumn, dataColumn
-
-	variable i, numRows
-	string list = ""
-
-	numRows = DimSize(twoDWave, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		if(TwoDwave[i][refColumn] == refValue)
-			list = AddListItem(num2str(TwoDwave[i][DataColumn]), list, ";", i)
-		endif
-	endfor
-
-	return list
-End

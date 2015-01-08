@@ -25,6 +25,7 @@
 #include "TJ_MIES_HardwareSetUp"
 #include "TJ_MIES_Indexing"
 #include "TJ_MIES_InitiateMIES"
+#include "TJ_MIES_MiesUtilities"
 #include "TJ_MIES_Oscilloscope"
 #include "TJ_MIES_PanelITC"
 #include "TJ_MIES_RepeatedAcquisition"
