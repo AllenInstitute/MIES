@@ -530,10 +530,10 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 		TPStorage[count][][%TimeInSeconds]         		= now
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
 		TPStorage[count][][%DeltaTimeInSeconds]    	= count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-
+		P_PressureControl(panelTitle) // Call pressure functions
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
-		P_PressureControl(panelTitle) // Call pressure functions
+		
 
 		// not all rows have the unit seconds, but with
 		// setting up a seconds scale, commands like

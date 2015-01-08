@@ -4618,9 +4618,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-	
-		//sprintf cmd, "ITCCloseAll" 
-		//execute cmd
+		// zero channels that may be left high
+		ITC_ZeroITCOnActiveChan(panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_SaveData
 		If(v_value == 0)

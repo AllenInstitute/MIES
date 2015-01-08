@@ -46,7 +46,7 @@ Function P_PressureControl(panelTitle)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
 			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
 			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) // this is slow!
-				TPStorage[count - 1][i][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] /// @todo Right now the headStage to AD channel relationship is assumed to be in parallel ascending order. The AD channel - column assocation of the TPStorage should actually be determined before assigning the pressure value to a column.
+				TPStorage[count][i][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] /// @todo Right now the headStage to AD channel relationship is assumed to be in parallel ascending order. The AD channel - column assocation of the TPStorage should actually be determined before assigning the pressure value to a column.
 				i += 1
 			endif
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
