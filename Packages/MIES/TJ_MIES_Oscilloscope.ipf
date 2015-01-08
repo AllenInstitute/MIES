@@ -123,6 +123,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 		// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		unit = StringFromList(numActiveDACs + i, unitWaveNote)
 		Label/W=$graph $leftAxis, leftAxis + " (" + unit + ")"
+		ModifyGraph/W=$graph lblPos($leftAxis) = 60
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
 		// add the also the trace for the current resistance values from the test pulse
