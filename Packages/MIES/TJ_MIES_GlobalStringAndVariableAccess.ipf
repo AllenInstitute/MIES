@@ -151,7 +151,7 @@ Function/S GetFollowerList([doNotCreateSVAR])
 	variable doNotCreateSVAR
 
 	ASSERT(!ParamIsDefault(doNotCreateSVAR) && doNotCreateSVAR == 1, "Wrong parameter, read the function documentation")
-	string path = HSU_DataFullFolderPathString(ITC1600_FIRST_DEVICE)
+	string path = GetDevicePathAsString(ITC1600_FIRST_DEVICE)
 
 	if(!DataFolderExists(path))
 		return ""
