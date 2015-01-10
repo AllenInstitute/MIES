@@ -43,7 +43,7 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
 End
 //======================================================================================
 Function ITC_BkrdTPFuncMD(s)
-	STRUCT WMBackgroundStruct &s
+	STRUCT BackgroundStruct &s
 	String cmd, Keyboard, panelTitle
 	
 	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
@@ -53,7 +53,6 @@ Function ITC_BkrdTPFuncMD(s)
 	variable NumberOfActiveDevices
 	string WavePath
 	string CountPath
-	string oscilloscopeSubWindow
 	variable ADChannelToMonitor
 	variable StopCollectionPoint
 	variable NumberOfChannels
@@ -62,6 +61,13 @@ Function ITC_BkrdTPFuncMD(s)
 	variable PointsInTP
 	string TPDurationGlobalPath 
 	variable PointsInTPITCDataWave
+
+	if(s.wmbs.started)
+		s.wmbs.started = 0
+		s.count  = 0
+	else
+		s.count += 1
+	endif
 
 	do // works through list of active devices
 		// update parameters for a particular active device
@@ -75,7 +81,6 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
 		WAVE ITCFIFOPositionAllConfigWavePth = ActiveDeviceWavePathWave[i][2] //  ActiveDeviceWavePathWave contains wave references
 		CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + "count"
-		oscilloscopeSubWindow = ActiveDeviceTextList[i] + "#oscilloscope"
 		ADChannelToMonitor = ActiveDeviceList[i][1]
 		StopCollectionPoint = ActiveDeviceList[i][2]
 		PointsInTP = (GlobalTPDurationVariable * 3) //
@@ -149,13 +154,11 @@ Function ITC_BkrdTPFuncMD(s)
 			endif
 			
 			ActiveDeviceList[i][5] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-			//ITCDataWave[0][0] =+ 0
-			
-			if(mod(s.curRunTicks, 100) == 0)// || BackgroundTPCount == 1) // switches autoscale on and off in oscilloscope Graph
-				ModifyGraph /w = $oscilloscopeSubWindow Live = 0
-				ModifyGraph /w = $oscilloscopeSubWindow Live = 1
+
+			if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
+				SCOPE_UpdateGraph(panelTitle)
 			endif
-			
+
 			ActiveDeviceList[i][3] += 1
 		
 		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
@@ -182,24 +185,20 @@ Function ITC_FinishTestPulseMD(panelTitle)
 	string panelTitle
 	string cmd
 
-	controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-	if(v_value == 0)
-		DAP_SmoothResizePanel(-340, panelTitle)
-		setwindow $panelTitle + "#oscilloscope", hide = 1
-	endif
+	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	ControlInfo /w = $panelTitle StartTestPulseButton
 	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		Button StartTestPulseButton, win = $panelTitle, disable = 0
 	endif
-	
+
 	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
 		V_disable = V_disable & ~0x2
 		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
 	endif
-	
+
 	DAP_RestoreTTLState(panelTitle)
-	
+
 	// Update pressure buttons
 	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
 	P_LoadPressureButtonState(panelTitle, headStage)

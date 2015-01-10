@@ -155,8 +155,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	endif
 
 	Wave/SDFR=dfr config = GetConfigWave(sweep)
-	string ADChannelList = SCOPE_RefToPullDatafrom2DWave(0, 0, 1, config)
-	string DAChannelList = SCOPE_RefToPullDatafrom2DWave(1, 0, 1, config)
+	string ADChannelList = ITC_GetADCList(config)
+	string DAChannelList = ITC_GetDACList(config)
 	variable NumberOfDAchannels = ItemsInList(DAChannelList)
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
 	// the max allows for uneven number of AD and DA channels

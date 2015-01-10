@@ -623,8 +623,9 @@ End
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
-StrConstant TP_CYLCE_COUNT_KEY           = "TPCycleCount"
-StrConstant AUTOBIAS_LAST_INVOCATION_KEY = "AutoBiasLastInvocation"
+StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
+StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
+StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 /// @}
 
 /// @brief Return a wave reference for TPStorage
@@ -657,6 +658,7 @@ Function/Wave GetTPStorage(panelTitle)
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
+	Note/NOCR wv, DIMENSION_SCALING_LAST_INVOC + ":0;"
 
 	return wv
 End

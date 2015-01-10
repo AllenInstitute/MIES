@@ -127,9 +127,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
 
-
-	itcdatawave[0][0] += 0//runs arithmatic on data wave to force onscreen update 
-	doupdate
+	itcdatawave[0][0] += 0 // Force onscreen update
 	
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	Execute cmd	

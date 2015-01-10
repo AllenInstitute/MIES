@@ -18,7 +18,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
 	string followerPanelTitle = ""
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-	SCOPE_UpdateGraph(ITCDataWave, panelTitle)
+	SCOPE_CreateGraph(ITCDataWave, panelTitle)
 	
 	if(DeviceType == 2) // starts data acquisition for ITC1600 devices
 		controlinfo /w = $panelTitle setvar_Hardware_Status
@@ -40,7 +40,7 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 						wave /z ITCDataWave = $WavePath + ":ITCDataWave"
-						SCOPE_UpdateGraph(ITCDataWave, followerPanelTitle)
+						SCOPE_CreateGraph(ITCDataWave, followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
 					i = 0
@@ -493,66 +493,52 @@ End
 
 Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure just prior to calling TP start - don't forget to reset the panel config for data acq following TP
 	string panelTitle
+
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string TestPulsePath
-	
-		DAP_StoreTTLState(panelTitle)
-		print "TTL state of:", panelTitle, "stored" 
-		DAP_TurnOffAllTTLs(panelTitle)
-		
-		// stores panel settings
-		make /o /n = 8 $(WavePath + ":SelectedDACWaveList")
-		wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-		TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-		TP_SelectTestPulseWave(panelTitle)
-		
-		make /o /n = 8 $(WavePath + ":SelectedDACScale")
-		wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
-		TP_StoreDAScale(SelectedDACScale,panelTitle)
-		TP_SetDAScaleToOne(panelTitle)
-		
-		// creates test pulse wave
-		TestPulsePath = GetWBSvdStimSetDAPathAsString() + ":TestPulse"
-		//  print "test pulse path = ", testpulsepath
-		make /o /n = 0 $TestPulsePath
-		wave TestPulse = $TestPulsePath
-		SetScale /P x 0,0.005,"ms", TestPulse // test pulse wave made at max possible samp frequency
-		
-		// adjust test pulse wave according to panel input
-		//TP_UpdateTestPulseWave(TestPulse, panelTitle)
-	
-		TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
-		
-		string TPDurationGlobalPath
-		sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
-		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath
-		DM_CreateScaleTPHoldWaveChunk(panelTitle,0, GlobalTPDurationVariable)  // first TP so start point = 0
-		TP_ClampModeString(panelTitle)
-		
-		// configures data for ITC with testpulse wave selected
-		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-		// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
-		wave ITCDataWave = $WavePath + ":ITCDataWave"
-		variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))
-		
-		if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
-			NewNoOfPoints = 2^15
-		endif
-		// print "divisor =",(deltaX(ITCDataWave) / 0.005)
-		// print "new no of points =", NewNoOfPoints
-		redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
-		
-		wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-		SCOPE_UpdateGraph(TestPulseITC,panelTitle)
-		//ITC_StartBackgroundTestPulseMD(DeviceType, DeviceNum, panelTitle)
-		ITC_ConfigUploadDAC(panelTitle)
-		
-		// open scope window
-		controlinfo /w = $panelTitle check_Settings_ShowScopeWindow
-		if(v_value == 0)
-			DAP_SmoothResizePanel(340, panelTitle)
-			setwindow $panelTitle + "#oscilloscope", hide = 0
-		endif
-	
+
+	DAP_StoreTTLState(panelTitle)
+	print "TTL state of:", panelTitle, "stored"
+	DAP_TurnOffAllTTLs(panelTitle)
+
+	// stores panel settings
+	make /o /n = 8 $(WavePath + ":SelectedDACWaveList")
+	wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
+	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
+
+	make /o /n = 8 $(WavePath + ":SelectedDACScale")
+	wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
+	TP_StoreDAScale(SelectedDACScale,panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
+
+	// creates test pulse wave
+	TestPulsePath = GetWBSvdStimSetDAPathAsString() + ":TestPulse"
+	make /o /n = 0 $TestPulsePath
+	wave TestPulse = $TestPulsePath
+	SetScale /P x 0,0.005,"ms", TestPulse // test pulse wave made at max possible samp frequency
+
+	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
+
+	string TPDurationGlobalPath
+	sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
+	NVAR GlobalTPDurationVariable = $TPDurationGlobalPath
+	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, GlobalTPDurationVariable)  // first TP so start point = 0
+	TP_ClampModeString(panelTitle)
+
+	// configures data for ITC with testpulse wave selected
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
+	// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
+	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))
+
+	if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
+		NewNoOfPoints = 2^15
+	endif
+	redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
+
+	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
+	SCOPE_CreateGraph(TestPulseITC,panelTitle)
+	ITC_ConfigUploadDAC(panelTitle)
+	SCOPE_OpenScopeWindow(panelTitle)
 End
-//=========================================================================================

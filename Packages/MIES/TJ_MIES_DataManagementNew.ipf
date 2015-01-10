@@ -90,7 +90,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
-	string ADChannelList  =  SCOPE_RefToPullDatafrom2DWave(0,0, 1, ITCChanConfigWave)
+	string ADChannelList   = ITC_GetADCList(ITCChanConfigWave)
 	variable StartOfADColumns = DC_NoOfChannelsSelected("da", panelTitle)
 	variable gain, i, numEntries, adc
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
@@ -119,7 +119,7 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 	DFREF deviceDFR       = GetDevicePath(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave, ITCChanConfigWave
-	string DAChannelList  = SCOPE_RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
+	string DAChannelList  = ITC_GetDACList(ITCChanConfigWave)
 
 	numEntries = ItemsInList(DAChannelList)
 	for(i = 0; i < numEntries ; i += 1)
