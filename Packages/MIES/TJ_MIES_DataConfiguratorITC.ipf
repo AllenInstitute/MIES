@@ -138,6 +138,8 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 End
 
 //==========================================================================================
+/// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
+///
 Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 	string panelTitle
 	Variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)
@@ -149,9 +151,11 @@ Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 	ChannelCount = NoOfDAChannelsSelected + NoOfADChannelsSelected + AreRack0FrontTTLsUsed + AreRack1FrontTTLsUsed
 	
 	return ChannelCount
-
 END
 //==========================================================================================
+/// @brief Returns the ON/OFF status of the front TTLs on a specified rack.
+///
+/// @param RackNo Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0
 Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 	variable RackNo
 	string panelTitle
