@@ -45,9 +45,8 @@ Function P_PressureControl(panelTitle)
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
 			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
-			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) // this is slow!
-				TPStorage[count][i][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] /// @todo Right now the headStage to AD channel relationship is assumed to be in parallel ascending order. The AD channel - column assocation of the TPStorage should actually be determined before assigning the pressure value to a column.
-				i += 1
+			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries
+				TPStorage[count][TP_GetTPResultsColOfHS(panelTitle, headStage)][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] 
 			endif
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
@@ -581,9 +580,9 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	for(i = 0; i < ColumnsInTPStorageWave; i += 1)
 		ADC = str2num(StringFromList(i, ADChannelList))
 		Row = TP_HeadstageUsingADC(panelTitle, ADC)
-		ASSERT(TPCycleCount > 0, "Expecting a strictly positive TPCycleCount")
-		PressureDataWv[Row][%PeakR] = TPStorageWave[TPCycleCount - 1 ][i][1] // update the peak resistance value
-		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[TPCycleCount - 1 ][i][2]	// update the steady state resistance value
+		ASSERT(TPCycleCount >= 0, "Expecting a strictly positive TPCycleCount")
+		PressureDataWv[Row][%PeakR] = TPStorageWave[TPCycleCount][i][1] // update the peak resistance value
+		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[TPCycleCount][i][2]	// update the steady state resistance value
 		PressureDataWv[Row][%PeakResistanceSlope] = TPStorageWave[0][i][5] 	// Layer 5 of the TP storage wave contains the slope of the steady state resistance values of the TP
 	endfor																					// Column 22 of the PressureDataWv stores the steady state resistance slope
 End

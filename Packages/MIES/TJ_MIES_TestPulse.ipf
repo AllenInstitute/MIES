@@ -712,6 +712,35 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 End
 
 //=============================================================================================
+///@brief Find the AD channel associated with a headstage
+Function TP_GetADChannelFromHeadstage(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+	variable i, retHeadstage
+	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
+		retHeadstage = TP_HeadstageUsingADC(panelTitle, i)
+		if(isFinite(retHeadstage) && retHeadstage == headstage)
+			return i
+		endif
+	endfor
+	return NaN
+End
+//=============================================================================================
+///@brief Find the DA channel associated with a headstage
+Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+	variable i, retHeadstage
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		retHeadstage = TP_HeadstageUsingDAC(panelTitle, i)
+		if(isFinite(retHeadstage) && retHeadstage == headstage)
+			return i
+		endif
+	endfor
+	return NaN
+End
+//=============================================================================================
+
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string 	panelTitle, OpName
 
@@ -763,3 +792,25 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	endif
 End
 //=============================================================================================
+/// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
+///
+Function TP_GetTPResultsColOfHS(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	variable ADC
+	DFREF dfr = GetDevicePath(panelTitle)
+	Wave/Z/SDFR=dfr wv = ITCChanConfigWave
+	ASSERT(WaveExists(Wv), "ITCChanConfigWave does not exist")
+	// Get the AD channel associated with the headstage
+	ADC = TP_GetADChannelFromHeadstage(panelTitle, headstage)
+	// Get the first AD rows of the ITCChanConfig wave
+	matrixOp/FREE OneDwave = col(Wv, 0) // extract the channel type column
+	FindValue/V = 0 OneDwave // ITC_XOP_CHANNEL_TYPE_ADC // find the AD channels
+	ASSERT(V_Value + 1, "No AD Columns found in ITCChanConfigWave")
+	variable FirstADColumn = V_Value
+	// Get the Column used by the headstage
+	matrixOp/FREE OneDwave = col(Wv, 1) // Extract the channel number column
+	findValue/S=(FirstADColumn)/V=(ADC) OneDwave // find the specific AD channel
+	ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
+	return V_value - FirstADColumn
+End
