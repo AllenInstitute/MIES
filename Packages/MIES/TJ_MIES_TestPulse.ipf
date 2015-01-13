@@ -800,17 +800,25 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 	variable ADC
 	DFREF dfr = GetDevicePath(panelTitle)
 	Wave/Z/SDFR=dfr wv = ITCChanConfigWave
-	ASSERT(WaveExists(Wv), "ITCChanConfigWave does not exist")
+	if(!WaveExists(Wv))
+		return -1
+	endif	
 	// Get the AD channel associated with the headstage
 	ADC = TP_GetADChannelFromHeadstage(panelTitle, headstage)
 	// Get the first AD rows of the ITCChanConfig wave
 	matrixOp/FREE OneDwave = col(Wv, 0) // extract the channel type column
 	FindValue/V = 0 OneDwave // ITC_XOP_CHANNEL_TYPE_ADC // find the AD channels
-	ASSERT(V_Value + 1, "No AD Columns found in ITCChanConfigWave")
+	if(V_Value == -1)
+		return -1
+	endif
+	//ASSERT(V_Value + 1, "No AD Columns found in ITCChanConfigWave")
 	variable FirstADColumn = V_Value
 	// Get the Column used by the headstage
 	matrixOp/FREE OneDwave = col(Wv, 1) // Extract the channel number column
 	findValue/S=(FirstADColumn)/V=(ADC) OneDwave // find the specific AD channel
-	ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
+	if(V_Value == -1)
+		return -1
+	endif
+	//ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
 	return V_value - FirstADColumn
 End

@@ -41,12 +41,15 @@ Function P_PressureControl(panelTitle)
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
-	variable 	headStage, i
+	variable 	headStage, Column
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
 			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
-			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries
-				TPStorage[count][TP_GetTPResultsColOfHS(panelTitle, headStage)][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] 
+			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries. This will fail when a new headstage is turned on.
+				Column = TP_GetTPResultsColOfHS(panelTitle, headStage)
+				if(Column != -1)
+					TPStorage[count][column][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] 
+				endif
 			endif
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
