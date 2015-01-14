@@ -364,6 +364,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	sprintf 	StringPath, "%s:ClampModeString" InputDataPath
 	SVAR 	ClampModeString = $StringPath
 //	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
+// 	TPwave has the AD columns in the order of active AD channels, not the order of active headstages
 	duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, 	BaselineSS
 	duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, 			TPSS
 	duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
@@ -376,7 +377,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 	AvgBaselineSS /= dimsize(BaselineSS, 0)
 	sprintf StringPath, "%s:BaselineSSAvg" InputDataPath
-	duplicate /o / r = [][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS $StringPath
+	duplicate /o / r = [][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS $StringPath // duplicate only the AD columns - this would error if a TTL was ever active with the TP, at present, however, they should never be coactive
 	wave 	BaselineSSAvg = $StringPath
 //	calculate the difference between the steady state and the baseline
 	duplicate /free AvgTPSS, AvgDeltaSS
@@ -523,16 +524,16 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 	if(needsUpdate)
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
-		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]        = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%SteadyStateResistance] = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%TimeInSeconds]         = now
+		TPStorage[count][][%Vm]                    			= BaselineSSAvg[0][q][0]
+		TPStorage[count][][%PeakResistance]        		= min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance] 	= min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%TimeInSeconds]         		= now
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
-		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-
+		TPStorage[count][][%DeltaTimeInSeconds]    	= count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+		P_PressureControl(panelTitle) // Call pressure functions
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
-		P_PressureControl(panelTitle) // Call pressure functions
+		
 
 		// not all rows have the unit seconds, but with
 		// setting up a seconds scale, commands like
@@ -711,6 +712,35 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 End
 
 //=============================================================================================
+///@brief Find the AD channel associated with a headstage
+Function TP_GetADChannelFromHeadstage(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+	variable i, retHeadstage
+	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
+		retHeadstage = TP_HeadstageUsingADC(panelTitle, i)
+		if(isFinite(retHeadstage) && retHeadstage == headstage)
+			return i
+		endif
+	endfor
+	return NaN
+End
+//=============================================================================================
+///@brief Find the DA channel associated with a headstage
+Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+	variable i, retHeadstage
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		retHeadstage = TP_HeadstageUsingDAC(panelTitle, i)
+		if(isFinite(retHeadstage) && retHeadstage == headstage)
+			return i
+		endif
+	endfor
+	return NaN
+End
+//=============================================================================================
+
 Function TP_IsBackgrounOpRunning(panelTitle, OpName)
 	string 	panelTitle, OpName
 
@@ -762,3 +792,33 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	endif
 End
 //=============================================================================================
+/// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
+///
+Function TP_GetTPResultsColOfHS(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	variable ADC
+	DFREF dfr = GetDevicePath(panelTitle)
+	Wave/Z/SDFR=dfr wv = ITCChanConfigWave
+	if(!WaveExists(Wv))
+		return -1
+	endif	
+	// Get the AD channel associated with the headstage
+	ADC = TP_GetADChannelFromHeadstage(panelTitle, headstage)
+	// Get the first AD rows of the ITCChanConfig wave
+	matrixOp/FREE OneDwave = col(Wv, 0) // extract the channel type column
+	FindValue/V = 0 OneDwave // ITC_XOP_CHANNEL_TYPE_ADC // find the AD channels
+	if(V_Value == -1)
+		return -1
+	endif
+	//ASSERT(V_Value + 1, "No AD Columns found in ITCChanConfigWave")
+	variable FirstADColumn = V_Value
+	// Get the Column used by the headstage
+	matrixOp/FREE OneDwave = col(Wv, 1) // Extract the channel number column
+	findValue/S=(FirstADColumn)/V=(ADC) OneDwave // find the specific AD channel
+	if(V_Value == -1)
+		return -1
+	endif
+	//ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
+	return V_value - FirstADColumn
+End

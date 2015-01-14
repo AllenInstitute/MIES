@@ -642,7 +642,7 @@ Function/Wave GetTPStorage(panelTitle)
 		return wv
 	endif
 
-	Make/N=(128, NUM_AD_CHANNELS, 8) dfr:TPStorage/Wave=wv
+	Make/N=(128, NUM_AD_CHANNELS, 9) dfr:TPStorage/Wave=wv
 	wv = NaN
 
 	SetDimLabel COLS,  -1, ADChannel            , wv
@@ -655,6 +655,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 5, Vm_Slope             , wv
 	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
 	SetDimLabel LAYERS, 7, Rss_Slope            , wv
+	SetDimLabel LAYERS, 8, Pressure             , wv
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
@@ -1866,7 +1867,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		return PressureData
 	endif
 
-	Make/N=(8,35,1) dfr:PressureData/Wave=PressureData
+	Make/N=(8,38,1) dfr:PressureData/Wave=PressureData
 
 	PressureData 	= nan
 	PressureData[][0]	= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
@@ -1875,46 +1876,48 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	PressureData[][6]	= 0
 	PressureData[][8]	= 0
 
-	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear   , PressureData // -1 = atmospheric pressure; 0 = approach; 1 = Seal; Break in = 2     , Clear = 3
-	SetDimLabel COLS, 1 , DAC_List_Index              , PressureData // The position in the popup menu list of attached ITC devices
-	SetDimLabel COLS, 2 , DAC_Type                    , PressureData // type of ITC DAC
-	SetDimLabel COLS, 3 , DAC_DevID                   , PressureData // ITC DAC number
-	SetDimLabel COLS, 4 , DAC                         , PressureData // DA channel
-	SetDimLabel COLS, 5 , DAC_Gain                    , PressureData
-	SetDimLabel COLS, 6 , ADC                         , PressureData
-	SetDimLabel COLS, 7 , ADC_Gain                    , PressureData
-	SetDimLabel COLS, 8 , TTL                         , PressureData // TTL channel
-	SetDimLabel COLS, 9 , PSI_air                     , PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 10, PSI_solution                , PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 11, PSI_slice                   , PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 12, PSI_nearCell                , PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 13, PSI_SealInitial             , PressureData // used to set the minium negative pressure for sealing
-	SetDimLabel COLS, 14, PSI_SealMax                 , PressureData // used to set the maximum negative pressure for sealing
-	SetDimLabel COLS, 15, solutionZaxis               , PressureData // solution height in microns (as measured from bottom of the chamber).
-	SetDimLabel COLS, 16, sliceZaxis                  , PressureData // top of slice in microns (as measured from bottom of the chamber).
-	SetDimLabel COLS, 17, cellZaxis                   , PressureData // height of cell (as measured from bottom of the chamber).
-	SetDimLabel COLS, 18, cellXaxis                   , PressureData // cell position data
-	SetDimLabel COLS, 19, cellYaxis                   , PressureData // cell position data
-	SetDimLabel COLS, 20, PlaceHolderZero             , PressureData // used to store pressure method currently being used on cell
-	SetDimLabel COLS, 21, PlaceHolderOne              , PressureData // numbe of times current state has been cycled through
-	SetDimLabel COLS, 22, LastResistanceValue         , PressureData // last steady state resistance value
-	SetDimLabel COLS, 23, PeakResistanceSlope         , PressureData // Slope of the peak TP resistance value over the last 5 seconds
-	SetDimLabel COLS, 24, ActiveTP                    , PressureData // Indicates if the TP is active on the headStage
+	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear,		PressureData // -1 = atmospheric pressure; 0 = approach; 1 = Seal; Break in = 2     , Clear = 3
+	SetDimLabel COLS, 1 , DAC_List_Index,				PressureData // The position in the popup menu list of attached ITC devices
+	SetDimLabel COLS, 2 , DAC_Type, 					PressureData // type of ITC DAC
+	SetDimLabel COLS, 3 , DAC_DevID,					PressureData // ITC DAC number
+	SetDimLabel COLS, 4 , DAC,							PressureData // DA channel
+	SetDimLabel COLS, 5 , DAC_Gain,						PressureData
+	SetDimLabel COLS, 6 , ADC,							PressureData
+	SetDimLabel COLS, 7 , ADC_Gain, 					PressureData
+	SetDimLabel COLS, 8 , TTL, 							PressureData // TTL channel
+	SetDimLabel COLS, 9 , PSI_air,						PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 10, PSI_solution,					PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 11, PSI_slice,						PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 12, PSI_nearCell,					PressureData // used to set pipette pressure on approach
+	SetDimLabel COLS, 13, PSI_SealInitial,					PressureData // used to set the minium negative pressure for sealing
+	SetDimLabel COLS, 14, PSI_SealMax,					PressureData // used to set the maximum negative pressure for sealing
+	SetDimLabel COLS, 15, solutionZaxis,					PressureData // solution height in microns (as measured from bottom of the chamber).
+	SetDimLabel COLS, 16, sliceZaxis,						PressureData // top of slice in microns (as measured from bottom of the chamber).
+	SetDimLabel COLS, 17, cellZaxis,						PressureData // height of cell (as measured from bottom of the chamber).
+	SetDimLabel COLS, 18, cellXaxis,						PressureData // cell position data
+	SetDimLabel COLS, 19, cellYaxis,						PressureData // cell position data
+	SetDimLabel COLS, 20, PlaceHolderZero,				PressureData // used to store pressure method currently being used on cell
+	SetDimLabel COLS, 21, RealTimePressure,				PressureData // // stores the last pressure pulse amplitude in psi. This is used to determine the amplitude of the next pressure pulse.
+	SetDimLabel COLS, 22, LastResistanceValue,			PressureData // last steady state resistance value
+	SetDimLabel COLS, 23, PeakResistanceSlope,			PressureData // Slope of the peak TP resistance value over the last 5 seconds
+	SetDimLabel COLS, 24, ActiveTP,						PressureData // Indicates if the TP is active on the headStage
 	/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
 	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
 	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
-	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, PressureData // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
-	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck       , PressureData // The time in ticks of the last check of the resistance slopes
-	SetDimLabel COLS, 26, LastPressureCommand         , PressureData
-	SetDimLabel COLS, 27, OngoingPessurePulse         , PressureData
-	SetDimLabel COLS, 28, LastVcom                    , PressureData
-	SetDimLabel COLS, 29, ManSSPressure               , PressureData
-	SetDimLabel COLS, 30, ManPPPressure               , PressureData
-	SetDimLabel COLS, 31, ManPPDuration               , PressureData
-	SetDimLabel COLS, 32, LastPeakR                   , PressureData
-	SetDimLabel COLS, 33, PeakR                       , PressureData
-	SetDimLabel COLS, 34, TimePeakRcheck              , PressureData
-
+	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, 	PressureData // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
+	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck,		PressureData // The time in ticks of the last check of the resistance slopes
+	SetDimLabel COLS, 26, LastPressureCommand, 		PressureData
+	SetDimLabel COLS, 27, OngoingPessurePulse,			PressureData
+	SetDimLabel COLS, 28, LastVcom,						PressureData
+	SetDimLabel COLS, 29, ManSSPressure,				PressureData
+	SetDimLabel COLS, 30, ManPPPressure,				PressureData
+	SetDimLabel COLS, 31, ManPPDuration,				PressureData
+	SetDimLabel COLS, 32, LastPeakR,					PressureData
+	SetDimLabel COLS, 33, PeakR,						PressureData
+	SetDimLabel COLS, 34, TimePeakRcheck,				PressureData
+	SetDimLabel COLS, 35, PosCalConst,					PressureData
+	SetDimLabel COLS, 36, NegCalConst,					PressureData
+	
 	SetDimLabel ROWS, 0, Headstage_0, PressureData
 	SetDimLabel ROWS, 1, Headstage_1, PressureData
 	SetDimLabel ROWS, 2, Headstage_2, PressureData

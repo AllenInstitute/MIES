@@ -167,7 +167,7 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	string cmd
 	
 	string ITCDeviceFolderPathString
-	sprintf  ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
+	sprintf ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
 	
 	string ITCDeviceIDGlobalPathString
 	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" ITCDeviceFolderPathString
@@ -186,10 +186,12 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	sprintf cmd, "ITCStopAcq /z = 0"
 	Execute cmd
 	
+	ITC_ZeroITCOnActiveChan(panelTitle)
+	
 	// remove device passed in from active device lists
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-	
+	/// @todo It seems like stopping the follower devices is missing
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if (dimsize(ActiveDeviceTextList, 0) == 0) 
 		print "no more active devices, stopping named background"

@@ -3285,6 +3285,7 @@ Function DAP_TabControlFinalHook(tca)
 	if(tca.tab == DATA_ACQU_TAB_NUM)
 		DAP_UpdateITIAcrossSets(tca.win)
 	endif
+
 End
 
 /// This is a function that gets run by ACLight's tab control function every time a tab is selected,
@@ -3313,7 +3314,6 @@ Function DAP_TabTJHook1(tca)
 			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
 		endfor
 	endif
-
 	return 0
 
 ///@todo we can move that stuff into DAP_TabControlFinalHook
@@ -4618,9 +4618,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
-	
-		//sprintf cmd, "ITCCloseAll" 
-		//execute cmd
+		// zero channels that may be left high
+		ITC_ZeroITCOnActiveChan(panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_SaveData
 		If(v_value == 0)

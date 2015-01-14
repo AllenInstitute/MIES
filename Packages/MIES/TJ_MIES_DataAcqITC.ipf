@@ -387,7 +387,7 @@ Function ITC_STOPTestPulse(panelTitle)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
-static Constant AUTOBIAS_INTERVALL_SECONDS = 2
+static Constant AUTOBIAS_INTERVALL_SECONDS = 1
 
 /// @brief Handle automatic bias current injection
 ///
@@ -473,6 +473,9 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		// I = U / R
 		current = ( targetVoltage - setVoltage ) / resistance
 		DEBUGPRINT("current=", var=current)
+		// only use part of the calculated current, as BaselineSSAvg holds
+		// an overestimate for small buffer sizes
+		current *= 0.15
 
 		actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
 		DEBUGPRINT("actualCurrent=", var=actualCurrent)
@@ -483,9 +486,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		current += actualCurrent
-		// only use part of the calculated current, as BaselineSSAvg holds
-		// an overestimate for small buffer sizes
-		current *= 0.80
 
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent

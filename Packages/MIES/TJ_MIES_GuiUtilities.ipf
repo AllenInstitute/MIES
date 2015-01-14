@@ -414,6 +414,18 @@ Function ChangeTab(panel, ctrl, tabID)
 	return ACL_DisplayTab(tca)
 End
 
+/// @brief Returns the number of the current tab
+///
+/// @param win	window name
+/// @param ctrl	name of the control
+Function GetTabID(win, ctrl)
+	string win, ctrl
+	
+	ControlInfo/W=$win $ctrl
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	return V_value
+End
+
 /// @brief Set value as the user data named key
 ///
 /// @param win     window name
