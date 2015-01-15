@@ -867,15 +867,17 @@ End
 
 /// @brief Sort 2D waves in-place with one column being the key
 ///
-/// By default an alphanumeric sorting is done.
-/// @param w        wave of arbitrary type
-/// @param keycol   column of the key for the sorting
-/// @param reversed [optional] Do an descending sort instead of an ascending one
+/// By default an alphanumeric sorting is performed.
+/// @param w                          wave of arbitrary type
+/// @param keyColPrimary              column of the primary key
+/// @param keyColSecondary [optional] column of the secondary key
+/// @param reversed [optional]        do an descending sort instead of an ascending one
 ///
-/// Taken from http://www.igorexchange.com/node/599 with some cosmetic changes
-Function MDsort(w, keycol, [reversed])
-	Wave w
-	variable keycol, reversed
+/// Taken from http://www.igorexchange.com/node/599 with some cosmetic changes and extended for
+/// the secondary key
+Function MDsort(w, keyColPrimary, [keyColSecondary, reversed])
+	WAVE w
+	variable keyColPrimary, keyColSecondary, reversed
 
 	variable numRows, type
 
@@ -886,34 +888,43 @@ Function MDsort(w, keycol, [reversed])
 		return NaN
 	endif
 
-	Make/Y=(type)/Free/n=(numRows) key
-	Make/Free/n=(numRows) valindex
+	Make/Y=(type)/Free/N=(numRows) keyPrimary, keySecondary
+	Make/Free/N=(numRows)/I/U valindex = p
 
 	if(type == 0)
-		Wave/t indirectSource = w
-		Wave/t output = key
-		output[] = indirectSource[p][keycol]
+		WAVE/T indirectSourceText = w
+		WAVE/T output = keyPrimary
+		output[] = indirectSourceText[p][keyColPrimary]
+		WAVE/T output = keySecondary
+		output[] = indirectSourceText[p][keyColSecondary]
 	else
-		Wave indirectSource2 = w
-		MultiThread key[] = indirectSource2[p][keycol]
+		WAVE indirectSource = w
+		MultiThread keyPrimary[]   = indirectSource[p][keyColPrimary]
+		MultiThread keySecondary[] = indirectSource[p][keyColSecondary]
 	endif
 
-	valindex = p
-	if(reversed)
-		Sort/A/R key, key, valindex
+	if(ParamIsDefault(keyColSecondary))
+		if(reversed)
+			Sort/A/R keyPrimary, valindex
+		else
+			Sort/A keyPrimary, valindex
+		endif
 	else
-		Sort/A key, key, valindex
+		if(reversed)
+			Sort/A/R {keyPrimary, keySecondary}, valindex
+		else
+			Sort/A {keyPrimary, keySecondary}, valindex
+		endif
 	endif
 
 	if(type == 0)
-		Duplicate/free indirectSource, M_newtoInsert
-		Wave/t output = M_newtoInsert
-		output[][] = indirectSource[valindex[p]][q]
-		indirectSource = output
+		Duplicate/FREE/T indirectSourceText, newtoInsertText
+		newtoInsertText[][] = indirectSourceText[valindex[p]][q]
+		indirectSourceText = newtoInsertText
 	else
-		Duplicate/free indirectSource2, M_newtoInsert
-		MultiThread M_newtoinsert[][] = indirectSource2[valindex[p]][q]
-		MultiThread indirectSource2 = M_newtoinsert
+		Duplicate/FREE indirectSource, newtoInsert
+		MultiThread newtoinsert[][] = indirectSource[valindex[p]][q]
+		MultiThread indirectSource = newtoinsert
 	endif
 End
 
