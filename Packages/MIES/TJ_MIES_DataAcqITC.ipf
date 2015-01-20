@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// Interval in iterations between the switch from live update false to true
-Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 50
+Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
 
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
@@ -82,8 +82,8 @@ Function ITC_CalculateDevChannelOffset(panelTitle)
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
 	ASSERT(ret, "Could not parse device string")
-
-	if(!cmpstr(deviceType, "2")) // ITC1600
+	
+	if(!cmpstr(deviceType, "ITC1600")) // ITC1600
 		return 16
 	endif
 
@@ -614,7 +614,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 
 		title = GetSetVariableString(panelTitle, setvarTitle)
 		gain  = GetSetVariable(panelTitle, setvarGain)
-
+		print "raw async", rawChannelValue
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncMeasurementWave[0][i] = rawChannelValue / gain // put the measurement value into the async settings wave for creation of wave notes
 		ITC_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
