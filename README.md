@@ -1,6 +1,6 @@
 # General
 
-## Installation
+## Full Installation
 
 * Quit Igor Pro
 * Make the VTD2.xop available in Igor Pro
@@ -10,6 +10,20 @@
   * In "Igor Extensions" a shortcut pointing to XOPs
   * In "Igor Help File"  a shortcut pointing to HelpFiles
 * Start Igor Pro
+
+## Partial Installation without hardware dependencies
+
+There are currently three packages which can be installed on demand:
+
+* The Data Browser (TJ_MIES_DataBrowser.ipf)
+* The Wave Builder (TJ_MIES_WaveBuilderPanel.ipf)
+* The Downsample Panel (TJ_MIES_Downsample.ipf)
+
+To install one of them perform the following steps:
+
+* Quit Igor Pro
+* Create a shortcut to the mentioned procedure file (.ipf) in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures"
+* Restart Igor Pro
 
 ## Building the documentation
 
