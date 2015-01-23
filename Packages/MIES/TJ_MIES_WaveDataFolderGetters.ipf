@@ -223,15 +223,13 @@ End
 /// @{
 
 /// @brief Return the datafolder reference to the lab notebook
-Function/DF GetLabNotebookFolder(panelTitle)
-	string panelTitle
+Function/DF GetLabNotebookFolder()
 
-	return createDFWithAllParents(GetLabNotebookFolderAsString(panelTitle))
+	return createDFWithAllParents(GetLabNotebookFolderAsString())
 End
 
 /// @brief Return the full path to the lab notebook, e.g. root:MIES:LabNoteBook
-Function/S GetLabNotebookFolderAsString(panelTitle)
-	string panelTitle
+Function/S GetLabNotebookFolderAsString()
 
 	return GetMiesPathAsString() + ":LabNoteBook"
 End
@@ -253,7 +251,7 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse the panelTitle")
 
-	return GetLabNotebookFolderAsString(panelTitle) + ":" + deviceType + ":Device" + deviceNumber
+	return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
 End
 
 /// @brief Return the datafolder reference to the device specific settings key
@@ -673,7 +671,7 @@ End
 /// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
-	return HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
+	return GetDevicePathAsString(panelTitle) + ":TestPulse"
 End
 
 /// @brief Return a datafolder reference to the device type folder
@@ -701,10 +699,7 @@ Function/S GetDevicePathAsString(panelTitle)
 
 	string deviceType, deviceNumber
 	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
-		DEBUGPRINT("Invalid/Non-locked paneltitle, falling back to querying the GUI.")
-
-		deviceType   = HSU_GetDeviceType(panelTitle)
-		deviceNumber = HSU_GetDeviceNumber(panelTitle)
+		Abort "Invalid/Non-locked paneltitle"
 	endif
 
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber

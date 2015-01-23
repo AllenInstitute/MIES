@@ -356,7 +356,7 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_DAC
 		ITCChanConfigWave[j][1] = i
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
 		j += 1
 	endfor
@@ -373,7 +373,7 @@ Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_ADC
 		ITCChanConfigWave[j][1] = i
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
 		j += 1
 	endfor
@@ -459,13 +459,13 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		sweepData[0][0][HeadStage] = i // document the DA channel
 
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
 		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
 
 		sweepData[0][2][HeadStage] = val // document the DA gain
 
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
 		sweepData[0][4][HeadStage] = DAScale // document the DA scale
@@ -534,7 +534,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		// document AD parameters into SweepData wave
 		sweepData[0][1][headStage] = i // document the AD channel
 
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 		sweepData[0][3][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
 	endfor
 

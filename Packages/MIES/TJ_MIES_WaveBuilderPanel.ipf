@@ -1,6 +1,23 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#include <Resize Controls>
-#include <FilterDialog> menus=0
+
+// third party includes
+#include ":ACL_TabUtilities"
+#include ":ACL_UserdataEditor"
+#include ":FixScrolling"
+
+// our includes
+#include ":TJ_MIES_Constants"
+#include ":TJ_MIES_Debugging"
+#include ":TJ_MIES_GlobalStringAndVariableAccess"
+#include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_MiesUtilities"
+#include ":TJ_MIES_Utilities"
+#include ":TJ_MIES_WaveDataFolderGetters"
+#include ":TJ_MIES_WaveBuilder"
+
+Menu "Mies Panels", dynamic
+		"WaveBuilder", /Q,  WBP_CreateWaveBuilderPanel()
+End
 
 StrConstant panel                     = "WaveBuilder"
 StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
@@ -1383,14 +1400,14 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)
 	string ctrlWave, ctrlIndexEnd, list
 
 	for(i=0; i < NUM_DA_TTL_CHANNELS; i+=1)
-		ctrlWave     = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		ctrlIndexEnd = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
 		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
 		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
 
-		ctrlWave     = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		ctrlIndexEnd = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
 		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)

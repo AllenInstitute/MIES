@@ -29,7 +29,6 @@ static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
 static Constant		MAX_REGULATOR_PRESSURE			= 10
 static Constant		MIN_REGULATOR_PRESSURE			= -10
-Constant        		SAMPLE_INT_MICRO             				= 5
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -569,7 +568,7 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	DFREF 	dfr 				= $HSU_DataFullFolderPathString(panelTitle)
 	/// @todo Make wave reference function for ITCChanConfigWave
 	Wave/SDFR = dfr  ITCChanConfigWave
-	string 	ADChannelList = ITC_GetADCList(ITCChanConfigWave)
+	string 	ADChannelList = GetADCListFromConfig(ITCChanConfigWave)
 	variable TPCycleCount = GetNumberFromWaveNote(TPStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent resistance value from TP storage wave
 	variable Row
 	// pull data from TPStorageWave, apply it to headStage using TP_HeadstageUsingADC(panelTitle, AD)

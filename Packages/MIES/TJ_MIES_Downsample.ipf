@@ -10,8 +10,22 @@
 /// Wave         |  $dataPath:rateWave        | Holds all rates in kHz for each wave.                                  | GetDownsampleRateWave()
 /// Wave         |  $dataPath:sweepProperties | Used by the list box to show the properties of each sweep              | GetDownsampleListWave()
 
-/// This regular expression matches all sweep waves
-StrConstant DATA_SWEEP_REGEXP = "(?i)^Sweep_[[:digit:]]+$"
+// third party includes
+#include ":ACL_TabUtilities"
+#include ":ACL_UserdataEditor"
+#include ":FixScrolling"
+
+// our includes
+#include ":TJ_MIES_Constants"
+#include ":TJ_MIES_Debugging"
+#include ":TJ_MIES_GlobalStringAndVariableAccess"
+#include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_Utilities"
+#include ":TJ_MIES_WaveDataFolderGetters"
+
+Menu "Mies Panels", dynamic
+	"Open Downsample Panel", /Q, CreateDownsamplePanel()
+End
 
 static StrConstant checkbox_equalize      = "checkbox_equalize_id"
 static StrConstant checkbox_downsample    = "checkbox_downsample_id"
@@ -88,7 +102,7 @@ End
 Function/S GetPopupMenuDeviceListWithData()
 
 	variable i, j, k
-	string path, deviceType, deviceNumber, str, yokedList = "", list = ""
+	string path, deviceType, deviceNumber, str, list = ""
 	string follower, followerDeviceIDList, allFollowerDevices = "", deviceString
 
 	string followerDeviceType, followerDeviceNumber
@@ -113,6 +127,7 @@ Function/S GetPopupMenuDeviceListWithData()
 				continue
 			endif
 
+			str = deviceString
 
 			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			if(SVAR_Exists(listOfFollowerDevices))
@@ -132,7 +147,7 @@ Function/S GetPopupMenuDeviceListWithData()
 				endif
 			endif
 
-			if(WhichListItem(str, allFollowerDevices) == -1)
+			if(WhichListItem(deviceString, allFollowerDevices) == -1)
 				list = AddListItem(str, list, ";", inf)
 			endif
 		endfor

@@ -1,5 +1,23 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+// third party includes
+#include ":ACL_TabUtilities"
+#include ":ACL_UserdataEditor"
+#include ":FixScrolling"
+
+// our includes
+#include ":TJ_MIES_Constants"
+#include ":TJ_MIES_Debugging"
+#include ":TJ_MIES_GlobalStringAndVariableAccess"
+#include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_MiesUtilities"
+#include ":TJ_MIES_Utilities"
+#include ":TJ_MIES_WaveDataFolderGetters"
+
+Menu "Mies Panels", dynamic
+		"Data Browser", /Q, Execute "DataBrowser()"
+End
+
 static Constant GRAPH_DIV_SPACING       = 0.03
 static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
@@ -155,8 +173,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	endif
 
 	Wave/SDFR=dfr config = GetConfigWave(sweep)
-	string ADChannelList = ITC_GetADCList(config)
-	string DAChannelList = ITC_GetDACList(config)
+	string ADChannelList = GetADCListFromConfig(config)
+	string DAChannelList = GetDACListFromConfig(config)
 	variable NumberOfDAchannels = ItemsInList(DAChannelList)
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
 	// the max allows for uneven number of AD and DA channels
@@ -729,7 +747,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			lbl = LineBreakingIntoParWithMinWidth(lbl)
 
 			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
-			WAVE settingsHistoryDat = ED_GetSettingsHistoryDateTime(settingsHistory)
+			WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 			sweepCol   = GetSweepColumn(settingsHistory)
 
@@ -884,7 +902,7 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 				if(isTimeAxis)
 					ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][sweepCol][0]
 				else // other direction
-					Wave xWave = ED_GetSettingsHistoryDateTime(settingsHistory)
+					Wave xWave = GetSettingsHistoryDateTime(settingsHistory)
 					ReplaceWave/W=$graph/X trace=$trace, xWave
 				endif
 			endfor

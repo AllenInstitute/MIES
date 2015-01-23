@@ -64,7 +64,7 @@ Function IDX_IndexingDoIt(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
 			ControlInfo/W=$panelTitle $ctrl
@@ -86,7 +86,7 @@ Function IDX_IndexingDoIt(panelTitle)
 	endfor
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
 			ControlInfo /w = $panelTitle $ctrl
 			if(v_value < TTLIndexingStorageWave[1][i])
@@ -120,7 +120,7 @@ Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	wave TTLIndexingStorageWave = $wavePath + ":TTLIndexingStorageWave"
 	string ctrl
 
-	ctrl = IDX_GetChannelControl(panelTitle, i, channelType, CHANNEL_CONTROL_WAVE)
+	ctrl = GetPanelControl(panelTitle, i, channelType, CHANNEL_CONTROL_WAVE)
 	ControlInfo/W=$panelTitle $ctrl
 	popIdx = V_Value
 	if(channelType == CHANNEL_TYPE_DAC)
@@ -321,58 +321,6 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	return MaxNoOfSweeps
 End
 
-/// @name Parameters for IDX_GetChannelControl and friends
-/// @{
-Constant CHANNEL_TYPE_DAC          = 0x00
-Constant CHANNEL_TYPE_TTL          = 0x01
-Constant CHANNEL_TYPE_ADC          = 0x02
-Constant CHANNEL_CONTROL_WAVE      = 0x04
-Constant CHANNEL_CONTROL_INDEX_END = 0x08
-Constant CHANNEL_CONTROL_UNIT      = 0x10
-Constant CHANNEL_CONTROL_GAIN      = 0x20
-Constant CHANNEL_CONTROL_SCALE     = 0x30
-Constant CHANNEL_CONTROL_CHECK     = 0x40
-/// @}
-
-/// @brief Returns the name of a channel related control
-Function/S IDX_GetChannelControl(panelTitle, idx, channelType, controlType)
-	string panelTitle
-	variable idx, channelType, controlType
-
-	string ctrl
-
-	if(channelType == CHANNEL_TYPE_DAC)
-		ctrl = "DA"
-	elseif(channelType == CHANNEL_TYPE_ADC)
-		ctrl = "AD"
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		ctrl = "TTL"
-	else
-		ASSERT(0, "Invalid channelType")
-	endif
-
-	if(controlType == CHANNEL_CONTROL_WAVE)
-		ctrl = "Wave_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_INDEX_END)
-		ctrl = "Popup_" + ctrl + "_IndexEnd"
-	elseif(controlType == CHANNEL_CONTROL_UNIT)
-		ctrl = "Unit_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_GAIN)
-		ctrl = "Gain_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_SCALE)
-		ctrl = "Scale_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_CHECK)
-		ctrl = "Check_" + ctrl
-	else
-		ASSERT(0, "Invalid controlType")
-	endif
-
-	ASSERT(idx >= 0 && idx < 100, "invalid idx")
-	sprintf ctrl, "%s_%02d", ctrl, idx
-
-	return ctrl
-End
-
 static Function IDX_GetITIFromWaveNote(wv)
 	Wave wv
 
@@ -469,8 +417,8 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 		ASSERT(0, "Invalid channelType")
 	endif
 	
-	waveCtrl = IDX_GetChannelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_WAVE)
-	lastCtrl = IDX_GetChannelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_INDEX_END)
+	waveCtrl = GetPanelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_WAVE)
+	lastCtrl = GetPanelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_INDEX_END)
 	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
 
 	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset

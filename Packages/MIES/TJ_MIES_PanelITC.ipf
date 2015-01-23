@@ -1,22 +1,11 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Constant DATA_ACQU_TAB_NUM               = 0
-Constant HARDWARE_TAB_NUM                = 6
+static Constant DATA_ACQU_TAB_NUM        = 0
+static Constant HARDWARE_TAB_NUM         = 6
 
-Constant NUM_DA_TTL_CHANNELS             = 8
-Constant NUM_HEADSTAGES                  = 8
-Constant NUM_AD_CHANNELS                 = 16
-Constant NUM_ASYNC_CHANNELS		= 8
-
-StrConstant BASE_WINDOW_TITLE            = "DA_Ephys"
 static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
-StrConstant ITC1600_FIRST_DEVICE         = "ITC1600_Dev_0"
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
-
-/// @todo replace all literal occurences of these strings
-StrConstant DEVICE_TYPES      = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
-StrConstant DEVICE_NUMBERS    = "0;1;2;3;4;5;6;7;8;9;10"
 
 Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
@@ -3700,7 +3689,7 @@ Function DAP_TurnOffAllDACs(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
@@ -3718,7 +3707,7 @@ Function DAP_TurnOffAllADCs(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
-		ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
@@ -4225,7 +4214,7 @@ Function DAP_CheckSettings(panelTitle)
 				continue
 			endif
 
-			ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			ttlWave = GetPopupMenuString(panelTitle, ctrl)
 			if(!CmpStr(ttlWave, NONE))
 				printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
@@ -4233,7 +4222,7 @@ Function DAP_CheckSettings(panelTitle)
 			endif
 
 			if(indexingEnabled)
-				ctrl = IDX_GetChannelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+				ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 				endWave = GetPopupMenuString(panelTitle, ctrl)
 				if(!CmpStr(endWave, NONE))
 					printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
@@ -4328,14 +4317,14 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 		return 1
 	endif
 
-	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
 		return 1
 	endif
 
-	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	gain = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", panelTitle, DACchannel
@@ -4343,28 +4332,28 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 	endif
 
 	// we allow the scale being zero
-	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	scale = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(scale))
 		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
 		return 1
 	endif
 
-	ctrl = IDX_GetChannelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	ctrl = GetPanelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for ADCchannel %d is empty.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
-	ctrl = IDX_GetChannelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	ctrl = GetPanelControl(panelTitle, ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	gain = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
-	ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	dacWave = GetPopupMenuString(panelTitle, ctrl)
 	if(!CmpStr(dacWave, NONE) || !CmpStr(dacWave, "TestPulse"))
 		printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
@@ -4372,7 +4361,7 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 	endif
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-		ctrl = IDX_GetChannelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		endWave = GetPopupMenuString(panelTitle, ctrl)
 		if(!CmpStr(endWave, NONE))
 			printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
