@@ -13,17 +13,18 @@
 
 ## Partial Installation without hardware dependencies
 
-There are currently three packages which can be installed on demand:
+* There are currently three packages which can be installed on demand:
 
-* The Data Browser (TJ_MIES_DataBrowser.ipf)
-* The Wave Builder (TJ_MIES_WaveBuilderPanel.ipf)
-* The Downsample Panel (TJ_MIES_Downsample.ipf)
+  * The Data Browser (TJ_MIES_DataBrowser.ipf)
+  * The Wave Builder (TJ_MIES_WaveBuilderPanel.ipf)
+  * The Downsample Panel (TJ_MIES_Downsample.ipf)
 
-To install one of them perform the following steps:
+* To install one of them perform the following steps:
 
-* Quit Igor Pro
-* Create a shortcut to the mentioned procedure file (.ipf) in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures"
-* Restart Igor Pro
+ * Quit Igor Pro
+ * In "User Procedures" a shortcut pointing to "Packages\MIES"
+ * Create a shortcut to the procedure file(s) (.ipf) for the desired package(s) in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures"
+ * Restart Igor Pro
 
 ## Building the documentation
 
