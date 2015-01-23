@@ -22,8 +22,8 @@
 * To install one of them perform the following steps:
 
  * Quit Igor Pro
- * In "User Procedures" a shortcut pointing to "Packages\MIES"
- * Create a shortcut to the procedure file(s) (.ipf) for the desired package(s) in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures"
+ * In "User Procedures" create a shortcut pointing to "Packages\MIES"
+ * In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s) 
  * Restart Igor Pro
 
 ## Building the documentation
