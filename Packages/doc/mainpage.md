@@ -34,6 +34,6 @@ that is, it allows the user to view the sweeps MIES will output, as well as the
 sweeps MIES did output, and their response.
 
 MIES is designed to be scalable: MIES can control up to 10 (only 4 have been
-tested) HEKA/Instrutech DACs independently or synchronously.
+tested) HEKA/Instrutech DACs independently or synchronously(ITC1600).
 
 MIES has two primary modes: The Test Pulse (TP) and Data Acquisition.
