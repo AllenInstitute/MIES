@@ -5141,8 +5141,6 @@ Function DAP_UnlockAllDevices()
 		win = StringFromList(i, list)
 		HSU_UnlockDevice(win)
 	endfor
-
-	ASSERT(ItemsInList(DAP_ListOfLockedDevs()) == 0, "Missed to unlock some devices")
 End
 
 Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
