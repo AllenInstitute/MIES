@@ -3437,13 +3437,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					KillVariables $CountPath
 				endif
 
-				/// @todo passing the device type and number *index* should not be required
-				/// panelTitle holds all required information
-				controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-				variable DeviceType = v_value - 1
-				controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-				variable DeviceNum = v_value - 1
-
 				// History management
 				// if overwrite old waves is checked in datapro panel, the following
 				// code will delete the old waves and generate a new settings history wave
