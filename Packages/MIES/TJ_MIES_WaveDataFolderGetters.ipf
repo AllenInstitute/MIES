@@ -376,17 +376,15 @@ Function/S GetActiveITCDevicesFolderAS()
 	return GetITCDevicesFolderAsString() + ":ActiveITCDevices"
 End
 
-/// @brief Returns a wave reference to the textDocWave
+/// @brief Returns a wave reference to the txtDocWave
 ///
-/// textDocWave is used to save settings for each data sweep and
-/// create waveNotes for tagging data sweeps
+/// txtDocWave is used to save settings for each data sweep
 ///
 /// Rows:
 /// - Only one
 ///
 /// Columns:
-/// - 0: Sweep Number
-/// - 1: Time Stamp
+/// - Filled at runtime
 ///
 /// Layers:
 /// - Headstage
@@ -401,11 +399,13 @@ Function/Wave GetTextDocWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(1,2,0) dfr:txtDocWave/Wave=wv
+	Make/T/N=(1,2,NUM_HEADSTAGES) dfr:txtDocWave/Wave=wv
 	wv = ""
 
 	return wv
 End
+
+Constant INITIAL_KEY_WAVE_COL_COUNT   = 2
 
 /// @brief Returns a wave reference to the textDocKeyWave
 ///
@@ -418,9 +418,6 @@ End
 /// Columns:
 /// - 0: Sweep Number
 /// - 1: Time Stamp
-///
-/// Layers:
-/// - Headstage
 Function/Wave GetTextDocKeyWave(panelTitle)
 	string panelTitle
 
@@ -432,8 +429,11 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(1,2,0) dfr:txtDocKeyWave/Wave=wv
+	Make/T/N=(1,INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
 	wv = ""
+
+	wv[0][0] = "Sweep #"
+	wv[0][1] = "Time Stamp"
 
 	SetDimLabel 0, 0, Parameter, wv
 
