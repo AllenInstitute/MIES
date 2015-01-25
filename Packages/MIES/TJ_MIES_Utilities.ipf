@@ -1160,6 +1160,149 @@ Function/S GetAllDevicesWithData()
 	return list
 End
 
+/// @brief Returns a list of all files with the extension given in the symbolic path pathName
+///
+/// Adapted from the example in the `IndexedDir` documentation
+///
+/// Warning! This function uses recursion, so it might take some time
+///
+/// @param pathName                   Name of symbolic path in which to look for folders and files
+/// @param extension                  File name extension (e.g., ".txt") or "????" for all files
+/// @param level [optional, don't use] Indicate level of recursion
+Function/S GetFilesRecursively(pathName, extension, [level])
+	string pathName
+	string extension
+	variable level
+
+	variable fileIndex, folderIndex, levelValue
+	string path, fileName, fileNames, subFolderPathName, subFolderPath
+	string foundFilesList = ""
+	string recursFoundFilesList = ""
+
+	if(ParamIsDefault(level))
+		levelValue = 0
+	else
+		levelValue = level
+	endif
+
+	levelValue += 1
+
+	// get folder name from symbolic path
+	PathInfo $pathName
+	path = S_path
+	ASSERT(V_flag != 0 , "path does not exist")
+
+	fileNames = IndexedFile($pathName, -1, extension)
+	fileIndex = 0
+
+	// get all files in the folder pathName
+	do
+		fileName = StringFromList(fileIndex, fileNames)
+
+		if (isEmpty(fileName))
+			break // No more files
+		endif
+
+		foundFilesList = AddListItem(path + fileName, foundFilesList, ";", inf)
+		fileIndex += 1
+	while(1)
+
+	// traverse into the first subfolder and call this function recursively
+	string paths = IndexedDir($pathName, -1, 1)
+	folderIndex = 0
+	do
+		path = StringFromList(folderIndex, paths)
+
+		if(isEmpty(path))
+			break // No more folders
+		endif
+
+		// name of the new symbolic path
+		subFolderPathName =  UniqueName("tempPrintFoldersPath_", 12, levelValue)
+		// Now we get the path to the new parent folder
+		subFolderPath = path
+
+		NewPath/Q/O $subFolderPathName, subFolderPath
+		recursFoundFilesList = GetFilesRecursively(subFolderPathName, extension, level = levelValue)
+		KillPath/Z $subFolderPathName
+
+		if(!isEmpty(recursFoundFilesList))
+			foundFilesList += recursFoundFilesList
+		endif
+
+		folderIndex += 1
+	while(1)
+
+	return foundFilesList
+End
+
+/// @brief Returns a reference to a newly created datafolder
+///
+/// Basically a datafolder aware version of UniqueName for datafolders
+///
+/// @param dfr 	    datafolder reference where the new datafolder should be created
+/// @param baseName first part of the datafolder, might be shorted due to Igor Pro limitations
+Function/DF UniqueDataFolder(dfr, baseName)
+	dfref dfr
+	string baseName
+
+	variable index
+	string name = ""
+	string basePath, path
+
+	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
+
+	// shorten basename so that we can attach some numbers
+	baseName = CleanupName(baseName[0, 26], 0)
+	basePath = GetDataFolder(1, dfr)
+	path = basePath + baseName
+
+	do
+		if(!DataFolderExists(path))
+			NewDataFolder $path
+			return $path
+		endif
+
+		path = basePath + baseName + "_" + num2istr(index)
+
+		index += 1
+	while(index < 10000)
+
+	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+
+	return $""
+End
+
+/// @brief Remove str with the first character removed, or
+/// if given with startStr removed
+///
+/// Same semantics as the RemoveEnding builtin
+Function/S RemovePrefix(str, [startStr])
+	string str, startStr
+
+	variable length, pos
+
+	length = strlen(str)
+
+	if(ParamIsDefault(startStr))
+
+		if(length <= 0)
+			return str
+		endif
+
+		return str[1, length - 1]
+	endif
+
+	pos = strsearch(str, startStr, 0)
+
+	if(pos != 0)
+		return str
+	endif
+
+	return 	str[strlen(startStr), length - 1]
+End
+
 /// @brief Set column dimension labels from the first row of the key wave
 ///
 /// Specialized function from the experiment documentation file needed also in other places.
