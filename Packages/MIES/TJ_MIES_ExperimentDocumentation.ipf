@@ -434,12 +434,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	variable settingsRowCount = (DimSize(textDocWave, 0))  // the new settingsRowCount
 	variable rowIndex = settingsRowCount - 1
 
-	// put the sweep number in col 0
-	textDocWave[rowIndex][0] = num2str(SweepCounter)
-
-	// put the timestamp in col 1
-	string timeStamp = secs2time(datetime, 1)
-	textDocWave[rowIndex][1] = timeStamp
+	textDocWave[rowIndex][0] = num2istr(SweepCounter)
+	textDocWave[rowIndex][1] = num2istr(datetime)
 
 	// Use the keyWave to see where to add the incomingTextDoc factors to the textDoc wave
 	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
