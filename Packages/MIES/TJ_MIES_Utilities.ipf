@@ -1020,6 +1020,59 @@ Function GetSweepColumn(settingsHistory)
 	return 0
 End
 
+/// @brief Extended version of `FindValue`
+///
+/// Allows to search only the specified column for a value
+/// and returns all matching row indizes in a wave
+///
+/// @param col               column to search in
+/// @param var [optional]    numeric value to search. One of `var` or `str` has to be given.
+/// @param str [optional]    string value to search. One of `var` or `str` has to be given.
+/// @param wv [optional]     numeric wave to search. One of `wv` or `wvText` has to be given.
+/// @param wvText [optional] text wave to search. One of `wv` or `wvText` has to be given.
+///
+/// @returns A wave with the row indizes of the found values. An invalid wave reference if the
+/// value could not be found.
+Function/Wave FindIndizes(col, [var, str, wv, wvText])
+	variable col, var
+	string str
+	Wave wv
+	Wave/T wvText
+
+	variable numCols
+
+	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wave argument")
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Expected exactly one optional var/str argument")
+
+	if(ParamIsDefault(var))
+		var = str2num(str)
+	endif
+
+	if(ParamIsDefault(str))
+		str = num2str(var)
+	endif
+
+	if(!ParamIsDefault(wv))
+		numCols = DimSize(wv, COLS)
+		ASSERT(col >= 0 && col < numCols, "Invalid column")
+		ASSERT(WaveType(wv), "Expected numeric wave")
+		Make/FREE/R/N=(DimSize(wv, ROWS)) matches = (wv[p][col] == var ? p : NaN)
+	else
+		numCols = DimSize(wvText, COLS)
+		ASSERT(col >= 0 && col < numCols, "Invalid column")
+		ASSERT(!WaveType(wv), "Expected text wave")
+		Make/FREE/R/N=(DimSize(wvText, ROWS)) matches = (!cmpstr(wvText[p][col], str) ? p : NaN)
+	endif
+
+	WaveTransform/O zapNaNs, matches
+
+	if(DimSize(matches, ROWS) == 0)
+		return $""
+	endif
+
+	return matches
+End
+
 /// @brief Find the first and last point index of a consecutive range of values
 ///
 /// @param[in]  wv                wave to search
@@ -1038,50 +1091,50 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 	first = NaN
 	last  = NaN
 
-	Make/FREE/B/U/N=(DimSize(wv, ROWS)) matches = wv[p][col] == val
+	if(!WaveType(wv))
+		WAVE/Z indizes = FindIndizes(col, var=val, wvText=wv)
+	else
+		WAVE/Z indizes = FindIndizes(col, var=val, wv=wv)
+	endif
 
-	Make/FREE levels
-	FindLevels/P/Q/DEST=levels matches, 1
-
-	if(V_flag == 2)
+	if(!WaveExists(indizes))
 		return NaN
 	endif
 
-	numRows = DimSize(levels, ROWS)
+	numRows = DimSize(indizes, ROWS)
 
 	if(numRows == 1)
-		first = levels[0]
-		last  = levels[0]
+		first = indizes[0]
+		last  = indizes[0]
 		return NaN
 	endif
 
 	if(forwardORBackward)
 
-		first = levels[0]
-		last  = levels[0]
+		first = indizes[0]
+		last  = indizes[0]
 
 		for(i = 1; i < numRows; i += 1)
 			// a forward search stops after the end of the first sequence
-			if(levels[i] > last + 1)
+			if(indizes[i] > last + 1)
 				return NaN
 			endif
 
-			last = levels[i]
+			last = indizes[i]
 		endfor
 	else
 
-		first = levels[numRows - 1]
-		last  = levels[numRows - 1]
+		first = indizes[numRows - 1]
+		last  = indizes[numRows - 1]
 
 		for(i = numRows - 2; i >= 0; i -= 1)
 			// a backward search stops when the beginning of the last sequence was found
-			if(levels[i] < first - 1)
+			if(indizes[i] < first - 1)
 				return NaN
 			endif
 
-			first = levels[i]
+			first = indizes[i]
 		endfor
-
 	endif
 End
 
