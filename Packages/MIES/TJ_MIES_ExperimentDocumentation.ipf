@@ -574,10 +574,6 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	Variable sweepCount
 
 	string ctrl
-	
-	// Check all active headstages
-	//Wave statusHS = DC_ControlStatusWave(panelTitle, "DA")
-	//variable noHeadStages = DimSize(statusHS, ROWS)
 
 	// Create the numerical wave for saving the numerical settings
 	Wave asyncSettingsWave = GetAsyncSettingsWave(panelTitle)
@@ -597,7 +593,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	// Now populate the aync Settings and measurement Waves
 	// first...determine if the head stage is being controlled
 	variable asyncVariablesCounter
-	for(asyncVariablesCounter = 0;asyncVariablesCounter < 8 ;asyncVariablesCounter += 1)
+	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
 	// build up the string to get the DA check box to see if the DA is enabled
 		sprintf ctrl, "Check_AsyncAD_0%d" asyncVariablesCounter
 		variable adOnOffValue = GetCheckBoxState(panelTitle, ctrl)
@@ -649,9 +645,6 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 			asyncMeasurementKey[%Units][asyncVariablesCounter] = adUnitStringValue
 		endif
 	endfor
-
-	// call the function that will create the text wave notes
-	//ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, SavedDataWaveName, SweepCount, panelTitle)
 
 	// create the async wave notes if the Append Async readings to wave note
 	variable appendAsync = GetCheckBoxState(panelTitle, "Check_Settings_Append")
