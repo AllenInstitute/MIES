@@ -686,7 +686,7 @@ End
 ///@brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
 ///
 ///@param panelTitle  panel title
-///@param setName A string that contains the path and name of the stimulus set.
+///@param SetName A string that contains the path and name of the stimulus set.
 ///@param channelNo The DA or TTL channel number
 ///@param DAorTTL The channel type. DA = 0. TTL = 1
 Function/c DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// setname is a string that contains the full wave path

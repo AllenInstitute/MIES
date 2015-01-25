@@ -3911,7 +3911,7 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 End
 
 //=========================================================================================
-/// @brief Return the main panel name where all subwindow specifications like #mySubWindow have been removed
+/// @brief Return the main panel name where all subwindow specifications like \#mySubWindow have been removed
 /// @todo get rid of this function
 Function/S DAP_ReturnPanelName()
 	string panelTitle
