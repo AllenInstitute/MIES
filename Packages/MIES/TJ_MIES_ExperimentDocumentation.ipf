@@ -78,7 +78,6 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	// get the size of the settingsHistory wave
 	variable rowCount = DimSize(settingsHistory, 0)		// sweep
 	variable colCount = DimSize(settingsHistory, 1)		// factor
-	variable layerCount = DimSize(settingsHistory, 2)		// headstage
 	
 	// get the size of the incoming Settings Wave
 	variable incomingRowCount = DimSize(incomingSettingsWave, 0)			// sweep
@@ -91,10 +90,9 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	variable incomingKeyColCount = DimSize(incomingKeyWave, 1)	// incoming factors
 	variable keyColCounter
 	variable incomingKeyColCounter
-	
+
 	// get the size of the incoming Key Wave
-	variable incomingKeyRowCount = DimSize(incomingKeyWave, 0)			// rows...should be 3
-	variable keyMatchFound = 0
+	variable keyMatchFound
 	// if keyWave is just formed, just add the incoming KeyWave....
 	if (keyColCount == 2)
 		// have to redimension the keyWave to create the space for the new stuff
@@ -111,7 +109,6 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 				
 		rowCount = DimSize(settingsHistory, 0)		// sweep
 		colCount = DimSize(settingsHistory, 1)		// factor
-		layerCount = DimSize(settingsHistory, 2)	// headstage			
 		
 		for (keyColCounter = 0; keyColCounter < (incomingKeyColCount); keyColCounter += 1)
 			keyWave[0][keyColCounter+2] = incomingKeyWave[0][keyColCounter] // copy the parameter name		
@@ -383,8 +380,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 	variable incomingKeyColCounter
 
 	// get the size of the incoming Key Wave
-	variable incomingKeyRowCount = DimSize(incomingTextDocKeyWave, 0)	// rows...should be 3
-	variable keyMatchFound = 0
+	variable keyMatchFound
 
 	// if keyWave is just formed, just add the incoming KeyWave....
 	if (keyColCount == 2)
