@@ -176,6 +176,11 @@ End
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
+	if(!windowExists(panelTitle))
+		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
+		return NaN
+	endif
+
 	if(DAP_DeviceIsLeader(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)
 	else
