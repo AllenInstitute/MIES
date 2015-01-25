@@ -378,12 +378,14 @@ Function ConvertRateToSamplingInterval(val)
 	return 1 / val * 1e3
 End
 
-/// @brief Create a backup of the wave wv if it does not already exist.
+/// @brief Create a backup of the wave wv if it does not already
+/// exist or if `forceCreation` is true.
 ///
 /// The backup wave will be located in the same data folder and
 /// its name will be the original name with suffix "_bak".
-Function CreateBackupWaveIfNeeded(wv)
+Function/Wave CreateBackupWave(wv, [forceCreation])
 	Wave wv
+	variable forceCreation
 
 	string backupname
 	dfref dfr
@@ -392,13 +394,21 @@ Function CreateBackupWaveIfNeeded(wv)
 	backupname = NameOfWave(wv) + "_bak"
 	dfr        = GetWavesDataFolderDFR(wv)
 
-	Wave/Z/SDFR=dfr backup = $backupname
-
-	if(WaveExists(backup))
-		return NaN
+	if(ParamIsDefault(forceCreation))
+		forceCreation = 0
+	else
+		forceCreation = !!forceCreation
 	endif
 
-	Duplicate/O wv, dfr:$backupname
+	Wave/Z/SDFR=dfr backup = $backupname
+
+	if(WaveExists(backup) && !forceCreation)
+		return backup
+	endif
+
+	Duplicate/O wv, dfr:$backupname/Wave=backup
+
+	return backup
 End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
