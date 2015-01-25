@@ -1138,59 +1138,97 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 	endif
 End
 
-/// @brief Returns a wave with all values of a setting from the settingsHistory wave
+/// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
-/// Entries which are NaN for all headstages are ignored.
-/// @returns a 2D wave where the columns are the setting for each headstage and the rows the different values. In case
-/// the setting could not be found a invalid wave reference is returned.
-Function/WAVE GetHistoryOfSetting(settingsHistory, sweepNo, setting)
-	Wave settingsHistory
+/// @returns a wave with the value for each headstage in a row. In case
+/// the setting could not be found an invalid wave reference is returned.
+Function/WAVE GetLastSetting(history, sweepNo, setting)
+	Wave history
 	variable sweepNo
 	string setting
 
-	variable settingCol, numHeadstages, i, sweepCol, entries
+	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable first, last
 
-	numHeadstages = DimSize(settingsHistory, LAYERS)
-
-	settingCol = FindDimLabel(settingsHistory, COLS, setting)
+	ASSERT(WaveType(history), "Can only work with numeric waves")
+	numLayers = DimSize(history, LAYERS)
+	settingCol = FindDimLabel(history, COLS, setting)
 
 	if(settingCol <= 0)
 		DEBUGPRINT("Could not find the setting", str=setting)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(settingsHistory)
-	FindRange(settingsHistory, sweepCol, sweepNo, 0, first, last)
+	sweepCol = GetSweepColumn(history)
+	FindRange(history, sweepCol, sweepNo, 0, first, last)
 
-	if(!IsFinite(first) || !IsFinite(last)) // sweep number is unknown
+	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
 		return $""
 	endif
 
-	Make/FREE/D/N=(last - first + 1, numHeadstages) status = NaN
-	Make/FREE/D/N=(numHeadstages) singleLayer
+	Make/FREE/N=(numLayers) status
 
-	SetDimLabel COLS, -1, Headstage, status
+	for(i = last; i >= first; i -= 1)
 
-	for(i = first; i <= last; i += 1)
+		status[] = history[i][settingCol][p]
+		WaveStats/Q/M=1 status
 
-		singleLayer[] = settingsHistory[i][settingCol][p]
-		WaveStats/Q/M=1 singleLayer
-
-		// only add a new row to the result wave if the setting in question
-		// was set in that row, which means that at least one value is not NaN
-		if(V_numNaNs == numHeadstages)
-			continue
+		// return if at least one entry is not NaN
+		if(V_numNaNs != numLayers)
+			return status
 		endif
-
-		status[entries][] = singleLayer[q]
-		entries += 1
 	endfor
 
-	Redimension/N=(entries, -1) status
+	return $""
+End
 
-	return status
+/// @brief Returns a wave with latest value of a setting from the history wave
+/// for a given sweep number.
+///
+/// Text wave version of `GetLastSetting`.
+///
+/// @returns a wave with the value for each headstage in a row. In case
+/// the setting could not be found an invalid wave reference is returned.
+Function/WAVE GetLastSettingText(history, sweepNo, setting)
+	Wave/T history
+	variable sweepNo
+	string setting
+
+	variable settingCol, numLayers, i, sweepCol
+	variable first, last
+
+	ASSERT(!WaveType(history), "Can only work with text waves")
+	numLayers = DimSize(history, LAYERS)
+	settingCol = FindDimLabel(history, COLS, setting)
+
+	if(settingCol <= 0)
+		DEBUGPRINT("Could not find the setting", str=setting)
+		return $""
+	endif
+
+	sweepCol = GetSweepColumn(history)
+	FindRange(history, sweepCol, sweepNo, 0, first, last)
+
+	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
+		return $""
+	endif
+
+	Make/FREE/N=(numLayers)/T status
+	Make/FREE/N=(numLayers) lengths
+
+	for(i = last; i >= first; i -= 1)
+
+		status[] = history[i][settingCol][p]
+		lengths[] = strlen(status[p])
+
+		// return if we have at least one non-empty entry
+		if(Sum(lengths) > 0)
+			return status
+		endif
+	endfor
+
+	return $""
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´
