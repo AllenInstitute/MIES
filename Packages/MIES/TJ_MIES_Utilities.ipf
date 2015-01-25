@@ -1362,6 +1362,83 @@ Function SetDimensionLabels(keys, values)
 	endfor
 End
 
+StrConstant TRASH_FOLDER_PREFIX = "trash"
+
+/// @brief Delete a datafolder or wave. If this is not possible, because Igor
+/// has locked the file, the wave or datafolder is moved into a unique folder
+/// named `root:mies:trash_$digit`.
+///
+/// The trash folders will be removed, if possible, from KillTemporaries().
+///
+/// @param path absolute path to a datafolder or wave
+Function KillOrMoveToTrash(path)
+	string path
+
+	string dest
+
+	if(DataFolderExists(path))
+		KillDataFolder/Z $path
+
+		if(!V_flag)
+			return NaN
+		endif
+
+		DFREF miesDFR = GetMiesPath()
+		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
+		MoveDataFolder $path, $dest
+	elseif(WaveExists($path))
+		KillWaves/F/Z $path
+
+		WAVE/Z wv = $path
+		if(!WaveExists(wv))
+			return NaN
+		endif
+
+		DFREF miesDFR = GetMiesPath()
+		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		MoveWave wv, tmpDFR
+	else
+		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
+	endif
+End
+
+/// @brief Returns a unique and non-existing file name
+///
+/// @warning This function must *not* be used for security relevant purposes,
+/// as for that the check-and-file-creation must be an atomic operation.
+///
+/// @param symbPath		symbolic path
+/// @param baseName		base name of the file, must not be empty
+/// @param suffix		file suffix, e.g. ".txt", must not be empty
+Function/S UniqueFile(symbPath, baseName, suffix)
+	string symbPath, baseName, suffix
+
+	string file
+	variable i = 1
+
+	PathInfo $symbPath
+	ASSERT(V_flag == 1, "Symbolic path does not exist")
+	ASSERT(!isEmpty(baseName), "baseName must not be empty")
+	ASSERT(!isEmpty(suffix), "suffix must not be empty")
+
+	file = baseName + suffix
+
+	do
+		GetFileFolderInfo/Q/Z/P=$symbPath file
+
+		if(V_flag)
+			return file
+		endif
+
+		file = baseName + "_" + num2str(i) + suffix
+		i += 1
+
+	while(i < 10000)
+
+	ASSERT(0, "Could not find a unique file with 10000 trials")
+End
+
 /// @brief Return the name of the experiment without the file suffix
 Function/S GetExperimentName()
 	return IgorInfo(1)
