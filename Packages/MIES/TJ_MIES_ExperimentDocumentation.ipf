@@ -513,6 +513,8 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	// Create the txt wave to be used for saving the sweep set name
 	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
 	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
+	sweepSettingsTxtWave = ""
+	sweepSettingsWave    = NaN
 
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  STIM_WAVE_NAME_KEY

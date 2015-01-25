@@ -600,6 +600,8 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 	WAVE ampSettingsWave  = GetAmplifierSettingsWave(panelTitle)
 	WAVE/T ampSettingsKey = GetAmplifierSettingsKeyWave(panelTitle)
 
+	ampSettingsWave = NaN
+
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS ; i += 1)
 		if(!statusHS[i])
