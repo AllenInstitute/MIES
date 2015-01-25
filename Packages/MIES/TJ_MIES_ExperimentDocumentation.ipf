@@ -457,7 +457,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDat
 
 	rowIndex = rowCount - 1
 
-	for (layerCounter = 0; layerCounter < layerCount; layerCounter += 1)
+	for (layerCounter = 0; layerCounter < NUM_HEADSTAGES; layerCounter += 1)
 		for ( colCounter = 2; colCounter < colCount; colCounter += 1) // start at 2...otherwise you get wavenotes for every new sweep # and time stamp
 			// build up the string for the report
 			if (StringMatch(textDocWave[rowIndex][colCounter][layerCounter], "!"))
@@ -479,18 +479,17 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	string SavedDataWaveName
 	Variable sweepCount
 
-	variable i, numHeadstages
+	variable i
 
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
-	numHeadstages = DimSize(statusHS, ROWS)
 
 	// Create the numerical wave for saving the settings
-	Wave sweepSettingsWave = GetSweepSettingsWave(panelTitle, numHeadstages)
+	Wave sweepSettingsWave = GetSweepSettingsWave(panelTitle)
 	Wave/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
 
 	// Create the txt wave to be used for saving the sweep set name
-	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle, numHeadstages)
-	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle, numHeadstages)
+	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
+	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
 
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  "Stim Wave Name"
@@ -499,7 +498,7 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	Wave sweepDataWave = DC_SweepDataWvRef(panelTitle)
 	Wave/T sweepSetName = DC_SweepDataTxtWvRef(panelTitle)
 
-	for(i = 0; i < numHeadstages; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if (!statusHS[i])
 			continue
 		endif
@@ -537,7 +536,7 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	headstagesKey[1][0] =  "On/Off"
 	headstagesKey[2][0] =  "-"
 
-	Make/FREE/N=(1, 1, numHeadstages) headstagesWave
+	Make/FREE/N=(1, 1, NUM_HEADSTAGES) headstagesWave
 	headStagesWave[0][0][] = statusHS[r]
 
 	ED_createWaveNotes(headstagesWave, headstagesKey, SavedDataWaveName, SweepCount, panelTitle)
@@ -549,7 +548,7 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	followerKeys[1][0] = "On/Off"
 	followerKeys[2][0] = "-"
 
-	Make/FREE/T/N=(1, 1, numHeadstages) followerValues
+	Make/FREE/T/N=(1, 1, NUM_HEADSTAGES) followerValues
 	followerValues = ""
 
 	if(DAP_DeviceCanLead(panelTitle))

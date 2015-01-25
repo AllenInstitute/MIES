@@ -454,9 +454,8 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave GetSweepSettingsWave(panelTitle, noHeadStages)
+Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
 
@@ -465,13 +464,13 @@ Function/Wave GetSweepSettingsWave(panelTitle, noHeadStages)
 	if(WaveExists(wv))
 		// we have to resize the wave here as the user relies
 		// on the requested size
-		if(DimSize(wv, LAYERS) != noHeadStages)
-			Redimension/N=(-1, -1, noHeadStages) wv
+		if(DimSize(wv, LAYERS) != NUM_HEADSTAGES)
+			Redimension/N=(-1, -1, NUM_HEADSTAGES) wv
 		endif
 		return wv
 	endif
 
-	Make/N=(1,7,noHeadStages) dfr:sweepSettingsWave/Wave=wv
+	Make/N=(1,7,NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
 	wv = Nan
 
 	return wv
@@ -560,9 +559,8 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave GetSweepSettingsTextWave(panelTitle, noHeadStages)
+Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
 
@@ -571,13 +569,13 @@ Function/Wave GetSweepSettingsTextWave(panelTitle, noHeadStages)
 	if(WaveExists(wv))
 		// we have to resize the wave here as the user relies
 		// on the requested size
-		if(DimSize(wv, LAYERS) != noHeadStages)
-			Redimension/N=(-1, -1, noHeadStages) wv
+		if(DimSize(wv, LAYERS) != NUM_HEADSTAGES)
+			Redimension/N=(-1, -1, NUM_HEADSTAGES) wv
 		endif
 		return wv
 	endif
 
-	Make/T/N=(1,1,noHeadStages) dfr:SweepSettingsTxtData/Wave=wv
+	Make/T/N=(1,1,NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	wv = ""
 
 	return wv
@@ -595,9 +593,8 @@ End
 ///
 /// Layers:
 /// - Headstage
-Function/Wave GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
+Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
@@ -606,13 +603,13 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle, noHeadStages)
 	if(WaveExists(wv))
 		// we have to resize the wave here as the user relies
 		// on the requested size
-		if(DimSize(wv, LAYERS) != noHeadStages)
-			Redimension/N=(-1, -1, noHeadStages) wv
+		if(DimSize(wv, LAYERS) != NUM_HEADSTAGES)
+			Redimension/N=(-1, -1, NUM_HEADSTAGES) wv
 		endif
 		return wv
 	endif
 
-	Make/T/N=(1,1,noHeadStages) dfr:SweepSettingsKeyTxtData/Wave=wv
+	Make/T/N=(1,1,NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	wv = ""
 
 	return wv
@@ -936,7 +933,6 @@ End
 /// - Only one...all async measurements apply across all headstages, so no need to create multiple layers
 Function/Wave GetAsyncMeasurementWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr =GetDevSpecLabNBSettHistFolder(panelTitle)
 
@@ -1090,7 +1086,6 @@ End
 /// - Just one layer...all async settings apply to every headstage, so no need to copy across multiple layers
 Function/Wave GetAsyncSettingsWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr =GetDevSpecLabNBSettHistFolder(panelTitle)
 
@@ -1412,7 +1407,6 @@ End
 /// - only do one...all of the aysnc measurement values apply to all headstages, so not necessary to save in 8 layers
 Function/Wave GetAsyncSettingsTextWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
 
@@ -1457,7 +1451,6 @@ End
 /// - Just one
 Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	string panelTitle
-	variable noHeadStages
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
