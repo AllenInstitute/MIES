@@ -566,24 +566,31 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 
 	ED_createWaveNotes(headstagesWave, headstagesKey, SavedDataWaveName, SweepCount, panelTitle)
 
-	Make/FREE/T/N=(3, 1) followerKeys
-	followerKeys = ""
+	Make/FREE/T/N=(3, 2) keys
+	keys = ""
 
-	followerKeys[0][0] = "Follower Device"
-	followerKeys[1][0] = "On/Off"
-	followerKeys[2][0] = "-"
+	keys[0][0] = "Follower Device"
+	keys[1][0] = "On/Off"
+	keys[2][0] = "-"
 
-	Make/FREE/T/N=(1, 1, NUM_HEADSTAGES) followerValues
-	followerValues = ""
+	keys[0][1] = "MIES version"
+	keys[1][1] = "On/Off"
+	keys[2][1] = "-"
+
+	Make/FREE/T/N=(1, 2, NUM_HEADSTAGES) values
+	values = ""
 
 	if(DAP_DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices))
-			followerValues[0][0][] = listOfFollowerDevices
+			values[0][0][] = listOfFollowerDevices
 		endif
 	endif
 
-	ED_createTextNotes(followerValues, followerKeys, SavedDataWaveName, SweepCount, panelTitle)
+	SVAR miesVersion = $GetMiesVersion()
+	values[0][1][] = miesVersion
+
+	ED_createTextNotes(values, keys, SavedDataWaveName, SweepCount, panelTitle)
 End
 
 //======================================================================================
