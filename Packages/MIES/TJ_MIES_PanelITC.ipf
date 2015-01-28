@@ -4180,6 +4180,11 @@ Function DAP_CheckSettings(panelTitle)
 
 		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 
+		if(HSU_CanSelectDevice(panelTitle))
+			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
+			return 1
+		endif
+
 		numHS = sum(DC_ControlStatusWave(panelTitle, "DataAcq_HS"))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle

@@ -557,4 +557,17 @@ Function/S HSU_ListDevices()
 	return result
 End
 
-//==================================================================================================
+/// @brief Try to select the ITC device
+/// @return 0 if sucessfull, 1 on error
+Function HSU_CanSelectDevice(panelTitle)
+	string panelTitle
+
+	string cmd
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	sprintf cmd, "ITCSelectDevice/Z %d", ITCDeviceIDGlobal
+	Execute cmd
+
+	NVAR ITCError, ITCXOPError
+	return ITCError != 0 || ITCXOPError != 0
+End
