@@ -1180,3 +1180,8 @@ Function SetDimensionLabels(keys, values)
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
 End
+
+/// @brief Return the name of the experiment without the file suffix
+Function/S GetExperimentName()
+	return IgorInfo(1)
+End

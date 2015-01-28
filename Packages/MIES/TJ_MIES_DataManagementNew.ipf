@@ -18,9 +18,8 @@ Function DM_SaveITCData(panelTitle)
 
 	Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
 	Duplicate/O ITCChanConfigWave $savedSetUpWaveName
-	note dataWave, Time() // adds time stamp to wave note
-	getwindow kwFrameOuter wtitle 
-	note dataWave, s_value
+	note dataWave, Time()
+	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
 	SVAR miesVersion = $GetMiesVersion()
 	Note dataWave, "MiesVersion: " + miesVersion
 	ED_AppendCommentToDataWave(dataWave, panelTitle) // adds user comments as wave note
