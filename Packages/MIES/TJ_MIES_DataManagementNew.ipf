@@ -26,7 +26,7 @@ Function DM_SaveITCData(panelTitle)
 	ED_AppendCommentToDataWave(dataWave, panelTitle) // adds user comments as wave note
 
 	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
-		AI_createAmpliferSettingsWave(panelTitle, savedDataWaveName, SweepNo)
+		AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 		// function for debugging
 		// createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	endif
