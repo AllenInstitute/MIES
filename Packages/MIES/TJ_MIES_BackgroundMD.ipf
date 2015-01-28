@@ -15,9 +15,8 @@ Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if
 	variable StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle) // DC_CalculateLongestSweep(panelTitle)
 	variable TimerStart
 
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
-	
-	//print "global device ID = ", itcdeviceidglobal
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 
@@ -164,19 +163,11 @@ END
 //=============================================================================================================================
 Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
 	String panelTitle
-	string cmd
-	
-	string ITCDeviceFolderPathString
-	sprintf ITCDeviceFolderPathString, "%s" HSU_DataFullFolderPathString(panelTitle)
-	
-	string ITCDeviceIDGlobalPathString
-	sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" ITCDeviceFolderPathString
-	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
-	
-	string CountPathString
-	sprintf CountPathString, "%s:Count" ITCDeviceFolderPathString
-	NVAR /z Count = $CountPathString
 
+	string cmd
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceTextList
 
@@ -208,8 +199,8 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	DM_ScaleITCDataWave(panelTitle)
 	
 	// kills the global variable associated with ongoing repeated data acquisition
-	if(exists(CountPathString) == 1) 
-		killvariables Count
+	if(NVAR_Exists(count))
+		KillVariables count
 	endif
 	
 	// sets the global variable that records the devices aquisition state to 0, indicating no onging acquisition.

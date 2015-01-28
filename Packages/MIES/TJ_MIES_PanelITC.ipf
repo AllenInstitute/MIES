@@ -4874,8 +4874,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
 	string cmd
-	NVAR FollowerITCDeviceIDGlobal = $(HSU_DataFullFolderPathString(panelToDeYoke) + ":ITCDeviceIDGlobal")
-	sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
+	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
+	sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
 	Execute cmd
 	Execute "ITCInitialize /M = 0"
 End

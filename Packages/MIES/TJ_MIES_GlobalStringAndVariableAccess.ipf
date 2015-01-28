@@ -159,3 +159,10 @@ Function/S GetFollowerList([doNotCreateSVAR])
 
 	return path + ":ListOfFollowerITC1600s"
 End
+
+/// @brief Returns the absolute path to the ITC device ID
+Function/S GetITCDeviceIDGlobal(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "ITCDeviceIDGlobal", initialValue=NaN)
+End

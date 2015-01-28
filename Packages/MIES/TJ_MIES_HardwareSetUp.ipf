@@ -281,21 +281,22 @@ End
 //==================================================================================================
 Function HSU_OpenITCDevice(panelTitle)
 	String panelTitle
+
 	variable DeviceType, DeviceNumber
 	string cmd
 	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 	DeviceType = v_value - 1
 	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 	DeviceNumber = v_value - 1
+
 	Make /o  /I /U /N = 1 DevID = 50 // /FREE /I /U /N = 2 DevID = 50
 	string DeviceID = "DevID"
 	sprintf cmd, "ITCOpenDevice %d, %d, %s", DeviceType, DeviceNumber, DeviceID
 	Execute cmd
+
 	print "ITC Device ID = ",DevID[0], "is locked."
-	//print "ITC Device ID = ",DevID[1], "is locked."
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string ITCDeviceIDGlobal = WavePath + ":ITCDeviceIDGlobal"
-	Variable /G $ITCDeviceIDGlobal = DevID[0]
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	ITCDeviceIDGlobal = DevID[0]
 End
 //==================================================================================================
 
@@ -416,14 +417,13 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	string leadDAC, followerDAC
 
 	string cmd
-	string followerPath = HSU_DataFullFolderPathString(followerDAC)
 
 	SVAR listOfFollowerDevices = $HSU_CreateITCFollowerList(leadDAC)
-	NVAR FollowerITCDeviceIDGlobal = $(followerPath + ":ITCDeviceIDGlobal")
+	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerDAC)
 	
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
-		sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
+		sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
 		Execute cmd
 		Execute "ITCInitialize /M = 1"
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
