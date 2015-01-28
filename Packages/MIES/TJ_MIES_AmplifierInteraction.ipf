@@ -230,6 +230,12 @@ Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x100
 Constant MCC_AUTOPIPETTEOFFSET_FUNC      = 0x110
 Constant MCC_SETPIPETTEOFFSET_FUNC       = 0x120
 Constant MCC_GETPIPETTEOFFSET_FUNC       = 0x130
+Constant MCC_SETSLOWCURRENTINJENABL_FUNC = 0x140
+Constant MCC_GETSLOWCURRENTINJENABL_FUNC = 0x150
+Constant MCC_SETSLOWCURRENTINJLEVEL_FUNC = 0x160
+Constant MCC_GETSLOWCURRENTINJLEVEL_FUNC = 0x170
+Constant MCC_SETSLOWCURRENTINJSETLT_FUNC = 0x180
+Constant MCC_GETSLOWCURRENTINJSETLT_FUNC = 0x190
 /// @}
 
 /// @brief Generic interface to call MCC amplifier functions
@@ -324,6 +330,24 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 			break
 		case MCC_GETPIPETTEOFFSET_FUNC:
 			ret = MCC_GetPipetteOffset()
+			break
+		case MCC_SETSLOWCURRENTINJENABL_FUNC:
+			ret = MCC_SetSlowCurrentInjEnable(value)
+			break
+		case MCC_GETSLOWCURRENTINJENABL_FUNC:
+			ret = MCC_GetSlowCurrentInjEnable()
+			break
+		case MCC_SETSLOWCURRENTINJLEVEL_FUNC:
+			ret = MCC_SetSlowCurrentInjLevel(value)
+			break
+		case MCC_GETSLOWCURRENTINJLEVEL_FUNC:
+			ret = MCC_GetSlowCurrentInjLevel()
+			break
+		case MCC_SETSLOWCURRENTINJSETLT_FUNC:
+			ret = MCC_SetSlowCurrentInjSetlTime(value)
+			break
+		case MCC_GETSLOWCURRENTINJSETLT_FUNC:
+			ret = MCC_GetSlowCurrentInjSetlTime()
 			break
 		default:
 			ASSERT(0, "Unknown function")
