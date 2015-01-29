@@ -1380,3 +1380,31 @@ Function/S GetTimeStamp([secondsSinceIgorEpoch])
 
 	return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
 End
+
+/// @brief Function prototype for use with CallFunctionForEachList
+Function CALL_FUNCTION_LIST_PROTOTYPE(str)
+	string str
+End
+
+/// @brief Convenience function to call the function f with each list item
+///
+/// The function's type must be CALL_FUNCTION_LIST_PROTOTYPE where the return
+/// type is ignored.
+Function CallFunctionForEachListItem(f, list, [sep])
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f
+	string list, sep
+
+	variable i, numEntries
+	string entry
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, sep)
+
+		f(entry)
+	endfor
+End
