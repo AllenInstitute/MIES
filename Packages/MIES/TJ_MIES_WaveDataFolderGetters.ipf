@@ -1977,7 +1977,7 @@ End
 Function/WAVE GetAmplifierSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/Z/SDFR=dfr wv = ampSettings
@@ -1986,7 +1986,7 @@ Function/WAVE GetAmplifierSettingsWave(panelTitle)
 		return wv
 	endif
 
-	Make/O/N=(1,36) dfr:ampSettings/Wave=wv
+	Make/O/N=(1,39) dfr:ampSettings/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -2006,7 +2006,7 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	string panelTitle
 	dfref dfr = GetAmpSettingsFolder()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
@@ -2015,7 +2015,7 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/O/N=(3, 36) dfr:ampSettingsKey/Wave=wv
+	Make/T/O/N=(3, 39) dfr:ampSettingsKey/Wave=wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -2166,6 +2166,18 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	wv[0][35] =  "Pipette Offset"
 	wv[1][35] =  "mV"
 	wv[2][35] =  ""
+
+	wv[0][36] =  "Slow current injection"
+	wv[1][36] =  "On/Off"
+	wv[2][36] =  "-"
+
+	wv[0][37] =  "Slow current injection level"
+	wv[1][37] =  "V"
+	wv[2][37] =  ""
+
+	wv[0][38] =  "Slow current injection settling time"
+	wv[1][38] =  "s"
+	wv[2][38] =  ""
 
 	SetWaveVersion(wv, versionOfNewWave)
 

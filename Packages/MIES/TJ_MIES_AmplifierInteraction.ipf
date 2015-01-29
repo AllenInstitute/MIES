@@ -668,6 +668,10 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 
 			// save bridge balance enabled in column 15
 			ampSettingsWave[0][15][i] =  (MCC_GetBridgeBalResist() * 1e-6)	 // I-Clamp Bridge Balance Resist
+
+			ampSettingsWave[0][36][i] =  MCC_GetSlowCurrentInjEnable()
+			ampSettingsWave[0][37][i] =  MCC_GetSlowCurrentInjLevel()
+			ampSettingsWave[0][38][i] =  MCC_GetSlowCurrentInjSetlTime()
 		endif
 
 		// save the axon telegraph settings as well
