@@ -10,9 +10,7 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 	Variable DurationTicks = (RunTime*60)
 	Variable EndTimeTicks = StartTicks + DurationTicks
 	
-	// get device ID global
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	// create string list with function names passed in
 	string ListOfFunctions = FunctionNameAPassedIn + ";" + FunctionNameBPassedIn + ";" + FunctionNameCPassedIn
@@ -102,9 +100,7 @@ Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, 
 
 	variable start = stopmstimer(-2)
 
-	// get device ID global
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DFREF activeDevicesTimer = GetActiveITCDevicesTimerFolder()
 
 	WAVE/Z/SDFR=activeDevicesTimer ActiveDevTimeParam
@@ -172,7 +168,7 @@ End
 Function ITC_StartITCDeviceTimer(panelTitle)
 	string panelTitle
 
-	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DFREF timer = GetActiveITCDevicesTimerFolder()
 
 	WAVE/Z/SDFR=timer CycleTimeStorageWave
@@ -192,7 +188,7 @@ Function ITC_StopITCDeviceTimer(panelTitle)
 	string panelTitle
 
 	WAVE/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
-	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	return stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
 End

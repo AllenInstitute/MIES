@@ -101,7 +101,7 @@ End // Function
 Function ITC_ConfigUploadDAC(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	string cmd = ""
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
@@ -379,9 +379,7 @@ Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only
 						// root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList NEED to make sure all yoked devices are inactive !!!!!!!!!!!!
 						
 						// check if lead device is still active
-						string ITCDeviceIDGlobalPathString
-						sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString("ITC1600_Dev_0")
-						NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+						NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal("ITC1600_Dev_0")
 						FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
 						
 						if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
@@ -390,10 +388,7 @@ Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only
 						
 						// check if follower devices are still active 
 						for (i = 0; i < numberOfFollowerDevices; i += 1)
-							string FollowerITC1600
-							sprintf FollowerITC1600, "%s" stringfromlist(i, ListOfFollowerDevices, ";")
-							sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString(FollowerITC1600)
-							NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+							NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(StringFromList(i, ListOfFollowerDevices))
 							FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
 							if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
 								return 0 // does not initiate data acquisition unless all follower devices have completed data acquistion
@@ -453,9 +448,7 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 						// root:MIES:ITCDevices:ActiveITCDevices:ActiveDeviceTextList NEED to make sure all yoked devices are inactive !!!!!!!!!!!!
 							
 						// check if lead device is still active
-						string ITCDeviceIDGlobalPathString
-						sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString("ITC1600_Dev_0")
-						NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+						NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal("ITC1600_Dev_0")
 						FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
 						
 						if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
@@ -464,10 +457,7 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 						
 						// check if follower devices are still active
 						for (i = 0; i < numberOfFollowerDevices; i += 1)
-							string FollowerITC1600
-							sprintf FollowerITC1600, "%s" stringfromlist(i, ListOfFollowerDevices, ";")
-							sprintf ITCDeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" HSU_DataFullFolderPathString(FollowerITC1600)
-							NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPathString
+							NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(StringFromList(i, ListOfFollowerDevices))
 							FindLevel /P /Q ActiveDeviceListDeviceIDGlobals, ITCDeviceIDGlobal
 							if(V_flag == 1) // ITCDeviceIDGlobal was found indicating the device is still active
 								return 0

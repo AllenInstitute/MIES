@@ -15,7 +15,7 @@ Function ITC_DataAcq(panelTitle)
 	variable i
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
 	variable stopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
@@ -108,7 +108,7 @@ Function ITC_BkrdDataAcq(panelTitle)
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	Execute cmd
@@ -138,8 +138,9 @@ Function ITC_StopDataAcq()
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	string CountPath = WavePath + ":count"
-	NVAR DeviceID = $(wavePath + ":ITCDeviceIDGlobal")
-	sprintf cmd, "ITCSelectDevice %d" DeviceID
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	
 	sprintf cmd, "ITCStopAcq /z = 0"
@@ -192,8 +193,8 @@ Function ITC_FIFOMonitor(s)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	WAVE ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	NVAR DeviceID = $(wavePath + ":ITCDeviceIDGlobal")
-	sprintf cmd, "ITCSelectDevice %d" DeviceID
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
 	Execute cmd	
@@ -283,7 +284,7 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	string  ITCDataWavePath = WavePath + ":ITCDataWave"
 	string  ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	execute cmd
 	
@@ -321,7 +322,7 @@ Function ITC_TestPulseFunc(s)
 	Wave ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
 	string ResultsWavePath = WavePath + ":ResultsWave"
 	string CountPath = WavePath + ":count"
-	NVAR DeviceID = $(wavePath + ":ITCDeviceIDGlobal")
+	NVAR DeviceID = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" DeviceID
 	execute cmd
 	

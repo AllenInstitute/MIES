@@ -13,7 +13,7 @@ Function RA_Start(panelTitle)
 	string CountPath = WavePath + ":Count"
 	variable /g $CountPath = 0
 	NVAR Count = $CountPath
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath = v_value
@@ -95,7 +95,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 	NVAR Count = $CountPath
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
-	NVAR ITCDeviceIDGlobal = $WavePath + ":ITCDeviceIDGlobal"
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	Count += 1
 	ActiveSetCount -= 1

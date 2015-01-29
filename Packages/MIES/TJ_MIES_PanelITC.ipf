@@ -4177,6 +4177,11 @@ Function DAP_CheckSettings(panelTitle)
 
 		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 
+		if(HSU_CanSelectDevice(panelTitle))
+			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
+			return 1
+		endif
+
 		numHS = sum(DC_ControlStatusWave(panelTitle, "DataAcq_HS"))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
@@ -4871,8 +4876,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
 	string cmd
-	NVAR FollowerITCDeviceIDGlobal = $(HSU_DataFullFolderPathString(panelToDeYoke) + ":ITCDeviceIDGlobal")
-	sprintf cmd, "ITCSelectDevice %d" FollowerITCDeviceIDGlobal
+	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
+	sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
 	Execute cmd
 	Execute "ITCInitialize /M = 0"
 End

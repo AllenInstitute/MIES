@@ -9,8 +9,6 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
 	sprintf ITCDataWavePath, "%s:ITCDataWave" WavePath
 	string ITCChanConfigWavePath
 	sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
-	string ITCDeviceIDGlobalPath
-	sprintf ITCDeviceIDGlobalPath, "%s:ITCDeviceIDGlobal" WavePath
 	string ITCFIFOAvailAllConfigWavePath
 	sprintf ITCFIFOAvailAllConfigWavePath, "%s:ITCFIFOAvailAllConfigWave" WavePath
 	string cmd
@@ -18,7 +16,7 @@ Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if star
 	
 	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle) // used to determine when a sweep should terminate
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle) // channel that is monitored to determine when a sweep should terminate
-	NVAR ITCDeviceIDGlobal = $ITCDeviceIDGlobalPath
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	
 	WAVE ITCDataWave = $ITCDataWavePath // ITC data wave is the wave that is uploaded to the DAC and contains the DA (output) data and place holder for the input data
 	WAVE ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
@@ -210,12 +208,11 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
 	string DeviceIDGlobalPathString
-	sprintf DeviceIDGlobalPathString, "%s:ITCDeviceIDGlobal" DeviceFolderPath
-	NVAR DeviceIDGlobal = $DeviceIDGlobalPathString
-	
-	sprintf cmd, "ITCSelectDevice %d" DeviceIDGlobal
-	execute cmd		
-	
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	execute cmd
+
 	// code section below is used to get the state of the DAC
 	string StateWavePathString 
 	sprintf StateWavePathString, "%s:StateWave" DeviceFolderPath
@@ -228,7 +225,7 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 		sprintf cmd, "ITCStopAcq"
 		execute cmd
 		
-		ITC_MakeOrUpdateTPDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1) // 
+		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 		ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 		if (dimsize(ActiveDeviceTextList, 0) == 0) 
