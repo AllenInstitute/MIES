@@ -3412,6 +3412,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
+	variable nextSweep
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
@@ -3444,11 +3445,8 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 
 					// Checks for manual roll back of Next Sweep
 					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
-						controlinfo SetVar_Sweep
-						variable NextSweep = v_value
-						DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
-						DM_DeleteDataWaves(panelTitle, NextSweep)
-						ED_MakeSettingsHistoryWave(panelTitle)
+						nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+						DM_DeleteDataWaves(panelTitle, nextSweep)
 					endif
 				endif
 
@@ -3487,6 +3485,8 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
+	variable nextSweep
+
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
 			SetDataFolder root:
@@ -3527,11 +3527,8 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 				if(GetCheckBoxState(panelTitle, "check_Settings_Overwrite")) // if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave
 
 					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle)) // checks for manual roll back of Next Sweep
-						controlinfo SetVar_Sweep
-						variable NextSweep = v_value
-						DM_DeleteSettingsHistoryWaves(NextSweep, panelTitle)
-						DM_DeleteDataWaves(panelTitle, NextSweep)
-						ED_MakeSettingsHistoryWave(panelTitle) // generates new settings history wave
+						nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+						DM_DeleteDataWaves(panelTitle, nextSweep)
 					endif
 				endif
 

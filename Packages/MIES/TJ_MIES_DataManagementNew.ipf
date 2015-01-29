@@ -145,32 +145,6 @@ Function DM_ScaleITCDataWave(panelTitle)
 	DM_ADScaling(ITCDataWave,panelTitle)
 end
 
-Function DM_DeleteSettingsHistoryWaves(SweepNo,panelTitle)// deletes setting history waves "older" than SweepNo
-	variable SweepNo
-	string panelTitle
-	variable i = 0
-	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	
-	SetDataFolder GetDevicePath(panelTitle)
-	string WavePath = GetDevicePathAsString(panelTitle)
-	string ListOf_ChanAmpAssign_Sweep_x_Wv = wavelist("ChanAmpAssign_Sweep_*", ";","")
-	string WaveNameUnderConsideration
-	do
-		WaveNameUnderConsideration = WavePath + ":" + stringfromlist(i, ListOf_ChanAmpAssign_Sweep_x_Wv, ";")
-		if(itemsinlist(ListOf_ChanAmpAssign_Sweep_x_Wv) > 0)
-		duplicate /free $WaveNameUnderConsideration WorkingWave
-			if(WorkingWave[11][0] > SweepNo)
-				killwaves /f /z $WaveNameUnderConsideration
-			endif	
-		endif
-		i += 1
-	while(i < itemsinlist(ListOf_ChanAmpAssign_Sweep_x_Wv))
-	
-	SetDataFolder saveDFR
-
-End
-//=============================================================================================================	
 Function DM_ReturnLastSweepAcquired(panelTitle)
 	string panelTitle
 	

@@ -1,22 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-//=============================================================================================================
-Function ED_MakeSettingsHistoryWave(panelTitle)
-	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	variable NextSweep
-	controlinfo /w = $panelTitle SetVar_Sweep
-	NextSweep = v_value
-	string NewWaveName = WavePath + ":ChanAmpAssign_Sweep_" + num2str(NextSweep)//sweep name has these new settings
-	string cmd
-	duplicate /o ChanAmpAssign $NewWaveName
-	wave SettingsHistoryWave = $NewWaveName
-	SettingsHistoryWave[11][] = NextSweep
-	note SettingsHistoryWave, time()
-End
-
-//=============================================================================================================
 Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 	wave DataWaveName
 	string panelTitle
@@ -26,7 +9,6 @@ Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
 		SetVariable SetVar_DataAcq_Comment value = _STR:""
 	endif
 End
-//=============================================================================================================
 
 /// @brief Add notation of settings to an experiment DataWave.  This function
 /// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.

@@ -302,14 +302,11 @@ End
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
 
-	Variable HeadStageNo, SweepNo, i, amplifierIdx
-	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
+	variable HeadStageNo, amplifierIdx
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
 	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
-
-	Duplicate/free ChanAmpAssign ChanAmpAssignOrig
 
 	// Assigns V-clamp settings for a particular headstage
 	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
@@ -338,10 +335,13 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ChanAmpAssign[7][HeadStageNo] = v_value
 	ControlInfo /w = $panelTitle SetVar_Hardware_IC_AD_Unit	
 	ChanAmpAssignUnit[3][HeadStageNo] = s_value
-	
-	// Assigns amplifier to a particular headstage - sounds weird because this relationship is predetermined in hardware
+
+	// Assigns amplifier to a particular headstage
+	// sounds weird because this relationship is predetermined in hardware
 	// but now you are telling the software what it is
 	amplifierIdx = GetPopupMenuIndex(panelTitle, "popup_Settings_Amplifier")
+
+	WAVE/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 	if(WaveExists(W_TelegraphServers) && amplifierIdx >= 1)
 		ChanAmpAssign[8][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][0] // serial number
 		ChanAmpAssign[9][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][1] // channel ID
@@ -349,17 +349,6 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	else
 		ChanAmpAssign[8][HeadStageNo] = nan
 		ChanAmpAssign[9][HeadStageNo] = nan
-	endif
-
-	//Duplicate ChanampAssign wave and add sweep number if the wave is changed
-	controlinfo SetVar_Sweep
-	SweepNo = v_value
-	
-	if(SweepNo > 0)
-		ChanAmpAssignOrig -= ChanAmpAssign//used to see if settings have changed
-		if((wavemax(ChanAmpAssignOrig)) != 0 || (wavemin(ChanAmpAssignOrig)) != 0)
-			ED_MakeSettingsHistoryWave(panelTitle)
-		endif
 	endif
 End
 //==================================================================================================
