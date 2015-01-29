@@ -126,17 +126,27 @@ End
 /// @brief Alternative implementation for WaveList which honours a dfref and thus
 /// does not require SetDataFolder calls.
 ///
+/// @param dfr                                 datafolder reference to search for the waves
+/// @param regExpStr                           regular expression matching the waves, see the help of GrepString for an introduction to regular expressions
+/// @param waveProperty [optional, empty]      additional properties of matching waves, inspired by WaveList, currently implemented are `MINCOLS` and `TEXT`
+/// @param fullPath [optional, default: false] should only the wavename or the absolute path of the wave be returned.
+///
 /// @returns list of wave names matching regExpStr located in dfr
-Function/S GetListOfWaves(dfr, regExpStr, [options])
+Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
 	dfref dfr
-	string regExpStr, options
+	string regExpStr, waveProperty
+	variable fullPath
 
-	variable i, j, numOptions, numWaves, matches, val
-	// todo think about using PadString here for increased speed
-	string list = "", name, str, opt
+	variable i, j, numWaveProperties, numWaves, matches, val
+	string name, str, prop
+	string list = ""
 
 	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
 	ASSERT(!isEmpty(regExpStr),"regexpStr is empty or null")
+
+	if(ParamIsDefault(fullPath))
+		fullPath = 0
+	endif
 
 	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
 	for(i=0; i<numWaves; i+=1)
@@ -148,16 +158,16 @@ Function/S GetListOfWaves(dfr, regExpStr, [options])
 		endif
 
 		matches = 1
-		if(!ParamIsDefault(options) && !isEmpty(options))
-			numOptions = ItemsInList(options)
-			for(j = 0; j < numOptions; j += 1)
-				str = StringFromList(j, options)
-				opt = StringFromList(0, str, ":")
-				val = str2num(StringFromList(1, str, ":"))
+		if(!ParamIsDefault(waveProperty) && !isEmpty(waveProperty))
+			numWaveProperties = ItemsInList(waveProperty)
+			for(j = 0; j < numWaveProperties; j += 1)
+				str  = StringFromList(j, waveProperty)
+				prop = StringFromList(0, str, ":")
+				val  = str2num(StringFromList(1, str, ":"))
 				ASSERT(IsFinite(val), "non finite value")
-				ASSERT(!IsEmpty(opt), "empty option")
+				ASSERT(!IsEmpty(prop), "empty option")
 
-				strswitch(opt)
+				strswitch(prop)
 					case "MINCOLS":
 						matches = matches & DimSize(wv, COLS) >= val
 						break
@@ -176,7 +186,11 @@ Function/S GetListOfWaves(dfr, regExpStr, [options])
 		endif
 
 		if(matches)
-			list = AddListItem(name, list, ";", Inf)
+			if(fullPath)
+				list = AddListItem(GetWavesDataFolder(wv, 2), list, ";", Inf)
+			else
+				list = AddListItem(name, list, ";", Inf)
+			endif
 		endif
 	endfor
 

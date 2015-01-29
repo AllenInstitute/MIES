@@ -149,7 +149,7 @@ Function DM_ReturnLastSweepAcquired(panelTitle)
 	
 	string list
 
-	list = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, options="MINCOLS:2")
+	list = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 	return ItemsInList(list) - 1
 End
 //=============================================================================================================

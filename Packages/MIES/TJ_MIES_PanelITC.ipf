@@ -3862,7 +3862,7 @@ Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 		endif
 
 		dfref dfr = GetDeviceDataPath(panelTitle)
-		maxNextSweep = max(maxNextSweep, ItemsInList(GetListOfWaves(dfr, DATA_SWEEP_REGEXP, options="MINCOLS:2")))
+		maxNextSweep = max(maxNextSweep, ItemsInList(GetListOfWaves(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")))
 	endfor
 
 	for(i = 0; i < numPanels; i += 1)
