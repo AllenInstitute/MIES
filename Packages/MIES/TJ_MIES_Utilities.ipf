@@ -1185,3 +1185,17 @@ End
 Function/S GetExperimentName()
 	return IgorInfo(1)
 End
+
+
+/// @brief Return a formatted timestamp of the form "YY_MM_DD_HHMMSS"
+//
+/// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
+Function/S GetTimeStamp([secondsSinceIgorEpoch])
+	variable secondsSinceIgorEpoch
+
+	if(ParamIsDefault(secondsSinceIgorEpoch))
+		secondsSinceIgorEpoch = DateTime
+	endif
+
+	return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
+End
