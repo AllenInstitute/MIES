@@ -1130,8 +1130,8 @@ Function/WAVE GetHistoryOfSetting(settingsHistory, sweepNo, setting)
 	return status
 End
 
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
-Function/S GetAllDevicesWithData()
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´
+Function/S GetAllActiveDevices()
 
 	variable i, j, numTypes, numNumbers
 	string type, number, device
@@ -1157,18 +1157,42 @@ Function/S GetAllDevicesWithData()
 		for(j = 0; j < numNumbers ; j += 1)
 			number = StringFromList(j, DEVICE_NUMBERS)
 			device = BuildDeviceString(type, number)
-			path   = GetDeviceDataPathAsString(device)
+			path   = GetDevicePathAsString(device)
 
 			if(!DataFolderExists(path))
 				continue
 			endif
 
-			if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
-				continue
-			endif
-
 			list = AddListItem(device, list, ";", inf)
 		endfor
+	endfor
+
+	return list
+End
+
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
+Function/S GetAllDevicesWithData()
+
+	variable i, numDevices
+	string deviceList, device, path
+	string list = ""
+
+	deviceList = GetAllActiveDevices()
+
+	numDevices = ItemsInList(deviceList)
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, deviceList)
+		path   = GetDeviceDataPathAsString(device)
+
+		if(!DataFolderExists(path))
+			continue
+		endif
+
+		if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
+			continue
+		endif
+
+		list = AddListItem(device, list, ";", inf)
 	endfor
 
 	return list
