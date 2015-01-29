@@ -52,11 +52,13 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	WAVE/D/Z/SDFR=settingsHistoryDFR settingsHistory
 
 	if(!WaveExists(settingsHistory))
-		make/D/N=(0, 2) settingsHistoryDFR:settingsHistory/Wave=settingsHistory
+		Make/D/N=(0, 2, NUM_HEADSTAGES) settingsHistoryDFR:settingsHistory/Wave=settingsHistory
 
 		SetDimLabel COLS, 0, SweepNum, settingsHistory
 		SetDimLabel COLS, 1, TimeStamp, settingsHistory
 	endif
+
+	ASSERT(DimSize(incomingSettingsWave, LAYERS) <= DimSize(settingsHistory, LAYERS), "Unexpected large layer count in the incoming settings wave")
 
 	WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
 
@@ -100,7 +102,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 		// have to redimension the keyWave to create the space for the new stuff
 		Redimension/N= (4, (keyColCount + incomingKeyColCount)) keyWave
 		// also redimension the settings History Wave to create row space to add new sweep data...
-		Redimension/N=(-1, (2+incomingColCount), incomingLayerCount) settingsHistory
+		Redimension/N=(-1, (2+incomingColCount), -1) settingsHistory
 		
 		// Add dimension labels to the keyWave
 		SetDimLabel 0, 0, Parameter, keyWave
