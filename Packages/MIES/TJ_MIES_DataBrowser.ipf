@@ -64,7 +64,7 @@ static Function DB_LockDBPanel(panelTitle)
 		return NaN
 	endif
 
-	panelTitleNew = "DB_" + device
+	panelTitleNew = UniqueName("DB_" + device, 9, 0)
 	DoWindow/W=$panelTitle/C $panelTitleNew
 
 	SetWindow $panelTitleNew, userdata(DataFolderPath) = GetDevicePathAsString(device)
