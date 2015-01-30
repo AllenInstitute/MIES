@@ -3430,9 +3430,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					ITC_STOPTestPulse(panelTitle)
 				endif
 
-				string wavePath = HSU_DataFullFolderPathString(panelTitle)
-				Wave/SDFR=$wavePath ITCDataWave
-
 				string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
 				if(exists(CountPath) == 2)
 					KillVariables $CountPath
@@ -3455,6 +3452,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 				// Function that passes column to configdataForITCfunction?
 				// If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
 				DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+				Wave/SDFR=GetDevicePath(panelTitle) ITCDataWave
 				SCOPE_CreateGraph(ITCDataWave, panelTitle)
 				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					ITC_DataAcq(panelTitle)
@@ -3497,10 +3495,9 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 			if(!DataAcqState)
-
 				 // stops test pulse if it is running
 				if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD"))
-					WAVE/Z /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
+					WAVE/T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 					variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
 					variable i = 0
 					for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
