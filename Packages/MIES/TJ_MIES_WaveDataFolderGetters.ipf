@@ -1977,7 +1977,7 @@ End
 Function/WAVE GetAmplifierSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/Z/SDFR=dfr wv = ampSettings
@@ -1986,7 +1986,7 @@ Function/WAVE GetAmplifierSettingsWave(panelTitle)
 		return wv
 	endif
 
-	Make/O/N=(1,39) dfr:ampSettings/Wave=wv
+	Make/O/N=(1,39, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
