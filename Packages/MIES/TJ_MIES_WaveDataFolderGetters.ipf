@@ -1966,3 +1966,220 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 
 	return PressureDataTextWv
 End
+
+/// @brief Returns wave reference for the amplifier settings
+///
+/// Rows:
+/// - Only one
+///
+/// Columns:
+/// - Amplifier parameters as described in the amplifier settings key wave
+Function/WAVE GetAmplifierSettingsWave(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 2
+	dfref dfr = GetAmpSettingsFolder()
+
+	Wave/Z/SDFR=dfr wv = ampSettings
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/O/N=(1,39) dfr:ampSettings/Wave=wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Returns wave reference for the amplifier settings keys
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance factor
+///
+/// Columns:
+/// - Various settings
+Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
+	string panelTitle
+	dfref dfr = GetAmpSettingsFolder()
+
+	variable versionOfNewWave = 2
+	dfref dfr = GetAmpSettingsFolder()
+
+	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/T/O/N=(3, 39) dfr:ampSettingsKey/Wave=wv
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units    , wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	wv[0][0] = "V-Clamp Holding Enable"
+	wv[1][0] = "On/Off"
+	wv[2][0] = "-"
+
+	wv[0][1] =  "V-Clamp Holding Level"
+	wv[1][1] = "mV"
+	wv[2][1] = "0.9"
+
+	wv[0][2] =  "Osc Killer Enable"
+	wv[1][2] =  "On/Off"
+	wv[2][2] =  "-"
+
+	wv[0][3] =  "RsComp Bandwidth"
+	wv[1][3] =  "Hz"
+	wv[2][3] =  "0.9"
+
+	wv[0][4] =  "RsComp Correction"
+	wv[1][4] =  "%"
+	wv[2][4] =  "0.9"
+
+	wv[0][5] =  "RsComp Enable"
+	wv[1][5] =  "On/Off"
+	wv[2][5] =  "-"
+
+	wv[0][6] =  "RsComp Prediction"
+	wv[1][6] =  "%"
+	wv[2][6] =  "0.9"
+
+	wv[0][7] =  "Whole Cell Comp Enable"
+	wv[1][7] =  "On/Off"
+	wv[2][7] =  "-"
+
+	wv[0][8] =  "Whole Cell Comp Cap"
+	wv[1][8] =  "pF"
+	wv[2][8] =  "0.9"
+
+	wv[0][9] =  "Whole Cell Comp Resist"
+	wv[1][9] =  "MOhm"
+	wv[2][9] =  "0.9"
+
+	wv[0][10] =  "I-Clamp Holding Enable"
+	wv[1][10] =  "On/Off"
+	wv[2][10] =  "-"
+
+	wv[0][11] =  "I-Clamp Holding Level"
+	wv[1][11] =  "pA"
+	wv[2][11] =  "0.9"
+
+	wv[0][12] =  "Neut Cap Enabled"
+	wv[1][12] =  "On/Off"
+	wv[2][12] =  "-"
+
+	wv[0][13] =  "Neut Cap Value"
+	wv[1][13] =  "pF"
+	wv[2][13] =  "0.9"
+
+	wv[0][14] =  "Bridge Bal Enable"
+	wv[1][14] =  "On/Off"
+	wv[2][14] =  "-"
+
+	wv[0][15] =  "Bridge Bal Value"
+	wv[1][15] =  "MOhm"
+	wv[2][15] =  "0.9"
+
+	// and now add the Axon values to the amp settings key
+	wv[0][16] =  "Serial Number"
+	wv[1][16] =  ""
+	wv[2][16] =  ""
+
+	wv[0][17] =  "Channel ID"
+	wv[1][17] =  ""
+	wv[2][17] =  ""
+
+	wv[0][18] =  "ComPort ID"
+	wv[1][18] =  ""
+	wv[2][18] =  ""
+
+	wv[0][19] =  "AxoBus ID"
+	wv[1][19] =  ""
+	wv[2][19] =  ""
+
+	wv[0][20] =  "Operating Mode"
+	wv[1][20] =  ""
+	wv[2][20] =  ""
+
+	wv[0][21] =  "Scaled Out Signal"
+	wv[1][21] =  ""
+	wv[2][21] =  ""
+
+	wv[0][22] =  "Alpha"
+	wv[1][22] =  ""
+	wv[2][22] =  ""
+
+	wv[0][23] =  "Scale Factor"
+	wv[1][23] =  ""
+	wv[2][23] =  ""
+
+	wv[0][24] =  "Scale Factor Units"
+	wv[1][24] =  ""
+	wv[2][24] =  ""
+
+	wv[0][25] =  "LPF Cutoff"
+	wv[1][25] =  ""
+	wv[2][25] =  ""
+
+	wv[0][26] =  "Membrane Cap"
+	wv[1][26] =  "pF"
+	wv[2][26] =  "0.9"
+
+	wv[0][27] =  "Ext Cmd Sens"
+	wv[1][27] =  ""
+	wv[2][27] =  ""
+
+	wv[0][28] =  "Raw Out Signal"
+	wv[1][28] =  ""
+	wv[2][28] =  ""
+
+	wv[0][29] =  "Raw Scale Factor"
+	wv[1][29] =  ""
+	wv[2][29] =  ""
+
+	wv[0][30] =  "Raw Scale Factor Units"
+	wv[1][30] =  ""
+	wv[2][30] =  ""
+
+	wv[0][31] =  "Hardware Type"
+	wv[1][31] =  ""
+	wv[2][31] =  ""
+
+	wv[0][32] =  "Secondary Alpha"
+	wv[1][32] =  ""
+	wv[2][32] =  ""
+
+	wv[0][33] =  "Secondary LPF Cutoff"
+	wv[1][33] =  ""
+	wv[2][33] =  ""
+
+	wv[0][34] =  "Series Resistance"
+	wv[1][34] =  "MOhms"
+	wv[2][34] =  "0.9"
+
+	// new keys starting from 29a161c
+	wv[0][35] =  "Pipette Offset"
+	wv[1][35] =  "mV"
+	wv[2][35] =  ""
+
+	wv[0][36] =  "Slow current injection"
+	wv[1][36] =  "On/Off"
+	wv[2][36] =  "-"
+
+	wv[0][37] =  "Slow current injection level"
+	wv[1][37] =  "V"
+	wv[2][37] =  ""
+
+	wv[0][38] =  "Slow current injection settling time"
+	wv[1][38] =  "s"
+	wv[2][38] =  ""
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
