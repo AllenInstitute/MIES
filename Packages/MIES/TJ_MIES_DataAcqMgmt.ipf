@@ -24,7 +24,6 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
-		// if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // allows ITC1600 devices that are not device 0 to work independently
 			print "Data Acq started on independent ITC1600"
 			ITC_ConfigUploadDAC(panelTitle)
 			ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
@@ -36,7 +35,6 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 					ARDStartSequence() // runs the arduino once before it matters to make sure it is intialized - not sure if i need to do this
 					do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						//print followerpaneltitle
 						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 						wave /z ITCDataWave = $WavePath + ":ITCDataWave"
@@ -45,7 +43,6 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 					while(i < numberOfFollowerDevices)
 					i = 0
 					TriggerMode = 256
-					//print "start time =",TriggerMode
 					
 					do // LOOP that preconfigures each DAC to
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
@@ -70,13 +67,12 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 					variable RepeatedAcqOnOrOff = v_value
 	
 					if(RepeatedAcqOnOrOff == 1)
-					//	print "started timer"
 						ITC_StartITCDeviceTimer(panelTitle) // starts a timer for lead  ITC device. Timer is used to do real time ITI timing.
 					endif
 					// activates trigger	
 					print "DATA Acquisition initiated"				
 					ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!! THIS TRIGGERS THE YOKED ITC1600s
-				elseif(numberOfFollowerDevices == 0) // No follower devices in global string that contains list of follower devices
+				else
 					ITC_ConfigUploadDAC(panelTitle)
 					ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
 				endif
@@ -85,12 +81,12 @@ Function FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // this functio
 				ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
 			endif
 		endif	
-	elseIf(DeviceType != 2) // starts data acquisition for non ITC1600 ITC devices
+	else
 		ITC_ConfigUploadDAC(panelTitle)
 		ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle)
 	endif
 	print "Data Acquisition took: ", (stopmstimer(-2) - start) / 1000, " ms"
-End // Function
+End
 //=================================================================================================================
 
 /// @brief Configures ITC DACs
@@ -143,7 +139,6 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
-//		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0) // if the device being started isn't device 0, then it isn't a yoked device. Therefore it starts on its own.
 			print "TP Started on independent ITC1600"
 			TP_TPSetUp(panelTitle)
 			ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle) // START TP DATA ACQUISITION
@@ -210,17 +205,14 @@ Function StartTestPulse(deviceType, deviceNum, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale,panelTitle)		
 			endif
 		endif
-	elseif(DeviceType != 2)
-	
+	else
 		TP_TPSetUp(panelTitle)
 		ITC_BkrdTPMD(DeviceType, DeviceNum, 0, panelTitle) // START TP DATA ACQUISITION
 		wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
 		wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
 		TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
 		TP_RestoreDAScale(SelectedDACScale,panelTitle)
-	
 	endif
-	
 End
 //=========================================================================================
 
@@ -238,7 +230,6 @@ Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simul
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
-//		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0)
 			print "Data Acquisition stopped on independent ITC1600"
 			DAP_StopOngoingDataAcqMD(panelTitle)
 		elseif(stringmatch(panelTitle, "ITC1600_Dev_0") == 1) 
@@ -247,15 +238,12 @@ Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simul
 				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 				if(numberOfFollowerDevices != 0) 
 					string followerPanelTitle
-					
 			
 					//Lead board commands
-					// ITC_StopTPMD(panelTitle)
 					DAP_StopOngoingDataAcqMD(panelTitle)
 					//Follower board commands
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						//ITC_StopTPMD(followerPanelTitle)
 						DAP_StopOngoingDataAcqMD(followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
@@ -268,8 +256,7 @@ Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simul
 				DAP_StopOngoingDataAcqMD(panelTitle)
 			endif
 		endif
-	elseif(DeviceType != 2)
-		// ITC_StopTPMD(panelTitle)
+	else
 		DAP_StopOngoingDataAcqMD(panelTitle)
 	endif
 End
@@ -341,10 +328,10 @@ if(DeviceType == 2) // if the device is a ITC1600 i.e., capable of yoking
     endif
 End
 
-Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
-	string panelTitle					// if devices are not yoked, it is the same as it would be if RA_StartMD was called directly
-
-	variable i, deviceType
+// if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
+// if devices are not yoked, it is the same as it would be if RA_StartMD was called directly
+Function YokedRA_StartMD(panelTitle)
+	string panelTitle
 
 	variable ITC1600True = stringmatch(panelTitle, "*ITC1600*")
 	if(ITC1600True == 1)
@@ -398,15 +385,15 @@ Function YokedRA_StartMD(panelTitle) // if devices are yoked, RA_StartMD is only
 					print "RA_StartMD(ITC1600_dev_0)" 
 					RA_StartMD("ITC1600_dev_0") // This should run if the device is an ITC1600_Dev0 as a lead or independent, all other devices get initated elswhere in this function
 				
-				elseif(numberOfFollowerDevices == 0) // there are no follower devices
+				else
 					RA_StartMD(panelTitle)
 				endif
 			else
 				RA_StartMD(panelTitle)
 			endif
 		endif
-	elseif(DeviceType != 2) // not a ITC1600, therefore there can be no follower devices
-			RA_StartMD(panelTitle)
+	else
+		RA_StartMD(panelTitle)
 	endif	
 End
 //=========================================================================================
@@ -474,8 +461,8 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 				 RA_BckgTPwithCallToRACounterMD(panelTitle)
 			endif
 		endif
-	elseif(DeviceType != 2) // not a ITC1600, therefore there can be no follower devices
-			 RA_BckgTPwithCallToRACounterMD(panelTitle)
+	else
+		 RA_BckgTPwithCallToRACounterMD(panelTitle)
 	endif	
 End
 

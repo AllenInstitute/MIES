@@ -83,7 +83,7 @@ Function ITC_CalculateDevChannelOffset(panelTitle)
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
 	ASSERT(ret, "Could not parse device string")
 	
-	if(!cmpstr(deviceType, "ITC1600")) // ITC1600
+	if(!cmpstr(deviceType, "ITC1600"))
 		return 16
 	endif
 
@@ -170,7 +170,6 @@ Function ITC_StopDataAcq()
 			DataAcqState = 0
 		endif
 	else
-		//print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
 		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 END
@@ -262,9 +261,6 @@ Function ITC_StopBackgroundTimerTask()
 	CtrlNamedBackground ITC_Timer, stop // had incorrect background procedure name
 	Execute FunctionNameA
  	Execute FunctionNameB
-	//Execute FunctionNameC
-	//killvariables/z Start, RunTime
-	//Killstrings/z FunctionNameA, FunctionNameB, FunctionNameC
 End
 //======================================================================================
 

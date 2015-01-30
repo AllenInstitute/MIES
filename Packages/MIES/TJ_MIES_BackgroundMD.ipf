@@ -109,7 +109,7 @@ End // Function ITC_FIFOMonitorMD(s)
 
 Function ITC_StopBckrdFIFOMonitorMD()
 	CtrlNamedBackground ITC_FIFOMonitorMD, stop
-End // Function ITC_StopBckrdFIFOMonitorMD
+End
 //=============================================================================================================================
 
 Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
@@ -131,9 +131,6 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	Execute cmd	
 	
-	//sprintf cmd, "ITCCloseAll" 
-	//execute cmd
-	
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
 		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps, one for saved waves, one for the oscilloscope
@@ -151,15 +148,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 			DataAcqState = 0
 		endif
 	else
-		//print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
-		//RA_BckgTPwithCallToRACounterMD(panelTitle)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		YokedRA_BckgTPwCallToRACounter(panelTitle)
 	endif
-	
-	//killvariables /z StopCollectionPoint, ADChannelToMonitor
-	//killvariables /z  ADChannelToMonitor
-	//killstrings /z PanelTitleG
 END
+
 //=============================================================================================================================
 Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
 	String panelTitle

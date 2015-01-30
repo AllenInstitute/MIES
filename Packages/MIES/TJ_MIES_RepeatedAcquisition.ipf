@@ -226,9 +226,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TotTrials = v_value
 	endif
 	
-	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-	//TotTrials = (TotTrials * v_value) + 1
-	
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
 	ITI = v_value
 			
@@ -268,7 +265,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		print "Repeated acquisition is complete"
 		Killvariables Count
 		killvariables /z Start, RunTime
-		Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
+		Killstrings /z FunctionNameA, FunctionNameB
 		killwaves /f TestPulse
 	endif
 End
@@ -276,8 +273,8 @@ End
 
 Function RA_StartMD(panelTitle)
 	string panelTitle
+
 	variable ITI
-	// variable IndexingState
 	variable i = 0
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
@@ -293,7 +290,6 @@ Function RA_StartMD(panelTitle)
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
 	ActiveSetCount *= v_value
-	//ActiveSetCount -= 1
 	variable TotTrials
 	
 	// gets info from controls
@@ -308,7 +304,7 @@ Function RA_StartMD(panelTitle)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 		TotTrials = v_value
 		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value) // + 1
+		TotTrials = (TotTrials * v_value)
 	else
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
@@ -354,40 +350,27 @@ Function RA_StartMD(panelTitle)
 					i += 1
 			
 				while(i < numberOfFollowerDevices)
-				
-			
 			endif
 		endif
 	endif
-	
+
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count)) // updates trials remaining in panel
-	
+
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
 	ITI = v_value
-	
-//	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-//	IndexingState = v_value
-//	Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
-		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
-		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
+	ITI -= ITC_StopITCDeviceTimer(panelTitle)
+	StartTestPulse(panelTitle)
 
-//	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-	StartTestPulse(deviceType, deviceNum, panelTitle)  // 
 	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
 	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
-	// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
-	// wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-	// wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
-	// TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	// TP_RestoreDAScale(SelectedDACScale,panelTitle)	
-
 End
 //====================================================================================================
 
 Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 	variable DeviceType,DeviceNum
 	string panelTitle
+
 	variable TotTrials
 	variable ITI
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
@@ -413,10 +396,7 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
 	endif
-	//print "TotTrials = " + num2str(tottrials)
 	print "count = " + num2str(count), "in RA_CounterMD"
-	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-	//TotTrials = (TotTrials * v_value) + 1
 	
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
 	ITI = v_value
@@ -433,7 +413,7 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 			controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value == 1)//indexing is locked
 				print "Index Step taken"
-				IDX_IndexingDoIt(panelTitle) //
+				IDX_IndexingDoIt(panelTitle)
 			endif	
 
 			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
@@ -608,19 +588,11 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	ITI = v_value
 			
 	if(Count < (TotTrials - 1))
-		//Print "run time:", ITC_StopITCDeviceTimer(panelTitle)
 		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		StartTestPulse(deviceType, deviceNum, panelTitle)
-		// ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
 		ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
-//		wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-//		wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
-//		TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-//		TP_RestoreDAScale(SelectedDACScale,panelTitle)		
-		
-		//killwaves/f TestPulse
 	else
 		ITC_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
@@ -636,8 +608,6 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			print "*****************path to list of follower devices exists"
 			numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
 			if(numberOfFollowerDevices != 0) // there are followers
-				// string followerPanelTitle
-				// variable followerTotTrials
 				i = 0
 				do
 					followerPanelTitle = stringfromlist(i,listOfFollowerDevices, ";")
@@ -652,11 +622,5 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			
 			endif
 		endif
-		
-		
-		//killvariables /z Start, RunTime
-		//Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
-		//killwaves /f TestPulse
 	endif
 End
-//====================================================================================================

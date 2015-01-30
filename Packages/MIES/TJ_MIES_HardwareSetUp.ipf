@@ -13,8 +13,6 @@ Function HSU_QueryITCDevice(panelTitle)
 	
 	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
 	Execute cmd
-	//sprintf cmd, "ITCGetState /E=1 ResultWave"
-	//Execute cmd
 	DoAlert /t = "Ready light check"  0, "Click \"OK\" when finished checking device"
 	
 	sprintf cmd, "ITCCloseDevice" 
@@ -101,8 +99,6 @@ End
 Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	string panelTitle
 	
-	variable ret
-	string deviceType, deviceNumber
 	string path = HSU_DataFullFolderPathString(panelTitle)
 
 	createDFWithAllParents(path + ":Data")
@@ -115,7 +111,7 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 End
 //==================================================================================================
 
-/// Returns the device type as string, readout from the popup menu in the Hardware tab
+/// @brief Returns the device type as string, readout from the popup menu in the Hardware tab
 Function/s HSU_GetDeviceType(panelTitle)
 	string panelTitle
 
@@ -124,7 +120,7 @@ Function/s HSU_GetDeviceType(panelTitle)
 	return S_value
 End
 
-/// Returns the device type as index into the popup menu in the Hardware tab
+/// @brief Returns the device type as index into the popup menu in the Hardware tab
 Function HSU_GetDeviceTypeIndex(panelTitle)
 	string panelTitle
 
@@ -142,6 +138,7 @@ Function/s HSU_GetDeviceNumber(panelTitle)
 	return S_value
 End
 
+/// @brief Returns the device number as index into the popup menu in the Hardware tab
 Function HSU_GetDeviceNumberIndex(panelTitle)
 	string panelTitle
 
