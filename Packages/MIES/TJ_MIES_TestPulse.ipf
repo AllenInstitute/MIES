@@ -281,7 +281,6 @@ Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
 				killvariables $CountPath
 			endif
 
-			// update TP buffer size global
 			TP_UpdateTPBufferSizeGlobal(panelTitle)
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
@@ -299,25 +298,17 @@ Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
 			break
 	endswitch
 End
-//=============================================================================================
-/// @brief Updates the global variable n in the TP folder for the device that TP_Delta uses to calculate the mean resistance values
+
+/// @brief Updates the global variable n in the TP folder
+///
 /// n determines the number of TP cycles to average
 Function TP_UpdateTPBufferSizeGlobal(panelTitle)
 	string panelTitle
-	controlInfo /w = $panelTitle setvar_Settings_TPBuffer
-	variable TPBufferSize = v_value
-	string TPBufferSizeGlobalStringPath
-	sprintf TPBufferSizeGlobalStringPath, "%s:TestPulse:n" HSU_DataFullFolderPathString(panelTitle)
-	if(exists(TPBufferSizeGlobalStringPath) ==2)
-		NVAR TPBufferSizeGlobal = $TPBufferSizeGlobalStringPath
-		TPBufferSizeGlobal = TPBufferSize
-	elseif(exists(TPBufferSizeGlobalStringPath) ==0)
-		variable /g $TPBufferSizeGlobalStringPath
-		NVAR TPBufferSizeGlobal = $TPBufferSizeGlobalStringPath
-		TPBufferSizeGlobal = TPBufferSize	
-	endif
+
+	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
+	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
 End
-//=============================================================================================
+
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
 // The function TPDelta is called by the TP dataaquistion functions
 // It updates a wave in the Test pulse folder for the device
@@ -342,8 +333,7 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	sprintf 	stringPath,  "%s:TestPulseITC"	InputDataPath
 	wave 	TPWave 	= $stringPath
 
-	sprintf 	stringPath,  "%s:n" 			InputDataPath
-	NVAR 	RowsInBufferWaves = $stringPath
+	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
 	variable 	Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
 	variable 	BaselineSteadyStateStartTime =(0.1 * duration)
@@ -445,30 +435,30 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 		columns = 1
 	endif
 
-	if(RowsInBufferWaves > 1)
+	if(tpBufferSize > 1)
 		sprintf stringPath,  "%s:TPBaselineBuffer" InputDataPath
-		make /o /n = (RowsInBufferWaves, columns) $stringPath // ** does not clear TP buffer wave each time TP is started by the user
+		make /o /n = (tpBufferSize, columns) $stringPath // ** does not clear TP buffer wave each time TP is started by the user
 		wave /z TPBaselineBuffer = $stringPath // buffer wave for baseline avg - the first row will hold the value of the most recent TP, the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
 		matrixop /o TPBaselineBuffer =  rotaterows(TPBaselineBuffer, 1)
 		TPBaselineBuffer[0][] = BaselineSSAvg[0][q]
 		matrixop /o BaselineSSAvg = sumcols(TPBaselineBuffer)
-		BaselineSSAvg /= RowsInBufferWaves // *
+		BaselineSSAvg /= tpBufferSize
 
 		sprintf stringPath,  "%s:TPInstBuffer" InputDataPath
-		make /o /n = (RowsInBufferWaves, columns) $stringPath
+		make /o /n = (tpBufferSize, columns) $stringPath
 		wave /z TPInstBuffer = $stringPath // buffer wave for Instantaneous avg
 		matrixop /o TPInstBuffer =  rotaterows(TPInstBuffer, 1)
 		Multithread TPInstBuffer[0][] = InstResistance[0][q]
 		matrixop /o InstResistance = sumcols(TPInstBuffer)
-		InstResistance /= RowsInBufferWaves
+		InstResistance /= tpBufferSize
 
 		sprintf stringPath,  "%s:TPSSBuffer" InputDataPath
-		make /o /n = (RowsInBufferWaves, columns) $stringPath
+		make /o /n = (tpBufferSize, columns) $stringPath
 		wave /z TPSSBuffer = $stringPath // buffer wave for steady state avg
 		matrixop /o TPSSBuffer =  rotaterows(TPSSBuffer, 1)
 		Multithread TPSSBuffer[0][] = SSResistance[0][q]
 		matrixop /o SSResistance = sumcols(TPSSBuffer)
-		SSResistance /= RowsInBufferWaves
+		SSResistance /= tpBufferSize
 
 	endif
 
