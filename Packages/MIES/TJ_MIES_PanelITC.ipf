@@ -3149,13 +3149,16 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 End
 
-//=========================================================================================
-/// Returns 1 if a ITC1600 device is selected in the Device type popup
-/// Remember: Only ITC1600 devices can be yoked
+/// @returns 1 if the device is a "ITC1600"
 Function DAP_DeviceIsYokeable(panelTitle)
   string panelTitle
 
-  return cmpstr(HSU_GetDeviceType(panelTitle),"ITC1600") == 0
+  string deviceType, deviceNumber
+  if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
+	deviceType = HSU_GetDeviceType(panelTitle)
+  endif
+
+  return !cmpstr(deviceType, "ITC1600")
 End
 
 Function DAP_DeviceIsFollower(panelTitle)
@@ -3170,7 +3173,7 @@ End
 Function DAP_DeviceCanLead(panelTitle)
 	string panelTitle
 
-  return cmpstr(HSU_GetDeviceType(panelTitle),"ITC1600") == 0 && cmpstr(HSU_GetDeviceNumber(panelTitle),"0") == 0
+	return !cmpstr(panelTitle, "ITC1600_Dev_0")
 End
 
 Function DAP_DeviceIsLeader(panelTitle)
