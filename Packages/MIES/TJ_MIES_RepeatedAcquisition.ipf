@@ -23,11 +23,6 @@ Function RA_Start(panelTitle)
 	//ActiveSetCount -= 1
 	variable TotTrials
 	
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum = v_value - 1
-	
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -75,15 +70,14 @@ Function RA_Start(panelTitle)
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
 		ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
-		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
+		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 		
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_RestoreDAScale(SelectedDACScale,panelTitle)
 End
 //====================================================================================================
 
-Function RA_Counter(DeviceType,DeviceNum,panelTitle)
-	variable DeviceType,DeviceNum
+Function RA_Counter(panelTitle)
 	string panelTitle
 	variable TotTrials
 	variable ITI
@@ -177,7 +171,7 @@ Function RA_Counter(DeviceType,DeviceNum,panelTitle)
 				
 				ITI -= ITC_StopITCDeviceTimer(panelTitle)
 				ITC_StartBackgroundTestPulse(panelTitle)
-				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
+				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 				
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale, panelTitle)
@@ -210,11 +204,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string CountPath = WavePath + ":Count"
 	NVAR Count = $CountPath
 		
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum = v_value - 1
-	
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -252,7 +241,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTestPulse(panelTitle)
-		ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")", "", panelTitle)
+		ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 		
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_RestoreDAScale(SelectedDACScale, panelTitle)
@@ -292,12 +281,6 @@ Function RA_StartMD(panelTitle)
 	ActiveSetCount *= v_value
 	variable TotTrials
 	
-	// gets info from controls
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum = v_value - 1
-	
 	// makes adjustments for indexing being on or off
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
@@ -311,8 +294,7 @@ Function RA_StartMD(panelTitle)
 	endif
 	
 	// if the device is an ITC1600 it will handle follower or independent devices
-	if(DeviceType == 2)
-
+	if(DAP_DeviceIsYokeable(panelTitle))
 		
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
@@ -363,12 +345,11 @@ Function RA_StartMD(panelTitle)
 	StartTestPulse(panelTitle)
 
 	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
-	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
+	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 End
 //====================================================================================================
 
-Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
-	variable DeviceType,DeviceNum
+Function RA_CounterMD(panelTitle)
 	string panelTitle
 
 	variable TotTrials
@@ -431,7 +412,7 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 		endif
 	endif
 	
-	if(DeviceType == 2)
+	if(DAP_DeviceIsYokeable(panelTitle))
 	
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
@@ -509,7 +490,7 @@ Function RA_CounterMD(DeviceType,DeviceNum,panelTitle)
 	if(Count < TotTrials)
 		variable DataAcqOrTP = 0
 		print "about in initate bkcrdDataAcq"
-		FunctionStartDataAcq(deviceType, deviceNum, panelTitle)
+		FunctionStartDataAcq(panelTitle)
 	endif
 End
 
@@ -525,12 +506,6 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	sprintf countPathString, "%s:Count"  WavePath
 	NVAR Count = $countPathString
 	
-	// get the device info: device type and device number	
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	variable DeviceNum = v_value - 1
-	
 	// check if indexing is selected
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
@@ -543,7 +518,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		TotTrials = v_value
 	endif
 
-	if(DeviceType == 2) // handling of  yoked ITC1600 
+	if(DAP_DeviceIsYokeable(panelTitle)) // handling of  yoked ITC1600
 
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
@@ -591,8 +566,9 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
-		StartTestPulse(deviceType, deviceNum, panelTitle)
-		ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(" + num2str(DeviceType) + "," + num2str(DeviceNum) + ",\"" + panelTitle + "\")",  "", panelTitle)
+		StartTestPulse(panelTitle)
+
+		ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 	else
 		ITC_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials

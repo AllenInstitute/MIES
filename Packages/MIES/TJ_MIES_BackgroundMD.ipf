@@ -4,8 +4,8 @@
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
  
-Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
-	variable DeviceType, DeviceNum, TriggerMode
+Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+	variable TriggerMode
 	string panelTitle
 //	Variable start = stopmstimer(-2)
 	string cmd
@@ -115,7 +115,7 @@ End
 Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
-	variable DeviceType, DeviceNum
+
 	string cmd
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"

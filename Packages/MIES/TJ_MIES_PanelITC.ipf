@@ -3521,16 +3521,10 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 
 				DAP_OneTimeInitBeforeDAQ(panelTitle)
 
-				// determine the type of device
-				controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-				variable DeviceType = v_value - 1
-				controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-				variable DeviceNum = v_value - 1
-
 				//Data collection
 				DataAcqState = 1
 				DAP_AcqDataButtonToStopButton(panelTitle)
-				FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
+				FunctionStartDataAcq(panelTitle) // initiates background aquisition
 			else // data aquistion is ongoing, stop data acq
 				DataAcqState = 0
 				Yoked_ITCStopDataAcq(panelTitle)

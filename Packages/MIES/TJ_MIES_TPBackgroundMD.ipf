@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function ITC_BkrdTPMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
- 	variable DeviceType, DeviceNum, TriggerMode
+Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+	variable TriggerMode
 	string panelTitle
 	string WavePath
 	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)

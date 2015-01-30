@@ -284,13 +284,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
 			TP_UpdateTPBufferSizeGlobal(panelTitle)
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
-			// determine the device type and device number
-			controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-			variable DeviceType = v_value - 1
-			controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-			variable DeviceNum = v_value - 1
-
-			StartTestPulse(deviceType, deviceNum, panelTitle)
+			StartTestPulse(panelTitle)
 
 			// Enable pressure buttons
 			variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
