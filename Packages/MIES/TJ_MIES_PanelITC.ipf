@@ -3408,11 +3408,35 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 End
 //=========================================================================================
 
+/// @brief One time initialization before data acquisition
+Function DAP_OneTimeInitBeforeDAQ(panelTitle)
+	string panelTitle
+
+	variable nextSweep
+
+	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
+	if(NVAR_Exists(count))
+		KillVariables count
+	endif
+
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
+
+	// History management
+	// if overwrite old waves is checked in data panel, the following
+	// code will delete the old waves
+	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
+		// Checks for manual roll back of Next Sweep
+		if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
+			nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+			DM_DeleteDataWaves(panelTitle, nextSweep)
+		endif
+	endif
+End
+
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
-	variable nextSweep
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
@@ -3430,22 +3454,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					ITC_STOPTestPulse(panelTitle)
 				endif
 
-				string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
-				if(exists(CountPath) == 2)
-					KillVariables $CountPath
-				endif
-
-				// History management
-				// if overwrite old waves is checked in datapro panel, the following
-				// code will delete the old waves and generate a new settings history wave
-				if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
-
-					// Checks for manual roll back of Next Sweep
-					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
-						nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
-						DM_DeleteDataWaves(panelTitle, nextSweep)
-					endif
-				endif
+				DAP_OneTimeInitBeforeDAQ(panelTitle)
 
 				// Data collection
 				// Function that assess how many 1d waves in set??
@@ -3507,27 +3516,13 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 					endfor
 				endif
 
-				// checks if the global variable count exists (it shouldn't exist at the onset of data acq, so it gets killed if it does)
-				string CountPath
-				sprintf CountPath, "%s:Count" HSU_DataFullFolderPathString(panelTitle)
-				if(exists(CountPath) == 2)
-					killvariables $CountPath
-				endif
+				DAP_OneTimeInitBeforeDAQ(panelTitle)
 
 				// determine the type of device
 				controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
 				variable DeviceType = v_value - 1
 				controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
 				variable DeviceNum = v_value - 1
-
-				// History management
-				if(GetCheckBoxState(panelTitle, "check_Settings_Overwrite")) // if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave
-
-					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle)) // checks for manual roll back of Next Sweep
-						nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
-						DM_DeleteDataWaves(panelTitle, nextSweep)
-					endif
-				endif
 
 				//Data collection
 				DataAcqState = 1
