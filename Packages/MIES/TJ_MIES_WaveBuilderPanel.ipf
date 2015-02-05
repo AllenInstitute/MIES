@@ -19,10 +19,10 @@ Menu "Mies Panels", dynamic
 		"WaveBuilder", /Q,  WBP_CreateWaveBuilderPanel()
 End
 
-StrConstant panel                     = "WaveBuilder"
-StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
-StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
-StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
+static StrConstant panel                     = "WaveBuilder"
+static StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
+static StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
+static StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 
 static Function WBP_InitiateWaveBuilder()
 
