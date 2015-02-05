@@ -3149,13 +3149,16 @@ Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
 
 End
 
-//=========================================================================================
-/// Returns 1 if a ITC1600 device is selected in the Device type popup
-/// Remember: Only ITC1600 devices can be yoked
+/// @returns 1 if the device is a "ITC1600"
 Function DAP_DeviceIsYokeable(panelTitle)
   string panelTitle
 
-  return cmpstr(HSU_GetDeviceType(panelTitle),"ITC1600") == 0
+  string deviceType, deviceNumber
+  if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
+	deviceType = HSU_GetDeviceType(panelTitle)
+  endif
+
+  return !cmpstr(deviceType, "ITC1600")
 End
 
 Function DAP_DeviceIsFollower(panelTitle)
@@ -3170,7 +3173,7 @@ End
 Function DAP_DeviceCanLead(panelTitle)
 	string panelTitle
 
-  return cmpstr(HSU_GetDeviceType(panelTitle),"ITC1600") == 0 && cmpstr(HSU_GetDeviceNumber(panelTitle),"0") == 0
+	return !cmpstr(panelTitle, "ITC1600_Dev_0")
 End
 
 Function DAP_DeviceIsLeader(panelTitle)
@@ -3408,11 +3411,35 @@ Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedur
 End
 //=========================================================================================
 
+/// @brief One time initialization before data acquisition
+Function DAP_OneTimeInitBeforeDAQ(panelTitle)
+	string panelTitle
+
+	variable nextSweep
+
+	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
+	if(NVAR_Exists(count))
+		KillVariables count
+	endif
+
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
+
+	// History management
+	// if overwrite old waves is checked in data panel, the following
+	// code will delete the old waves
+	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
+		// Checks for manual roll back of Next Sweep
+		if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
+			nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+			DM_DeleteDataWaves(panelTitle, nextSweep)
+		endif
+	endif
+End
+
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
-	variable nextSweep
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
@@ -3430,31 +3457,14 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					ITC_STOPTestPulse(panelTitle)
 				endif
 
-				string wavePath = HSU_DataFullFolderPathString(panelTitle)
-				Wave/SDFR=$wavePath ITCDataWave
-
-				string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
-				if(exists(CountPath) == 2)
-					KillVariables $CountPath
-				endif
-
-				// History management
-				// if overwrite old waves is checked in datapro panel, the following
-				// code will delete the old waves and generate a new settings history wave
-				if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
-
-					// Checks for manual roll back of Next Sweep
-					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
-						nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
-						DM_DeleteDataWaves(panelTitle, nextSweep)
-					endif
-				endif
+				DAP_OneTimeInitBeforeDAQ(panelTitle)
 
 				// Data collection
 				// Function that assess how many 1d waves in set??
 				// Function that passes column to configdataForITCfunction?
 				// If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
 				DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+				Wave/SDFR=GetDevicePath(panelTitle) ITCDataWave
 				SCOPE_CreateGraph(ITCDataWave, panelTitle)
 				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					ITC_DataAcq(panelTitle)
@@ -3497,10 +3507,9 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 			if(!DataAcqState)
-
 				 // stops test pulse if it is running
 				if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD"))
-					WAVE/Z /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
+					WAVE/T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 					variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
 					variable i = 0
 					for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
@@ -3510,32 +3519,12 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 					endfor
 				endif
 
-				// checks if the global variable count exists (it shouldn't exist at the onset of data acq, so it gets killed if it does)
-				string CountPath
-				sprintf CountPath, "%s:Count" HSU_DataFullFolderPathString(panelTitle)
-				if(exists(CountPath) == 2)
-					killvariables $CountPath
-				endif
-
-				// determine the type of device
-				controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-				variable DeviceType = v_value - 1
-				controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-				variable DeviceNum = v_value - 1
-
-				// History management
-				if(GetCheckBoxState(panelTitle, "check_Settings_Overwrite")) // if overwrite old waves is checked in datapro panel, the following code will delete the old waves and generate a new settings history wave
-
-					if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle)) // checks for manual roll back of Next Sweep
-						nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
-						DM_DeleteDataWaves(panelTitle, nextSweep)
-					endif
-				endif
+				DAP_OneTimeInitBeforeDAQ(panelTitle)
 
 				//Data collection
 				DataAcqState = 1
 				DAP_AcqDataButtonToStopButton(panelTitle)
-				FunctionStartDataAcq(deviceType, deviceNum, panelTitle) // initiates background aquisition
+				FunctionStartDataAcq(panelTitle) // initiates background aquisition
 			else // data aquistion is ongoing, stop data acq
 				DataAcqState = 0
 				Yoked_ITCStopDataAcq(panelTitle)

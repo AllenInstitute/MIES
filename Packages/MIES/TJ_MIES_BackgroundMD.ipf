@@ -4,8 +4,8 @@
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
  
-Function ITC_BkrdDataAcqMD(DeviceType, DeviceNum, TriggerMode, panelTitle) // if start time = 0 the variable is ignored
-	variable DeviceType, DeviceNum, TriggerMode
+Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+	variable TriggerMode
 	string panelTitle
 //	Variable start = stopmstimer(-2)
 	string cmd
@@ -109,13 +109,13 @@ End // Function ITC_FIFOMonitorMD(s)
 
 Function ITC_StopBckrdFIFOMonitorMD()
 	CtrlNamedBackground ITC_FIFOMonitorMD, stop
-End // Function ITC_StopBckrdFIFOMonitorMD
+End
 //=============================================================================================================================
 
 Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
-	variable DeviceType, DeviceNum
+
 	string cmd
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
@@ -130,9 +130,6 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	Execute cmd	
-	
-	//sprintf cmd, "ITCCloseAll" 
-	//execute cmd
 	
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
@@ -151,15 +148,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 			DataAcqState = 0
 		endif
 	else
-		//print "about to initiate RA_BckgTPwithCallToRACounter(panelTitleG)"
-		//RA_BckgTPwithCallToRACounterMD(panelTitle)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		YokedRA_BckgTPwCallToRACounter(panelTitle)
 	endif
-	
-	//killvariables /z StopCollectionPoint, ADChannelToMonitor
-	//killvariables /z  ADChannelToMonitor
-	//killstrings /z PanelTitleG
 END
+
 //=============================================================================================================================
 Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
 	String panelTitle

@@ -13,8 +13,6 @@ Function HSU_QueryITCDevice(panelTitle)
 	
 	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
 	Execute cmd
-	//sprintf cmd, "ITCGetState /E=1 ResultWave"
-	//Execute cmd
 	DoAlert /t = "Ready light check"  0, "Click \"OK\" when finished checking device"
 	
 	sprintf cmd, "ITCCloseDevice" 
@@ -101,8 +99,6 @@ End
 Function HSU_CreateDataFolderForLockdDev(panelTitle)
 	string panelTitle
 	
-	variable ret
-	string deviceType, deviceNumber
 	string path = HSU_DataFullFolderPathString(panelTitle)
 
 	createDFWithAllParents(path + ":Data")
@@ -115,7 +111,7 @@ Function HSU_CreateDataFolderForLockdDev(panelTitle)
 End
 //==================================================================================================
 
-/// Returns the device type as string, readout from the popup menu in the Hardware tab
+/// @brief Returns the device type as string, readout from the popup menu in the Hardware tab
 Function/s HSU_GetDeviceType(panelTitle)
 	string panelTitle
 
@@ -124,7 +120,7 @@ Function/s HSU_GetDeviceType(panelTitle)
 	return S_value
 End
 
-/// Returns the device type as index into the popup menu in the Hardware tab
+/// @brief Returns the device type as index into the popup menu in the Hardware tab
 Function HSU_GetDeviceTypeIndex(panelTitle)
 	string panelTitle
 
@@ -142,6 +138,7 @@ Function/s HSU_GetDeviceNumber(panelTitle)
 	return S_value
 End
 
+/// @brief Returns the device number as index into the popup menu in the Hardware tab
 Function HSU_GetDeviceNumberIndex(panelTitle)
 	string panelTitle
 
@@ -254,11 +251,12 @@ End
 
 Function HSU_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
+
 	string cmd
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	variable DeviceType = v_value - 1
-	make  /O /I /N = 1 localwave
-	sprintf cmd, "ITCGetDevices /Z=0 %d, localWave" DeviceType
+	variable deviceType = HSU_GetDeviceTypeIndex(panelTitle)
+
+	Make/O/I/N=1 localwave
+	sprintf cmd, "ITCGetDevices /Z=0 %d, localWave" deviceType
 	Execute cmd
 	if(LocalWave[0] == 0)
 		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
@@ -282,16 +280,14 @@ End
 Function HSU_OpenITCDevice(panelTitle)
 	String panelTitle
 
-	variable DeviceType, DeviceNumber
+	variable deviceType, deviceNumber
 	string cmd
-	controlinfo /w = $panelTitle popup_MoreSettings_DeviceType
-	DeviceType = v_value - 1
-	controlinfo /w = $panelTitle popup_moreSettings_DeviceNo
-	DeviceNumber = v_value - 1
 
-	Make /o  /I /U /N = 1 DevID = 50 // /FREE /I /U /N = 2 DevID = 50
-	string DeviceID = "DevID"
-	sprintf cmd, "ITCOpenDevice %d, %d, %s", DeviceType, DeviceNumber, DeviceID
+	deviceType = HSU_GetDeviceTypeIndex(panelTitle)
+	deviceNumber = str2num(HSU_GetDeviceNumber(panelTitle))
+
+	Make/O/I/U/N=1 DevID = 50
+	sprintf cmd, "ITCOpenDevice %d, %d, DevID", deviceType, deviceNumber
 	Execute cmd
 
 	print "ITC Device ID = ",DevID[0], "is locked."
