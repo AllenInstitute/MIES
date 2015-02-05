@@ -378,12 +378,14 @@ Function ConvertRateToSamplingInterval(val)
 	return 1 / val * 1e3
 End
 
-/// @brief Create a backup of the wave wv if it does not already exist.
+/// @brief Create a backup of the wave wv if it does not already
+/// exist or if `forceCreation` is true.
 ///
 /// The backup wave will be located in the same data folder and
 /// its name will be the original name with suffix "_bak".
-Function CreateBackupWaveIfNeeded(wv)
+Function/Wave CreateBackupWave(wv, [forceCreation])
 	Wave wv
+	variable forceCreation
 
 	string backupname
 	dfref dfr
@@ -392,13 +394,21 @@ Function CreateBackupWaveIfNeeded(wv)
 	backupname = NameOfWave(wv) + "_bak"
 	dfr        = GetWavesDataFolderDFR(wv)
 
-	Wave/Z/SDFR=dfr backup = $backupname
-
-	if(WaveExists(backup))
-		return NaN
+	if(ParamIsDefault(forceCreation))
+		forceCreation = 0
+	else
+		forceCreation = !!forceCreation
 	endif
 
-	Duplicate/O wv, dfr:$backupname
+	Wave/Z/SDFR=dfr backup = $backupname
+
+	if(WaveExists(backup) && !forceCreation)
+		return backup
+	endif
+
+	Duplicate/O wv, dfr:$backupname/Wave=backup
+
+	return backup
 End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
@@ -1010,6 +1020,59 @@ Function GetSweepColumn(settingsHistory)
 	return 0
 End
 
+/// @brief Extended version of `FindValue`
+///
+/// Allows to search only the specified column for a value
+/// and returns all matching row indizes in a wave
+///
+/// @param col               column to search in
+/// @param var [optional]    numeric value to search. One of `var` or `str` has to be given.
+/// @param str [optional]    string value to search. One of `var` or `str` has to be given.
+/// @param wv [optional]     numeric wave to search. One of `wv` or `wvText` has to be given.
+/// @param wvText [optional] text wave to search. One of `wv` or `wvText` has to be given.
+///
+/// @returns A wave with the row indizes of the found values. An invalid wave reference if the
+/// value could not be found.
+Function/Wave FindIndizes(col, [var, str, wv, wvText])
+	variable col, var
+	string str
+	Wave wv
+	Wave/T wvText
+
+	variable numCols
+
+	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wave argument")
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Expected exactly one optional var/str argument")
+
+	if(ParamIsDefault(var))
+		var = str2num(str)
+	endif
+
+	if(ParamIsDefault(str))
+		str = num2str(var)
+	endif
+
+	if(!ParamIsDefault(wv))
+		numCols = DimSize(wv, COLS)
+		ASSERT(col >= 0 && col < numCols, "Invalid column")
+		ASSERT(WaveType(wv), "Expected numeric wave")
+		Make/FREE/R/N=(DimSize(wv, ROWS)) matches = (wv[p][col] == var ? p : NaN)
+	else
+		numCols = DimSize(wvText, COLS)
+		ASSERT(col >= 0 && col < numCols, "Invalid column")
+		ASSERT(!WaveType(wv), "Expected text wave")
+		Make/FREE/R/N=(DimSize(wvText, ROWS)) matches = (!cmpstr(wvText[p][col], str) ? p : NaN)
+	endif
+
+	WaveTransform/O zapNaNs, matches
+
+	if(DimSize(matches, ROWS) == 0)
+		return $""
+	endif
+
+	return matches
+End
+
 /// @brief Find the first and last point index of a consecutive range of values
 ///
 /// @param[in]  wv                wave to search
@@ -1028,106 +1091,144 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 	first = NaN
 	last  = NaN
 
-	Make/FREE/B/U/N=(DimSize(wv, ROWS)) matches = wv[p][col] == val
+	if(!WaveType(wv))
+		WAVE/Z indizes = FindIndizes(col, var=val, wvText=wv)
+	else
+		WAVE/Z indizes = FindIndizes(col, var=val, wv=wv)
+	endif
 
-	Make/FREE levels
-	FindLevels/P/Q/DEST=levels matches, 1
-
-	if(V_flag == 2)
+	if(!WaveExists(indizes))
 		return NaN
 	endif
 
-	numRows = DimSize(levels, ROWS)
+	numRows = DimSize(indizes, ROWS)
 
 	if(numRows == 1)
-		first = levels[0]
-		last  = levels[0]
+		first = indizes[0]
+		last  = indizes[0]
 		return NaN
 	endif
 
 	if(forwardORBackward)
 
-		first = levels[0]
-		last  = levels[0]
+		first = indizes[0]
+		last  = indizes[0]
 
 		for(i = 1; i < numRows; i += 1)
 			// a forward search stops after the end of the first sequence
-			if(levels[i] > last + 1)
+			if(indizes[i] > last + 1)
 				return NaN
 			endif
 
-			last = levels[i]
+			last = indizes[i]
 		endfor
 	else
 
-		first = levels[numRows - 1]
-		last  = levels[numRows - 1]
+		first = indizes[numRows - 1]
+		last  = indizes[numRows - 1]
 
 		for(i = numRows - 2; i >= 0; i -= 1)
 			// a backward search stops when the beginning of the last sequence was found
-			if(levels[i] < first - 1)
+			if(indizes[i] < first - 1)
 				return NaN
 			endif
 
-			first = levels[i]
+			first = indizes[i]
 		endfor
-
 	endif
 End
 
-/// @brief Returns a wave with all values of a setting from the settingsHistory wave
+/// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
-/// Entries which are NaN for all headstages are ignored.
-/// @returns a 2D wave where the columns are the setting for each headstage and the rows the different values. In case
-/// the setting could not be found a invalid wave reference is returned.
-Function/WAVE GetHistoryOfSetting(settingsHistory, sweepNo, setting)
-	Wave settingsHistory
+/// @returns a wave with the value for each headstage in a row. In case
+/// the setting could not be found an invalid wave reference is returned.
+Function/WAVE GetLastSetting(history, sweepNo, setting)
+	Wave history
 	variable sweepNo
 	string setting
 
-	variable settingCol, numHeadstages, i, sweepCol, entries
+	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable first, last
 
-	numHeadstages = DimSize(settingsHistory, LAYERS)
-
-	settingCol = FindDimLabel(settingsHistory, COLS, setting)
+	ASSERT(WaveType(history), "Can only work with numeric waves")
+	numLayers = DimSize(history, LAYERS)
+	settingCol = FindDimLabel(history, COLS, setting)
 
 	if(settingCol <= 0)
 		DEBUGPRINT("Could not find the setting", str=setting)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(settingsHistory)
-	FindRange(settingsHistory, sweepCol, sweepNo, 0, first, last)
+	sweepCol = GetSweepColumn(history)
+	FindRange(history, sweepCol, sweepNo, 0, first, last)
 
-	if(!IsFinite(first) || !IsFinite(last)) // sweep number is unknown
+	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
 		return $""
 	endif
 
-	Make/FREE/D/N=(last - first + 1, numHeadstages) status = NaN
-	Make/FREE/D/N=(numHeadstages) singleLayer
+	Make/FREE/N=(numLayers) status
 
-	SetDimLabel COLS, -1, Headstage, status
+	for(i = last; i >= first; i -= 1)
 
-	for(i = first; i <= last; i += 1)
+		status[] = history[i][settingCol][p]
+		WaveStats/Q/M=1 status
 
-		singleLayer[] = settingsHistory[i][settingCol][p]
-		WaveStats/Q/M=1 singleLayer
-
-		// only add a new row to the result wave if the setting in question
-		// was set in that row, which means that at least one value is not NaN
-		if(V_numNaNs == numHeadstages)
-			continue
+		// return if at least one entry is not NaN
+		if(V_numNaNs != numLayers)
+			return status
 		endif
-
-		status[entries][] = singleLayer[q]
-		entries += 1
 	endfor
 
-	Redimension/N=(entries, -1) status
+	return $""
+End
 
-	return status
+/// @brief Returns a wave with latest value of a setting from the history wave
+/// for a given sweep number.
+///
+/// Text wave version of `GetLastSetting`.
+///
+/// @returns a wave with the value for each headstage in a row. In case
+/// the setting could not be found an invalid wave reference is returned.
+Function/WAVE GetLastSettingText(history, sweepNo, setting)
+	Wave/T history
+	variable sweepNo
+	string setting
+
+	variable settingCol, numLayers, i, sweepCol
+	variable first, last
+
+	ASSERT(!WaveType(history), "Can only work with text waves")
+	numLayers = DimSize(history, LAYERS)
+	settingCol = FindDimLabel(history, COLS, setting)
+
+	if(settingCol <= 0)
+		DEBUGPRINT("Could not find the setting", str=setting)
+		return $""
+	endif
+
+	sweepCol = GetSweepColumn(history)
+	FindRange(history, sweepCol, sweepNo, 0, first, last)
+
+	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
+		return $""
+	endif
+
+	Make/FREE/N=(numLayers)/T status
+	Make/FREE/N=(numLayers) lengths
+
+	for(i = last; i >= first; i -= 1)
+
+		status[] = history[i][settingCol][p]
+		lengths[] = strlen(status[p])
+
+		// return if we have at least one non-empty entry
+		if(Sum(lengths) > 0)
+			return status
+		endif
+	endfor
+
+	return $""
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´

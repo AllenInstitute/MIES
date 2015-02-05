@@ -603,8 +603,8 @@ Function ButtonDoIt(ba) : ButtonControl
 				Wave config = GetConfigWave(data)
 
 				if(backupWaves)
-					CreateBackupWaveIfNeeded(data)
-					CreateBackupWaveIfNeeded(config)
+					CreateBackupWave(data)
+					CreateBackupWave(config)
 				endif
 
 				// resample with window function

@@ -214,9 +214,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 	Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 
-	///@todo what should happen if we find multiple entries for one sweep
-	WAVE statusDAC = GetHistoryOfSetting(settingsHistory, sweepNo, "DAC")
-	WAVE statusADC = GetHistoryOfSetting(settingsHistory, sweepNo, "ADC")
+	WAVE statusDAC = GetLastSetting(settingsHistory, sweepNo, "DAC")
+	WAVE statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
 
 	for(i = 0; i < numChannels; i += 1)
 		if(DisplayDAChan && i < NumberOfDAchannels)
