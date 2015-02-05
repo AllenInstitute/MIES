@@ -617,13 +617,18 @@ static Function WBP_ParamToPanel(WaveParametersWave)
 	while(RowNo < 23)
 End
 
-Function WBP_SetVarProc_SetNo(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+Function WBP_SetVarProc_SetNo(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
 
-	WBP_UpdatePanelIfAllowed()
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
 End
 
 Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
@@ -664,15 +669,20 @@ Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
 	PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
 End
 
-Function WBP_SetVarProc_StepCount(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+Function WBP_SetVarProc_StepCount(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
 
-	WBP_LowPassDeltaLimits()
-	WBP_HighPassDeltaLimits()
-	WBP_UpdatePanelIfAllowed()
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WBP_LowPassDeltaLimits()
+			WBP_HighPassDeltaLimits()
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
 End
 
 Function WBP_ButtonProc_AutoScale(ctrlName) : ButtonControl
@@ -681,41 +691,52 @@ Function WBP_ButtonProc_AutoScale(ctrlName) : ButtonControl
 	SetAxis/A/W=$WaveBuilderGraph
 End
 
-Function WBP_CheckProc(ctrlName, checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
+Function WBP_CheckProc(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
 
-	if(!CmpStr(ctrlName,"check_Sin_Chirp"))
-		if(checked == 1)
-			EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
-		else
-			DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
-		endif
-	elseif(!CmpStr(ctrlName,"check_Noise_Pink"))
-		if(checked)
-			SetCheckBoxState(panel,"Check_Noise_Brown", 0)
-			DisableControl(panel, "Check_Noise_Brown")
-			DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-			EnableControl(panel, "SetVar_WaveBuilder_P30")
-		else
-			EnableControl(panel, "Check_Noise_Brown")
-			EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-			DisableControl(panel, "SetVar_WaveBuilder_P30")
-		endif
-	elseif(!CmpStr(ctrlName,"check_Noise_Brown"))
-		if(checked)
-			SetCheckBoxState(panel,"Check_Noise_Pink", 0)
-			DisableControl(panel, "Check_Noise_Pink")
-			DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-			EnableControl(panel, "SetVar_WaveBuilder_P30")
-		else
-			EnableControl(panel, "check_Noise_Pink")
-			EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-			DisableControl(panel, "SetVar_WaveBuilder_P30")
-		endif
-	endif
+	string control
+	variable checked
 
-	WBP_UpdatePanelIfAllowed()
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			control = cba.ctrlName
+			checked = cba.checked
+
+			if(!cmpstr(control,"check_Sin_Chirp"))
+				if(checked)
+					EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+				else
+					DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+				endif
+			elseif(!cmpstr(control,"check_Noise_Pink"))
+				if(checked)
+					SetCheckBoxState(panel,"Check_Noise_Brown", 0)
+					DisableControl(panel, "Check_Noise_Brown")
+					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+					EnableControl(panel, "SetVar_WaveBuilder_P30")
+				else
+					EnableControl(panel, "Check_Noise_Brown")
+					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+					DisableControl(panel, "SetVar_WaveBuilder_P30")
+				endif
+			elseif(!cmpstr(control,"check_Noise_Brown"))
+				if(checked)
+					SetCheckBoxState(panel,"Check_Noise_Pink", 0)
+					DisableControl(panel, "Check_Noise_Pink")
+					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+					EnableControl(panel, "SetVar_WaveBuilder_P30")
+				else
+					EnableControl(panel, "check_Noise_Pink")
+					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+					DisableControl(panel, "SetVar_WaveBuilder_P30")
+				endif
+			endif
+
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
 End
 
 ///@brief Gets run by ACLight's tab control function every time a tab is selected
