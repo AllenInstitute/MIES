@@ -126,17 +126,27 @@ End
 /// @brief Alternative implementation for WaveList which honours a dfref and thus
 /// does not require SetDataFolder calls.
 ///
+/// @param dfr                                 datafolder reference to search for the waves
+/// @param regExpStr                           regular expression matching the waves, see the help of GrepString for an introduction to regular expressions
+/// @param waveProperty [optional, empty]      additional properties of matching waves, inspired by WaveList, currently implemented are `MINCOLS` and `TEXT`
+/// @param fullPath [optional, default: false] should only the wavename or the absolute path of the wave be returned.
+///
 /// @returns list of wave names matching regExpStr located in dfr
-Function/S GetListOfWaves(dfr, regExpStr, [options])
+Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
 	dfref dfr
-	string regExpStr, options
+	string regExpStr, waveProperty
+	variable fullPath
 
-	variable i, j, numOptions, numWaves, matches, val
-	// todo think about using PadString here for increased speed
-	string list = "", name, str, opt
+	variable i, j, numWaveProperties, numWaves, matches, val
+	string name, str, prop
+	string list = ""
 
 	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
 	ASSERT(!isEmpty(regExpStr),"regexpStr is empty or null")
+
+	if(ParamIsDefault(fullPath))
+		fullPath = 0
+	endif
 
 	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
 	for(i=0; i<numWaves; i+=1)
@@ -148,16 +158,16 @@ Function/S GetListOfWaves(dfr, regExpStr, [options])
 		endif
 
 		matches = 1
-		if(!ParamIsDefault(options) && !isEmpty(options))
-			numOptions = ItemsInList(options)
-			for(j = 0; j < numOptions; j += 1)
-				str = StringFromList(j, options)
-				opt = StringFromList(0, str, ":")
-				val = str2num(StringFromList(1, str, ":"))
+		if(!ParamIsDefault(waveProperty) && !isEmpty(waveProperty))
+			numWaveProperties = ItemsInList(waveProperty)
+			for(j = 0; j < numWaveProperties; j += 1)
+				str  = StringFromList(j, waveProperty)
+				prop = StringFromList(0, str, ":")
+				val  = str2num(StringFromList(1, str, ":"))
 				ASSERT(IsFinite(val), "non finite value")
-				ASSERT(!IsEmpty(opt), "empty option")
+				ASSERT(!IsEmpty(prop), "empty option")
 
-				strswitch(opt)
+				strswitch(prop)
 					case "MINCOLS":
 						matches = matches & DimSize(wv, COLS) >= val
 						break
@@ -176,7 +186,11 @@ Function/S GetListOfWaves(dfr, regExpStr, [options])
 		endif
 
 		if(matches)
-			list = AddListItem(name, list, ";", Inf)
+			if(fullPath)
+				list = AddListItem(GetWavesDataFolder(wv, 2), list, ";", Inf)
+			else
+				list = AddListItem(name, list, ";", Inf)
+			endif
 		endif
 	endfor
 
@@ -1116,8 +1130,8 @@ Function/WAVE GetHistoryOfSetting(settingsHistory, sweepNo, setting)
 	return status
 End
 
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
-Function/S GetAllDevicesWithData()
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´
+Function/S GetAllActiveDevices()
 
 	variable i, j, numTypes, numNumbers
 	string type, number, device
@@ -1143,13 +1157,9 @@ Function/S GetAllDevicesWithData()
 		for(j = 0; j < numNumbers ; j += 1)
 			number = StringFromList(j, DEVICE_NUMBERS)
 			device = BuildDeviceString(type, number)
-			path   = GetDeviceDataPathAsString(device)
+			path   = GetDevicePathAsString(device)
 
 			if(!DataFolderExists(path))
-				continue
-			endif
-
-			if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
 				continue
 			endif
 
@@ -1158,6 +1168,177 @@ Function/S GetAllDevicesWithData()
 	endfor
 
 	return list
+End
+
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
+Function/S GetAllDevicesWithData()
+
+	variable i, numDevices
+	string deviceList, device, path
+	string list = ""
+
+	deviceList = GetAllActiveDevices()
+
+	numDevices = ItemsInList(deviceList)
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, deviceList)
+		path   = GetDeviceDataPathAsString(device)
+
+		if(!DataFolderExists(path))
+			continue
+		endif
+
+		if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
+			continue
+		endif
+
+		list = AddListItem(device, list, ";", inf)
+	endfor
+
+	return list
+End
+
+/// @brief Returns a list of all files with the extension given in the symbolic path pathName
+///
+/// Adapted from the example in the `IndexedDir` documentation
+///
+/// Warning! This function uses recursion, so it might take some time
+///
+/// @param pathName                   Name of symbolic path in which to look for folders and files
+/// @param extension                  File name extension (e.g., ".txt") or "????" for all files
+/// @param level [optional, don't use] Indicate level of recursion
+Function/S GetFilesRecursively(pathName, extension, [level])
+	string pathName
+	string extension
+	variable level
+
+	variable fileIndex, folderIndex, levelValue
+	string path, fileName, fileNames, subFolderPathName, subFolderPath
+	string foundFilesList = ""
+	string recursFoundFilesList = ""
+
+	if(ParamIsDefault(level))
+		levelValue = 0
+	else
+		levelValue = level
+	endif
+
+	levelValue += 1
+
+	// get folder name from symbolic path
+	PathInfo $pathName
+	path = S_path
+	ASSERT(V_flag != 0 , "path does not exist")
+
+	fileNames = IndexedFile($pathName, -1, extension)
+	fileIndex = 0
+
+	// get all files in the folder pathName
+	do
+		fileName = StringFromList(fileIndex, fileNames)
+
+		if (isEmpty(fileName))
+			break // No more files
+		endif
+
+		foundFilesList = AddListItem(path + fileName, foundFilesList, ";", inf)
+		fileIndex += 1
+	while(1)
+
+	// traverse into the first subfolder and call this function recursively
+	string paths = IndexedDir($pathName, -1, 1)
+	folderIndex = 0
+	do
+		path = StringFromList(folderIndex, paths)
+
+		if(isEmpty(path))
+			break // No more folders
+		endif
+
+		// name of the new symbolic path
+		subFolderPathName =  UniqueName("tempPrintFoldersPath_", 12, levelValue)
+		// Now we get the path to the new parent folder
+		subFolderPath = path
+
+		NewPath/Q/O $subFolderPathName, subFolderPath
+		recursFoundFilesList = GetFilesRecursively(subFolderPathName, extension, level = levelValue)
+		KillPath/Z $subFolderPathName
+
+		if(!isEmpty(recursFoundFilesList))
+			foundFilesList += recursFoundFilesList
+		endif
+
+		folderIndex += 1
+	while(1)
+
+	return foundFilesList
+End
+
+/// @brief Returns a reference to a newly created datafolder
+///
+/// Basically a datafolder aware version of UniqueName for datafolders
+///
+/// @param dfr 	    datafolder reference where the new datafolder should be created
+/// @param baseName first part of the datafolder, might be shorted due to Igor Pro limitations
+Function/DF UniqueDataFolder(dfr, baseName)
+	dfref dfr
+	string baseName
+
+	variable index
+	string name = ""
+	string basePath, path
+
+	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
+
+	// shorten basename so that we can attach some numbers
+	baseName = CleanupName(baseName[0, 26], 0)
+	basePath = GetDataFolder(1, dfr)
+	path = basePath + baseName
+
+	do
+		if(!DataFolderExists(path))
+			NewDataFolder $path
+			return $path
+		endif
+
+		path = basePath + baseName + "_" + num2istr(index)
+
+		index += 1
+	while(index < 10000)
+
+	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+
+	return $""
+End
+
+/// @brief Remove str with the first character removed, or
+/// if given with startStr removed
+///
+/// Same semantics as the RemoveEnding builtin
+Function/S RemovePrefix(str, [startStr])
+	string str, startStr
+
+	variable length, pos
+
+	length = strlen(str)
+
+	if(ParamIsDefault(startStr))
+
+		if(length <= 0)
+			return str
+		endif
+
+		return str[1, length - 1]
+	endif
+
+	pos = strsearch(str, startStr, 0)
+
+	if(pos != 0)
+		return str
+	endif
+
+	return 	str[strlen(startStr), length - 1]
 End
 
 /// @brief Set column dimension labels from the first row of the key wave
@@ -1178,5 +1359,129 @@ Function SetDimensionLabels(keys, values)
 		text = keys[0][i]
 		ASSERT(!isEmpty(text), "Empty key")
 		SetDimLabel COLS, i, $text, keys, values
+	endfor
+End
+
+StrConstant TRASH_FOLDER_PREFIX = "trash"
+
+/// @brief Delete a datafolder or wave. If this is not possible, because Igor
+/// has locked the file, the wave or datafolder is moved into a unique folder
+/// named `root:mies:trash_$digit`.
+///
+/// The trash folders will be removed, if possible, from KillTemporaries().
+///
+/// @param path absolute path to a datafolder or wave
+Function KillOrMoveToTrash(path)
+	string path
+
+	string dest
+
+	if(DataFolderExists(path))
+		KillDataFolder/Z $path
+
+		if(!V_flag)
+			return NaN
+		endif
+
+		DFREF miesDFR = GetMiesPath()
+		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
+		MoveDataFolder $path, $dest
+	elseif(WaveExists($path))
+		KillWaves/F/Z $path
+
+		WAVE/Z wv = $path
+		if(!WaveExists(wv))
+			return NaN
+		endif
+
+		DFREF miesDFR = GetMiesPath()
+		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		MoveWave wv, tmpDFR
+	else
+		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
+	endif
+End
+
+/// @brief Returns a unique and non-existing file name
+///
+/// @warning This function must *not* be used for security relevant purposes,
+/// as for that the check-and-file-creation must be an atomic operation.
+///
+/// @param symbPath		symbolic path
+/// @param baseName		base name of the file, must not be empty
+/// @param suffix		file suffix, e.g. ".txt", must not be empty
+Function/S UniqueFile(symbPath, baseName, suffix)
+	string symbPath, baseName, suffix
+
+	string file
+	variable i = 1
+
+	PathInfo $symbPath
+	ASSERT(V_flag == 1, "Symbolic path does not exist")
+	ASSERT(!isEmpty(baseName), "baseName must not be empty")
+	ASSERT(!isEmpty(suffix), "suffix must not be empty")
+
+	file = baseName + suffix
+
+	do
+		GetFileFolderInfo/Q/Z/P=$symbPath file
+
+		if(V_flag)
+			return file
+		endif
+
+		file = baseName + "_" + num2str(i) + suffix
+		i += 1
+
+	while(i < 10000)
+
+	ASSERT(0, "Could not find a unique file with 10000 trials")
+End
+
+/// @brief Return the name of the experiment without the file suffix
+Function/S GetExperimentName()
+	return IgorInfo(1)
+End
+
+
+/// @brief Return a formatted timestamp of the form "YY_MM_DD_HHMMSS"
+//
+/// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
+Function/S GetTimeStamp([secondsSinceIgorEpoch])
+	variable secondsSinceIgorEpoch
+
+	if(ParamIsDefault(secondsSinceIgorEpoch))
+		secondsSinceIgorEpoch = DateTime
+	endif
+
+	return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
+End
+
+/// @brief Function prototype for use with CallFunctionForEachList
+Function CALL_FUNCTION_LIST_PROTOTYPE(str)
+	string str
+End
+
+/// @brief Convenience function to call the function f with each list item
+///
+/// The function's type must be CALL_FUNCTION_LIST_PROTOTYPE where the return
+/// type is ignored.
+Function CallFunctionForEachListItem(f, list, [sep])
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f
+	string list, sep
+
+	variable i, numEntries
+	string entry
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, sep)
+
+		f(entry)
 	endfor
 End

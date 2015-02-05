@@ -3,14 +3,15 @@
 static StrConstant optionalInclude = "DR_MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
-		"DA_Ephys", execute "DA_Ephys()"
-		"WaveBuilder", /Q, WBP_CreateWaveBuilderPanel()
-		"Data Browser", execute "DataBrowser()"
-		"Initiate Mies", IM_InitiateMies()		
-		"Close Mies", CloseMies()
-		"Open Downsample Panel", CreateDownsamplePanel()
+		"DA_Ephys"                   , /Q, Execute "DA_Ephys()"
+		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
+		"Data Browser"               , /Q, Execute "DataBrowser()"
+		"Initiate Mies"              , /Q, IM_InitiateMies()
+		"Save and Clear Experiment"  , /Q, IM_SaveAndClearExperiment()
+		"Close Mies"                 , /Q, CloseMies()
+		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
 		"-"
-		GetOptionalIncludeMenuTitle(), HandleOptionalInclude()
+		GetOptionalIncludeMenuTitle(), /Q, HandleOptionalInclude()
 End
 
 ///@returns 1 if the optional include is loaded, 0 otherwise
