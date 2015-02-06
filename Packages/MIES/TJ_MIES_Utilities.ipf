@@ -848,16 +848,60 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
 	endif
 End
 
-/// @brief Remove all traces from a graph and try to kill their waves
-Function RemoveTracesFromGraph(graph, [kill])
+/// @brief Check if a given wave is displayed on a graph
+///
+/// @return one if it is displayed, zero otherwise
+Function IsWaveDisplayedOnGraph(win, wv)
+	string win
+	WAVE/Z wv
+
+	string traceList, trace
+	variable numTraces, i
+
+	if(!WaveExists(wv))
+		return 0
+	endif
+
+	traceList = TraceNameList(win, ";", 1)
+	numTraces = ItemsInList(traceList)
+	for(i = numTraces - 1; i >= 0; i -= 1)
+		trace = StringFromList(i, traceList)
+		WAVE traceWave = TraceNameToWaveRef(win, trace)
+		if(WaveRefsEqual(wv, traceWave))
+			return 1
+		endif
+	endfor
+
+	return 0
+End
+
+/// @brief Remove traces from a graph and optionally try to kill their waves
+///
+/// @param graph                           graph
+/// @param kill [optional, default: false] try to kill the wave after it has been removed
+/// @param trace [optional, default: all] remove the given trace only
+/// @param wv [optional, default: ignored] remove all traces which stem from the given wave
+///
+/// Only one of kill and trace may be supplied.
+///
+/// @return number of traces/waves removed from the graph
+Function RemoveTracesFromGraph(graph, [kill, trace, wv])
 	string graph
 	variable kill
+	string trace
+	WAVE/Z wv
 
-	variable i, numEntries
-	string traceList, trace
+	variable i, numEntries, removals, tryKillingTheWave
+	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
 		kill = 0
+	endif
+
+	ASSERT(ParamIsDefault(trace) + ParamIsDefault(wv) != 0, "Can not accept both trace and wv parameters")
+
+	if(!ParamIsDefault(wv) && !WaveExists(wv))
+		return removals
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
@@ -865,14 +909,36 @@ Function RemoveTracesFromGraph(graph, [kill])
 
 	// iterating backwards is required, see http://www.igorexchange.com/node/1677#comment-2315
 	for(i = numEntries - 1; i >= 0; i -= 1)
-		trace = StringFromList(i, traceList)
-		Wave/Z wv = TraceNameToWaveRef(graph, trace)
-		RemoveFromGraph/W=$graph $trace
+		refTrace = StringFromList(i, traceList)
 
-		if(kill)
-			KillWaves/F/Z wv
+		Wave/Z refWave = TraceNameToWaveRef(graph, refTrace)
+
+		if(ParamIsDefault(trace) && ParamIsDefault(wv))
+			RemoveFromGraph/W=$graph $refTrace
+			removals += 1
+			tryKillingTheWave = 1
+		elseif(!ParamIsDefault(trace))
+			if(!cmpstr(refTrace, trace))
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
+		elseif(!ParamIsDefault(wv))
+			if(WaveRefsEqual(refWave, wv))
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
 		endif
+
+		if(kill && tryKillingTheWave)
+			KillWaves/F/Z refWave
+		endif
+
+		tryKillingTheWave = 0
 	endfor
+
+	return removals
 End
 
 ///@brief Removes all annotations from the graph
