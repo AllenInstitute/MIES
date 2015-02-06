@@ -287,7 +287,10 @@ static Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowP
 
 	if(!brownCheck && !pinkCheck)
 		SegmentWave = gnoise(Amplitude) // MultiThread didn't impact processing time for gnoise
-		ASSERT(duration > 0, "negative duration")
+		if(duration <= 0)
+			print "WB_NoiseSegment: Can not proceed with non-positive duration"
+			return NaN
+		endif
 
 		if(LowPassCutOff <= 100000 && LowPassCutOff != 0)
 			FilterFIR /DIM = 0 /LO = {(LowPassCutOff / 200000), (LowPassCutOff / 200000), LowPassFiltCoefCount} SegmentWave
