@@ -438,16 +438,16 @@ Window dataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(14,118,1227,838) as "DataBrowser"
 	SetDrawLayer UserBack
-	Button button_DataBrowser_NextSweep,pos={628,628},size={395,36},proc=DB_ButtonProc_NextSweep,title="Next Sweep \\W649"
+	Button button_DataBrowser_NextSweep,pos={628,628},size={395,36},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-!!#C*J,hnIz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_NextSweep,fSize=20
-	Button button_DataBrowser_Previous,pos={18,626},size={425,43},proc=DB_ButtonProc_PrevSweep,title="\\W646 Previous Sweep"
-	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo)= A"!!,BI!!#D,J,hsdJ,hnez!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button button_DataBrowser_Previous,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_Previous,fSize=20
+	Button button_DataBrowser_PrevSweep,pos={18,626},size={425,43},proc=DB_ButtonProc_Sweep,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo)= A"!!,BI!!#D,J,hsdJ,hnez!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	Button button_DataBrowser_PrevSweep,fSize=20
 	ValDisplay valdisp_DataBrowser_LastSweep,pos={531,634},size={86,30},bodyWidth=60,title="of"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo)= A"!!,Ij^]6bDJ,hp;!!#=Sz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
 	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -624,25 +624,35 @@ Function DB_DataBrowserStartupSettings()
 	SetPopupMenuIndex(panelTitle, "popup_labenotebookViewableCols", 0)
 End
 
-Function DB_ButtonProc_NextSweep(ba) : ButtonControl
+Function DB_ButtonProc_Sweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string panelTitle
-	variable sweepNo
+	string panelTitle, ctrl
+	variable currentSweep, newSweep, direction
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
 			panelTitle = ba.win
-			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+			ctrl       = ba.ctrlName
 
-			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				DisableControl(panelTitle, "button_DataBrowser_Previous")
-				sweepNo += GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
+			currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+
+			if(!cmpstr(ctrl, "button_DataBrowser_PrevSweep"))
+				direction = -1
+			elseif(!cmpstr(ctrl, "button_DataBrowser_NextSweep"))
+				direction = +1
 			else
-				EnableControl(panelTitle, "button_DataBrowser_Previous")
-				sweepNo += 1
+				ASSERT(0, "unhandled control name")
 			endif
 
-			DB_PlotSweep(panelTitle, sweepNo)
+			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+				newSweep = currentSweep + direction * GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
+				DisableControl(panelTitle, "button_DataBrowser_Previous")
+			else
+				EnableControl(panelTitle, "button_DataBrowser_Previous")
+				newSweep = currentSweep + direction
+			endif
+
+			DB_PlotSweep(panelTitle, newSweep)
 			break
 	endswitch
 
@@ -658,31 +668,6 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 			panelTitle = ba.win
 			SetAxis/A/W=$DB_GetMainGraph(panelTitle)
 			SetAxis/A/W=$DB_GetLabNotebookGraph(panelTitle)
-			break
-	endswitch
-
-	return 0
-End
-
-Function DB_ButtonProc_PrevSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	variable sweepNo
-	string panelTitle
-	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-			panelTitle = ba.win
-			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-
-			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				DisableControl(panelTitle, "button_DataBrowser_nextSweep")
-				sweepNo -= GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
-			else
-				EnableControl(panelTitle, "button_DataBrowser_nextSweep")
-				sweepNo -= 1
-			endif
-
-			DB_PlotSweep(panelTitle, sweepNo)
 			break
 	endswitch
 
