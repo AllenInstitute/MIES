@@ -848,6 +848,33 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
 	endif
 End
 
+/// @brief Check if a given wave is displayed on a graph
+///
+/// @return one if it is displayed, zero otherwise
+Function IsWaveDisplayedOnGraph(win, wv)
+	string win
+	WAVE/Z wv
+
+	string traceList, trace
+	variable numTraces, i
+
+	if(!WaveExists(wv))
+		return 0
+	endif
+
+	traceList = TraceNameList(win, ";", 1)
+	numTraces = ItemsInList(traceList)
+	for(i = numTraces - 1; i >= 0; i -= 1)
+		trace = StringFromList(i, traceList)
+		WAVE traceWave = TraceNameToWaveRef(win, trace)
+		if(WaveRefsEqual(wv, traceWave))
+			return 1
+		endif
+	endfor
+
+	return 0
+End
+
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
 /// @param graph                           graph
