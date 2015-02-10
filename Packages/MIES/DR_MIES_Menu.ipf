@@ -26,9 +26,9 @@ End
 Function/S GetOptionalIncludeMenuTitle()
 
 	if(OptionalIncludeLoaded())
-		return "Unload Tango\HDF5 tools"
+		return "Unload Tango Tools"
 	else
-		return "Load Tango\HDF5 tools"
+		return "Load Tango Tools"
 	endif
 End
 
