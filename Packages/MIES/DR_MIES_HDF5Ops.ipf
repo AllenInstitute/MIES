@@ -1,19 +1,27 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-#include "tango"
 #include "HDF Utilities"
 #include "HDF5 Browser"
 
-Menu "HDF5 Ops"
+Menu "HDF5 Tools"
 		"Open HDF5 Browser", CreateNewHDF5Browser()
-		"Save HDF5 File", TangoHDF5Save("menuSaveFile.h5")	
+		"Save HDF5 File", convert_to_hdf5("menuSaveFile.h5")	
 End
 
+/// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
+Function TangoHDF5Save(saveFilename)
+	string saveFilename
+
+	convert_to_hdf5(saveFilename)
+End
 
 /// @brief dump all experiment data to HDF5 file
 Function convert_to_hdf5(filename)
     String filename
     Variable root_id, h5_id
+    
+    // save the present data folder
+    string savedDataFolder = GetDataFolder(1)
     
     SetDataFolder root:
     HDF5CreateFile /O /Z h5_id as filename
@@ -27,10 +35,14 @@ Function convert_to_hdf5(filename)
     HDF5CloseGroup root_id
     HDF5CloseFile h5_id
     print "HDF5 file save complete for ", filename
+    
+    // restore the data folder
+    SetDataFolder savedDataFolder
+    
 end
 
 
-// creates high-level group structure of HDF5 file
+/// @brief creates high-level group structure of HDF5 file
 Function hdf5_structure(h5_id)
 	Variable h5_id
 	Variable root_id, grp_id
@@ -49,7 +61,7 @@ Function hdf5_structure(h5_id)
 	endif
 End
 
-//////////////////////////////////
+/// @brief creates dataset for saving the entire MIES dataspace
 Function create_dataset(h5_id, sweep_name, data)
 	Variable h5_id
 	String sweep_name
@@ -81,7 +93,7 @@ Function create_dataset(h5_id, sweep_name, data)
 	// fetch metadata and calculate/store dt
 	String cfg_name = "Config_" + sweep_name
 	Wave cfg = $cfg_name
-	Make /O /N=1 dt = 1e-6 * cfg[0][2][0]
+	Make /FREE /N=1 dt = 1e-6 * cfg[0][2][0]
 	HDF5SaveData /O /Z dt, sweep_id
 	if (V_flag != 0)
 		print "HDF5SaveData failed (dt)"
@@ -96,14 +108,14 @@ Function create_dataset(h5_id, sweep_name, data)
 		return -1
 	endif
 	// calculate and store Hz
-	Make /O /N=1 rate = (1.0 / dt)
+	Make /FREE /N=1 rate = (1.0 / dt)
 	HDF5SaveData /O /Z rate, sweep_id
 	if (V_flag != 0)
 		print "HDF5SaveData failed (rate)"
 		return -1
 	endif
 	// calculate and store sweep duration
-	Make /O /N=1 duration = (dt * (DimSize(v_0, 0)-1))
+	Make /FREE /N=1 duration = (dt * (DimSize(v_0, 0)-1))
 	HDF5SaveData /O /Z duration, sweep_id
 	if (V_flag != 0)
 		print "HDF5SaveData failed (duration)"

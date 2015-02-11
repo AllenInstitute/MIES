@@ -7,13 +7,6 @@ Menu "Mies Panels"
 		"Stop Polling WSE queue", StopTestTask()
 End
 
-/// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
-Function TangoHDF5Save(saveFilename)
-	string saveFilename
-
-	convert_to_hdf5(saveFilename)
-End
-
 Function writeLog(logMessage)
 	String logMessage
 	
