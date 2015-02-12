@@ -163,8 +163,6 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 		elseif(newWaveDisplayed)
 			return NaN
 		endif
-	else
-		RemoveTracesFromGraph(graph)
 	endif
 
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", newSweep)
@@ -228,6 +226,10 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	string graph = DB_GetMainGraph(panelTitle)
 
 	Wave ranges = GetAxesRanges(graph)
+
+	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+		RemoveTracesFromGraph(graph)
+	endif
 
 	DisplayDAChan = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
 	if(DisplayDAChan)
