@@ -260,13 +260,13 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 			YaxisHigh = DAYaxisHigh
 			YaxisLow = DAYaxisLow
 			dac = StringFromList(i, DAChannelList)
-			axis = "DA" + dac
-			trace = axis
+			axis = GetNextFreeAxisName(graph, AXIS_BASE)
+			trace = "DA" + dac
 
 			AppendToGraph/W=$graph/L=$axis sweep[][i]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i, configNote)
-			Label/W=$graph $axis, axis + "\r(" + unit + ")"
+			Label/W=$graph $axis, trace + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 
@@ -287,13 +287,13 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 		if(i < NumberOfADchannels)
 			adc = StringFromList(i, ADChannelList)
-			axis = "AD" + adc
-			trace = axis
+			axis = GetNextFreeAxisName(graph, AXIS_BASE)
+			trace = "AD" + adc
 
 			AppendToGraph/W=$graph/L=$axis sweep[][i + NumberOfDAchannels]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i + NumberOfDAchannels, configNote)
-			Label/W=$graph $axis, axis + "\r(" + unit + ")"
+			Label/W=$graph $axis, trace + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 
