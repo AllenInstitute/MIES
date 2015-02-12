@@ -18,6 +18,7 @@ Menu "Mies Panels", dynamic
 		"Data Browser", /Q, Execute "DataBrowser()"
 End
 
+static StrConstant AXIS_BASE            = "col"
 static Constant GRAPH_DIV_SPACING       = 0.03
 static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
@@ -334,7 +335,7 @@ static Function/S DB_GetNextFreeAxisName(graph, axesBaseName)
 
 	numAxes = ItemsInList(ListMatch(AxisList(graph), axesBaseName + "*"))
 
-	return "col" + num2str(numAxes)
+	return axesBaseName + num2str(numAxes)
 End
 
 static Function DB_EvenlySpaceAxes(graph, axisBaseName)
@@ -736,8 +737,6 @@ Function DB_ButtonProc_LockDBtoDevice(ba) : ButtonControl
 	return 0
 End
 
-static StrConstant axisBaseName = "col"
-
 Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
@@ -767,7 +766,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 			sweepCol   = GetSweepColumn(settingsHistory)
 
-			axis = DB_GetNextFreeAxisName(graph, axisBaseName)
+			axis = DB_GetNextFreeAxisName(graph, AXIS_BASE)
 
 			numEntries = DimSize(settingsHistory, LAYERS)
 			for(i = 0; i < numEntries; i += 1)
@@ -796,7 +795,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			ModifyGraph/W=$graph nticks(bottom) = 10
 
 			DB_SetLabNotebookBottomLabel(graph)
-			DB_EvenlySpaceAxes(graph, axisBaseName)
+			DB_EvenlySpaceAxes(graph, AXIS_BASE)
 			DB_UpdateLegend(graph, traceList=traceList)
 		break
 	endswitch
