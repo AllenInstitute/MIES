@@ -28,6 +28,10 @@ Function convert_to_hdf5(filename)
     if (V_Flag != 0 ) // HDF5CreateFile failed
     	print "HDF5Create File failed for ", filename
     	print "Check file name format..."
+    	
+    	// restore the data folder
+    	SetDataFolder savedDataFolder
+    	
     	return -1
     endif
     HDF5CreateGroup /Z h5_id, "/", root_id
