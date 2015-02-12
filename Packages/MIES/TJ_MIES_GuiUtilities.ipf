@@ -573,7 +573,7 @@ Function SetAxesRanges(graph, ranges)
 		maximum = ranges[%maximum][i]
 		if(IsFinite(minimum) && IsFinite(maximum))
 			axes = GetDimLabel(ranges, COLS, i)
-			SetAxis/W=$graph $axes, minimum, maximum
+			SetAxis/W=$graph/Z $axes, minimum, maximum
 		endif
 	endfor
 End
