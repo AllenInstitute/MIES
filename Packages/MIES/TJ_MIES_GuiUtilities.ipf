@@ -577,3 +577,15 @@ Function SetAxesRanges(graph, ranges)
 		endif
 	endfor
 End
+
+/// @brief Returns the next axis name in a row of *consecutive*
+/// and already existing axis names
+Function/S GetNextFreeAxisName(graph, axesBaseName)
+	string graph, axesBaseName
+
+	variable numAxes
+
+	numAxes = ItemsInList(ListMatch(AxisList(graph), axesBaseName + "*"))
+
+	return axesBaseName + num2str(numAxes)
+End

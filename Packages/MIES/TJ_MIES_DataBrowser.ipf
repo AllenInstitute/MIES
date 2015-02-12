@@ -328,16 +328,6 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	SetAxesRanges(graph, ranges)
 End
 
-static Function/S DB_GetNextFreeAxisName(graph, axesBaseName)
-	string graph, axesBaseName
-
-	variable numAxes
-
-	numAxes = ItemsInList(ListMatch(AxisList(graph), axesBaseName + "*"))
-
-	return axesBaseName + num2str(numAxes)
-End
-
 static Function DB_EvenlySpaceAxes(graph, axisBaseName)
 	string graph, axisBaseName
 
@@ -766,7 +756,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 			sweepCol   = GetSweepColumn(settingsHistory)
 
-			axis = DB_GetNextFreeAxisName(graph, AXIS_BASE)
+			axis = GetNextFreeAxisName(graph, AXIS_BASE)
 
 			numEntries = DimSize(settingsHistory, LAYERS)
 			for(i = 0; i < numEntries; i += 1)
