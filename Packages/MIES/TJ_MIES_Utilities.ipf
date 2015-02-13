@@ -71,8 +71,8 @@ End
 
 /// @brief Low overhead function to check assertions
 ///
-/// @param var if zero an error message is printed into the history, nothing is done otherwise.
-/// If the debugger is enabled, it also steps into it.
+/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
+///                 nothing is done otherwise.  If the debugger is enabled, it also steps into it.
 /// @param errorMsg error message to output in failure case
 ///
 /// Example usage:
@@ -109,6 +109,7 @@ Function ASSERT(var, errorMsg)
 		sprintf abortMsg, "Assertion FAILED in function %s(...) %s:%s.\rMessage: %s\r", func, file, line, errorMsg
 		printf abortMsg
 		Debugger
+		Abort
 	endtry
 End
 
