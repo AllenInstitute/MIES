@@ -22,7 +22,7 @@ static Constant 		BITS_PER_VOLT                				= 3200
 static Constant 		NEG_PRESSURE_PULSE_INCREMENT 	= 0.2 // psi
 static Constant 		POS_PRESSURE_PULSE_INCREMENT 	= 0.1 // psi
 static Constant 		PRESSURE_PULSE_STARTpt       		= 1 // 12000
-static Constant 		PRESSURE_PULSE_ENDpt         			= 35000
+static Constant 		PRESSURE_PULSE_ENDpt         			= 70000
 static Constant 		SAMPLE_INT_MILLI             				= 0.005
 static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
@@ -732,7 +732,7 @@ Function P_ITCDataAcq(panelTitle, headStage)
 	execute "ITCStartAcq"
 
 	// Start FIFO monitor
-	CtrlNamedBackground P_FIFOMonitor, period = 12, proc = P_FIFOMonitorProc
+	CtrlNamedBackground P_FIFOMonitor, period = 10, proc = P_FIFOMonitorProc
 	CtrlNamedBackground P_FIFOMonitor, start
 End
 
@@ -758,7 +758,7 @@ Function P_FIFOMonitorProc(s)
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(FIFOAvail, 2)
 	Execute cmd
 
-	if(FIFOAvail[1][2] > 300 / SAMPLE_INT_MILLI)
+	if(FIFOAvail[1][2] > 350 / SAMPLE_INT_MILLI)
 		execute "ITCStopAcq"
 		pressureDataWv[][%OngoingPessurePulse]	= 0
 		CtrlNamedBackground P_FIFOMonitor, stop
@@ -967,10 +967,10 @@ Function P_TTLforPpulse(panelTitle, Headstage)
 
 	if(TTL < 4) // Rack 0
 		Rack0state = UpdateTTLdecimal(Rack0state, TTL, 1) // determine the TTL state for the pulse period
-		ITCData[5000, PRESSURE_PULSE_ENDpt][%TTL_R0] = Rack0state // update the pulse period TTL state
+		ITCData[20000, PRESSURE_PULSE_ENDpt][%TTL_R0] = Rack0state // update the pulse period TTL state
 	else // Rack 1
 		Rack1state = UpdateTTLdecimal(Rack1state, TTL, 1)
-		ITCData[5000, PRESSURE_PULSE_ENDpt][%TTL_R1] = Rack1state
+		ITCData[20000, PRESSURE_PULSE_ENDpt][%TTL_R1] = Rack1state
 	endif
 End
 

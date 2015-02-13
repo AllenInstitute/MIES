@@ -471,7 +471,7 @@ Constant fittingRange = 5
 Constant dimensionRescalingInterval = 100
 
 /// Units MOhm
-static Constant MAX_VALID_RESISTANCE = 25000
+static Constant MAX_VALID_RESISTANCE = 3000
 
 /// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
 ///
