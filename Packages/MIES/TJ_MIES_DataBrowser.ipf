@@ -18,6 +18,7 @@ Menu "Mies Panels", dynamic
 		"Data Browser", /Q, Execute "DataBrowser()"
 End
 
+static StrConstant AXIS_BASE            = "col"
 static Constant GRAPH_DIV_SPACING       = 0.03
 static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
@@ -163,8 +164,6 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 		elseif(newWaveDisplayed)
 			return NaN
 		endif
-	else
-		RemoveTracesFromGraph(graph)
 	endif
 
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", newSweep)
@@ -229,6 +228,10 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 	Wave ranges = GetAxesRanges(graph)
 
+	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+		RemoveTracesFromGraph(graph)
+	endif
+
 	DisplayDAChan = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
 	if(DisplayDAChan)
 		ADYaxisSpacing = 0.8 / numChannels
@@ -257,13 +260,13 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 			YaxisHigh = DAYaxisHigh
 			YaxisLow = DAYaxisLow
 			dac = StringFromList(i, DAChannelList)
-			axis = "DA" + dac
-			trace = axis
+			axis = GetNextFreeAxisName(graph, AXIS_BASE)
+			trace = "DA" + dac
 
 			AppendToGraph/W=$graph/L=$axis sweep[][i]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i, configNote)
-			Label/W=$graph $axis, axis + "\r(" + unit + ")"
+			Label/W=$graph $axis, trace + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 
@@ -284,13 +287,13 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 		if(i < NumberOfADchannels)
 			adc = StringFromList(i, ADChannelList)
-			axis = "AD" + adc
-			trace = axis
+			axis = GetNextFreeAxisName(graph, AXIS_BASE)
+			trace = "AD" + adc
 
 			AppendToGraph/W=$graph/L=$axis sweep[][i + NumberOfDAchannels]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
 			unit = StringFromList(i + NumberOfDAchannels, configNote)
-			Label/W=$graph $axis, axis + "\r(" + unit + ")"
+			Label/W=$graph $axis, trace + "\r(" + unit + ")"
 			ModifyGraph/W=$graph lblPosMode = 1
 			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 
@@ -323,16 +326,6 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	endfor
 
 	SetAxesRanges(graph, ranges)
-End
-
-static Function/S DB_GetNextFreeAxisName(graph, axesBaseName)
-	string graph, axesBaseName
-
-	variable numAxes
-
-	numAxes = ItemsInList(ListMatch(AxisList(graph), axesBaseName + "*"))
-
-	return "col" + num2str(numAxes)
 End
 
 static Function DB_EvenlySpaceAxes(graph, axisBaseName)
@@ -734,8 +727,6 @@ Function DB_ButtonProc_LockDBtoDevice(ba) : ButtonControl
 	return 0
 End
 
-static StrConstant axisBaseName = "col"
-
 Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
@@ -765,7 +756,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
 			sweepCol   = GetSweepColumn(settingsHistory)
 
-			axis = DB_GetNextFreeAxisName(graph, axisBaseName)
+			axis = GetNextFreeAxisName(graph, AXIS_BASE)
 
 			numEntries = DimSize(settingsHistory, LAYERS)
 			for(i = 0; i < numEntries; i += 1)
@@ -794,7 +785,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			ModifyGraph/W=$graph nticks(bottom) = 10
 
 			DB_SetLabNotebookBottomLabel(graph)
-			DB_EvenlySpaceAxes(graph, axisBaseName)
+			DB_EvenlySpaceAxes(graph, AXIS_BASE)
 			DB_UpdateLegend(graph, traceList=traceList)
 		break
 	endswitch
