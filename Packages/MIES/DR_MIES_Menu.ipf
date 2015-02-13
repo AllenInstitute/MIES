@@ -1,6 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-static StrConstant optionalInclude = "DR_MIES_TangoInteract"
+static StrConstant optionalTangoInclude = "DR_MIES_TangoInteract"
+static StrConstant optionalHDF5Include = "DR_MIES_HDF5Ops"
 
 Menu "Mies Panels", dynamic
 		"DA_Ephys"                   , /Q, Execute "DA_Ephys()"
@@ -11,34 +12,69 @@ Menu "Mies Panels", dynamic
 		"Close Mies"                 , /Q, CloseMies()
 		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
 		"-"
-		GetOptionalIncludeMenuTitle(), /Q, HandleOptionalInclude()
+		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
+End
+
+Menu "HDF5 Tools", dynamic
+	GetOptHDF5IncludeMenuTitle(), /Q, HandleHDF5OptionalInclude()	
 End
 
 ///@returns 1 if the optional include is loaded, 0 otherwise
-static Function OptionalIncludeLoaded()
+static Function OptTangoIncludeLoaded()
 
-	string procList = WinList(optionalInclude + ".ipf",";","")
+	string procList = WinList(optionalTangoInclude + ".ipf",";","")
 
 	return !isEmpty(procList)
 End
 
-///@brief Returns the title of the load/unload menu entry
-Function/S GetOptionalIncludeMenuTitle()
+///@returns 1 if the optional include is loaded, 0 otherwise
+static Function OptHDF5IncludeLoaded()
 
-	if(OptionalIncludeLoaded())
-		return "Unload Tango\HDF5 tools"
+	string procList = WinList(optionalHDF5Include + ".ipf",";","")
+
+	return !isEmpty(procList)
+End
+
+///@brief Returns the title of the tango load/unload menu entry
+Function/S GetOptTangoIncludeMenuTitle()
+
+	if(OptTangoIncludeLoaded())
+		return "Unload Tango Tools"
 	else
-		return "Load Tango\HDF5 tools"
+		return "Load Tango Tools"
 	endif
 End
 
-///@brief Load/Unload the optional include
-Function HandleOptionalInclude()
+///@brief Returns the title of the HDF5 load/unload menu entry
+Function/S GetOptHDF5IncludeMenuTitle()
 
-	if(!OptionalIncludeLoaded())
-		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalInclude + "\""
+	if(OptHDF5IncludeLoaded())
+		return "Unload HDF5 Tools"
 	else
-		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalInclude + "\""
+		return "Load HDF5 Tools"
+	endif
+End
+
+
+///@brief Load/Unload the optional tango include
+Function HandleTangoOptionalInclude()
+
+	if(!OptTangoIncludeLoaded())
+		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalTangoInclude + "\""
+	else
+		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalTangoInclude + "\""
+	endif
+
+	Execute/P/Q/Z "COMPILEPROCEDURES "
+End
+
+///@brief Load/Unload the optional hdf5 include
+Function HandleHDF5OptionalInclude()
+
+	if(!OptHDF5IncludeLoaded())
+		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalHDF5Include + "\""
+	else
+		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalHDF5Include + "\""
 	endif
 
 	Execute/P/Q/Z "COMPILEPROCEDURES "
