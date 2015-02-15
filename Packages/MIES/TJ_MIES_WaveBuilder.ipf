@@ -43,7 +43,7 @@ static Function WB_AddDelta()
 	Wave/SDFR=GetWaveBuilderDataPath() WP
 	variable i
 
-	variable checked = GetCheckBoxState("WaveBuilder", "check_WaveBuilder_exp")
+	variable checked = GetCheckBoxState("WaveBuilder", "check_WaveBuilder_exp_P40")
 
 	for(i=0; i < 30; i += 2)
 		WP[i][][0] = WP[i + 1][q][0] + WP[i][q][0]
@@ -100,8 +100,6 @@ static Function WB_MakeWaveBuilderWave()
 		PulseDuration              = WP[8][i][type]
 		DeltaPulsedur              = WP[9][i][type]
 		TauRise                    = WP[10][i][type]
-		//row spacing changes here to leave room for addition of delta parameters in the future
-		//also allows for universal delta parameter addition
 		DeltaTauRise               = WP[11][i][type]
 		TauDecay1                  = WP[12][i][type]
 		DeltaTauDecay1             = WP[13][i][type]
@@ -122,6 +120,7 @@ static Function WB_MakeWaveBuilderWave()
 		LowPassFiltCoefCount       = WP[28][i][type]
 		DeltaLowPassFiltCoefCount  = WP[29][i][type]
 		FIncrement                 = WP[30][i][type]
+
 
 		if(Duration < 0)
 			Print "User input has generated a negative epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
@@ -282,8 +281,8 @@ static Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowP
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 
-	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink")
-	brownCheck = GetCheckBoxState("Wavebuilder", "check_Noise_Brown")
+	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink_P41")
+	brownCheck = GetCheckBoxState("Wavebuilder", "Check_Noise_Brown_P42")
 
 	if(!brownCheck && !pinkCheck)
 		SegmentWave = gnoise(Amplitude) // MultiThread didn't impact processing time for gnoise
@@ -315,7 +314,7 @@ static Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 
-	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp"))
+	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp_P43"))
 		MultiThread SegmentWave = Amplitude * sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
 		SegmentWave += Offset
 	else
@@ -354,7 +353,7 @@ static Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaD
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 	EndPoint = NumberOfPulses
 
-	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson"))
+	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
 		do
 			SegmentWave[(PulseStartTime / 0.005), ((PulseStartTime / 0.005) + (PulseDuration / 0.005))] = Amplitude
 			if(i + 1 == EndPoint)

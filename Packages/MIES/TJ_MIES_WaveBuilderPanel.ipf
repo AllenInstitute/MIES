@@ -42,7 +42,7 @@ static Function WBP_InitiateWaveBuilder()
 
 	Make/O/N= 100 dfr:WaveBuilderWave
 	//WP = Wave Parameters
-	Make/O/N= (31,100,8) dfr:WP/Wave=WP
+	Make/O/N= (51,100,8) dfr:WP/Wave=WP
 	//sets low pass filter to off (off value is related to sampling frequency)
 	WP[20][][2] = 10001
 	//sets coefficent count for low pass filter to a reasonable and legal Number
@@ -51,7 +51,7 @@ static Function WBP_InitiateWaveBuilder()
 	WP[28][][2] = 500
 
 	//WPT = Wave Parameters Text
-	Make/T/O/N=(31,100) dfr:WPT
+	Make/T/O/N=(51,100) dfr:WPT
 
 	GetSegmentWave()
 End
@@ -220,12 +220,12 @@ Function WBP_CreateWaveBuilderPanel()
 	Button button_WaveBuilder_KillSet,userdata(ResizeControlsInfo)= A"!!,Jc!!#CB!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_WaveBuilder_KillSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_WaveBuilder_KillSet,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	CheckBox check_WaveBuilder_exp,pos={413,32},size={49,20},proc=WBP_CheckProc,title="Delta\\S2"
-	CheckBox check_WaveBuilder_exp,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_WaveBuilder_exp,userdata(ResizeControlsInfo)= A"!!,I4J,hn9!!#>R!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_WaveBuilder_exp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox check_WaveBuilder_exp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_WaveBuilder_exp,value= 0
+	CheckBox check_WaveBuilder_exp_P40,pos={413,32},size={49,20},proc=WBP_CheckProc,title="Delta\\S2"
+	CheckBox check_WaveBuilder_exp_P40,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_WaveBuilder_exp_P40,userdata(ResizeControlsInfo)= A"!!,I4J,hn9!!#>R!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_WaveBuilder_exp_P40,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_WaveBuilder_exp_P40,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_WaveBuilder_exp_P40,value= 0
 	Button button_WaveBuilder_setaxisA,pos={19,442},size={150,23},proc=WBP_ButtonProc_AutoScale,title="Autoscale"
 	Button button_WaveBuilder_setaxisA,userdata(tabcontrol)=  "WBP_WaveType"
 	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo)= A"!!,BQ!!#CB!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -428,12 +428,12 @@ Function WBP_CreateWaveBuilderPanel()
 	SetVariable setvar_WaveBuilder_P17,userdata(tabnum)=  "6"
 	SetVariable setvar_WaveBuilder_P17,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable setvar_WaveBuilder_P17,limits={-inf,inf,0.1},value= _NUM:0
-	CheckBox check_SPT_Poisson,pos={413,103},size={68,26},disable=1,proc=WBP_CheckProc,title="Poisson\rdistribution"
-	CheckBox check_SPT_Poisson,userdata(ResizeControlsInfo)= A"!!,I4J,hp]!!#?A!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_SPT_Poisson,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox check_SPT_Poisson,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_SPT_Poisson,userdata(tabnum)=  "5"
-	CheckBox check_SPT_Poisson,userdata(tabcontrol)=  "WBP_WaveType",value= 0
+	CheckBox check_SPT_Poisson_P44,pos={413,103},size={68,26},disable=1,proc=WBP_CheckProc,title="Poisson\rdistribution"
+	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo)= A"!!,I4J,hp]!!#?A!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_SPT_Poisson_P44,userdata(tabnum)=  "5"
+	CheckBox check_SPT_Poisson_P44,userdata(tabcontrol)=  "WBP_WaveType",value= 0
 	SetVariable SetVar_WaveBuilder_P24,pos={194,129},size={100,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="End Freq"
 	SetVariable SetVar_WaveBuilder_P24,userdata(ResizeControlsInfo)= A"!!,GR!!#@e!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P24,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -448,13 +448,13 @@ Function WBP_CreateWaveBuilderPanel()
 	SetVariable SetVar_WaveBuilder_P25,userdata(tabnum)=  "3"
 	SetVariable SetVar_WaveBuilder_P25,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P25,value= _NUM:0
-	CheckBox check_Sin_Chirp,pos={413,101},size={41,26},disable=1,proc=WBP_CheckProc,title="log\rchirp"
-	CheckBox check_Sin_Chirp,userdata(tabnum)=  "3"
-	CheckBox check_Sin_Chirp,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_Sin_Chirp,userdata(ResizeControlsInfo)= A"!!,I4J,hpY!!#>2!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Sin_Chirp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox check_Sin_Chirp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Sin_Chirp,value= 0
+	CheckBox check_Sin_Chirp_P43,pos={413,101},size={41,26},disable=1,proc=WBP_CheckProc,title="log\rchirp"
+	CheckBox check_Sin_Chirp_P43,userdata(tabnum)=  "3"
+	CheckBox check_Sin_Chirp_P43,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo)= A"!!,I4J,hpY!!#>2!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_Sin_Chirp_P43,value= 0
 	Button button_WaveBuilder_LoadSet,pos={530,442},size={150,23},proc=WBP_ButtonProc_LoadSet,title="Load Set"
 	Button button_WaveBuilder_LoadSet,help={"If set isn't removed from list after deleting, a wave from the set must be in use, kill the appropriate graph or table and retry."}
 	Button button_WaveBuilder_LoadSet,userdata(ResizeControlsInfo)= A"!!,IjJ,hsm!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -526,20 +526,20 @@ Function WBP_CreateWaveBuilderPanel()
 	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_WBP_GNoise_F,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_WBP_GNoise_F,frame=0
-	CheckBox check_Noise_Pink,pos={413,107},size={39,14},disable=1,proc=WBP_CheckProc,title="Pink"
-	CheckBox check_Noise_Pink,userdata(tabnum)=  "2"
-	CheckBox check_Noise_Pink,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_Noise_Pink,userdata(ResizeControlsInfo)= A"!!,I4J,hpe!!#>*!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Noise_Pink,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	CheckBox check_Noise_Pink,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Noise_Pink,value= 1
-	CheckBox check_Noise_Brown,pos={413,126},size={48,14},disable=3,proc=WBP_CheckProc,title="Brown"
-	CheckBox check_Noise_Brown,userdata(tabnum)=  "2"
-	CheckBox check_Noise_Brown,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_Noise_Brown,userdata(ResizeControlsInfo)= A"!!,I4J,hq6!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Noise_Brown,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	CheckBox check_Noise_Brown,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Noise_Brown,value= 0
+	CheckBox check_Noise_Pink_P41,pos={413,107},size={39,14},disable=1,proc=WBP_CheckProc,title="Pink"
+	CheckBox check_Noise_Pink_P41,userdata(tabnum)=  "2"
+	CheckBox check_Noise_Pink_P41,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_Noise_Pink_P41,userdata(ResizeControlsInfo)= A"!!,I4J,hpe!!#>*!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Noise_Pink_P41,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox check_Noise_Pink_P41,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox check_Noise_Pink_P41,value= 1
+	CheckBox Check_Noise_Brown_P42,pos={413,126},size={48,14},disable=3,proc=WBP_CheckProc,title="Brown"
+	CheckBox Check_Noise_Brown_P42,userdata(tabnum)=  "2"
+	CheckBox Check_Noise_Brown_P42,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox Check_Noise_Brown_P42,userdata(ResizeControlsInfo)= A"!!,I4J,hq6!!#>N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Noise_Brown_P42,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox Check_Noise_Brown_P42,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Noise_Brown_P42,value= 0
 	CheckBox check_PreventUpdate,pos={189,447},size={91,14},proc=WBP_CheckProc_PreventUpdate,title="Prevent update"
 	CheckBox check_PreventUpdate,userdata(ResizeControlsInfo)= A"!!,GM!!#CDJ,hpE!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_PreventUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -619,8 +619,28 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
 		row = WBP_ExtractRowNumberFromControl(control)
-		SetSetVariable(panel, control, WP[row][segment][stimulusType])
+		SetControl(panel, control, WP[row][segment][stimulusType])
 	endfor
+End
+
+/// @brief Generic wrapper for setting a control's value
+static Function SetControl(win, control, value)
+	string win, control
+	variable value
+
+	variable controlType
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+
+	if(controlType == 2)
+		CheckBox $control, win=$win, value=(value == CHECKBOX_SELECTED)
+	elseif(controlType == 5)
+		SetVariable $control, win=$win, value=_NUM:value
+	else
+		ASSERT(0, "Unsupported control type")
+	endif
 End
 
 Function WBP_SetVarProc_SetNo(sva) : SetVariableControl
@@ -708,37 +728,38 @@ Function WBP_CheckProc(cba) : CheckBoxControl
 			control = cba.ctrlName
 			checked = cba.checked
 
-			if(!cmpstr(control,"check_Sin_Chirp"))
+			if(!cmpstr(control,"check_Sin_Chirp_P43"))
 				if(checked)
 					EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 				else
 					DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 				endif
-			elseif(!cmpstr(control,"check_Noise_Pink"))
+			elseif(!cmpstr(control,"check_Noise_Pink_P41"))
 				if(checked)
-					SetCheckBoxState(panel,"Check_Noise_Brown", 0)
-					DisableControl(panel, "Check_Noise_Brown")
+					SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
+					DisableControl(panel, "Check_Noise_Brown_P42")
 					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 					EnableControl(panel, "SetVar_WaveBuilder_P30")
 				else
-					EnableControl(panel, "Check_Noise_Brown")
+					EnableControl(panel, "Check_Noise_Brown_P42")
 					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 					DisableControl(panel, "SetVar_WaveBuilder_P30")
 				endif
-			elseif(!cmpstr(control,"check_Noise_Brown"))
+			elseif(!cmpstr(control,"Check_Noise_Brown_P42"))
 				if(checked)
-					SetCheckBoxState(panel,"Check_Noise_Pink", 0)
-					DisableControl(panel, "Check_Noise_Pink")
+					SetCheckBoxState(panel,"check_Noise_Pink_P41", 0)
+					DisableControl(panel, "check_Noise_Pink_P41")
 					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 					EnableControl(panel, "SetVar_WaveBuilder_P30")
 				else
-					EnableControl(panel, "check_Noise_Pink")
+					EnableControl(panel, "check_Noise_Pink_P41")
 					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 					DisableControl(panel, "SetVar_WaveBuilder_P30")
 				endif
 			endif
 
-			WBP_UpdatePanelIfAllowed()
+			WBP_UpdateParam(control, checked)
+
 			break
 	endswitch
 
@@ -842,20 +863,11 @@ static Function WBP_UpdateControl(control, value)
 	string control
 	variable value
 
-	variable stimulusType, segmentNo, paramRow, controlType
+	variable stimulusType, segmentNo, paramRow
 
 	Wave/SDFR=GetWaveBuilderDataPath() WP
 
-	ControlInfo/W=$panel $control
-	controlType = abs(V_flag)
-
-	if(controlType == 2)
-		SetCheckBoxState(panel, control, value)
-	elseif(controlType == 5)
-		SetSetVariable(panel,  control, value)
-	else
-		ASSERT(0, "Unsupported control type")
-	endif
+	SetControl(panel, control, value)
 
 	ControlInfo/W=$panel WBP_WaveType
 	stimulusType = v_value
