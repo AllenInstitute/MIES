@@ -8,7 +8,8 @@ Menu "HDF5 Tools"
 		"Open HDF5 Browser", CreateNewHDF5Browser()
 		"Save HDF5 File", convert_to_hdf5("menuSaveFile.h5")
 		"Save Stim Set", SaveStimSet()
-		"Load Stim Set", LoadStimSet()	
+		"Load and Replace Stim Set", LoadReplaceStimSet()
+		"Load Additional Stim Set", LoadAdditionalStimSet()	
 End
 
 /// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
@@ -142,24 +143,24 @@ static Constant TYPE_RAMP    = 4
 /// @brief Categorize stimulus and extract some features
 Function ident_stimulus(current, dt, stim_characteristics)
 	Wave current
-	Variable dt
+	variable dt
 	Wave stim_characteristics
 
 	ASSERT(DimSize(current,ROWS) > 0,"expected non-empty wave")
 	ASSERT(DimSize(stim_characteristics,ROWS) > 5,"expected wave with at least 5 rows")
 
 	// variables to track stimulus characteristics
-	Variable polarity = 0 // >0 when i increasing; <0 when i decreasing
-	Variable flips = 0 // number of polarity shifts
-	Variable changes = 0 // number of changes in i
-	Variable peak = 0 // peak current
-	Variable start = 0
-	Variable stop = 0
-	Variable last = current[0]
+	variable polarity = 0 // >0 when i increasing; <0 when i decreasing
+	variable flips = 0 // number of polarity shifts
+	variable changes = 0 // number of changes in i
+	variable peak = 0 // peak current
+	variable start = 0
+	variable stop = 0
+	variable last = current[0]
 
 	// characterize stimulus, using current polarity and amplitude changes
-	Variable n = DimSize(current, 0)
-	Variable i, cur
+	variable n = DimSize(current, 0)
+	variable i, cur
 	for (i=0; i<n; i+=1)
 		cur = current[i]
 		if (cur == last)
@@ -202,10 +203,10 @@ Function ident_stimulus(current, dt, stim_characteristics)
 		last = cur
 	endfor
 
-	Variable t = (n-1) * dt
-	Variable dur = (stop - start) * dt
-	Variable onset = start * dt
-	Variable type = TYPE_UNKNOWN // default to unknown
+	variable t = (n-1) * dt
+	variable dur = (stop - start) * dt
+	variable onset = start * dt
+	variable type = TYPE_UNKNOWN // default to unknown
 
 	if (changes == 4)
 		if (dur < 0.020)
@@ -232,22 +233,32 @@ End
 
 ///@brief Save stim sets to HDF5 file
 Function SaveStimSet()
-	String filename
-	Variable root_id, h5_id
+	string filename
+	variable root_id, h5_id
     
 	// save the present data folder
 	string savedDataFolder = GetDataFolder(1)
+	
+	// use the NewPath command to make sure that the saving directory exists
+	NewPath/O/C/Z savedStimSetPath "C:\\MiesHDF5Files"
+	NewPath/O/C/Z savedStimSetPath "C:\\MiesHDF5Files\\SavedStimSets"
     	
     	// build up the filename using the time and date functions
-    	String fileLocation = "c:\\MiesHDF5Files\\SavedStimSets\\"
+    	string fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
+    	
+    	// See if the save file location actually exists
+    	GetFileFolderInfo/Z/Q  fileLocation
+    	if (!( V_Flag == 0 && V_isFolder ))
+    		print "Saved Stim Set folder does not exist...please create directory"
+    		return 0
+    	endif
     	
     	string dateTimeStamp = GetTimeStamp()
     	
-    	//filename =  "c:\\stimProtocol_" + fileDateStamp + "_" + fileTimeStamp + ".h5"
     	sprintf filename, "%sstimProtocol_%s.h5", fileLocation, dateTimeStamp
     	print "filename: ", filename
     	 
-	HDF5CreateFile h5_id as filename
+	HDF5CreateFile  h5_id as filename
 	if (V_Flag != 0 ) // HDF5CreateFile failed
 		print "HDF5Create File failed for ", filename
 		print "Check file name format..."
@@ -258,15 +269,15 @@ Function SaveStimSet()
 	endif
     	
 	// Set the data folder for saving all the Wave Builder stuff
-	SetDataFolder GetWBSvdStimSetPath()
+	DFREF dfr = GetWBSvdStimSetPath() 
 	HDF5CreateGroup /Z h5_id, "/SavedStimulusSets", root_id
-	HDF5SaveGroup /O /R  :, root_id, "/SavedStimulusSets"
+	HDF5SaveGroup /O /R dfr, root_id, "/SavedStimulusSets" 
 	HDF5CloseGroup root_id
     	
 	// Now the data folder for saving the SavedStimulusSetParameters
-	SetDataFolder GetWBSvdStimSetParamPath()
-	HDF5CreateGroup /Z h5_id, "/SavedStimulusSetParameters", root_id
-	HDF5SaveGroup /O /R  :, root_id, "/SavedStimulusSetParameters"
+	dfr = GetWBSvdStimSetParamPath()	
+	HDF5CreateGroup /Z h5_id, "/SavedStimulusSetParameters", root_id	
+	HDF5SaveGroup /O /R  dfr, root_id, "/SavedStimulusSetParameters"
 	HDF5CloseGroup root_id 
     	
 	HDF5CloseFile h5_id
@@ -277,19 +288,20 @@ Function SaveStimSet()
     	
 End
 
-/// @brief Load stim sets from HDF5 file
-Function LoadStimSet([incomingFileName])
+/// @brief Load stim sets from HDF5 file and replace all of the current stimulus waves
+Function LoadReplaceStimSet([incomingFileName])
 	string incomingFileName
 	    
-	Variable fileID, waveCounter
+	variable fileID, waveCounter
 	string dataSet
 	string dataFolderString
 	string stimSetType
+    	string stimName
     	
 	// save the present data folder
 	string savedDataFolder = GetDataFolder(1)
 	
-	if( ParamIsDefault(incomingFileName) )
+	if(ParamIsDefault(incomingFileName))
 		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
@@ -298,7 +310,7 @@ Function LoadStimSet([incomingFileName])
 			return 0
 		endif
 	else
-		if (StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
+		if(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
 			print "Not a valid stim set file....exiting..."
 			return 0
 		else
@@ -320,7 +332,6 @@ Function LoadStimSet([incomingFileName])
 	SetDataFolder GetWBSvdStimSetTTLPath()
 	KillWaves/A/Z
 	
-	string stimName
 	groupItems = ItemsInList(groupList)
 	for(waveCounter = 0; waveCounter < groupItems; waveCounter += 1)
 		dataSet = StringFromList(waveCounter, groupList)
@@ -335,7 +346,69 @@ Function LoadStimSet([incomingFileName])
 		elseif(StringMatch(dataSet,"SavedStimulusSets/DA/*"))
 			// loading into the DA folder
 			SetDataFolder GetWBSvdStimSetDAPath()
-			KillWaves/F/Z dataSet
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif(StringMatch(dataSet,"SavedStimulusSets/TTL/*"))
+			// loading into the TTL folder
+			SetDataFolder GetWBSvdStimSetTTLPath()
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet			
+		endif
+	endfor
+
+	HDF5CloseFile fileID
+	print "Stimulus Set Loaded..."
+	
+	// restore the data folder
+	SetDataFolder savedDataFolder   	
+End
+
+/// @brief Load stim sets from HDF5 file and add to the current stimulus waves.  If there is a wave with a matching name already present, it will be overwritten and replaced
+Function LoadAdditionalStimSet([incomingFileName])
+	string incomingFileName
+	    
+	variable fileID, waveCounter
+	string dataSet
+	string dataFolderString
+	string stimSetType
+    	string stimName
+    	
+	// save the present data folder
+	string savedDataFolder = GetDataFolder(1)
+	
+	if(ParamIsDefault(incomingFileName))
+		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
+		if(V_flag == 0)				 // User selected a file?
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+		else
+			print "File load cancelled..."
+			return 0
+		endif
+	else
+		if(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
+			print "Not a valid stim set file....exiting..."
+			return 0
+		else
+			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"	
+		endif
+	endif
+    	
+	string groupList =  S_HDF5ListGroup
+	variable groupItems
+	
+	groupItems = ItemsInList(groupList)
+	for(waveCounter = 0; waveCounter < groupItems; waveCounter += 1)
+		dataSet = StringFromList(waveCounter, groupList)
+		if (StringMatch(dataSet,"SavedStimulusSetParameters/DA/*"))
+			// load into the DA folder
+			SetDataFolder GetWBSvdStimSetParamDAPath()
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif(StringMatch(dataSet,"SavedStimulusSetParameters/TTL/*"))
+			// load into the TTL folder
+			SetDataFolder GetWBSvdStimSetParamTTLPath()
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif(StringMatch(dataSet,"SavedStimulusSets/DA/*"))
+			// loading into the DA folder
+			SetDataFolder GetWBSvdStimSetDAPath()
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
 		elseif(StringMatch(dataSet,"SavedStimulusSets/TTL/*"))
 			// loading into the TTL folder
