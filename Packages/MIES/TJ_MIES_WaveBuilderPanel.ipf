@@ -28,7 +28,12 @@ static StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 static Constant  STIMULUS_TYPE_DA            = 1
 static Constant  STIMULUS_TYPE_TLL           = 2
 
-static Function WBP_InitiateWaveBuilder()
+Function WBP_CreateWaveBuilderPanel()
+
+	if(windowExists(panel))
+		DoWindow/F $panel
+		return NaN
+	endif
 
 	// create all necessary data folders
 	GetWBSvdStimSetParamPath()
@@ -39,31 +44,9 @@ static Function WBP_InitiateWaveBuilder()
 	GetWBSvdStimSetTTLPath()
 
 	dfref dfr = GetWaveBuilderDataPath()
-
 	Make/O/N= 100 dfr:WaveBuilderWave
-	//WP = Wave Parameters
-	Make/O/N= (51,100,8) dfr:WP/Wave=WP
-	//sets low pass filter to off (off value is related to sampling frequency)
-	WP[20][][2] = 10001
-	//sets coefficent count for low pass filter to a reasonable and legal Number
-	WP[26][][2] = 500
-	//sets coefficent count for high pass filter to a reasonable and legal Number
-	WP[28][][2] = 500
-
-	//WPT = Wave Parameters Text
-	Make/T/O/N=(51,100) dfr:WPT
 
 	GetSegmentWave()
-End
-
-Function WBP_CreateWaveBuilderPanel()
-
-	if(windowExists(panel))
-		DoWindow/F $panel
-		return NaN
-	endif
-
-	WBP_InitiateWaveBuilder()
 
 	NewPanel/N=$panel/W=(1230,597,2247,1071)
 	ASSERT(CmpStr(panel, S_name) == 0, "window already exists")
@@ -609,7 +592,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	string list, control
 	variable segment, numEntries, i, row
 
-	WAVE/SDFR=GetWaveBuilderDataPath() WP
+	WAVE WP = GetWaveBuilderWaveParam()
 
 	segment = GetSetVariable(panel, "setvar_WaveBuilder_SegmentEdit")
 
@@ -865,7 +848,7 @@ static Function WBP_UpdateControl(control, value)
 
 	variable stimulusType, segmentNo, paramRow
 
-	Wave/SDFR=GetWaveBuilderDataPath() WP
+	WAVE WP = GetWaveBuilderWaveParam()
 
 	SetControl(panel, control, value)
 
@@ -1009,7 +992,8 @@ static Function WBP_ChangeWaveType(stimulusType)
 
 	dfref dfr = GetWaveBuilderDataPath()
 	Wave/SDFR=dfr SegWvType
-	Wave/SDFR=dfr WP
+
+	WAVE WP = GetWaveBuilderWaveParam()
 
 	string list
 
@@ -1093,9 +1077,9 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 		case 2:
 			win = pa.win
 
-			dfref dfr = WBP_GetFolderPath()
+			WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-			Wave/T/SDFR=GetWaveBuilderDataPath() WPT
+			dfref dfr = WBP_GetFolderPath()
 			Wave/Z/SDFR=dfr customWave = $pa.popStr
 
 			SegmentNo = GetSetVariable(win, "setvar_WaveBuilder_SegmentEdit")
