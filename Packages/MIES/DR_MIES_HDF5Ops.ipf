@@ -150,12 +150,12 @@ Function ident_stimulus(current, dt, stim_characteristics)
 	ASSERT(DimSize(stim_characteristics,ROWS) > 5,"expected wave with at least 5 rows")
 
 	// variables to track stimulus characteristics
-	variable polarity = 0 // >0 when i increasing; <0 when i decreasing
-	variable flips = 0 // number of polarity shifts
-	variable changes = 0 // number of changes in i
-	variable peak = 0 // peak current
-	variable start = 0
-	variable stop = 0
+	variable polarity // >0 when i increasing; <0 when i decreasing
+	variable flips // number of polarity shifts
+	variable changes // number of changes in i
+	variable peak // peak current
+	variable start 
+	variable stop 
 	variable last = current[0]
 
 	// characterize stimulus, using current polarity and amplitude changes
@@ -234,15 +234,17 @@ End
 ///@brief Save stim sets to HDF5 file
 Function SaveStimSet()
 	string filename
+	string fileLocation
+	string dateTimeStamp
 	variable root_id, h5_id
 	    	
  	// build up the filename using the time and date functions
-    	string fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
+    	fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
     	
 	// Call this new function to insure that the folder actually exists on the disk
 	CreateFolderOnDisk(fileLocation)
     	
-    	string dateTimeStamp = GetTimeStamp()
+    	dateTimeStamp = GetTimeStamp()
     	
     	sprintf filename, "%sstimProtocol_%s.h5", fileLocation, dateTimeStamp
     	print "filename: ", filename
@@ -280,10 +282,13 @@ Function LoadReplaceStimSet([incomingFileName])
 	string dataSet
 	string dataFolderString
 	string stimSetType
-    	string stimName
+	string stimName
+	string savedDataFolder
+	string groupList
+	variable groupItems
     	
 	// save the present data folder
-	string savedDataFolder = GetDataFolder(1)
+	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
 		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
@@ -303,8 +308,7 @@ Function LoadReplaceStimSet([incomingFileName])
 		endif
 	endif
     	
-	string groupList =  S_HDF5ListGroup
-	variable groupItems
+	groupList =  S_HDF5ListGroup
 	
 	// Need to clear out the previously loaded wave sets
 	SetDataFolder GetWBSvdStimSetParamDAPath()
@@ -353,10 +357,13 @@ Function LoadAdditionalStimSet([incomingFileName])
 	string dataSet
 	string dataFolderString
 	string stimSetType
-    	string stimName
+	string stimName
+	string savedDataFolder
+	string groupList 
+	variable groupItems
     	
 	// save the present data folder
-	string savedDataFolder = GetDataFolder(1)
+	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
 		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
@@ -376,8 +383,7 @@ Function LoadAdditionalStimSet([incomingFileName])
 		endif
 	endif
     	
-	string groupList =  S_HDF5ListGroup
-	variable groupItems
+	groupList =  S_HDF5ListGroup
 	
 	groupItems = ItemsInList(groupList)
 	for(waveCounter = 0; waveCounter < groupItems; waveCounter += 1)
