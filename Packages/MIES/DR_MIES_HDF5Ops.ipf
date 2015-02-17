@@ -239,7 +239,7 @@ Function SaveStimSet()
 	variable root_id, h5_id
 	    	
  	// build up the filename using the time and date functions
-    	fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
+ 	fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
     	
 	// Call this new function to insure that the folder actually exists on the disk
 	CreateFolderOnDisk(fileLocation)
