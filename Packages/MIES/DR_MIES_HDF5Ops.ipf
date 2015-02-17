@@ -235,57 +235,41 @@ End
 Function SaveStimSet()
 	string filename
 	variable root_id, h5_id
-    
-	// save the present data folder
-	string savedDataFolder = GetDataFolder(1)
-	
-	// use the NewPath command to make sure that the saving directory exists
-	NewPath/O/C/Z savedStimSetPath "C:\\MiesHDF5Files"
-	NewPath/O/C/Z savedStimSetPath "C:\\MiesHDF5Files\\SavedStimSets"
-    	
-    	// build up the filename using the time and date functions
+	    	
+ 	// build up the filename using the time and date functions
     	string fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
     	
-    	// See if the save file location actually exists
-    	GetFileFolderInfo/Z/Q  fileLocation
-    	if (!( V_Flag == 0 && V_isFolder ))
-    		print "Saved Stim Set folder does not exist...please create directory"
-    		return 0
-    	endif
+	// Call this new function to insure that the folder actually exists on the disk
+	CreateFolderOnDisk(fileLocation)
     	
     	string dateTimeStamp = GetTimeStamp()
     	
     	sprintf filename, "%sstimProtocol_%s.h5", fileLocation, dateTimeStamp
     	print "filename: ", filename
-    	 
+	    	 
 	HDF5CreateFile  h5_id as filename
 	if (V_Flag != 0 ) // HDF5CreateFile failed
 		print "HDF5Create File failed for ", filename
 		print "Check file name format..."
 		
-		// restore the data folder
-		SetDataFolder savedDataFolder
 		return -1
 	endif
-    	
+	    	
 	// Set the data folder for saving all the Wave Builder stuff
 	DFREF dfr = GetWBSvdStimSetPath() 
 	HDF5CreateGroup /Z h5_id, "/SavedStimulusSets", root_id
 	HDF5SaveGroup /O /R dfr, root_id, "/SavedStimulusSets" 
 	HDF5CloseGroup root_id
-    	
+	    	
 	// Now the data folder for saving the SavedStimulusSetParameters
 	dfr = GetWBSvdStimSetParamPath()	
 	HDF5CreateGroup /Z h5_id, "/SavedStimulusSetParameters", root_id	
 	HDF5SaveGroup /O /R  dfr, root_id, "/SavedStimulusSetParameters"
 	HDF5CloseGroup root_id 
-    	
+	    	
 	HDF5CloseFile h5_id
 	print "HDF5 file save complete..."
-    	
-	// restore the data folder
-	SetDataFolder savedDataFolder
-    	
+	    	
 End
 
 /// @brief Load stim sets from HDF5 file and replace all of the current stimulus waves

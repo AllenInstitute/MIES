@@ -1652,3 +1652,51 @@ Function CallFunctionForEachListItem(f, list, [sep])
 		f(entry)
 	endfor
 End
+
+/// @brief Create a folder recursively on disk given an absolute path
+///
+/// If you pass windows style paths using backslashes remember to always *double* them.
+Function CreateFolderOnDisk(absPath)
+	string absPath
+
+	string path, partialPath, tempPath
+	variable numParts, i
+
+	// convert to ":" folder separators
+	path = ParseFilePath(5, absPath, ":", 0, 0)
+
+	GetFileFolderInfo/Q/Z path
+	if(!V_flag)
+		ASSERT(V_isFolder, "The path which we should create exists, but points to a file")
+		return NaN
+	endif
+
+	tempPath = UniqueName("tempPath", 12, 0)
+
+	numParts = ItemsInList(path, ":")
+	partialPath = StringFromList(0, path, ":")
+	ASSERT(strlen(partialPath) == 1, "Expected a single drive letter for the first path component")
+
+	// we skip the first one as that is the drive letter
+	for(i = 1; i < numParts; i += 1)
+		partialPath += ":" + StringFromList(i, path, ":")
+
+		GetFileFolderInfo/Q/Z partialPath
+		if(!V_flag)
+			ASSERT(V_isFolder, "The partial path which we should create exists, but points to a file")
+			continue
+		endif
+
+		NewPath/O/C/Q/Z $tempPath partialPath
+	endfor
+
+	KillPath/Z $tempPath
+
+	GetFileFolderInfo/Q/Z partialPath
+	if(!V_flag)
+		ASSERT(V_isFolder, "The path which we should create exists, but points to a file")
+		return NaN
+	endif
+
+	ASSERT(0, "Could not create the path, maybe the permissions were insufficient")
+End
