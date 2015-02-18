@@ -218,7 +218,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
 	// the max allows for uneven number of AD and DA channels
 	variable numChannels = max(NumberOfDAchannels, NumberOfADchannels)
-	variable DisplayDAChan
+	variable DisplayDAChan, axisIndex
 	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
 	variable headstage, red, green, blue, i
 	string axis, trace, adc, dac
@@ -260,8 +260,10 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 			YaxisHigh = DAYaxisHigh
 			YaxisLow = DAYaxisLow
 			dac = StringFromList(i, DAChannelList)
-			axis = GetNextFreeAxisName(graph, AXIS_BASE)
 			trace = "DA" + dac
+
+			axis = "col" + num2str(axisIndex)
+			axisIndex += 1
 
 			AppendToGraph/W=$graph/L=$axis sweep[][i]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
@@ -287,8 +289,10 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 		if(i < NumberOfADchannels)
 			adc = StringFromList(i, ADChannelList)
-			axis = GetNextFreeAxisName(graph, AXIS_BASE)
 			trace = "AD" + adc
+
+			axis = "col" + num2str(axisIndex)
+			axisIndex += 1
 
 			AppendToGraph/W=$graph/L=$axis sweep[][i + NumberOfDAchannels]/TN=$trace
 			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
