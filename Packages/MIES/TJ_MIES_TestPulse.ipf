@@ -204,7 +204,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 			if(exists(CountPath) == 2)
 				killvariables $CountPath
 			endif
-			DAP_StopOngoingDataAcquisition(panelTitle) /// @todo Need to reset data acquisition button when data acquisition is stopped.
+			DAP_StopOngoingDataAcquisition(panelTitle) 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
 			DAP_StoreTTLState(panelTitle)
