@@ -3482,7 +3482,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 				DataAcqState = 0
 				DAP_StopOngoingDataAcquisition(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
-				DAP_StopButtonToAcqDataButton(panelTitle)
 			endif
 		break
 	endswitch
@@ -4600,8 +4599,12 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 		
 		DM_ScaleITCDataWave(panelTitle)
-	
+		DAP_StopButtonToAcqDataButton(panelTitle)
+
 	endif
+	
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 0
 	print "Data acquisition was manually terminated"
 End 
 //=========================================================================================
