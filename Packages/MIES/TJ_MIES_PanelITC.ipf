@@ -4599,12 +4599,14 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 		
 		DM_ScaleITCDataWave(panelTitle)
-		DAP_StopButtonToAcqDataButton(panelTitle)
-
 	endif
 	
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 0
+	if(DataAcqState)
+		DataAcqState = 0
+		DAP_StopButtonToAcqDataButton(panelTitle)
+	endif
+	
 	print "Data acquisition was manually terminated"
 End 
 //=========================================================================================
