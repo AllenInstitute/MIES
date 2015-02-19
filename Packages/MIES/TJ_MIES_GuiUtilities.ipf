@@ -258,8 +258,9 @@ Function SetSetVariable(win,Control, newValue)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
-
-	SetVariable $control, win = $win, value =_NUM:newValue
+	if(newValue != v_value)
+		SetVariable $control, win = $win, value =_NUM:newValue
+	endif
 End
 
 Function SetSetVariableString(win,Control, newString)
@@ -280,8 +281,10 @@ Function SetCheckBoxState(win,control,state)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-
-	CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
+	if(state != V_Value)
+		CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
+	endif
+	
 End
 
 /// @brief Returns the contents of a SetVariable
@@ -329,12 +332,15 @@ End
 Function SetPopupMenuIndex(win, control, index)
 	string win, control
 	variable index
+	index += 1
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	ASSERT(index >= 0,"Invalid index")
-	PopupMenu $control win=$win, mode=(index+1)
+	if(index != v_value)
+		PopupMenu $control win=$win, mode=index
+	endif
 End
 
 /// @brief Sets the popupmenu value
