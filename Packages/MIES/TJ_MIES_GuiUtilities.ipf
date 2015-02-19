@@ -526,6 +526,40 @@ Function GetAxisRange(graph, axis, minimum, maximum)
 	endif
 End
 
+/// @name Constants for GetAxisOrientation
+/// @{
+static Constant AXIS_ORIENTATION_LEFT   = 0x01
+static Constant AXIS_ORIENTATION_RIGHT  = 0x02
+static Constant AXIS_ORIENTATION_BOTTOM = 0x04
+static Constant AXIS_ORIENTATION_TOP    = 0x08
+/// @}
+
+/// @brief Return the orientation of the axis as numeric value
+Function GetAxisOrientation(graph, axes)
+	string graph, axes
+
+	string orientation
+
+	orientation = StringByKey("AXTYPE", AxisInfo(graph, axes))
+
+	strswitch(orientation)
+		case "left":
+			return AXIS_ORIENTATION_LEFT
+			break
+		case "right":
+			return AXIS_ORIENTATION_RIGHT
+			break
+		case "bottom":
+			return AXIS_ORIENTATION_BOTTOM
+			break
+		case "top":
+			return AXIS_ORIENTATION_TOP
+			break
+	endswitch
+
+	Abort "unknown axis type"
+End
+
 /// @brief Returns a wave with the minimum and maximum
 /// values of each axis
 ///
@@ -534,22 +568,26 @@ End
 Function/Wave GetAxesRanges(graph)
 	string graph
 
-	string list, axes
+	string list, axis, orientation
 	variable numAxes, i, minimum, maximum
 
 	list    = AxisList(graph)
+	list    = SortList(list)
 	numAxes = ItemsInList(list)
 
-	Make/FREE/D/N=(2, numAxes) ranges
-	SetDimLabel ROWS, 0, minimum, ranges
-	SetDimLabel ROWS, 1, maximum, ranges
+	Make/FREE/D/N=(numAxes, 3) ranges = 0
+	SetDimLabel COLS, 0, minimum , ranges
+	SetDimLabel COLS, 1, maximum , ranges
+	SetDimLabel COLS, 2, axisType, ranges
 
 	for(i = 0; i < numAxes; i += 1)
-		axes = StringFromList(i, list)
-		SetDimLabel COLS, i, $axes, ranges
-		GetAxisRange(graph, axes, minimum, maximum)
-		ranges[%minimum][i] = minimum
-		ranges[%maximum][i] = maximum
+		axis = StringFromList(i, list)
+		SetDimLabel ROWS, i, $axis, ranges
+		ranges[i][%axisType] = GetAxisOrientation(graph, axis)
+
+		GetAxisRange(graph, axis, minimum, maximum)
+		ranges[i][%minimum] = minimum
+		ranges[i][%maximum] = maximum
 	endfor
 
 	return ranges
@@ -557,24 +595,48 @@ End
 
 /// @brief Set the range of all axes as stored by GetAxesRange
 ///
+/// Includes a heuristic if the name of the axis changed after GetAxesRange.
+/// The axis range is also restored if its index in the sorted axis list and its
+/// orientation is the same.
 /// @see GetAxisRange
 Function SetAxesRanges(graph, ranges)
 	string graph
 	Wave ranges
 
-	variable numCols, i, minimum, maximum
-	string axes
+	variable numRows, i, minimum, maximum, row, numAxes
+	string axis, list
 
 	ASSERT(windowExists(graph), "Graph does not exist")
-	numCols = DimSize(ranges, COLS)
+	numRows = DimSize(ranges, ROWS)
 
-	for(i = 0; i < numCols; i += 1)
-		minimum = ranges[%minimum][i]
-		maximum = ranges[%maximum][i]
-		if(IsFinite(minimum) && IsFinite(maximum))
-			axes = GetDimLabel(ranges, COLS, i)
-			SetAxis/W=$graph/Z $axes, minimum, maximum
+	list    = AxisList(graph)
+	list    = SortList(list)
+	numAxes = ItemsInList(list)
+
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, list)
+
+		row = FindDimLabel(ranges, ROWS, axis)
+
+		if(row >= 0)
+			minimum = ranges[row][%minimum]
+			maximum = ranges[row][%maximum]
+		else
+			// axis does not exist, lets just try the axis at the current index
+			// and check if the orientation is correct
+			if(i < numRows && GetAxisOrientation(graph, axis) == ranges[i][%axisType])
+				minimum = ranges[i][%minimum]
+				maximum = ranges[i][%maximum]
+			else
+				continue
+			endif
 		endif
+
+		if(!IsFinite(minimum) || !IsFinite(maximum))
+			continue
+		endif
+
+		SetAxis/W=$graph $axis, minimum, maximum
 	endfor
 End
 
