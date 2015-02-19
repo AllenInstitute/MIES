@@ -7,7 +7,7 @@ Function WB_MakeStimSet()
 	variable i
 	Variable start = stopmstimer(-2)
 
-	Wave/SDFR=dfr WP
+	WAVE WP = GetWaveBuilderWaveParam()
 
 	// duplicating starting parameter Waves so that they can be returned to start parameters at end of Wave making
 	Duplicate/FREE WP, WP_orig
@@ -40,10 +40,11 @@ End
 /// @brief Adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter Waves
 static Function WB_AddDelta()
 
-	Wave/SDFR=GetWaveBuilderDataPath() WP
-	variable i
+	variable i, checked
 
-	variable checked = GetCheckBoxState("WaveBuilder", "check_WaveBuilder_exp")
+	WAVE WP = GetWaveBuilderWaveParam()
+
+	checked = GetCheckBoxState("WaveBuilder", "check_WaveBuilder_exp_P40")
 
 	for(i=0; i < 30; i += 2)
 		WP[i][][0] = WP[i + 1][q][0] + WP[i][q][0]
@@ -83,10 +84,10 @@ static Function WB_MakeWaveBuilderWave()
 	ControlInfo SetVar_WaveBuilder_NoOfSegments
 	NumberOfSegments = v_value
 
+	WAVE WP    = GetWaveBuilderWaveParam()
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
 	for(i=0; i < NumberOfSegments; i+=1)
-		//Load in parameters
-		Wave/SDFR=dfr WP
-		Wave/T/SDFR=dfr WPT
 		type = SegWvType[i]
 
 		Duration                   = WP[0][i][type]
@@ -100,8 +101,6 @@ static Function WB_MakeWaveBuilderWave()
 		PulseDuration              = WP[8][i][type]
 		DeltaPulsedur              = WP[9][i][type]
 		TauRise                    = WP[10][i][type]
-		//row spacing changes here to leave room for addition of delta parameters in the future
-		//also allows for universal delta parameter addition
 		DeltaTauRise               = WP[11][i][type]
 		TauDecay1                  = WP[12][i][type]
 		DeltaTauDecay1             = WP[13][i][type]
@@ -282,12 +281,15 @@ static Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowP
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 
-	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink")
-	brownCheck = GetCheckBoxState("Wavebuilder", "check_Noise_Brown")
+	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink_P41")
+	brownCheck = GetCheckBoxState("Wavebuilder", "Check_Noise_Brown_P42")
 
 	if(!brownCheck && !pinkCheck)
 		SegmentWave = gnoise(Amplitude) // MultiThread didn't impact processing time for gnoise
-		ASSERT(duration > 0, "negative duration")
+		if(duration <= 0)
+			print "WB_NoiseSegment: Can not proceed with non-positive duration"
+			return NaN
+		endif
 
 		if(LowPassCutOff <= 100000 && LowPassCutOff != 0)
 			FilterFIR /DIM = 0 /LO = {(LowPassCutOff / 200000), (LowPassCutOff / 200000), LowPassFiltCoefCount} SegmentWave
@@ -312,7 +314,7 @@ static Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 
-	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp"))
+	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp_P43"))
 		MultiThread SegmentWave = Amplitude * sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
 		SegmentWave += Offset
 	else
@@ -351,7 +353,7 @@ static Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaD
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 	EndPoint = NumberOfPulses
 
-	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson"))
+	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
 		do
 			SegmentWave[(PulseStartTime / 0.005), ((PulseStartTime / 0.005) + (PulseDuration / 0.005))] = Amplitude
 			if(i + 1 == EndPoint)

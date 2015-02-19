@@ -2176,3 +2176,71 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 
 	return wv
 End
+
+/// @brief Return the parameter wave for the wave builder panel
+///
+/// Rows:
+/// - Variables synced to GUI controls, see e.g. WB_MakeWaveBuilderWave in TJ_MIES_WaveBuilder for an up to date list
+///
+/// Columns:
+/// - Segment/Epoch
+///
+/// Layers hold different stimulus wave form types:
+/// - Square pulse
+/// - Ramp
+/// - GPB_Noise
+/// - Sin
+/// - Saw tooth
+/// - Square pulse train
+/// - PSC
+/// - Load custom wave
+Function/WAVE GetWaveBuilderWaveParam()
+
+	variable versionOfNewWave = 1
+	dfref dfr = GetWaveBuilderDataPath()
+
+	WAVE/Z/SDFR=dfr wv = WP
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/O/N=(51, 100, 8) dfr:WP/Wave=wv
+
+	// sets low pass filter to off (off value is related to sampling frequency)
+	wv[20][][2] = 10001
+	// sets coefficent count for low pass filter to a reasonable and legal Number
+	wv[26][][2] = 500
+	// sets coefficent count for high pass filter to a reasonable and legal Number
+	wv[28][][2] = 500
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the parameter text wave for the wave builder panel
+///
+/// Rows:
+/// - 0: name of the custom wave loaded
+/// - 1-50: unused
+///
+/// Columns:
+/// - Segment/Epoch
+Function/WAVE GetWaveBuilderWaveTextParam()
+
+	variable versionOfNewWave = 1
+	dfref dfr = GetWaveBuilderDataPath()
+
+	WAVE/T/Z/SDFR=dfr wv = WPT
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/N=(51, 100)/O/T dfr:WPT
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
