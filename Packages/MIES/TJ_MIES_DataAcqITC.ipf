@@ -494,7 +494,16 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 
 		DEBUGPRINT("current to send=", var=current)
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
+		ampSettings[17][0][headStage] = 1
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
+		ampSettings[16][0][headStage] = current
+		
+		// update the DA_Ephys panel amp controls
+		if(headStage == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")) /// @todo State of setVar amp controls need to be linked to AmplifierParamStorageWave to avoid manual GUI updates. Headstage slider needs to update link between controls and AmplifierParamStorageWave
+			SetSetVariable(panelTitle, "setvar_DataAcq_Hold_IC", current)
+			SetCheckboxState(panelTitle, "check_DatAcq_HoldEnable", 1)
+		endif
+		
 	endfor
 End
 
