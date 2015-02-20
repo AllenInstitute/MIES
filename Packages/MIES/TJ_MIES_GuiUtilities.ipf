@@ -125,7 +125,7 @@ Function SetControlTitle(win, controlName, newTitle)
 End
 
 /// @brief Change color of a control
-Function SetControlTitleColor(win, controlName, R, G, B)
+Function SetControlTitleColor(win, controlName, R, G, B) ///@todo store color in control user data, check for color change before applying change
 	string win, controlName
 	variable R, G, B
 
