@@ -281,6 +281,9 @@ Function SetCheckBoxState(win,control,state)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+	
+	state = !!state
+	
 	if(state != V_Value)
 		CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
 	endif
