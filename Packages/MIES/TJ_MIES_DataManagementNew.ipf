@@ -61,7 +61,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
 
 	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
-	Redimension/D TestPulseITC
+	Redimension/Y=(FLOAT_64BIT) TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
@@ -78,7 +78,7 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	Duplicate /o /r = [startPoint,(startPoint + RowsToCopy)][] ITCDataWave $TestPulseITCPath
 	//Duplicate /o /r = [((startPoint + RowsToCopy)/4),(((startPoint + RowsToCopy)/4)+(startPoint + RowsToCopy))][] ITCDataWave $TestPulseITCPath
 	wave TestPulseITC = $TestPulseITCPath
-	redimension /d TestPulseITC
+	Redimension/Y=(FLOAT_64BIT) TestPulseITC
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
@@ -139,7 +139,7 @@ Function DM_ScaleITCDataWave(panelTitle)
 
 	DFREF dfr = GetDevicePath(panelTitle)
 	WAVE/SDFR=dfr ITCDataWave
-	Redimension/D ITCDataWave
+	Redimension/Y=(FLOAT_64BIT) ITCDataWave
 
 	DM_ADScaling(ITCDataWave,panelTitle)
 end
