@@ -173,7 +173,6 @@ Function ITC_StopDataAcq()
 		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 END
-//======================================================================================
 
 //======================================================================================
 Function ITC_StartBckgrdFIFOMonitor()
@@ -398,7 +397,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	variable headStage, entries, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable activeHeadStages
 	variable resistance, maximumAutoBiasCurrent
-	variable UserSelectedHeadStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
 	variable curTime = ticks * TICKS_TO_SECONDS
@@ -493,17 +491,15 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		DEBUGPRINT("current to send=", var=current)
+		
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
-		ampSettings[17][0][headStage] = 1
+		ampSettings[17][0][headStage] = 1 /// @todo Modify AI_UpdateAmpModel to allow a value to be passed in, in place of the GUI query. 
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
 		ampSettings[16][0][headStage] = current
 		
 		// update the DA_Ephys panel amp controls
-		if(headStage == UserSelectedHeadStage) /// @todo State of setVar amp controls need to be linked to AmplifierParamStorageWave to avoid manual GUI updates. Headstage slider needs to update link between controls and AmplifierParamStorageWave
-			SetSetVariable(panelTitle, "setvar_DataAcq_Hold_IC", current)
-			SetCheckboxState(panelTitle, "check_DatAcq_HoldEnable", 1)
-		endif
-		
+		AI_UpdateAmpView(panelTitle, headStage, "setvar_DataAcq_Hold_IC")
+		AI_UpdateAmpView(panelTitle, headStage, "check_DatAcq_HoldEnable")
 	endfor
 End
 
