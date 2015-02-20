@@ -498,8 +498,8 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		ampSettings[16][0][headStage] = current
 		
 		// update the DA_Ephys panel amp controls
-		AI_UpdateAmpView(panelTitle, headStage, "setvar_DataAcq_Hold_IC")
-		AI_UpdateAmpView(panelTitle, headStage, "check_DatAcq_HoldEnable")
+		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_IC")
+		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnable")
 	endfor
 End
 

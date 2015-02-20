@@ -527,8 +527,8 @@ End
 ///
 ///@param panelTitle locked device to work on
 ///@param MIESHeadStageNo The headstage on which the MIES DA_Ephys amplifer controls will be updated
-///@param cntrlName Name of the control being updated. If left blank, all controls are updated.
-Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, cntrlName)
+///@param cntrlName Name of the control being updated.It is an optional parameter (see displayHelpTopic "Using Optional Parameters").
+Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 	string panelTitle
 	variable MIESHeadStageNo
 	string cntrlName

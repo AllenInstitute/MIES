@@ -105,7 +105,7 @@ Function P_MethodApproach(panelTitle, headStage)
 		// Turn off holding
 		AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
 		AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 0
-		AI_UpdateAmpView(panelTitle, headStage, "check_DatAcq_HoldEnableVC")
+		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnableVC")
 	endif	
 End
 
@@ -294,7 +294,7 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	// make sure holding is enabled
 	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
 	AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 1
-	AI_UpdateAmpView(panelTitle, headStage, "check_DatAcq_HoldEnableVC")
+	AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnableVC")
 End
 
 /// @brief Opens ITC devices used for pressure regulation
