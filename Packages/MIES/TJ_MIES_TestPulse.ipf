@@ -204,7 +204,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 			if(exists(CountPath) == 2)
 				killvariables $CountPath
 			endif
-
+			DAP_StopOngoingDataAcquisition(panelTitle) 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
 			DAP_StoreTTLState(panelTitle)
@@ -269,6 +269,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
 				Abort "Give test pulse a duration greater than 0 ms"
 			endif
 
+			DAP_StopOngoingDataAcqMD(panelTitle) // stop any ongoing data aquisition
 			DisableControl(panelTitle, ba.ctrlName)
 
 			// Determine the data folder path for the DAC
