@@ -43,7 +43,7 @@ Function DM_SaveITCData(panelTitle)
 	endif	
 	SetVariable SetVar_Sweep, Value = _NUM:(SweepNo+1), limits={0, SweepNo + 1,1},win = $panelTitle
 
-	Redimension/Y=(FLOAT_64BIT) $SavedDataWaveName
+	Redimension/Y=(FLOAT_32BIT) $SavedDataWaveName
 
 	DM_ADScaling($SavedDataWaveName, panelTitle)
 	DM_DAScaling($SavedDataWaveName, panelTitle)
@@ -65,7 +65,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
 
 	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
-	Redimension/Y=(FLOAT_64BIT) TestPulseITC
+	Redimension/Y=(FLOAT_32BIT) TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
@@ -82,7 +82,7 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	Duplicate /o /r = [startPoint,(startPoint + RowsToCopy)][] ITCDataWave $TestPulseITCPath
 	//Duplicate /o /r = [((startPoint + RowsToCopy)/4),(((startPoint + RowsToCopy)/4)+(startPoint + RowsToCopy))][] ITCDataWave $TestPulseITCPath
 	wave TestPulseITC = $TestPulseITCPath
-	Redimension/Y=(FLOAT_64BIT) TestPulseITC
+	Redimension/Y=(FLOAT_32BIT) TestPulseITC
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
@@ -170,7 +170,7 @@ Function DM_ScaleITCDataWave(panelTitle)// used after single trial of data aquis
 string panelTitle
 string WavePath = HSU_DataFullFolderPathString(panelTitle)
 wave ITCDataWave = $WavePath + ":ITCDataWave"
-Redimension/Y=(FLOAT_64BIT) ITCDataWave
+Redimension/Y=(FLOAT_32BIT) ITCDataWave
 DM_ADScaling(ITCDataWave,panelTitle)
 end
 
