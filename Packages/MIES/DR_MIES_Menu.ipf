@@ -94,7 +94,7 @@ Function CloseMies()
 
 	for (index = 0; index < noOfActiveWindows;index += 1)
 		windowToClose = StringFromList(index, activeWindows)
-		if ( StringMatch(windowToClose, "waveBuilder*") || StringMatch(windowToClose, "dataBrowser*") || StringMatch(windowToClose, "DB_ITC*") || StringMatch(windowToClose, "DA_Ephys*") )
+		if ( StringMatch(windowToClose, "waveBuilder*") || StringMatch(windowToClose, "dataBrowser*") || StringMatch(windowToClose, "DB_ITC*") || StringMatch(windowToClose, "DA_Ephys*") || StringMatch(windowToClose, "configureAnalysis") || StringMatch(windowToClose, "analysisMaster*") )
 			KillWindow $windowToClose
 		endif
 	endfor
