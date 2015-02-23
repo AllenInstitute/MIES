@@ -540,7 +540,7 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 	endif
 	
 	Wave AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
-	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == MIESHeadStageNo) // only update view if headstage is selected
+	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == MIESHeadStageNo) // only update view if headstage is selected. 
 		if(paramIsDefault(cntrlName)) // update all amplifier controls
 			cntrlName = ""
 			setSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", AmpStorageWave[%holdingPotential][0][MIESHeadStageNo])
