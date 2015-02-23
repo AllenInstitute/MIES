@@ -4575,6 +4575,9 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
 	
+	string countPath = WavePath + ":Count"
+	NVAR count = $countPath
+	
 	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
 		ITC_STOPTestPulse(panelTitle)
 	endif
@@ -4599,6 +4602,12 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 		
 		DM_ScaleITCDataWave(panelTitle)
+	else // adding the elseif to force a stop if invoked during a 'down' time, with nothing happening.  
+		// get the set number of SweepsActiveSet
+		variable maxSweeps = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+		
+		// Set the count to the maxSweeps
+		count = maxSweeps	
 	endif
 	
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)

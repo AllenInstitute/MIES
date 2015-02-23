@@ -11,6 +11,7 @@ Menu "Mies Panels", dynamic
 		"Save and Clear Experiment"  , /Q, IM_SaveAndClearExperiment()
 		"Close Mies"                 , /Q, CloseMies()
 		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
+		"Open AnalysisMaster Panel", /Q, analysisMaster()
 		"-"
 		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 End

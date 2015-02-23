@@ -29,6 +29,9 @@ Function DM_SaveITCData(panelTitle)
 		// function for debugging
 		// createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
 	endif
+	
+	// Adding in the post sweep analysis function here
+	AM_analysisMasterPostSweep(panelTitle, sweepNo)
 
 	if(GetCheckboxState(panelTitle, "Check_Settings_Append")) // if option is checked, wave note containing single readings from (async) ADs is made
 		ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
