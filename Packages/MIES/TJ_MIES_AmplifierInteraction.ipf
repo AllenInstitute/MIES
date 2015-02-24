@@ -247,7 +247,7 @@ Constant MCC_GETHOLDINGENABLE_FUNC       = 0x200
 /// @param value      Numerical value to send, ignored by getter functions (MCC_GETHOLDING_FUNC and MCC_GETPIPETTEOFFSET_FUNC)
 ///
 /// @returns return value or error condition. An error is indicated by a return value of NaN.
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It might make sense to have this function update the AmpStorageWave 
 	string panelTitle
 	variable headStage, mode, func, value
 

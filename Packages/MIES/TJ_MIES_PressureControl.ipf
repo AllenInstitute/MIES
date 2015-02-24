@@ -290,6 +290,7 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	// apply holding
 	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, vCom * 1e-3)
 	AmpStorageWave[%HoldingPotential][0][headStage] = vCom
+	AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_VC")
 	
 	// make sure holding is enabled
 	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
