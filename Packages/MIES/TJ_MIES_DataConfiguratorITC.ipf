@@ -6,13 +6,6 @@ CONSTANT DATA_ACQUISITION_MODE = 0
 CONSTANT TEST_PULSE_MODE       = 1
 ///@}
 
-///@name Constants shared with the ITC XOP
-///@{
-Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
-Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
-Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
-///@}
-
 /// @brief Prepare test pulse/data acquisition
 ///
 /// @param panelTitle  panel title

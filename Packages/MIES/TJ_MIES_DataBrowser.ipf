@@ -20,7 +20,6 @@ End
 
 static StrConstant AXIS_BASE            = "col"
 static Constant GRAPH_DIV_SPACING       = 0.03
-static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
 static Function/DF DB_GetDataPath(panelTitle)
 	string panelTitle

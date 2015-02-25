@@ -62,20 +62,9 @@ static Function/s RefToPullDatafrom2DWave(refValue, refColumn, dataColumn, twoDW
 	return list
 End
 
-/// @name Parameters for GetChannelControl and IDX_GetSetsInRange, IDX_GetSetFolder
-/// @{
-Constant CHANNEL_TYPE_DAC          = 0x00
-Constant CHANNEL_TYPE_TTL          = 0x01
-Constant CHANNEL_TYPE_ADC          = 0x02
-Constant CHANNEL_CONTROL_WAVE      = 0x04
-Constant CHANNEL_CONTROL_INDEX_END = 0x08
-Constant CHANNEL_CONTROL_UNIT      = 0x10
-Constant CHANNEL_CONTROL_GAIN      = 0x20
-Constant CHANNEL_CONTROL_SCALE     = 0x30
-Constant CHANNEL_CONTROL_CHECK     = 0x40
-/// @}
-
 /// @brief Returns the name of a control from the DA_EPHYS panel
+///
+/// Constants are defined at @ref ChannelTypeAndControlConstants
 Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
 	string panelTitle
 	variable idx, channelType, controlType

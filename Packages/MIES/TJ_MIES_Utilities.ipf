@@ -3,47 +3,6 @@
 /// @file TJ_MIES_Utilities.ipf
 /// This file holds general utility functions available for all other procedures.
 
-/// Convenience definition to nicify expressions like DimSize(wv, ROWS)
-/// easier to read than DimSize(wv, 0).
-/// @{
-Constant ROWS                = 0
-Constant COLS                = 1
-Constant LAYERS              = 2
-Constant CHUNKS              = 3
-/// @}
-Constant MAX_DIMENSION_COUNT = 4
-
-/// @name Constants used by Downsample
-/// @{
-Constant DECIMATION_BY_OMISSION  = 1
-Constant DECIMATION_BY_SMOOTHING = 2
-Constant DECIMATION_BY_AVERAGING = 4
-StrConstant ALL_WINDOW_FUNCTIONS = "Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;None;Parzen;Poisson2;Poisson3;Poisson4;Riemann"
-/// @}
-
-/// Common string to denote an invalid entry in a popupmenu
-StrConstant NONE = "- none -"
-
-/// Hook events constants
-Constant EVENT_KILL_WINDOW_HOOK = 2
-
-/// Used by CheckName and UniqueName
-Constant CONTROL_PANEL_TYPE = 9
-
-/// @name CountObjects and CountObjectsDFR constant
-/// @{
-Constant COUNTOBJECTS_WAVES      = 1
-Constant COUNTOBJECTS_VAR        = 2
-Constant COUNTOBJECTS_STR        = 3
-Constant COUNTOBJECTS_DATAFOLDER = 4
-/// @}
-
-/// See "Control Structure eventMod Field"
-Constant EVENT_MOUSE_UP = 2
-
-// Conversion factor from ticks to seconds, exact value is 1/60
-Constant TICKS_TO_SECONDS = 0.0166666666666667
-
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 Function IsFinite(var)
 	variable var
@@ -198,8 +157,6 @@ Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
 	return list
 End
 
-static Constant MINIMUM_WAVE_SIZE   = 64
-
 /// @brief Redimension the wave to at least the given size.
 ///
 /// The redimensioning is only done if it is required.
@@ -257,8 +214,6 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 		endswitch
 	endif
 End
-
-static Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
 /// @brief Resize the number of rows to maximumSize if it is larger than that
 ///
@@ -1529,8 +1484,6 @@ Function SetDimensionLabels(keys, values)
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
 End
-
-StrConstant TRASH_FOLDER_PREFIX = "trash"
 
 /// @brief Delete a datafolder or wave. If this is not possible, because Igor
 /// has locked the file, the wave or datafolder is moved into a unique folder

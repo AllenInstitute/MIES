@@ -400,6 +400,8 @@ End
 /// @param channel channel
 /// @param channelType  CHANNEL_TYPE_DAC or CHANNEL_TYPE_TTL
 /// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
+///
+/// Constants are defined at @ref ChannelTypeAndControlConstants
 Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
@@ -482,6 +484,7 @@ Function/DF IDX_GetSetFolderFromString(channelType)
 	endif
 End
 
+/// Constants are defined at @ref ChannelTypeAndControlConstants
 Function/DF IDX_GetSetFolder(channelType)
 	variable channelType
 
