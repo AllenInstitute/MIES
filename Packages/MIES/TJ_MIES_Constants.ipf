@@ -78,7 +78,8 @@ Constant TICKS_TO_SECONDS = 0.0166666666666667
 
 StrConstant TRASH_FOLDER_PREFIX = "trash"
 
-///@name Parameters for `FindValue`
+///@name   Parameters for FindIndizes
+///@anchor FindIndizesProps
 ///@{
 Constant PROP_NON_EMPTY                = 0x01 ///< Wave entry is not NaN or ""
 Constant PROP_EMPTY                    = 0x02 ///< Wave entry is NaN or ""
