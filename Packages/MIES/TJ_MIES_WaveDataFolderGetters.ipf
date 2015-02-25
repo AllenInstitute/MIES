@@ -665,7 +665,7 @@ Function/DF GetDeviceTestPulse(panelTitle)
 	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
 End
 
-/// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
+/// @brief Return the path to the test pulse folder, e.g. root:mies:ITCDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
@@ -677,7 +677,7 @@ Function/DF GetDeviceTypePath(deviceType)
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
-/// @brief Return the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
+/// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
 Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
@@ -690,7 +690,7 @@ Function/DF GetDevicePath(panelTitle)
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0
+/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
 Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
@@ -708,7 +708,7 @@ Function/DF GetDeviceDataPath(panelTitle)
 	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
+/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":Data"
