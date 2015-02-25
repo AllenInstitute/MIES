@@ -804,18 +804,32 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
 	endif
 End
 
-/// @brief Check if a given wave is displayed on a graph
+/// @brief Check if a given wave, or at least one wave from the dfr, is displayed on a graph
 ///
-/// @return one if it is displayed, zero otherwise
-Function IsWaveDisplayedOnGraph(win, wv)
+/// @return one if one is displayed, zero otherwise
+Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 	string win
 	WAVE/Z wv
+	DFREF dfr
 
-	string traceList, trace
-	variable numTraces, i
+	string traceList, trace, list
+	variable numWaves, numTraces, i
 
-	if(!WaveExists(wv))
-		return 0
+	ASSERT(ParamIsDefault(wv) + ParamIsDefault(dfr) == 1, "Expected exactly one parameter of wv and dfr")
+
+	if(!ParamIsDefault(wv))
+		if(!WaveExists(wv))
+			return 0
+		endif
+
+		MAKE/FREE/WAVE/N=1 candidates = wv
+	else
+		if(!DataFolderExistsDFR(dfr) || CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) == 0)
+			return 0
+		endif
+
+		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
+		numWaves = DimSize(candidates, ROWS)
 	endif
 
 	traceList = TraceNameList(win, ";", 1)
@@ -823,7 +837,8 @@ Function IsWaveDisplayedOnGraph(win, wv)
 	for(i = numTraces - 1; i >= 0; i -= 1)
 		trace = StringFromList(i, traceList)
 		WAVE traceWave = TraceNameToWaveRef(win, trace)
-		if(WaveRefsEqual(wv, traceWave))
+
+		if(GetRowIndex(candidates, refWave=traceWave) >= 0)
 			return 1
 		endif
 	endfor
@@ -833,31 +848,38 @@ End
 
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
-/// @param graph                           graph
-/// @param kill [optional, default: false] try to kill the wave after it has been removed
-/// @param trace [optional, default: all] remove the given trace only
-/// @param wv [optional, default: ignored] remove all traces which stem from the given wave
+/// @param graph                            graph
+/// @param kill [optional, default: false]  try to kill the wave after it has been removed
+/// @param trace [optional, default: all]   remove the given trace only
+/// @param wv [optional, default: ignored]  remove all traces which stem from the given wave
+/// @param dfr [optional, default: ignored] remove all traces which stem from one of the waves in dfr
 ///
-/// Only one of kill and trace may be supplied.
+/// Only one of trace/wv/dfr may be supplied.
 ///
 /// @return number of traces/waves removed from the graph
-Function RemoveTracesFromGraph(graph, [kill, trace, wv])
+Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	string graph
 	variable kill
 	string trace
 	WAVE/Z wv
+	DFREF dfr
 
-	variable i, numEntries, removals, tryKillingTheWave
+	variable i, numEntries, removals, tryKillingTheWave, numOptArgs
 	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
 		kill = 0
 	endif
 
-	ASSERT(ParamIsDefault(trace) + ParamIsDefault(wv) != 0, "Can not accept both trace and wv parameters")
+	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
+	ASSERT(numOptArgs == 3 || numOptArgs == 2, "Can only accept one of the trace/wv/dfr parameters")
 
-	if(!ParamIsDefault(wv) && !WaveExists(wv))
-		return removals
+	if(!ParamIsDefault(wv) && !WaveExists(wv) || !ParamIsDefault(dfr) && !DataFolderExistsDFR(dfr))
+		return 0
+	endif
+
+	if(!ParamIsDefault(dfr))
+		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
@@ -869,7 +891,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv])
 
 		Wave/Z refWave = TraceNameToWaveRef(graph, refTrace)
 
-		if(ParamIsDefault(trace) && ParamIsDefault(wv))
+		if(ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr))
 			RemoveFromGraph/W=$graph $refTrace
 			removals += 1
 			tryKillingTheWave = 1
@@ -881,6 +903,12 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv])
 			endif
 		elseif(!ParamIsDefault(wv))
 			if(WaveRefsEqual(refWave, wv))
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
+		elseif(!ParamIsDefault(dfr))
+			if(GetRowIndex(candidates, refWave=refWave) >= 0)
 				RemoveFromGraph/W=$graph $refTrace
 				removals += 1
 				tryKillingTheWave = 1
@@ -1653,4 +1681,60 @@ Function CreateFolderOnDisk(absPath)
 	endif
 
 	ASSERT(0, "Could not create the path, maybe the permissions were insufficient")
+End
+
+/// @brief Return the row index of the given value, string converted to a variable, or wv
+///
+/// Assumes wv being one dimensional
+Function GetRowIndex(wv, [val, str, refWave])
+	WAVE wv
+	variable val
+	string str
+	WAVE/Z refWave
+
+	variable numEntries, i
+
+	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
+
+	if(!ParamIsDefault(refWave))
+		ASSERT(WaveType(wv, 1) == 4, "wv must be a wave holding wave references")
+		numEntries = DimSize(wv, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+			WAVE/WAVE cmpWave = wv
+			if(WaveRefsEqual(cmpWave[i], refWave))
+				return i
+			endif
+		endfor
+	else
+		if(!ParamIsDefault(str))
+			val = str2num(str)
+		endif
+
+		FindValue/V=(val) wv
+
+		if(V_Value >= 0)
+			return V_Value
+		endif
+	endif
+
+	return NaN
+End
+
+/// @brief Converts a list of strings referencing waves with full paths to a wave of wave references
+///
+/// It is assumed that all created wave references refer to an *existing* wave
+Function/WAVE ConvertListOfWaves(list)
+	string list
+
+	variable i, numEntries
+	numEntries = ItemsInList(list)
+	MAKE/FREE/WAVE/N=(numEntries) waves
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z wv = $StringFromList(i, list)
+		ASSERT(WaveExists(wv), "The wave does not exist")
+		waves[i] = wv
+	endfor
+
+	return waves
 End

@@ -151,8 +151,8 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 		WAVE/Z/SDFR=dfr newSweepWave = $("Sweep_" + num2str(newSweep))
 		WAVE/Z/SDFR=dfr currentSweepWave = $("Sweep_" + num2str(currentSweep))
 
-		newWaveDisplayed     = IsWaveDisplayedOnGraph(graph, newSweepWave)
-		currentWaveDisplayed = IsWaveDisplayedOnGraph(graph, currentSweepWave)
+		newWaveDisplayed     = IsWaveDisplayedOnGraph(graph, wv=newSweepWave)
+		currentWaveDisplayed = IsWaveDisplayedOnGraph(graph, wv=currentSweepWave)
 
 		if(newWaveDisplayed && currentWaveDisplayed && !WaveRefsEqual(newSweepWave, currentSweepWave))
 			RemoveTracesFromGraph(graph, wv=currentSweepWave)
@@ -184,19 +184,6 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 	else
 		DEBUGPRINT("channel overlay - not yet implemented")
 	endif
-End
-
-static Function DB_GetRowIndex(wv, value)
-	Wave wv
-	variable value
-
-	FindValue/V=(value) wv
-
-	if(V_Value == -1)
-		return NaN
-	endif
-
-	return V_Value
 End
 
 static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
