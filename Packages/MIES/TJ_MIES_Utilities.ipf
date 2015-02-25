@@ -280,46 +280,6 @@ Function GetSizeOfType(type)
 	return size
 End
 
-/// @brief Returns the config wave for a given sweep wave
-Function/Wave GetConfigWave(sweepWave)
-    Wave sweepWave
-
-	string name = "Config_" + NameOfWave(sweepWave)
-	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(DimSize(config,COLS)==4,"Unexpected number of columns")
-	return config
-End
-
-/// @brief Returns the sampling interval of the sweep
-/// in microseconds (1e-6s)
-Function GetSamplingInterval(sweepWave)
-    Wave sweepWave
-
-	Wave config = GetConfigWave(sweepWave)
-
-	// from ITCConfigAllChannels help file:
-	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
-	Duplicate/D/R=[][2]/FREE config samplingInterval
-
-	// The sampling interval is the same for all channels
-	ASSERT(numpnts(samplingInterval),"Expected non-empty wave")
-	ASSERT(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
-	return samplingInterval[0]
-End
-
-/// @brief Write the given property to the config wave
-///
-/// @note Please add new properties as required
-/// @param config configuration wave
-/// @param samplingInterval sampling interval in microseconds (1e-6s)
-Function UpdateSweepConfig(config, [samplingInterval])
-	Wave config
-	variable samplingInterval
-
-	ASSERT(IsFinite(samplingInterval), "samplingInterval must be finite")
-	config[][2] = samplingInterval
-End
-
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
 Function ConvertSamplingIntervalToRate(val)
 	variable val
@@ -401,39 +361,6 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Duplicate/O backup, wv
 	KillWaves/Z backup
 	return 1
-End
-
-/// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES
-/// and Y from @ref DEVICE_NUMBERS.
-///
-/// Returns the result in deviceType and deviceNumber.
-/// Currently the parsing is successfull if X and Y are non-empty.
-/// @param[in]  device       input device string X_DEV_Y
-/// @param[out] deviceType   returns the device type X
-/// @param[out] deviceNumber returns the device number Y
-/// @returns one on successfull parsing, zero on error
-/// @todo replace all similiar usages in the rest of the code
-Function ParseDeviceString(device, deviceType, deviceNumber)
-	string device
-	string &deviceType, &deviceNumber
-
-	if(isEmpty(device))
-		return 0
-	endif
-
-	deviceType   = StringFromList(0,device,"_")
-	deviceNumber = StringFromList(2,device,"_")
-
-	return !isEmpty(deviceType) && !isEmpty(deviceNumber)
-End
-
-/// @brief Builds the common device string X_DEV_Y, e.g. ITC1600_DEV_O and friends
-/// @todo replace all similiar usages in the rest of the code
-Function/S BuildDeviceString(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number");
-	return deviceType + "_Dev_" + deviceNumber
 End
 
 /// @brief Checks if the datafolder referenced by dfr exists.
@@ -1052,34 +979,6 @@ Function/S LineBreakingIntoParWithMinWidth(str)
 	return output
 End
 
-/// @brief Returns the numerical index for the sweep number column
-/// in the settings history wave
-Function GetSweepColumn(settingsHistory)
-	Wave settingsHistory
-
-	variable sweepCol
-
-	// new label
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNum")
-
-	if(sweepCol >= 0)
-		return sweepCol
-	endif
-
-	// Old label prior to 276b5cf6
-	// was normally overwritten by SweepNum later in the code
-	// but not always as it turned out
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNumber")
-
-	if(sweepCol >= 0)
-		return sweepCol
-	endif
-
-	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
-
-	return 0
-End
-
 /// @brief Extended version of `FindValue`
 ///
 /// Allows to search only the specified column for a value
@@ -1266,167 +1165,6 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 	endif
 End
 
-/// @brief Returns a wave with the latest value of a setting from the history wave
-/// for a given sweep number.
-///
-/// @returns a wave with the value for each headstage in a row. In case
-/// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSetting(history, sweepNo, setting)
-	Wave history
-	variable sweepNo
-	string setting
-
-	variable settingCol, numLayers, i, sweepCol, numEntries
-	variable first, last
-
-	ASSERT(WaveType(history), "Can only work with numeric waves")
-	numLayers = DimSize(history, LAYERS)
-	settingCol = FindDimLabel(history, COLS, setting)
-
-	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
-		return $""
-	endif
-
-	sweepCol = GetSweepColumn(history)
-	FindRange(history, sweepCol, sweepNo, 0, first, last)
-
-	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
-		return $""
-	endif
-
-	Make/FREE/N=(numLayers) status
-
-	for(i = last; i >= first; i -= 1)
-
-		status[] = history[i][settingCol][p]
-		WaveStats/Q/M=1 status
-
-		// return if at least one entry is not NaN
-		if(V_numNaNs != numLayers)
-			return status
-		endif
-	endfor
-
-	return $""
-End
-
-/// @brief Returns a wave with latest value of a setting from the history wave
-/// for a given sweep number.
-///
-/// Text wave version of `GetLastSetting`.
-///
-/// @returns a wave with the value for each headstage in a row. In case
-/// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSettingText(history, sweepNo, setting)
-	Wave/T history
-	variable sweepNo
-	string setting
-
-	variable settingCol, numLayers, i, sweepCol
-	variable first, last
-
-	ASSERT(!WaveType(history), "Can only work with text waves")
-	numLayers = DimSize(history, LAYERS)
-	settingCol = FindDimLabel(history, COLS, setting)
-
-	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
-		return $""
-	endif
-
-	sweepCol = GetSweepColumn(history)
-	FindRange(history, sweepCol, sweepNo, 0, first, last)
-
-	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
-		return $""
-	endif
-
-	Make/FREE/N=(numLayers)/T status
-	Make/FREE/N=(numLayers) lengths
-
-	for(i = last; i >= first; i -= 1)
-
-		status[] = history[i][settingCol][p]
-		lengths[] = strlen(status[p])
-
-		// return if we have at least one non-empty entry
-		if(Sum(lengths) > 0)
-			return status
-		endif
-	endfor
-
-	return $""
-End
-
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´
-Function/S GetAllActiveDevices()
-
-	variable i, j, numTypes, numNumbers
-	string type, number, device
-	string path, list = ""
-
-	path = GetITCDevicesFolderAsString()
-
-	if(!DataFolderExists(path))
-		return ""
-	endif
-
-	numTypes   = ItemsInList(DEVICE_TYPES)
-	numNumbers = ItemsInList(DEVICE_NUMBERS)
-	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES)
-
-		path = GetDeviceTypePathAsString(type)
-
-		if(!DataFolderExists(path))
-			continue
-		endif
-
-		for(j = 0; j < numNumbers ; j += 1)
-			number = StringFromList(j, DEVICE_NUMBERS)
-			device = BuildDeviceString(type, number)
-			path   = GetDevicePathAsString(device)
-
-			if(!DataFolderExists(path))
-				continue
-			endif
-
-			list = AddListItem(device, list, ";", inf)
-		endfor
-	endfor
-
-	return list
-End
-
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
-Function/S GetAllDevicesWithData()
-
-	variable i, numDevices
-	string deviceList, device, path
-	string list = ""
-
-	deviceList = GetAllActiveDevices()
-
-	numDevices = ItemsInList(deviceList)
-	for(i = 0; i < numDevices; i += 1)
-		device = StringFromList(i, deviceList)
-		path   = GetDeviceDataPathAsString(device)
-
-		if(!DataFolderExists(path))
-			continue
-		endif
-
-		if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
-			continue
-		endif
-
-		list = AddListItem(device, list, ";", inf)
-	endfor
-
-	return list
-End
-
 /// @brief Returns a list of all files with the extension given in the symbolic path pathName
 ///
 /// Adapted from the example in the `IndexedDir` documentation
@@ -1591,45 +1329,6 @@ Function SetDimensionLabels(keys, values)
 	endfor
 End
 
-/// @brief Delete a datafolder or wave. If this is not possible, because Igor
-/// has locked the file, the wave or datafolder is moved into a unique folder
-/// named `root:mies:trash_$digit`.
-///
-/// The trash folders will be removed, if possible, from KillTemporaries().
-///
-/// @param path absolute path to a datafolder or wave
-Function KillOrMoveToTrash(path)
-	string path
-
-	string dest
-
-	if(DataFolderExists(path))
-		KillDataFolder/Z $path
-
-		if(!V_flag)
-			return NaN
-		endif
-
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
-		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
-		MoveDataFolder $path, $dest
-	elseif(WaveExists($path))
-		KillWaves/F/Z $path
-
-		WAVE/Z wv = $path
-		if(!WaveExists(wv))
-			return NaN
-		endif
-
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
-		MoveWave wv, tmpDFR
-	else
-		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
-	endif
-End
-
 /// @brief Returns a unique and non-existing file name
 ///
 /// @warning This function must *not* be used for security relevant purposes,
@@ -1670,7 +1369,6 @@ End
 Function/S GetExperimentName()
 	return IgorInfo(1)
 End
-
 
 /// @brief Return a formatted timestamp of the form "YY_MM_DD_HHMMSS"
 //
