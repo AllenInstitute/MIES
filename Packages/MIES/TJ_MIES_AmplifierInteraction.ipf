@@ -308,7 +308,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 			ret = MCC_SetRsCompEnable(value)
 			break
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
-			ret = MCC_AutoBridgeBal()
+			MCC_AutoBridgeBal()
+			ret = MCC_GetBridgeBalResist() * 1e-6
+			print ret
 			break
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
@@ -323,7 +325,8 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 			ret = MCC_SetNeutralizationEnable(value)
 			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
-			ret = MCC_AutoPipetteOffset()
+			MCC_AutoPipetteOffset()
+			ret =  MCC_GetPipetteOffset() * 1e3
 			break
 		case MCC_SETPIPETTEOFFSET_FUNC:
 			ret = MCC_SetPipetteOffset(value)
@@ -470,7 +473,9 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value * 1e-3)
 				break
 			case "button_DataAcq_AutoPipOffset_VC":
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
+				AmpStorageWave[%PipetteOffset][0][i] = value
+				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -510,7 +515,11 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				AmpStorageWave[25][0][i] = value
 				break
 			case "button_DataAcq_AutoBridgeBal_IC":
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
+				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
+				AmpStorageWave[%BridgeBalance][0][i] = value
+				AmpStorageWave[%BridgeBalanceEnable][0][i] = 1
+				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_BB")
+				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="check_DatAcq_BBEnable")
 				break
 			// I Zero controls
 			case "check_DataAcq_IzeroEnable":
