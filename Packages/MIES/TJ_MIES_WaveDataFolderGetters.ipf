@@ -1888,6 +1888,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 21, RealTimePressure,				PressureData // // stores the last pressure pulse amplitude in psi. This is used to determine the amplitude of the next pressure pulse.
 	SetDimLabel COLS, 22, LastResistanceValue,			PressureData // last steady state resistance value
 	SetDimLabel COLS, 23, PeakResistanceSlope,			PressureData // Slope of the peak TP resistance value over the last 5 seconds
+	/// @todo Dim label for  col 23 needs to be changed to steadStateResistanceSlope
 	SetDimLabel COLS, 24, ActiveTP,						PressureData // Indicates if the TP is active on the headStage
 	/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
 	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)

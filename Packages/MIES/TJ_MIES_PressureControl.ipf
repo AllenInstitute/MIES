@@ -105,9 +105,7 @@ Function P_MethodApproach(panelTitle, headStage)
 		// Turn off holding
 		AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
 		AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 0
-		if(headStage  == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
-			AI_UpdateAmpView(panelTitle, headStage)
-		endif
+		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnableVC")
 	endif	
 End
 
@@ -117,7 +115,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	variable 	headStage
 	WAVE 	PressureDataWv 			= P_GetPressureDataWaveRef(panelTitle)
 	variable 	RSlope
-	variable 	RSlopeThreshold 			= 8 // with a slope of 8 Mohm/s it will take two minutes for a seal to form.
+	variable 	RSlopeThreshold 			= 4 // with a slope of 8 Mohm/s it will take two minutes for a seal to form.
 	variable 	lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
 	variable 	timeInSec 				= ticks / 60
 	variable 	ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
@@ -150,13 +148,14 @@ Function P_MethodSeal(panelTitle, headStage)
 		if(PressureDataWv[headStage][%LastPressureCommand] > PressureDataWv[headStage][%PSI_SealInitial])
 			PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, PressureDataWv[headStage][%PSI_SealInitial]) // column 26 is the last pressure command, column 13 is the starting seal pressure
 			pressure = PressureDataWv[headStage][%PSI_SealInitial]
+			P_UpdateTTLstate(panelTitle, headStage, 1)
 			PressureDataWv[headStage][%LastPressureCommand] = PressureDataWv[headStage][%PSI_SealInitial]
 			PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 			print "starting seal"
 		endif
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
 		// print ElapsedTimeInSeconds
-		if(ElapsedTimeInSeconds > 15) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
+		if(ElapsedTimeInSeconds > 20) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
 			RSlope = PressureDataWv[headStage][%PeakResistanceSlope]
 			print "slope:", rslope, "thres:", RSlopeThreshold
 			if(RSlope < RSlopeThreshold) // if the resistance is not going up quickly enough increase the negative pressure
@@ -292,14 +291,12 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	// apply holding
 	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, vCom * 1e-3)
 	AmpStorageWave[%HoldingPotential][0][headStage] = vCom
+	AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_VC")
 	
 	// make sure holding is enabled
 	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
 	AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 1
-
-	if(headStage  == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
-		AI_UpdateAmpView(panelTitle, headStage)
-	endif
+	AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnableVC")
 End
 
 /// @brief Opens ITC devices used for pressure regulation

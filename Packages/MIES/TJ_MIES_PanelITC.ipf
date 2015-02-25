@@ -4958,9 +4958,9 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	if(sc.eventCode & 0x1)
 		panelTitle = sc.win
 		headStage  = sc.curVal
-		AI_UpdateAmpView(panelTitle, headStage)
-			P_LoadPressureButtonState(panelTitle, headStage)
 		mode = AI_MIESHeadstageMode(panelTitle, headStage)
+		AI_UpdateAmpView(panelTitle, headStage)
+		P_LoadPressureButtonState(panelTitle, headStage)
 		// chooses the amp tab according to the MIES headstage clamp mode
 		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif

@@ -173,7 +173,6 @@ Function ITC_StopDataAcq()
 		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	endif
 END
-//======================================================================================
 
 //======================================================================================
 Function ITC_StartBckgrdFIFOMonitor()
@@ -398,7 +397,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	variable headStage, entries, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable activeHeadStages
 	variable resistance, maximumAutoBiasCurrent
-
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
 	variable curTime = ticks * TICKS_TO_SECONDS
@@ -473,8 +471,11 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
 		current *= 0.15
-
-		actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
+		
+		// check if holding is enabled. If it is not, ignore holding current value.
+		if(AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
+			actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
+		endif
 		DEBUGPRINT("actualCurrent=", var=actualCurrent)
 
 		if(!IsFinite(actualCurrent))
@@ -483,15 +484,22 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		current += actualCurrent
-
+		
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
 			continue
 		endif
 
 		DEBUGPRINT("current to send=", var=current)
+		
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
+		ampSettings[17][0][headStage] = 1 /// @todo Modify AI_UpdateAmpModel to allow a value to be passed in, in place of the GUI query. 
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
+		ampSettings[16][0][headStage] = current * 1e12
+		
+		// update the DA_Ephys panel amp controls
+		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_IC")
+		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnable")
 	endfor
 End
 
