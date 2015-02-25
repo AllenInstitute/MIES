@@ -100,3 +100,10 @@ Constant CHANNEL_CONTROL_GAIN      = 0x20
 Constant CHANNEL_CONTROL_SCALE     = 0x30
 Constant CHANNEL_CONTROL_CHECK     = 0x40
 /// @}
+
+/// @name Constants for the selection wave of a ListBox
+/// @{
+Constant LISTBOX_SELECTED          = 0x01
+Constant LISTBOX_TREEVIEW_EXPANDED = 0x10
+Constant LISTBOX_TREEVIEW          = 0x40
+/// @}

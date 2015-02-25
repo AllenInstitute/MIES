@@ -1514,3 +1514,78 @@ Function/WAVE ConvertListOfWaves(list)
 
 	return waves
 End
+
+/// @brief Return a list of datafolders located in `dfr`
+Function/S GetListOfDataFolders(dfr)
+	DFREF dfr
+
+	string list = DataFolderDir(0x01, dfr)
+	list = StringByKey("FOLDERS", list , ":")
+	list = ReplaceString(",", list, ";")
+
+	return list
+End
+
+/// @brief Return the base name of the file
+///
+/// Given `path/file.suffix` this gives `file`.
+Function/S GetBaseName(filePathWithSuffix)
+	string filePathWithSuffix
+
+	return ParseFilePath(3, filePathWithSuffix, ":", 1, 0)
+End
+
+/// @brief Set the given bit mask in var
+Function SetBit(var, bit)
+	variable var, bit
+
+	return var | bit
+End
+
+/// @brief Clear the given bit mask in var
+Function ClearBit(var, bit)
+	variable var, bit
+
+	return var & ~bit
+End
+
+/// @brief Create a list of strings using the given format in the given range
+///
+/// @param format   formatting string, must have exactly one specifier which accepts a number
+/// @param start	first point of the range
+/// @param step	    step size for iterating over the range
+/// @param stop 	last point of the range
+Function/S BuildList(format, start, step, stop)
+	string format
+	variable start, step, stop
+
+	string str
+	string list = ""
+	variable i
+
+	ASSERT(start < stop, "Invalid range")
+	ASSERT(step > 0, "Invalid step")
+
+	for(i = start; i < stop; i += step)
+		sprintf str, format, i
+		list = AddListItem(str, list, ";", inf)
+	endfor
+
+	return list
+End
+
+/// @brief Searches the column colLabel in wv for an non-empty
+/// entry with a row number smaller or equal to endRow
+///
+/// @param wv         text wave to search in
+/// @param colLabel   column label from wv
+/// @param endRow     maximum row index to consider
+Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
+	Wave/T wv
+	string colLabel
+	variable endRow
+
+	WAVE/Z indizes = FindIndizes(colLabel=colLabel, wvText=wv, prop=PROP_NON_EMPTY, endRow=endRow)
+	ASSERT(WaveExists(indizes), "expected a indizes wave")
+	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
+End
