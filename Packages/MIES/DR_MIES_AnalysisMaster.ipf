@@ -85,8 +85,9 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
-	string WavePath = GetDevicePathAsString(panelTitle)
-	Wave currentCompleteDataWave = $WavePath + ":ITCDataWave"	
+	
+	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave
+	
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
 	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
 	Wave/Z sweep = GetSweepWave(paneltitle, (sweepNo-1))
@@ -119,9 +120,7 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
-	string WavePath = GetDevicePathAsString(panelTitle)
-	Wave currentCompleteDataWave = $WavePath + ":ITCDataWave"	
-	
+	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
 	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
@@ -185,7 +184,10 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		
 		// return the scale factor that caused the AP to fire
 		actionScaleSettingsWave[headStage][%result] = scaleFactor
-		print "scale factor that caused AP: ", scaleFactor		
+		print "scale factor that caused AP: ", scaleFactor	
+		
+		// Now put the scale factor back to 1.0
+		SetSetVariable(panelTitle, scaleControlName, 1.0)	
 		return 1
 	endif
 End
