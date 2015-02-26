@@ -85,20 +85,16 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	Wave currentCompleteDataWave = $WavePath + ":ITCDataWave"
-	
-	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
-	
-	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-	
+	string WavePath = GetDevicePathAsString(panelTitle)
+	Wave currentCompleteDataWave = $WavePath + ":ITCDataWave"	
+	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
+	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
 	Wave/Z sweep = GetSweepWave(paneltitle, (sweepNo-1))
 	if(!WaveExists(sweep))
      		Abort "***Error getting current sweep wave..."
 	endif
 	
-	Wave config = GetConfigWave(sweep)
-	
+	Wave config = GetConfigWave(sweep)	
 	variable x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
 	
 	string ADChannelList = GetADCListFromConfig(config)
@@ -123,21 +119,18 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	string WavePath = GetDevicePathAsString(panelTitle)
 	Wave currentCompleteDataWave = $WavePath + ":ITCDataWave"	
 	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
-	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
-	
-	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-	
+	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
+	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
 	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
 	endif
 	
 	Wave config = GetConfigWave(sweep)
-	
 	variable x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
 	
 	string ADChannelList = GetADCListFromConfig(config)
@@ -171,7 +164,6 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 	
 	// get the DA channel associated with the desired headstage
 	variable daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
-	
 	string scaleControlName
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
 	variable scaleFactor = GetSetVariable(panelTitle, scaleControlName)
@@ -252,8 +244,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		print "scale factor that caused AP: ", scaleFactor	
 		
 		// Now put the scale factor back to 1.0
-		SetSetVariable(panelTitle, scaleControlName, 1.0)
-			
+		SetSetVariable(panelTitle, scaleControlName, 1.0)			
 		return 1
 	endif
 End
@@ -404,8 +395,7 @@ Function configureAnalysis(headStageNumber, itcPanel)
 	SetVariable setFineValue, pos={25, 55}, size={180, 30}, title="Fine Scale Adjustment:" 
 	SetVariable setFineValue, value=actionScaleSettingsWave[headStageNumber][%fineScaleValue], live=1
 	SetVariable setThresholdValue, pos={25, 80}, size={180, 30}, title="AP Threshold Adjustment:" 
-	SetVariable setThresholdValue, value=actionScaleSettingsWave[headStageNumber][%apThreshold], live=1
-	
+	SetVariable setThresholdValue, value=actionScaleSettingsWave[headStageNumber][%apThreshold], live=1	
 End
 
 ///@brief procedure to pop up the window to configure the analysis stuff
@@ -413,21 +403,20 @@ Function AM_configAnalysis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 	
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-		
-		// get the am panel name
-		string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-		if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-			print "Please lock a device...."
-			return NAN
-		endif
-
-		// decipher which headstage we are dealing with
-		string controlName = ba.ctrlName
-		variable headstageNumber
-		sscanf controlName, "PAA_headStage%d", headStageNumber
-		configureAnalysis(headStageNumber, itcPanel)
-		break
+		case EVENT_MOUSE_UP:		
+			// get the am panel name
+			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+				print "Please lock a device...."
+				return NAN
+			endif
+			// decipher which headstage we are dealing with
+			string controlName = ba.ctrlName
+			variable headstageNumber
+			sscanf controlName, "PAA_headStage%d", headStageNumber
+			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
+			configureAnalysis(headStageNumber, itcPanel)
+			break
 	endswitch
 End
 
@@ -439,14 +428,13 @@ Function AM_LockedDeviceMenu(pa) : PopupMenuControl
 	String popStr = pa.popStr
 	String panel = pa.win		// window that hosts the popup menu
 	
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 2: // mouse up
 			DoWindow /T $panel, "AM_" + popStr
 			break
 		case -1: // control being killed
 			break
-	endswitch	
-	
+	endswitch		
 	return 0
 End
 
@@ -457,14 +445,13 @@ Function AM_HeadStagePSCheckBox(cba) : CheckBoxControl
 	Variable checked = cba.checked
 	string controlName = cba.ctrlName
 	
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			AM_PostSweepCheckBox(controlName, checked)
 			break
 		case -1: // control being killed
 			break
 	endswitch
-
 	return 0
 End
 
@@ -484,14 +471,15 @@ Function AM_PostSweepCheckBox(ctrlName, checked)
 		
 	Variable headStageClicked
 	sscanf ctrlName, "headStage%d_postSweepAnalysisOn", headStageClicked
+	ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 	
 	// check to see if the panel and control exist
 	ControlInfo /w = $amPanel $ctrlName
 	ASSERT(WindowExists(amPanel), "Analysis master panel must exist")
 	
 	//build up the string for enabling the config button
-	string configButtonEnable
-	sprintf configButtonEnable, "PAA_headStage%dConfig", headStageClicked
+	string configButton
+	sprintf configButton, "PAA_headStage%dConfig", headStageClicked
 	
 	//build up the strings for disabling the mid sweep checkbox
 	string midSweepAnalysisCheck
@@ -504,27 +492,24 @@ Function AM_PostSweepCheckBox(ctrlName, checked)
 	if (checked)	
 		print "postSweepAnalysis turned on for headstage #", headStageClicked
 		//enable the config button
-		ModifyControl $configButtonEnable, disable=0
-		// turn off the midSweep analysis
+		EnableControl(amPanel, configButton)
+		// turn off the midSweep analysis		
 		SetCheckBoxState(amPanel, midSweepAnalysisCheck, 0)
 		//disable the mid sweep check box
-		ModifyControl $midSweepAnalysisCheck, disable=2	
+		DisableControl(amPanel, midSweepAnalysisCheck)	
 		//disable the mid sweep menu
-		ModifyControl $midSweepMenu, disable=2
+		DisableControl(amPanel, midSweepMenu)
 	else
 		print "postSweepAnalysis turned off for headstage #", headStageClicked
 		//disable the config button
-		ModifyControl $configButtonEnable, disable=2
+		DisableControl(amPanel, configButton)
 		//enable the mid sweep check box
-		ModifyControl $midSweepAnalysisCheck, disable=0
+		EnableControl(amPanel, midSweepAnalysisCheck)
 		//enable the mid sweep menu
-		ModifyControl $midSweepMenu, disable=0		
+		EnableControl(amPanel, midSweepMenu)		
 	endif
 	
-	analysisSettingsWave[headStageClicked][%PSAOnOff] = num2str(checked)
-	
-	//enable the config button
-	
+	analysisSettingsWave[headStageClicked][%PSAOnOff] = num2str(checked)	
 end
 
 ///@brief function to handle the PA check box control
@@ -534,14 +519,13 @@ Function AM_HeadStagePACheckBox(cba) : CheckBoxControl
 	Variable checked = cba.checked
 	string controlName = cba.ctrlName
 	
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			AM_PostAnalysisCheckBox(cba)
 			break
 		case -1: // control being killed
 			break
 	endswitch
-
 	return 0
 End
 
@@ -549,11 +533,10 @@ End
 Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 	
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			string ctrlName = cba.ctrlName
-			Variable checked = cba.checked
-	
+			Variable checked = cba.checked	
 			// get the da_ephys panel name
 			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
 			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
@@ -565,7 +548,8 @@ Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 			
 			Variable headStageClicked
 			sscanf ctrlName, "headStage%d_postAnalysisActionOn", headStageClicked 
-			
+			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
+						
 			//build up the string for enabling the config button
 			string configButtonEnable
 			sprintf configButtonEnable, "PAA_headStage%dConfig", headStageClicked
@@ -589,25 +573,25 @@ Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 			if (checked)	
 				print "postAnalysisAction turned on for headstage #", headStageClicked	
 				//enable the config button
-				ModifyControl $configButtonEnable, disable=0
+				EnableControl(amPanel, configButtonEnable)
 				//check on the postSweepAnalysis check box
 				SetCheckBoxState(amPanel, postSweepAnalysisCheck, 1)
 				//check off the midsweepAnalysis
 				SetCheckBoxState(amPanel, midSweepAnalysisCheck, 0)
 				//disable the mid sweep check box
-				ModifyControl $midSweepAnalysisCheck, disable=2
+				DisableControl(amPanel, midSweepAnalysisCheck)
 				//disable the mid sweep menu
-				ModifyControl $midSweepMenu, disable=2
+				DisableControl(amPanel, midSweepMenu)
 			else
 				print "postAnalysisAction turned off for headstage #", headStageClicked
 				//disable the config button
-				ModifyControl $configButtonEnable, disable=2
+				DisableControl(amPanel, configButtonEnable)
 				//check off the postSweepAnalysis check box
 				SetCheckBoxState(amPanel, postSweepAnalysisCheck, 0)
 				//enable the mid sweep check box
-				ModifyControl $midSweepAnalysisCheck, disable=0
+				EnableControl(amPanel, midSweepAnalysisCheck)
 				//enable the mid sweep menu
-				ModifyControl $midSweepMenu, disable=0
+				EnableControl(amPanel, midSweepMenu)
 			endif
 			analysisSettingsWave[headStageClicked][%PAAOnOff] = num2str(checked)
 		case -1: // control being killed
@@ -620,12 +604,8 @@ End
 ///@brief function to handle the midSweep Analysis check box control
 Function AM_HeadStageMSCheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
-
-	Variable checked = cba.checked
-	string controlName = cba.ctrlName
-	Variable panelName = cba.win
 	
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			AM_midSweepAnalysisCheckBox(cba)
 			break
@@ -640,7 +620,7 @@ End
 Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 	
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			string ctrlName = cba.ctrlName
 			Variable checked = cba.checked
@@ -654,7 +634,8 @@ Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
 			Variable headStageClicked
-			sscanf ctrlName, "headStage%d_midSweepAnalysisActionOn", headStageClicked 
+			sscanf ctrlName, "headStage%d_midSweepAnalysisOn", headStageClicked 
+			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
 			//build up the string for enabling the config button
 			string configButtonEnable
@@ -681,27 +662,26 @@ Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 			if (checked)	
 				print "midSweepAnalysisAction turned on for headstage #", headStageClicked
 				//enable the config button
-				ModifyControl $configButtonEnable, disable=0
+				EnableControl(amPanel, configButtonEnable)
 				//disable the postSweep stuff
-				ModifyControl $postSweepAnalysisCheck, disable=2
-				ModifyControl $postAnalysisActionCheck, disable=2
-				ModifyControl $postSweepMenu, disable=2
-				ModifyControl $postAnalysisMenu, disable=2
+				DisableControl(amPanel, postSweepAnalysisCheck)
+				DisableControl(amPanel, postAnalysisActionCheck)
+				DisableControl(amPanel, postSweepMenu)
+				DisableControl(amPanel, postAnalysisMenu)
 			else
 				print "midSweepAnalysisAction turned off for headstage #", headStageClicked
 				//disable the config button
-				ModifyControl $configButtonEnable, disable=2
+				DisableControl(amPanel, configButtonEnable)
 				//enable the postSweep stuff
-				ModifyControl $postSweepAnalysisCheck, disable=0
-				ModifyControl $postAnalysisActionCheck, disable=0
-				ModifyControl $postSweepMenu, disable=0
-				ModifyControl $postAnalysisMenu, disable=0	
+				EnableControl(amPanel, postSweepAnalysisCheck)
+				EnableControl(amPanel, postAnalysisActionCheck)
+				EnableControl(amPanel, postSweepMenu)
+				EnableControl(amPanel, postAnalysisMenu)	
 			endif
 			analysisSettingsWave[headStageClicked][%MSAOnOff] = num2str(checked)
 		case -1: // control being killed
 			break
 	endswitch
-	
 	return 0
 End
 
@@ -709,7 +689,7 @@ End
 Function AM_PS_PopMenuChk(pa) : PopupMenuControl  
 	STRUCT WMPopupAction &pa
 	
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 2: // mouse up
 			variable popNum = pa.popNum
 			String popStr = pa.popStr
@@ -726,17 +706,16 @@ Function AM_PS_PopMenuChk(pa) : PopupMenuControl
 			
 			Variable headStageSelected
 			sscanf ctrlName, "PSA_headStage%d", headStageSelected
+			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
 			ASSERT(V_flag != 0, "non-existing window or control")
 			
-			analysisSettingsWave[headStageSelected][%PSAType] = popStr
-			
+			analysisSettingsWave[headStageSelected][%PSAType] = popStr			
 		case -1: // control being killed
 			break
 	endswitch
-
 	return 0
 End	
 			
@@ -744,7 +723,7 @@ End
 Function AM_PA_PopMenuChk(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 2: // mouse up
 			variable popNum = pa.popNum
 			String popStr = pa.popStr
@@ -761,11 +740,11 @@ Function AM_PA_PopMenuChk(pa) : PopupMenuControl
 			
 			Variable headStageSelected
 			sscanf ctrlName, "PAA_headStage%d", headStageSelected
+			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
-			ASSERT(V_flag != 0, "non-existing window or control")
-			
+			ASSERT(V_flag != 0, "non-existing window or control")			
 			analysisSettingsWave[headStageSelected][%PAAType] = popStr		
 		case -1: // control being killed
 			break
@@ -778,7 +757,7 @@ End
 Function AM_MS_PopMenuChk(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 2: // mouse up
 			variable popNum = pa.popNum
 			String popStr = pa.popStr
@@ -795,11 +774,11 @@ Function AM_MS_PopMenuChk(pa) : PopupMenuControl
 			
 			Variable headStageSelected
 			sscanf ctrlName, "MSA_headStage%d", headStageSelected
+			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
-			ASSERT(V_flag != 0, "non-existing window or control")
-			
+			ASSERT(V_flag != 0, "non-existing window or control")	
 			analysisSettingsWave[headStageSelected][%MSAType] = popStr		
 		case -1: // control being killed
 			break
@@ -837,6 +816,7 @@ static Function/S AM_sortAMFunctions(str)
 	for (i = 0; i < noFunctions; i += 1)
 	    func = StringFromList(i, funcList)
 	    sscanf func, funcTemplate, editedFunc
+	    ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 	    editedList = AddListItem(editedFunc, editedList, ";", INF)
 	endfor
 
