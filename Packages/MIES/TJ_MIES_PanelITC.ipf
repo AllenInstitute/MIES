@@ -2532,27 +2532,18 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	// remove tools
 	HideTools/W=$panelTitle/A
 
+	// activate only the first headstage
+	DAP_TurnOffAllHeadstages(panelTitle)
+	CheckBox Check_DataAcq_HS_00 WIN = $panelTitle,value= 1
+
+	DAP_TurnOffAllDACs(panelTitle)
+	DAP_TurnOffAllADCs(panelTitle)
+	DAP_TurnOffAllTTLs(panelTitle)
+
 	ChangeTab(panelTitle, "ADC", 0)
 	ChangeTab(panelTitle, "tab_DataAcq_Amp", 0)
-	ChangeTab(panelTitle, "ADC", 5)
+	ChangeTab(panelTitle, "ADC", 6)
 	DoUpdate/W=$panelTitle
-
-	CheckBox Check_AD_00 Win = $panelTitle, value = 0
-	CheckBox Check_AD_01 Win = $panelTitle, value = 0
-	CheckBox Check_AD_02 Win = $panelTitle, value = 0
-	CheckBox Check_AD_03 Win = $panelTitle, value = 0
-	CheckBox Check_AD_04 Win = $panelTitle, value = 0
-	CheckBox Check_AD_05 Win = $panelTitle, value = 0	
-	CheckBox Check_AD_06 Win = $panelTitle, value = 0
-	CheckBox Check_AD_07 Win = $panelTitle, value = 0
-	CheckBox Check_AD_08 Win = $panelTitle, value = 0
-	CheckBox Check_AD_09 Win = $panelTitle, value = 0	
-	CheckBox Check_AD_10 Win = $panelTitle, value = 0
-	CheckBox Check_AD_11 Win = $panelTitle, value = 0
-	CheckBox Check_AD_12 Win = $panelTitle, value = 0
-	CheckBox Check_AD_13 Win = $panelTitle, value = 0
-	CheckBox Check_AD_14 Win = $panelTitle, value = 0
-	CheckBox Check_AD_15 Win = $panelTitle, value = 0
 
 	SetVariable Gain_AD_00 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_AD_01 WIN = $panelTitle, value = _NUM:0.00
@@ -2570,15 +2561,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable Gain_AD_13 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_AD_14 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_AD_15 WIN = $panelTitle, value = _NUM:0.00
-
-	CheckBox Check_DA_00 Win = $panelTitle, value = 0
-	CheckBox Check_DA_01 Win = $panelTitle, value = 0
-	CheckBox Check_DA_02 Win = $panelTitle, value = 0
-	CheckBox Check_DA_03 Win = $panelTitle, value = 0
-	CheckBox Check_DA_04 Win = $panelTitle, value = 0
-	CheckBox Check_DA_05 Win = $panelTitle, value = 0
-	CheckBox Check_DA_06 Win = $panelTitle, value = 0
-	CheckBox Check_DA_07 Win = $panelTitle, value = 0
 
 	SetVariable Gain_DA_00 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_DA_01 WIN = $panelTitle, value = _NUM:0.00
@@ -2611,21 +2593,10 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	
 	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 0
 	
-	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:5
-
-	CheckBox Check_DataAcq_HS_00 WIN = $panelTitle,value= 1
+	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0
 
 	SetVariable SetVar_DataAcq_TPDuration  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
-
-	CheckBox Check_TTL_00 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_01 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_02 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_03 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_04 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_05 Win = $panelTitle, value = 0	
-	CheckBox Check_TTL_06 Win = $panelTitle, value = 0
-	CheckBox Check_TTL_07 Win = $panelTitle, value = 0
 	
 	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
@@ -2682,14 +2653,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
 	CheckBox Radio_ClampMode_0 WIN = $panelTitle,value= 1,mode=1
-
-	CheckBox Check_DataAcq_HS_01 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_02 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_03 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_04 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_05 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_06 WIN = $panelTitle, value= 0
-	CheckBox Check_DataAcq_HS_07 WIN = $panelTitle, value= 0
 	
 	// Sets MIES headstage to V-Clamp
 	CheckBox Radio_ClampMode_0 WIN = $panelTitle, value= 1,mode=1
@@ -2811,7 +2774,14 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	PopupMenu popup_MoreSettings_DeviceType WIN = $panelTitle,mode=1 // ,popvalue="ITC1600",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
 	PopupMenu popup_moreSettings_DeviceNo WIN = $panelTitle,mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
 
-	SetVariable SetVar_DataAcq_OnsetDelay WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_Sweep WIN = $panelTitle,value= _NUM:0
+
+	SetVariable SetVar_DataAcq_OnsetDelay WIN = $panelTitle,value= _NUM:1
+	ValDisplay valdisp_DataAcq_SweepsInSet WIN = $panelTitle,value= _NUM:1
+	ValDisplay valdisp_DataAcq_SweepsActiveSet WIN = $panelTitle,value= _NUM:1
+	ValDisplay valdisp_DataAcq_TrialsCountdown WIN = $panelTitle,value= _NUM:1
+	ValDisplay valdisp_DataAcq_ITICountdown WIN = $panelTitle,value= _NUM:0
+
 	SetVariable SetVar_DataAcq_TerminationDelay WIN = $panelTitle,value= _NUM:0
 
 	CheckBox check_Settings_SetOption_5 WIN = $panelTitle,fColor=(65280,43520,0),value= 0
