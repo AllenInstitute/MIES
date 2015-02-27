@@ -190,6 +190,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			if(showResistanceCurve)
 				Label/W=$graph $rightAxis "Resistance \\Z10(M\\F'Symbol'W\\M)"
 				Label/W=$graph top "Relative time (s)"
+				SetAxis/W=$graph/A=2 $rightAxis
 				SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
 			else
 				ModifyGraph/W=$graph lsize($peakTrace) = 0, lsize($steadyStateTrace) = 0
