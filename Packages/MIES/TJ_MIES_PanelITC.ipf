@@ -4355,6 +4355,12 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 		endif
 	endif
 
+	if(GetCheckBoxState(panelTitle, "check_Settings_SaveAmpSettings") && AI_SelectMultiClamp(panelTitle, headStage, verbose=0) == 2)
+		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", panelTitle, headStage
+		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
+		return 1
+	endif
+
 	return 0
 End
 
