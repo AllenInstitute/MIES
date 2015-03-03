@@ -4113,11 +4113,28 @@ Function DAP_CheckSettings(panelTitle)
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
 	variable mode, headStage, ctrlNo
 	string ctrl, endWave, ttlWave
-	string list
+	string list, msg
 
 	if(isEmpty(panelTitle))
 		print "Invalid empty string for panelTitle, can not proceed"
 		return 1
+	endif
+
+	if(GetFreeMemory() < FREE_MEMORY_LOWER_LIMIT)
+		DFREF dfr = GetMiesPath()
+		NVAR/Z/SDFR=dfr skip_free_memory_warning
+
+		if(!NVAR_Exists(skip_free_memory_warning) || !skip_free_memory_warning)
+			sprintf msg, "The amount of free memory is below %gGB,\r would you like to start a new experiment?", FREE_MEMORY_LOWER_LIMIT
+			DoAlert/T="Low memory warning" 1, msg
+			if(V_flag == 1)
+				IM_SaveAndClearExperiment(fileNameSuffix=SIBLING_FILENAME_SUFFIX, zeroSweeps=0, keepOtherWaves=1)
+				print "Please restart data acquisition"
+				return 1
+			else
+				variable/G dfr:skip_free_memory_warning = 1
+			endif
+		endif
 	endif
 
 	list = panelTitle
