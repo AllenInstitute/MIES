@@ -153,31 +153,64 @@ Function AI_GetAmpChannel(panelTitle, headStage)
 	return ChanAmpAssign[9][headStage]
 End
 
-/// @brief Set the clamp mode of user linked MCC based on the headstage number
-Function AI_SetClampMode(panelTitle, headStage, mode)
+/// @brief Wrapper for MCC_SelectMultiClamp700B
+///
+/// @param panelTitle                          device
+/// @param headStage	                       headstage number
+/// @param verbose [optional: default is true] print an error message
+///
+/// @returns 0: success
+/// @returns 1: stored amplifier serials are invalid
+/// @returns 2: calling MCC_SelectMultiClamp700B failed
+Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	string panelTitle
-	variable headStage
-	variable mode
+	variable headStage, verbose
 
-	variable channel, errorCode
+	variable channel, errorCode, axonSerial
 	string mccSerial
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
-	mccSerial = AI_GetAmpMCCSerial(panelTitle, headStage)
-	channel   = AI_GetAmpChannel(panelTitle, headStage)
+	if(ParamIsDefault(verbose))
+		verbose = 1
+	else
+		verbose = !!verbose
+	endif
 
-	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, channel=channel))
-		print "No Amp is linked with this headstage"
-		return NaN
+	// checking axonSerial is done as a service to the caller
+	axonSerial = AI_GetAmpAxonSerial(panelTitle, headStage)
+	mccSerial  = AI_GetAmpMCCSerial(panelTitle, headStage)
+	channel    = AI_GetAmpChannel(panelTitle, headStage)
+
+	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, axonSerial=axonSerial, channel=channel))
+		if(verbose)
+			print "No Amp is linked with this headstage"
+		endif
+		return 1
 	endif
 
 	try
 		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
 	catch
 		errorCode = GetRTError(1)
-		printf "Could not find any connected amplifiers, please call \"Query connected Amps\" from the Hardware Tab\r"
-		return NaN
+		if(verbose)
+			printf "The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", mccSerial, headStage
+		endif
+		return 2
 	endtry
+
+	return 0
+end
+
+/// @brief Set the clamp mode of user linked MCC based on the headstage number
+Function AI_SetClampMode(panelTitle, headStage, mode)
+	string panelTitle
+	variable headStage
+	variable mode
+
+	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+
+	if(AI_SelectMultiClamp(panelTitle, headStage))
+		return NaN
+	endif
 
 	if(!IsFinite(MCC_SetMode(mode)))
 		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is longer present\r", mode
@@ -251,8 +284,8 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 	string panelTitle
 	variable headStage, mode, func, value
 
-	variable ret, channel, headstageMode
-	string serial, str
+	variable ret, headstageMode
+	string str
 
 	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
@@ -267,17 +300,12 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 		return NaN
 	endif
 
-	serial  = AI_GetAmpMCCSerial(panelTitle, headStage)
-	channel = AI_GetAmpChannel(panelTitle, headStage)
-
-	if(!AI_IsValidSerialAndChannel(mccserial=serial, channel=channel))
-		return NaN
-	endif
-
 	sprintf str, "headStage=%d, mode=%d, func=%d, value=%g", headStage, mode, func, value
 	DEBUGPRINT(str)
 
-	MCC_SelectMultiClamp700B(serial, channel)
+	if(AI_SelectMultiClamp(panelTitle, headstage))
+		return NaN
+	endif
 
 	switch(func)
 		case MCC_SETHOLDING_FUNC:
@@ -676,12 +704,9 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 		axonSerial = AI_GetAmpAxonSerial(panelTitle, i)
 		channel    = AI_GetAmpChannel(panelTitle, i)
 
-		// checks to make sure amp is associated with MIES headstage
-		if(!AI_IsValidSerialAndChannel(axonSerial=axonSerial, mccSerial=mccSerial, channel=channel))
+		if(AI_SelectMultiClamp(panelTitle, i))
 			continue
 		endif
-
-		MCC_SelectMultiClamp700B(mccSerial, channel)
 
 		// now start to query the amp to get the status
 		if (ChannelClampMode[i][0] == V_CLAMP_MODE)
