@@ -70,12 +70,28 @@ Function SCOPE_UpdateGraph(panelTitle)
 	ModifyGraph/W=$graph live = 1
 End
 
+static Function GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+	string panelTitle
+	variable &showSteadyStateResistance, &showPeakResistance
+
+	variable showResistanceCurve = GetCheckboxState(panelTitle, "check_settings_TP_show_resist", allowMissingControl=1)
+
+	if(IsFinite(showResistanceCurve)) // control from old panel
+		showPeakResistance        = showResistanceCurve
+		showSteadyStateResistance = showResistanceCurve
+	else // old control does not exist ->  new panel
+		showPeakResistance        = GetCheckboxState(panelTitle, "check_settings_TP_show_peak")
+		showSteadyStateResistance = GetCheckboxState(panelTitle, "check_settings_TP_show_steady")
+	endif
+End
+
 Function SCOPE_CreateGraph(plotData, panelTitle)
 	wave plotData
 	string panelTitle
 
 	string dataName, graph, tagName
-	variable i, adc, showResistanceCurve, numActiveDACs, numADChannels
+	variable i, adc, numActiveDACs, numADChannels
+	variable showSteadyStateResistance, showPeakResistance
 	string leftAxis, rightAxis, tagAxis, ADChannelList, str
 	string tagPeakTrace, tagSteadyStateTrace
 	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
@@ -109,7 +125,8 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	RemoveAnnotationsFromGraph(graph)
 
 	numActiveDACs = ItemsInList(GetDACListFromConfig(ITCChanConfigWave))
-	showResistanceCurve = GetCheckboxState(panelTitle, "check_settings_TP_show_resist")
+
+	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adcStr = StringFromList(i, ADChannelList)
@@ -131,17 +148,27 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 
 			rightAxis = "resistance" + adcStr
 
-			peakTrace = "PeakResistance" + adcStr
-			AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%PeakResistance]/TN=$peakTrace
-			ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
+			if(showPeakResistance)
+				peakTrace = "PeakResistance" + adcStr
+				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%PeakResistance]/TN=$peakTrace
+				ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
+			endif
 
-			steadyStateTrace = "SteadyStateResistance" + adcStr
-			AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
-			ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
+			if(showSteadyStateResistance)
+				steadyStateTrace = "SteadyStateResistance" + adcStr
+				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
+				ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
+			endif
 
-			ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.2}, freePos($rightAxis)={0, kwFraction}
-			ModifyGraph/W=$graph lblPos($rightAxis) = 70, lblRot($rightAxis) = 180
+			if(showPeakResistance ||showSteadyStateResistance)
+				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.2}, freePos($rightAxis)={0, kwFraction}
+				ModifyGraph/W=$graph lblPos($rightAxis) = 70, lblRot($rightAxis) = 180
 
+				Label/W=$graph $rightAxis "Resistance \\Z10(M\\F'Symbol'W\\M)"
+				Label/W=$graph top "Relative time (s)"
+				SetAxis/W=$graph/A=2 $rightAxis
+				SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
+			endif
 
 			tagAxis = rightAxis + "_tags"
 
@@ -149,7 +176,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			AppendToGraph/W=$graph/R=$tagAxis SSResistance[][i]/TN=$tagSteadyStateTrace
 			ModifyGraph/W=$graph mode($tagSteadyStateTrace) = 2, lsize($tagSteadyStateTrace) = 0
 
-			if(showResistanceCurve)
+			if(showPeakResistance || showSteadyStateResistance)
 				xPos = 50
 				yPos = 5
 				anchor = "RB"
@@ -167,7 +194,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			AppendToGraph/W=$graph/R=$tagAxis InstResistance[][i]/TN=$tagPeakTrace
 			ModifyGraph/W=$graph mode($tagPeakTrace) = 2, lsize($tagPeakTrace) = 0
 
-			if(showResistanceCurve)
+			if(showPeakResistance || showSteadyStateResistance)
 				xPos = 100
 				yPos = 3
 				anchor = "RB"
@@ -185,17 +212,6 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			ModifyGraph/W=$graph axisEnab($tagAxis) = {YaxisLow, YaxisHigh}, freePos($tagAxis)={1, kwFraction}
 
 			SetAxis/W=$graph/A=2/N=2/E=2 $tagAxis -20000000, 20000000
-
-
-			if(showResistanceCurve)
-				Label/W=$graph $rightAxis "Resistance \\Z10(M\\F'Symbol'W\\M)"
-				Label/W=$graph top "Relative time (s)"
-				SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
-			else
-				ModifyGraph/W=$graph lsize($peakTrace) = 0, lsize($steadyStateTrace) = 0
-				ModifyGraph/W=$graph noLabel($rightAxis) = 2, noLabel(top) = 2
-				ModifyGraph/W=$graph axThick($rightAxis) = 0, axThick(top) = 0
-			endif
 		endif
 
 		YaxisHigh -= YaxisSpacing
