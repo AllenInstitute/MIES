@@ -41,3 +41,6 @@
 
 // Menu includes
 #include "DR_MIES_Menu"
+
+// Analysis Framework Include
+#include "DR_MIES_AnalysisMaster"

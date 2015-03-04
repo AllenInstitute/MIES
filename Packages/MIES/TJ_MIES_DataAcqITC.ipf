@@ -204,6 +204,8 @@ Function ITC_FIFOMonitor(s)
 		ITC_StopDataAcq()
 		ITC_STOPFifoMonitor()
 	endif
+	
+	AM_analysisMasterMidSweep(panelTitleG)
 
 	return 0
 End

@@ -2245,3 +2245,106 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 
 	return wv
 End
+
+/// @brief Returns a wave reference to the Analysis Master Wave
+///
+/// Analysis Master Wave is used to store routines for doing post-sweep analysis and post analysis actions.
+///
+/// Rows:
+/// - Headstages
+///
+/// Columns:
+/// - 0: Analysis On/Off
+/// - 1: Analysis Function
+/// - 2: Action On/Off
+/// - 3: Action Function
+///
+Function/Wave GetAnalysisSettingsWaveRef(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevSpecAnlyssSttngsWavePath(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = analysisSettingsWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(NUM_HEADSTAGES,9) dfr:analysisSettingsWave/Wave=wv
+	wv = ""
+	
+	SetDimLabel 0, -1, HeadStage, wv
+	
+	SetDimLabel 1, 0, PSAOnOff, wv
+	SetDimLabel 1, 1, PSAType, wv
+	SetDimLabel 1, 2, PSAResult, wv
+	SetDimLabel 1, 3, PAAOnOff, wv
+	SetDimLabel 1, 4, PAAType, wv 
+	SetDimLabel 1, 5, PAAResult, wv 
+	SetDimLabel 1, 6, MSAOnOff, wv
+	SetDimLabel 1, 7, MSAType, wv
+	SetDimLabel 1, 8, MSAResult, wv
+
+	return wv
+End
+
+///@brief Returns a wave reference to the ActionScaleSettings Wave
+Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevSpecAnlyssSttngsWavePath(panelTitle)
+
+	Wave/Z/SDFR=dfr wv = actionScaleSettingsWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(NUM_HEADSTAGES,6) dfr:actionScaleSettingsWave/Wave=wv
+	
+	SetDimLabel 0, -1, HeadStage, wv	
+	SetDimLabel 1, 0, coarseScaleValue, wv
+	SetDimLabel 1, 1, fineScaleValue, wv
+	SetDimLabel 1, 2, apThreshold, wv
+	SetDimLabel 1, 3, coarseTuneUse, wv
+	SetDimLabel 1, 4, fineTuneUse, wv
+	SetDimLabel 1, 5, result, wv
+	
+	// put the coarse scale value to a default
+	wv[][%coarseScaleValue] = 0.10 
+	
+	// put the fine scale value to a default
+	wv[][%fineScaleValue] = 0.05
+	
+	// put the apThreshold to a default
+	wv[][%apThreshold] = 0.0
+	
+	// put the coarse tune use factor to 1 as an initial state
+	wv[][%coarseTuneUse] = 1
+
+	return wv
+End
+
+/// @brief Return the datafolder reference to the device specific text documentation
+Function/DF GetDevSpecAnlyssSttngsWavePath(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecAnlyssSttngsWaveAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:analysisSettings
+Function/S GetDevSpecAnlyssSttngsWaveAS(panelTitle)
+	string panelTitle
+
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":analysisSettings"
+End
+
+/// @brief Returns the, possibly non existing, sweep data wave for the given sweep number
+Function/Wave GetSweepWave(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
+
+	return wv
+End

@@ -370,6 +370,16 @@ Function/S GetValDisplayAsString(win, control)
 	return S_value
 End
 
+/// @brief Returns the contents of a ValDisplay as a number
+Function GetValDisplayAsNum(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_VALDISPLAY, "Control is not a val display")
+	return V_Value
+End
+
 /// @brief Returns the slider position
 Function GetSliderPositionIndex(win, control)
 	string win, control

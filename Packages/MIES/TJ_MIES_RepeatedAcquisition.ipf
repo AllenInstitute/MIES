@@ -186,7 +186,6 @@ Function RA_Counter(panelTitle)
 				Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
 			endif
 		else //background aquisition is on
-				print "about in initate bkcrdDataAcq"
 				ITC_BkrdDataAcq(panelTitle)
 		endif
 	endif
@@ -489,7 +488,6 @@ Function RA_CounterMD(panelTitle)
 
 	if(Count < TotTrials)
 		variable DataAcqOrTP = 0
-		print "about in initate bkcrdDataAcq"
 		FunctionStartDataAcq(panelTitle)
 	endif
 End
