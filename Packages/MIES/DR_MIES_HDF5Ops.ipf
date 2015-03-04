@@ -10,6 +10,7 @@ Menu "HDF5 Tools"
 		"Save Stim Set", SaveStimSet()
 		"Load and Replace Stim Set", LoadReplaceStimSet()
 		"Load Additional Stim Set", LoadAdditionalStimSet()	
+		"Save Sweep Data", SaveSweepData()
 End
 
 /// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
@@ -412,4 +413,77 @@ Function LoadAdditionalStimSet([incomingFileName])
 	
 	// restore the data folder
 	SetDataFolder savedDataFolder   	
+End
+
+///@brief Routine for saving the sweep data in hdf5 format.  This will allow for saving data in a smaller file size.
+Function SaveSweepData()
+
+	// get the names of all the devices that have data present, regardless of being locked or not
+	string dataPresentDevList = GetAllDevicesWithData()
+	variable noDataPresentDevs = ItemsInList(dataPresentDevList)
+
+	string win, control
+	variable value
+	string currentPanel
+	string groupString
+	variable i
+
+	// set up the filename for the hdf5 file
+	String filename
+	Variable root_id, h5_id
+
+	// save the present data folder
+	string savedDataFolder = GetDataFolder(1)
+
+	// build up the filename using the time and date functions
+	String fileLocation = "c:\\MiesHDF5Files\\SavedDataSets\\"
+	string dateTimeStamp = GetTimeStamp()
+	sprintf filename, "%ssavedData_%s.h5", fileLocation, dateTimeStamp
+
+	HDF5CreateFile h5_id as filename
+	if (V_Flag != 0 ) // HDF5CreateFile failed
+		print "HDF5Create File failed for ", filename
+		print "Check file name format..."
+		return -1
+	endif
+
+	// Save the list of devices with dataPresent
+	Make/O/T/N=1 dataPresentList = dataPresentDevList
+
+	// run through all of the devices that have data present
+	for (i = 0; i<noDataPresentDevs; i+= 1)
+		currentPanel = StringFromList(i, dataPresentDevList)
+
+		print "Saving data set for ", currentPanel
+
+		// Set the data folder for the device specific lab notebook
+		SetDataFolder GetDevSpecLabNBFolder(currentPanel)
+
+		sprintf groupString "/%s_savedLabNotebook", currentPanel
+		HDF5CreateGroup /Z h5_id, groupString, root_id
+		HDF5SaveGroup /O /R  :, root_id, groupString
+		HDF5CloseGroup root_id
+
+		// Set the data folder to grab the device specific data sets
+		SetDataFolder GetDeviceDataPath(currentPanel)
+
+		sprintf groupString "/%s_savedDataSets", currentPanel
+		HDF5CreateGroup /Z h5_id, groupString, root_id
+		HDF5SaveGroup /O /R  :, root_id, groupString
+		HDF5CloseGroup root_id
+
+		print "Data set saved for ", currentPanel
+	endfor
+
+	// save the data present list
+	HDF5SaveData /Z /O  dataPresentList, h5_id
+
+	// and now kill the dataPresentList so its not floating around in the Mies dataspace
+	KillWaves dataPresentList
+
+	HDF5CloseFile h5_id
+	print "HDF5 file save complete..."
+
+	// restore the data folder
+	SetDataFolder savedDataFolder
 End
