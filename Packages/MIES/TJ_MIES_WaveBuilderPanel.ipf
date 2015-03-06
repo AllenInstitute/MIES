@@ -551,6 +551,7 @@ static Function WBP_DisplaySetInPanel()
 	variable i, numWaves, setNumber
 	string list, basename, outputWaveType, searchPattern, entry
 
+	WAVE ranges = GetAxesRanges(waveBuilderGraph)
 	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
 	WB_MakeStimSet()
 
@@ -577,6 +578,7 @@ static Function WBP_DisplaySetInPanel()
 			ModifyGraph/W=$waveBuilderGraph rgb($entry) = (13056,13056,13056)
 		endif
 	endfor
+	SetAxesRanges(waveBuilderGraph, ranges)
 End
 
 static Function WBP_UpdatePanelIfAllowed()
