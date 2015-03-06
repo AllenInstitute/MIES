@@ -29,7 +29,7 @@ Function WB_MakeStimSet()
 		ControlInfo popup_WaveBuilder_OutputType
 		string OutputWaveType = s_value
 
-		OutputWaveName = num2str(i) + "_" + setbasename + "_" + OutputWaveType + "_" + num2str(setnumber)
+		OutputWaveName = "X" + num2str(i) + "_" + setbasename + "_" + OutputWaveType + "_" + num2str(setnumber)
 		Duplicate/O WaveBuilderWave, dfr:$OutputWaveName
 	endfor
 
