@@ -198,13 +198,14 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 
 			DisableControl(panelTitle, ba.ctrlName)
 
-			string WavePath = HSU_DataFullFolderPathString(panelTitle)
+			DAP_StopOngoingDataAcquisition(panelTitle)
 
-			string CountPath = WavePath + ":count"
+			string WavePath = HSU_DataFullFolderPathString(panelTitle)
+			string CountPath =  WavePath + ":count"
 			if(exists(CountPath) == 2)
 				killvariables $CountPath
 			endif
-			DAP_StopOngoingDataAcquisition(panelTitle) 
+
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
 			DAP_StoreTTLState(panelTitle)
