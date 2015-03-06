@@ -16,6 +16,9 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 /// This regular expression matches all sweep waves
 StrConstant DATA_SWEEP_REGEXP = "(?i)^Sweep_[[:digit:]]+$"
 
+StrConstant UNTITLED_EXPERIMENT           = "Untitled"
+StrConstant PACKED_FILE_EXPERIMENT_SUFFIX = ".pxp"
+
 /// @name Pressure Control constants
 /// @{
 Constant SAMPLE_INT_MICRO        = 5
