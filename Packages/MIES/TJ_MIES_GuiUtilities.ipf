@@ -390,6 +390,17 @@ Function GetSliderPositionIndex(win, control)
 	return V_value
 End
 
+/// @brief Sets the slider position
+Function SetSliderPositionIndex(win, control, index)
+	string win, control
+	variable index
+	
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")
+	Slider $control win=$win, value = index
+End
+
 /// @brief Set a ValDisplay
 ///
 /// The variable var can be formatted using format.
