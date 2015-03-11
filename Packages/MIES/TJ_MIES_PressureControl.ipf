@@ -148,9 +148,9 @@ Function P_MethodSeal(panelTitle, headStage)
 		if(PressureDataWv[headStage][%LastPressureCommand] > PressureDataWv[headStage][%PSI_SealInitial])
 			PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, PressureDataWv[headStage][%PSI_SealInitial]) // column 26 is the last pressure command, column 13 is the starting seal pressure
 			pressure = PressureDataWv[headStage][%PSI_SealInitial]
-			P_UpdateTTLstate(panelTitle, headStage, 1)
 			PressureDataWv[headStage][%LastPressureCommand] = PressureDataWv[headStage][%PSI_SealInitial]
 			PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
+			P_UpdateTTLstate(panelTitle, headStage, 1) // give pressure regulator access to pipette by opening TTL
 			print "starting seal"
 		endif
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
@@ -261,7 +261,7 @@ Function P_ApplyNegV(panelTitle, headStage)
 	variable 	headStage
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	variable 	resistance 		=  PressureDataWv[headStage][%LastResistanceValue]
-	variable 	vCom 			= floor(-0.200 * resistance)
+	variable 	vCom 			= floor(-0.100 * resistance)
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
 	if(getCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
@@ -273,8 +273,8 @@ Function P_ApplyNegV(panelTitle, headStage)
  	if(!isFinite(lastVcom))
 		lastVcom = 0
 	endif
-
-	if(vCom > -70 && (vCom > (lastVcom + 2) || vCom < (lastVcom - 2)))
+	
+	if(vCom > -70 && (vCom > (lastVcom + 2) || vCom < (lastVcom - 2)) && resistance >= 50)
 		print "vcom=",vcom
 		P_UpdateVcom(panelTitle, vCom, headStage)
 		PressureDataWv[headStage][%LastVcom] = vCom
@@ -1001,6 +1001,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 	variable pressureMode
 	string pressureControlName
 	variable checkAll
+
 	variable headStageNo = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable SavedPressureMode = PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear]
