@@ -1137,3 +1137,23 @@ Function AI_CloseAllMCC()
 	ExecuteScriptText "nircmd.exe win close title \"11&12\""
 	
 End
+
+Function AI_SetAmplifierHeadstage(panelTitle, [headstage, increment])
+	string panelTitle
+	variable headstage, increment
+	
+	if(paramIsDefault(headstage) && paramIsDefault(increment))
+		return Nan
+	endif
+	
+	if(!paramIsDefault(increment))
+		headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
+	endif
+		
+		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
+		variable mode = AI_MIESHeadstageMode(panelTitle, headStage)
+		AI_UpdateAmpView(panelTitle, headStage)
+		P_LoadPressureButtonState(panelTitle, headStage)
+		// chooses the amp tab according to the MIES headstage clamp mode
+		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+End
