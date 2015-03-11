@@ -1138,7 +1138,7 @@ Function AI_CloseAllMCC()
 	
 End
 
-Function AI_SetAmplifierHeadstage(panelTitle, [headstage, increment])
+Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	string panelTitle
 	variable headstage, increment
 	
@@ -1149,11 +1149,13 @@ Function AI_SetAmplifierHeadstage(panelTitle, [headstage, increment])
 	if(!paramIsDefault(increment))
 		headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
-		
+	
+	if(headstage >= 0 && headstage < NUM_HEADSTAGES)	
 		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
 		variable mode = AI_MIESHeadstageMode(panelTitle, headStage)
 		AI_UpdateAmpView(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		// chooses the amp tab according to the MIES headstage clamp mode
 		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+	endif
 End
