@@ -3,47 +3,6 @@
 /// @file TJ_MIES_Utilities.ipf
 /// This file holds general utility functions available for all other procedures.
 
-/// Convenience definition to nicify expressions like DimSize(wv, ROWS)
-/// easier to read than DimSize(wv, 0).
-/// @{
-Constant ROWS                = 0
-Constant COLS                = 1
-Constant LAYERS              = 2
-Constant CHUNKS              = 3
-/// @}
-Constant MAX_DIMENSION_COUNT = 4
-
-/// @name Constants used by Downsample
-/// @{
-Constant DECIMATION_BY_OMISSION  = 1
-Constant DECIMATION_BY_SMOOTHING = 2
-Constant DECIMATION_BY_AVERAGING = 4
-StrConstant ALL_WINDOW_FUNCTIONS = "Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;None;Parzen;Poisson2;Poisson3;Poisson4;Riemann"
-/// @}
-
-/// Common string to denote an invalid entry in a popupmenu
-StrConstant NONE = "- none -"
-
-/// Hook events constants
-Constant EVENT_KILL_WINDOW_HOOK = 2
-
-/// Used by CheckName and UniqueName
-Constant CONTROL_PANEL_TYPE = 9
-
-/// @name CountObjects and CountObjectsDFR constant
-/// @{
-Constant COUNTOBJECTS_WAVES      = 1
-Constant COUNTOBJECTS_VAR        = 2
-Constant COUNTOBJECTS_STR        = 3
-Constant COUNTOBJECTS_DATAFOLDER = 4
-/// @}
-
-/// See "Control Structure eventMod Field"
-Constant EVENT_MOUSE_UP = 2
-
-// Conversion factor from ticks to seconds, exact value is 1/60
-Constant TICKS_TO_SECONDS = 0.0166666666666667
-
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 Function IsFinite(var)
 	variable var
@@ -198,8 +157,6 @@ Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
 	return list
 End
 
-static Constant MINIMUM_WAVE_SIZE   = 64
-
 /// @brief Redimension the wave to at least the given size.
 ///
 /// The redimensioning is only done if it is required.
@@ -257,8 +214,6 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 		endswitch
 	endif
 End
-
-static Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
 /// @brief Resize the number of rows to maximumSize if it is larger than that
 ///
@@ -323,46 +278,6 @@ Function GetSizeOfType(type)
 	endif
 
 	return size
-End
-
-/// @brief Returns the config wave for a given sweep wave
-Function/Wave GetConfigWave(sweepWave)
-    Wave sweepWave
-
-	string name = "Config_" + NameOfWave(sweepWave)
-	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(DimSize(config,COLS)==4,"Unexpected number of columns")
-	return config
-End
-
-/// @brief Returns the sampling interval of the sweep
-/// in microseconds (1e-6s)
-Function GetSamplingInterval(sweepWave)
-    Wave sweepWave
-
-	Wave config = GetConfigWave(sweepWave)
-
-	// from ITCConfigAllChannels help file:
-	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
-	Duplicate/D/R=[][2]/FREE config samplingInterval
-
-	// The sampling interval is the same for all channels
-	ASSERT(numpnts(samplingInterval),"Expected non-empty wave")
-	ASSERT(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
-	return samplingInterval[0]
-End
-
-/// @brief Write the given property to the config wave
-///
-/// @note Please add new properties as required
-/// @param config configuration wave
-/// @param samplingInterval sampling interval in microseconds (1e-6s)
-Function UpdateSweepConfig(config, [samplingInterval])
-	Wave config
-	variable samplingInterval
-
-	ASSERT(IsFinite(samplingInterval), "samplingInterval must be finite")
-	config[][2] = samplingInterval
 End
 
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
@@ -446,39 +361,6 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Duplicate/O backup, wv
 	KillWaves/Z backup
 	return 1
-End
-
-/// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES
-/// and Y from @ref DEVICE_NUMBERS.
-///
-/// Returns the result in deviceType and deviceNumber.
-/// Currently the parsing is successfull if X and Y are non-empty.
-/// @param[in]  device       input device string X_DEV_Y
-/// @param[out] deviceType   returns the device type X
-/// @param[out] deviceNumber returns the device number Y
-/// @returns one on successfull parsing, zero on error
-/// @todo replace all similiar usages in the rest of the code
-Function ParseDeviceString(device, deviceType, deviceNumber)
-	string device
-	string &deviceType, &deviceNumber
-
-	if(isEmpty(device))
-		return 0
-	endif
-
-	deviceType   = StringFromList(0,device,"_")
-	deviceNumber = StringFromList(2,device,"_")
-
-	return !isEmpty(deviceType) && !isEmpty(deviceNumber)
-End
-
-/// @brief Builds the common device string X_DEV_Y, e.g. ITC1600_DEV_O and friends
-/// @todo replace all similiar usages in the rest of the code
-Function/S BuildDeviceString(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number");
-	return deviceType + "_Dev_" + deviceNumber
 End
 
 /// @brief Checks if the datafolder referenced by dfr exists.
@@ -849,18 +731,32 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
 	endif
 End
 
-/// @brief Check if a given wave is displayed on a graph
+/// @brief Check if a given wave, or at least one wave from the dfr, is displayed on a graph
 ///
-/// @return one if it is displayed, zero otherwise
-Function IsWaveDisplayedOnGraph(win, wv)
+/// @return one if one is displayed, zero otherwise
+Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 	string win
 	WAVE/Z wv
+	DFREF dfr
 
-	string traceList, trace
-	variable numTraces, i
+	string traceList, trace, list
+	variable numWaves, numTraces, i
 
-	if(!WaveExists(wv))
-		return 0
+	ASSERT(ParamIsDefault(wv) + ParamIsDefault(dfr) == 1, "Expected exactly one parameter of wv and dfr")
+
+	if(!ParamIsDefault(wv))
+		if(!WaveExists(wv))
+			return 0
+		endif
+
+		MAKE/FREE/WAVE/N=1 candidates = wv
+	else
+		if(!DataFolderExistsDFR(dfr) || CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) == 0)
+			return 0
+		endif
+
+		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
+		numWaves = DimSize(candidates, ROWS)
 	endif
 
 	traceList = TraceNameList(win, ";", 1)
@@ -868,7 +764,8 @@ Function IsWaveDisplayedOnGraph(win, wv)
 	for(i = numTraces - 1; i >= 0; i -= 1)
 		trace = StringFromList(i, traceList)
 		WAVE traceWave = TraceNameToWaveRef(win, trace)
-		if(WaveRefsEqual(wv, traceWave))
+
+		if(GetRowIndex(candidates, refWave=traceWave) >= 0)
 			return 1
 		endif
 	endfor
@@ -878,31 +775,38 @@ End
 
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
-/// @param graph                           graph
-/// @param kill [optional, default: false] try to kill the wave after it has been removed
-/// @param trace [optional, default: all] remove the given trace only
-/// @param wv [optional, default: ignored] remove all traces which stem from the given wave
+/// @param graph                            graph
+/// @param kill [optional, default: false]  try to kill the wave after it has been removed
+/// @param trace [optional, default: all]   remove the given trace only
+/// @param wv [optional, default: ignored]  remove all traces which stem from the given wave
+/// @param dfr [optional, default: ignored] remove all traces which stem from one of the waves in dfr
 ///
-/// Only one of kill and trace may be supplied.
+/// Only one of trace/wv/dfr may be supplied.
 ///
 /// @return number of traces/waves removed from the graph
-Function RemoveTracesFromGraph(graph, [kill, trace, wv])
+Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	string graph
 	variable kill
 	string trace
 	WAVE/Z wv
+	DFREF dfr
 
-	variable i, numEntries, removals, tryKillingTheWave
+	variable i, numEntries, removals, tryKillingTheWave, numOptArgs
 	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
 		kill = 0
 	endif
 
-	ASSERT(ParamIsDefault(trace) + ParamIsDefault(wv) != 0, "Can not accept both trace and wv parameters")
+	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
+	ASSERT(numOptArgs == 3 || numOptArgs == 2, "Can only accept one of the trace/wv/dfr parameters")
 
-	if(!ParamIsDefault(wv) && !WaveExists(wv))
-		return removals
+	if(!ParamIsDefault(wv) && !WaveExists(wv) || !ParamIsDefault(dfr) && !DataFolderExistsDFR(dfr))
+		return 0
+	endif
+
+	if(!ParamIsDefault(dfr))
+		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
@@ -914,7 +818,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv])
 
 		Wave/Z refWave = TraceNameToWaveRef(graph, refTrace)
 
-		if(ParamIsDefault(trace) && ParamIsDefault(wv))
+		if(ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr))
 			RemoveFromGraph/W=$graph $refTrace
 			removals += 1
 			tryKillingTheWave = 1
@@ -926,6 +830,12 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv])
 			endif
 		elseif(!ParamIsDefault(wv))
 			if(WaveRefsEqual(refWave, wv))
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
+		elseif(!ParamIsDefault(dfr))
+			if(GetRowIndex(candidates, refWave=refWave) >= 0)
 				RemoveFromGraph/W=$graph $refTrace
 				removals += 1
 				tryKillingTheWave = 1
@@ -962,13 +872,14 @@ End
 /// @param w                          wave of arbitrary type
 /// @param keyColPrimary              column of the primary key
 /// @param keyColSecondary [optional] column of the secondary key
+/// @param keyColTertiary [optional]  column of the tertiary key
 /// @param reversed [optional]        do an descending sort instead of an ascending one
 ///
 /// Taken from http://www.igorexchange.com/node/599 with some cosmetic changes and extended for
-/// the secondary key
-Function MDsort(w, keyColPrimary, [keyColSecondary, reversed])
+/// the two key
+Function MDsort(w, keyColPrimary, [keyColSecondary, keyColTertiary, reversed])
 	WAVE w
-	variable keyColPrimary, keyColSecondary, reversed
+	variable keyColPrimary, keyColSecondary, keyColTertiary, reversed
 
 	variable numRows, type
 
@@ -979,7 +890,7 @@ Function MDsort(w, keyColPrimary, [keyColSecondary, reversed])
 		return NaN
 	endif
 
-	Make/Y=(type)/Free/N=(numRows) keyPrimary, keySecondary
+	Make/Y=(type)/Free/N=(numRows) keyPrimary, keySecondary, keyTertiary
 	Make/Free/N=(numRows)/I/U valindex = p
 
 	if(type == 0)
@@ -988,33 +899,42 @@ Function MDsort(w, keyColPrimary, [keyColSecondary, reversed])
 		output[] = indirectSourceText[p][keyColPrimary]
 		WAVE/T output = keySecondary
 		output[] = indirectSourceText[p][keyColSecondary]
+		WAVE/T output = keyTertiary
+		output[] = indirectSourceText[p][keyColTertiary]
 	else
-		WAVE indirectSource = w
+		WAVE indirectSource        = w
 		MultiThread keyPrimary[]   = indirectSource[p][keyColPrimary]
 		MultiThread keySecondary[] = indirectSource[p][keyColSecondary]
+		MultiThread keyTertiary[]  = indirectSource[p][keyColTertiary]
 	endif
 
-	if(ParamIsDefault(keyColSecondary))
+	if(ParamIsDefault(keyColSecondary) && ParamIsDefault(keyColTertiary))
 		if(reversed)
 			Sort/A/R keyPrimary, valindex
 		else
 			Sort/A keyPrimary, valindex
 		endif
-	else
+	elseif(!ParamIsDefault(keyColSecondary))
 		if(reversed)
 			Sort/A/R {keyPrimary, keySecondary}, valindex
 		else
 			Sort/A {keyPrimary, keySecondary}, valindex
 		endif
+	else
+		if(reversed)
+			Sort/A/R {keyPrimary, keySecondary, keyTertiary}, valindex
+		else
+			Sort/A {keyPrimary, keySecondary, keyTertiary}, valindex
+		endif
 	endif
 
 	if(type == 0)
 		Duplicate/FREE/T indirectSourceText, newtoInsertText
-		newtoInsertText[][] = indirectSourceText[valindex[p]][q]
+		newtoInsertText[][][][] = indirectSourceText[valindex[p]][q][r][s]
 		indirectSourceText = newtoInsertText
 	else
 		Duplicate/FREE indirectSource, newtoInsert
-		MultiThread newtoinsert[][] = indirectSource[valindex[p]][q]
+		MultiThread newtoinsert[][][][] = indirectSource[valindex[p]][q][r][s]
 		MultiThread indirectSource = newtoinsert
 	endif
 End
@@ -1059,76 +979,116 @@ Function/S LineBreakingIntoParWithMinWidth(str)
 	return output
 End
 
-/// @brief Returns the numerical index for the sweep number column
-/// in the settings history wave
-Function GetSweepColumn(settingsHistory)
-	Wave settingsHistory
-
-	variable sweepCol
-
-	// new label
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNum")
-
-	if(sweepCol >= 0)
-		return sweepCol
-	endif
-
-	// Old label prior to 276b5cf6
-	// was normally overwritten by SweepNum later in the code
-	// but not always as it turned out
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNumber")
-
-	if(sweepCol >= 0)
-		return sweepCol
-	endif
-
-	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
-
-	return 0
-End
-
 /// @brief Extended version of `FindValue`
 ///
 /// Allows to search only the specified column for a value
-/// and returns all matching row indizes in a wave
+/// and returns all matching row indizes in a wave.
 ///
-/// @param col               column to search in
-/// @param var [optional]    numeric value to search. One of `var` or `str` has to be given.
-/// @param str [optional]    string value to search. One of `var` or `str` has to be given.
-/// @param wv [optional]     numeric wave to search. One of `wv` or `wvText` has to be given.
-/// @param wvText [optional] text wave to search. One of `wv` or `wvText` has to be given.
+/// Exactly one of `var`/`str`/`prop` has to be given.
+///
+/// Exactly one of `wv`/`wvText` has to be given.
+///
+/// Exactly one of `col`/`colLabel` has to be given.
+///
+/// @param col [optional]      column to search in only
+/// @param colLabel [optional] column label to search in only
+/// @param var [optional]      numeric value to search
+/// @param str [optional]      string value to search
+/// @param prop [optional]     property to search, see @ref FindIndizesProps
+/// @param wv [optional]       numeric wave to search
+/// @param wvText [optional]   text wave to search
+/// @param startRow [optional] starting row to restrict the search to
+/// @param endRow [optional]   ending row to restrict the search to
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-Function/Wave FindIndizes(col, [var, str, wv, wvText])
-	variable col, var
+Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, endRow])
+	variable col, var, prop
 	string str
 	Wave wv
 	Wave/T wvText
+	string colLabel
+	variable startRow, endRow
 
-	variable numCols
+	variable numCols, numRows
 
-	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wave argument")
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Expected exactly one optional var/str argument")
+	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
+	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wv/wvText argument")
+	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2 || (!ParamIsDefault(prop) && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) && !ParamIsDefault(var) && ParamIsDefault(str)), "Expected exactly one optional var/str/prop argument")
 
 	if(ParamIsDefault(var))
 		var = str2num(str)
-	endif
-
-	if(ParamIsDefault(str))
+	elseif(ParamIsDefault(str))
 		str = num2str(var)
 	endif
 
 	if(!ParamIsDefault(wv))
-		numCols = DimSize(wv, COLS)
-		ASSERT(col >= 0 && col < numCols, "Invalid column")
 		ASSERT(WaveType(wv), "Expected numeric wave")
-		Make/FREE/R/N=(DimSize(wv, ROWS)) matches = (wv[p][col] == var ? p : NaN)
+		numCols = DimSize(wv, COLS)
+		numRows = DimSize(wv, ROWS)
+		if(!ParamIsDefault(colLabel))
+			col = FindDimLabel(wv, COLS, colLabel)
+			ASSERT(col >= 0, "invalid column label")
+		endif
 	else
-		numCols = DimSize(wvText, COLS)
-		ASSERT(col >= 0 && col < numCols, "Invalid column")
 		ASSERT(!WaveType(wv), "Expected text wave")
-		Make/FREE/R/N=(DimSize(wvText, ROWS)) matches = (!cmpstr(wvText[p][col], str) ? p : NaN)
+		numCols = DimSize(wvText, COLS)
+		numRows = DimSize(wvText, ROWS)
+		if(!ParamIsDefault(colLabel))
+			col = FindDimLabel(wvText, COLS, colLabel)
+			ASSERT(col >= 0, "invalid column label")
+		endif
+	endif
+
+	if(!ParamIsDefault(prop))
+		ASSERT(prop == PROP_NON_EMPTY || prop == PROP_EMPTY || prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, "Invalid property")
+	endif
+
+	if(ParamIsDefault(startRow))
+		startRow = 0
+	endif
+
+	if(ParamIsDefault(endRow))
+		endRow  = ParamIsDefault(wv) ? DimSize(wvText, ROWS) : DimSize(wv, ROWS)
+		endRow -= 1
+	endif
+
+	ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
+	ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
+	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
+
+	ASSERT(col >= 0 && col < numCols, "Invalid column")
+
+	Make/FREE/R/N=(numRows) matches = NaN
+
+	if(!ParamIsDefault(wv))
+		if(!ParamIsDefault(prop))
+			if(prop == PROP_EMPTY)
+				matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
+			elseif(prop == PROP_NON_EMPTY)
+				matches[startRow, endRow] = (numtype(wv[p][col]) != 2 ? p : NaN)
+			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
+				matches[startRow, endRow] = (wv[p][col] & var ? p : NaN)
+			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
+				matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
+			endif
+		else
+			matches[startRow, endRow] = (wv[p][col] == var ? p : NaN)
+		endif
+	else
+		if(!ParamIsDefault(prop))
+			if(prop == PROP_EMPTY)
+				matches[startRow, endRow] = (!cmpstr(wvText[p][col], "") ? p : NaN)
+			elseif(prop == PROP_NON_EMPTY)
+				matches[startRow, endRow] = (cmpstr(wvText[p][col], "") ? p : NaN)
+			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
+				matches[startRow, endRow] = (str2num(wvText[p][col]) & var ? p : NaN)
+			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
+				matches[startRow, endRow] = (!(str2num(wvText[p][col]) & var) ? p : NaN)
+			endif
+		else
+			matches[startRow, endRow] = (!cmpstr(wvText[p][col], str) ? p : NaN)
+		endif
 	endif
 
 	WaveTransform/O zapNaNs, matches
@@ -1159,9 +1119,9 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 	last  = NaN
 
 	if(!WaveType(wv))
-		WAVE/Z indizes = FindIndizes(col, var=val, wvText=wv)
+		WAVE/Z indizes = FindIndizes(col=col, var=val, wvText=wv)
 	else
-		WAVE/Z indizes = FindIndizes(col, var=val, wv=wv)
+		WAVE/Z indizes = FindIndizes(col=col, var=val, wv=wv)
 	endif
 
 	if(!WaveExists(indizes))
@@ -1203,167 +1163,6 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 			first = indizes[i]
 		endfor
 	endif
-End
-
-/// @brief Returns a wave with the latest value of a setting from the history wave
-/// for a given sweep number.
-///
-/// @returns a wave with the value for each headstage in a row. In case
-/// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSetting(history, sweepNo, setting)
-	Wave history
-	variable sweepNo
-	string setting
-
-	variable settingCol, numLayers, i, sweepCol, numEntries
-	variable first, last
-
-	ASSERT(WaveType(history), "Can only work with numeric waves")
-	numLayers = DimSize(history, LAYERS)
-	settingCol = FindDimLabel(history, COLS, setting)
-
-	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
-		return $""
-	endif
-
-	sweepCol = GetSweepColumn(history)
-	FindRange(history, sweepCol, sweepNo, 0, first, last)
-
-	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
-		return $""
-	endif
-
-	Make/FREE/N=(numLayers) status
-
-	for(i = last; i >= first; i -= 1)
-
-		status[] = history[i][settingCol][p]
-		WaveStats/Q/M=1 status
-
-		// return if at least one entry is not NaN
-		if(V_numNaNs != numLayers)
-			return status
-		endif
-	endfor
-
-	return $""
-End
-
-/// @brief Returns a wave with latest value of a setting from the history wave
-/// for a given sweep number.
-///
-/// Text wave version of `GetLastSetting`.
-///
-/// @returns a wave with the value for each headstage in a row. In case
-/// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSettingText(history, sweepNo, setting)
-	Wave/T history
-	variable sweepNo
-	string setting
-
-	variable settingCol, numLayers, i, sweepCol
-	variable first, last
-
-	ASSERT(!WaveType(history), "Can only work with text waves")
-	numLayers = DimSize(history, LAYERS)
-	settingCol = FindDimLabel(history, COLS, setting)
-
-	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
-		return $""
-	endif
-
-	sweepCol = GetSweepColumn(history)
-	FindRange(history, sweepCol, sweepNo, 0, first, last)
-
-	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
-		return $""
-	endif
-
-	Make/FREE/N=(numLayers)/T status
-	Make/FREE/N=(numLayers) lengths
-
-	for(i = last; i >= first; i -= 1)
-
-		status[] = history[i][settingCol][p]
-		lengths[] = strlen(status[p])
-
-		// return if we have at least one non-empty entry
-		if(Sum(lengths) > 0)
-			return status
-		endif
-	endfor
-
-	return $""
-End
-
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´
-Function/S GetAllActiveDevices()
-
-	variable i, j, numTypes, numNumbers
-	string type, number, device
-	string path, list = ""
-
-	path = GetITCDevicesFolderAsString()
-
-	if(!DataFolderExists(path))
-		return ""
-	endif
-
-	numTypes   = ItemsInList(DEVICE_TYPES)
-	numNumbers = ItemsInList(DEVICE_NUMBERS)
-	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES)
-
-		path = GetDeviceTypePathAsString(type)
-
-		if(!DataFolderExists(path))
-			continue
-		endif
-
-		for(j = 0; j < numNumbers ; j += 1)
-			number = StringFromList(j, DEVICE_NUMBERS)
-			device = BuildDeviceString(type, number)
-			path   = GetDevicePathAsString(device)
-
-			if(!DataFolderExists(path))
-				continue
-			endif
-
-			list = AddListItem(device, list, ";", inf)
-		endfor
-	endfor
-
-	return list
-End
-
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
-Function/S GetAllDevicesWithData()
-
-	variable i, numDevices
-	string deviceList, device, path
-	string list = ""
-
-	deviceList = GetAllActiveDevices()
-
-	numDevices = ItemsInList(deviceList)
-	for(i = 0; i < numDevices; i += 1)
-		device = StringFromList(i, deviceList)
-		path   = GetDeviceDataPathAsString(device)
-
-		if(!DataFolderExists(path))
-			continue
-		endif
-
-		if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
-			continue
-		endif
-
-		list = AddListItem(device, list, ";", inf)
-	endfor
-
-	return list
 End
 
 /// @brief Returns a list of all files with the extension given in the symbolic path pathName
@@ -1530,47 +1329,6 @@ Function SetDimensionLabels(keys, values)
 	endfor
 End
 
-StrConstant TRASH_FOLDER_PREFIX = "trash"
-
-/// @brief Delete a datafolder or wave. If this is not possible, because Igor
-/// has locked the file, the wave or datafolder is moved into a unique folder
-/// named `root:mies:trash_$digit`.
-///
-/// The trash folders will be removed, if possible, from KillTemporaries().
-///
-/// @param path absolute path to a datafolder or wave
-Function KillOrMoveToTrash(path)
-	string path
-
-	string dest
-
-	if(DataFolderExists(path))
-		KillDataFolder/Z $path
-
-		if(!V_flag)
-			return NaN
-		endif
-
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
-		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
-		MoveDataFolder $path, $dest
-	elseif(WaveExists($path))
-		KillWaves/F/Z $path
-
-		WAVE/Z wv = $path
-		if(!WaveExists(wv))
-			return NaN
-		endif
-
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
-		MoveWave wv, tmpDFR
-	else
-		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
-	endif
-End
-
 /// @brief Returns a unique and non-existing file name
 ///
 /// @warning This function must *not* be used for security relevant purposes,
@@ -1611,7 +1369,6 @@ End
 Function/S GetExperimentName()
 	return IgorInfo(1)
 End
-
 
 /// @brief Return a formatted timestamp of the form "YY_MM_DD_HHMMSS"
 //
@@ -1700,4 +1457,135 @@ Function CreateFolderOnDisk(absPath)
 	endif
 
 	ASSERT(0, "Could not create the path, maybe the permissions were insufficient")
+End
+
+/// @brief Return the row index of the given value, string converted to a variable, or wv
+///
+/// Assumes wv being one dimensional
+Function GetRowIndex(wv, [val, str, refWave])
+	WAVE wv
+	variable val
+	string str
+	WAVE/Z refWave
+
+	variable numEntries, i
+
+	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
+
+	if(!ParamIsDefault(refWave))
+		ASSERT(WaveType(wv, 1) == 4, "wv must be a wave holding wave references")
+		numEntries = DimSize(wv, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+			WAVE/WAVE cmpWave = wv
+			if(WaveRefsEqual(cmpWave[i], refWave))
+				return i
+			endif
+		endfor
+	else
+		if(!ParamIsDefault(str))
+			val = str2num(str)
+		endif
+
+		FindValue/V=(val) wv
+
+		if(V_Value >= 0)
+			return V_Value
+		endif
+	endif
+
+	return NaN
+End
+
+/// @brief Converts a list of strings referencing waves with full paths to a wave of wave references
+///
+/// It is assumed that all created wave references refer to an *existing* wave
+Function/WAVE ConvertListOfWaves(list)
+	string list
+
+	variable i, numEntries
+	numEntries = ItemsInList(list)
+	MAKE/FREE/WAVE/N=(numEntries) waves
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z wv = $StringFromList(i, list)
+		ASSERT(WaveExists(wv), "The wave does not exist")
+		waves[i] = wv
+	endfor
+
+	return waves
+End
+
+/// @brief Return a list of datafolders located in `dfr`
+Function/S GetListOfDataFolders(dfr)
+	DFREF dfr
+
+	string list = DataFolderDir(0x01, dfr)
+	list = StringByKey("FOLDERS", list , ":")
+	list = ReplaceString(",", list, ";")
+
+	return list
+End
+
+/// @brief Return the base name of the file
+///
+/// Given `path/file.suffix` this gives `file`.
+Function/S GetBaseName(filePathWithSuffix)
+	string filePathWithSuffix
+
+	return ParseFilePath(3, filePathWithSuffix, ":", 1, 0)
+End
+
+/// @brief Set the given bit mask in var
+Function SetBit(var, bit)
+	variable var, bit
+
+	return var | bit
+End
+
+/// @brief Clear the given bit mask in var
+Function ClearBit(var, bit)
+	variable var, bit
+
+	return var & ~bit
+End
+
+/// @brief Create a list of strings using the given format in the given range
+///
+/// @param format   formatting string, must have exactly one specifier which accepts a number
+/// @param start	first point of the range
+/// @param step	    step size for iterating over the range
+/// @param stop 	last point of the range
+Function/S BuildList(format, start, step, stop)
+	string format
+	variable start, step, stop
+
+	string str
+	string list = ""
+	variable i
+
+	ASSERT(start < stop, "Invalid range")
+	ASSERT(step > 0, "Invalid step")
+
+	for(i = start; i < stop; i += step)
+		sprintf str, format, i
+		list = AddListItem(str, list, ";", inf)
+	endfor
+
+	return list
+End
+
+/// @brief Searches the column colLabel in wv for an non-empty
+/// entry with a row number smaller or equal to endRow
+///
+/// @param wv         text wave to search in
+/// @param colLabel   column label from wv
+/// @param endRow     maximum row index to consider
+Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
+	Wave/T wv
+	string colLabel
+	variable endRow
+
+	WAVE/Z indizes = FindIndizes(colLabel=colLabel, wvText=wv, prop=PROP_NON_EMPTY, endRow=endRow)
+	ASSERT(WaveExists(indizes), "expected a indizes wave")
+	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End

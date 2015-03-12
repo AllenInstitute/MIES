@@ -665,7 +665,7 @@ Function/DF GetDeviceTestPulse(panelTitle)
 	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
 End
 
-/// @brief Return the path to the test pulse folder, e.g. root:mies::ITCDevices:ITC1600:Device0:TestPulse
+/// @brief Return the path to the test pulse folder, e.g. root:mies:ITCDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
@@ -677,7 +677,7 @@ Function/DF GetDeviceTypePath(deviceType)
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
-/// @brief Return the path to the device type folder, e.g. root:mies::ITCDevices:ITC1600
+/// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
 Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
@@ -690,7 +690,7 @@ Function/DF GetDevicePath(panelTitle)
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0
+/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
 Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
@@ -708,7 +708,7 @@ Function/DF GetDeviceDataPath(panelTitle)
 	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies::ITCDevices:ITC1600:Device0:Data
+/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":Data"
@@ -2348,3 +2348,207 @@ Function/Wave GetSweepWave(panelTitle, sweepNo)
 
 	return wv
 End
+
+/// @name Getter functions for the analysis browser
+///@{
+
+/// @brief Return the datafolder reference to the root folder for the analysis browser
+Function/DF GetAnalysisFolder()
+	return createDFWithAllParents(GetAnalysisFolderAS())
+End
+
+/// @brief Return the full path to the root analysis folder, e.g. root:MIES:analysis
+Function/S GetAnalysisFolderAS()
+	return GetMiesPathAsString() + ":Analysis"
+End
+
+/// @brief Return the datafolder reference to the per experiment folder
+Function/DF GetAnalysisExpFolder(expFolder)
+	string expFolder
+	return createDFWithAllParents(GetAnalysisExpFolderAS(expFolder))
+End
+
+/// @brief Return the full path to the per experiment folder, e.g. root:MIES:Analysis:my_experiment
+Function/S GetAnalysisExpFolderAS(expFolder)
+	string expFolder
+	return GetAnalysisFolderAS() + ":" + expFolder
+End
+
+/// @brief Return the datafolder reference to the per device folder of an experiment
+Function/DF GetAnalysisDeviceFolder(expFolder, device)
+	string expFolder, device
+	return createDFWithAllParents(GetAnalysisDeviceFolderAS(expFolder, device))
+End
+
+/// @brief Return the full path to the per device folder of an experiment, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0
+Function/S GetAnalysisDeviceFolderAS(expFolder, device)
+	string expFolder, device
+	return GetAnalysisExpFolderAS(expFolder) + ":" + device
+End
+
+/// @brief Return the datafolder reference to the sweep config folder of an device and experiment pair
+Function/DF GetAnalysisDeviceConfigFolder(expFolder, device)
+	string expFolder, device
+	return createDFWithAllParents(GetAnalysisDeviceConfigFolderAS(expFolder, device))
+End
+
+/// @brief Return the full path to the sweep config folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:config
+Function/S GetAnalysisDeviceConfigFolderAS(expFolder, device)
+	string expFolder, device
+
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":config"
+End
+
+/// @brief Return the datafolder reference to the labnotebook folder of a device and experiment pair
+Function/DF GetAnalysisLabNBFolder(expFolder, device)
+	string expFolder, device
+	return createDFWithAllParents(GetAnalysisLabNBFolderAS(expFolder, device))
+End
+
+/// @brief Return the full path to the labnotebook folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:labnotebook
+Function/S GetAnalysisLabNBFolderAS(expFolder, device)
+	string expFolder, device
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":labnotebook"
+End
+
+/// @brief Return the datafolder reference to the sweep folder of a device and experiment pair
+Function/DF GetAnalysisSweepPath(expFolder, device)
+	string expFolder, device
+
+	return createDFWithAllParents(GetAnalysisSweepPathAsString(expFolder, device))
+End
+
+/// @brief Return the full path to the sweep folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:sweep
+Function/S GetAnalysisSweepPathAsString(expFolder, device)
+	string expFolder, device
+
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":sweep"
+End
+
+/// @brief Return the datafolder reference to the per sweep folder
+Function/DF GetAnalysisSweepDataPath(expFolder, device, sweep)
+	string expFolder, device
+	variable sweep
+
+	return createDFWithAllParents(GetAnalysisSweepDataPathAS(expFolder, device, sweep))
+End
+
+/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:sweep
+Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
+	string expFolder, device
+	variable sweep
+
+	ASSERT(IsFinite(sweep), "Expected finite sweep number")
+	// folder name starts with X as only liberal names are allowed to start with numbers. And we don't want liberal names.
+	return GetAnalysisSweepPathAsString(expFolder, device) + ":X_" + num2str(sweep)
+End
+
+/// @brief Return the datafolder reference to the stim set folder
+Function/DF GetAnalysisStimSetPath(expFolder, device)
+	string expFolder, device
+
+	return createDFWithAllParents(GetAnalysisStimSetPathAS(expFolder, device))
+End
+
+/// @brief Return the full path to the stim set folder, e.g. root:MIES:Analysis:my_experiment::stimset
+Function/S GetAnalysisStimSetPathAS(expFolder, device)
+	string expFolder, device
+
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
+End
+
+/// @brief Return the text wave mapping the properties of the loaded experiments
+Function/Wave GetExperimentMap()
+
+	DFREF dfr = GetAnalysisFolder()
+
+	Wave/Z/SDFR=dfr/T wv = experimentMap
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE, 3)/T dfr:experimentMap/Wave=wv
+
+	SetDimLabel COLS, 0, ExperimentDiscLocation, wv
+	SetDimLabel COLS, 1, ExperimentName, wv
+	SetDimLabel COLS, 2, ExperimentFolder, wv
+
+	SetNumberInWaveNote(wv, "Index", 0)
+
+	return wv
+End
+
+static Constant NUM_COLUMNS_LIST_WAVE = 11
+
+/// @brief Return the text wave used in the listbox of the experiment browser
+///
+/// The "experiment" column in the second layer maps to the corresponding row in he experimentMap.
+Function/Wave GetExperimentBrowserGUIList()
+
+	DFREF dfr = GetAnalysisFolder()
+
+	Wave/Z/SDFR=dfr/T wv = expBrowserList
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE, 2)/T dfr:expBrowserList/Wave=wv
+
+	SetDimLabel COLS, 0 , $""          , wv
+	SetDimLabel COLS, 1 , experiment   , wv
+	SetDimLabel COLS, 2 , $""          , wv
+	SetDimLabel COLS, 3 , device       , wv
+	SetDimLabel COLS, 4 , '#sweeps'    , wv
+	SetDimLabel COLS, 5 , sweep        , wv
+	SetDimLabel COLS, 6 , '#headstages', wv
+	SetDimLabel COLS, 7 , 'stim sets'  , wv
+	SetDimLabel COLS, 8 , 'set count'  , wv
+	SetDimLabel COLS, 9 , '#DAC'       , wv
+	SetDimLabel COLS, 10, '#ADC'       , wv
+
+	SetNumberInWaveNote(wv, "Index", 0)
+
+	return wv
+End
+
+/// @brief Return the selection wave used in the listbox of the experiment browser
+///
+Function/Wave GetExperimentBrowserGUISel()
+
+	DFREF dfr = GetAnalysisFolder()
+
+	Wave/Z/SDFR=dfr wv = expBrowserSel
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the config wave of a given sweep from the analysis subfolder
+Function/Wave GetAnalysisConfigWave(expFolder, device, sweep)
+	string expFolder, device
+	variable sweep
+
+	Wave/SDFR=GetAnalysisDeviceConfigFolder(expFolder, device) wv = $("Config_Sweep_" + num2str(sweep))
+
+	return wv
+End
+
+/// @brief Return the sweep wave of a given sweep from the analysis subfolder
+Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
+	string expFolder, device
+	variable sweep
+
+	Wave/SDFR=GetAnalysisSweepDataPath(expFolder, device, sweep) wv = $("Sweep_" + num2str(sweep))
+
+	return wv
+End
+///@}
+
+

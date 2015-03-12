@@ -18,10 +18,6 @@ Menu "Mies Panels", dynamic
 		"Data Browser", /Q, Execute "DataBrowser()"
 End
 
-static StrConstant AXIS_BASE            = "col"
-static Constant GRAPH_DIV_SPACING       = 0.03
-static StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
-
 static Function/DF DB_GetDataPath(panelTitle)
 	string panelTitle
 
@@ -152,8 +148,8 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 		WAVE/Z/SDFR=dfr newSweepWave = $("Sweep_" + num2str(newSweep))
 		WAVE/Z/SDFR=dfr currentSweepWave = $("Sweep_" + num2str(currentSweep))
 
-		newWaveDisplayed     = IsWaveDisplayedOnGraph(graph, newSweepWave)
-		currentWaveDisplayed = IsWaveDisplayedOnGraph(graph, currentSweepWave)
+		newWaveDisplayed     = IsWaveDisplayedOnGraph(graph, wv=newSweepWave)
+		currentWaveDisplayed = IsWaveDisplayedOnGraph(graph, wv=currentSweepWave)
 
 		if(newWaveDisplayed && currentWaveDisplayed && !WaveRefsEqual(newSweepWave, currentSweepWave))
 			RemoveTracesFromGraph(graph, wv=currentSweepWave)
@@ -187,19 +183,6 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 	endif
 End
 
-static Function DB_GetRowIndex(wv, value)
-	Wave wv
-	variable value
-
-	FindValue/V=(value) wv
-
-	if(V_Value == -1)
-		return NaN
-	endif
-
-	return V_Value
-End
-
 static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	string panelTitle
 	wave sweep
@@ -212,226 +195,13 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	endif
 
 	Wave/SDFR=dfr config = GetConfigWave(sweep)
-	string ADChannelList = GetADCListFromConfig(config)
-	string DAChannelList = GetDACListFromConfig(config)
-	variable NumberOfDAchannels = ItemsInList(DAChannelList)
-	variable NumberOfADchannels = ItemsInList(ADChannelList)
-	// the max allows for uneven number of AD and DA channels
-	variable numChannels = max(NumberOfDAchannels, NumberOfADchannels)
-	variable DisplayDAChan, axisIndex
-	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
-	variable headstage, red, green, blue, i
-	string axis, trace, adc, dac
-	string configNote = note(config)
-	string unit
-	string graph = DB_GetMainGraph(panelTitle)
-
-	Wave ranges = GetAxesRanges(graph)
-
-	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-		RemoveTracesFromGraph(graph)
-	endif
-
-	DisplayDAChan = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
-	if(DisplayDAChan)
-		ADYaxisSpacing = 0.8 / numChannels
-		DAYaxisSpacing = 0.2 / numChannels
-	else
-		ADYaxisSpacing = 1 / NumberOfADchannels
-	endif
-
-	if(DisplayDAChan)
-		DAYaxisHigh = 1
-		DAYaxisLow  = DAYaxisHigh - DAYaxisSpacing + GRAPH_DIV_SPACING
-		ADYaxisHigh = DAYaxisLow - GRAPH_DIV_SPACING
-		ADYaxisLow  = ADYaxisHigh - ADYaxisSpacing + GRAPH_DIV_SPACING
-	else
-		ADYaxisHigh = 1
-		ADYaxisLow  = 1 - ADYaxisSpacing + GRAPH_DIV_SPACING
-	endif
-
+	string graph         = DB_GetMainGraph(panelTitle)
 	Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 
-	WAVE statusDAC = GetLastSetting(settingsHistory, sweepNo, "DAC")
-	WAVE statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
+	variable displayDAC   = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
+	variable overlaySweep = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
 
-	for(i = 0; i < numChannels; i += 1)
-		if(DisplayDAChan && i < NumberOfDAchannels)
-			YaxisHigh = DAYaxisHigh
-			YaxisLow = DAYaxisLow
-			dac = StringFromList(i, DAChannelList)
-			trace = "DA" + dac
-
-			axis = "col" + num2str(axisIndex)
-			axisIndex += 1
-
-			AppendToGraph/W=$graph/L=$axis sweep[][i]/TN=$trace
-			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
-			unit = StringFromList(i, configNote)
-			Label/W=$graph $axis, trace + "\r(" + unit + ")"
-			ModifyGraph/W=$graph lblPosMode = 1
-			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
-
-			headstage = DB_GetRowIndex(statusDAC, str2num(dac))
-			if(!IsFinite(headstage))
-				// use a different color to tell the user that we can't query the headstage information
-				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-			else
-				GetTraceColor(headstage, red, green, blue)
-			endif
-
-			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
-		endif
-
-		//AD wave to plot
-		YaxisHigh = ADYaxisHigh
-		YaxisLow  = ADYaxisLow
-
-		if(i < NumberOfADchannels)
-			adc = StringFromList(i, ADChannelList)
-			trace = "AD" + adc
-
-			axis = "col" + num2str(axisIndex)
-			axisIndex += 1
-
-			AppendToGraph/W=$graph/L=$axis sweep[][i + NumberOfDAchannels]/TN=$trace
-			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
-			unit = StringFromList(i + NumberOfDAchannels, configNote)
-			Label/W=$graph $axis, trace + "\r(" + unit + ")"
-			ModifyGraph/W=$graph lblPosMode = 1
-			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
-
-			headstage = DB_GetRowIndex(statusADC, str2num(adc))
-			if(!IsFinite(headstage))
-				// use a different color to tell the user that we can't query the headstage information
-				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-			else
-				GetTraceColor(headstage, red, green, blue)
-			endif
-
-			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
-		endif
-
-		if(i >= NumberOfDAchannels)
-			DAYaxisSpacing = 0
-		endif
-
-		if(i >= NumberOfADchannels)
-			ADYaxisSpacing = 0
-		endif
-
-		if(DisplayDAChan)
-			DAYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
-			DAYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
-		endif
-
-		ADYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
-		ADYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
-	endfor
-
-	SetAxesRanges(graph, ranges)
-End
-
-static Function DB_EvenlySpaceAxes(graph, axisBaseName)
-	string graph, axisBaseName
-
-	variable numAxes, axisInc, axisStart, axisEnd, i
-	string axes, axis
-
-	axes    = ListMatch(AxisList(graph), axisBaseName + "*")
-	numAxes = ItemsInList(axes)
-	axisInc = 1 / numAxes
-
-	for(i = numAxes - 1; i >= 0; i -= 1)
-		axis = StringFromList(i, axes)
-		axisStart = GRAPH_DIV_SPACING + axisInc * i
-		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - GRAPH_DIV_SPACING)
-		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
-	endfor
-End
-
-static Function DB_UpdateLegend(graph, [traceList])
-	string graph, traceList
-
-	string str
-	variable numEntries, i
-
-	if(!windowExists(graph))
-		return NaN
-	endif
-
-	if(ParamIsDefault(traceList))
-		TextBox/C/W=$graph/N=text0/F=0 ""
-		return NaN
-	endif
-
-	str = "\\JCHeadstage\r"
-
-	numEntries = ItemsInList(traceList)
-	for(i = 0 ; i < numEntries; i += 1)
-		str += "\\s(" + PossiblyQuoteName(StringFromList(i, traceList)) + ") " + num2str(i + 1)
-		if(mod(i, 2))
-			str += "\r"
-		endif
-	endfor
-
-	str = RemoveEnding(str, "\r")
-	TextBox/C/W=$graph/N=text0/F=2 str
-End
-
-static Function DB_XAxisOfTracesIsTime(graph)
-	string graph
-
-	string list, trace, dataUnits
-
-	list = TraceNameList(graph, ";", 0 + 1)
-
-	// default is time axis
-	if(isEmpty(list))
-		return 1
-	endif
-
-	trace = StringFromList(0, list)
-	dataUnits = WaveUnits(XWaveRefFromTrace(graph, trace), -1)
-
-	return !cmpstr(dataUnits, "dat")
-End
-
-static Function DB_GetKeyWaveParameterAndUnit(panelTitle, entry, parameter, unit, col)
-	string panelTitle, entry
-	string &parameter, &unit
-	variable &col
-
-	variable row, numRows
-	string device
-
-	parameter = ""
-	unit      = ""
-	col       = NaN
-
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-	Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
-
-	if(!WaveExists(keyWave))
-		printf "Could not find keyWave of %s\r", panelTitle
-		return 1
-	endif
-
-	FindValue/TXOP=4/TEXT=entry keyWave
-
-	numRows = DimSize(keywave, ROWS)
-	col = floor(V_value / numRows)
-	row = V_value - col * numRows
-
-	if(V_Value == -1 || row != FindDimLabel(keyWave, ROWS, "Parameter"))
-		printf "Could not find %s in keyWave\r", entry
-		return 1
-	endif
-
-	parameter = keyWave[%Parameter][col]
-	unit      = keyWave[%Units][col]
-
-	return 0
+	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, sweepWave=sweep)
 End
 
 static Function DB_ClearGraph(panelTitle)
@@ -439,7 +209,7 @@ static Function DB_ClearGraph(panelTitle)
 
 	string graph = DB_GetLabNoteBookGraph(panelTitle)
 	RemoveTracesFromGraph(graph)
-	DB_UpdateLegend(graph)
+	UpdateLBGraphLegend(graph)
 End
 
 static Function/WAVE DB_GetSettingsHistory(panelTitle)
@@ -451,19 +221,6 @@ static Function/WAVE DB_GetSettingsHistory(panelTitle)
 	WAVE/SDFR=GetDevSpecLabNBSettHistFolder(device) settingsHistory
 
 	return settingsHistory
-End
-
-/// @brief Set the appropriate label for the bottom axis
-///
-/// Assumes that wave data units are equal for all traces
-static Function DB_SetLabNotebookBottomLabel(graph)
-	string graph
-
-	if(DB_XAxisOfTracesIsTime(graph))
-		Label/W=$graph bottom LABNOTEBOOK_BOTTOM_AXIS_TIME
-	else
-		Label/W=$graph bottom LABNOTEBOOK_BOTTOM_AXIS_SWEEP
-	endif
 End
 
 Window dataBrowser() : Panel
@@ -734,10 +491,7 @@ End
 Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string graph, unit, lbl, axis, trace, popStr, panelTitle
-	string traceList = ""
-	variable sweepNo, i, numEntries, row, col
-	variable red, green, blue, isTimeAxis, sweepCol
+	string graph, popStr, panelTitle, device
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -749,56 +503,16 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 				break
 			endif
 
-			if(DB_GetKeyWaveParameterAndUnit(panelTitle, popStr, lbl, unit, col))
-				break
-			endif
-
-			lbl = LineBreakingIntoParWithMinWidth(lbl)
-
 			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
-			WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
-			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
-			sweepCol   = GetSweepColumn(settingsHistory)
+			device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+			Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
 
-			axis = GetNextFreeAxisName(graph, AXIS_BASE)
-
-			numEntries = DimSize(settingsHistory, LAYERS)
-			for(i = 0; i < numEntries; i += 1)
-
-				trace = CleanupName(lbl + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
-				traceList = AddListItem(trace, traceList, ";", inf)
-
-				if(isTimeAxis)
-					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistoryDat
-				else
-					AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistory[][sweepCol][0]
-				endif
-
-				GetTraceColor(i, red, green, blue)
-				ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
-			endfor
-
-			if(!isEmpty(unit))
-				lbl += "\r(" + unit + ")"
-			endif
-
-			Label/W=$graph $axis lbl
-
-			ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
-			ModifyGraph/W=$graph mode = 3
-			ModifyGraph/W=$graph nticks(bottom) = 10
-
-			DB_SetLabNotebookBottomLabel(graph)
-			DB_EvenlySpaceAxes(graph, AXIS_BASE)
-			DB_UpdateLegend(graph, traceList=traceList)
+			AddTraceToLBGraph(graph, keyWave, settingsHistory, popStr)
 		break
 	endswitch
 
 	return 0
 End
-
-static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
-static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
 static Function DB_SetFormerSweepNumber(panelTitle, sweepNo)
 	string panelTitle
@@ -863,31 +577,20 @@ End
 Function/S DB_GetLabNotebookViewAbleCols(panelTitle)
 	string panelTitle
 
-	string device, list = NONE
-	variable numCols, i
+	string device
 
 	if(!windowExists(panelTitle))
-		return list
+		return NONE
 	endif
 
 	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
 	if(!CmpStr(device, NONE))
-		return list
+		return NONE
 	endif
 
-	Wave/T/Z/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
+	WAVE/T/Z/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
 
-	if(!WaveExists(keyWave))
-		return list
-	endif
-
-	numCols = DimSize(keyWave, COLS)
-	// 2 is the first column in keyWave with data we want to plot
-	for(i = 2; i < numCols; i += 1)
-		list = AddListItem(keyWave[%Parameter][i], list, ";", inf)
-	endfor
-
-	return SortList(list)
+	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
 End
 
 Function/S DB_GetAllDevicesWithData()
@@ -898,47 +601,15 @@ End
 Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string panelTitle, graph, trace, dataUnits, list
-	variable i, numEntries, isTimeAxis, sweepCol
+	string panelTitle, graph
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			panelTitle = ba.win
 			graph      = DB_GetLabNoteBookGraph(panelTitle)
-
-			list = TraceNameList(graph, ";", 0 + 1)
-
-			if(isEmpty(list))
-				break
-			endif
-
 			WAVE settingsHistory = DB_GetSettingsHistory(panelTitle)
-			isTimeAxis = DB_XAxisOfTracesIsTime(graph)
-			sweepCol   = GetSweepColumn(settingsHistory)
 
-			numEntries = ItemsInList(list)
-			for(i = 0; i < numEntries; i += 1)
-				trace = StringFromList(i, list)
-
-				// change from timestamps to sweepNums
-				if(isTimeAxis)
-					ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][sweepCol][0]
-				else // other direction
-					Wave xWave = GetSettingsHistoryDateTime(settingsHistory)
-					ReplaceWave/W=$graph/X trace=$trace, xWave
-				endif
-			endfor
-
-			DB_SetLabNotebookBottomLabel(graph)
-
-			// autoscale all axis after a switch
-			list = AxisList(graph)
-
-			numEntries = ItemsInList(list)
-			for(i = 0; i < numEntries; i += 1)
-				SetAxis/W=$graph/A $StringFromList(i, list)
-			endfor
-
+			SwitchLBGraphXAxis(graph, settingsHistory)
 			break
 	endswitch
 
