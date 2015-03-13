@@ -1390,17 +1390,25 @@ Function ButtonProc_Approach(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			variable PressureMode = 0
-			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
-			if(!P_IsTPActive(ba.win)) // P_PressureControl will be called from TP functions when the TP is running
-				P_PressureControl(ba.win)
-			endif
+			P_SetApproach(ba.win, ba.ctrlName)
 			break
 		case -1: // control being killed
 			break
 	endswitch
 
 	return 0
+End
+
+/// @brief Sets approach state
+///
+/// Handles the TP depency of the approach pressure application
+Function P_SetApproach(panelTitle, cntrlName)
+	string panelTitle, cntrlName
+	variable PressureMode = 0
+	P_UpdatePressureMode(panelTitle, PressureMode, cntrlName, 1)
+	if(!P_IsTPActive(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
+		P_PressureControl(panelTitle)
+	endif
 End
 
 /// @brief Seal button.
