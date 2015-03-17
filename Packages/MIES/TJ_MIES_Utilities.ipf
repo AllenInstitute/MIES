@@ -1589,3 +1589,13 @@ Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
 	ASSERT(WaveExists(indizes), "expected a indizes wave")
 	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End
+
+/// @brief Return the amount of free memory in GB
+///
+/// Due to memory fragmentation you can not assume that you can still create a wave
+/// occupying as much space as returned.
+Function GetFreeMemory()
+	string memStr = StringByKey("FREEMEM", IgorInfo(0))
+
+	return str2num(memStr) / 1024 / 1024 / 1024
+End

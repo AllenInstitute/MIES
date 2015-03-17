@@ -16,6 +16,12 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 /// This regular expression matches all sweep waves
 StrConstant DATA_SWEEP_REGEXP = "(?i)^Sweep_[[:digit:]]+$"
 
+StrConstant UNTITLED_EXPERIMENT           = "Untitled"
+StrConstant PACKED_FILE_EXPERIMENT_SUFFIX = ".pxp"
+
+/// Amount of free memory required to perform data aquisition in GB
+Constant FREE_MEMORY_LOWER_LIMIT = 0.5
+
 /// @name Pressure Control constants
 /// @{
 Constant SAMPLE_INT_MICRO        = 5
@@ -76,7 +82,8 @@ Constant EVENT_MOUSE_UP = 2
 // Conversion factor from ticks to seconds, exact value is 1/60
 Constant TICKS_TO_SECONDS = 0.0166666666666667
 
-StrConstant TRASH_FOLDER_PREFIX = "trash"
+StrConstant TRASH_FOLDER_PREFIX     = "trash"
+StrConstant SIBLING_FILENAME_SUFFIX = "sibling"
 
 ///@name   Parameters for FindIndizes
 ///@anchor FindIndizesProps
