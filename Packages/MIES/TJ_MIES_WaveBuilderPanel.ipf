@@ -576,6 +576,8 @@ static Function WBP_DisplaySetInPanel()
 			ModifyGraph/W=$waveBuilderGraph rgb($entry) = (13056,13056,13056)
 		endif
 	endfor
+	SetAxis/W=$waveBuilderGraph/A/E=3 left
+
 	SetAxesRanges(waveBuilderGraph, ranges)
 End
 
