@@ -268,6 +268,12 @@ Constant MCC_GETSLOWCURRENTINJLEVEL_FUNC = 0x170
 Constant MCC_SETSLOWCURRENTINJSETLT_FUNC = 0x180
 Constant MCC_GETSLOWCURRENTINJSETLT_FUNC = 0x190
 Constant MCC_GETHOLDINGENABLE_FUNC       = 0x200
+Constant MCC_AUTOFASTCOMP_FUNC           = 0x210
+Constant MCC_AUTOSLOWCOMP_FUNC           = 0x220
+Constant MCC_GETFASTCOMPTAU_FUNC         = 0x230
+Constant MCC_GETFASTCOMPCAP_FUNC         = 0x240
+Constant MCC_GETSLOWCOMPTAU_FUNC         = 0x250
+Constant MCC_GETSLOWCOMPCAP_FUNC         = 0x260
 /// @}
 
 /// @brief Generic interface to call MCC amplifier functions
@@ -380,6 +386,24 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 			break
 		case MCC_GETHOLDINGENABLE_FUNC:
 			ret = MCC_GetHoldingEnable()
+			break
+		case MCC_AUTOSLOWCOMP_FUNC:
+			ret = MCC_AutoSlowComp()
+			break
+		case MCC_AUTOFASTCOMP_FUNC:
+			ret = MCC_AutoFastComp()
+			break
+		case MCC_GETFASTCOMPCAP_FUNC:
+			ret = MCC_GetFastCompCap()
+			break
+		case MCC_GETFASTCOMPTAU_FUNC:
+			ret = MCC_GetFastCompTau()
+			break
+		case MCC_GETSLOWCOMPCAP_FUNC:
+			ret = MCC_GetSlowCompCap()
+			break
+		case MCC_GETSLOWCOMPTAU_FUNC:
+			ret = MCC_GetSlowCompTau()
 			break
 		default:
 			ASSERT(0, "Unknown function")
