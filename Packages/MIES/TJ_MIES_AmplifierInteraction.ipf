@@ -1,6 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-///@todo use these constants instead of literal numbers
 Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
