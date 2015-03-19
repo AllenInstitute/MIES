@@ -1272,7 +1272,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 		return wv
 	endif
 
-	Make/N=(51, 100)/O/T dfr:WPT
+	Make/N=(51, 100)/O/T dfr:WPT/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
