@@ -122,9 +122,9 @@ static Function WB_MakeWaveBuilderWave()
 		DeltaLowPassFiltCoefCount  = WP[29][i][type]
 		FIncrement                 = WP[30][i][type]
 
-		if(Duration < 0)
-			Print "User input has generated a negative epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
-			Duration = 1
+		if(duration < 0 || !IsFinite(duration))
+			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
+			duration = 1
 		endif
 
 		//Make correct Wave segment with above parameters
