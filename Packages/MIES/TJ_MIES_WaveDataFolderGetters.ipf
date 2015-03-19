@@ -741,16 +741,18 @@ End
 Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	string panelTitle
 
+	variable versionOfNewWave = 1
+
 	DFREF dfr = GetAmpSettingsFolder()
 
 	// wave's name is like ITC18USB_Dev_0
 	Wave/Z/SDFR=dfr wv = $panelTitle
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/N=(31, 1, NUM_HEADSTAGES) dfr:$panelTitle/Wave=wv
+	Make/N=(31, 1, NUM_HEADSTAGES)/O dfr:$panelTitle/Wave=wv
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
 	SetDimLabel ROWS  , 0 , HoldingPotential      , wv
@@ -762,8 +764,8 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 6 , Prediction            , wv
 	SetDimLabel ROWS  , 7 , RsCompEnable          , wv
 	SetDimLabel ROWS  , 8 , PipetteOffset         , wv
-	SetDimLabel ROWS  , 9 , VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 10, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 9 , FastCapacitanceComp   , wv
+	SetDimLabel ROWS  , 10, SlowCapacitanceComp   , wv
 	SetDimLabel ROWS  , 11, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 12, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 13, VClampPlaceHolder     , wv
@@ -784,6 +786,8 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 28, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 29, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 30, IZeroEnable           , wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End

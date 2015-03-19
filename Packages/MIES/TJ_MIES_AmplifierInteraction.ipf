@@ -527,6 +527,14 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				AmpStorageWave[%PipetteOffset][0][i] = value
 				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
 				break
+			case "button_DataAcq_FastComp_VC":
+				AmpStorageWave[%FastCapacitanceComp][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOFASTCOMP_FUNC, NaN)
+				break
+			case "button_DataAcq_SlowComp_VC":
+				AmpStorageWave[%SlowCapacitanceComp][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOSLOWCOMP_FUNC, NaN)
+				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
 				AmpStorageWave[16][0][i] = value
