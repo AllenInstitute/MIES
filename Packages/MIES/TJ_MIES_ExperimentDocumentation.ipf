@@ -685,3 +685,85 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SavedDataWaveName, SweepCount, panelTitle)
 	endif
 End
+
+/// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function
+Function ITC_TPDocumentation(panelTitle)
+	string panelTitle
+
+	variable sweepNo, RTolerance
+	variable i, j, clampMode, numHS
+	string clampModeString = TP_ClampModeString(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
+	WAVE/SDFR=dfr InstResistance // wave that contains the peak resistance calculation result from the TP
+	WAVE/SDFR=dfr SSResistance // wave that contains the steady state resistance calculation result from the TP
+
+	// 3 rows to hold: Name of parameter; unit of parameter; tolerance of parameter. 3 columns for: BaselineSSAvg; InstResistance; SSResistance.
+	Make/FREE/T/N=(3, 8, 1) TPKeyWave
+	// 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance and 4 more amplifier values.
+	Make/FREE/N=(1, 8, NUM_HEADSTAGES) TPSettingsWave = NaN
+
+	// add data to TPKeyWave
+	TPKeyWave[0][0] = "TP Baseline Vm"  // current clamp
+	TPKeyWave[0][1] = "TP Baseline pA"  // voltage clamp
+	TPKeyWave[0][2] = "TP Peak Resistance"
+	TPKeyWave[0][3] = "TP Steady State Resistance"
+	// same names as in GetAmplifierSettingsKeyWave
+	TPKeyWave[0][4] = "Fast compensation capacitance"
+	TPKeyWave[0][5] = "Slow compensation capacitance"
+	TPKeyWave[0][6] = "Fast compensation time"
+	TPKeyWave[0][7] = "Slow compensation time"
+
+	TPKeyWave[1][0] = "mV"
+	TPKeyWave[1][1] = "pA"
+	TPKeyWave[1][2] = "Mohm"
+	TPKeyWave[1][3] = "Mohm"
+	TPKeyWave[1][4] = "F"
+	TPKeyWave[1][5] = "F"
+	TPKeyWave[1][6] = "s"
+	TPKeyWave[1][7] = "s"
+
+	RTolerance = GetSetVariable(panelTitle, "setvar_Settings_TP_RTolerance")
+	TPKeyWave[2][0] = "1" // Assume a tolerance of 1 mV for V rest
+	TPKeyWave[2][1] = "50" // Assume a tolerance of 50pA for I rest
+	TPKeyWave[2][2] = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
+	TPKeyWave[2][3] = num2str(RTolerance)
+	TPKeyWave[2][4] = "1e-12"
+	TPKeyWave[2][5] = "1e-12"
+	TPKeyWave[2][6] = "1e-6"
+	TPKeyWave[2][7] = "1e-6"
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		clampMode = str2num(StringFromList(j, clampModeString))
+		if(clampMode == V_CLAMP_MODE)
+			TPSettingsWave[0][4][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN)
+			TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN)
+			TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN)
+			TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN)
+			TPSettingsWave[0][1][i] = BaselineSSAvg[0][j]
+		else
+			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j]
+		endif
+
+		TPSettingsWave[0][2][i] = InstResistance[0][j]
+		TPSettingsWave[0][3][i] = SSResistance[0][j]
+		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active headstage (no place holder columns), j only increments for active headstages.
+	endfor
+
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	WAVE/Z sweepData = GetSweepWave(panelTitle, sweepNo)
+
+	if(!WaveExists(sweepData))
+		// adds to settings history wave if no data has been acquired
+		ED_createWaveNotes(TPSettingsWave, TPKeyWave, "", NaN, panelTitle)
+	else
+		ED_createWaveNotes(TPSettingsWave, TPKeyWave, GetWavesDataFolder(sweepData, 2), sweepNo, panelTitle)
+	endif
+End

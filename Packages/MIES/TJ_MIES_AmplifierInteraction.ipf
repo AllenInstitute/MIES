@@ -771,6 +771,11 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 			// Save the whole cell comp resist value in column 9
 			ampSettingsWave[0][9][i] =  (MCC_GetWholeCellCompResist() * 1e-6) // V-Clamp Whole Cell Comp Resist, Converts Ohms to MOhms
 
+			ampSettingsWave[0][39][i] = MCC_GetFastCompCap() // V-Clamp Fast cap compensation
+			ampSettingsWave[0][40][i] = MCC_GetSlowCompCap() // V-Clamp Slow cap compensation
+			ampSettingsWave[0][41][i] = MCC_GetFastCompTau() // V-Clamp Fast compensation tau
+			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau() // V-Clamp Slow compensation tau
+
 		elseif (ChannelClampMode[i][0] == I_CLAMP_MODE)
 			// Save the i clamp holding enabled in column 10
 			ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable

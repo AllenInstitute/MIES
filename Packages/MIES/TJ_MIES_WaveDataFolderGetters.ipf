@@ -802,7 +802,7 @@ End
 Function/WAVE GetAmplifierSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/Z/SDFR=dfr wv = ampSettings
@@ -811,7 +811,7 @@ Function/WAVE GetAmplifierSettingsWave(panelTitle)
 		return wv
 	endif
 
-	Make/O/N=(1,39, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
+	Make/O/N=(1,43, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -831,7 +831,7 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	string panelTitle
 	dfref dfr = GetAmpSettingsFolder()
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
@@ -840,7 +840,7 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/O/N=(3, 39) dfr:ampSettingsKey/Wave=wv
+	Make/T/O/N=(3, 43) dfr:ampSettingsKey/Wave=wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -1003,6 +1003,22 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	wv[0][38] =  "Slow current injection settling time"
 	wv[1][38] =  "s"
 	wv[2][38] =  ""
+
+	wv[0][39] =  "Fast compensation capacitance"
+	wv[1][39] =  "F"
+	wv[2][39] =  ""
+
+	wv[0][40] =  "Slow compensation capacitance"
+	wv[1][40] =  "F"
+	wv[2][40] =  ""
+
+	wv[0][41] =  "Fast compensation time"
+	wv[1][41] =  "s"
+	wv[2][41] =  ""
+
+	wv[0][42] =  "Slow compensation time"
+	wv[1][42] =  "s"
+	wv[2][42] =  ""
 
 	SetWaveVersion(wv, versionOfNewWave)
 
