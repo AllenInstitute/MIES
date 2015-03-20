@@ -337,7 +337,6 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
 			MCC_AutoBridgeBal()
 			ret = MCC_GetBridgeBalResist() * 1e-6
-			print ret
 			break
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
