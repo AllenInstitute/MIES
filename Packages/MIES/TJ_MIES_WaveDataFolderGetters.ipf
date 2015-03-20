@@ -447,28 +447,37 @@ End
 ///
 /// Rows:
 /// - 0: Parameter Name
+/// - 0: Parameter Unit
+/// - 0: Parameter Tolerance
 ///
 /// Columns:
 /// - 0: Sweep Number
 /// - 1: Time Stamp
+/// - other columns are filled at runtime
 Function/Wave GetTextDocKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
+	variable versionOfNewWave = 1
+
 	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/T/N=(1,INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
+	Make/O/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
 	wv = ""
 
 	wv[0][0] = "Sweep #"
 	wv[0][1] = "Time Stamp"
 
-	SetDimLabel 0, 0, Parameter, wv
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End

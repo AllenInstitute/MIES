@@ -707,11 +707,9 @@ End
 /// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_createWaveNotes
 ///
 /// @param panelTitle 		 device
-/// @param savedDataWaveName wave name that the wavenotes will be amended to
 /// @param sweepNo           data wave sweep number
-Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
+Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string panelTitle
-	string savedDataWaveName
 	variable sweepNo
 
 	variable numHS, i, axonSerial, channel
@@ -829,9 +827,9 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 		// new parameters
 		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
 	endfor
-	
+
 	// now call the function that will create the wave notes	
-	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, savedDataWaveName, sweepNo, panelTitle)
+	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle)
 END
 
 /// Brief description of the function AI_createAmplifierTextDocWave
@@ -851,13 +849,11 @@ END
 ///
 /// Incoming parameters
 /// @param panelTitle -- the calling panel name, used for finding the right folder to save data in.
-/// @param SavedDataWaveName -- the wave name that the wavenotes will be amended to.
 /// @param SweepCount -- the current data wave sweep number
 /// 
 /// The function will take text input from the user, in a manner yet to be determined, and append them to the savedDataWave
-function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepCount)
+function AI_createAmpliferTextDocWave(panelTitle, SweepCount)
 	string panelTitle
-	string SavedDataWaveName
 	Variable SweepCount
 	
 	dfref ampdfr = GetAmpSettingsFolder()
@@ -913,15 +909,14 @@ function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepCount)
 			ampTextDocWave[0][textDocColCounter][textDocLayerCounter] = textDocText
 		endfor
 	endfor
-	
+
 	// call the function to create the text notes
-	ED_createTextNotes(ampTextDocWave, ampTextDocKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createTextNotes(ampTextDocWave, ampTextDocKey, SweepCount, panelTitle)
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
-function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepCount)
+function createDummySettingsWave(panelTitle, SweepCount)
 	string panelTitle
-	string SavedDataWaveName
 	Variable SweepCount
 
 	// Location for the settings wave
@@ -986,7 +981,7 @@ function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepCount)
 	endfor
 	
 	// now call the function that will create the wave notes	
-	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle)
 	
 End
 

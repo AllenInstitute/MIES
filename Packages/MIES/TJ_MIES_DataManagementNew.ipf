@@ -25,9 +25,9 @@ Function DM_SaveITCData(panelTitle)
 	ED_AppendCommentToDataWave(dataWave, panelTitle) // adds user comments as wave note
 
 	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
-		AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
+		AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		// function for debugging
-		// createDummySettingsWave(panelTitle, SavedDataWaveName, SweepNo)
+		// createDummySettingsWave(panelTitle, SweepNo)
 	endif
 	
 	// Adding in the post sweep analysis function here
@@ -45,10 +45,10 @@ Function DM_SaveITCData(panelTitle)
 	DM_DAScaling(dataWave, panelTitle)
 
 	//Add wave notes for the stim wave name and scale factor
-	ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepNo)
+	ED_createWaveNoteTags(panelTitle, sweepNo)
 
 	//Add wave notes for the factors on the Asyn tab
-	ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepNo)
+	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
 End
 
 Function DM_CreateScaleTPHoldingWave(panelTitle)
