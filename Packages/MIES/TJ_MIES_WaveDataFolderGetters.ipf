@@ -2523,7 +2523,7 @@ Function/Wave GetExperimentMap()
 	SetDimLabel COLS, 1, ExperimentName, wv
 	SetDimLabel COLS, 2, ExperimentFolder, wv
 
-	SetNumberInWaveNote(wv, "Index", 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End
@@ -2555,7 +2555,7 @@ Function/Wave GetExperimentBrowserGUIList()
 	SetDimLabel COLS, 9 , '#DAC'       , wv
 	SetDimLabel COLS, 10, '#ADC'       , wv
 
-	SetNumberInWaveNote(wv, "Index", 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End

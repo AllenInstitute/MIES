@@ -85,6 +85,8 @@ Constant TICKS_TO_SECONDS = 0.0166666666666667
 StrConstant TRASH_FOLDER_PREFIX     = "trash"
 StrConstant SIBLING_FILENAME_SUFFIX = "sibling"
 
+StrConstant NOTE_INDEX = "Index"
+
 ///@name   Parameters for FindIndizes
 ///@anchor FindIndizesProps
 ///@{

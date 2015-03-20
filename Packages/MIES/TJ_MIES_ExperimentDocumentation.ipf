@@ -47,7 +47,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 		SetDimLabel COLS, 0, SweepNum, settingsHistory
 		SetDimLabel COLS, 1, TimeStamp, settingsHistory
 
-		SetNumberInWaveNote(settingsHistory, "Index", 0)
+		SetNumberInWaveNote(settingsHistory, NOTE_INDEX, 0)
 	endif
 
 	ASSERT(DimSize(incomingSettingsWave, LAYERS) <= DimSize(settingsHistory, LAYERS), "Unexpected large layer count in the incoming settings wave")
@@ -90,7 +90,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 		settingsHistory[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingSettingsWave[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(settingsHistory, "Index", rowIndex + 1)
+	SetNumberInWaveNote(settingsHistory, NOTE_INDEX, rowIndex + 1)
 
 	SetDimensionLabels(keyWave, settingsHistory)
 	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
@@ -293,7 +293,7 @@ static Function/Wave FindIndizesAndRedimensionWaves(incomingKey, key, values, ro
 		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
 	endif
 
-	rowIndex = GetNumberFromWaveNote(values, "Index")
+	rowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
 	if(!IsFinite(rowIndex))
 		// old waves don't have that info
 		// use the last row
@@ -355,7 +355,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 		textDocWave[rowIndex][indizes[i]][] = incomingTextDocWave[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(textDocWave, "Index", rowIndex + 1)
+	SetNumberInWaveNote(textDocWave, NOTE_INDEX, rowIndex + 1)
 
 	SetDimensionLabels(textDocKeyWave, textDocWave)
 
