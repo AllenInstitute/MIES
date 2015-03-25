@@ -4608,9 +4608,9 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	if(DataAcqState)
 		DataAcqState = 0
-		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif
 
+	DAP_StopButtonToAcqDataButton(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
