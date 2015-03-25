@@ -341,7 +341,7 @@ Function ITC_TestPulseFunc(s)
 	Execute cmd
 	DM_CreateScaleTPHoldingWave(panelTitle)
 	TP_ClampModeString(panelTitle)
-	TP_Delta(panelTitle, WavePath + ":TestPulse")
+	TP_Delta(panelTitle)
 
 	if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 		SCOPE_UpdateGraph(panelTitle)
@@ -550,7 +550,7 @@ Function ITC_StartTestPulse(panelTitle)
 		Execute cmd
 		DM_CreateScaleTPHoldingWave(panelTitle)
 		TP_ClampModeString(panelTitle)
-		TP_Delta(panelTitle, WavePath + ":TestPulse") 
+		TP_Delta(panelTitle)
 		DoUpdate/W=$oscilloscopeSubwindow
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 		Execute cmd
