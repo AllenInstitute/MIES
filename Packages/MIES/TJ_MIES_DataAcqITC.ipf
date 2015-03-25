@@ -1,8 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// Interval in iterations between the switch from live update false to true
-Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
-
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
 	int32 count ///< Number of invocations of background function

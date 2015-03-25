@@ -76,6 +76,15 @@ Constant COUNTOBJECTS_STR        = 3
 Constant COUNTOBJECTS_DATAFOLDER = 4
 /// @}
 
+/// @name Control types from ControlInfo
+/// @{
+Constant CONTROL_TYPE_CHECKBOX    = 2
+Constant CONTROL_TYPE_POPUPMENU   = 3
+Constant CONTROL_TYPE_VALDISPLAY  = 4
+Constant CONTROL_TYPE_SETVARIABLE = 5
+Constant CONTROL_TYPE_SLIDER      = 7
+/// @}
+
 /// See "Control Structure eventMod Field"
 Constant EVENT_MOUSE_UP = 2
 
@@ -132,3 +141,57 @@ StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 Constant SAVE_AND_CLEAR            = 0x01
 Constant SAVE_AND_SPLIT            = 0x02
 /// @}
+
+/// @name Constants for DC_ConfigureDataForITC
+/// @{
+Constant DATA_ACQUISITION_MODE = 0
+Constant TEST_PULSE_MODE       = 1
+/// @}
+
+/// @name Constants for three Amplifier modes
+/// @{
+Constant V_CLAMP_MODE      = 0
+Constant I_CLAMP_MODE      = 1
+Constant I_EQUAL_ZERO_MODE = 2
+/// @}
+
+/// @name Possible values for the function parameter of AI_SendToAmp
+/// @anchor AI_SendToAmpConstants
+/// @{
+Constant MCC_SETHOLDING_FUNC             = 0x001
+Constant MCC_GETHOLDING_FUNC             = 0x002
+Constant MCC_SETHOLDINGENABLE_FUNC       = 0x004
+Constant MCC_SETWHOLECELLCOMPCAP_FUNC    = 0x008
+Constant MCC_SETWHOLECELLCOMPRESIST_FUNC = 0x010
+Constant MCC_SETWHOLECELLCOMPENABLE_FUNC = 0x020
+Constant MCC_SETRSCOMPCORRECTION_FUNC    = 0x030
+Constant MCC_SETRSCOMPPREDICTION_FUNC    = 0x040
+Constant MCC_SETRSCOMPENABLE_FUNC        = 0x050
+Constant MCC_AUTOBRIDGEBALANCE_FUNC      = 0x060
+Constant MCC_SETBRIDGEBALRESIST_FUNC     = 0x070
+Constant MCC_SETBRIDGEBALENABLE_FUNC     = 0x080
+Constant MCC_SETNEUTRALIZATIONCAP_FUNC   = 0x090
+Constant MCC_SETNEUTRALIZATIONENABL_FUNC = 0x100
+Constant MCC_AUTOPIPETTEOFFSET_FUNC      = 0x110
+Constant MCC_SETPIPETTEOFFSET_FUNC       = 0x120
+Constant MCC_GETPIPETTEOFFSET_FUNC       = 0x130
+Constant MCC_SETSLOWCURRENTINJENABL_FUNC = 0x140
+Constant MCC_GETSLOWCURRENTINJENABL_FUNC = 0x150
+Constant MCC_SETSLOWCURRENTINJLEVEL_FUNC = 0x160
+Constant MCC_GETSLOWCURRENTINJLEVEL_FUNC = 0x170
+Constant MCC_SETSLOWCURRENTINJSETLT_FUNC = 0x180
+Constant MCC_GETSLOWCURRENTINJSETLT_FUNC = 0x190
+Constant MCC_GETHOLDINGENABLE_FUNC       = 0x200
+Constant MCC_AUTOFASTCOMP_FUNC           = 0x210
+Constant MCC_AUTOSLOWCOMP_FUNC           = 0x220
+Constant MCC_GETFASTCOMPTAU_FUNC         = 0x230
+Constant MCC_GETFASTCOMPCAP_FUNC         = 0x240
+Constant MCC_GETSLOWCOMPTAU_FUNC         = 0x250
+Constant MCC_GETSLOWCOMPCAP_FUNC         = 0x260
+/// @}
+
+Constant CHECKBOX_SELECTED     = 1
+Constant CHECKBOX_UNSELECTED   = 0
+
+/// Interval in iterations between the switch from live update false to true
+Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
