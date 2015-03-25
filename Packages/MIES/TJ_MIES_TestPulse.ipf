@@ -418,23 +418,27 @@ Function TP_Delta(panelTitle)
 	// the first row will hold the value of the most recent TP,
 	// the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
 	if(tpBufferSize > 1)
-		// ** does not clear TP buffer wave each time TP is started by the user
-		Make/O/N=(tpBufferSize, columns) dfr:TPBaselineBuffer/Wave=TPBaselineBuffer
+		WAVE/SDFR=dfr TPBaselineBuffer
 		MatrixOp/O TPBaselineBuffer = rotaterows(TPBaselineBuffer, 1)
 		TPBaselineBuffer[0][] = BaselineSSAvg[0][q]
-		MatrixOp/O BaselineSSAvg = sumcols(TPBaselineBuffer)
+		// the comparison a == a evaluates to false iff a = NaN
+		// therefore we can extract all non-NaN values
+		Extract/FREE TPBaselineBuffer, filledBuffer, TPBaselineBuffer == TPBaselineBuffer
+		MatrixOp/O BaselineSSAvg = sumcols(filledBuffer)
 		BaselineSSAvg /= tpBufferSize
 
-		Make/O/N=(tpBufferSize, columns) dfr:TPInstBuffer/Wave=TPInstBuffer
+		WAVE/SDFR=dfr TPInstBuffer
 		MatrixOp/O TPInstBuffer = rotaterows(TPInstBuffer, 1)
 		Multithread TPInstBuffer[0][] = InstResistance[0][q]
-		MatrixOp/O InstResistance = sumcols(TPInstBuffer)
+		Extract/FREE InstResistance, filledBuffer, InstResistance == InstResistance
+		MatrixOp/O InstResistance = sumcols(filledBuffer)
 		InstResistance /= tpBufferSize
 
-		Make/O/N=(tpBufferSize, columns) dfr:TPSSBuffer/Wave=TPSSBuffer
+		WAVE/SDFR=dfr TPSSBuffer
 		MatrixOp/O TPSSBuffer = rotaterows(TPSSBuffer, 1)
 		Multithread TPSSBuffer[0][] = SSResistance[0][q]
-		MatrixOp/O SSResistance = sumcols(TPSSBuffer)
+		Extract/FREE SSResistance, filledBuffer, SSResistance == SSResistance
+		MatrixOp/O SSResistance = sumcols(filledBuffer)
 		SSResistance /= tpBufferSize
 	endif
 
