@@ -351,7 +351,7 @@ Function TangoCommandInput(cmdString)
 	
 	// parse out the cmd_id from the input cmdString
 	variable cmdNumber
-	string cmdID
+	variable cmdID
 	string cmdPortion
 	string igorCmd
 	cmdNumber = ItemsInList(cmdString)
@@ -359,7 +359,9 @@ Function TangoCommandInput(cmdString)
 	// the first portion of the cmdString should be the "cmd_id:<id>"
 	cmdPortion = StringFromList(0, cmdString)
 	// now parse out the cmd_id
-	sscanf cmdPortion, "cmd_id:%s", cmdID
+	sscanf cmdPortion, "cmd_id:%d", cmdID
+	
+	print "cmdID: ", cmdID
 	
 	// the second portion of the cmdString should be the "cmd_string"
 	igorCmd = StringFromList(1, cmdString)
@@ -369,13 +371,14 @@ Function TangoCommandInput(cmdString)
 	print "igorCmdPortion: ", igorCmdPortion
 	// and append the cmdNumber and the trailing ")"
 	string completeIgorCommand
-	sprintf completeIgorCommand, "%s,%s)", igorCmdPortion, num2str(cmdNumber)
+	sprintf completeIgorCommand, "%s, cmdID=%d)", igorCmdPortion, cmdID
 	
+	print "completeIgorCommand: ", completeIgorCommand
 	// now call the command 
 	Execute/Z completeIgorCommand
 	if (V_Flag != 0)
 		print "Unable to run command....check command syntax..."
-		writeAck(cmdID, "-1")
+		writeAck(cmdID, -1)
 	else
 		print "Command ran successfully..."
 //		writeLog("Mies command ran successfully....")
@@ -404,7 +407,7 @@ End
 /// @brief Save Mies Experiment as a packed experiment
 Function TangoSave(saveFileName, [cmdID])
 	string saveFileName
-	string cmdID
+	variable cmdID
 	
 	//save as packed experiment
 	SaveExperiment/C/F={1,"",2}/P=home as saveFileName + ".pxp"
@@ -412,7 +415,7 @@ Function TangoSave(saveFileName, [cmdID])
 	
 	// determine if the cmdID was provided
 	if (ParamIsDefault(cmdID) == 0)
-		writeAck(cmdID, "1")
+		writeAck(cmdID, 1)
 	endif
 End
 
@@ -837,9 +840,9 @@ Function/S TI_runAPResult(headstage, [cmdID])
 End
 
 ///@brief routine to be called from the WSE to start and stop the test pulse
-Function/S TI_runTestPulse(tpCmd, [cmdID])
+Function TI_runTestPulse(tpCmd, [cmdID])
 	variable tpCmd
-	string cmdID
+	variable cmdID
 	
 	print "cmdID: ", cmdID
 	
@@ -849,7 +852,7 @@ Function/S TI_runTestPulse(tpCmd, [cmdID])
 	
 	variable n
 	string currentPanel
-	string returnString
+	variable returnValue
 	for (n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
 
@@ -865,23 +868,23 @@ Function/S TI_runTestPulse(tpCmd, [cmdID])
 			
 			TP_ButtonProc_DataAcq_TestPulse(ba)
 			
-			returnString = "RETURN: 1"
+			returnValue = 1
 		elseif(tpCmd == 0) // Turn off the test pulse
 			ITC_STOPTestPulse(currentPanel)
 			ITC_TPDocumentation(currentPanel) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
-			returnString = "RETURN: 0"
+			returnValue = 0
 		else
-			returnString = "RETURN: -1"
+			returnValue = -1
 		endif
 	endfor
 	
-	return returnString
+	writeAck(cmdID, returnValue)
 END
 
 
 ///@brief Routine to test starting and stopping acquisition by remotely hitting the start/stop button on the DA_Ephys panel
 Function TI_runStopStart([cmdID])
-	string cmdID
+	variable cmdID
 	
 	// get the da_ephys panel names
 	string lockedDevList = DAP_ListOfLockedDevs()
@@ -907,21 +910,20 @@ Function TI_runStopStart([cmdID])
 	
 	// determine if the cmdID was provided
 	if (ParamIsDefault(cmdID) == 0)
-		writeAck(cmdID, "1")
+		writeAck(cmdID, 1)
 	endif
-	
-	return 1
 End
 
 /// @brief function to write the acknowledgement string back to the WSE
 Function writeAck(cmdID, returnValue)
-	String cmdID
-	String returnValue
+	Variable cmdID
+	Variable returnValue
 	
 	String logMessage
 		
 	// put the response string together...
-	sprintf logMessage, "cmd_id:%s;response:0", cmdID 
+	sprintf logMessage, "cmd_id:%d;response:%d", cmdID, returnValue 
+	print "logMessage: ", logMessage
 	
 	//- function arg: the name of the device on which the commands will be executed 
 	String dev_name = "mies_device/MiesDevice/test"
@@ -989,14 +991,14 @@ End
 
 /// @brief function to allow for writing async responses back to the WSE
 Function writeAsyncResponse(cmdID, returnString)
-	String cmdID
+	variable cmdID
 	String returnString
 	
 	String responseMessage	
 	variable numberOfReturnItems = ItemsInList(returnString)
 	
 	// put the response string together...
-	sprintf logMessage, "cmd_id:%s;%d;%s", cmdID, numberOfReturnItems, returnString
+	sprintf logMessage, "cmd_id:%d;%d;%s", cmdID, numberOfReturnItems, returnString
 	
 	//- function arg: the name of the device on which the commands will be executed 
 	String dev_name = "mies_device/MiesDevice/test"
