@@ -4570,13 +4570,8 @@ End
 /// Should be used if `Multi Device Support` is not checked
 Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string countPath = WavePath + ":Count"
-	NVAR count = $countPath
-	
 
 	string cmd
-	variable maxSweeps
 
 	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
 		ITC_STOPTestPulse(panelTitle)
@@ -4601,11 +4596,13 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 
 		DM_ScaleITCDataWave(panelTitle)
-	else // adding the elseif to force a stop if invoked during a 'down' time, with nothing happening.
-		// get the set number of SweepsActiveSet
-		maxSweeps = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+	else
+		// force a stop if invoked during a 'down' time, with nothing happening.
+		NVAR/Z/SDFR=GetDevicePath(panelTitle) count
 
-		count = maxSweeps
+		if(NVAR_Exists(count))
+			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+		endif
 	endif
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
