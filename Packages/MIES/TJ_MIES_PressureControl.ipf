@@ -29,6 +29,7 @@ static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
 static Constant		MAX_REGULATOR_PRESSURE			= 10
 static Constant		MIN_REGULATOR_PRESSURE			= -10
+static Constant		ATMOSPHERIC_PRESSURE				= 0
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -133,7 +134,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	P_UpdateSSRSlopeAndSSR(panelTitle) // update the resistance values used to assess seal changes
 	variable resistance = PressureDataWv[headStage][%LastResistanceValue]
 	variable pressure = PressureDataWv[headStage][%LastPressureCommand]
-
+	variable targetPressure
 	// if the seal resistance is greater that 1 giga ohm set pressure to atmospheric AND stop sealing process
 	if(Resistance >= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
@@ -150,13 +151,19 @@ Function P_MethodSeal(panelTitle, headStage)
 		print "Seal on head stage:", headstage
 	else // no seal, start, hold, or increment negative pressure
 		// if there is no neg pressure, apply starting pressure.
-		if(PressureDataWv[headStage][%LastPressureCommand] > PressureDataWv[headStage][%PSI_SealInitial])
-			PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, PressureDataWv[headStage][%PSI_SealInitial]) // column 26 is the last pressure command, column 13 is the starting seal pressure
-			pressure = PressureDataWv[headStage][%PSI_SealInitial]
-			PressureDataWv[headStage][%LastPressureCommand] = PressureDataWv[headStage][%PSI_SealInitial]
-			PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
-			P_UpdateTTLstate(panelTitle, headStage, 1) // give pressure regulator access to pipette by opening TTL
-			print "starting seal"
+			if(PressureDataWv[headStage][%LastPressureCommand] > PressureDataWv[headStage][%PSI_SealInitial])
+			if(PressureDataWv[headStage][%SealAtm])
+				targetPressure = ATMOSPHERIC_PRESSURE
+				P_MethodAtmospheric(panelTitle, headstage)
+			else
+				targetPressure = PressureDataWv[headStage][%PSI_SealInitial]
+				PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetPressure) // column 26 is the last pressure command, column 13 is the starting seal pressure
+				pressure = targetPressure
+				PressureDataWv[headStage][%LastPressureCommand] = targetPressure
+				PressureDataWv[headStage][%RealTimePressure] = targetPressure
+				P_UpdateTTLstate(panelTitle, headStage, 1) // give pressure regulator access to pipette by opening TTL
+				print "starting seal"
+			endif
 		endif
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
 		// print ElapsedTimeInSeconds
@@ -169,7 +176,13 @@ Function P_MethodSeal(panelTitle, headStage)
 				if(pressure > (0.98 *PressureDataWv[headStage][%PSI_SealMax])) // is the pressure beign applied less than the maximum allowed?
 					print "resistance is not going up fast enough"
 					print "updated seal pressure =", pressure - 0.1
-					PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, (pressure - 0.1)) // increase the negative pressure by 0.1 psi
+					if(PressureDataWv[headStage][%LastPressureCommand] == 0)
+						targetPressure = PressureDataWv[headStage][%PSI_SealInitial]
+						P_UpdateTTLstate(panelTitle, headStage, 1) // open the TTL/switch to regulator now since it was at atmospheric pressure
+					else
+						targetPressure = pressure - 0.1
+					endif
+					PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetPressure) // increase the negative pressure by 0.1 psi
 					PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 				else // max neg pressure has been reached and resistance has stabilized
 					print "pressure is at max neg value"
