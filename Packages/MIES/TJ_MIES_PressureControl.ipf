@@ -587,9 +587,9 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 End
 
 /// @brief Updates the pressure state (approach, seal, break in, or clear) from DA_Ephys panel to the pressureData wave
-Function P_UpdatePressureDataStorageWv(panelTitle)
+Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter
 	string 	panelTitle
-	variable 	headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
+	variable 	headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	string 	deviceType, deviceNum
 
@@ -615,7 +615,9 @@ Function P_UpdatePressureDataStorageWv(panelTitle)
 	PressureDataWv[][%ManSSPressure]				= GetSetVariable			(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%ManPPPressure]				= GetSetVariable			(panelTitle, "setvar_DataAcq_PPPressure")
 	PressureDataWv[][%ManPPDuration]				= GetSetVariable			(panelTitle, "setvar_DataAcq_PPDuration")
-
+	PressureDataWv[][%ApproachNear]					= GetCheckBoxState		(panelTitle, "check_DatAcq_ApproachNear")
+	PressureDataWv[][%SealAtm]						= GetCheckBoxState		(panelTitle, "check_DatAcq_SealAtm")
+	
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
 	PressureDataTxtWv[headStageNo][%ITC_Device] = SelectedITCDevice
@@ -1564,6 +1566,7 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			Variable checked = cba.checked
+			P_UpdatePressureDataStorageWv(cba.win)
 			break
 		case -1: // control being killed
 			break
@@ -1578,6 +1581,7 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			Variable checked = cba.checked
+			P_UpdatePressureDataStorageWv(cba.win)
 			break
 		case -1: // control being killed
 			break
