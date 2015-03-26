@@ -351,6 +351,16 @@ Function/Wave GetConfigWave(sweepWave)
 	return config
 End
 
+/// @brief Returns the, possibly non existing, sweep data wave for the given sweep number
+Function/Wave GetSweepWave(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
+
+	return wv
+End
+
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
 Function GetSamplingInterval(sweepWave)

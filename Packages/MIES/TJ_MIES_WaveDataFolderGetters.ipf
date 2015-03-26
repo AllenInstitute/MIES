@@ -1,6 +1,17 @@
 #pragma rtGlobals=3
 
-static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17 
+/// @file TJ_MIES_WaveDataFolderGetters.ipf
+///
+/// @brief Collection of Wave and Datafolder getter functions
+///
+/// - All functions with return types `DF` or `Wave` return an existing wave or datafolder.
+/// - Prefer functions which return a `DFREF` over functions which return strings.
+///   The latter ones are only useful if you need to know if the folder exists.
+/// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
+
+static Constant NUM_COLUMNS_LIST_WAVE   = 11
+static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17
+static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
@@ -64,6 +75,7 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 End
 
 /// @name Wave versioning support
+/// @anchor WaveVersioningSupport
 ///
 /// The wave getter functions always return an existing wave.
 /// This can result in problems if the layout of the wave changes.
@@ -105,7 +117,6 @@ End
 /// - Rule of thumb: Raise the version if you change anything in or below the `Make` line above
 /// - Wave versioning needs a special wave note style, see @ref GetNumberFromWaveNote
 /// @{
-static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
 /// @brief Check if wv exists and has the correct version
 static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
@@ -124,6 +135,7 @@ static Function SetWaveVersion(wv, val)
 	ASSERT(val > 0 && IsInteger(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
 End
+
 /// @}
 
 /// @brief Return a wave reference to the channel clamp mode wave
@@ -155,6 +167,98 @@ Function/Wave GetChannelClampMode(panelTitle)
 
 	return wv
 End
+
+/// @brief Return the ITC devices folder "root:mies:ITCDevices"
+Function/DF GetITCDevicesFolder()
+
+	return createDFWithAllParents(GetITCDevicesFolderAsString())
+End
+
+/// @brief Return a data folder reference to the ITC devices folder
+Function/S GetITCDevicesFolderAsString()
+
+	return GetMiesPathAsString() + ":ITCDevices"
+End
+
+/// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
+Function/DF GetActiveITCDevicesTimerFolder()
+
+	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
+End
+
+/// @brief Return a data folder reference to the active ITC devices timer folder
+Function/S GetActiveITCDevicesTimerAS()
+
+	return GetActiveITCDevicesFolderAS() + ":Timer"
+End
+
+/// @brief Return the active ITC devices folder "root:mies:ITCDevices:ActiveITCDevices"
+Function/DF GetActiveITCDevicesFolder()
+
+	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
+End
+
+/// @brief Return a data folder reference to the active ITC devices folder
+Function/S GetActiveITCDevicesFolderAS()
+
+	return GetITCDevicesFolderAsString() + ":ActiveITCDevices"
+End
+
+/// @brief Return a datafolder reference to the device type folder
+Function/DF GetDeviceTypePath(deviceType)
+	string deviceType
+	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
+End
+
+/// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
+Function/S GetDeviceTypePathAsString(deviceType)
+	string deviceType
+
+	return GetITCDevicesFolderAsString() + ":" + deviceType
+End
+
+/// @brief Return a datafolder reference to the device folder
+Function/DF GetDevicePath(panelTitle)
+	string panelTitle
+	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
+End
+
+/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
+Function/S GetDevicePathAsString(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
+		Abort "Invalid/Non-locked paneltitle"
+	endif
+
+	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
+End
+
+/// @brief Return a datafolder reference to the device data folder
+Function/DF GetDeviceDataPath(panelTitle)
+	string panelTitle
+	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
+End
+
+/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:Data
+Function/S GetDeviceDataPathAsString(panelTitle)
+	string panelTitle
+	return GetDevicePathAsString(panelTitle) + ":Data"
+End
+
+/// @brief Returns a data folder reference to the mies base folder
+Function/DF GetMiesPath()
+	return createDFWithAllParents(GetMiesPathAsString())
+End
+
+/// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
+Function/S GetMiesPathAsString()
+	return "root:MIES"
+End
+
+/// @name Experiment Documentation
+/// @{
 
 /// @brief Returns a wave reference to the SweepData
 ///
@@ -218,9 +322,6 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 
 	return wv
 End
-
-/// @name Experiment Documentation
-/// @{
 
 /// @brief Return the datafolder reference to the lab notebook
 Function/DF GetLabNotebookFolder()
@@ -310,72 +411,6 @@ Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation"
 End
 
-/// @brief Returns device specific pressure folder as string
-Function/S P_GetDevicePressureFolderAS(panelTitle)
-	string panelTitle
-
-	string 	DeviceNumber 	
-	string 	DeviceType 	
-	ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	string 	FolderPathString
-	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" GetMiesPathAsString(), DeviceType, DeviceNumber
-	return FolderPathString
-End
-
-/// @brief Creates ITC device specific pressure folder - used to store data for pressure regulators
-Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
-	string 	panelTitle
-	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
-End
-
-/// @brief Returns pressure folder as string
-Function/S P_GetPressureFolderAS(panelTitle)
-	string panelTitle
-	return GetMiesPathAsString() + ":Pressure"
-End
-
-/// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
-Function/DF P_PressureFolderReference(panelTitle)
-	string panelTitle
-	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
-End
-
-/// @brief Return the ITC devices folder "root:mies:ITCDevices"
-Function/DF GetITCDevicesFolder()
-
-	return createDFWithAllParents(GetITCDevicesFolderAsString())
-End
-
-/// @brief Return a data folder reference to the ITC devices folder
-Function/S GetITCDevicesFolderAsString()
-
-	return GetMiesPathAsString() + ":ITCDevices"
-End
-
-/// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
-Function/DF GetActiveITCDevicesTimerFolder()
-
-	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
-End
-
-/// @brief Return a data folder reference to the active ITC devices timer folder
-Function/S GetActiveITCDevicesTimerAS()
-
-	return GetActiveITCDevicesFolderAS() + ":Timer"
-End
-
-/// @brief Return the active ITC devices folder "root:mies:ITCDevices:ActiveITCDevices"
-Function/DF GetActiveITCDevicesFolder()
-
-	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
-End
-
-/// @brief Return a data folder reference to the active ITC devices folder
-Function/S GetActiveITCDevicesFolderAS()
-
-	return GetITCDevicesFolderAsString() + ":ActiveITCDevices"
-End
-
 /// @brief Returns a wave reference to the txtDocWave
 ///
 /// txtDocWave is used to save settings for each data sweep
@@ -404,8 +439,6 @@ Function/Wave GetTextDocWave(panelTitle)
 
 	return wv
 End
-
-Constant INITIAL_KEY_WAVE_COL_COUNT   = 2
 
 /// @brief Returns a wave reference to the textDocKeyWave
 ///
@@ -616,12 +649,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 End
 /// @}
 
-/// @name Constants for the note of the wave returned by GetTPStorage
+/// @name Test Pulse
 /// @{
-StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
-StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
-StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
-/// @}
 
 /// @brief Return a wave reference for TPStorage
 ///
@@ -671,48 +700,10 @@ Function/S GetDeviceTestPulseAsString(panelTitle)
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
 End
 
-/// @brief Return a datafolder reference to the device type folder
-Function/DF GetDeviceTypePath(deviceType)
-	string deviceType
-	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
-End
+/// @}
 
-/// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
-Function/S GetDeviceTypePathAsString(deviceType)
-	string deviceType
-
-	return GetITCDevicesFolderAsString() + ":" + deviceType
-End
-
-/// @brief Return a datafolder reference to the device folder
-Function/DF GetDevicePath(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
-End
-
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
-Function/S GetDevicePathAsString(panelTitle)
-	string panelTitle
-
-	string deviceType, deviceNumber
-	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
-		Abort "Invalid/Non-locked paneltitle"
-	endif
-
-	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
-End
-
-/// @brief Return a datafolder reference to the device data folder
-Function/DF GetDeviceDataPath(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
-End
-
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:Data
-Function/S GetDeviceDataPathAsString(panelTitle)
-	string panelTitle
-	return GetDevicePathAsString(panelTitle) + ":Data"
-End
+/// @name Amplifier
+/// @{
 
 /// @brief Return the datafolder reference to the amplifier
 Function/DF GetAmplifierFolder()
@@ -797,17 +788,226 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns a data folder reference to the mies base folder
-Function/DF GetMiesPath()
-	return createDFWithAllParents(GetMiesPathAsString())
+/// @brief Returns wave reference for the amplifier settings
+///
+/// Rows:
+/// - Only one
+///
+/// Columns:
+/// - Amplifier parameters as described in the amplifier settings key wave
+Function/WAVE GetAmplifierSettingsWave(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 3
+	dfref dfr = GetAmpSettingsFolder()
+
+	Wave/Z/SDFR=dfr wv = ampSettings
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/O/N=(1,39, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
 End
 
-/// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
-Function/S GetMiesPathAsString()
-	return "root:MIES"
+/// @brief Returns wave reference for the amplifier settings keys
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance factor
+///
+/// Columns:
+/// - Various settings
+Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
+	string panelTitle
+	dfref dfr = GetAmpSettingsFolder()
+
+	variable versionOfNewWave = 2
+	dfref dfr = GetAmpSettingsFolder()
+
+	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/T/O/N=(3, 39) dfr:ampSettingsKey/Wave=wv
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units    , wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	wv[0][0] = "V-Clamp Holding Enable"
+	wv[1][0] = "On/Off"
+	wv[2][0] = "-"
+
+	wv[0][1] =  "V-Clamp Holding Level"
+	wv[1][1] = "mV"
+	wv[2][1] = "0.9"
+
+	wv[0][2] =  "Osc Killer Enable"
+	wv[1][2] =  "On/Off"
+	wv[2][2] =  "-"
+
+	wv[0][3] =  "RsComp Bandwidth"
+	wv[1][3] =  "Hz"
+	wv[2][3] =  "0.9"
+
+	wv[0][4] =  "RsComp Correction"
+	wv[1][4] =  "%"
+	wv[2][4] =  "0.9"
+
+	wv[0][5] =  "RsComp Enable"
+	wv[1][5] =  "On/Off"
+	wv[2][5] =  "-"
+
+	wv[0][6] =  "RsComp Prediction"
+	wv[1][6] =  "%"
+	wv[2][6] =  "0.9"
+
+	wv[0][7] =  "Whole Cell Comp Enable"
+	wv[1][7] =  "On/Off"
+	wv[2][7] =  "-"
+
+	wv[0][8] =  "Whole Cell Comp Cap"
+	wv[1][8] =  "pF"
+	wv[2][8] =  "0.9"
+
+	wv[0][9] =  "Whole Cell Comp Resist"
+	wv[1][9] =  "MOhm"
+	wv[2][9] =  "0.9"
+
+	wv[0][10] =  "I-Clamp Holding Enable"
+	wv[1][10] =  "On/Off"
+	wv[2][10] =  "-"
+
+	wv[0][11] =  "I-Clamp Holding Level"
+	wv[1][11] =  "pA"
+	wv[2][11] =  "0.9"
+
+	wv[0][12] =  "Neut Cap Enabled"
+	wv[1][12] =  "On/Off"
+	wv[2][12] =  "-"
+
+	wv[0][13] =  "Neut Cap Value"
+	wv[1][13] =  "pF"
+	wv[2][13] =  "0.9"
+
+	wv[0][14] =  "Bridge Bal Enable"
+	wv[1][14] =  "On/Off"
+	wv[2][14] =  "-"
+
+	wv[0][15] =  "Bridge Bal Value"
+	wv[1][15] =  "MOhm"
+	wv[2][15] =  "0.9"
+
+	// and now add the Axon values to the amp settings key
+	wv[0][16] =  "Serial Number"
+	wv[1][16] =  ""
+	wv[2][16] =  ""
+
+	wv[0][17] =  "Channel ID"
+	wv[1][17] =  ""
+	wv[2][17] =  ""
+
+	wv[0][18] =  "ComPort ID"
+	wv[1][18] =  ""
+	wv[2][18] =  ""
+
+	wv[0][19] =  "AxoBus ID"
+	wv[1][19] =  ""
+	wv[2][19] =  ""
+
+	wv[0][20] =  "Operating Mode"
+	wv[1][20] =  ""
+	wv[2][20] =  ""
+
+	wv[0][21] =  "Scaled Out Signal"
+	wv[1][21] =  ""
+	wv[2][21] =  ""
+
+	wv[0][22] =  "Alpha"
+	wv[1][22] =  ""
+	wv[2][22] =  ""
+
+	wv[0][23] =  "Scale Factor"
+	wv[1][23] =  ""
+	wv[2][23] =  ""
+
+	wv[0][24] =  "Scale Factor Units"
+	wv[1][24] =  ""
+	wv[2][24] =  ""
+
+	wv[0][25] =  "LPF Cutoff"
+	wv[1][25] =  ""
+	wv[2][25] =  ""
+
+	wv[0][26] =  "Membrane Cap"
+	wv[1][26] =  "pF"
+	wv[2][26] =  "0.9"
+
+	wv[0][27] =  "Ext Cmd Sens"
+	wv[1][27] =  ""
+	wv[2][27] =  ""
+
+	wv[0][28] =  "Raw Out Signal"
+	wv[1][28] =  ""
+	wv[2][28] =  ""
+
+	wv[0][29] =  "Raw Scale Factor"
+	wv[1][29] =  ""
+	wv[2][29] =  ""
+
+	wv[0][30] =  "Raw Scale Factor Units"
+	wv[1][30] =  ""
+	wv[2][30] =  ""
+
+	wv[0][31] =  "Hardware Type"
+	wv[1][31] =  ""
+	wv[2][31] =  ""
+
+	wv[0][32] =  "Secondary Alpha"
+	wv[1][32] =  ""
+	wv[2][32] =  ""
+
+	wv[0][33] =  "Secondary LPF Cutoff"
+	wv[1][33] =  ""
+	wv[2][33] =  ""
+
+	wv[0][34] =  "Series Resistance"
+	wv[1][34] =  "MOhms"
+	wv[2][34] =  "0.9"
+
+	// new keys starting from 29a161c
+	wv[0][35] =  "Pipette Offset"
+	wv[1][35] =  "mV"
+	wv[2][35] =  ""
+
+	wv[0][36] =  "Slow current injection"
+	wv[1][36] =  "On/Off"
+	wv[2][36] =  "-"
+
+	wv[0][37] =  "Slow current injection level"
+	wv[1][37] =  "V"
+	wv[2][37] =  ""
+
+	wv[0][38] =  "Slow current injection settling time"
+	wv[1][38] =  "s"
+	wv[2][38] =  ""
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
 End
 
-/// @name Wavebuilder datafolders
+/// @}
+
+/// @name Wavebuilder
 /// @{
 
 /// @brief Returns a data folder reference to the base
@@ -889,7 +1089,74 @@ End
 Function/S GetWBSvdStimSetTTLPathAsString()
 	return GetWBSvdStimSetPathAsString() + ":TTL"
 End
-///@}
+
+/// @brief Return the parameter wave for the wave builder panel
+///
+/// Rows:
+/// - Variables synced to GUI controls, see e.g. WB_MakeWaveBuilderWave in TJ_MIES_WaveBuilder for an up to date list
+///
+/// Columns:
+/// - Segment/Epoch
+///
+/// Layers hold different stimulus wave form types:
+
+/// - Ramp
+/// - GPB_Noise
+/// - Sin
+/// - Saw tooth
+/// - Square pulse train
+/// - PSC
+/// - Load custom wave
+Function/WAVE GetWaveBuilderWaveParam()
+
+	variable versionOfNewWave = 1
+	dfref dfr = GetWaveBuilderDataPath()
+
+	WAVE/Z/SDFR=dfr wv = WP
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/O/N=(51, 100, 8) dfr:WP/Wave=wv
+
+	// sets low pass filter to off (off value is related to sampling frequency)
+	wv[20][][2] = 10001
+	// sets coefficent count for low pass filter to a reasonable and legal Number
+	wv[26][][2] = 500
+	// sets coefficent count for high pass filter to a reasonable and legal Number
+	wv[28][][2] = 500
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the parameter text wave for the wave builder panel
+///
+/// Rows:
+/// - 0: name of the custom wave loaded
+/// - 1-50: unused
+///
+/// Columns:
+/// - Segment/Epoch
+Function/WAVE GetWaveBuilderWaveTextParam()
+
+	variable versionOfNewWave = 1
+	dfref dfr = GetWaveBuilderDataPath()
+
+	WAVE/T/Z/SDFR=dfr wv = WPT
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/N=(51, 100)/O/T dfr:WPT
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
 
 /// @brief Returns the segment parameter wave used by the wave builder panel
 /// - Rows
@@ -910,6 +1177,10 @@ Function/Wave GetSegmentWave()
 
 	return wv
 End
+/// @}
+
+/// @name Asynchronous Measurements
+/// @}
 
 /// @brief Returns a wave reference to the asyncMeasurementWave
 ///
@@ -1482,6 +1753,42 @@ Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	
 	return wv
 End
+
+/// @}
+
+/// @name Pressure Control
+/// @{
+
+/// @brief Returns device specific pressure folder as string
+Function/S P_GetDevicePressureFolderAS(panelTitle)
+	string panelTitle
+
+	string 	DeviceNumber
+	string 	DeviceType
+	ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	string 	FolderPathString
+	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" GetMiesPathAsString(), DeviceType, DeviceNumber
+	return FolderPathString
+End
+
+/// @brief Creates ITC device specific pressure folder - used to store data for pressure regulators
+Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
+	string 	panelTitle
+	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
+End
+
+/// @brief Returns pressure folder as string
+Function/S P_GetPressureFolderAS(panelTitle)
+	string panelTitle
+	return GetMiesPathAsString() + ":Pressure"
+End
+
+/// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
+Function/DF P_PressureFolderReference(panelTitle)
+	string panelTitle
+	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
+End
+
 /// @brief Returns a wave reference to a DA data wave used for pressure pulses
 ///
 /// Rows:
@@ -1906,7 +2213,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 34, TimePeakRcheck,				PressureData
 	SetDimLabel COLS, 35, PosCalConst,					PressureData
 	SetDimLabel COLS, 36, NegCalConst,					PressureData
-	
+
 	SetDimLabel ROWS, 0, Headstage_0, PressureData
 	SetDimLabel ROWS, 1, Headstage_1, PressureData
 	SetDimLabel ROWS, 2, Headstage_2, PressureData
@@ -1961,290 +2268,7 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	return PressureDataTextWv
 End
 
-/// @brief Returns wave reference for the amplifier settings
-///
-/// Rows:
-/// - Only one
-///
-/// Columns:
-/// - Amplifier parameters as described in the amplifier settings key wave
-Function/WAVE GetAmplifierSettingsWave(panelTitle)
-	string panelTitle
-
-	variable versionOfNewWave = 3
-	dfref dfr = GetAmpSettingsFolder()
-
-	Wave/Z/SDFR=dfr wv = ampSettings
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	endif
-
-	Make/O/N=(1,39, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
-
-	SetWaveVersion(wv, versionOfNewWave)
-
-	return wv
-End
-
-/// @brief Returns wave reference for the amplifier settings keys
-///
-/// Rows:
-/// - 0: Parameter
-/// - 1: Units
-/// - 2: Tolerance factor
-///
-/// Columns:
-/// - Various settings
-Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
-	string panelTitle
-	dfref dfr = GetAmpSettingsFolder()
-
-	variable versionOfNewWave = 2
-	dfref dfr = GetAmpSettingsFolder()
-
-	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	endif
-
-	Make/T/O/N=(3, 39) dfr:ampSettingsKey/Wave=wv
-
-	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units    , wv
-	SetDimLabel ROWS, 2, Tolerance, wv
-
-	wv[0][0] = "V-Clamp Holding Enable"
-	wv[1][0] = "On/Off"
-	wv[2][0] = "-"
-
-	wv[0][1] =  "V-Clamp Holding Level"
-	wv[1][1] = "mV"
-	wv[2][1] = "0.9"
-
-	wv[0][2] =  "Osc Killer Enable"
-	wv[1][2] =  "On/Off"
-	wv[2][2] =  "-"
-
-	wv[0][3] =  "RsComp Bandwidth"
-	wv[1][3] =  "Hz"
-	wv[2][3] =  "0.9"
-
-	wv[0][4] =  "RsComp Correction"
-	wv[1][4] =  "%"
-	wv[2][4] =  "0.9"
-
-	wv[0][5] =  "RsComp Enable"
-	wv[1][5] =  "On/Off"
-	wv[2][5] =  "-"
-
-	wv[0][6] =  "RsComp Prediction"
-	wv[1][6] =  "%"
-	wv[2][6] =  "0.9"
-
-	wv[0][7] =  "Whole Cell Comp Enable"
-	wv[1][7] =  "On/Off"
-	wv[2][7] =  "-"
-
-	wv[0][8] =  "Whole Cell Comp Cap"
-	wv[1][8] =  "pF"
-	wv[2][8] =  "0.9"
-
-	wv[0][9] =  "Whole Cell Comp Resist"
-	wv[1][9] =  "MOhm"
-	wv[2][9] =  "0.9"
-
-	wv[0][10] =  "I-Clamp Holding Enable"
-	wv[1][10] =  "On/Off"
-	wv[2][10] =  "-"
-
-	wv[0][11] =  "I-Clamp Holding Level"
-	wv[1][11] =  "pA"
-	wv[2][11] =  "0.9"
-
-	wv[0][12] =  "Neut Cap Enabled"
-	wv[1][12] =  "On/Off"
-	wv[2][12] =  "-"
-
-	wv[0][13] =  "Neut Cap Value"
-	wv[1][13] =  "pF"
-	wv[2][13] =  "0.9"
-
-	wv[0][14] =  "Bridge Bal Enable"
-	wv[1][14] =  "On/Off"
-	wv[2][14] =  "-"
-
-	wv[0][15] =  "Bridge Bal Value"
-	wv[1][15] =  "MOhm"
-	wv[2][15] =  "0.9"
-
-	// and now add the Axon values to the amp settings key
-	wv[0][16] =  "Serial Number"
-	wv[1][16] =  ""
-	wv[2][16] =  ""
-
-	wv[0][17] =  "Channel ID"
-	wv[1][17] =  ""
-	wv[2][17] =  ""
-
-	wv[0][18] =  "ComPort ID"
-	wv[1][18] =  ""
-	wv[2][18] =  ""
-
-	wv[0][19] =  "AxoBus ID"
-	wv[1][19] =  ""
-	wv[2][19] =  ""
-
-	wv[0][20] =  "Operating Mode"
-	wv[1][20] =  ""
-	wv[2][20] =  ""
-
-	wv[0][21] =  "Scaled Out Signal"
-	wv[1][21] =  ""
-	wv[2][21] =  ""
-
-	wv[0][22] =  "Alpha"
-	wv[1][22] =  ""
-	wv[2][22] =  ""
-
-	wv[0][23] =  "Scale Factor"
-	wv[1][23] =  ""
-	wv[2][23] =  ""
-
-	wv[0][24] =  "Scale Factor Units"
-	wv[1][24] =  ""
-	wv[2][24] =  ""
-
-	wv[0][25] =  "LPF Cutoff"
-	wv[1][25] =  ""
-	wv[2][25] =  ""
-
-	wv[0][26] =  "Membrane Cap"
-	wv[1][26] =  "pF"
-	wv[2][26] =  "0.9"
-
-	wv[0][27] =  "Ext Cmd Sens"
-	wv[1][27] =  ""
-	wv[2][27] =  ""
-
-	wv[0][28] =  "Raw Out Signal"
-	wv[1][28] =  ""
-	wv[2][28] =  ""
-
-	wv[0][29] =  "Raw Scale Factor"
-	wv[1][29] =  ""
-	wv[2][29] =  ""
-
-	wv[0][30] =  "Raw Scale Factor Units"
-	wv[1][30] =  ""
-	wv[2][30] =  ""
-
-	wv[0][31] =  "Hardware Type"
-	wv[1][31] =  ""
-	wv[2][31] =  ""
-
-	wv[0][32] =  "Secondary Alpha"
-	wv[1][32] =  ""
-	wv[2][32] =  ""
-
-	wv[0][33] =  "Secondary LPF Cutoff"
-	wv[1][33] =  ""
-	wv[2][33] =  ""
-
-	wv[0][34] =  "Series Resistance"
-	wv[1][34] =  "MOhms"
-	wv[2][34] =  "0.9"
-
-	// new keys starting from 29a161c
-	wv[0][35] =  "Pipette Offset"
-	wv[1][35] =  "mV"
-	wv[2][35] =  ""
-
-	wv[0][36] =  "Slow current injection"
-	wv[1][36] =  "On/Off"
-	wv[2][36] =  "-"
-
-	wv[0][37] =  "Slow current injection level"
-	wv[1][37] =  "V"
-	wv[2][37] =  ""
-
-	wv[0][38] =  "Slow current injection settling time"
-	wv[1][38] =  "s"
-	wv[2][38] =  ""
-
-	SetWaveVersion(wv, versionOfNewWave)
-
-	return wv
-End
-
-/// @brief Return the parameter wave for the wave builder panel
-///
-/// Rows:
-/// - Variables synced to GUI controls, see e.g. WB_MakeWaveBuilderWave in TJ_MIES_WaveBuilder for an up to date list
-///
-/// Columns:
-/// - Segment/Epoch
-///
-/// Layers hold different stimulus wave form types:
-/// - Square pulse
-/// - Ramp
-/// - GPB_Noise
-/// - Sin
-/// - Saw tooth
-/// - Square pulse train
-/// - PSC
-/// - Load custom wave
-Function/WAVE GetWaveBuilderWaveParam()
-
-	variable versionOfNewWave = 1
-	dfref dfr = GetWaveBuilderDataPath()
-
-	WAVE/Z/SDFR=dfr wv = WP
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	endif
-
-	Make/O/N=(51, 100, 8) dfr:WP/Wave=wv
-
-	// sets low pass filter to off (off value is related to sampling frequency)
-	wv[20][][2] = 10001
-	// sets coefficent count for low pass filter to a reasonable and legal Number
-	wv[26][][2] = 500
-	// sets coefficent count for high pass filter to a reasonable and legal Number
-	wv[28][][2] = 500
-
-	SetWaveVersion(wv, versionOfNewWave)
-
-	return wv
-End
-
-/// @brief Return the parameter text wave for the wave builder panel
-///
-/// Rows:
-/// - 0: name of the custom wave loaded
-/// - 1-50: unused
-///
-/// Columns:
-/// - Segment/Epoch
-Function/WAVE GetWaveBuilderWaveTextParam()
-
-	variable versionOfNewWave = 1
-	dfref dfr = GetWaveBuilderDataPath()
-
-	WAVE/T/Z/SDFR=dfr wv = WPT
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	endif
-
-	Make/N=(51, 100)/O/T dfr:WPT
-
-	SetWaveVersion(wv, versionOfNewWave)
-
-	return wv
-End
+/// @}
 
 /// @brief Returns a wave reference to the Analysis Master Wave
 ///
@@ -2339,18 +2363,8 @@ Function/S GetDevSpecAnlyssSttngsWaveAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":analysisSettings"
 End
 
-/// @brief Returns the, possibly non existing, sweep data wave for the given sweep number
-Function/Wave GetSweepWave(panelTitle, sweepNo)
-	string panelTitle
-	variable sweepNo
-
-	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
-
-	return wv
-End
-
-/// @name Getter functions for the analysis browser
-///@{
+/// @name Analysis Browser
+/// @{
 
 /// @brief Return the datafolder reference to the root folder for the analysis browser
 Function/DF GetAnalysisFolder()
@@ -2479,8 +2493,6 @@ Function/Wave GetExperimentMap()
 	return wv
 End
 
-static Constant NUM_COLUMNS_LIST_WAVE = 11
-
 /// @brief Return the text wave used in the listbox of the experiment browser
 ///
 /// The "experiment" column in the second layer maps to the corresponding row in he experimentMap.
@@ -2549,6 +2561,4 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 
 	return wv
 End
-///@}
-
-
+/// @}

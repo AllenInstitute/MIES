@@ -4,7 +4,7 @@ static StrConstant amPanel = "analysisMaster"
 
 /// @file DR_MIES_analysisMaster.ipf
 /// @brief waveform analysis framework
-/// Brief description of the function WA_analysisMaster
+
 /// Function used to create a framework for calling post-sweep analysis functions
 //===============================================================================
 Function AM_analysisMasterPostSweep(panelTitle, sweepNo)
