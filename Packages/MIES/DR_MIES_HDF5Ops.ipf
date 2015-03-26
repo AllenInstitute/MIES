@@ -725,49 +725,61 @@ Function LoadDataSet([incomingFileName])
 	string devNumber
 	string restOfName
 	string panelName
-    	variable dataObjectsPresent
-    	variable nextSweepNumber
-    	string advanceSweepNumberString
+	variable dataObjectsPresent
+	variable nextSweepNumber
+	string advanceSweepNumberString
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
-		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
-		if(V_flag == 0)				 // User selected a file?
-			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
-		else
+		HDF5OpenFile /R /Z fileID as "" // Displays a dialog
+		if(V_flag != 0) // User cancelled the dialog
 			print "File load cancelled..."
 			return 0
 		endif
+	elseif(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
+		print "Not a valid stim set file....exiting..."
+		return 0
 	else
-		if(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
-			print "Not a valid stim set file....exiting..."
-			return 0
-		else
-			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
-			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"	
-		endif
+		HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
 	endif
+
+	HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+	groupList = S_HDF5ListGroup 
 	
 	groupList =  S_HDF5ListGroup	
 	groupItems = ItemsInList(groupList)
 
 	for(waveCounter = 0; waveCounter < groupItems;waveCounter += 1)
 		dataSet = StringFromList(waveCounter, groupList)
-		if (StringMatch(dataSet, "*savedDataSets"))
-			print "dataSet: ", dataSet
+		if(StringMatch(dataSet, "*savedDataSets"))
 			devName = StringFromList(0, dataSet, "_")
 			devNumber = StringFromList(2, dataSet, "_")
 			restOfName = StringFromList(3, dataSet, "_")
-			sprintf panelName, "%s_Dev_%s", devName, devNumber
-			print "panelName: ", panelName
+			panelName = BuildDeviceString(devName, devNumber)
 			// Before restoring any of the saved sweeps, check to see if there has already been data collected.  
 			// If there has been, pop up an alert window to make sure the user really wants to do this
 			dataObjectsPresent = CountObjectsDFR(GetDeviceDataPath(panelName), 1)
-			if (dataObjectsPresent > 0)
+			if(dataObjectsPresent > 0)
 				DoAlert/T="Sweep Data Restore" 1, "Sweep Data has already been collected.  Restoring a Sweep Data Set will overwrite this data.  Do you wish to proceed with the Restore Sweep Data?"
-				if (V_flag == 2)
+				if(V_flag == 2)
+					print "Sweep Data Restore cancelled..."
+					return 0
+				else
+					print "Sweep Data being restored..."
+				endif
+			endif
+		elseif(StringMatch(dataSet, "*savedLabNotebook/settingsHistory"))
+			devName = StringFromList(0, dataSet, "_")
+			devNumber = StringFromList(2, dataSet, "_")
+			restOfName = StringFromList(3, dataSet, "_")
+			panelName = BuildDeviceString(devName, devNumber)
+			// Also check to see if a test pulse has been run, without any data sweeps.  Restoring the saved data will overwrite the labNoteBook and the keyWave values for the testPulse already run
+			dataObjectsPresent = CountObjectsDFR(GetDevSpecLabNBSettKeyFolder(panelName), 1)
+			if(dataObjectsPresent > 0)
+				DoAlert/T="Sweep Data Restore" 1, "Settings History Data has already been collected.  Restoring a Sweep Data Set will overwrite this data.  Do you wish to proceed with the Restore Sweep Data?"
+				if(V_flag == 2)
 					print "Sweep Data Restore cancelled..."
 					return 0
 				else
@@ -775,22 +787,27 @@ Function LoadDataSet([incomingFileName])
 				endif
 			endif
 		endif
-		if (StringMatch(dataSet, "*savedDataSets/*"))
+	endfor
+	
+	// Now that we've checked about the existance of previously collected data, and made sure the user really wants to do this, we chug through the data sets and do the loadData stuff
+	for(waveCounter = 0; waveCounter < groupItems;waveCounter += 1)
+		dataSet = StringFromList(waveCounter, groupList)
+		if(StringMatch(dataSet, "*savedDataSets/*"))
 			SetDataFolder GetDeviceDataPath(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
-		elseif (StringMatch(dataSet, "*savedLabNotebook/analysisSettings/*"))
+		elseif(StringMatch(dataSet, "*savedLabNotebook/analysisSettings/*"))
 			SetDataFolder GetDevSpecAnlyssSttngsWavePath(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
-		elseif (StringMatch(dataSet, "*savedLabNotebook/KeyWave/*"))
+		elseif(StringMatch(dataSet, "*savedLabNotebook/KeyWave/*"))
 			SetDataFolder GetDevSpecLabNBSettKeyFolder(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
 		elseif (StringMatch(dataSet, "*savedLabNotebook/settingsHistory/*"))
 			SetDataFolder GetDevSpecLabNBSettHistFolder(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
-		elseif (StringMatch(dataSet, "*savedLabNotebook/TextDocKeyWave/*"))
+		elseif(StringMatch(dataSet, "*savedLabNotebook/TextDocKeyWave/*"))
 			SetDataFolder GetDevSpecLabNBTxtDocKeyFolder(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
-		elseif (StringMatch(dataSet, "*savedLabNotebook/textDocumentation/*"))
+		elseif(StringMatch(dataSet, "*savedLabNotebook/textDocumentation/*"))
 			SetDataFolder GetDevSpecLabNBTextDocFolder(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
 		endif
@@ -800,12 +817,11 @@ Function LoadDataSet([incomingFileName])
 	print "Data Set Loaded..."
 	
 	// Now ask the user if they want to advance the NextSweepNumber to append any new sweep data, rather then overwrite one of the sweeps just restored
-	dataObjectsPresent = CountObjectsDFR(GetDeviceDataPath(panelName), 1)
-	nextSweepNumber = dataObjectsPresent/2
-	if (nextSweepNumber != GetSetVariable(panelName, "SetVar_Sweep"))	
+	nextSweepNumber = DM_ReturnLastSweepAcquired(panelName) + 1
+	if(nextSweepNumber != GetSetVariable(panelName, "SetVar_Sweep"))	
 		advanceSweepNumberString = "Advance Next Sweep Number to " + Num2Str(nextSweepNumber) + "?"
 		DoAlert/T="Advance Sweep Number" 1, advanceSweepNumberString
-		if (V_flag == 2)
+		if(V_flag == 2)
 			print "Sweep Number advance cancelled..."
 		else
 			print "Advancing Sweep Number"
