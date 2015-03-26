@@ -1557,3 +1557,31 @@ Function ButtonProc_ManPP(ba) : ButtonControl
 
 	return 0
 End
+
+Function P_Check_ApproachNear(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			Variable checked = cba.checked
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function P_Check_SealAtm(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			Variable checked = cba.checked
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End

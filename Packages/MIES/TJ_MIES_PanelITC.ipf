@@ -1105,7 +1105,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo)= A"!!,Cp!!#As!!#@\"!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_HeadStage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_HeadStage,mode=2,popvalue="1",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_HeadStage,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
 	PopupMenu popup_Settings_Amplifier,pos={32,358},size={224,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="Amplfier (700B)"
 	PopupMenu popup_Settings_Amplifier,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
@@ -2196,7 +2196,7 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
-	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 7,side= 2,vert= 0,ticks= 0,thumbColor= (43520,43520,43520)
+	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 0,side= 2,vert= 0,ticks= 0,thumbColor= (43520,43520,43520)
 	TabControl tab_DataAcq_Amp,pos={38,148},size={408,110},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Amp,help={"Entries into these tabs update the MCC only when in the active mode. On mode switching, the parameters will be passed to the MCC."}
 	TabControl tab_DataAcq_Amp,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
@@ -2373,7 +2373,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_ClearEnable,pos={372,311},size={51,14},disable=1,proc=CheckProc_ClearEnable,title="Enable"
 	CheckBox check_DatAcq_ClearEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_ClearEnable,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	CheckBox check_DatAcq_ClearEnable,value= 1
+	CheckBox check_DatAcq_ClearEnable,value= 0
 	CheckBox check_DatAcq_SealALl,pos={150,311},size={29,14},disable=1,title="All"
 	CheckBox check_DatAcq_SealALl,help={"Seals all headstates with active test pulse"}
 	CheckBox check_DatAcq_SealALl,userdata(tabnum)=  "0"
@@ -2384,7 +2384,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_BreakInAll,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_BreakInAll,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	CheckBox check_DatAcq_BreakInAll,value= 0
-	Button button_DataAcq_Approach,pos={42,281},size={84,27},disable=1,proc=ButtonProc_Approach,title="Approach"
+	Button button_DataAcq_Approach,pos={42,281},size={84,27},disable=3,proc=ButtonProc_Approach,title="Approach"
 	Button button_DataAcq_Approach,help={"Applies positive pressure to the pipette"}
 	Button button_DataAcq_Approach,userdata(tabnum)=  "0"
 	Button button_DataAcq_Approach,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2493,8 +2493,8 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_P_Disable,userdata(tabcontrol)=  "ADC",fSize=14
 	ValDisplay valdisp_DataAcq_P_0,pos={53,331},size={102,17},bodyWidth=35,disable=1,title="\\Z10Pressure (psi)"
 	ValDisplay valdisp_DataAcq_P_0,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	ValDisplay valdisp_DataAcq_P_0,fSize=14,fStyle=0
-	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535)
+	ValDisplay valdisp_DataAcq_P_0,fSize=14,fStyle=0,valueColor=(65535,65535,65535)
+	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={158,331},size={35,17},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_1,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2528,8 +2528,8 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_6,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_7,pos={401,331},size={35,17},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_7,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	ValDisplay valdisp_DataAcq_P_7,fSize=14,fStyle=0,valueColor=(65535,65535,65535)
-	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(0,0,0)
+	ValDisplay valdisp_DataAcq_P_7,fSize=14,fStyle=0
+	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	TabControl tab_DataAcq_Pressure,pos={38,260},size={410,94},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Pressure,help={"Entries into these tabs update the MCC only when in the active mode. On mode switching, the parameters will be passed to the MCC."}
@@ -2538,10 +2538,10 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Pressure,userdata(currenttab)=  "0"
 	TabControl tab_DataAcq_Pressure,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Pressure,tabLabel(0)="Auto",tabLabel(1)="Manual",value= 0
-	Button button_DataAcq_SSSetPressureMan,pos={42,281},size={84,27},disable=1,proc=ButtonProc_DataAcq_ManPressSet,title=""
+	Button button_DataAcq_SSSetPressureMan,pos={42,281},size={84,27},disable=3,proc=ButtonProc_DataAcq_ManPressSet,title=""
 	Button button_DataAcq_SSSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	Button button_DataAcq_PPSetPressureMan,pos={196,281},size={84,27},disable=1,proc=ButtonProc_ManPP,title="Pressure Pulse"
+	Button button_DataAcq_PPSetPressureMan,pos={196,281},size={84,27},disable=3,proc=ButtonProc_ManPP,title="Pressure Pulse"
 	Button button_DataAcq_PPSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_PPSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	SetVariable setvar_DataAcq_SSPressure,pos={131,288},size={58,16},disable=1,proc=DAP_SetVarProc_CAA,title="psi"
@@ -2568,12 +2568,12 @@ Window DA_Ephys() : Panel
 	CheckBox check_settings_TP_show_steady,help={"Show the steady state resistance curve during the testpulse"}
 	CheckBox check_settings_TP_show_steady,userdata(tabnum)=  "5"
 	CheckBox check_settings_TP_show_steady,userdata(tabcontrol)=  "ADC",value= 1
-	CheckBox check_DatAcq_ApproachNear,pos={84,311},size={41,14},disable=1,title="Near"
+	CheckBox check_DatAcq_ApproachNear,pos={84,311},size={41,14},disable=1,proc=P_Check_ApproachNear,title="Near"
 	CheckBox check_DatAcq_ApproachNear,help={"Apply postive pressure to all headstages"}
 	CheckBox check_DatAcq_ApproachNear,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_ApproachNear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	CheckBox check_DatAcq_ApproachNear,value= 0
-	CheckBox check_DatAcq_SealAtm,pos={188,311},size={39,14},disable=1,title="Atm."
+	CheckBox check_DatAcq_SealAtm,pos={188,311},size={39,14},disable=1,proc=P_Check_SealAtm,title="Atm."
 	CheckBox check_DatAcq_SealAtm,help={"Seals all headstates with active test pulse"}
 	CheckBox check_DatAcq_SealAtm,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_SealAtm,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
