@@ -99,6 +99,11 @@ Function P_MethodApproach(panelTitle, headStage)
 	
 	P_UpdateTTLstate(panelTitle, headStage, ONorOFF) // Open the TTL - outside of if statement below because TTL will only update if the state is incorrect.
 
+	// if Near cell checkbox is checked then all headstages, except the active headstage, go to in slice pressure. The active headstage goes to nearCell pressure
+	if(PressureDataWv[headStage][%ApproachNear] && headStage != PressureDataWv[headStage][%UserSelectedHeadStage])
+		targetP = PressureDataWv[headStage][%PSI_slice]
+	endif
+	
 	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
