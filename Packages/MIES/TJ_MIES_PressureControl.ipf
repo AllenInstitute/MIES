@@ -1582,6 +1582,9 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 		case 2: // mouse up
 			Variable checked = cba.checked
 			P_UpdatePressureDataStorageWv(cba.win)
+			if(!P_IsTPActive(cba.win)) // P_PressureControl will be called from TP functions when the TP is running
+				P_PressureControl(cba.win)
+			endif
 			break
 		case -1: // control being killed
 			break
