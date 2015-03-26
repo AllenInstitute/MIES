@@ -13,6 +13,7 @@ Menu "HDF5 Tools"
 		"Save Sweep Data", SaveSweepData()
 		"Save Configuration", SaveConfiguration()
 		"Load Configuration", LoadConfigSet()
+		"Load Sweep Data", LoadDataSet()
 End
 
 /// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
@@ -708,6 +709,110 @@ Function LoadConfigSet([incomingFileName])
 	
 	// restore the data folder
 	SetDataFolder savedDataFolder		   	
-End		
-			
-				
+End
+
+/// @brief Load previous data sets from HDF5 file for viewing with the wave browser.  If there is a data wave with a matching name already present, it will be overwritten and replaced
+Function LoadDataSet([incomingFileName])
+	string incomingFileName
+
+	variable fileID, waveCounter
+	string dataSet
+	string dataFolderString
+	string savedDataFolder
+	string groupList 
+	variable groupItems
+	string devName 
+	string devNumber
+	string restOfName
+	string panelName
+    	variable dataObjectsPresent
+    	variable nextSweepNumber
+    	string advanceSweepNumberString
+    	
+	// save the present data folder
+	savedDataFolder = GetDataFolder(1)
+	
+	if(ParamIsDefault(incomingFileName))
+		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
+		if(V_flag == 0)				 // User selected a file?
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+		else
+			print "File load cancelled..."
+			return 0
+		endif
+	else
+		if(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
+			print "Not a valid stim set file....exiting..."
+			return 0
+		else
+			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"	
+		endif
+	endif
+	
+	groupList =  S_HDF5ListGroup	
+	groupItems = ItemsInList(groupList)
+
+	for(waveCounter = 0; waveCounter < groupItems;waveCounter += 1)
+		dataSet = StringFromList(waveCounter, groupList)
+		if (StringMatch(dataSet, "*savedDataSets"))
+			print "dataSet: ", dataSet
+			devName = StringFromList(0, dataSet, "_")
+			devNumber = StringFromList(2, dataSet, "_")
+			restOfName = StringFromList(3, dataSet, "_")
+			sprintf panelName, "%s_Dev_%s", devName, devNumber
+			print "panelName: ", panelName
+			// Before restoring any of the saved sweeps, check to see if there has already been data collected.  
+			// If there has been, pop up an alert window to make sure the user really wants to do this
+			dataObjectsPresent = CountObjectsDFR(GetDeviceDataPath(panelName), 1)
+			if (dataObjectsPresent > 0)
+				DoAlert/T="Sweep Data Restore" 1, "Sweep Data has already been collected.  Restoring a Sweep Data Set will overwrite this data.  Do you wish to proceed with the Restore Sweep Data?"
+				if (V_flag == 2)
+					print "Sweep Data Restore cancelled..."
+					return 0
+				else
+					print "Sweep Data being restored..."
+				endif
+			endif
+		endif
+		if (StringMatch(dataSet, "*savedDataSets/*"))
+			SetDataFolder GetDeviceDataPath(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif (StringMatch(dataSet, "*savedLabNotebook/analysisSettings/*"))
+			SetDataFolder GetDevSpecAnlyssSttngsWavePath(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif (StringMatch(dataSet, "*savedLabNotebook/KeyWave/*"))
+			SetDataFolder GetDevSpecLabNBSettKeyFolder(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif (StringMatch(dataSet, "*savedLabNotebook/settingsHistory/*"))
+			SetDataFolder GetDevSpecLabNBSettHistFolder(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif (StringMatch(dataSet, "*savedLabNotebook/TextDocKeyWave/*"))
+			SetDataFolder GetDevSpecLabNBTxtDocKeyFolder(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif (StringMatch(dataSet, "*savedLabNotebook/textDocumentation/*"))
+			SetDataFolder GetDevSpecLabNBTextDocFolder(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		endif
+	endfor	
+
+	HDF5CloseFile fileID
+	print "Data Set Loaded..."
+	
+	// Now ask the user if they want to advance the NextSweepNumber to append any new sweep data, rather then overwrite one of the sweeps just restored
+	dataObjectsPresent = CountObjectsDFR(GetDeviceDataPath(panelName), 1)
+	nextSweepNumber = dataObjectsPresent/2
+	if (nextSweepNumber != GetSetVariable(panelName, "SetVar_Sweep"))	
+		advanceSweepNumberString = "Advance Next Sweep Number to " + Num2Str(nextSweepNumber) + "?"
+		DoAlert/T="Advance Sweep Number" 1, advanceSweepNumberString
+		if (V_flag == 2)
+			print "Sweep Number advance cancelled..."
+		else
+			print "Advancing Sweep Number"
+			SetSetVariable(panelName, "SetVar_Sweep", nextSweepNumber)
+		endif
+	endif
+	
+	// restore the original data folder
+	SetDataFolder savedDataFolder 
+End
