@@ -104,7 +104,7 @@ static Function WB_MakeWaveBuilderWave(stepCount, numEpochs, wvName)
 	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
 
 	string customWaveName, debugMsg
-	variable i, type
+	variable i, type, accumulatedDuration
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 	WAVE WP = GetWaveBuilderWaveParam()
@@ -247,7 +247,17 @@ static Function WB_MakeWaveBuilderWave(stepCount, numEpochs, wvName)
 			default:
 				ASSERT(0, "Unknown Wave type to create")
 		endswitch
-		Concatenate/NP=0 {SegmentWave}, WaveBuilderWave
+
+		if(stepCount == 0)
+			WAVE epochID = GetEpochID()
+			epochID[i][%timeBegin] = accumulatedDuration
+			epochID[i][%timeEnd]   = accumulatedDuration + duration
+
+			accumulatedDuration += duration
+		endif
+
+		WAVE/SDFR=dfr segmentWave
+		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)

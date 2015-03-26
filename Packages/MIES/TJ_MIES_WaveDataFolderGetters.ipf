@@ -1302,6 +1302,27 @@ Function/Wave GetSegmentWave()
 
 	return wv
 End
+
+/// @brief Return the wave identifiying the begin and
+/// end times of the current epoch
+Function/Wave GetEpochID()
+
+	dfref dfr = GetWaveBuilderDataPath()
+
+	WAVE/Z/SDFR=dfr wv = epochID
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(100, 2) dfr:epochID/Wave=wv
+
+	SetDimLabel COLS, 0, timeBegin, wv
+	SetDimLabel COLS, 1, timeEnd, wv
+
+	return wv
+End
+
 /// @}
 
 /// @name Asynchronous Measurements

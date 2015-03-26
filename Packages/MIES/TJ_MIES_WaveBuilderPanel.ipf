@@ -617,16 +617,82 @@ Window WaveBuilder() : Panel
 	SetActiveSubwindow ##
 EndMacro
 
+static Constant EPOCH_HL_TYPE_LEFT  = 0x01
+static Constant EPOCH_HL_TYPE_RIGHT = 0x02
+
+/// @brief Add epoch highlightning traces
+/// Uses fill-to-next on specially created waves added before and after the current trace
+static Function WBP_AddEpochHLTraces(dfr, epochHLType, epoch, numEpochs)
+	DFREF dfr
+	variable epochHLType, epoch, numEpochs
+
+	string nameBegin, nameEnd
+	variable first, last
+
+	WAVE epochID = GetEpochID()
+
+	if(epochHLType == EPOCH_HL_TYPE_LEFT)
+		nameBegin = "epochHLBeginLeft"
+		nameEnd   = "epochHLEndLeft"
+
+		Make/O/N=(2) dfr:$nameBegin = NaN, dfr:$nameEnd = NaN
+		WAVE/SDFR=dfr waveBegin = $nameBegin
+		WAVE/SDFR=dfr waveEnd   = $nameEnd
+
+		if(epoch == 0)
+			// no epoch to highlight left of the current one
+			return NaN
+		endif
+
+		// we highlight the range 0, 1, ..., epoch - 1
+		first = epochID[0][%timeBegin]
+		last  = epochID[epoch - 1][%timeEnd]
+		SetScale/I x, first, last, "ms", waveBegin, waveEnd
+	elseif(epochHLType == EPOCH_HL_TYPE_RIGHT)
+		nameBegin = "epochHLBeginRight"
+		nameEnd   = "epochHLEndRight"
+
+		Make/O/N=(2) dfr:$nameBegin = NaN, dfr:$nameEnd = NaN
+		WAVE/SDFR=dfr waveBegin = $nameBegin
+		WAVE/SDFR=dfr waveEnd   = $nameEnd
+
+		if(epoch == numEpochs - 1)
+			// no epoch to highlight right of the current one
+			return NaN
+		endif
+
+		// and the range epoch + 1, ...,  lastEpoch
+		first = epochID[epoch + 1][%timeBegin]
+		last  = epochID[numEpochs - 1][%timeEnd]
+		SetScale/I x, first, last, "ms", waveBegin, waveEnd
+	endif
+
+	AppendToGraph/W=$waveBuilderGraph waveBegin
+	ModifyGraph/W=$waveBuilderGraph hbFill($nameBegin)=5
+	ModifyGraph/W=$waveBuilderGraph mode($nameBegin)=7, toMode($nameBegin)=1
+	ModifyGraph/W=$waveBuilderGraph useNegRGB($nameBegin)=1, usePlusRGB($nameBegin)=1
+	ModifyGraph/W=$waveBuilderGraph plusRGB($nameBegin)=(56576,56576,56576), negRGB($nameBegin)=(56576,56576,56576)
+	ModifyGraph/W=$waveBuilderGraph rgb($nameBegin)=(65535,65535,65535)
+
+	AppendToGraph/W=$waveBuilderGraph waveEnd
+	ModifyGraph/W=$waveBuilderGraph rgb($nameEnd)=(65535,65535,65535)
+End
+
 static Function WBP_DisplaySetInPanel()
 
 	dfref dfr = GetWaveBuilderDataPath()
-	variable i, numWaves, setNumber
+	variable first, last
+	variable i, numWaves, setNumber, epoch, numEpochs
 	string list, basename, outputWaveType, searchPattern, entry
+	variable maxYValue = -Inf
+	variable minYValue = Inf
 
 	WAVE ranges = GetAxesRanges(waveBuilderGraph)
 	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
 	WB_MakeStimSet()
 
+	epoch     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	numEpochs = GetSetVariable(panel, "SetVar_WaveBuilder_NoOfEpochs")
 
 	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
 	basename = basename[0,15]
@@ -638,6 +704,15 @@ static Function WBP_DisplaySetInPanel()
 	list = GetListOfWaves(dfr, searchPattern)
 
 	numWaves = ItemsInList(list)
+	if(!numWaves)
+		return NaN
+	endif
+
+	WBP_AddEpochHLTraces(dfr, EPOCH_HL_TYPE_LEFT, epoch, numEpochs)
+	WAVE/SDFR=dfr epochHLBeginLeft, epochHLEndLeft
+
+	WBP_AddEpochHLTraces(dfr, EPOCH_HL_TYPE_RIGHT, epoch, numEpochs)
+	WAVE/SDFR=dfr epochHLBeginRight, epochHLEndRight
 
 	for(i=0; i < numWaves; i += 1)
 		entry = StringFromList(i, list)
@@ -647,9 +722,22 @@ static Function WBP_DisplaySetInPanel()
 			// here we assume that we trace name is the same as the wave name
 			ModifyGraph/W=$waveBuilderGraph rgb($entry) = (13056,13056,13056)
 		endif
-	endfor
-	SetAxis/W=$waveBuilderGraph/A/E=3 left
 
+		if(DimSize(wv, ROWS) > 0)
+			maxYValue = max(WaveMax(wv), maxYValue)
+			minYValue = min(WaveMin(wv), minYValue)
+		endif
+	endfor
+
+	if(IsFinite(maxYValue) && IsFinite(minYValue))
+		epochHLBeginRight = maxYValue
+		epochHLBeginLeft  = maxYValue
+
+		epochHLEndRight   = min(0, minYValue)
+		epochHLEndLeft    = min(0, minYValue)
+	endif
+
+	SetAxis/W=$waveBuilderGraph/A/E=3 left
 	SetAxesRanges(waveBuilderGraph, ranges)
 End
 
@@ -891,10 +979,11 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
 
 	variable i, numPanels
-	string panelTitle, ListOfTracesOnGraph
-	ListOfTracesOnGraph = TraceNameList(WaveBuilderGraph, ";", 0+1 )
+	string panelTitle, listOfTracesOnGraph
+	listOfTracesOnGraph = TraceNameList(WaveBuilderGraph, ";", 0+1 )
+	listOfTracesOnGraph = ListMatch(listOfTracesOnGraph, "!epoch*")
 
-	WBP_Transfer1DsTo2D(ListOfTracesOnGraph)
+	WBP_Transfer1DsTo2D(listOfTracesOnGraph)
 	RemoveTracesFromGraph(WaveBuilderGraph, kill=1)
 	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleSetName(), 1, "")
 	WBP_SaveSetParam()
