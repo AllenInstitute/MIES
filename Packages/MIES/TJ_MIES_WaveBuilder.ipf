@@ -2,35 +2,28 @@
 
 Function WB_MakeStimSet()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr WaveBuilderWave
-	variable i
-	Variable start = stopmstimer(-2)
+	variable i, numEpochs, numSteps, setNumber, stimulusType
+	string basename, stimulusTypeAS, outputWaveName
+	variable start = stopmstimer(-2)
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	// duplicating starting parameter Waves so that they can be returned to start parameters at end of Wave making
 	Duplicate/FREE WP, WP_orig
 
-	ControlInfo setvar_WaveBuilder_baseName
-	string setbasename = s_value[0,15]
+	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
+	basename = basename[0,15]
 
-	ControlInfo setvar_WaveBuilder_SetNumber
-	variable setnumber = v_value
+	setNumber      = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
+	numSteps       = GetSetVariable("WaveBuilder", "setVar_WaveBuilder_StepCount")
+	stimulusTypeAS = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
+	stimulusType   = GetPopupMenuIndex("WaveBuilder", "popup_WaveBuilder_OutputType")
+	numEpochs      = GetSetVariable("WaveBuilder", "SetVar_WaveBuilder_NoOfEpochs")
 
-	ControlInfo SetVar_WaveBuilder_StepCount
-	variable NoOfWavesInSet = v_value
-
-	string OutputWaveName
-
-	for(i=1; i <= NoOfWavesInSet; i+=1)
-		WB_MakeWaveBuilderWave()
+	for(i=0; i < numSteps; i+=1)
+		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + stimulusTypeAS + "_" + num2str(setNumber)
+		WB_MakeWaveBuilderWave(i, numEpochs, outputWaveName)
 		WB_AddDelta()
-		ControlInfo popup_WaveBuilder_OutputType
-		string OutputWaveType = s_value
-
-		OutputWaveName = "X" + num2str(i) + "_" + setbasename + "_" + OutputWaveType + "_" + num2str(setnumber)
-		Duplicate/O WaveBuilderWave, dfr:$OutputWaveName
 	endfor
 
 	WP = WP_orig
@@ -69,25 +62,26 @@ static Function WB_AddDelta()
 	endfor
 End
 
-static Function WB_MakeWaveBuilderWave()
+static Function WB_MakeWaveBuilderWave(stepCount, numEpochs, wvName)
+	variable stepCount
+	variable numEpochs
+	string wvName
+
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
 	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount, FIncrement
 
 	dfref dfr = GetWaveBuilderDataPath()
 	Wave/SDFR=dfr SegWvType
-	Make/O/N=0 dfr:WaveBuilderWave/Wave=WaveBuilderWave = 0
-	Make/O/N=0 dfr:SegmentWave/Wave=SegmentWave = 0
+	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
 
-	string customWaveName
-	variable NumberOfSegments, i, type
-	ControlInfo SetVar_WaveBuilder_NoOfSegments
-	NumberOfSegments = v_value
+	string customWaveName, debugMsg
+	variable i, type
 
-	WAVE WP    = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+	WAVE WP = GetWaveBuilderWaveParam()
 
-	for(i=0; i < NumberOfSegments; i+=1)
+	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
 
 		Duration                   = WP[0][i][type]
@@ -122,12 +116,14 @@ static Function WB_MakeWaveBuilderWave()
 		DeltaLowPassFiltCoefCount  = WP[29][i][type]
 		FIncrement                 = WP[30][i][type]
 
+		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, duration, DeltaDur, amplitude, DeltaAmp
+		DEBUGPRINT("params", str=debugMsg)
+
 		if(duration < 0 || !IsFinite(duration))
 			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
 			duration = 1
 		endif
 
-		//Make correct Wave segment with above parameters
 		switch(type)
 			case 0:
 				WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
@@ -232,7 +228,6 @@ static Function WB_MakeWaveBuilderWave()
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
 	KillStrings/Z StringHolder
-	KillWaves/F/Z SegmentWave
 End
 
 static Function/Wave WB_GetSegmentWave(duration)
@@ -249,7 +244,6 @@ static Function/Wave WB_GetSegmentWave(duration)
 		Redimension/N=(numPoints) SegmentWave
 	endif
 
-	SegmentWave = 0
 	SetScale/P x 0,0.005, "ms", SegmentWave
 
 	return SegmentWave

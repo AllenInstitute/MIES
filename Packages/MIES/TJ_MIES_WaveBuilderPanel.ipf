@@ -43,9 +43,6 @@ Function WBP_CreateWaveBuilderPanel()
 	GetWBSvdStimSetDAPath()
 	GetWBSvdStimSetTTLPath()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Make/O/N= 100 dfr:WaveBuilderWave
-
 	GetSegmentWave()
 
 	NewPanel/N=$panel/W=(1230,597,2247,1071)
