@@ -1,6 +1,8 @@
 #pragma rtGlobals=3
 
-static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17 
+static Constant NUM_COLUMNS_LIST_WAVE   = 11
+static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17
+static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
@@ -105,7 +107,6 @@ End
 /// - Rule of thumb: Raise the version if you change anything in or below the `Make` line above
 /// - Wave versioning needs a special wave note style, see @ref GetNumberFromWaveNote
 /// @{
-static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
 /// @brief Check if wv exists and has the correct version
 static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
@@ -405,8 +406,6 @@ Function/Wave GetTextDocWave(panelTitle)
 	return wv
 End
 
-Constant INITIAL_KEY_WAVE_COL_COUNT   = 2
-
 /// @brief Returns a wave reference to the textDocKeyWave
 ///
 /// textDocKeyWave is used to index save settings for each data sweep
@@ -616,12 +615,6 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 End
 /// @}
 
-/// @name Constants for the note of the wave returned by GetTPStorage
-/// @{
-StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
-StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
-StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
-/// @}
 
 /// @brief Return a wave reference for TPStorage
 ///
@@ -2468,8 +2461,6 @@ Function/Wave GetExperimentMap()
 
 	return wv
 End
-
-static Constant NUM_COLUMNS_LIST_WAVE = 11
 
 /// @brief Return the text wave used in the listbox of the experiment browser
 ///

@@ -114,3 +114,12 @@ Constant LISTBOX_SELECTED          = 0x01
 Constant LISTBOX_TREEVIEW_EXPANDED = 0x10
 Constant LISTBOX_TREEVIEW          = 0x40
 /// @}
+
+Constant INITIAL_KEY_WAVE_COL_COUNT = 2
+
+/// @name Constants for the note of the wave returned by GetTPStorage
+/// @{
+StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
+StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
+StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
+/// @}
