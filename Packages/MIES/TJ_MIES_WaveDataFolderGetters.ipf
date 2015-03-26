@@ -2339,16 +2339,6 @@ Function/S GetDevSpecAnlyssSttngsWaveAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":analysisSettings"
 End
 
-/// @brief Returns the, possibly non existing, sweep data wave for the given sweep number
-Function/Wave GetSweepWave(panelTitle, sweepNo)
-	string panelTitle
-	variable sweepNo
-
-	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
-
-	return wv
-End
-
 /// @name Getter functions for the analysis browser
 ///@{
 
