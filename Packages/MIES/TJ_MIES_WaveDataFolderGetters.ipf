@@ -1230,7 +1230,7 @@ End
 /// - Load custom wave
 Function/WAVE GetWaveBuilderWaveParam()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	dfref dfr = GetWaveBuilderDataPath()
 
 	WAVE/Z/SDFR=dfr wv = WP
@@ -1238,9 +1238,9 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(51, -1, -1) wv
+		Redimension/N=(61, -1, -1) wv
 	else
-		Make/N=(51, 100, 8) dfr:WP/Wave=wv
+		Make/N=(61, 100, 8) dfr:WP/Wave=wv
 
 		// sets low pass filter to off (off value is related to sampling frequency)
 		wv[20][][2] = 10001

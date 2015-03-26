@@ -2,8 +2,8 @@
 
 Function WB_MakeStimSet()
 
-	variable i, numEpochs, numSteps, setNumber, stimulusType
-	string basename, stimulusTypeAS, outputWaveName
+	variable i, numEpochs, numSteps, setNumber
+	string basename, outputType, outputWaveName
 	variable start = stopmstimer(-2)
 
 	WAVE WP = GetWaveBuilderWaveParam()
@@ -14,51 +14,79 @@ Function WB_MakeStimSet()
 	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
 	basename = basename[0,15]
 
-	setNumber      = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
-	numSteps       = GetSetVariable("WaveBuilder", "setVar_WaveBuilder_StepCount")
-	stimulusTypeAS = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
-	stimulusType   = GetPopupMenuIndex("WaveBuilder", "popup_WaveBuilder_OutputType")
-	numEpochs      = GetSetVariable("WaveBuilder", "SetVar_WaveBuilder_NoOfEpochs")
+	setNumber  = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
+	numSteps   = GetSetVariable("WaveBuilder", "setVar_WaveBuilder_StepCount")
+	outputType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
+	numEpochs  = GetSetVariable("WaveBuilder", "SetVar_WaveBuilder_NoOfEpochs")
 
 	for(i=0; i < numSteps; i+=1)
-		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + stimulusTypeAS + "_" + num2str(setNumber)
+		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + outputType + "_" + num2str(setNumber)
 		WB_MakeWaveBuilderWave(i, numEpochs, outputWaveName)
-		WB_AddDelta()
+		WB_AddDelta(numEpochs)
 	endfor
 
 	WP = WP_orig
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
 End
 
-/// @brief Adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter Waves
-static Function WB_AddDelta()
+/// @brief Add delta to appropriate parameters
+///
+/// Relies on alternating sequence of parameter and delta's in parameter waves as documented in WB_MakeWaveBuilderWave()
+static Function WB_AddDelta(numEpochs)
+	variable numEpochs
 
-	variable i, checked
+	variable i, j, k
+	variable offsetFactor, durationFactor, amplitudeFactor
+	variable operation, factor
+	variable numEpochTypes
 
 	WAVE WP = GetWaveBuilderWaveParam()
+	numEpochTypes = DimSize(WP, LAYERS)
 
-	checked = GetCheckBoxState("WaveBuilder", "check_WaveBuilder_exp_P40")
+	for(i = 0; i < 30; i += 2)
+		for(j = 0; j < numEpochs; j += 1)
+			for(k = 0; k < numEpochTypes; k += 1)
 
-	for(i=0; i < 30; i += 2)
-		WP[i][][0] = WP[i + 1][q][0] + WP[i][q][0]
-		WP[i][][1] = WP[i + 1][q][1] + WP[i][q][1]
-		WP[i][][2] = WP[i + 1][q][2] + WP[i][q][2]
-		WP[i][][3] = WP[i + 1][q][3] + WP[i][q][3]
-		WP[i][][4] = WP[i + 1][q][4] + WP[i][q][4]
-		WP[i][][5] = WP[i + 1][q][5] + WP[i][q][5]
-		WP[i][][6] = WP[i + 1][q][6] + WP[i][q][6]
-		WP[i][][7] = WP[i + 1][q][7] + WP[i][q][7]
+				WP[i][j][k] += WP[i + 1][j][k]
 
-		if(checked)
-			WP[i + 1][][0] += WP[i + 1][q][0]
-			WP[i + 1][][1] += WP[i + 1][q][1]
-			WP[i + 1][][2] += WP[i + 1][q][2]
-			WP[i + 1][][3] += WP[i + 1][q][3]
-			WP[i + 1][][4] += WP[i + 1][q][4]
-			WP[i + 1][][5] += WP[i + 1][q][5]
-			WP[i + 1][][6] += WP[i + 1][q][6]
-			WP[i + 1][][7] += WP[i + 1][q][7]
-		endif
+				operation = WP[40][j][k]
+				if(operation)
+					durationFactor  = WP[52][j][k]
+					amplitudeFactor = WP[50][j][k]
+					offsetFactor    = WP[51][j][k]
+					switch(i)
+						case 2:
+							factor = amplitudeFactor
+							break
+						case 4:
+							factor = offsetFactor
+							break
+						default:
+							factor = durationFactor
+							break
+					endswitch
+
+					switch(operation)
+						case 1: // Simple factor
+							WP[i + 1][j][k] = WP[i + 1][j][k] * factor
+							break
+						case 2: // Log
+							// ignore a delta value of exactly zero
+							WP[i + 1][j][k] = WP[i + 1][j][k] == 0 ? 0 : log(WP[i + 1][j][k])
+							break
+						case 3: // Squared
+							WP[i + 1][j][k] = (WP[i + 1][j][k])^2
+							break
+						case 4: // Power
+							WP[i + 1][j][k] = (WP[i + 1][j][k])^factor
+							break
+						default:
+							ASSERT(0, "Unkonwn operation")
+							break
+					endswitch
+				endif
+			endfor
+		endfor
 	endfor
 End
 
