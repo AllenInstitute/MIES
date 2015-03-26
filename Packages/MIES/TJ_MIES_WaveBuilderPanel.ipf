@@ -851,6 +851,8 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL, 1, panelTitle)
 					WBP_UpdateITCPanelPopUps(panelTitle)
 				endfor
+			else
+				WBP_DeleteSet()
 			endif
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
