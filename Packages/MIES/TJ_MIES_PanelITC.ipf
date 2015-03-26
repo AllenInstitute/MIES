@@ -4565,57 +4565,55 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	DAP_UpdateITIAcrossSets(panelTitle)
 End
 
-//=========================================================================================
-/// DAP_StopOngoingDataAcquisition
+/// @brief Stop the testpulse and data acquisition
+///
+/// Should be used if `Multi Device Support` is not checked
 Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
-	string cmd 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
-	
-	string countPath = WavePath + ":Count"
-	NVAR count = $countPath
-	
+
+	string cmd
+
 	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
 		ITC_STOPTestPulse(panelTitle)
 	endif
-	
-	
+
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
-			CtrlNamedBackground ITC_Timer, stop
+		CtrlNamedBackground ITC_Timer, stop
 	endif
-	
+
 	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
 		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
 		ITC_STOPFifoMonitor()
-		
+
 		sprintf cmd, "ITCStopAcq /z = 0"
 		Execute cmd
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
-	
+
 		ControlInfo /w = $panelTitle Check_Settings_SaveData
-		If(v_value == 0)
+		if(v_value == 0)
 			DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
 		endif
-		
+
 		DM_ScaleITCDataWave(panelTitle)
-	else // adding the elseif to force a stop if invoked during a 'down' time, with nothing happening.  
-		// get the set number of SweepsActiveSet
-		variable maxSweeps = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
-		
-		// Set the count to the maxSweeps
-		count = maxSweeps	
+	else
+		// force a stop if invoked during a 'down' time, with nothing happening.
+		NVAR/Z/SDFR=GetDevicePath(panelTitle) count
+
+		if(NVAR_Exists(count))
+			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+		endif
 	endif
-	
+
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	if(DataAcqState)
 		DataAcqState = 0
-		DAP_StopButtonToAcqDataButton(panelTitle)
 	endif
-	
+
+	DAP_StopButtonToAcqDataButton(panelTitle)
 	print "Data acquisition was manually terminated"
-End 
+End
+
 //=========================================================================================
 /// DAP_StopOngoingDataAcqMD
 Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
