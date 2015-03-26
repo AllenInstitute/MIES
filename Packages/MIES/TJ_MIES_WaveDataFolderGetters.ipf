@@ -2210,7 +2210,8 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 36, NegCalConst,					PressureData
 	SetDimLabel COLS, 37, ApproachNear,					PressureData
 	SetDimLabel COLS, 38, SealAtm,						PressureData
-
+	SetDimLabel COLS, 39, UserSelectedHeadStage			PressureData
+	
 	SetDimLabel ROWS, 0, Headstage_0, PressureData
 	SetDimLabel ROWS, 1, Headstage_1, PressureData
 	SetDimLabel ROWS, 2, Headstage_2, PressureData
@@ -2566,4 +2567,5 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 
 	return wv
 End
+
 /// @}

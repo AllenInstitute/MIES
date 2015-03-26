@@ -1383,6 +1383,16 @@ Function P_ManPressurePulse(panelTitle, headStage)
 	P_TTLforPpulse(panelTitle, Headstage) 	// update TTL data
 	P_ITCDataAcq(panelTitle, headStage)
 End
+
+
+/// @brief Saves user seleted headstage in pressureData wave
+///
+Function P_SaveUserSelectedHeadstage(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	PressureDataWv[][%UserSelectedHeadStage] =  headStage
+End
 //============================================================================================================
 // PRESSURE CONTROLS; DA_ePHYS PANEL; DATA ACQUISTION TAB
 //============================================================================================================

@@ -5040,6 +5040,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		mode = AI_MIESHeadstageMode(panelTitle, headStage)
 		AI_UpdateAmpView(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
+		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		// chooses the amp tab according to the MIES headstage clamp mode
 		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif
