@@ -555,14 +555,12 @@ static Function WBP_DisplaySetInPanel()
 	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
 	WB_MakeStimSet()
 
-	controlinfo setvar_WaveBuilder_baseName
-	basename = s_value[0,15]
 
-	controlinfo setvar_WaveBuilder_SetNumber
-	SetNumber = v_value
+	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
+	basename = basename[0,15]
 
-	controlInfo popup_WaveBuilder_OutputType
-	outputWaveType = s_value
+	setNumber      = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
+	outputWaveType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
 
 	searchPattern = ".*" + basename + ".*" + outputWaveType + "_.*" + num2str(setNumber)
 	list = GetListOfWaves(dfr, searchPattern)
