@@ -640,42 +640,50 @@ Function WBP_SetVarProc_SetNo(sva) : SetVariableControl
 	return 0
 End
 
-Function WBP_ButtonProc_DeleteSet(ctrlName) : ButtonControl
-	String ctrlName
+Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	String DAorTTL, setWaveToDelete, panelTitle
+	string DAorTTL, setWaveToDelete, panelTitle
+	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
 	variable i, numPanels
 
-	setWaveToDelete = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
+	switch(ba.eventCode)
+		case 2: // mouse up
 
-	if(!CmpStr(SetWaveToDelete, NONE))
-		print "Select a set to delete from popup menu."
-		return 0
-	endif
+			setWaveToDelete = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
 
-	SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-	if(SVAR_Exists(ITCPanelTitleList))
-		numPanels = ItemsInList(ITCPanelTitleList)
-		for(i = 0; i < numPanels; i += 1)
-			panelTitle = StringFromList(i, ITCPanelTitleList)
-			if(StringMatch(SetWaveToDelete, "*DA*"))
-				DAorTTL = "DA"
-			else
-				DAorTTL = "TTL"
+			if(!CmpStr(SetWaveToDelete, NONE))
+				print "Select a set to delete from popup menu."
+				break
 			endif
 
-			string popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL, 0, panelTitle)
-			string popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL, 1, panelTitle)
-			WBP_DeleteSet()
-			WBP_UpdateITCPanelPopUps(panelTitle)
-			WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL, 0, panelTitle)
-			WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL, 1, panelTitle)
-			WBP_UpdateITCPanelPopUps(panelTitle)
-		endfor
-	endif
+			SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
+			if(SVAR_Exists(ITCPanelTitleList))
+				numPanels = ItemsInList(ITCPanelTitleList)
+				for(i = 0; i < numPanels; i += 1)
+					panelTitle = StringFromList(i, ITCPanelTitleList)
+					if(StringMatch(SetWaveToDelete, "*DA*"))
+						DAorTTL = "DA"
+					else
+						DAorTTL = "TTL"
+					endif
 
-	ControlUpdate/W=$panel popup_WaveBuilder_SetList
-	PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
+					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL, 0, panelTitle)
+					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL, 1, panelTitle)
+					WBP_DeleteSet()
+					WBP_UpdateITCPanelPopUps(panelTitle)
+					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL, 0, panelTitle)
+					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL, 1, panelTitle)
+					WBP_UpdateITCPanelPopUps(panelTitle)
+				endfor
+			endif
+
+			ControlUpdate/W=$panel popup_WaveBuilder_SetList
+			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
+			break
+	endswitch
+
+	return 0
 End
 
 Function WBP_SetVarProc_StepCount(sva) : SetVariableControl
@@ -1318,10 +1326,16 @@ Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariabl
 	WBP_UpdatePanelIfAllowed()
 End
 
-Function WBP_ButtonProc_LoadSet(ctrlName) : ButtonControl
-	String ctrlName
+Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	WBP_LoadSet()
+	switch(ba.eventCode)
+		case 2: // mouse up
+			WBP_LoadSet()
+			break
+	endswitch
+
+	return 0
 End
 
 static Function WBP_CutOffCrossOver()
