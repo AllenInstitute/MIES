@@ -752,7 +752,7 @@ Function LoadDataSet([incomingFileName])
 	groupItems = ItemsInList(groupList)
 	
 	// check and make sure this is a saved data set
-	if (FindListItem(groupList, "savedDataSets") == -1)
+	if (FindListItem("dataPresentList", groupList) == -1)
 		print "This is not a valid data set file.  Please select a valid data set file..."
 		return 0
 	endif 
