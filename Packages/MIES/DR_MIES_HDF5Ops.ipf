@@ -738,8 +738,8 @@ Function LoadDataSet([incomingFileName])
 			print "File load cancelled..."
 			return 0
 		endif
-	elseif(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
-		print "Not a valid stim set file....exiting..."
+	elseif(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedDataSets\\savedData*") != 1)
+		print "Not a valid data set file....exiting..."
 		return 0
 	else
 		HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
@@ -750,6 +750,12 @@ Function LoadDataSet([incomingFileName])
 	
 	groupList =  S_HDF5ListGroup	
 	groupItems = ItemsInList(groupList)
+	
+	// check and make sure this is a saved data set
+	if (FindListItem(groupList, "savedDataSets") == -1)
+		print "This is not a valid data set file.  Please select a valid data set file..."
+		return 0
+	endif 
 
 	for(waveCounter = 0; waveCounter < groupItems;waveCounter += 1)
 		dataSet = StringFromList(waveCounter, groupList)
