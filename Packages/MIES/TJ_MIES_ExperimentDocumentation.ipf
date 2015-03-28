@@ -98,7 +98,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	// get the size of the incoming Key Wave
 	variable keyMatchFound
 	// if keyWave is just formed, just add the incoming KeyWave....
-	if (keyColCount == 2)
+	if (keyColCount == INITIAL_KEY_WAVE_COL_COUNT)
 		// have to redimension the keyWave to create the space for the new stuff
 		Redimension/N= (4, (keyColCount + incomingKeyColCount)) keyWave
 		// also redimension the settings History Wave to create row space to add new sweep data...
