@@ -12,8 +12,9 @@ CONSTANT TEST_PULSE_MODE       = 1
 /// @param dataAcqOrTP one of DATA_ACQUISITION_MODE or TEST_PULSE_MODE
 Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	string panelTitle
-	variable DataAcqOrTP
+	variable dataAcqOrTP
 
+	variable numADCs
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
 	DC_MakeITCConfigAllConfigWave(panelTitle)  
@@ -25,6 +26,17 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	DC_PlaceDataInITCDataWave(panelTitle)
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
+		numADCs = ItemsInList(GetADCListFromConfig(ITCChanConfigWave))
+
+		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
+		DFREF dfr = GetDeviceTestPulse(panelTitle)
+		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
+		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
+		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
+	endif
 End
 
 //==========================================================================================

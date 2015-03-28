@@ -309,75 +309,67 @@ End
 // The function TPDelta is called by the TP dataaquistion functions
 // It updates a wave in the Test pulse folder for the device
 // The wave contains the steady state difference between the baseline and the TP response
-Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to the test pulse folder for the device on which the TP is being activated
+Function TP_Delta(panelTitle)
 	string 	panelTitle
-	string 	InputDataPath
 
-	string 	StringPath
-	sprintf 	StringPath, "%s:Duration" 		InputDataPath
-	NVAR 	DurationG 	= $StringPath
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
-	sprintf 	stringPath,  "%s:AmplitudeIC" 	InputDataPath
-	NVAR 	AmplitudeIC 	= $StringPath
-
-	sprintf 	stringPath,  "%s:AmplitudeVC"	InputDataPath
-	NVAR 	AmplitudeVC	= $StringPath
-
-	AmplitudeIC 	= abs(AmplitudeIC)
-	AmplitudeVC	=  abs(AmplitudeVC)
-
-	sprintf 	stringPath,  "%s:TestPulseITC"	InputDataPath
-	wave 	TPWave 	= $stringPath
+	WAVE/SDFR=dfr TestPulseITC
+	NVAR/SDFR=dfr durationG = duration
+	NVAR/SDFR=dfr amplitudeIC
+	NVAR/SDFR=dfr amplitudeVC
+	NVAR/SDFR=dfr noOfActiveDA
+	SVAR/SDFR=dfr clampModeString
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
-	variable 	Duration = (durationG * 2 * deltaX(TPWave)) // total duration of TP in ms
-	variable 	BaselineSteadyStateStartTime =(0.1 * duration)
-	variable 	BaselineSteadyStateEndTime = (0.24 * Duration)
-	variable 	TPSSEndTime = (0.74 * duration)
-	variable 	TPInstantaneouseOnsetTime = (0.252 * Duration)
-	variable 	DimOffsetVar = DimOffset(TPWave, 0)
-	variable 	DimDeltaVar = DimDelta(TPWave, 0)
-	variable 	PointsInSteadyStatePeriod =  (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))// (x2pnt(TPWave, BaselineSteadyStateEndTime) - x2pnt(TPWave, BaselineSteadyStateStartTime))
-	variable 	BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
-	variable 	BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
-	variable 	TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
-	variable 	TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-	variable 	TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
-	variable 	columns
-	sprintf 	StringPath, "%s:NoOfActiveDA" InputDataPath
-	NVAR 	NoOfActiveDA = $StringPath
-	sprintf 	StringPath, "%s:ClampModeString" InputDataPath
-	SVAR 	ClampModeString = $StringPath
-//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
-// 	TPwave has the AD columns in the order of active AD channels, not the order of active headstages
-	duplicate /free /r = [BaselineSSStartPoint, BaslineSSEndPoint][] TPWave, 	BaselineSS
-	duplicate /free /r = [TPSSStartPoint, TPSSEndPoint][] TPWave, 			TPSS
-	duplicate /free /r = [TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TPWave Instantaneous
-//	average the steady state wave
+	amplitudeIC = abs(amplitudeIC)
+	amplitudeVC = abs(amplitudeVC)
+
+	variable duration = (durationG * 2 * deltaX(TestPulseITC)) // total duration of TP in ms
+	variable BaselineSteadyStateStartTime =(0.1 * duration)
+	variable BaselineSteadyStateEndTime = (0.24 * Duration)
+	variable TPSSEndTime = (0.74 * duration)
+	variable TPInstantaneouseOnsetTime = (0.252 * Duration)
+	variable DimOffsetVar = DimOffset(TestPulseITC, ROWS)
+	variable DimDeltaVar = DimDelta(TestPulseITC, ROWS)
+	variable PointsInSteadyStatePeriod = (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))
+	variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
+	variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
+	variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
+	variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
+	variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
+	variable columns
+
+	//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
+	// 	TestPulseITC has the AD columns in the order of active AD channels, not the order of active headstages
+	Duplicate/FREE/R=[BaselineSSStartPoint, BaslineSSEndPoint][] TestPulseITC, BaselineSS
+	Duplicate/FREE/R=[TPSSStartPoint, TPSSEndPoint][] TestPulseITC, TPSS
+	Duplicate/FREE/R=[TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TestPulseITC, Instantaneous
+	//	average the steady state wave
 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
-	avgTPSS /= dimsize(TPSS, 0)
+	avgTPSS /= dimsize(TPSS, ROWS)
 
 	///@todo rework the matrxOp calls with sumCols to also use ^t (transposition), so that intstead of
 	/// a `1xm` wave we get a `m` wave (no columns)
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
-	AvgBaselineSS /= dimsize(BaselineSS, 0)
-	sprintf StringPath, "%s:BaselineSSAvg" InputDataPath
-	duplicate /o / r = [][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS $StringPath // duplicate only the AD columns - this would error if a TTL was ever active with the TP, at present, however, they should never be coactive
-	wave 	BaselineSSAvg = $StringPath
-//	calculate the difference between the steady state and the baseline
-	duplicate /free AvgTPSS, AvgDeltaSS
+	AvgBaselineSS /= dimsize(BaselineSS, ROWS)
+	// duplicate only the AD columns - this would error if a TTL was ever active with the TP, at present, however, they should never be coactive
+	Duplicate/O/R=[][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS dfr:BaselineSSAvg/Wave=BaselineSSAvg
+
+	//	calculate the difference between the steady state and the baseline
+	Duplicate/FREE AvgTPSS, AvgDeltaSS
 	AvgDeltaSS -= AvgBaselineSS
 	AvgDeltaSS = abs(AvgDeltaSS)
 
-//	create wave that will hold instantaneous average
+	//	create wave that will hold instantaneous average
 	variable 	i = 0
 	variable 	columnsInWave = dimsize(Instantaneous, 1)
 	if(columnsInWave == 0)
 		columnsInWave = 1
 	endif
 
-	make /FREE /n = (1, columnsInWave) InstAvg
+	Make/FREE/N=(1, columnsInWave) InstAvg
 	variable 	OneDInstMax
 	variable 	OndDBaseline
 
@@ -398,29 +390,21 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 	Multithread InstAvg -= AvgBaselineSS
 	Multithread InstAvg = abs(InstAvg)
 
-	sprintf StringPath, "%s:SSResistance" InputDataPath
-	duplicate /o /r = [][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS $StringPath
-	wave 	SSResistance = $StringPath
+	Duplicate/O/R=[][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS dfr:SSResistance/Wave=SSResistance
 	SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
 
-	sprintf StringPath, "%s:InstResistance" InputDataPath
-	duplicate /o /r = [][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg $StringPath
-	wave 	InstResistance = $StringPath
+	Duplicate/O/R=[][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg dfr:InstResistance/Wave=InstResistance
 	SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
-
-	sprintf StringPath, "%s:ClampModeString" InputDataPath
-	SVAR 	ClampModeString = $StringPath
-	string 	decimalAdjustment
 
 	i = 0
 	do
 		if((str2num(stringfromlist(i, ClampModeString, ";"))) == I_CLAMP_MODE)
 			// R = V / I
-			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
-			Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (AmplitudeIC)) * 1000
+			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (amplitudeIC)) * 1000
+			Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (amplitudeIC)) * 1000
 		else
-			Multithread SSResistance[0][i] = ((AmplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]) * 1000
-			Multithread InstResistance[0][i] = ((AmplitudeVC) / InstAvg[0][i + NoOfActiveDA]) * 1000
+			Multithread SSResistance[0][i] = ((amplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]) * 1000
+			Multithread InstResistance[0][i] = ((amplitudeVC) / InstAvg[0][i + NoOfActiveDA]) * 1000
 		endif
 		i += 1
 	while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
@@ -431,31 +415,31 @@ Function TP_Delta(panelTitle, InputDataPath) // the input path is the path to th
 		columns = 1
 	endif
 
+	// the first row will hold the value of the most recent TP,
+	// the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
 	if(tpBufferSize > 1)
-		sprintf stringPath,  "%s:TPBaselineBuffer" InputDataPath
-		make /o /n = (tpBufferSize, columns) $stringPath // ** does not clear TP buffer wave each time TP is started by the user
-		wave /z TPBaselineBuffer = $stringPath // buffer wave for baseline avg - the first row will hold the value of the most recent TP, the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
-		matrixop /o TPBaselineBuffer =  rotaterows(TPBaselineBuffer, 1)
+		WAVE/SDFR=dfr TPBaselineBuffer
+		MatrixOp/O TPBaselineBuffer = rotaterows(TPBaselineBuffer, 1)
 		TPBaselineBuffer[0][] = BaselineSSAvg[0][q]
-		matrixop /o BaselineSSAvg = sumcols(TPBaselineBuffer)
+		// the comparison a == a evaluates to false iff a = NaN
+		// therefore we can extract all non-NaN values
+		Extract/FREE TPBaselineBuffer, filledBuffer, TPBaselineBuffer == TPBaselineBuffer
+		MatrixOp/O BaselineSSAvg = sumcols(filledBuffer)
 		BaselineSSAvg /= tpBufferSize
 
-		sprintf stringPath,  "%s:TPInstBuffer" InputDataPath
-		make /o /n = (tpBufferSize, columns) $stringPath
-		wave /z TPInstBuffer = $stringPath // buffer wave for Instantaneous avg
-		matrixop /o TPInstBuffer =  rotaterows(TPInstBuffer, 1)
+		WAVE/SDFR=dfr TPInstBuffer
+		MatrixOp/O TPInstBuffer = rotaterows(TPInstBuffer, 1)
 		Multithread TPInstBuffer[0][] = InstResistance[0][q]
-		matrixop /o InstResistance = sumcols(TPInstBuffer)
+		Extract/FREE InstResistance, filledBuffer, InstResistance == InstResistance
+		MatrixOp/O InstResistance = sumcols(filledBuffer)
 		InstResistance /= tpBufferSize
 
-		sprintf stringPath,  "%s:TPSSBuffer" InputDataPath
-		make /o /n = (tpBufferSize, columns) $stringPath
-		wave /z TPSSBuffer = $stringPath // buffer wave for steady state avg
-		matrixop /o TPSSBuffer =  rotaterows(TPSSBuffer, 1)
+		WAVE/SDFR=dfr TPSSBuffer
+		MatrixOp/O TPSSBuffer = rotaterows(TPSSBuffer, 1)
 		Multithread TPSSBuffer[0][] = SSResistance[0][q]
-		matrixop /o SSResistance = sumcols(TPSSBuffer)
+		Extract/FREE SSResistance, filledBuffer, SSResistance == SSResistance
+		MatrixOp/O SSResistance = sumcols(filledBuffer)
 		SSResistance /= tpBufferSize
-
 	endif
 
 	variable numADCs = columns

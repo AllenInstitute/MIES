@@ -122,7 +122,7 @@ Function ITC_BkrdTPFuncMD(s)
 	//		print activechunk
 			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP / 1.5) // 
 		endif																	
-		TP_Delta(panelTitle, WavePath + ":TestPulse") 
+		TP_Delta(panelTitle)
 //		ActiveDeviceList[i][4] += 1
 		ActiveDeviceList[i][4] = ActiveChunk
 		// print ActiveChunk
