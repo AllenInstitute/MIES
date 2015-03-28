@@ -1,8 +1,20 @@
 *.bat whitespace=cr-at-eol
 *.bat eol=CRLF
 
-*.bat        export-ignore
 *.sh         export-ignore
 tools        export-ignore
 Packages/ITC export-ignore
 Packages/doc export-ignore
+
+.git* export-ignore
+
+*.ipf whitespace=cr-at-eol,indent-with-non-tab,tabwidth=4
+*.ibw binary
+*.xop binary
+*.pxp binary
+*.pxt binary
+*.uxp binary
+*.uxt binary
+*.ihf binary
+*.ifn binary
+*.ift binary
