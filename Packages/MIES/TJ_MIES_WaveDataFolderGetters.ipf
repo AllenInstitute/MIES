@@ -2162,14 +2162,9 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		return PressureData
 	endif
 
-	Make/N=(8,38,1) dfr:PressureData/Wave=PressureData
+	Make/N=(8,40,1) dfr:PressureData/Wave=PressureData
 
 	PressureData 	= nan
-	PressureData[][0]	= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
-	PressureData[][1]	= 0
-	PressureData[][4]	= 0
-	PressureData[][6]	= 0
-	PressureData[][8]	= 0
 
 	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear,		PressureData // -1 = atmospheric pressure; 0 = approach; 1 = Seal; Break in = 2     , Clear = 3
 	SetDimLabel COLS, 1 , DAC_List_Index,				PressureData // The position in the popup menu list of attached ITC devices
@@ -2213,7 +2208,10 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel COLS, 34, TimePeakRcheck,				PressureData
 	SetDimLabel COLS, 35, PosCalConst,					PressureData
 	SetDimLabel COLS, 36, NegCalConst,					PressureData
-
+	SetDimLabel COLS, 37, ApproachNear,					PressureData
+	SetDimLabel COLS, 38, SealAtm,						PressureData
+	SetDimLabel COLS, 39, UserSelectedHeadStage			PressureData
+	
 	SetDimLabel ROWS, 0, Headstage_0, PressureData
 	SetDimLabel ROWS, 1, Headstage_1, PressureData
 	SetDimLabel ROWS, 2, Headstage_2, PressureData
@@ -2223,6 +2221,14 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel ROWS, 6, Headstage_6, PressureData
 	SetDimLabel ROWS, 7, Headstage_7, PressureData
 
+	PressureData[][0]					= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
+	PressureData[][%DAC_List_Index]	= 0
+	PressureData[][%DAC]			= 0
+	PressureData[][%ADC]			= 0
+	PressureData[][%TTL]				= 0
+	PressureData[][%ApproachNear]	= 0
+	PressureData[][%SealAtm]		= 0
+	
 	return PressureData
 End
 
@@ -2561,4 +2567,5 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 
 	return wv
 End
+
 /// @}

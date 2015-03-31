@@ -9,7 +9,7 @@ static StrConstant LEADER                = "Leader"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(352,98,834,880)
+	NewPanel /W=(287,62,769,844)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -383,25 +383,25 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo)= A"!!,H0!!#?M!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_00,value= _NUM:1
+	SetVariable Scale_DA_00,limits={-inf,inf,10},value= _NUM:1
 	SetVariable Scale_DA_01,pos={272,120},size={40,16},disable=1
 	SetVariable Scale_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo)= A"!!,H0!!#@T!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_01,value= _NUM:1
+	SetVariable Scale_DA_01,limits={-inf,inf,10},value= _NUM:1
 	SetVariable Scale_DA_02,pos={272,167},size={40,16},disable=1
 	SetVariable Scale_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo)= A"!!,H0!!#A6!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_02,value= _NUM:1
+	SetVariable Scale_DA_02,limits={-inf,inf,10},value= _NUM:1
 	SetVariable Scale_DA_03,pos={272,213},size={40,16},disable=1
 	SetVariable Scale_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo)= A"!!,H0!!#Ae!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_03,value= _NUM:1
+	SetVariable Scale_DA_03,limits={-inf,inf,10},value= _NUM:1
 	SetVariable Scale_DA_04,pos={272,258},size={40,16},disable=1
 	SetVariable Scale_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo)= A"!!,H0!!#B<!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -419,13 +419,13 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo)= A"!!,H0!!#Bk!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_06,value= _NUM:1
-	SetVariable Scale_DA_07,pos={272,399},size={40,16},disable=1
+	SetVariable Scale_DA_06,limits={-inf,inf,10},value= _NUM:1
+	SetVariable Scale_DA_07,pos={272,399},size={40,16},bodyWidth=40,disable=1
 	SetVariable Scale_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo)= A"!!,H0!!#C-J,hnY!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Scale_DA_07,value= _NUM:1
+	SetVariable Scale_DA_07,limits={-inf,inf,10},value= _NUM:1
 	SetVariable SetVar_DataAcq_Comment,pos={48,692},size={384,16},disable=1,title="Comment"
 	SetVariable SetVar_DataAcq_Comment,help={"Appends a comment to wave note of next sweep"}
 	SetVariable SetVar_DataAcq_Comment,userdata(tabnum)=  "0"
@@ -466,7 +466,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq_HS_00,userdata(ResizeControlsInfo)= A"!!,G$!!#?e!!#=#!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcq_HS_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq_HS_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DataAcq_HS_00,labelBack=(65280,0,0),value= 1
+	CheckBox Check_DataAcq_HS_00,labelBack=(65280,0,0),value= 0
 	SetVariable SetVar_DataAcq_TPDuration,pos={66,384},size={110,16},disable=1,proc=DAP_SetVarProc_TPDuration,title="Duration (ms)"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabcontrol)=  "ADC"
@@ -618,7 +618,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
-	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,5,1},value= _NUM:0
+	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,14,1},value= _NUM:0
 	CheckBox Check_Settings_SaveData,pos={34,237},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
 	CheckBox Check_Settings_SaveData,help={"Use cautiously - intended primarily for software development"}
 	CheckBox Check_Settings_SaveData,userdata(tabnum)=  "5"
@@ -1710,7 +1710,7 @@ Window DA_Ephys() : Panel
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_03,frame=0
 	PopupMenu popup_MoreSettings_DeviceType,pos={33,73},size={160,21},bodyWidth=100,proc=DAP_PopMenuProc_DevTypeChk,title="Device type"
-	PopupMenu popup_MoreSettings_DeviceType,help={"Step 1. Select device type. Open device button will be enabled if device type is attached."}
+	PopupMenu popup_MoreSettings_DeviceType,help={"Step 1. Select device type. Available number of devies for selected type are printed to history window."}
 	PopupMenu popup_MoreSettings_DeviceType,userdata(tabnum)=  "6"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo)= A"!!,E.!!#?k!!#A/!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1748,7 +1748,7 @@ Window DA_Ephys() : Panel
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_Hardware_FolderPath,fSize=12
-	Button button_SettingsPlus_PingDevice,pos={43,126},size={150,20},proc=HSU_ButtonProc_Settings_OpenDev,title="Open device"
+	Button button_SettingsPlus_PingDevice,pos={43,126},size={150,20},disable=2,proc=HSU_ButtonProc_Settings_OpenDev,title="Open device"
 	Button button_SettingsPlus_PingDevice,help={"Step 3. Use to determine device number for connected device. Look for device with Ready light ON. Device numbers are determined in hardware and do not change over time. "}
 	Button button_SettingsPlus_PingDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_PingDevice,userdata(tabcontrol)=  "ADC"
@@ -2065,7 +2065,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
 	Button button_Hardware_AddFollower,userdata(tabnum)=  "6"
 	Button button_Hardware_AddFollower,userdata(tabcontrol)=  "ADC"
-	TitleBox title_hardware_1600inst,pos={29,176},size={282,13},disable=3,title="Designate the status of the ITC1600 assigned to this device"
+	TitleBox title_hardware_1600inst,pos={29,176},size={220,13},disable=3,title="To yoke devices go to panel: ITC1600_Dev_0"
 	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
 	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC",frame=0
@@ -2085,7 +2085,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Hardware_YokeList,userdata(tabnum)=  "6"
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
-	SetVariable setvar_Hardware_YokeList,value= _STR:"No Yoked Devices",noedit= 1
+	SetVariable setvar_Hardware_YokeList,value= _STR:"Device is not yokeable",noedit= 1
 	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=3,proc=DAP_ButtonProc_YokeRelease,title="Release"
 	Button button_Hardware_RemoveYoke,userdata(tabnum)=  "6"
 	Button button_Hardware_RemoveYoke,userdata(tabcontrol)=  "ADC"
@@ -2273,7 +2273,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TPBuffer,pos={173,106},size={103,16},disable=1,title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:100
+	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:4
 	CheckBox check_Settings_SaveAmpSettings,pos={306,566},size={108,14},disable=1,title="Save Amp Settings"
 	CheckBox check_Settings_SaveAmpSettings,help={"Adds amplifier settings to lab note book for Multiclamp 700Bs ONLY!"}
 	CheckBox check_Settings_SaveAmpSettings,userdata(tabnum)=  "5"
@@ -2282,7 +2282,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TP_RTolerance,help={"Sets the minimum delta required forTP resistance values to be appended as a wave note to the data sweep. TP resistance values are always documented in the Lab Note Book."}
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:1
+	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:5
 	CheckBox check_Settings_TP_SaveTPRecord,pos={309,107},size={93,14},disable=1,title="Save TP record"
 	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
@@ -2310,7 +2310,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_ClearEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_ClearEnable,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	CheckBox check_DatAcq_ClearEnable,value= 0
-	CheckBox check_DatAcq_SealALl,pos={164,311},size={29,14},disable=1,title="All"
+	CheckBox check_DatAcq_SealALl,pos={150,311},size={29,14},disable=1,title="All"
 	CheckBox check_DatAcq_SealALl,help={"Seals all headstates with active test pulse"}
 	CheckBox check_DatAcq_SealALl,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_SealALl,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2320,11 +2320,11 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_BreakInAll,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_BreakInAll,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	CheckBox check_DatAcq_BreakInAll,value= 0
-	Button button_DataAcq_Approach,pos={42,281},size={84,27},disable=3,proc=ButtonProc_Approach,title="Approach"
+	Button button_DataAcq_Approach,pos={42,281},size={84,27},disable=1,proc=ButtonProc_Approach,title="Approach"
 	Button button_DataAcq_Approach,help={"Applies positive pressure to the pipette"}
 	Button button_DataAcq_Approach,userdata(tabnum)=  "0"
 	Button button_DataAcq_Approach,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	CheckBox check_DatAcq_ApproachAll,pos={55,311},size={29,14},disable=1,title="All"
+	CheckBox check_DatAcq_ApproachAll,pos={45,311},size={29,14},disable=1,title="All"
 	CheckBox check_DatAcq_ApproachAll,help={"Apply postive pressure to all headstages"}
 	CheckBox check_DatAcq_ApproachAll,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_ApproachAll,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2333,7 +2333,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Pressure_ITCdev,help={"List of available ITC devices for pressure control"}
 	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Pressure_ITCdev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
+	PopupMenu popup_Settings_Pressure_ITCdev,mode=3,popvalue="ITC1600_Dev_2",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
 	TitleBox Title_settings_Hardware_Pressur,pos={31,481},size={41,13},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC",frame=0
@@ -2344,23 +2344,23 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_Pressure_AD,pos={37,555},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_Pressure_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_AD,userdata(tabcontrol)=  "ADC"
-	PopupMenu Popup_Settings_Pressure_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_Pressure_AD,mode=5,popvalue="4",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
 	SetVariable setvar_Settings_Pressure_DAgain,pos={98,532},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:nan
+	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:2
 	SetVariable setvar_Settings_Pressure_ADgain,pos={98,557},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:nan
+	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:0.5
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,pos={156,532},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Hardware_Pressur_DA_Unit,value= _STR:""
+	SetVariable SetVar_Hardware_Pressur_DA_Unit,value= _STR:"psi"
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,pos={177,557},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Hardware_Pressur_AD_Unit,value= _STR:""
+	SetVariable SetVar_Hardware_Pressur_AD_Unit,value= _STR:"psi"
 	TitleBox Title_Hardware_Pressure_DA_Div,pos={190,534},size={15,13},title="/ V"
 	TitleBox Title_Hardware_Pressure_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_Pressure_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
@@ -2379,32 +2379,32 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_InAirP,help={"Set the (positive) pressure applied to the pipette when the pipette is out of the bath."}
 	SetVariable setvar_Settings_InAirP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InAirP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_InAirP,limits={-10,10,0.1},value= _NUM:0.400000005960464
+	SetVariable setvar_Settings_InAirP,limits={-10,10,0.1},value= _NUM:3.79999995231628
 	SetVariable setvar_Settings_InBathP,pos={162,651},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In bath P (psi)"
 	SetVariable setvar_Settings_InBathP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the bath."}
 	SetVariable setvar_Settings_InBathP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InBathP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_InBathP,limits={-10,10,0.1},value= _NUM:0.535000026226044
+	SetVariable setvar_Settings_InBathP,limits={-10,10,0.1},value= _NUM:0.549999952316284
 	SetVariable setvar_Settings_InSliceP,pos={287,649},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In slice P (psi)"
 	SetVariable setvar_Settings_InSliceP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the tissue specimen."}
 	SetVariable setvar_Settings_InSliceP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InSliceP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_InSliceP,limits={-10,10,0.1},value= _NUM:0.400000005960464
+	SetVariable setvar_Settings_InSliceP,limits={-10,10,0.1},value= _NUM:0.200000002980232
 	SetVariable setvar_Settings_NearCellP,pos={40,670},size={111,16},disable=1,proc=DAP_SetVarProc_CAA,title="Near cell P (psi)"
 	SetVariable setvar_Settings_NearCellP,help={"Set the (positive) pressure applied to the pipette when the pipette is close to the target neuron."}
 	SetVariable setvar_Settings_NearCellP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_NearCellP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_NearCellP,limits={-1,1,0.1},value= _NUM:0.400000005960464
+	SetVariable setvar_Settings_NearCellP,limits={-1,1,0.1},value= _NUM:0.600000023841858
 	SetVariable setvar_Settings_SealStartP,pos={157,670},size={110,16},disable=1,proc=DAP_SetVarProc_CAA,title="Seal Init P (psi)"
 	SetVariable setvar_Settings_SealStartP,help={"Set the starting negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealStartP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealStartP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_SealStartP,limits={-10,0,0.1},value= _NUM:-0.800000011920929
+	SetVariable setvar_Settings_SealStartP,limits={-10,0,0.1},value= _NUM:-0.600000023841858
 	SetVariable setvar_Settings_SealMaxP,pos={277,669},size={115,16},disable=1,proc=DAP_SetVarProc_CAA,title="Seal max P (psi)"
 	SetVariable setvar_Settings_SealMaxP,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealMaxP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealMaxP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_SealMaxP,limits={-10,0,0.1},value= _NUM:-1.5
+	SetVariable setvar_Settings_SealMaxP,limits={-10,0,0.1},value= _NUM:-1.39999997615814
 	SetVariable setvar_Settings_SurfaceHeight,pos={36,691},size={165,16},disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SurfaceHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabnum)=  "5"
@@ -2419,11 +2419,11 @@ Window DA_Ephys() : Panel
 	Button button_Settings_UpdateDACList,help={"Updates the popup menu contents to show the available ITC devices"}
 	Button button_Settings_UpdateDACList,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateDACList,userdata(tabcontrol)=  "ADC"
-	Button button_Hardware_P_Enable,pos={285,527},size={60,46},disable=2,proc=P_ButtonProc_Enable,title="Enable"
+	Button button_Hardware_P_Enable,pos={285,527},size={60,46},proc=P_ButtonProc_Enable,title="Enable"
 	Button button_Hardware_P_Enable,help={"Enable ITC devices used for pressure regulation."}
 	Button button_Hardware_P_Enable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Enable,userdata(tabcontrol)=  "ADC",fSize=14
-	Button button_Hardware_P_Disable,pos={352,527},size={60,46},proc=P_ButtonProc_Disable,title="Disable"
+	Button button_Hardware_P_Disable,pos={352,527},size={60,46},disable=2,proc=P_ButtonProc_Disable,title="Disable"
 	Button button_Hardware_P_Disable,help={"Enable ITC devices used for pressure regulation."}
 	Button button_Hardware_P_Disable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Disable,userdata(tabcontrol)=  "ADC",fSize=14
@@ -2474,10 +2474,10 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Pressure,userdata(currenttab)=  "0"
 	TabControl tab_DataAcq_Pressure,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Pressure,tabLabel(0)="Auto",tabLabel(1)="Manual",value= 0
-	Button button_DataAcq_SSSetPressureMan,pos={42,281},size={84,27},disable=3,proc=ButtonProc_DataAcq_ManPressSet,title="Set pressure"
+	Button button_DataAcq_SSSetPressureMan,pos={42,281},size={84,27},disable=1,proc=ButtonProc_DataAcq_ManPressSet,title=""
 	Button button_DataAcq_SSSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	Button button_DataAcq_PPSetPressureMan,pos={196,281},size={84,27},disable=3,proc=ButtonProc_ManPP,title="Pressure Pulse"
+	Button button_DataAcq_PPSetPressureMan,pos={196,281},size={84,27},disable=1,proc=ButtonProc_ManPP,title="Pressure Pulse"
 	Button button_DataAcq_PPSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_PPSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	SetVariable setvar_DataAcq_SSPressure,pos={131,288},size={58,16},disable=1,proc=DAP_SetVarProc_CAA,title="psi"
@@ -2487,7 +2487,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_PPPressure,pos={283,286},size={58,16},disable=1,proc=DAP_SetVarProc_CAA,title="psi"
 	SetVariable setvar_DataAcq_PPPressure,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_PPPressure,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	SetVariable setvar_DataAcq_PPPressure,limits={-10,10,1},value= _NUM:2
+	SetVariable setvar_DataAcq_PPPressure,limits={-10,10,1},value= _NUM:5
 	SetVariable setvar_DataAcq_PPDuration,pos={346,287},size={88,16},disable=1,proc=DAP_SetVarProc_CAA,title="Dur(ms)"
 	SetVariable setvar_DataAcq_PPDuration,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_PPDuration,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2504,6 +2504,16 @@ Window DA_Ephys() : Panel
 	CheckBox check_settings_TP_show_steady,help={"Show the steady state resistance curve during the testpulse"}
 	CheckBox check_settings_TP_show_steady,userdata(tabnum)=  "5"
 	CheckBox check_settings_TP_show_steady,userdata(tabcontrol)=  "ADC",value= 1
+	CheckBox check_DatAcq_ApproachNear,pos={84,311},size={41,14},disable=1,proc=P_Check_ApproachNear,title="Near"
+	CheckBox check_DatAcq_ApproachNear,help={"Apply postive pressure to all headstages"}
+	CheckBox check_DatAcq_ApproachNear,userdata(tabnum)=  "0"
+	CheckBox check_DatAcq_ApproachNear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
+	CheckBox check_DatAcq_ApproachNear,value= 0
+	CheckBox check_DatAcq_SealAtm,pos={188,311},size={39,14},disable=1,proc=P_Check_SealAtm,title="Atm."
+	CheckBox check_DatAcq_SealAtm,help={"Seals all headstates with active test pulse"}
+	CheckBox check_DatAcq_SealAtm,userdata(tabnum)=  "0"
+	CheckBox check_DatAcq_SealAtm,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
+	CheckBox check_DatAcq_SealAtm,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2538,7 +2548,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	// activate only the first headstage
 	DAP_TurnOffAllHeadstages(panelTitle)
-	CheckBox Check_DataAcq_HS_00 WIN = $panelTitle,value= 1
+	CheckBox Check_DataAcq_HS_00 WIN = $panelTitle,value= 0
 
 	DAP_TurnOffAllDACs(panelTitle)
 	DAP_TurnOffAllADCs(panelTitle)
@@ -4966,6 +4976,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		mode = AI_MIESHeadstageMode(panelTitle, headStage)
 		AI_UpdateAmpView(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
+		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		// chooses the amp tab according to the MIES headstage clamp mode
 		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif

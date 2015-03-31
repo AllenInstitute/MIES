@@ -29,6 +29,7 @@ static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
 static Constant		MAX_REGULATOR_PRESSURE			= 10
 static Constant		MIN_REGULATOR_PRESSURE			= -10
+static Constant		ATMOSPHERIC_PRESSURE				= 0
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -99,6 +100,11 @@ Function P_MethodApproach(panelTitle, headStage)
 	
 	P_UpdateTTLstate(panelTitle, headStage, ONorOFF) // Open the TTL - outside of if statement below because TTL will only update if the state is incorrect.
 
+	// if Near cell checkbox is checked then all headstages, except the active headstage, go to in slice pressure. The active headstage goes to nearCell pressure
+	if(PressureDataWv[headStage][%ApproachNear] && headStage != PressureDataWv[headStage][%UserSelectedHeadStage])
+		targetP = PressureDataWv[headStage][%PSI_slice]
+	endif
+	
 	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
@@ -128,7 +134,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	P_UpdateSSRSlopeAndSSR(panelTitle) // update the resistance values used to assess seal changes
 	variable resistance = PressureDataWv[headStage][%LastResistanceValue]
 	variable pressure = PressureDataWv[headStage][%LastPressureCommand]
-
+	variable targetPressure
 	// if the seal resistance is greater that 1 giga ohm set pressure to atmospheric AND stop sealing process
 	if(Resistance >= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
@@ -145,13 +151,19 @@ Function P_MethodSeal(panelTitle, headStage)
 		print "Seal on head stage:", headstage
 	else // no seal, start, hold, or increment negative pressure
 		// if there is no neg pressure, apply starting pressure.
-		if(PressureDataWv[headStage][%LastPressureCommand] > PressureDataWv[headStage][%PSI_SealInitial])
-			PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, PressureDataWv[headStage][%PSI_SealInitial]) // column 26 is the last pressure command, column 13 is the starting seal pressure
-			pressure = PressureDataWv[headStage][%PSI_SealInitial]
-			PressureDataWv[headStage][%LastPressureCommand] = PressureDataWv[headStage][%PSI_SealInitial]
-			PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
-			P_UpdateTTLstate(panelTitle, headStage, 1) // give pressure regulator access to pipette by opening TTL
-			print "starting seal"
+			if(PressureDataWv[headStage][%LastPressureCommand] > PressureDataWv[headStage][%PSI_SealInitial])
+			if(PressureDataWv[headStage][%SealAtm])
+				targetPressure = ATMOSPHERIC_PRESSURE
+				P_MethodAtmospheric(panelTitle, headstage)
+			else
+				targetPressure = PressureDataWv[headStage][%PSI_SealInitial]
+				PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetPressure) // column 26 is the last pressure command, column 13 is the starting seal pressure
+				pressure = targetPressure
+				PressureDataWv[headStage][%LastPressureCommand] = targetPressure
+				PressureDataWv[headStage][%RealTimePressure] = targetPressure
+				P_UpdateTTLstate(panelTitle, headStage, 1) // give pressure regulator access to pipette by opening TTL
+				print "starting seal"
+			endif
 		endif
 		// if the seal slope has plateau'd or is going down, increase the negative pressure
 		// print ElapsedTimeInSeconds
@@ -164,7 +176,13 @@ Function P_MethodSeal(panelTitle, headStage)
 				if(pressure > (0.98 *PressureDataWv[headStage][%PSI_SealMax])) // is the pressure beign applied less than the maximum allowed?
 					print "resistance is not going up fast enough"
 					print "updated seal pressure =", pressure - 0.1
-					PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, (pressure - 0.1)) // increase the negative pressure by 0.1 psi
+					if(PressureDataWv[headStage][%LastPressureCommand] == 0)
+						targetPressure = PressureDataWv[headStage][%PSI_SealInitial]
+						P_UpdateTTLstate(panelTitle, headStage, 1) // open the TTL/switch to regulator now since it was at atmospheric pressure
+					else
+						targetPressure = pressure - 0.1
+					endif
+					PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetPressure) // increase the negative pressure by 0.1 psi
 					PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 				else // max neg pressure has been reached and resistance has stabilized
 					print "pressure is at max neg value"
@@ -587,9 +605,9 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 End
 
 /// @brief Updates the pressure state (approach, seal, break in, or clear) from DA_Ephys panel to the pressureData wave
-Function P_UpdatePressureDataStorageWv(panelTitle)
+Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter
 	string 	panelTitle
-	variable 	headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
+	variable 	headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	string 	deviceType, deviceNum
 
@@ -615,7 +633,9 @@ Function P_UpdatePressureDataStorageWv(panelTitle)
 	PressureDataWv[][%ManSSPressure]				= GetSetVariable			(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%ManPPPressure]				= GetSetVariable			(panelTitle, "setvar_DataAcq_PPPressure")
 	PressureDataWv[][%ManPPDuration]				= GetSetVariable			(panelTitle, "setvar_DataAcq_PPDuration")
-
+	PressureDataWv[][%ApproachNear]					= GetCheckBoxState		(panelTitle, "check_DatAcq_ApproachNear")
+	PressureDataWv[][%SealAtm]						= GetCheckBoxState		(panelTitle, "check_DatAcq_SealAtm")
+	
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
 	PressureDataTxtWv[headStageNo][%ITC_Device] = SelectedITCDevice
@@ -1381,6 +1401,16 @@ Function P_ManPressurePulse(panelTitle, headStage)
 	P_TTLforPpulse(panelTitle, Headstage) 	// update TTL data
 	P_ITCDataAcq(panelTitle, headStage)
 End
+
+
+/// @brief Saves user seleted headstage in pressureData wave
+///
+Function P_SaveUserSelectedHeadstage(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	PressureDataWv[][%UserSelectedHeadStage] =  headStage
+End
 //============================================================================================================
 // PRESSURE CONTROLS; DA_ePHYS PANEL; DATA ACQUISTION TAB
 //============================================================================================================
@@ -1550,6 +1580,37 @@ Function ButtonProc_ManPP(ba) : ButtonControl
 		case 2: // mouse up
 			variable headStage = GetSliderPositionIndex(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function P_Check_ApproachNear(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			P_UpdatePressureDataStorageWv(cba.win)
+			if(!P_IsTPActive(cba.win)) // P_PressureControl will be called from TP functions when the TP is running
+				P_PressureControl(cba.win)
+			endif
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function P_Check_SealAtm(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			P_UpdatePressureDataStorageWv(cba.win)
 			break
 		case -1: // control being killed
 			break
