@@ -681,3 +681,53 @@ Function/S GetNextFreeAxisName(graph, axesBaseName)
 
 	return axesBaseName + num2str(numAxes)
 End
+
+/// @brief Generic wrapper for setting a control's value -- developed to be used with loadConfig function
+/// pass in the value as a string, and then decide whether to change to a number based on the type of control
+Function SetGuiControlValue(win, control, value)
+	string win, control
+	string value
+
+	variable controlType
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+
+	if(controlType == 2)
+		SetCheckBoxState(win, control, str2num(value))
+	elseif(controlType == 5)
+		SetSetVariableString(win, control, value)
+	elseif(controlType == 7)
+		Slider $control, value = str2num(value)		
+	else
+		print "Unsupported control type..."	// if I get this, something's really gone pear shaped
+	endif
+End
+
+/// @brief Generic wrapper for getting a control's value -- developed to be used with the saveConfig Function
+Function/S GetGuiControlValue(win, control)
+	string win, control
+	
+	string value
+	variable controlType
+	
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+	
+	if(controlType == 2) // Check boxes
+		value = num2str(GetCheckBoxState(win, control))
+	elseif(controlType == 7) // slider for active headstages
+		value = num2str(V_value)
+	elseif(controlType == 5) // 
+		value = num2str(GetSetVariable(win, control))
+		if (StringMatch(value, "Nan"))
+			value = GetSetVariableString(win, control)
+		endif
+	else
+		value = "NIL"
+	endif
+	
+	return value
+End

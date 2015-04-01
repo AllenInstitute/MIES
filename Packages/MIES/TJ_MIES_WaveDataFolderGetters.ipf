@@ -2568,4 +2568,52 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 	return wv
 End
 
+///@brief Returns a wave reference to the new config settings Wave
+Function/Wave newGetConfigSettingsWaveRef(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevSpecConfigSttngsWavePath(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = configSettingsWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	print "making the config wave..."
+	// Make this a 2 by 1 wave...the 1st row will have the name of the thing saved, the 2nd row will have the value.  This wave will get redimensioned and
+	// expanded and new things are added
+	Make/T/N=(2,1) dfr:configSettingsWave/Wave=wv
+	
+	SetDimLabel 0, 0, settingName, wv
+	SetDimLabel 0, 1, settingValue, wv
+	SetDimLabel 1, 0, version, wv
+	
+	return wv
+End
+
+/// @brief Return the datafolder reference to the device specific text documentation
+Function/DF GetDevSpecConfigSttngsWavePath(panelTitle)
+	string panelTitle
+	return createDFWithAllParents(GetDevSpecConfigSttngsWaveAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:analysisSettings
+Function/S GetDevSpecConfigSttngsWaveAS(panelTitle)
+	string panelTitle
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":configSettings"
+End
+
+/// @brief Return the datafolder reference to the device specific config settings
+Function/DF GetDevSpecLabNBConfigFolder(panelTitle)
+	string panelTitle
+	return createDFWithAllParents(GetDevSpecLabNBConfigFolderAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:configSettings
+Function/S GetDevSpecLabNBConfigFolderAS(panelTitle)
+	string panelTitle
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":configSettings"
+End
+
 /// @}
