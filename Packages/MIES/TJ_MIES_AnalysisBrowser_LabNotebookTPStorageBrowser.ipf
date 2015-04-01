@@ -221,15 +221,16 @@ End
 
 Function/S LBN_GetLabNotebookViewAbleCols()
 
-	string expFolder, device, panel
+	string expFolder, device, panel, control
 
-	panel = LBN_GetLeftPanel()
+	panel   = LBN_GetLeftPanel()
+	control = "popup_select_device"
 
-	if(!windowExists(panel))
+	if(!windowExists(panel) || !ControlExists(panel, control))
 		return NONE
 	endif
 
-	device = GetPopupMenuString(panel, "popup_select_device")
+	device = GetPopupMenuString(panel, control)
 	expFolder = LBN_GetExpFolderFromPopup()
 
 	if(isEmpty(device) || isEmpty(expFolder))

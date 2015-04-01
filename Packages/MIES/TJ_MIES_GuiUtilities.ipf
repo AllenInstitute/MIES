@@ -425,6 +425,14 @@ Function SetValDisplaySingleVariable(win, control, var, [format])
 	ValDisplay $control win=$win, value=#formattedString
 End
 
+/// @brief Check if a given control exists
+Function ControlExists(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	return V_flag != 0
+End
+
 /// @brief Change the active tab of a panel
 ///
 /// @param panel    window name, tabs must be managed with Adam's Tab Control procedures
