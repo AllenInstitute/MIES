@@ -42,25 +42,17 @@ Function SaveExperimentWithDialog(path, filename)
 	return 0
 End
 
-/// @brief Save the current experiment under a new name and clear all data
-/// @param fileNameSuffix   [optional: default current timestamp]     suffix for the new experiment name
-/// @param zeroSweeps       [optional: default true]                  should the sweep number be resetted to zero
-/// @param keepOtherWaves   [optional: default false]                 only delete the sweep and sweep config waves
-/// @param untitledSaveName [optional: default `UNTITLED_EXPERIMENT`] initial suggestion for the filename in the save dialog
-Function IM_SaveAndClearExperiment([fileNameSuffix, zeroSweeps, keepOtherWaves, untitledSaveName])
-	string fileNameSuffix
+/// @brief Save the current experiment under a new name and clear all/some data
+/// @param mode                                       mode for generating the experiment name, one of @ref SaveExperimentModes
+/// @param zeroSweeps       [optional: default true]  should the sweep number be resetted to zero
+/// @param keepOtherWaves   [optional: default false] only delete the sweep and sweep config waves
+Function IM_SaveExperiment(mode, [zeroSweeps, keepOtherWaves])
+	variable mode
 	variable zeroSweeps, keepOtherWaves
-	string untitledSaveName
 
 	variable numDevices, i, ret, pos
 	string path, devicesWithData, activeDevices, device, expLoc, list, refNum
 	string expName, substr
-
-	if(ParamIsDefault(fileNameSuffix))
-		fileNameSuffix = "_" + GetTimeStamp()
-	elseif(!isEmpty(fileNameSuffix))
-		fileNameSuffix = "_" + fileNameSuffix
-	endif
 
 	if(ParamIsDefault(zeroSweeps))
 		zeroSweeps = 1
@@ -73,12 +65,6 @@ Function IM_SaveAndClearExperiment([fileNameSuffix, zeroSweeps, keepOtherWaves, 
 	else
 		keepOtherWaves = !!keepOtherWaves
 	endif
-
-	if(ParamIsDefault(untitledSaveName))
-		untitledSaveName = UNTITLED_EXPERIMENT
-	endif
-
-	ASSERT(strlen(untitledSaveName) > 0, "Can not proceed with an empty untitledSaveName")
 
 	// We want never to loose data so we do the following:
 	// Case 1: Unitled experiment
@@ -98,7 +84,7 @@ Function IM_SaveAndClearExperiment([fileNameSuffix, zeroSweeps, keepOtherWaves, 
 	expName = GetExperimentName()
 
 	if(!cmpstr(expName, UNTITLED_EXPERIMENT))
-		ret = SaveExperimentWithDialog("", GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX)
+		ret = SaveExperimentWithDialog("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX)
 
 		if(ret)
 			return NaN
@@ -110,19 +96,20 @@ Function IM_SaveAndClearExperiment([fileNameSuffix, zeroSweeps, keepOtherWaves, 
 		SaveExperiment
 	endif
 
-	// Remove a possibly existing sibling suffix
-	expName = RemoveEnding(expName, "_" + SIBLING_FILENAME_SUFFIX)
-
-	// and a numerical suffix, 0 to 999, from earlier saving
-	pos = strsearch(expName, "_", inf, 1)
-	if(pos > 0)
-		substr = expName[pos + 1, inf]
-		if(strlen(substr) <= 3 && IsFinite(str2num(substr)))
-			expName = RemoveEnding(expName, substr)
-		endif
+	if(mode == SAVE_AND_SPLIT)
+		// Remove the following suffixes:
+		// - sibling
+		// - time stamp
+		// - numerical suffixes added to prevent overwriting files
+		expName  = RemoveEnding(expName, "_" + SIBLING_FILENAME_SUFFIX)
+		expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
+		expName  = RemoveEndingRegExp(expName, "_[[:digit:]]+") // example: _1, _123
+		expName += SIBLING_FILENAME_SUFFIX
+	elseif(mode == SAVE_AND_CLEAR)
+		expName = "_" + GetTimeStamp()
+	else
+		ASSERT(0, "unknown mode")
 	endif
-
-	expName += fileNameSuffix
 
 	// saved experiments are stored in the symbolic path "home"
 	expLoc  = "home"

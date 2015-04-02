@@ -8,7 +8,7 @@ Menu "Mies Panels", dynamic
 		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
 		"Data Browser"               , /Q, Execute "DataBrowser()"
 		"Initiate Mies"              , /Q, IM_InitiateMies()
-		"Save and Clear Experiment"  , /Q, IM_SaveAndClearExperiment(fileNameSuffix="")
+		"Save and Clear Experiment"  , /Q, IM_SaveExperiment(SAVE_AND_CLEAR)
 		"Close Mies"                 , /Q, CloseMies()
 		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
 		"Open AnalysisMaster Panel", /Q, analysisMaster()

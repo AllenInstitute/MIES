@@ -4138,7 +4138,7 @@ Function DAP_CheckSettings(panelTitle)
 			sprintf msg, "The amount of free memory is below %gGB,\r would you like to start a new experiment?", FREE_MEMORY_LOWER_LIMIT
 			DoAlert/T="Low memory warning" 1, msg
 			if(V_flag == 1)
-				IM_SaveAndClearExperiment(fileNameSuffix=SIBLING_FILENAME_SUFFIX, zeroSweeps=0, keepOtherWaves=1)
+				IM_SaveExperiment(SAVE_AND_SPLIT, zeroSweeps=0, keepOtherWaves=1)
 				print "Please restart data acquisition"
 				return 1
 			else
