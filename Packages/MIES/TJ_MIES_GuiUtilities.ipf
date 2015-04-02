@@ -682,7 +682,7 @@ Function/S GetNextFreeAxisName(graph, axesBaseName)
 	return axesBaseName + num2str(numAxes)
 End
 
-/// @brief Generic wrapper for setting a control's value -- developed to be used with loadConfig function
+/// @brief Generic wrapper for setting a control's value 
 /// pass in the value as a string, and then decide whether to change to a number based on the type of control
 Function SetGuiControlValue(win, control, value)
 	string win, control
@@ -701,11 +701,13 @@ Function SetGuiControlValue(win, control, value)
 	elseif(controlType == 7)
 		Slider $control, value = str2num(value)		
 	else
-		print "Unsupported control type..."	// if I get this, something's really gone pear shaped
+		print "trying to set this: ", control
+		print "to this: ", value
+		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
 	endif
 End
 
-/// @brief Generic wrapper for getting a control's value -- developed to be used with the saveConfig Function
+/// @brief Generic wrapper for getting a control's value 
 Function/S GetGuiControlValue(win, control)
 	string win, control
 	
@@ -722,12 +724,46 @@ Function/S GetGuiControlValue(win, control)
 		value = num2str(V_value)
 	elseif(controlType == 5) // 
 		value = num2str(GetSetVariable(win, control))
-		if (StringMatch(value, "Nan"))
+		if (cmpstr(value, "NaN") == 0)
 			value = GetSetVariableString(win, control)
 		endif
-	else
-		value = "NIL"
 	endif
 	
 	return value
+End
+
+/// @brief Generic wrapper for getting a controls state (enabled, hidden, disabled)
+Function/S GetGuiControlState(win, control)
+	string win, control
+	
+	string controlState
+	
+	
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlState = num2str(abs(V_disable))	
+
+	return controlState
+End
+
+/// @brief Generic wrapper for setting a controls state (enabled, hidden, disabled)
+Function SetGuiControlState(win, control, controlState)
+	string win, control
+	string controlState
+
+	variable controlType
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+
+	if(controlType == 2)
+		CheckBox $control, win=$win, disable=str2num(controlState) 
+	elseif(controlType == 5)
+		SetVariable $control, win = $win, disable = str2num(controlState)
+	elseif(controlType == 7)
+		Slider $control, win=$win, disable = str2num(controlState)		
+	else
+		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
+	endif
 End

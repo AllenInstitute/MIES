@@ -511,6 +511,7 @@ Function SaveConfiguration()
 	string groupString
 	string panelControlsList
 	string currentControl
+	string controlState
 	variable configWaveSize
 	
 	// get the da_ephys panel names
@@ -551,7 +552,7 @@ Function SaveConfiguration()
 		for (n = 0; n<noLockedDevs; n+= 1)
 			currentPanel = StringFromList(n, lockedDevList)
 			
-			wave/T configWave = newGetConfigSettingsWaveRef(currentPanel)
+			wave/T configWave = GetConfigSettingsWaveRef(currentPanel)
 			
 			print "Saving Configuration for ", currentPanel
 			
@@ -566,9 +567,10 @@ Function SaveConfiguration()
 			numControls = ItemsInList(panelControlsList)
 			for (controlCounter = 0; controlCounter<numControls;controlCounter+=1)
 				currentControl = StringFromList(controlCounter, panelControlsList)
-				value = GetGuiControlValue(currentPanel, currentControl)					
+				value = GetGuiControlValue(currentPanel, currentControl)
+				controlState = GetGuiControlState(currentPanel, currentControl)					
 				
-				if (StringMatch(value, "!NIL"))
+				if (!IsNull(value))
 					// get the current configWaveSize
 					configWaveSize = DimSize(configWave, 1)
 					
@@ -578,6 +580,7 @@ Function SaveConfiguration()
 					// and now stuff the info in the right place
 					configWave[%settingName][configWaveSize] = currentControl
 					configWave[%settingValue][configWaveSize] = value
+					configWave[%controlState][configWaveSize] = controlState
 				endif				
 			endfor
 			
@@ -586,7 +589,6 @@ Function SaveConfiguration()
 			sprintf groupString "/%s", currentPanel
 			HDF5CreateGroup /Z h5_id, groupString, root_id
 			HDF5SaveGroup /O /R  :, root_id, groupString
-//			HDF5SaveData /Z /O  configWave, h5_id
 			HDF5CloseGroup root_id
 		
 			print "Configuration saved for ", currentPanel
@@ -632,7 +634,8 @@ Function LoadConfigSet([incomingFileName])
 	savedDataFolder = GetDataFolder(1)
 	
 	if( ParamIsDefault(incomingFileName) )
-		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
+		NewPath/O miesHDF5ConfigStorage, "C:\\MiesHDF5Files\\SavedConfigFiles\\"
+		HDF5OpenFile /R /P=miesHDF5ConfigStorage fileID as ""	 // Displays a dialog
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		else
@@ -670,10 +673,9 @@ Function LoadConfigSet([incomingFileName])
 				SetDataFolder GetDevSpecLabNBConfigFolder(currentPanel)
 				HDF5LoadData /O /IGOR=-1 fileID, dataSet
 				
-				wave/T configWave = newGetConfigSettingsWaveRef(currentPanel)
+				wave/T configWave = GetConfigSettingsWaveRef(currentPanel)
 				
 				// Version #
-				//print root:MIES:version
 				SVAR versionString = $GetMiesVersion()
 				if (StringMatch(versionString, configWave[%settingValue][%version]) != 1)
 					print "MIES Versions do not match....proceed with caution..."
@@ -683,6 +685,8 @@ Function LoadConfigSet([incomingFileName])
 				for (controlCounter = 1; controlCounter<configWaveSize;controlCounter+=1) // start at column 1...column zero is the version number
 					// Some times the values saved are blanks...so need to send the value as a string and let the SetGuiControlValue decide what to do with it
 					SetGuiControlValue(currentPanel, configWave[%settingName][controlCounter],configWave[%settingValue][controlCounter])
+					// also set the control state
+					SetGuiControlState(currentPanel, configWave[%settingName][controlCounter], configWave[%controlState][controlCounter])
 				endfor
 			endfor
 		endif
