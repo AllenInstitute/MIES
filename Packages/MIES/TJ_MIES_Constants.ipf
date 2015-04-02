@@ -123,3 +123,10 @@ StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
 StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 /// @}
+
+/// @name Modes for IM_SaveExperiment
+/// @anchor SaveExperimentModes
+/// @{
+Constant SAVE_AND_CLEAR            = 0x01
+Constant SAVE_AND_SPLIT            = 0x02
+/// @}

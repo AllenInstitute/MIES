@@ -1599,3 +1599,23 @@ Function GetFreeMemory()
 
 	return str2num(memStr) / 1024 / 1024 / 1024
 End
+
+/// @brief Remove the given reguluar expression from the end of the string
+///
+/// In case the regular expression does not match, the string is returned unaltered.
+///
+/// See also `DisplayHelpTopic "Regular Expressions"`.
+Function/S RemoveEndingRegExp(str, endingRegExp)
+	string str, endingRegExp
+
+	string endStr
+
+	if(isEmpty(str) || isEmpty(endingRegExp))
+		return str
+	endif
+
+	SplitString/E="(" + endingRegExp + ")$" str, endStr
+	ASSERT(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
+
+	return RemoveEnding(str, endStr)
+End
