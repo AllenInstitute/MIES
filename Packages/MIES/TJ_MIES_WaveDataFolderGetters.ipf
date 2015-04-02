@@ -2604,17 +2604,4 @@ Function/S GetDevSpecConfigSttngsWaveAS(panelTitle)
 	string panelTitle
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":configSettings"
 End
-
-/// @brief Return the datafolder reference to the device specific config settings folder
-Function/DF GetDevSpecLabNBConfigFolder(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDevSpecLabNBConfigFolderAS(panelTitle))
-End
-
-///// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:configSettings
-Function/S GetDevSpecLabNBConfigFolderAS(panelTitle)
-	string panelTitle
-	return GetDevSpecLabNBFolderAsString(panelTitle) + ":configSettings"
-End
-
 /// @}

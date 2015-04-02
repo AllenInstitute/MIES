@@ -585,7 +585,7 @@ Function SaveConfiguration()
 			endfor
 			
 			// Set the data folder for saving the config settings stuff
-			SetDataFolder GetDevSpecLabNBConfigFolder(currentPanel)
+			SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
 			sprintf groupString "/%s", currentPanel
 			HDF5CreateGroup /Z h5_id, groupString, root_id
 			HDF5SaveGroup /O /R  :, root_id, groupString
@@ -670,7 +670,7 @@ Function LoadConfigSet([incomingFileName])
 			for (n = 0; n<noLockedDevs; n+= 1)
 				currentPanel = StringFromList(n, lockedDevList)
 				// load into the DA folder
-				SetDataFolder GetDevSpecLabNBConfigFolder(currentPanel)
+				SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
 				HDF5LoadData /O /IGOR=-1 fileID, dataSet
 				
 				wave/T configWave = GetConfigSettingsWaveRef(currentPanel)
