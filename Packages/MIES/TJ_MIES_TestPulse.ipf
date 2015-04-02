@@ -415,36 +415,53 @@ Function TP_Delta(panelTitle)
 		columns = 1
 	endif
 
-	// the first row will hold the value of the most recent TP,
-	// the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
 	if(tpBufferSize > 1)
-		WAVE/SDFR=dfr TPBaselineBuffer
-		MatrixOp/O TPBaselineBuffer = rotaterows(TPBaselineBuffer, 1)
-		TPBaselineBuffer[0][] = BaselineSSAvg[0][q]
-		// the comparison a == a evaluates to false iff a = NaN
-		// therefore we can extract all non-NaN values
-		Extract/FREE TPBaselineBuffer, filledBuffer, TPBaselineBuffer == TPBaselineBuffer
-		MatrixOp/O BaselineSSAvg = sumcols(filledBuffer)
-		BaselineSSAvg /= tpBufferSize
+		// the first row will hold the value of the most recent TP,
+		// the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
+		WAVE/SDFR=dfr TPBaselineBuffer, TPInstBuffer, TPSSBuffer
 
-		WAVE/SDFR=dfr TPInstBuffer
-		MatrixOp/O TPInstBuffer = rotaterows(TPInstBuffer, 1)
-		Multithread TPInstBuffer[0][] = InstResistance[0][q]
-		Extract/FREE InstResistance, filledBuffer, InstResistance == InstResistance
-		MatrixOp/O InstResistance = sumcols(filledBuffer)
-		InstResistance /= tpBufferSize
-
-		WAVE/SDFR=dfr TPSSBuffer
-		MatrixOp/O TPSSBuffer = rotaterows(TPSSBuffer, 1)
-		Multithread TPSSBuffer[0][] = SSResistance[0][q]
-		Extract/FREE SSResistance, filledBuffer, SSResistance == SSResistance
-		MatrixOp/O SSResistance = sumcols(filledBuffer)
-		SSResistance /= tpBufferSize
+		TP_CalculateAverage(TPBaselineBuffer, BaselineSSAvg)
+		TP_CalculateAverage(TPInstBuffer, InstResistance)
+		TP_CalculateAverage(TPSSBuffer, SSResistance)
 	endif
 
 	variable numADCs = columns
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+End
+
+static Function TP_CalculateAverage(buffer, dest)
+	Wave buffer, dest
+
+	variable i
+	variable lastFiniteRow = NaN
+	variable numRows = DimSize(buffer, ROWS)
+
+	ASSERT(DimSize(buffer, COLS) == DimSize(dest, COLS) || (DimSize(dest, COLS) == 1 && DimSize(buffer, COLS) == 0) , "Mismatched column sizes")
+
+	MatrixOp/O buffer = rotaterows(buffer, 1)
+	buffer[0][] = dest[0][q]
+
+	// only remove NaNs if we actually have one
+	// as we append data to the front, the last row is a good point to check
+	if(IsFinite(buffer[numRows - 1][0]))
+		MatrixOp/O dest = sumcols(buffer)
+		dest /= numRows
+	else
+		// FindValue/BinarySearch does not support searching for NaNs
+		// reported to WM on 2nd April 2015
+		for(i = 0; i < numRows; i += 1)
+			if(!IsFinite(buffer[i][0]))
+				ASSERT(i > 0, "No valid entries in buffer")
+				lastFiniteRow = i - 1
+				break
+			endif
+		endfor
+		ASSERT(IsFinite(lastFiniteRow), "Hugh? Did not find any NaNs...")
+		Duplicate/FREE/R=[0, lastFiniteRow][] buffer, filledBuffer
+		MatrixOp/O dest = sumcols(filledBuffer)
+		dest /= DimSize(filledBuffer, ROWS)
+	endif
 End
 
 /// Sampling interval in seconds
