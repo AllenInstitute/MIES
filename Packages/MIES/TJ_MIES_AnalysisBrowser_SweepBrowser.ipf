@@ -159,6 +159,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	WAVE/T map = SB_GetSweepBrowserMap(sweepBrowser)
 
 	index = GetNumberFromWaveNote(map, "index")
+	EnsureLargeEnoughWave(map, minimumSize=index)
 
 	foundExperiment = WaveExists(FindIndizes(colLabel="ExperimentName", wvText=map, str=expName, endRow=index))
 	foundExpFolder  = WaveExists(FindIndizes(colLabel="ExperimentFolder", wvText=map, str=expFolder, endRow=index))

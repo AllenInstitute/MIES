@@ -50,18 +50,18 @@ Window LabnotebookBrowser() : Graph
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KCJ,ht*J,hp!!!#<pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	PopupMenu popup_select_experiment,pos={29,94},size={199,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Experiment:"
+	PopupMenu popup_select_experiment,mode=1,value= #"LBN_GetAllExperiments()"
+	PopupMenu popup_select_device,pos={46,123},size={161,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Device: "
+	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment()"
 	PopupMenu popup_labenotebookViewableCols,pos={27,12},size={150,21},bodyWidth=150,proc=LBN_PopMenuProc_ViewableCols
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_labenotebookViewableCols,mode=1,popvalue=" ",value= #"LBN_GetLabNotebookViewAbleCols()"
+	PopupMenu popup_labenotebookViewableCols,mode=1,value= #"LBN_GetLabNotebookViewAbleCols()"
 	Button button_switch,pos={58,63},size={72,23},proc=LBN_ButtonProc_SwitchXaxisType,title="Switch x-axis"
-	PopupMenu popup_select_experiment,pos={29,94},size={199,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Experiment:"
-	PopupMenu popup_select_experiment,mode=1,popvalue=" ",value= #"LBN_GetAllExperiments()"
 	CheckBox check_sync_with_sweepBrowser,pos={17,194},size={141,14},proc=LBN_CheckProc_SyncSweepBrowser,title="Sync with Sweep Browser"
 	CheckBox check_sync_with_sweepBrowser,value= 0, disable=2
-	PopupMenu popup_select_device,pos={46,123},size={161,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Device: "
-	PopupMenu popup_select_device,mode=1,popvalue=" ",value= #"LBN_GetAllDevicesForExperiment()"
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 EndMacro
@@ -221,15 +221,16 @@ End
 
 Function/S LBN_GetLabNotebookViewAbleCols()
 
-	string expFolder, device, panel
+	string expFolder, device, panel, control
 
-	panel = LBN_GetLeftPanel()
+	panel   = LBN_GetLeftPanel()
+	control = "popup_select_device"
 
-	if(!windowExists(panel))
+	if(!windowExists(panel) || !ControlExists(panel, control))
 		return NONE
 	endif
 
-	device = GetPopupMenuString(panel, "popup_select_device")
+	device = GetPopupMenuString(panel, control)
 	expFolder = LBN_GetExpFolderFromPopup()
 
 	if(isEmpty(device) || isEmpty(expFolder))
