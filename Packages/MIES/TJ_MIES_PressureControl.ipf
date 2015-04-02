@@ -6,9 +6,9 @@
 
 ///@name Constants Used by pressure control
 /// @{
-static StrConstant 	PRESSURE_CONTROLS_BUTTON_LIST  	= "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan;button_DataAcq_PPSetPressureMan"
-static StrConstant 	PRESSURE_CONTROL_TITLE_LIST    		= "Approach;Seal;Break In;Clear"
-static StrConstant 	PRESSURE_CONTROL_CHECKBOX_LIST 	= "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable"
+static StrConstant 	PRESSURE_CONTROLS_BUTTON_LIST  	= "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
+static StrConstant 	PRESSURE_CONTROL_TITLE_LIST    		= "Approach;Seal;Break In;Clear;Apply"
+static StrConstant 	PRESSURE_CONTROL_CHECKBOX_LIST 	= "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
 static StrConstant 	PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
 static Constant 		P_METHOD_neg1_ATM            			= -1
 static Constant 		P_METHOD_0_APPROACH         			= 0
@@ -73,6 +73,13 @@ Function P_PressureControl(panelTitle)
 						 P_MethodClear(panelTitle, headStage)
 					endif
 					break
+				case P_METHOD_4_MANUAL:
+					P_ManSetPressure(panelTitle, headStage)
+					break
+				default: 
+					PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = -1
+					P_MethodAtmospheric(panelTitle, headstage)
+					break
 			endswitch
 			
 		endif
@@ -126,7 +133,7 @@ Function P_MethodSeal(panelTitle, headStage)
 	variable 	timeInSec 				= ticks / 60
 	variable 	ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
 	
-	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2) // checks for first time thru.
+	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2 || !ElapsedTimeInSeconds) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 	endif
@@ -1044,7 +1051,11 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
-			elseif(PressureMode)
+			elseif(PressureMode == P_METHOD_4_MANUAL) // Manual pressure set, apply the mode
+				SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
+				SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
+				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode			
+			elseif(PressureMode) // all other modes, only apply if TP is running
 				if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
 					SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
@@ -1131,13 +1142,11 @@ Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 			EnableControl(panelTitle, StringFromList(1, PRESSURE_CONTROLS_BUTTON_LIST))
 			EnableControl(panelTitle, StringFromList(2, PRESSURE_CONTROLS_BUTTON_LIST))
 			EnableControl(panelTitle, StringFromList(4, PRESSURE_CONTROLS_BUTTON_LIST))
-			EnableControl(panelTitle, StringFromList(5, PRESSURE_CONTROLS_BUTTON_LIST))
 		endif
 	else
 		DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
 		EnableControl(panelTitle, StringFromList(0, PRESSURE_CONTROLS_BUTTON_LIST)) // approach button
 		EnableControl(panelTitle, StringFromList(4, PRESSURE_CONTROLS_BUTTON_LIST))
-		EnableControl(panelTitle, StringFromList(5, PRESSURE_CONTROLS_BUTTON_LIST))
 	endif
 End
 
@@ -1362,19 +1371,14 @@ End
 // MANUAL PRESSURE CONTROL
 //============================================================================================================
 /// @brief Sets the pressure on the active headstage or all headstages.
-Function P_ManSetPressure(panelTitle)
+Function P_ManSetPressure(panelTitle, headStage)
 	string panelTitle
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	variable headStage
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable psi = PressureDataWv[0][%ManSSPressure]
 	variable ONorOFF = 1
 
 	PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_4_MANUAL
-
-	if(psi == 0)
-		ONorOFF = 0
-		PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
-	endif
 
 	if(GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll"))
 		for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
@@ -1434,8 +1438,7 @@ End
 /// Handles the TP depency of the approach pressure application
 Function P_SetApproach(panelTitle, cntrlName)
 	string panelTitle, cntrlName
-	variable PressureMode = 0
-	P_UpdatePressureMode(panelTitle, PressureMode, cntrlName, 1)
+	P_UpdatePressureMode(panelTitle, P_METHOD_0_APPROACH, cntrlName, 1)
 	if(!P_IsTPActive(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(panelTitle)
 	endif
@@ -1487,6 +1490,15 @@ Function ButtonProc_Clear(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Handles the TP depency of the Manual pressure application
+Function P_SetManual(panelTitle, cntrlName)
+	string panelTitle, cntrlName
+	P_UpdatePressureMode(panelTitle, P_METHOD_4_MANUAL, cntrlName, 1)
+	if(!P_IsTPActive(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
+		P_PressureControl(panelTitle)
+	endif
 End
 
 /// @brief Clear all check box.
@@ -1563,7 +1575,7 @@ Function ButtonProc_DataAcq_ManPressSet(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			P_ManSetPressure(ba.win)
+			P_SetManual(ba.win, ba.ctrlname)
 			break
 		case -1: // control being killed
 			break
