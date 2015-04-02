@@ -694,15 +694,13 @@ Function SetGuiControlValue(win, control, value)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
 
-	if(controlType == 2)
+	if(controlType == CONTROL_TYPE_CHECKBOX)
 		SetCheckBoxState(win, control, str2num(value))
-	elseif(controlType == 5)
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
 		SetSetVariableString(win, control, value)
-	elseif(controlType == 7)
+	elseif(controlType == CONTROL_TYPE_SLIDER)
 		Slider $control, value = str2num(value)		
 	else
-		print "trying to set this: ", control
-		print "to this: ", value
 		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
 	endif
 End
@@ -718,15 +716,17 @@ Function/S GetGuiControlValue(win, control)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
 	
-	if(controlType == 2) // Check boxes
+	if(controlType == CONTROL_TYPE_CHECKBOX) // Check boxes
 		value = num2str(GetCheckBoxState(win, control))
-	elseif(controlType == 7) // slider for active headstages
+	elseif(controlType == CONTROL_TYPE_SLIDER) // slider for active headstages
 		value = num2str(V_value)
-	elseif(controlType == 5) // 
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE) // 
 		value = num2str(GetSetVariable(win, control))
 		if (cmpstr(value, "NaN") == 0)
 			value = GetSetVariableString(win, control)
 		endif
+	else
+		value = ""
 	endif
 	
 	return value
@@ -757,11 +757,11 @@ Function SetGuiControlState(win, control, controlState)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
 
-	if(controlType == 2)
+	if(controlType == CONTROL_TYPE_CHECKBOX)
 		CheckBox $control, win=$win, disable=str2num(controlState) 
-	elseif(controlType == 5)
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
 		SetVariable $control, win = $win, disable = str2num(controlState)
-	elseif(controlType == 7)
+	elseif(controlType == CONTROL_TYPE_SLIDER)
 		Slider $control, win=$win, disable = str2num(controlState)		
 	else
 		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped

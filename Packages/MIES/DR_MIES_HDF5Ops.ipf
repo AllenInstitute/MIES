@@ -570,7 +570,7 @@ Function SaveConfiguration()
 				value = GetGuiControlValue(currentPanel, currentControl)
 				controlState = GetGuiControlState(currentPanel, currentControl)					
 				
-				if (!IsNull(value))
+				if (!IsEmpty(value))
 					// get the current configWaveSize
 					configWaveSize = DimSize(configWave, 1)
 					
