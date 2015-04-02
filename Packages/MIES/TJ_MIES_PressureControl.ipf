@@ -1373,7 +1373,7 @@ End
 /// @brief Sets the pressure on the active headstage or all headstages.
 Function P_ManSetPressure(panelTitle, headStage)
 	string panelTitle
-	variable headStage // = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	variable headStage
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable psi = PressureDataWv[0][%ManSSPressure]
 	variable ONorOFF = 1
