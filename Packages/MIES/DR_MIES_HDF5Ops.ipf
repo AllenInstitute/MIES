@@ -505,9 +505,6 @@ Function SaveConfiguration()
 	string dateTimeStamp
 	variable n, controlCounter, numControls
 	string currentPanel
-	string commentString
-	string unitString
-	string titleString
 	string groupString
 	string panelControlsList
 	string currentControl
@@ -611,8 +608,6 @@ Function LoadConfigSet([incomingFileName])
 	    	    
 	Variable fileID, waveCounter
 	string dataSet
-	string dataFolderString
-	string stimSetType
 	string savedDataFolder
 	string groupList
 	variable groupItems
@@ -620,15 +615,12 @@ Function LoadConfigSet([incomingFileName])
 	variable noLockedDevs
 	variable n
 	string currentPanel
-	string control
-	variable value
-	string controlsPresent
-	string missingControls
-	variable numMissingControls
-	string missingItem
-	variable missingItemCounter
+	string panelControlsList
+	variable numRemainingControls
+	string currentControl
 	variable configWaveSize
 	variable controlCounter
+	variable controlType
 	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -669,6 +661,10 @@ Function LoadConfigSet([incomingFileName])
 			noLockedDevs = ItemsInList(lockedDevList)
 			for (n = 0; n<noLockedDevs; n+= 1)
 				currentPanel = StringFromList(n, lockedDevList)
+				
+				// Now get the list of the control names for the current panel
+				panelControlsList = ControlNameList(currentPanel)
+				
 				// load into the DA folder
 				SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
 				HDF5LoadData /O /IGOR=-1 fileID, dataSet
@@ -687,8 +683,23 @@ Function LoadConfigSet([incomingFileName])
 					SetGuiControlValue(currentPanel, configWave[%settingName][controlCounter],configWave[%settingValue][controlCounter])
 					// also set the control state
 					SetGuiControlState(currentPanel, configWave[%settingName][controlCounter], configWave[%controlState][controlCounter])
+					
+					// Now remove that control name from the panelsControlList
+					panelControlsList = RemoveFromList(configWave[%settingName][controlCounter], panelControlsList)
 				endfor
-			endfor
+				// Go through the remaining controls not restored, and see if they are a valid control...or one that we shouldn't worry about, like the tab or somethign similar
+				numRemainingControls = ItemsInList(panelControlsList)
+				print "The following controls were not restored"
+				for (n = 0;n<numRemainingControls;n+=1)
+					currentControl = StringFromList(n, panelControlsList)
+					ControlInfo/W=$currentPanel $currentControl
+					ASSERT(V_flag != 0, "Non-existing control or window")
+					controlType = abs(V_flag)
+					if((controlType == 2) || (controlType == 5) || (controlType == 7))
+						print "Control: ", currentControl
+					endif
+				endfor			
+			endfor				
 		endif
 	endfor
 	
