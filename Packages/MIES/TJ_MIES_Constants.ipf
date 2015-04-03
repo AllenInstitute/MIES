@@ -78,11 +78,13 @@ Constant COUNTOBJECTS_DATAFOLDER = 4
 
 /// @name Control types from ControlInfo
 /// @{
+Constant CONTROL_TYPE_BUTTON      = 1
 Constant CONTROL_TYPE_CHECKBOX    = 2
 Constant CONTROL_TYPE_POPUPMENU   = 3
 Constant CONTROL_TYPE_VALDISPLAY  = 4
 Constant CONTROL_TYPE_SETVARIABLE = 5
 Constant CONTROL_TYPE_SLIDER      = 7
+Constant CONTROL_TYPE_TAB         = 8
 /// @}
 
 /// See "Control Structure eventMod Field"
