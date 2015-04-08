@@ -716,11 +716,11 @@ Function/S GetGuiControlValue(win, control)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
 	
-	if(controlType == CONTROL_TYPE_CHECKBOX) // Check boxes
+	if(controlType == CONTROL_TYPE_CHECKBOX)
 		value = num2str(GetCheckBoxState(win, control))
-	elseif(controlType == CONTROL_TYPE_SLIDER) // slider for active headstages
+	elseif(controlType == CONTROL_TYPE_SLIDER) 
 		value = num2str(V_value)
-	elseif(controlType == CONTROL_TYPE_SETVARIABLE) // 
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE) 
 		value = num2str(GetSetVariable(win, control))
 		if (cmpstr(value, "NaN") == 0)
 			value = GetSetVariableString(win, control)
@@ -734,36 +734,22 @@ End
 
 /// @brief Generic wrapper for getting a controls state (enabled, hidden, disabled)
 Function/S GetGuiControlState(win, control)
-	string win, control
-	
-	string controlState
-	
-	
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	controlState = num2str(abs(V_disable))	
+    string win, control
 
-	return controlState
+    ControlInfo/W=$win $control
+    ASSERT(V_flag != 0, "Non-existing control or window")
+
+    return num2str(V_disable)
 End
 
 /// @brief Generic wrapper for setting a controls state (enabled, hidden, disabled)
 Function SetGuiControlState(win, control, controlState)
-	string win, control
-	string controlState
+    string win, control
+    string controlState
+    variable controlType
 
-	variable controlType
+    ControlInfo/W=$win $control
+    ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	controlType = abs(V_flag)
-
-	if(controlType == CONTROL_TYPE_CHECKBOX)
-		CheckBox $control, win=$win, disable=str2num(controlState) 
-	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
-		SetVariable $control, win = $win, disable = str2num(controlState)
-	elseif(controlType == CONTROL_TYPE_SLIDER)
-		Slider $control, win=$win, disable = str2num(controlState)		
-	else
-		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
-	endif
+    ModifyControl $control, win=$win, disable=str2num(controlState)
 End
