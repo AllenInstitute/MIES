@@ -11,14 +11,14 @@
 // our includes
 #include "TJ_MIES_Constants"
 #include "TJ_MIES_Debugging"
+#include "TJ_MIES_GlobalStringAndVariableAccess"
 #include "TJ_MIES_GuiUtilities"
 #include "TJ_MIES_MiesUtilities"
 #include "TJ_MIES_Utilities"
-#include "TJ_MIES_GlobalStringAndVariableAccess"
 #include "TJ_MIES_WaveDataFolderGetters"
 
-#include "TJ_MIES_AnalysisBrowser_SweepBrowser"
 #include "TJ_MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
+#include "TJ_MIES_AnalysisBrowser_SweepBrowser"
 
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
