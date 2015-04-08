@@ -13,6 +13,7 @@
 
 ## Partial Installation without hardware dependencies
 * There are currently three packages (Located in: "....\MIES-Igor-Master\Packages\MIES") which can be installed on demand:
+	* The Analysis Browser (TJ_MIES_AnalysisBrowser.ipf)
 	* The Data Browser (TJ_MIES_DataBrowser.ipf)
 	* The Wave Builder (TJ_MIES_WaveBuilderPanel.ipf)
 	* The Downsample Panel (TJ_MIES_Downsample.ipf)
