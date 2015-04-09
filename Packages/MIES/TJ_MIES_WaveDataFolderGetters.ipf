@@ -275,6 +275,7 @@ End
 /// - 4: DA Scale
 /// - 5: Set sweep count 
 /// - 6: TP Insert On/Off
+/// - 7: Inter-trial interval
 ///
 /// Layers:
 /// - Headstage
@@ -284,13 +285,15 @@ Function/Wave DC_SweepDataWvRef(panelTitle)
 	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/SDFR=dfr wv = SweepData
+	variable versionOfNewWave = 1
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/N=(1, 7, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
+	Make/O/N=(1, 8, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
 	wv = NaN
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -492,6 +495,7 @@ End
 /// - 4: AD Gain
 /// - 5: Set sweep count
 /// - 6: Insert TP on/off
+/// - 7: Inter-trial interval
 ///
 /// Layers:
 /// - Headstage
@@ -499,20 +503,17 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/Z/SDFR=dfr wv = sweepSettingsWave
 
-	if(WaveExists(wv))
-		// we have to resize the wave here as the user relies
-		// on the requested size
-		if(DimSize(wv, LAYERS) != NUM_HEADSTAGES)
-			Redimension/N=(-1, -1, NUM_HEADSTAGES) wv
-		endif
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/N=(1,7,NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
+	Make/O/N=(1,8,NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
 	wv = Nan
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -535,6 +536,7 @@ End
 /// - 4: AD Gain
 /// - 5: Set sweep count
 /// - 6: Insert TP on/off
+/// - 7: Inter-trial interval
 ///
 /// Layers:
 /// - Headstage
@@ -542,14 +544,15 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/T/N=(3,7) dfr:sweepSettingsKeyWave/Wave=wv
+	Make/O/T/N=(3,8) dfr:sweepSettingsKeyWave/Wave=wv
 	wv = ""
 
 	SetDimLabel 0, 0, Parameter, wv
@@ -583,6 +586,12 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][6] = "TP Insert Checkbox"
 	wv[%Units][6]     = "On/Off"
 	wv[%Tolerance][6] = "-"
+
+	wv[%Parameter][7] = "Inter-trial interval"
+	wv[%Units][7]     = "s"
+	wv[%Tolerance][7] = "0.01"
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End

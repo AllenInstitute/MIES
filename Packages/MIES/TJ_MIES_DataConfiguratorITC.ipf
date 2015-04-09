@@ -418,6 +418,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable DAGain, DAScale, setColumn, insertStart, insertEnd, endRow, oneFullCycle, val
 	variable/C ret
 	variable GlobalTPInsert = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
+	variable ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	
 	if(GlobalTPInsert) // param for global TP Insertion placed outside of for loop so that they are only called once	
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
@@ -521,6 +522,7 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		
 		// put the insert test pulse checkbox status into the sweep data wave
 		sweepData[0][6][HeadStage] = GlobalTPInsert
+		sweepData[0][7][HeadStage] = ITI
 
 		col += 1 // col determines what column of the ITCData wave the DAC wave is inserted into
 	endfor

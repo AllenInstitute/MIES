@@ -540,6 +540,7 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 		sweepSettingsWave[0][5][i] = sweepDataWave[0][5][i]
 		// TP Insert Checkbox
 		sweepSettingsWave[0][6][i] = sweepDataWave[0][6][i]
+		sweepSettingsWave[0][7][i] = sweepDataWave[0][7][i]
 	endfor
 
 	// call the function that will create the text wave notes
