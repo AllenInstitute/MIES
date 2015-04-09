@@ -2749,6 +2749,18 @@ Function/S GetAnalysisDeviceConfigFolderAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":config"
 End
 
+/// @brief Return the datafolder reference to the testpulse folder of a device and experiment pair
+Function/DF GetAnalysisDeviceTestpulse(expFolder, device)
+	string expFolder, device
+	return createDFWithAllParents(GetAnalysisDeviceTestpulseAS(expFolder, device))
+End
+
+/// @brief Return the full path to the testpulse folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:testpulse
+Function/S GetAnalysisDeviceTestpulseAS(expFolder, device)
+	string expFolder, device
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":testpulse"
+End
+
 /// @brief Return the datafolder reference to the labnotebook folder of a device and experiment pair
 Function/DF GetAnalysisLabNBFolder(expFolder, device)
 	string expFolder, device
