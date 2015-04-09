@@ -303,6 +303,7 @@ End
 ///
 /// Columns:
 /// - 0: SetName
+/// - 1: User comment
 ///
 /// Layers:
 /// - Headstage
@@ -312,13 +313,15 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = SweepTxtData
+	variable versionOfNewWave = 1
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/T/N=(1, 1, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
+	Make/O/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
 	wv = ""
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -579,16 +582,16 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the SweepSettingsTxtWave
+/// @brief Returns a wave reference to SweepSettingsTxtData
 ///
-/// SweepSettingsTxtData is used to store the set name used on a particular
-/// headstage and then create waveNotes for the sweep data
+/// SweepSettingsTxtData is passed to ED_createTextNotes to add entries to the labnotebook.
 ///
 /// Rows:
 /// - Only one
 ///
 /// Columns:
 /// - 0: SetName
+/// - 1: User Comment
 ///
 /// Layers:
 /// - Headstage
@@ -596,33 +599,31 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
-	if(WaveExists(wv))
-		// we have to resize the wave here as the user relies
-		// on the requested size
-		if(DimSize(wv, LAYERS) != NUM_HEADSTAGES)
-			Redimension/N=(-1, -1, NUM_HEADSTAGES) wv
-		endif
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/T/N=(1,1,NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
+	Make/O/T/N=(1,2,NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	wv = ""
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
 
 /// @brief Returns a wave reference to the SweepSettingsKeyTxtData
 ///
-/// SweepSettingsKeyTxtData is used to index Txt Key Wave
+/// SweepSettingsKeyTxtData is used to index SweepSettingsTxtData.
 ///
 /// Rows:
 /// - Only one
 ///
 /// Columns:
 /// - 0: SetName
+/// - 1: User Comment
 ///
 /// Layers:
 /// - Headstage
@@ -630,20 +631,17 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
-	if(WaveExists(wv))
-		// we have to resize the wave here as the user relies
-		// on the requested size
-		if(DimSize(wv, LAYERS) != NUM_HEADSTAGES)
-			Redimension/N=(-1, -1, NUM_HEADSTAGES) wv
-		endif
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/T/N=(1,1,NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
+	Make/O/T/N=(1,2,NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	wv = ""
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End

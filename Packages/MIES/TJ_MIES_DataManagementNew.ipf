@@ -22,7 +22,6 @@ Function DM_SaveITCData(panelTitle)
 	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
 	SVAR miesVersion = $GetMiesVersion()
 	Note dataWave, "MiesVersion: " + miesVersion
-	ED_AppendCommentToDataWave(dataWave, panelTitle) // adds user comments as wave note
 
 	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)

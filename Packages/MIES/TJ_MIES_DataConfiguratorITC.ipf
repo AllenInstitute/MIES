@@ -479,7 +479,8 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		setName = StringFromList(i, setNameList)
 		setNameFullPath = GetWBSvdStimSetDAPathAsString() + ":" + setName
 
-		sweepTxTData[0][0][HeadStage] = setName // document the Set name
+		sweepTxTData[0][0][HeadStage] = setName
+		sweepTxTData[0][1][HeadStage] = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
 
 		ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, 0)
 		oneFullCycle = imag(ret)
