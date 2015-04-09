@@ -428,7 +428,7 @@ static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 
 	baseline = WaveMin(SegmentWave)
 	peak = WaveMax(SegmentWave)
-	SegmentWave *= amplitude/(peak - baseline)
+	SegmentWave *= abs(amplitude)/(peak - baseline)
 
 	baseline = WaveMin(SegmentWave)
 	SegmentWave -= baseline
