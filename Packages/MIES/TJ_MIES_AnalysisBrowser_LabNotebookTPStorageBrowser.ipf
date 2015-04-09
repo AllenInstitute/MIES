@@ -2,17 +2,20 @@
 
 static StrConstant LAB_NOTEBOOK_BROWSER = "LabnotebookBrowser"
 
-static Function/S LBN_GetLeftPanel()
-	return LAB_NOTEBOOK_BROWSER + "#P0"
+static Function/S LBN_GetLeftPanel(win)
+	string win
+
+	return win + "#P0"
 End
 
-static Function/S LBN_GetExpFolderFromPopup()
+static Function/S LBN_GetExpFolderFromPopup(graph)
+	string graph
 
 	string panel
 	variable index
 
 	WAVE/T experimentMap = GetExperimentMap()
-	panel = LBN_GetLeftPanel()
+	panel = LBN_GetLeftPanel(graph)
 	index = GetPopupMenuIndex(panel, "popup_select_experiment")
 
 	ASSERT(index >= 0 && index < DimSize(experimentMap, ROWS), "Invalid index")
@@ -22,7 +25,8 @@ End
 
 Function LBN_OpenLabnotebookBrowser()
 
-	string panel = LAB_NOTEBOOK_BROWSER
+	string panel     = LAB_NOTEBOOK_BROWSER
+	string leftPanel = LBN_GetLeftPanel(panel)
 
 	if(windowExists(panel))
 		DoWindow/F $panel
@@ -31,12 +35,10 @@ Function LBN_OpenLabnotebookBrowser()
 
 	Execute panel + "()"
 
-	DoUpdate/W=$LBN_GetLeftPanel()
-	SetPopupMenuIndex(LBN_GetLeftPanel(), "popup_select_experiment", 0)
-	SetPopupMenuIndex(LBN_GetLeftPanel(), "popup_select_device", 0)
-
-	DoUpdate/W=$LBN_GetLeftPanel()
-	SetPopupMenuIndex(LBN_GetLeftPanel(), "popup_labenotebookViewableCols", 0)
+	SetPopupMenuIndex(leftPanel, "popup_select_experiment", 0)
+	SetPopupMenuIndex(leftPanel, "popup_select_device", 0)
+	SetPopupMenuIndex(leftPanel, "popup_labenotebookViewableCols", 0)
+	DoUpdate/W=$leftPanel
 End
 
 Window LabnotebookBrowser() : Graph
@@ -53,12 +55,12 @@ Window LabnotebookBrowser() : Graph
 	PopupMenu popup_select_experiment,pos={29,94},size={199,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Experiment:"
 	PopupMenu popup_select_experiment,mode=1,value= #"LBN_GetAllExperiments()"
 	PopupMenu popup_select_device,pos={46,123},size={161,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Device: "
-	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment()"
-	PopupMenu popup_labenotebookViewableCols,pos={27,12},size={150,21},bodyWidth=150,proc=LBN_PopMenuProc_ViewableCols
+	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment(\"LabnotebookBrowser\")"
+	PopupMenu popup_labenotebookViewableCols,pos={27,12},size={150,21},bodyWidth=150,proc=LBN_PopMenuProc_LBNViewableCols
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_labenotebookViewableCols,mode=1,value= #"LBN_GetLabNotebookViewAbleCols()"
+	PopupMenu popup_labenotebookViewableCols,mode=1,value= #"LBN_GetLabNotebookViewAbleCols(\"LabnotebookBrowser\")"
 	Button button_switch,pos={58,63},size={72,23},proc=LBN_ButtonProc_SwitchXaxisType,title="Switch x-axis"
 	CheckBox check_sync_with_sweepBrowser,pos={17,194},size={141,14},proc=LBN_CheckProc_SyncSweepBrowser,title="Sync with Sweep Browser"
 	CheckBox check_sync_with_sweepBrowser,value= 0, disable=2
@@ -69,27 +71,29 @@ EndMacro
 Function LBN_ButtonProc_ClearGraph(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
+	string graph
 	switch(ba.eventCode)
 		case 2: // mouse up
-			RemoveTracesFromGraph(LAB_NOTEBOOK_BROWSER)
-			UpdateLBGraphLegend(LAB_NOTEBOOK_BROWSER)
+			graph = GetMainWindow(ba.win)
+			RemoveTracesFromGraph(graph)
+			UpdateLBGraphLegend(graph)
 			break
 	endswitch
 
 	return 0
 End
 
-Function LBN_PopMenuProc_ViewableCols(pa) : PopupMenuControl
+Function LBN_PopMenuProc_LBNViewableCols(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string popStr, graph, panel, expFolder, device, folder
 	switch(pa.eventCode)
 		case 2: // mouse up
 			popStr = pa.popStr
-			graph = LAB_NOTEBOOK_BROWSER
-			panel = LBN_GetLeftPanel()
+			panel = pa.win
+			graph = GetMainWindow(panel)
 
-			expFolder = LBN_GetExpFolderFromPopup()
+			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
 
 			folder = GetAnalysisLabNBFolderAS(expFolder, device)
@@ -115,10 +119,10 @@ Function LBN_ButtonProc_SwitchXaxisType(ba) : ButtonControl
 	string graph, panel, expFolder, device
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = LAB_NOTEBOOK_BROWSER
-			panel = LBN_GetLeftPanel()
+			panel = ba.win
+			graph = GetMainWindow(panel)
 
-			expFolder = LBN_GetExpFolderFromPopup()
+			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
 
 			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
@@ -140,10 +144,10 @@ Function LBN_PopMenuProc_ExpDevSelector(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
-			graph = LAB_NOTEBOOK_BROWSER
-			panel = LBN_GetLeftPanel()
+			panel = pa.win
+			graph = GetMainWindow(panel)
 
-			expFolder = LBN_GetExpFolderFromPopup()
+			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
 
 			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
@@ -197,9 +201,10 @@ Function LBN_CheckProc_SyncSweepBrowser(cba) : CheckBoxControl
 	return 0
 End
 
-Function/S LBN_GetAllDevicesForExperiment()
+Function/S LBN_GetAllDevicesForExperiment(graph)
+	string graph
 
-	DFREF expFolder = GetAnalysisExpFolder(LBN_GetExpFolderFromPopup())
+	DFREF expFolder = GetAnalysisExpFolder(LBN_GetExpFolderFromPopup(graph))
 
 	return GetListOfDataFolders(expFolder)
 End
@@ -219,11 +224,12 @@ Function/S LBN_GetAllExperiments()
 	return list
 End
 
-Function/S LBN_GetLabNotebookViewAbleCols()
+Function/S LBN_GetLabNotebookViewAbleCols(graph)
+	string graph
 
 	string expFolder, device, panel, control
 
-	panel   = LBN_GetLeftPanel()
+	panel   = LBN_GetLeftPanel(graph)
 	control = "popup_select_device"
 
 	if(!windowExists(panel) || !ControlExists(panel, control))
@@ -231,7 +237,7 @@ Function/S LBN_GetLabNotebookViewAbleCols()
 	endif
 
 	device = GetPopupMenuString(panel, control)
-	expFolder = LBN_GetExpFolderFromPopup()
+	expFolder = LBN_GetExpFolderFromPopup(graph)
 
 	if(isEmpty(device) || isEmpty(expFolder))
 		return NONE
