@@ -415,7 +415,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 	variable numWavesLoaded, totalNumWavesLoaded
 	variable start, step, stop, i
 
-	DFREF expDataDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
+	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
 	DFREF saveDFR = GetDataFolderDFR()
 
@@ -425,7 +425,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 		stop  = (i + 1) * LOAD_CONFIG_CHUNK_SIZE
 
 		listOfWaves = BuildList("Config_Sweep_%d", start, step, stop)
-		numWavesLoaded = AB_LoadDataWrapper(expDataDFR, expFilePath, dataFolderPath, listOfWaves)
+		numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves)
 
 		if(numWavesLoaded <= 0 && stop >= highestSweepNumber)
 			break
