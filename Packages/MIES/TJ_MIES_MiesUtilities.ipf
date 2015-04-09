@@ -735,7 +735,9 @@ Function UpdateLBGraphLegend(graph, [traceList])
 		return NaN
 	endif
 
-	ASSERT(FindListItem("text0", AnnotationList(graph)) != -1, "Could not find text0 annotation")
+	if(FindListItem("text0", AnnotationList(graph)) == -1)
+		return NaN
+	endif
 
 	if(ParamIsDefault(traceList) || ItemsInList(traceList) == 0)
 		TextBox/C/W=$graph/N=text0/F=0 ""
