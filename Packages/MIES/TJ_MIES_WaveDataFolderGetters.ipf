@@ -280,7 +280,7 @@ End
 /// - Headstage
 Function/Wave DC_SweepDataWvRef(panelTitle)
 	string panelTitle
-	
+
 	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/SDFR=dfr wv = SweepData
@@ -485,8 +485,13 @@ End
 ///  - One row
 ///
 /// Columns:
-/// - 0: Stim Wave Name
-/// - 1: Stim Scale Factor
+/// - 0: Stim Scale Factor
+/// - 1: DAC
+/// - 2: ADC
+/// - 3: DA Gain
+/// - 4: AD Gain
+/// - 5: Set sweep count
+/// - 6: Insert TP on/off
 ///
 /// Layers:
 /// - Headstage
@@ -576,7 +581,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][5] = ".0001"
 	
 	wv[%Parameter][6] = "TP Insert Checkbox"
-	wv[%Units][6] = "On/Off"
+	wv[%Units][6]     = "On/Off"
 	wv[%Tolerance][6] = "-"
 
 	return wv
