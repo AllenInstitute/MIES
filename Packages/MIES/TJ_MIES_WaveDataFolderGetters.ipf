@@ -2736,7 +2736,7 @@ Function/S GetAnalysisDeviceFolderAS(expFolder, device)
 	return GetAnalysisExpFolderAS(expFolder) + ":" + device
 End
 
-/// @brief Return the datafolder reference to the sweep config folder of an device and experiment pair
+/// @brief Return the datafolder reference to the sweep config folder of a device and experiment pair
 Function/DF GetAnalysisDeviceConfigFolder(expFolder, device)
 	string expFolder, device
 	return createDFWithAllParents(GetAnalysisDeviceConfigFolderAS(expFolder, device))
