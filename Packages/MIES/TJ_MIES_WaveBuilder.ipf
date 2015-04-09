@@ -413,9 +413,7 @@ static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 
 	variable first, last
-	variable scale = 1.2
 	variable baseline, peak
-	variable i
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 
@@ -426,17 +424,15 @@ static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 	TauDecay2 = 1 / TauDecay2
 	TauDecay2 *= 0.005
 
-	MultiThread SegmentWave[] = ((1 - exp( - TauRise * p))) * amplitude
-	MultiThread SegmentWave[] += (exp( - TauDecay1 * (p)) * (amplitude * (1 - TauDecay2Weight)))
-	MultiThread SegmentWave[] += (exp( - TauDecay2 * (p)) * ((amplitude * (TauDecay2Weight))))
+	MultiThread SegmentWave[] = amplitude * ((1 - exp(-TauRise * p)) + exp(-TauDecay1 * p) * (1 - TauDecay2Weight) + exp(-TauDecay2 * p) * TauDecay2Weight)
 
 	baseline = WaveMin(SegmentWave)
 	peak = WaveMax(SegmentWave)
-	SegmentWave *= Amplitude/(Peak-Baseline)
+	SegmentWave *= amplitude/(peak - baseline)
 
 	baseline = WaveMin(SegmentWave)
 	SegmentWave -= baseline
-	SegmentWave += OffSet
+	SegmentWave += offset
 End
 
 static Function WB_CustomWaveSegment(CustomOffset, wv)
