@@ -447,28 +447,37 @@ End
 ///
 /// Rows:
 /// - 0: Parameter Name
+/// - 0: Parameter Unit
+/// - 0: Parameter Tolerance
 ///
 /// Columns:
 /// - 0: Sweep Number
 /// - 1: Time Stamp
+/// - other columns are filled at runtime
 Function/Wave GetTextDocKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
+	variable versionOfNewWave = 1
+
 	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/T/N=(1,INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
+	Make/O/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
 	wv = ""
 
 	wv[0][0] = "Sweep #"
 	wv[0][1] = "Time Stamp"
 
-	SetDimLabel 0, 0, Parameter, wv
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -741,16 +750,18 @@ End
 Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	string panelTitle
 
+	variable versionOfNewWave = 1
+
 	DFREF dfr = GetAmpSettingsFolder()
 
 	// wave's name is like ITC18USB_Dev_0
 	Wave/Z/SDFR=dfr wv = $panelTitle
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	Make/N=(31, 1, NUM_HEADSTAGES) dfr:$panelTitle/Wave=wv
+	Make/N=(31, 1, NUM_HEADSTAGES)/O dfr:$panelTitle/Wave=wv
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
 	SetDimLabel ROWS  , 0 , HoldingPotential      , wv
@@ -762,8 +773,8 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 6 , Prediction            , wv
 	SetDimLabel ROWS  , 7 , RsCompEnable          , wv
 	SetDimLabel ROWS  , 8 , PipetteOffset         , wv
-	SetDimLabel ROWS  , 9 , VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 10, VClampPlaceHolder     , wv
+	SetDimLabel ROWS  , 9 , FastCapacitanceComp   , wv
+	SetDimLabel ROWS  , 10, SlowCapacitanceComp   , wv
 	SetDimLabel ROWS  , 11, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 12, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 13, VClampPlaceHolder     , wv
@@ -785,6 +796,8 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 29, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 30, IZeroEnable           , wv
 
+	SetWaveVersion(wv, versionOfNewWave)
+
 	return wv
 End
 
@@ -798,7 +811,7 @@ End
 Function/WAVE GetAmplifierSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/Z/SDFR=dfr wv = ampSettings
@@ -807,7 +820,7 @@ Function/WAVE GetAmplifierSettingsWave(panelTitle)
 		return wv
 	endif
 
-	Make/O/N=(1,39, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
+	Make/O/N=(1,43, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -827,7 +840,7 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	string panelTitle
 	dfref dfr = GetAmpSettingsFolder()
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
@@ -836,7 +849,7 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/O/N=(3, 39) dfr:ampSettingsKey/Wave=wv
+	Make/T/O/N=(3, 43) dfr:ampSettingsKey/Wave=wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -999,6 +1012,22 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	wv[0][38] =  "Slow current injection settling time"
 	wv[1][38] =  "s"
 	wv[2][38] =  ""
+
+	wv[0][39] =  "Fast compensation capacitance"
+	wv[1][39] =  "F"
+	wv[2][39] =  ""
+
+	wv[0][40] =  "Slow compensation capacitance"
+	wv[1][40] =  "F"
+	wv[2][40] =  ""
+
+	wv[0][41] =  "Fast compensation time"
+	wv[1][41] =  "s"
+	wv[2][41] =  ""
+
+	wv[0][42] =  "Slow compensation time"
+	wv[1][42] =  "s"
+	wv[2][42] =  ""
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -2494,7 +2523,7 @@ Function/Wave GetExperimentMap()
 	SetDimLabel COLS, 1, ExperimentName, wv
 	SetDimLabel COLS, 2, ExperimentFolder, wv
 
-	SetNumberInWaveNote(wv, "Index", 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End
@@ -2526,7 +2555,7 @@ Function/Wave GetExperimentBrowserGUIList()
 	SetDimLabel COLS, 9 , '#DAC'       , wv
 	SetDimLabel COLS, 10, '#ADC'       , wv
 
-	SetNumberInWaveNote(wv, "Index", 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End

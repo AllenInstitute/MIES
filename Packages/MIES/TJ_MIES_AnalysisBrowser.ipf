@@ -51,11 +51,11 @@ static Function AB_ClearWaves()
 
 	WAVE/T experimentMap = GetExperimentMap()
 	experimentMap = ""
-	SetNumberInWaveNote(experimentMap, "index", 0)
+	SetNumberInWaveNote(experimentMap, NOTE_INDEX, 0)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	list = ""
-	SetNumberInWaveNote(list, "index", 0)
+	SetNumberInWaveNote(list, NOTE_INDEX, 0)
 
 	WAVE sel = GetExperimentBrowserGUISel()
 	sel = NaN
@@ -79,7 +79,7 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	string fileName, expFolderName
 	WAVE/T experimentMap = GetExperimentMap()
 
-	index = GetNumberFromWaveNote(experimentMap, "index")
+	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
 
 	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
 	experimentMap[index][%ExperimentDiscLocation] = expFilePath
@@ -91,7 +91,7 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	experimentMap[index][%ExperimentFolder] = expFolderName
 
 	index += 1
-	SetNumberInWaveNote(experimentMap, "index", index)
+	SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
 
 	return index - 1
 End
@@ -106,9 +106,9 @@ static Function AB_AddExperimentFile(expFilePath)
 
 	mapIndex = AB_AddExperimentMapEntry(expFilePath)
 
-	firstMapped = GetNumberFromWaveNote(list, "index")
+	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
 	AB_LoadLabNotebookFromFile(expFilePath)
-	lastMapped = GetNumberFromWaveNote(list, "index") - 1
+	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped > firstMapped)
 		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
@@ -144,7 +144,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 	WAVE/SDFR=dfr numericValues, textValues
 	WAVE/T list = GetExperimentBrowserGUIList()
 
-	index = GetNumberFromWaveNote(list, "index")
+	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%experiment][0] = expName
 	index += 1
@@ -223,7 +223,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 		endif
 	endfor
 
-	SetNumberInWaveNote(list, "index", index)
+	SetNumberInWaveNote(list, NOTE_INDEX, index)
 End
 
 /// @brief Load waves from a packed/unpacked experiment file
@@ -1017,7 +1017,7 @@ Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 			WAVE expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel  = GetExperimentBrowserGUISel()
 
-			numEntries = GetNumberFromWaveNote(expBrowserList, "index")
+			numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
 			Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
 
 			AB_ResetSelectionWave()

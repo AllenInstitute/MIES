@@ -26,36 +26,28 @@ End
 ///
 /// The history wave will use layers to report the different headstages.
 ///
-/// Incoming parameters
 /// @param incomingSettingsWave -- the settingsWave sent by the each reporting subsystem
 /// @param incomingKeyWave -- the key wave that is used to reference the incoming settings wave
-/// @param SaveDataWavePath -- the path to the data wave that will have the wave notes added to it
-/// @param SweepNo -- the sweep number
+/// @param sweepNo -- the sweep number
 /// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
-///
-/// After the key wave and history settings waves are created and have new information appended to them, this function
-/// will compare the new settings to the most recent settings, and will create the wave note indicating the change in states
-///
-//=============================================================================================================
-Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWavePath, SweepNo, panelTitle)
+Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, panelTitle)
 	wave incomingSettingsWave
 	wave/T incomingKeyWave
-	string saveDataWavePath
 	string panelTitle
-	variable SweepNo
-	
-	// Location for the saved datawave
-	WAVE/Z saveDataWave = $saveDataWavePath
-	variable idx
-	
+	variable sweepNo
+
+	variable idx, rowIndex, numCols, lastValidIncomingLayer, i
+
 	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
 	WAVE/D/Z/SDFR=settingsHistoryDFR settingsHistory
 
 	if(!WaveExists(settingsHistory))
-		Make/D/N=(0, 2, NUM_HEADSTAGES) settingsHistoryDFR:settingsHistory/Wave=settingsHistory
+		Make/D/N=(MINIMUM_WAVE_SIZE, 2, NUM_HEADSTAGES) settingsHistoryDFR:settingsHistory/Wave=settingsHistory = NaN
 
 		SetDimLabel COLS, 0, SweepNum, settingsHistory
 		SetDimLabel COLS, 1, TimeStamp, settingsHistory
+
+		SetNumberInWaveNote(settingsHistory, NOTE_INDEX, 0)
 	endif
 
 	ASSERT(DimSize(incomingSettingsWave, LAYERS) <= DimSize(settingsHistory, LAYERS), "Unexpected large layer count in the incoming settings wave")
@@ -65,191 +57,43 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, SaveDataWaveP
 	DFREF keyWaveDFR = GetDevSpecLabNBSettKeyFolder(panelTitle)
 	Wave/T/Z/SDFR=keyWaveDFR keyWave
 
-	if (!WaveExists(keyWave))
-		Make/T/N=(4, 2) keyWaveDFR:keyWave/Wave=keyWave
+	if(!WaveExists(keyWave))
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) keyWaveDFR:keyWave/Wave=keyWave
 		// row 0 - Parameter name
 		// row 1 - Unit
 		// row 2 - Tolerance
-		
+
+		SetDimLabel 0, 0, Parameter, keyWave
+		SetDimLabel 0, 1, Units    , keyWave
+		SetDimLabel 0, 2, Tolerance, keyWave
+
 		// These will be permanent....will make it easier for everything to line up correctly
-		// Col 0 - Sweep #		
+		// Col 0 - Sweep #
 		// Col 1 - Time
-		
+
 		keyWave[0][0] = "SweepNum"
 		keyWave[0][1] = "TimeStamp"
 	endif
-	
-	// get the size of the settingsHistory wave
-	variable rowCount = DimSize(settingsHistory, 0)		// sweep
-	variable colCount = DimSize(settingsHistory, 1)		// factor
-	
-	// get the size of the incoming Settings Wave
-	variable incomingRowCount = DimSize(incomingSettingsWave, 0)			// sweep
-	variable incomingColCount = DimSize(incomingSettingsWave, 1)			// factor
-	variable incomingLayerCount = DimSize(incomingSettingsWave, 2)		// headstage
-			
-	// Now go through the incoming text wave and see if these factors are already being monitored
-	// get the dimension of the existing keyWave
-	variable keyColCount = DimSize(keyWave, 1) 					// factor
-	variable incomingKeyColCount = DimSize(incomingKeyWave, 1)	// incoming factors
-	variable keyColCounter
-	variable incomingKeyColCounter
 
-	// get the size of the incoming Key Wave
-	variable keyMatchFound
-	// if keyWave is just formed, just add the incoming KeyWave....
-	if (keyColCount == 2)
-		// have to redimension the keyWave to create the space for the new stuff
-		Redimension/N= (4, (keyColCount + incomingKeyColCount)) keyWave
-		// also redimension the settings History Wave to create row space to add new sweep data...
-		Redimension/N=(-1, (2+incomingColCount), -1) settingsHistory
-		
-		// Add dimension labels to the keyWave
-		SetDimLabel 0, 0, Parameter, keyWave
-		SetDimLabel 0, 1, Units, keyWave
-		SetDimLabel 0, 2, Tolerance, keyWave
-		SetDimLabel 1, 0, SweepNum, keyWave
-		SetDimLabel 1, 1, TimeStamp, keyWave
-				
-		rowCount = DimSize(settingsHistory, 0)		// sweep
-		colCount = DimSize(settingsHistory, 1)		// factor
-		
-		for (keyColCounter = 0; keyColCounter < (incomingKeyColCount); keyColCounter += 1)
-			keyWave[0][keyColCounter+2] = incomingKeyWave[0][keyColCounter] // copy the parameter name		
-			keyWave[1][keyColCounter+2] = incomingKeyWave[1][keyColCounter] // copy the unit string		
-			keyWave[2][keyColCounter+2] = incomingKeyWave[2][keyColCounter] // copy the tolerance factor
-		endfor
-		
-		// set this so we don't do the matching bit down below
-		keyMatchFound = 1
-	else	 // scan through the keyWave to see where to stick the incomingKeyWave		
-		for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
-			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-				if (stringmatch(incomingKeyWave[0][incomingKeyColCounter], keyWave[0][keyColCounter]) == 1)
-					keyMatchFound = 1
-				endif
-			endfor
-		endfor		
-	endif
-	
-	variable  newSettingsHistoryRowSize
-	if (keyMatchFound == 1)
-		// just need to redimension the row size of the settingsHistory
-		// only need to have this block of code once...
-	else		// append the incoming keyWave to the existing keyWave
-		print "extending the keyWave for new factors"
-		// Need to resize the column part of the keyWave to accomodate the new factors being monitored
-		Redimension/N=(-1, (keyColCount + incomingKeyColCount), -1) keyWave
-		// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors
-		Redimension/N=(-1, (colCount + incomingColCount), -1) settingsHistory
-	
-		variable nanInsertCounter
-		for (nanInsertCounter = colCount; nanInsertCounter < (colCount + incomingColCount); nanInsertCounter += 1)
-			settingsHistory[][nanInsertCounter][] = NAN
-		endfor
-		
-		variable keyWaveInsertPoint = keyColCount
-		variable insertCounter 
-		for (insertCounter = keyWaveInsertPoint; insertCounter < (keyWaveInsertPoint + incomingKeyColCount); insertCounter += 1)
-			keyWave[0][insertCounter] = incomingKeyWave[0][(insertCounter - keyWaveInsertPoint)]
-			keyWave[1][insertCounter] = incomingKeyWave[1][(insertCounter - keyWaveInsertPoint)]
-			keyWave[2][insertCounter] = incomingKeyWave[2][(insertCounter - keyWaveInsertPoint)]
-		endfor
-	endif
-	
-	// Get the size of the new rejiggered keyWave
-	keyColCount = DimSize(keyWave, 1)
-	
-	//define counters
-	variable colCounter 
-	variable layerCounter
-		
-	variable settingsRowCount = (DimSize(settingsHistory, 0))  // the new settingsRowCount
-	variable rowIndex = settingsRowCount - 1 
-	
-	// Adding this section to handle the changing off the parameter names, units, and tolerances for the async factors
-	// see if the incoming wave is the async wave
-	if (stringmatch(incomingKeyWave[0][0], "Async AD 0*") == 1)	// this never changes...shows that the incoming keyWave is the Async stuff	
-		// build up a string for comparison purposes
-		string asyncParameterString
-		variable adUnitCounter
-		variable factorFound 
-		for (adUnitCounter = 0; adUnitCounter < 8; adUnitCounter += 1)
-			sprintf asyncParameterString, "Async AD %d*" adUnitCounter
-			factorFound = 0
-			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-				if (stringmatch(keyWave[0][keyColCounter], incomingKeyWave[0][adUnitCounter]) == 1) // the factor already exists
-					factorFound = 1
-					// copy the units and tol factors over into the keyWave...they can change without changing the parameter name...always do this since copying is more
-					// time efficient then doing string matches
-					keyWave[1][keyColCounter] = incomingKeyWave[1][adUnitCounter]  // units
-					keyWave[2][keyColCounter] = incomingKeyWave[2][adUnitCounter]  // tolerance factor
-				endif
-			endfor
-			if (factorFound == 0)
-				// if the parameter name has changed, we need to create a new column for this
-				// find the dimensions again for the keyWave (cols) and settingsHistory(rows, cols)
-				keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
-				colCount = DimSize(settingsHistory, 1) // same with this
-				rowCount = DimSize(settingsHistory, 0) // same with this
-				// Need to resize the column part of the keyWave to accomodate the new factor being monitored...unlike above, need to do this one factor at a time
-				Redimension/N=(-1, (keyColCount + 1), -1) keyWave
-				// need to redimension the column portion of the settingsHistory as well to make space for the incoming factors...fill it with nan's
-				Redimension/N=(-1, (colCount + 1), -1, -1) settingsHistory
-				variable newSettingsColCount = DimSize(settingsHistory, 1)
-				settingsHistory[][newSettingsColCount-1][] = NAN
-		
-				// put the new incoming factor at the end of keyWave
-				keyWave[0][keyColCount] = incomingKeyWave[0][adUnitCounter]
-				keyWave[1][keyColCount] = incomingKeyWave[1][adUnitCounter]
-				keyWave[2][keyColCount] = incomingKeyWave[2][adUnitCounter]
-			endif							
-		endfor
-	endif
+	WAVE indizes = FindIndizesAndRedimensionWaves(incomingKeyWave, keyWave, settingsHistory, rowIndex)
 
-	// Now need to redimension the row size of the settingsHistory
-	newSettingsHistoryRowSize = rowCount + incomingRowCount
-	Redimension/N=(newSettingsHistoryRowSize, -1, -1) settingsHistory
-	idx = newSettingsHistoryRowSize - 1
-
-	// need to fill the newly created row with NAN's....redimension autofills them with zeros
-	settingsHistory[rowCount,][][] = NAN
-
-	settingsHistory[idx][0] = sweepNo
-	settingsHistory[idx][1] = datetime
+	settingsHistory[rowIndex][0] = sweepNo
+	settingsHistory[rowIndex][1] = DateTime
 
 	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=idx, dimension=ROWS, initialValue=NaN)
 
 	settingsHistoryDat[idx] = settingsHistory[idx][1]
 
-	// after doing all that, get the new dimension for the keyColCounter and the Settings History wave
-	keyColCount = DimSize(keyWave, 1)    // since we are doing this factor by factor for these, need to do this everytime through
-	colCount = DimSize(settingsHistory, 1) // same with this
-	rowCount = DimSize(settingsHistory, 0) // same with this
-	
-	// need to make sure the incomingKeyColCount is correct
-	incomingKeyColCount = DimSize(incomingKeyWave, 1)
-	
-	// Use the keyWave to see where to add the incomingWave factors to the ampSettingsHistory wave
-	for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingKeyColCount; incomingKeyColCounter += 1)
-		for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-			if (stringmatch(incomingKeyWave[0][incomingKeyColCounter], keyWave[0][keyColCounter]) == 1)
-			// found the string match
-				variable insertionPoint = keyColCounter
-				// put this in to handle the async stuff that only has one layer
-				if (incomingLayerCount == 0)
-					settingsHistory[rowCount - 1][insertionPoint][0] = incomingSettingsWave[0][incomingkeyColCounter]
-				else		
-					for (layerCounter = 0; layerCounter < incominglayerCount; layerCounter += 1)
-						// add all the values in that column to the settingsHistory wave
-						settingsHistory[rowCount - 1][insertionPoint][layerCounter] = incomingSettingsWave[0][incomingkeyColCounter][layerCounter]
-					endfor
-				endif
-			endif
-		endfor
+	numCols = DimSize(incomingSettingsWave, COLS)
+	lastValidIncomingLayer = DimSize(incomingSettingsWave, LAYERS) == 0 ? 0 : DimSize(incomingSettingsWave, LAYERS) - 1
+	for(i = 0; i < numCols; i += 1)
+		settingsHistory[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingSettingsWave[0][i][r]
 	endfor
 
+	SetNumberInWaveNote(settingsHistory, NOTE_INDEX, rowIndex + 1)
+
 	SetDimensionLabels(keyWave, settingsHistory)
+	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
 	WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
 End
 
@@ -396,6 +240,78 @@ Function WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, settingsHis
 	endif
 End
 
+/// @brief Returns the column indizes of each parameter in incomingKey into the `key` wave
+///
+/// Redimensions `key` and prefills with incomingKey data if necessary.
+///
+/// Ensures that data and key have a matching column size at return.
+/// @param[in]  incomingKey text wave with the keys to add
+/// @param[in]  key         key wave of the labnotebook
+/// @param[in]  values      values/data wave of the labnotebook
+/// @param[out] rowIndex    returns the row index into values at which the new values should be written
+static Function/Wave FindIndizesAndRedimensionWaves(incomingKey, key, values, rowIndex)
+	WAVE/T incomingKey, key
+	WAVE values
+	variable &rowIndex
+
+	variable numCols, col, row, numKeyRows, numKeyCols, i, numAdditions, idx
+	variable lastValidIncomingKeyRow
+	string msg
+
+	numKeyRows = DimSize(key, ROWS)
+	numKeyCols = DimSize(key, COLS)
+	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
+
+	Make/FREE/U/I/N=(DimSize(incomingKey, COLS)) indizes = NaN
+
+	numCols = DimSize(incomingKey, COLS)
+	for(i = 0; i < numCols; i += 1)
+		FindValue/TXOP=4/TEXT=(incomingKey[0][i]) key
+		col = floor(V_value / numKeyRows)
+
+		if(col >= 0)
+			row = V_value - col * numKeyRows
+			ASSERT(row == 0, "Unexpected match in a row not being zero")
+			indizes[i] = col
+			sprintf msg, "Found key \"%s\" from incoming column %d in key column %d", incomingKey[0][i], i, idx
+			DEBUGPRINT(msg)
+		else
+			idx = numKeyCols + numAdditions
+			EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
+			ASSERT(strlen(incomingKey[0][i]) > 0, "can not handle empty incoming key")
+			key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
+			indizes[i] = idx
+			numAdditions += 1
+			sprintf msg, "Created key \"%s\" from incoming column %d in key column %d", incomingKey[0][i], i, idx
+			DEBUGPRINT(msg)
+		endif
+	endfor
+
+	// for further performance enhancement we must add "support for enhancing multiple dimensions at once"
+	// to EnsureLargeEnoughWave
+	if(numAdditions)
+		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
+	endif
+
+	rowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
+	if(!IsFinite(rowIndex))
+		// old waves don't have that info
+		// use the last row
+		rowIndex = DimSize(values, ROWS)
+	endif
+
+	if(WaveType(values)) // numeric
+		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
+		if(numAdditions)
+			values[][numKeyCols,][] = NaN
+		endif
+	else
+		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS)
+	endif
+
+	return indizes
+End
+
 /// @brief Function used to add text notation to an experiment DataWave.  This function creates a keyWave to reference
 /// the text wave, which spells out each parameter being saved, and a textWave, which stores text notation.
 ///
@@ -410,98 +326,48 @@ End
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
-/// Incoming parameters
 /// @param incomingTextDocWave -- the incoming Text Documentation Wave sent by the each reporting subsystem
 /// @param incomingTextDocKeyWave -- the incoming Text Documentation key wave that is used to reference the incoming settings wave
-/// @param SaveDataWavePath -- the path to the data wave that will have the wave notes added to it
 /// @param sweepNo -- the sweep number
 /// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
-///
-/// After the key wave and history settings waves are created and have new information appended to them, this function
-/// will compare the new settings to the most recent settings, and will create the wave note indicating the change in states
-///
-//=============================================================================================================
-Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, SaveDataWavePath, sweepNo, panelTitle)
+Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo, panelTitle)
 	wave/T incomingTextDocWave
 	wave/T incomingTextDocKeyWave
-	string saveDataWavePath
 	string panelTitle
 	variable sweepNo
 
-	string changedDocText
-	variable keyColCount, incomingKeyColCounter, rowCount, colCount, incomingRowCount, incomingColCount
-	variable keyColCounter, keyMatchFound, rowIndex
-	variable i, j, k
+	variable rowIndex, numCols, i
 
-	// Location for the saved datawave
-	wave saveDataWave = $saveDataWavePath
-	Wave/T textDocWave = GetTextDocWave(panelTitle)
-	Wave/T textDocKeyWave = GetTextDocKeyWave(panelTitle)
+	WAVE/T textDocWave = GetTextDocWave(panelTitle)
+	WAVE/T textDocKeyWave = GetTextDocKeyWave(panelTitle)
 
-	rowCount = DimSize(textDocWave, ROWS)
-	colCount = DimSize(textDocWave, COLS)
-	incomingRowCount = DimSize(incomingTextDocWave, ROWS)
-	incomingColCount = DimSize(incomingTextDocWave, COLS)
-
+	ASSERT(DimSize(incomingTextDocWave, ROWS)   == 1, "Mismatched row counts")
 	ASSERT(DimSize(incomingTextDocWave, LAYERS) == NUM_HEADSTAGES, "Mismatched layer counts")
 	ASSERT(DimSize(incomingTextDocWave, COLS)   == DimSize(incomingTextDocKeyWave, COLS), "Mismatched column counts")
 
-	keyColCount = DimSize(textDocKeyWave, COLS)
-
-	if(keyColCount != INITIAL_KEY_WAVE_COL_COUNT)
-		// scan through the keyWave to see where to stick the incomingKeyWave
-		/// @todo the logic here is flawed as it does not handle a keyWave properly with entries
-		/// unknownEntry | knownEntry
-		/// in that case it would set keyMatchFound to 1 although there is a unknown entry in the first row
-		for (incomingKeyColCounter = 0; incomingKeyColCounter < incomingColCount; incomingKeyColCounter += 1)
-			for (keyColCounter = 0; keyColCounter < keyColCount; keyColCounter += 1)
-				if (!cmpstr(incomingTextDocKeyWave[0][incomingKeyColCounter], textDocKeyWave[0][keyColCounter]))
-					keyMatchFound = 1
-				endif
-			endfor
-		endfor
-	endif
-
-	if(keyMatchFound)
-		///@todo rework to use EnsureLargeEnoughWave to minimize the calls to Redimension
-		Redimension/N=((rowCount + 1), -1, -1) textDocWave
-	else
-		// append the incoming keyWave to the existing keyWave
-		// Need to resize the waves to accomodate the new factors being monitored
-		Redimension/N=(-1, (keyColCount + incomingColCount), -1) textDocKeyWave
-		Redimension/N=((rowCount + 1), (colCount + incomingColCount), -1) textDocWave
-
-		textDocKeyWave[0][keyColCount,] = incomingTextDocKeyWave[0][q - keyColCount]
-	endif
-
-	rowCount = DimSize(textDocWave, ROWS)
-	colCount = DimSize(textDocWave, COLS)
-	keyColCount = DimSize(textDocKeyWave, COLS)
-	rowIndex = rowCount -1
+	WAVE indizes = FindIndizesAndRedimensionWaves(incomingTextDocKeyWave, textDocKeyWave, textDocWave, rowIndex)
 
 	textDocWave[rowIndex][0] = num2istr(sweepNo)
 	textDocWave[rowIndex][1] = num2istr(DateTime)
 
-	SetDimensionLabels(textDocKeyWave, textDocWave)
-
-	// Use the keyWave to see where to add the incomingTextDoc factors to the textDoc wave
-	for(i = 0; i < incomingColCount; i += 1)
-		 for(j = INITIAL_KEY_WAVE_COL_COUNT; j < keyColCount; j += 1)
-			  if(!cmpstr(incomingTextDocKeyWave[0][i], textDocKeyWave[0][j]))
-				   textDocWave[rowIndex][j][] = incomingTextDocWave[0][i][r]
-			  endif
-		 endfor
+	numCols = DimSize(incomingTextDocWave, COLS)
+	for(i = 0; i < numCols; i += 1)
+		textDocWave[rowIndex][indizes[i]][] = incomingTextDocWave[0][i][r]
 	endfor
 
+	SetNumberInWaveNote(textDocWave, NOTE_INDEX, rowIndex + 1)
+
+	SetDimensionLabels(textDocKeyWave, textDocWave)
+
+	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
 	WriteChangedValuesToNoteText(saveDataWave, incomingTextDocKeyWave, textDocWave, sweepNo)
 End
 
 //======================================================================================
 /// always create a WaveNote for each sweep that indicates the Stim Wave Name and the Stim scale factor
 // a function to create waveNote tags for the stim wave name and scale factor
-function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
+function ED_createWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
-	string SavedDataWaveName
 	Variable sweepCount
 
 	variable i
@@ -550,10 +416,10 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	endfor
 
 	// call the function that will create the text wave notes
-	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle)
 
 	// call the function that will create the numerical wave notes
-	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle)
 
 	// document active headstages
 	Make/FREE/N=(3, 1)/T headstagesKey
@@ -566,7 +432,7 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	Make/FREE/N=(1, 1, NUM_HEADSTAGES) headstagesWave
 	headStagesWave[0][0][] = statusHS[r]
 
-	ED_createWaveNotes(headstagesWave, headstagesKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createWaveNotes(headstagesWave, headstagesKey, SweepCount, panelTitle)
 
 	Make/FREE/T/N=(3, 2) keys
 	keys = ""
@@ -592,14 +458,13 @@ function ED_createWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	SVAR miesVersion = $GetMiesVersion()
 	values[0][1][] = miesVersion
 
-	ED_createTextNotes(values, keys, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createTextNotes(values, keys, SweepCount, panelTitle)
 End
 
 //======================================================================================
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
-function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
+function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
-	string SavedDataWaveName
 	Variable sweepCount
 
 	string ctrl
@@ -679,9 +544,84 @@ function ED_createAsyncWaveNoteTags(panelTitle, savedDataWaveName, sweepCount)
 	variable appendAsync = GetCheckBoxState(panelTitle, "Check_Settings_Append")
 	if (appendAsync == 1)
 		// call the function that will create the numerical wave notes
-		ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+		ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle)
 	
 		// call the function that will create the measurement wave notes
-		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SavedDataWaveName, SweepCount, panelTitle)
+		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle)
 	endif
+End
+
+/// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function
+Function ITC_TPDocumentation(panelTitle)
+	string panelTitle
+
+	variable sweepNo, RTolerance
+	variable i, j, clampMode, numHS
+	string clampModeString = TP_ClampModeString(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
+	WAVE/SDFR=dfr InstResistance // wave that contains the peak resistance calculation result from the TP
+	WAVE/SDFR=dfr SSResistance // wave that contains the steady state resistance calculation result from the TP
+
+	// 3 rows to hold: Name of parameter; unit of parameter; tolerance of parameter. 3 columns for: BaselineSSAvg; InstResistance; SSResistance.
+	Make/FREE/T/N=(3, 8, 1) TPKeyWave
+	// 1 row to hold values. 3 columns for BaselineSSAvg; InstResistance; SSResistance and 4 more amplifier values.
+	Make/FREE/N=(1, 8, NUM_HEADSTAGES) TPSettingsWave = NaN
+
+	// add data to TPKeyWave
+	TPKeyWave[0][0] = "TP Baseline Vm"  // current clamp
+	TPKeyWave[0][1] = "TP Baseline pA"  // voltage clamp
+	TPKeyWave[0][2] = "TP Peak Resistance"
+	TPKeyWave[0][3] = "TP Steady State Resistance"
+	// same names as in GetAmplifierSettingsKeyWave
+	TPKeyWave[0][4] = "Fast compensation capacitance"
+	TPKeyWave[0][5] = "Slow compensation capacitance"
+	TPKeyWave[0][6] = "Fast compensation time"
+	TPKeyWave[0][7] = "Slow compensation time"
+
+	TPKeyWave[1][0] = "mV"
+	TPKeyWave[1][1] = "pA"
+	TPKeyWave[1][2] = "Mohm"
+	TPKeyWave[1][3] = "Mohm"
+	TPKeyWave[1][4] = "F"
+	TPKeyWave[1][5] = "F"
+	TPKeyWave[1][6] = "s"
+	TPKeyWave[1][7] = "s"
+
+	RTolerance = GetSetVariable(panelTitle, "setvar_Settings_TP_RTolerance")
+	TPKeyWave[2][0] = "1" // Assume a tolerance of 1 mV for V rest
+	TPKeyWave[2][1] = "50" // Assume a tolerance of 50pA for I rest
+	TPKeyWave[2][2] = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
+	TPKeyWave[2][3] = num2str(RTolerance)
+	TPKeyWave[2][4] = "1e-12"
+	TPKeyWave[2][5] = "1e-12"
+	TPKeyWave[2][6] = "1e-6"
+	TPKeyWave[2][7] = "1e-6"
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		clampMode = str2num(StringFromList(j, clampModeString))
+		if(clampMode == V_CLAMP_MODE)
+			TPSettingsWave[0][4][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN)
+			TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN)
+			TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN)
+			TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN)
+			TPSettingsWave[0][1][i] = BaselineSSAvg[0][j]
+		else
+			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j]
+		endif
+
+		TPSettingsWave[0][2][i] = InstResistance[0][j]
+		TPSettingsWave[0][3][i] = SSResistance[0][j]
+		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active headstage (no place holder columns), j only increments for active headstages.
+	endfor
+
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
 End

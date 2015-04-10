@@ -34,7 +34,7 @@ static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	SetDimLabel COLS, 2, Device, wv
 	SetDimLabel COLS, 3, Sweep, wv
 
-	SetNumberInWaveNote(wv, "Index", 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End
@@ -158,7 +158,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 
 	WAVE/T map = SB_GetSweepBrowserMap(sweepBrowser)
 
-	index = GetNumberFromWaveNote(map, "index")
+	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 	EnsureLargeEnoughWave(map, minimumSize=index)
 
 	foundExperiment = WaveExists(FindIndizes(colLabel="ExperimentName", wvText=map, str=expName, endRow=index))
@@ -176,7 +176,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	map[index][%Device]           = device
 	map[index][%Sweep]            = sweepStr
 
-	SetNumberInWaveNote(map, "index", index + 1)
+	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
 
 Function SB_SweepBrowserWindowHook(s)
@@ -274,7 +274,7 @@ Function/S SB_GetSweepList(graph)
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(graph)
 
-	numRows = GetNumberFromWaveNote(map, "index")
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
 	for(i = 0; i < numRows; i += 1)
 		sprintf str, "Sweep %d [%s]", str2num(map[i][%Sweep]), GetBaseName(map[i][%ExperimentName])
 		list = AddListItem(str, list, ";", Inf)

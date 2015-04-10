@@ -2212,10 +2212,10 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_RsPred,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsPred,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_RsPred,limits={0,100,1},value= _NUM:0
-	Button button_DataAcq_ForwardHold,pos={386,204},size={49,35},disable=1,title="Auto fill\rbias"
-	Button button_DataAcq_ForwardHold,help={"Sets the I-clamp holding current based on the V-clamp holding potential"}
-	Button button_DataAcq_ForwardHold,userdata(tabnum)=  "0"
-	Button button_DataAcq_ForwardHold,userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	Button button_DataAcq_FastComp_VC,pos={388,204},size={45,20},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Cp Fast"
+	Button button_DataAcq_FastComp_VC,help={"Activates MCC auto fast capacitance compensation"}
+	Button button_DataAcq_FastComp_VC,userdata(tabnum)=  "0"
+	Button button_DataAcq_FastComp_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	Button button_Hardware_AutoGainAndUnit,pos={385,409},size={31,47},proc=DAP_ButtonProc_AutoFillGain,title="Auto\rFill"
 	Button button_Hardware_AutoGainAndUnit,help={"A amplifier channel needs to be selected from the popup menu prior to auto filling gain and units."}
 	Button button_Hardware_AutoGainAndUnit,userdata(tabnum)=  "6"
@@ -2508,6 +2508,10 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_ApproachNear,help={"Apply postive pressure to all headstages"}
 	CheckBox check_DatAcq_ApproachNear,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_ApproachNear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
+	Button button_DataAcq_SlowComp_VC,pos={388,226},size={45,20},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Cp Slow"
+	Button button_DataAcq_SlowComp_VC,help={"Activates MCC auto slow capacitance compensation"}
+	Button button_DataAcq_SlowComp_VC,userdata(tabnum)=  "0"
+	Button button_DataAcq_SlowComp_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_ApproachNear,value= 0
 	CheckBox check_DatAcq_SealAtm,pos={188,311},size={39,14},disable=1,proc=P_Check_SealAtm,title="Atm."
 	CheckBox check_DatAcq_SealAtm,help={"Seals all headstates with active test pulse"}

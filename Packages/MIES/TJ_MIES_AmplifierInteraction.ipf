@@ -1,6 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-///@todo use these constants instead of literal numbers
 Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
@@ -269,6 +268,12 @@ Constant MCC_GETSLOWCURRENTINJLEVEL_FUNC = 0x170
 Constant MCC_SETSLOWCURRENTINJSETLT_FUNC = 0x180
 Constant MCC_GETSLOWCURRENTINJSETLT_FUNC = 0x190
 Constant MCC_GETHOLDINGENABLE_FUNC       = 0x200
+Constant MCC_AUTOFASTCOMP_FUNC           = 0x210
+Constant MCC_AUTOSLOWCOMP_FUNC           = 0x220
+Constant MCC_GETFASTCOMPTAU_FUNC         = 0x230
+Constant MCC_GETFASTCOMPCAP_FUNC         = 0x240
+Constant MCC_GETSLOWCOMPTAU_FUNC         = 0x250
+Constant MCC_GETSLOWCOMPCAP_FUNC         = 0x260
 /// @}
 
 /// @brief Generic interface to call MCC amplifier functions
@@ -338,7 +343,6 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
 			MCC_AutoBridgeBal()
 			ret = MCC_GetBridgeBalResist() * 1e-6
-			print ret
 			break
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
@@ -382,6 +386,24 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 			break
 		case MCC_GETHOLDINGENABLE_FUNC:
 			ret = MCC_GetHoldingEnable()
+			break
+		case MCC_AUTOSLOWCOMP_FUNC:
+			ret = MCC_AutoSlowComp()
+			break
+		case MCC_AUTOFASTCOMP_FUNC:
+			ret = MCC_AutoFastComp()
+			break
+		case MCC_GETFASTCOMPCAP_FUNC:
+			ret = MCC_GetFastCompCap()
+			break
+		case MCC_GETFASTCOMPTAU_FUNC:
+			ret = MCC_GetFastCompTau()
+			break
+		case MCC_GETSLOWCOMPCAP_FUNC:
+			ret = MCC_GetSlowCompCap()
+			break
+		case MCC_GETSLOWCOMPTAU_FUNC:
+			ret = MCC_GetSlowCompTau()
 			break
 		default:
 			ASSERT(0, "Unknown function")
@@ -504,6 +526,14 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
 				AmpStorageWave[%PipetteOffset][0][i] = value
 				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
+				break
+			case "button_DataAcq_FastComp_VC":
+				AmpStorageWave[%FastCapacitanceComp][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOFASTCOMP_FUNC, NaN)
+				break
+			case "button_DataAcq_SlowComp_VC":
+				AmpStorageWave[%SlowCapacitanceComp][0][i] = value
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOSLOWCOMP_FUNC, NaN)
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -677,11 +707,9 @@ End
 /// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_createWaveNotes
 ///
 /// @param panelTitle 		 device
-/// @param savedDataWaveName wave name that the wavenotes will be amended to
 /// @param sweepNo           data wave sweep number
-Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
+Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string panelTitle
-	string savedDataWaveName
 	variable sweepNo
 
 	variable numHS, i, axonSerial, channel
@@ -741,6 +769,11 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 			// Save the whole cell comp resist value in column 9
 			ampSettingsWave[0][9][i] =  (MCC_GetWholeCellCompResist() * 1e-6) // V-Clamp Whole Cell Comp Resist, Converts Ohms to MOhms
 
+			ampSettingsWave[0][39][i] = MCC_GetFastCompCap() // V-Clamp Fast cap compensation
+			ampSettingsWave[0][40][i] = MCC_GetSlowCompCap() // V-Clamp Slow cap compensation
+			ampSettingsWave[0][41][i] = MCC_GetFastCompTau() // V-Clamp Fast compensation tau
+			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau() // V-Clamp Slow compensation tau
+
 		elseif (ChannelClampMode[i][0] == I_CLAMP_MODE)
 			// Save the i clamp holding enabled in column 10
 			ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable
@@ -794,9 +827,9 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, savedDataWaveName, sweepNo)
 		// new parameters
 		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
 	endfor
-	
+
 	// now call the function that will create the wave notes	
-	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, savedDataWaveName, sweepNo, panelTitle)
+	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle)
 END
 
 /// Brief description of the function AI_createAmplifierTextDocWave
@@ -816,13 +849,11 @@ END
 ///
 /// Incoming parameters
 /// @param panelTitle -- the calling panel name, used for finding the right folder to save data in.
-/// @param SavedDataWaveName -- the wave name that the wavenotes will be amended to.
 /// @param SweepCount -- the current data wave sweep number
 /// 
 /// The function will take text input from the user, in a manner yet to be determined, and append them to the savedDataWave
-function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepCount)
+function AI_createAmpliferTextDocWave(panelTitle, SweepCount)
 	string panelTitle
-	string SavedDataWaveName
 	Variable SweepCount
 	
 	dfref ampdfr = GetAmpSettingsFolder()
@@ -878,15 +909,14 @@ function AI_createAmpliferTextDocWave(panelTitle, SavedDataWaveName, SweepCount)
 			ampTextDocWave[0][textDocColCounter][textDocLayerCounter] = textDocText
 		endfor
 	endfor
-	
+
 	// call the function to create the text notes
-	ED_createTextNotes(ampTextDocWave, ampTextDocKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createTextNotes(ampTextDocWave, ampTextDocKey, SweepCount, panelTitle)
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
-function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepCount)
+function createDummySettingsWave(panelTitle, SweepCount)
 	string panelTitle
-	string SavedDataWaveName
 	Variable SweepCount
 
 	// Location for the settings wave
@@ -951,7 +981,7 @@ function createDummySettingsWave(panelTitle, SavedDataWaveName, SweepCount)
 	endfor
 	
 	// now call the function that will create the wave notes	
-	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SavedDataWaveName, SweepCount, panelTitle)
+	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle)
 	
 End
 

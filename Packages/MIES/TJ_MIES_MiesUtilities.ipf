@@ -136,6 +136,13 @@ Function GetSweepColumn(settingsHistory)
 		return sweepCol
 	endif
 
+	// text documentation waves
+	sweepCol = FindDimLabel(settingsHistory, COLS, "Sweep #")
+
+	if(sweepCol >= 0)
+		return sweepCol
+	endif
+
 	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
 
 	return 0

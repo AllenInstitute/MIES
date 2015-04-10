@@ -210,7 +210,7 @@ Function/S LBN_GetAllExperiments()
 	string list = ""
 
 	WAVE/T experimentMap = GetExperimentMap()
-	index = GetNumberFromWaveNote(experimentMap, "index")
+	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
 
 	for(i = 0; i < index; i += 1)
 		list = AddListItem(experimentMap[i][%ExperimentName], list, ";", Inf)
