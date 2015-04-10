@@ -838,7 +838,6 @@ End
 /// - Various settings
 Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	string panelTitle
-	dfref dfr = GetAmpSettingsFolder()
 
 	variable versionOfNewWave = 3
 	dfref dfr = GetAmpSettingsFolder()
