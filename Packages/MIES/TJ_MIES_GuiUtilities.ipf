@@ -689,3 +689,75 @@ Function/S GetNextFreeAxisName(graph, axesBaseName)
 
 	return axesBaseName + num2str(numAxes)
 End
+
+/// @brief Generic wrapper for setting a control's value 
+/// pass in the value as a string, and then decide whether to change to a number based on the type of control
+Function SetGuiControlValue(win, control, value)
+	string win, control
+	string value
+
+	variable controlType
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+
+	if(controlType == CONTROL_TYPE_CHECKBOX)
+		SetCheckBoxState(win, control, str2num(value))
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
+		SetSetVariableString(win, control, value)
+	elseif(controlType == CONTROL_TYPE_SLIDER)
+		Slider $control, value = str2num(value)		
+	else
+		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
+	endif
+End
+
+/// @brief Generic wrapper for getting a control's value 
+Function/S GetGuiControlValue(win, control)
+	string win, control
+	
+	string value
+	variable controlType
+	
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+	
+	if(controlType == CONTROL_TYPE_CHECKBOX)
+		value = num2str(GetCheckBoxState(win, control))
+	elseif(controlType == CONTROL_TYPE_SLIDER) 
+		value = num2str(V_value)
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE) 
+		value = num2str(GetSetVariable(win, control))
+		if (cmpstr(value, "NaN") == 0)
+			value = GetSetVariableString(win, control)
+		endif
+	else
+		value = ""
+	endif
+	
+	return value
+End
+
+/// @brief Generic wrapper for getting a controls state (enabled, hidden, disabled)
+Function/S GetGuiControlState(win, control)
+    string win, control
+
+    ControlInfo/W=$win $control
+    ASSERT(V_flag != 0, "Non-existing control or window")
+
+    return num2str(V_disable)
+End
+
+/// @brief Generic wrapper for setting a controls state (enabled, hidden, disabled)
+Function SetGuiControlState(win, control, controlState)
+    string win, control
+    string controlState
+    variable controlType
+
+    ControlInfo/W=$win $control
+    ASSERT(V_flag != 0, "Non-existing control or window")
+
+    ModifyControl $control, win=$win, disable=str2num(controlState)
+End

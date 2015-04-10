@@ -11,6 +11,8 @@ Menu "HDF5 Tools"
 		"Load and Replace Stim Set", LoadReplaceStimSet()
 		"Load Additional Stim Set", LoadAdditionalStimSet()	
 		"Save Sweep Data", SaveSweepData()
+		"Save Configuration", SaveConfiguration()
+		"Load Configuration", LoadConfigSet()
 End
 
 /// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
@@ -487,3 +489,225 @@ Function SaveSweepData()
 	// restore the data folder
 	SetDataFolder savedDataFolder
 End
+
+///@brief Routine for saving all gui settings/switches/check boxes 
+Function SaveConfiguration()
+
+	// define variables
+	string lockedDevList
+	variable noLockedDevs
+	string win, control
+	string value
+	String filename
+	Variable root_id, h5_id
+	string savedDataFolder
+	String fileLocation
+	string dateTimeStamp
+	variable n, controlCounter, numControls
+	string currentPanel
+	string groupString
+	string panelControlsList
+	string currentControl
+	string controlState
+	variable configWaveSize
+	
+	// get the da_ephys panel names
+	lockedDevList = DAP_ListOfLockedDevs()
+	noLockedDevs = ItemsInList(lockedDevList)
+    
+	// save the present data folder
+	savedDataFolder = GetDataFolder(1)
+    	
+	// build up the filename using the time and date functions    	
+	fileLocation = "c:\\MiesHDF5Files\\SavedConfigFiles\\"
+	
+	// Call this new function to insure that the folder actually exists on the disk
+	CreateFolderOnDisk(fileLocation)
+	
+	dateTimeStamp = GetTimeStamp()
+	sprintf filename, "%ssavedConfig_%s.h5", fileLocation, dateTimeStamp
+
+	// run through the open and locked da_ephys panels
+	// if no locked devices are found, don't save the configuration
+	if (noLockedDevs == 0)
+		print "No Locked Devices found...configuration settings not saved"
+		
+		// restore the data folder
+		SetDataFolder savedDataFolder 
+		return -1
+	else
+		HDF5CreateFile h5_id as filename
+		if (V_Flag != 0 ) // HDF5CreateFile failed
+			print "HDF5Create File failed for ", filename
+			print "Check file name format..."
+		
+			// restore the data folder
+			SetDataFolder savedDataFolder 
+			return -1
+		endif
+		
+		for (n = 0; n<noLockedDevs; n+= 1)
+			currentPanel = StringFromList(n, lockedDevList)
+			
+			wave/T configWave = GetConfigSettingsWaveRef(currentPanel)
+			
+			print "Saving Configuration for ", currentPanel
+			
+			//Put the version string in the first column of the configWave
+			// Version #
+			SVAR versionString = $GetMiesVersion()
+			configWave[0][0] = "Version #"
+			configWave[1][0] = versionString
+			
+			// Now get the list of the control names for the current panel
+			panelControlsList = ControlNameList(currentPanel)
+			numControls = ItemsInList(panelControlsList)
+			for (controlCounter = 0; controlCounter<numControls;controlCounter+=1)
+				currentControl = StringFromList(controlCounter, panelControlsList)
+				value = GetGuiControlValue(currentPanel, currentControl)
+				controlState = GetGuiControlState(currentPanel, currentControl)					
+				
+				if (!IsEmpty(value))
+					// get the current configWaveSize
+					configWaveSize = DimSize(configWave, 1)
+					
+					// now extend the wave by 1 to accomodate
+					Redimension/N = (-1, configWaveSize + 1) configWave
+					
+					// and now stuff the info in the right place
+					configWave[%settingName][configWaveSize] = currentControl
+					configWave[%settingValue][configWaveSize] = value
+					configWave[%controlState][configWaveSize] = controlState
+				endif				
+			endfor
+			
+			// Set the data folder for saving the config settings stuff
+			SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
+			sprintf groupString "/%s", currentPanel
+			HDF5CreateGroup /Z h5_id, groupString, root_id
+			HDF5SaveGroup /O /R  :, root_id, groupString
+			HDF5CloseGroup root_id
+		
+			print "Configuration saved for ", currentPanel
+			
+			// Now kill the configWave....since its only used for saving the configuration settings to hdf5, don't need it floating around anymore
+			KillWaves ConfigWave
+		endfor	
+		
+		HDF5CloseFile h5_id
+		print "HDF5 file save complete..."
+	endif
+    	
+	// restore the data folder
+	SetDataFolder savedDataFolder	
+End	
+		
+/// @brief Load config settings from HDF5 file
+Function LoadConfigSet([incomingFileName])
+	string incomingFileName
+	    	    
+	Variable fileID, waveCounter
+	string dataSet
+	string savedDataFolder
+	string groupList
+	variable groupItems
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+	string panelControlsList
+	variable numRemainingControls
+	string currentControl
+	variable configWaveSize
+	variable controlCounter
+	variable controlType
+	
+	// save the present data folder
+	savedDataFolder = GetDataFolder(1)
+	
+	if( ParamIsDefault(incomingFileName) )
+		NewPath/O miesHDF5ConfigStorage, "C:\\MiesHDF5Files\\SavedConfigFiles\\"
+		HDF5OpenFile /R /P=miesHDF5ConfigStorage fileID as ""	 // Displays a dialog
+		if(V_flag == 0)				 // User selected a file?
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+		else
+			print "File load cancelled..."
+			
+			// restore the data folder
+			SetDataFolder savedDataFolder
+			return 0
+		endif
+	else
+		if (StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedConfigFiles\\savedConfig*") != 1)
+			print "Not a valid config settings file....exiting..."
+			
+			// restore the data folder
+			SetDataFolder savedDataFolder
+			
+			return 0
+		else
+			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"	
+		endif
+	endif
+    	
+	groupList =  S_HDF5ListGroup 
+	groupItems = ItemsInList(groupList)
+	for(waveCounter = 0; waveCounter < groupItems; waveCounter += 1)
+		dataSet = StringFromList(waveCounter, groupList)
+		if (StringMatch(dataSet,"ITC*/*"))
+			// get the da_ephys panel names
+			lockedDevList = DAP_ListOfLockedDevs()
+			noLockedDevs = ItemsInList(lockedDevList)
+			for (n = 0; n<noLockedDevs; n+= 1)
+				currentPanel = StringFromList(n, lockedDevList)
+				
+				// Now get the list of the control names for the current panel
+				panelControlsList = ControlNameList(currentPanel)
+				
+				// load into the DA folder
+				SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
+				HDF5LoadData /O /IGOR=-1 fileID, dataSet
+				
+				wave/T configWave = GetConfigSettingsWaveRef(currentPanel)
+				
+				// Version #
+				SVAR versionString = $GetMiesVersion()
+				if (StringMatch(versionString, configWave[%settingValue][%version]) != 1)
+					print "MIES Versions do not match....proceed with caution..."
+				endif			
+				
+				configWaveSize = DimSize(configWave, 1)
+				for (controlCounter = 1; controlCounter<configWaveSize;controlCounter+=1) // start at column 1...column zero is the version number
+					// Some times the values saved are blanks...so need to send the value as a string and let the SetGuiControlValue decide what to do with it
+					SetGuiControlValue(currentPanel, configWave[%settingName][controlCounter],configWave[%settingValue][controlCounter])
+					// also set the control state
+					SetGuiControlState(currentPanel, configWave[%settingName][controlCounter], configWave[%controlState][controlCounter])
+					
+					// Now remove that control name from the panelsControlList
+					panelControlsList = RemoveFromList(configWave[%settingName][controlCounter], panelControlsList)
+				endfor
+				// Go through the remaining controls not restored, and see if they are a valid control...or one that we shouldn't worry about, like the tab or somethign similar
+				numRemainingControls = ItemsInList(panelControlsList)
+				print "The following controls were not restored"
+				for (n = 0;n<numRemainingControls;n+=1)
+					currentControl = StringFromList(n, panelControlsList)
+					ControlInfo/W=$currentPanel $currentControl
+					ASSERT(V_flag != 0, "Non-existing control or window")
+					controlType = abs(V_flag)
+					if((controlType == 2) || (controlType == 5) || (controlType == 7))
+						print "Control: ", currentControl
+					endif
+				endfor			
+			endfor				
+		endif
+	endfor
+	
+	HDF5CloseFile fileID
+	print "Configuration Settings Loaded..."
+	
+	// restore the data folder
+	SetDataFolder savedDataFolder		   	
+End		
+			
+				
