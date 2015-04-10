@@ -1033,6 +1033,88 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	return wv
 End
 
+/// @brief Returns wave reference for the amplifier settings (text version)
+///
+/// Rows:
+/// - Only one
+///
+/// Columns:
+/// - Amplifier parameters as described in the amplifier settings text key wave
+Function/WAVE GetAmplifierSettingsTextWave(panelTitle)
+	string panelTitle
+
+	dfref dfr = GetAmpSettingsFolder()
+	variable versionOfNewWave = 1
+
+	Wave/T/Z/SDFR=dfr wv = ampSettingsText
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/O/T/N=(1,6, NUM_HEADSTAGES) dfr:ampSettingsText/Wave=wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Returns wave reference for the amplifier settings keys (text version)
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance factor
+///
+/// Columns:
+/// - Various settings
+Function/WAVE GetAmplifierSettingsTextKeyWave(panelTitle)
+	string panelTitle
+
+	dfref dfr = GetAmpSettingsFolder()
+	variable versionOfNewWave = 1
+
+	Wave/T/Z/SDFR=dfr wv = ampSettingsTextKey
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	Make/T/O/N=(3, 6) dfr:ampSettingsTextKey/Wave=wv
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units    , wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	wv[0][0] = "OperatingModeString"
+	wv[1][0] = ""
+	wv[2][0] = "-"
+
+	wv[0][1] = "ScaledOutSignalString"
+	wv[1][1] = ""
+	wv[2][1] = "-"
+
+	wv[0][2] = "ScaleFactorUnitsString"
+	wv[1][2] = ""
+	wv[2][2] = "-"
+
+	wv[0][3] = "RawOutSignalString"
+	wv[1][3] = ""
+	wv[2][3] = "-"
+
+	wv[0][4] = "RawScaleFactorUnitsString"
+	wv[1][4] = ""
+	wv[2][4] = "-"
+
+	wv[0][5] = "HardwareTypeString"
+	wv[1][5] = ""
+	wv[2][5] = "-"
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
 /// @}
 
 /// @name Wavebuilder

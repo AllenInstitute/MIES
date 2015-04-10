@@ -716,9 +716,11 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string mccSerial
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ChannelClampMode
-	WAVE statusHS         = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
-	WAVE ampSettingsWave  = GetAmplifierSettingsWave(panelTitle)
-	WAVE/T ampSettingsKey = GetAmplifierSettingsKeyWave(panelTitle)
+	WAVE statusHS              = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	WAVE ampSettingsWave       = GetAmplifierSettingsWave(panelTitle)
+	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave(panelTitle)
+	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave(panelTitle)
+	WAVE/T ampSettingsTextKey  = GetAmplifierSettingsTextKeyWave(panelTitle)
 
 	ampSettingsWave = NaN
 
@@ -824,11 +826,19 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
 		ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
 
+		ampSettingsTextWave[0][0][i] = tds.OperatingModeString
+		ampSettingsTextWave[0][1][i] = tds.ScaledOutSignalString
+		ampSettingsTextWave[0][2][i] = tds.ScaleFactorUnitsString
+		ampSettingsTextWave[0][3][i] = tds.RawOutSignalString
+		ampSettingsTextWave[0][4][i] = tds.RawScaleFactorUnitsString
+		ampSettingsTextWave[0][5][i] = tds.HardwareTypeString
+
 		// new parameters
 		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
 	endfor
 
 	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle)
+	ED_createTextNotes(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle)
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
