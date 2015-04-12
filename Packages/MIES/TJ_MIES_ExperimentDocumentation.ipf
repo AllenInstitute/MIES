@@ -548,8 +548,8 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	endif
 End
 
-/// Takes TP  related data produced by TPDelta function and rearranges it into the correct format (for ED_CreateWaveNotes), and passes it into ED_CreateWaveNotes function
-Function ITC_TPDocumentation(panelTitle)
+/// @brief Stores test pulse related data in the labnotebook
+Function ED_TPDocumentation(panelTitle)
 	string panelTitle
 
 	variable sweepNo, RTolerance

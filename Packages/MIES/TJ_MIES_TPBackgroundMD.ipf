@@ -166,8 +166,8 @@ Function ITC_BkrdTPFuncMD(s)
 				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
 					beep 
-				  	 ITCStopTP(panelTitle)
-				  	 ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values for manual termination of the TP.
+					ITCStopTP(panelTitle)
+					ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values for manual termination of the TP.
 				endif
 			endif
 		endif

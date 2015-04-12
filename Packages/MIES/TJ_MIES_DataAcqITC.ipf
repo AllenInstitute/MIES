@@ -349,7 +349,7 @@ Function ITC_TestPulseFunc(s)
 		if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 			beep
 			ITC_STOPTestPulse(panelTitle)
-			ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
+			ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
 		endif
 	endif
 
@@ -561,7 +561,7 @@ Function ITC_StartTestPulse(panelTitle)
 	while (cmpstr(Keyboard[9], " ") != 0)
 	
 	DAP_RestoreTTLState(panelTitle)
-	ITC_TPDocumentation(panelTitle)
+	ED_TPDocumentation(panelTitle)
 	EnableControl(panelTitle,"StartTestPulseButton")
 	
 	// Update pressure buttons

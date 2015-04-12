@@ -236,7 +236,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 		SCOPE_CreateGraph(TestPulseITC, panelTitle)
-		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
+		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTestPulse(panelTitle)
@@ -245,7 +245,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	else
-		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
+		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 		DAP_StopButtonToAcqDataButton(panelTitle) // 
 		ITC_StopITCDeviceTimer(panelTitle)
 		NVAR DataAcqState = $GetDataAcqState(panelTitle)
@@ -561,14 +561,14 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	ITI = v_value
 			
 	if(Count < (TotTrials - 1))
-		ITC_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
+		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		StartTestPulse(panelTitle)
 
 		ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 	else
-		ITC_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
+		ED_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
 		DAP_StopButtonToAcqDataButton(panelTitle)
 		NVAR DataAcqState = $GetDataAcqState(panelTitle)
