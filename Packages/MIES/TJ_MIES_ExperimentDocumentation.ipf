@@ -377,6 +377,8 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  STIM_WAVE_NAME_KEY
 	sweepSettingsTxtKey[0][1] =  "User Comment"
+	sweepSettingsTxtKey[0][2] =  "DA unit"
+	sweepSettingsTxtKey[0][3] =  "AD unit"
 
 	// Get the wave reference to the new Sweep Data wave
 	Wave sweepDataWave      = DC_SweepDataWvRef(panelTitle)
@@ -392,6 +394,10 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 		sweepSettingsTxtWave[0][0][i] = sweepDataTxtWave[0][0][i]
 		// user comment
 		sweepSettingsTxtWave[0][1][i] = sweepDataTxtWave[0][1][i]
+		// DA unit
+		sweepSettingsTxtWave[0][2][i] = sweepDataTxtWave[0][2][i]
+		// AD unit
+		sweepSettingsTxtWave[0][3][i] = sweepDataTxtWave[0][3][i]
 		// scale factor
 		sweepSettingsWave[0][0][i] = sweepDataWave[0][4][i]
 		// DAC

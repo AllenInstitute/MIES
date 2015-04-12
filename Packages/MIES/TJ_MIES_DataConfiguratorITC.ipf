@@ -477,6 +477,9 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		sweepTxTData[0][0][HeadStage] = setName
 		sweepTxTData[0][1][HeadStage] = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
 
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		sweepTxTData[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+
 		ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, 0)
 		oneFullCycle = imag(ret)
 
@@ -538,6 +541,9 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 		sweepData[0][3][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		sweepTxTData[0][3][HeadStage] = GetSetVariableString(panelTitle, ctrl)
 	endfor
 
 	// Place TTL waves into ITCDataWave
