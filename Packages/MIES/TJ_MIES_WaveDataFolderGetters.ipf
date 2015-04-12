@@ -1237,16 +1237,18 @@ Function/WAVE GetWaveBuilderWaveParam()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(51, -1, -1) wv
+	else
+		Make/N=(51, 100, 8) dfr:WP/Wave=wv
+
+		// sets low pass filter to off (off value is related to sampling frequency)
+		wv[20][][2] = 10001
+		// sets coefficent count for low pass filter to a reasonable and legal Number
+		wv[26][][2] = 500
+		// sets coefficent count for high pass filter to a reasonable and legal Number
+		wv[28][][2] = 500
 	endif
-
-	Make/O/N=(51, 100, 8) dfr:WP/Wave=wv
-
-	// sets low pass filter to off (off value is related to sampling frequency)
-	wv[20][][2] = 10001
-	// sets coefficent count for low pass filter to a reasonable and legal Number
-	wv[26][][2] = 500
-	// sets coefficent count for high pass filter to a reasonable and legal Number
-	wv[28][][2] = 500
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1270,9 +1272,11 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(51, -1) wv
+	else
+		Make/N=(51, 100)/T dfr:WPT/Wave=wv
 	endif
-
-	Make/N=(51, 100)/O/T dfr:WPT/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 

@@ -1240,6 +1240,10 @@ static Function WBP_LoadSet()
 	Duplicate/O WPT, dfr:WPT
 	Duplicate/O SegWvType, dfr:SegWvType/Wave=SegWvType
 
+	// fetch wave references, possibly updating the wave layout if required
+	WAVE WP  = GetWaveBuilderWaveParam()
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
 	// we might be called from an old panel without an ITI setvariable control
 	ControlInfo/W=$panel setvar_WaveBuilder_ITI
 	if(V_flag > 0)
