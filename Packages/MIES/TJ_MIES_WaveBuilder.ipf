@@ -1,5 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict Wave access.
 
+static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
+
 Function WB_MakeStimSet()
 
 	variable i, numEpochs, numSteps, setNumber
@@ -8,8 +10,8 @@ Function WB_MakeStimSet()
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	// duplicating starting parameter Waves so that they can be returned to start parameters at end of Wave making
-	Duplicate/FREE WP, WP_orig
+	// WB_AddDelta modifies WP so we pass a copy instead
+	Duplicate/FREE WP, WPCopy
 
 	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
 	basename = basename[0,15]
@@ -21,18 +23,21 @@ Function WB_MakeStimSet()
 
 	for(i=0; i < numSteps; i+=1)
 		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + outputType + "_" + num2str(setNumber)
-		WB_MakeWaveBuilderWave(i, numEpochs, outputWaveName)
-		WB_AddDelta(numEpochs)
+		WB_MakeWaveBuilderWave(WPCopy, i, numEpochs, outputWaveName)
+		WB_AddDelta(WPCopy, numEpochs)
 	endfor
 
-	WP = WP_orig
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
 End
 
 /// @brief Add delta to appropriate parameters
 ///
 /// Relies on alternating sequence of parameter and delta's in parameter waves as documented in WB_MakeWaveBuilderWave()
-static Function WB_AddDelta(numEpochs)
+///
+/// @param WP         wavebuilder parameter wave (temporary copy)
+/// @param numEpochs  number of epochs
+static Function WB_AddDelta(WP, numEpochs)
+	Wave WP
 	variable numEpochs
 
 	variable i, j, k
@@ -40,7 +45,6 @@ static Function WB_AddDelta(numEpochs)
 	variable operation, factor
 	variable numEpochTypes
 
-	WAVE WP = GetWaveBuilderWaveParam()
 	numEpochTypes = DimSize(WP, LAYERS)
 
 	for(i = 0; i < 30; i += 2)
@@ -90,7 +94,8 @@ static Function WB_AddDelta(numEpochs)
 	endfor
 End
 
-static Function WB_MakeWaveBuilderWave(stepCount, numEpochs, wvName)
+static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
+	Wave WP
 	variable stepCount
 	variable numEpochs
 	string wvName
@@ -107,7 +112,6 @@ static Function WB_MakeWaveBuilderWave(stepCount, numEpochs, wvName)
 	variable i, type, accumulatedDuration
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
-	WAVE WP = GetWaveBuilderWaveParam()
 
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
@@ -268,12 +272,18 @@ static Function WB_MakeWaveBuilderWave(stepCount, numEpochs, wvName)
 	KillStrings/Z StringHolder
 End
 
+/// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
+/// @param duration time of the stimulus in ms
 static Function/Wave WB_GetSegmentWave(duration)
 	variable duration
 
 	DFREF dfr = GetWaveBuilderDataPath()
 	variable numPoints = duration / 0.005
 	Wave/Z/SDFR=dfr SegmentWave
+
+	if(duration > MAX_SWEEP_DURATION_IN_MS)
+		Abort "Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!"
+	endif
 
 	// optimization: recreate the wave only if necessary or just resize it
 	if(!WaveExists(SegmentWave))
