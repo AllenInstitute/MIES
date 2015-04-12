@@ -1211,11 +1211,10 @@ static Function WBP_SaveSetParam()
 End
 
 static Function WBP_LoadSet()
-	string SetName
-	string FolderPath, WPName, WPTName, SegWvTypeName
+	string setName
 
 	ControlInfo popup_WaveBuilder_SetList
-	SetName = s_value
+	setName = s_value
 
 	if(!CmpStr(SetName, NONE))
 		Print "Select set to load from popup menu."
@@ -1232,15 +1231,14 @@ static Function WBP_LoadSet()
 		dfref dfr = GetWBSvdStimSetParamDAPath()
 	endif
 
-	Wave/SDFR=dfr WP            = $"WP_"  + SetName
-	Wave/SDFR=dfr WPT           = $"WPT_" + SetName
-	Wave/SDFR=dfr SegWvTypeOrig = $"SegWvType_" + SetName
+	Wave/SDFR=dfr WP        = $"WP_"  + setName
+	Wave/T/SDFR=dfr WPT     = $"WPT_" + setName
+	Wave/SDFR=dfr SegWvType = $"SegWvType_" + setName
 
-	SegWvTypeName = "SegWvType_" + SetName
-
-	Duplicate/O WP, $GetWaveBuilderDataPathAsString() + ":WP"
-	Duplicate/O WPT, $GetWaveBuilderDataPathAsString() + ":WPT"
-	Duplicate/O SegWvTypeOrig, $GetWaveBuilderDataPathAsString() + ":SegWvType"/Wave=SegWvType
+	DFREF dfr = GetWaveBuilderDataPath()
+	Duplicate/O WP, dfr:WP
+	Duplicate/O WPT, dfr:WPT
+	Duplicate/O SegWvType, dfr:SegWvType/Wave=SegWvType
 
 	// we might be called from an old panel without an ITI setvariable control
 	ControlInfo/W=$panel setvar_WaveBuilder_ITI
