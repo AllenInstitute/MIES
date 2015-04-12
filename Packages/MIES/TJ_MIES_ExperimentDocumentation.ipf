@@ -2,16 +2,6 @@
 
 static StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
 
-Function ED_AppendCommentToDataWave(DataWaveName, panelTitle)
-	wave DataWaveName
-	string panelTitle
-	controlinfo /w = $panelTitle SetVar_DataAcq_Comment
-	if(strlen(s_value) != 0)
-		Note DataWaveName, s_value
-		SetVariable SetVar_DataAcq_Comment value = _STR:""
-	endif
-End
-
 /// @brief Add notation of settings to an experiment DataWave.  This function
 /// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
 ///
@@ -386,10 +376,11 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  STIM_WAVE_NAME_KEY
+	sweepSettingsTxtKey[0][1] =  "User Comment"
 
 	// Get the wave reference to the new Sweep Data wave
-	Wave sweepDataWave = DC_SweepDataWvRef(panelTitle)
-	Wave/T sweepSetName = DC_SweepDataTxtWvRef(panelTitle)
+	Wave sweepDataWave      = DC_SweepDataWvRef(panelTitle)
+	Wave/T sweepDataTxtWave = DC_SweepDataTxtWvRef(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if (!statusHS[i])
@@ -397,8 +388,10 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 		endif
 
 		// Save info into the stimSettingsWave
-		// wave name
-		sweepSettingsTxtWave[0][0][i] = sweepSetName[0][0][i]
+		// set name
+		sweepSettingsTxtWave[0][0][i] = sweepDataTxtWave[0][0][i]
+		// user comment
+		sweepSettingsTxtWave[0][1][i] = sweepDataTxtWave[0][1][i]
 		// scale factor
 		sweepSettingsWave[0][0][i] = sweepDataWave[0][4][i]
 		// DAC
@@ -413,10 +406,14 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 		sweepSettingsWave[0][5][i] = sweepDataWave[0][5][i]
 		// TP Insert Checkbox
 		sweepSettingsWave[0][6][i] = sweepDataWave[0][6][i]
+		sweepSettingsWave[0][7][i] = sweepDataWave[0][7][i]
 	endfor
 
 	// call the function that will create the text wave notes
 	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle)
+
+	// after writing the text notes, clear the user comment
+	SetSetVariableString(panelTitle, "SetVar_DataAcq_Comment", "")
 
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle)
