@@ -65,7 +65,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 		keyWave[0][1] = "TimeStamp"
 	endif
 
-	WAVE indizes = FindIndizesAndRedimensionWaves(incomingKeyWave, keyWave, settingsHistory, rowIndex)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingKeyWave, keyWave, settingsHistory, rowIndex)
 
 	settingsHistory[rowIndex][0] = sweepNo
 	settingsHistory[rowIndex][1] = DateTime
@@ -84,13 +84,13 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 
 	SetDimensionLabels(keyWave, settingsHistory)
 	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
+	ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
 End
 
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
-Function WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
+static Function ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
 	Wave/Z saveDataWave
 	Wave/T incomingKeyWave
 	Wave settingsHistory
@@ -169,7 +169,7 @@ End
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
-Function WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
+static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
 	Wave/Z saveDataWave
 	Wave/T incomingKeyWave
 	Wave/T settingsHistory
@@ -239,7 +239,7 @@ End
 /// @param[in]  key         key wave of the labnotebook
 /// @param[in]  values      values/data wave of the labnotebook
 /// @param[out] rowIndex    returns the row index into values at which the new values should be written
-static Function/Wave FindIndizesAndRedimensionWaves(incomingKey, key, values, rowIndex)
+static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowIndex)
 	WAVE/T incomingKey, key
 	WAVE values
 	variable &rowIndex
@@ -335,7 +335,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 	ASSERT(DimSize(incomingTextDocWave, LAYERS) == NUM_HEADSTAGES, "Mismatched layer counts")
 	ASSERT(DimSize(incomingTextDocWave, COLS)   == DimSize(incomingTextDocKeyWave, COLS), "Mismatched column counts")
 
-	WAVE indizes = FindIndizesAndRedimensionWaves(incomingTextDocKeyWave, textDocKeyWave, textDocWave, rowIndex)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextDocKeyWave, textDocKeyWave, textDocWave, rowIndex)
 
 	textDocWave[rowIndex][0] = num2istr(sweepNo)
 	textDocWave[rowIndex][1] = num2istr(DateTime)
@@ -350,7 +350,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 	SetDimensionLabels(textDocKeyWave, textDocWave)
 
 	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	WriteChangedValuesToNoteText(saveDataWave, incomingTextDocKeyWave, textDocWave, sweepNo)
+	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextDocKeyWave, textDocWave, sweepNo)
 End
 
 //======================================================================================
