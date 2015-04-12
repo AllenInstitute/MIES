@@ -1221,7 +1221,6 @@ End
 /// - Segment/Epoch
 ///
 /// Layers hold different stimulus wave form types:
-
 /// - Ramp
 /// - GPB_Noise
 /// - Sin
