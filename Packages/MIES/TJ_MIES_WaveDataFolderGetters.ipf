@@ -297,9 +297,12 @@ Function/Wave DC_SweepDataWvRef(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 8,-1) wv
+	else
+		Make/N=(1, 8, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
 	endif
 
-	Make/O/N=(1, 8, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
 	wv = NaN
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -328,9 +331,12 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 2, -1) wv
+	else
+		Make/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
 	endif
 
-	Make/O/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
 	wv = ""
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -479,9 +485,12 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, INITIAL_KEY_WAVE_COL_COUNT) wv
+	else
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
 	endif
 
-	Make/O/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
 	wv = ""
 
 	wv[0][0] = "Sweep #"
@@ -526,9 +535,12 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 8, -1) wv
+	else
+		Make/N=(1, 8, NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
 	endif
 
-	Make/O/N=(1,8,NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
 	wv = Nan
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -567,9 +579,12 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 8) wv
+	else
+		Make/T/N=(3, 8) dfr:sweepSettingsKeyWave/Wave=wv
 	endif
 
-	Make/O/T/N=(3,8) dfr:sweepSettingsKeyWave/Wave=wv
 	wv = ""
 
 	SetDimLabel 0, 0, Parameter, wv
@@ -636,10 +651,14 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 2, -1) wv
+	else
+		Make/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	endif
 
-	Make/O/T/N=(1,2,NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	wv = ""
+
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -668,10 +687,14 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 2, -1) wv
+	else
+		Make/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	endif
 
-	Make/O/T/N=(1,2,NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	wv = ""
+
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -779,9 +802,11 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		// nothing to do
+	else
+		Make/N=(31, 1, NUM_HEADSTAGES) dfr:$panelTitle/Wave=wv
 	endif
-
-	Make/N=(31, 1, NUM_HEADSTAGES)/O dfr:$panelTitle/Wave=wv
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
 	SetDimLabel ROWS  , 0 , HoldingPotential      , wv
@@ -838,9 +863,11 @@ Function/WAVE GetAmplifierSettingsWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 43, -1) wv
+	else
+		Make/N=(1, 43, NUM_HEADSTAGES) dfr:ampsettings/Wave=wv
 	endif
-
-	Make/O/N=(1,43, NUM_HEADSTAGES) dfr:ampSettings/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -866,9 +893,11 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 43) wv
+	else
+		Make/T/N=(3, 43) dfr:ampSettingsKey/Wave=wv
 	endif
-
-	Make/T/O/N=(3, 43) dfr:ampSettingsKey/Wave=wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -1070,9 +1099,11 @@ Function/WAVE GetAmplifierSettingsTextWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 6 -1) wv
+	else
+		Make/T/N=(1, 6, NUM_HEADSTAGES) dfr:ampSettingsText/Wave=wv
 	endif
-
-	Make/O/T/N=(1,6, NUM_HEADSTAGES) dfr:ampSettingsText/Wave=wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1098,9 +1129,11 @@ Function/WAVE GetAmplifierSettingsTextKeyWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 6) wv
+	else
+		Make/T/N=(3, 6) dfr:ampSettingsTextKey/Wave=wv
 	endif
-
-	Make/T/O/N=(3, 6) dfr:ampSettingsTextKey/Wave=wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
