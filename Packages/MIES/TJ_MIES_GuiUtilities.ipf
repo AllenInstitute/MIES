@@ -760,3 +760,12 @@ Function IsControlDisabled(win, control)
 
 	return V_disable & DISABLE_CONTROL_BIT
 End
+
+/// @brief Return the main window name from a full subwindow specification
+///
+/// @param subwindow window name including subwindows, e.g. `panel#subWin1#subWin2`
+Function/S GetMainWindow(subwindow)
+	string subwindow
+
+	return StringFromList(0, subwindow, "#")
+End

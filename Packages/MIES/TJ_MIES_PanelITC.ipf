@@ -3948,18 +3948,11 @@ End
 Function/S DAP_ReturnPanelName()
 	string panelTitle
 
-	variable pos
 	GetWindow kwTopWin activesw
 	panelTitle = s_value
 
 	if(StringMatch(panelTitle, "ITC*"))
-		pos = strsearch(panelTitle, "#", 0)
-
-		if(pos != -1 && pos >= 1)
-			return panelTitle[0, pos - 1]
-		endif
-
-		return panelTitle
+		return GetMainWindow(panelTitle)
 	endif
 
 	// we do not return anything useful
