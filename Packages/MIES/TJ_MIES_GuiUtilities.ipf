@@ -2,9 +2,6 @@
 
 static constant DISABLE_CONTROL_BIT = 2
 static constant HIDDEN_CONTROL_BIT  = 1
-
-Constant CHECKBOX_SELECTED     = 1
-Constant CHECKBOX_UNSELECTED   = 0
  
 /// @brief Show a GUI control in the given window
 Function ShowControl(win, control)
@@ -206,15 +203,6 @@ Function ChangeListOfControlBckgColor(win, controlList, R, G, B)
 	ModifyControlList controlList, WIN = $win, valueBackColor = (R,G,B)
 	
 End
-
-/// @name Control types from ControlInfo
-/// @{
-Constant CONTROL_TYPE_CHECKBOX    = 2
-Constant CONTROL_TYPE_POPUPMENU   = 3
-Constant CONTROL_TYPE_VALDISPLAY  = 4
-Constant CONTROL_TYPE_SETVARIABLE = 5
-Constant CONTROL_TYPE_SLIDER      = 7
-/// @}
 
 /// @brief Returns control disable state
 Function GetControlDisable(win, control)

@@ -1,15 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-///@name Constants for DC_ConfigureDataForITC
-///@{
-CONSTANT DATA_ACQUISITION_MODE = 0
-CONSTANT TEST_PULSE_MODE       = 1
-///@}
-
 /// @brief Prepare test pulse/data acquisition
 ///
 /// @param panelTitle  panel title
-/// @param dataAcqOrTP one of DATA_ACQUISITION_MODE or TEST_PULSE_MODE
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP

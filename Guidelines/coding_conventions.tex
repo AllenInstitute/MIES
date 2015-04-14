@@ -14,8 +14,8 @@
 \setminted{autogobble, tabsize=4, fontfamily=tt}
 \setminted[igor]{style=igor}
 
-\date{3.11.2014}
-\newcommand{\version}{0.1}
+\date{12.04.2015}
+\newcommand{\version}{0.11}
 
 \usepackage[%
 pdfa=true,
@@ -390,11 +390,9 @@ pdfauthor={Thomas Braun, byte physics, thomas.braun@byte-physics.de}
 \subsection{Constants}
 %
 \begin{itemize}
-	\item Define them at the top of the file
+	\item Static constants, which are required only in one file, should be defined at the top of the file
 %
-	\item Make them \mintinline{igor}{static} if they are only required inside the same procedure file
-%
-	\item They are named with all caps and underlines if non-static
+	\item Global constants are named with all caps and underlines and are collated in a single file
 %
 	\item Explain magic numbers in a comment
 	\begin{minted}{igor}

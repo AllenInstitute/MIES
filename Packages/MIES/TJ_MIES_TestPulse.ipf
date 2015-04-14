@@ -465,13 +465,13 @@ static Function TP_CalculateAverage(buffer, dest)
 End
 
 /// Sampling interval in seconds
-Constant samplingInterval = 0.2
+static Constant samplingInterval = 0.2
 
 /// Fitting range in seconds
-Constant fittingRange = 5
+static Constant fittingRange = 5
 
 /// Interval in steps of samplingInterval for recalculating the time axis
-Constant dimensionRescalingInterval = 100
+static Constant dimensionRescalingInterval = 100
 
 /// Units MOhm
 static Constant MAX_VALID_RESISTANCE = 3000
