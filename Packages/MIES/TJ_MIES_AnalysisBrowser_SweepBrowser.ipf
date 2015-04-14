@@ -36,6 +36,7 @@ End
 static Function/S SB_GetSweepBrowserFolder(graph)
 	string graph
 
+	ASSERT(windowExists(graph), "Window must exist")
 	string folder = GetUserData(graph, "", "folder")
 	ASSERT(DataFolderExists(folder), "Datafolder of the sweep browser could not be found")
 
