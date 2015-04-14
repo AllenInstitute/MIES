@@ -84,9 +84,10 @@ End
 /// - Sizes of all dimensions
 /// - Labels of all dimensions
 /// - Wave data type
+/// - Prefilled wave content
 ///
-/// In order to enable smooth upgrades between old and new wave layouts the following
-/// code pattern can be used:
+/// In order to enable smooth upgrades between old and new wave layouts
+/// the following code pattern can be used:
 /// @code
 /// Function/Wave GetMyWave(panelTitle)
 /// 	string panelTitle
@@ -98,23 +99,30 @@ End
 ///
 /// 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 /// 		return wv
-/// 	endif
+/// 	elseif(WaveExists(wv)) // handle upgrade
+/// 	    // change the required dimensions and leave all others untouched with -1
+/// 	    // the extended dimensions are initialized with zero
+/// 		Redimension/N=(10, -1, -1, -1) wv
+/// 	else
+/// 		Make/N=(10, 2) dfr:myWave/Wave=wv
+/// 	end
 ///
-/// 	Make/O/N=(1,2) dfr:myWave/Wave=wv
 /// 	SetWaveVersion(wv, versionOfNewWave)
 ///
 /// 	return wv
 /// End
 /// @endcode
 ///
-/// Now everytime the layout of `myWave` changes, you just raise `versionOfNewWave` by 1.
-/// When `GetMyWave` is called the first time, the wave is recreated, and on successive calls
-/// the newly recreated wave is just returned.
+/// Now everytime the layout of `myWave` changes, raise `versionOfNewWave` by 1 and
+/// adapt the `Make` and `Redimension` calls. When `GetMyWave` is called the first time,
+/// the wave is redimensioned, and on successive calls the newly recreated wave is just returned.
+/// Fancy solutions might adapt the redimensioning step depending on the new and old version.
+/// The old version can be queried with `GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)`.
 ///
-/// Some Hints:
+/// Hints:
 /// - Wave layout versioning is *mandatory* if you change the layout of the wave
 /// - Wave layout versions start with 1 and are integers
-/// - Rule of thumb: Raise the version if you change anything in or below the `Make` line above
+/// - Rule of thumb: Raise the version if you change anything in or below the `Make` line
 /// - Wave versioning needs a special wave note style, see @ref GetNumberFromWaveNote
 /// @{
 
