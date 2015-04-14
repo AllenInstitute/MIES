@@ -80,6 +80,170 @@ static Function SB_GetFormerSweepNumber(win)
 	return str2num(GetUserData(win, "popup_sweep_selector", LAST_SWEEP_USER_DATA))
 End
 
+/// @brief Return numeric labnotebook entries
+///
+/// @param graph    sweep browser graph
+/// @param mapIndex index into the sweep browser map, equal to the index into the popup menu (0-based)
+/// @param key      labnotebook key
+///
+/// @return wave with the setting for each headstage or an invalid wave reference if the setting does not exist
+static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
+	string graph
+	variable mapIndex
+	string key
+
+	string device, expFolder
+	variable sweep
+
+	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+
+	if(!IsFinite(mapIndex) || mapIndex < 0 || mapIndex >= DimSize(sweepMap, ROWS))
+		return $""
+	endif
+
+	device    = sweepMap[mapIndex][%Device]
+	sweep     = str2num(sweepMap[mapIndex][%Sweep])
+	expFolder = sweepMap[mapIndex][%ExperimentFolder]
+
+	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
+	WAVE/SDFR=dfr numericValues
+
+	return GetLastSetting(numericValues, sweep, key)
+End
+
+/// @brief Return a list of experiments from which the sweeps in the sweep browser
+/// graph originated from
+///
+/// @param graph sweep browser name
+Function/S SB_GetListOfExperiments(graph)
+	string graph
+
+	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+
+	variable numEntries, i
+	string experiment
+	string list = ""
+
+	numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+	for(i = 0; i < numEntries; i += 1)
+		experiment = sweepMap[i][%ExperimentName]
+		if(WhichListItem(experiment, list) == -1)
+			list = AddListItem(experiment, list, ";", Inf)
+		endif
+	endfor
+
+	return list
+End
+
+/// @brief Return a text wave with information about the channel waves
+/// of the sweep browser graph of all or a specific experiment
+///
+/// The returned textwave will have multiple columns with different information on each wave.
+///
+/// Rows:
+///  - One entry for each wave
+///
+/// Columns:
+/// - 0: channel number
+/// - 1: absolute path to the wave
+/// - 2: headstage
+///
+/// Example usage:
+/// @code
+/// variable channelNumber, headstage, numWaves, i
+/// string graph   = "SweepBrowser1" // name of an existing sweep browser graph
+/// string channel = "DA"
+/// WAVE/T wv =  SB_GetChannelInfoFromGraph(graph, channel)
+///
+/// numWaves = DimSize(wv, ROWS)
+/// for(i = 0; i < numWaves; i += 1)
+/// 	WAVE data     = $(wv[i][%path])
+/// 	channelNumber = str2num(wv[i][%channel])
+/// 	headstage     = str2num(wv[i][%headstage])
+///
+/// 	printf "Channel %d acquired by headstage %d is stored in %s\r", channelNumber, headstage, NameOfWave(data)
+/// endfor
+/// @endcode
+///
+/// @param graph                                 sweep browser name
+/// @param channel                               type of the channel, one of #ITC_CHANNEL_NAMES
+/// @param experiment[optional: defaults to all] name of the experiment the channel wave should originate from
+Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
+	string graph, channel, experiment
+
+	variable i, j, numEntries, idx, numWaves, channelNumber
+	string list, headstage, path
+
+	ASSERT(FindListitem(channel, ITC_CHANNEL_NAMES) != -1, "Given channel could not be found in ITC_CHANNEL_NAMES")
+
+	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 3) channelMap
+
+	SetDimLabel COLS, 0, channel,   channelMap
+	SetDimLabel COLS, 1, path,      channelMap
+	SetDimLabel COLS, 2, headstage, channelMap
+
+	if(ParamIsDefault(experiment))
+		numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+		Make/FREE/N=(numEntries) indizes = p
+	else
+		WAVE/Z indizes = FindIndizes(wvText=sweepMap, colLabel="ExperimentName", str=experiment)
+		ASSERT(WaveExists(indizes), "The experiment could not be found in the sweep browser")
+		numEntries = DimSize(indizes, ROWS)
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+		DFREF dfr = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, indizes[i])
+
+		list = GetListOfWaves(dfr, channel + "_.*", fullpath=1)
+		if(IsEmpty(list))
+			continue
+		endif
+
+		WAVE headstages = SB_GetSweepPropertyFromNumLBN(graph, i, "Headstage Active")
+		WAVE ADCs = SB_GetSweepPropertyFromNumLBN(graph, i, "ADC")
+		WAVE DACs = SB_GetSweepPropertyFromNumLBN(graph, i, "DAC")
+
+		numWaves = ItemsInList(list)
+		for(j = 0; j < numWaves; j += 1)
+			path = StringFromList(j, list)
+			channelNumber = str2num(RemovePrefix(GetBaseName(path), startstr=channel + "_"))
+			ASSERT(IsFinite(channelNumber), "Extracted non finite channel number")
+
+			strswitch(channel)
+				case "AD":
+					FindValue/V=(channelNumber) ADCs
+					break
+				case "DA":
+					FindValue/V=(channelNumber) DACs
+					break
+				default:
+					ASSERT(0, "Unsupported channel")
+					break
+			endswitch
+
+			ASSERT(V_value != -1, "Could not find the channel number")
+			ASSERT(headstages[V_value] == 1, "The headstage of the channel was not active but should have been")
+
+			headstage = num2str(V_value)
+
+			EnsureLargeEnoughWave(channelMap, minimumSize=idx)
+			channelMap[idx][%channel]    = num2str(channelNumber)
+			channelMap[idx][%path]      = path
+			channelMap[idx][%headstage] = headstage
+			idx += 1
+		endfor
+	endfor
+
+	Redimension/N=(idx, -1) channelMap
+
+	return channelMap
+End
+
 /// @param sweepBrowserDFR datatfolder of the sweep browser
 /// @param currentMapIndex index into the sweep browser map of the currently shown sweep
 /// @param newMapIndex index into the sweep browser map of the new to-be-shown sweep
