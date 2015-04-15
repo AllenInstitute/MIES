@@ -1268,7 +1268,6 @@ End
 /// - Segment/Epoch
 ///
 /// Layers hold different stimulus wave form types:
-
 /// - Ramp
 /// - GPB_Noise
 /// - Sin
@@ -1278,23 +1277,25 @@ End
 /// - Load custom wave
 Function/WAVE GetWaveBuilderWaveParam()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	dfref dfr = GetWaveBuilderDataPath()
 
 	WAVE/Z/SDFR=dfr wv = WP
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(61, -1, -1) wv
+	else
+		Make/N=(61, 100, 8) dfr:WP/Wave=wv
+
+		// sets low pass filter to off (off value is related to sampling frequency)
+		wv[20][][2] = 10001
+		// sets coefficent count for low pass filter to a reasonable and legal Number
+		wv[26][][2] = 500
+		// sets coefficent count for high pass filter to a reasonable and legal Number
+		wv[28][][2] = 500
 	endif
-
-	Make/O/N=(51, 100, 8) dfr:WP/Wave=wv
-
-	// sets low pass filter to off (off value is related to sampling frequency)
-	wv[20][][2] = 10001
-	// sets coefficent count for low pass filter to a reasonable and legal Number
-	wv[26][][2] = 500
-	// sets coefficent count for high pass filter to a reasonable and legal Number
-	wv[28][][2] = 500
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1318,9 +1319,11 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(51, -1) wv
+	else
+		Make/N=(51, 100)/T dfr:WPT/Wave=wv
 	endif
-
-	Make/N=(51, 100)/O/T dfr:WPT
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1346,6 +1349,27 @@ Function/Wave GetSegmentWave()
 
 	return wv
 End
+
+/// @brief Return the wave identifiying the begin and
+/// end times of the current epoch
+Function/Wave GetEpochID()
+
+	dfref dfr = GetWaveBuilderDataPath()
+
+	WAVE/Z/SDFR=dfr wv = epochID
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(100, 2) dfr:epochID/Wave=wv
+
+	SetDimLabel COLS, 0, timeBegin, wv
+	SetDimLabel COLS, 1, timeEnd, wv
+
+	return wv
+End
+
 /// @}
 
 /// @name Asynchronous Measurements

@@ -1,93 +1,119 @@
 #pragma rtGlobals=3		// Use modern global access method and strict Wave access.
 
+static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
+
 Function WB_MakeStimSet()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr WaveBuilderWave
-	variable i
-	Variable start = stopmstimer(-2)
+	variable i, numEpochs, numSteps, setNumber
+	string basename, outputType, outputWaveName
+	variable start = stopmstimer(-2)
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	// duplicating starting parameter Waves so that they can be returned to start parameters at end of Wave making
-	Duplicate/FREE WP, WP_orig
+	// WB_AddDelta modifies WP so we pass a copy instead
+	Duplicate/FREE WP, WPCopy
 
-	ControlInfo setvar_WaveBuilder_baseName
-	string setbasename = s_value[0,15]
+	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
+	basename = basename[0,15]
 
-	ControlInfo setvar_WaveBuilder_SetNumber
-	variable setnumber = v_value
+	setNumber  = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
+	numSteps   = GetSetVariable("WaveBuilder", "setVar_WaveBuilder_StepCount")
+	outputType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
+	numEpochs  = GetSetVariable("WaveBuilder", "SetVar_WaveBuilder_NoOfEpochs")
 
-	ControlInfo SetVar_WaveBuilder_StepCount
-	variable NoOfWavesInSet = v_value
-
-	string OutputWaveName
-
-	for(i=1; i <= NoOfWavesInSet; i+=1)
-		WB_MakeWaveBuilderWave()
-		WB_AddDelta()
-		ControlInfo popup_WaveBuilder_OutputType
-		string OutputWaveType = s_value
-
-		OutputWaveName = num2str(i) + "_" + setbasename + "_" + OutputWaveType + "_" + num2str(setnumber)
-		Duplicate/O WaveBuilderWave, dfr:$OutputWaveName
+	for(i=0; i < numSteps; i+=1)
+		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + outputType + "_" + num2str(setNumber)
+		WB_MakeWaveBuilderWave(WPCopy, i, numEpochs, outputWaveName)
+		WB_AddDelta(WPCopy, numEpochs)
 	endfor
 
-	WP = WP_orig
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
 End
 
-/// @brief Adds delta to appropriate parameter - relies on alternating sequence of parameter and delta's in parameter Waves
-static Function WB_AddDelta()
+/// @brief Add delta to appropriate parameters
+///
+/// Relies on alternating sequence of parameter and delta's in parameter waves as documented in WB_MakeWaveBuilderWave()
+///
+/// @param WP         wavebuilder parameter wave (temporary copy)
+/// @param numEpochs  number of epochs
+static Function WB_AddDelta(WP, numEpochs)
+	Wave WP
+	variable numEpochs
 
-	variable i, checked
+	variable i, j, k
+	variable offsetFactor, durationFactor, amplitudeFactor
+	variable operation, factor
+	variable numEpochTypes
 
-	WAVE WP = GetWaveBuilderWaveParam()
+	numEpochTypes = DimSize(WP, LAYERS)
 
-	checked = GetCheckBoxState("WaveBuilder", "check_WaveBuilder_exp_P40")
+	for(i = 0; i < 30; i += 2)
+		for(j = 0; j < numEpochs; j += 1)
+			for(k = 0; k < numEpochTypes; k += 1)
 
-	for(i=0; i < 30; i += 2)
-		WP[i][][0] = WP[i + 1][q][0] + WP[i][q][0]
-		WP[i][][1] = WP[i + 1][q][1] + WP[i][q][1]
-		WP[i][][2] = WP[i + 1][q][2] + WP[i][q][2]
-		WP[i][][3] = WP[i + 1][q][3] + WP[i][q][3]
-		WP[i][][4] = WP[i + 1][q][4] + WP[i][q][4]
-		WP[i][][5] = WP[i + 1][q][5] + WP[i][q][5]
-		WP[i][][6] = WP[i + 1][q][6] + WP[i][q][6]
-		WP[i][][7] = WP[i + 1][q][7] + WP[i][q][7]
+				WP[i][j][k] += WP[i + 1][j][k]
 
-		if(checked)
-			WP[i + 1][][0] += WP[i + 1][q][0]
-			WP[i + 1][][1] += WP[i + 1][q][1]
-			WP[i + 1][][2] += WP[i + 1][q][2]
-			WP[i + 1][][3] += WP[i + 1][q][3]
-			WP[i + 1][][4] += WP[i + 1][q][4]
-			WP[i + 1][][5] += WP[i + 1][q][5]
-			WP[i + 1][][6] += WP[i + 1][q][6]
-			WP[i + 1][][7] += WP[i + 1][q][7]
-		endif
+				operation = WP[40][j][k]
+				if(operation)
+					durationFactor  = WP[52][j][k]
+					amplitudeFactor = WP[50][j][k]
+					offsetFactor    = WP[51][j][k]
+					switch(i)
+						case 2:
+							factor = amplitudeFactor
+							break
+						case 4:
+							factor = offsetFactor
+							break
+						default:
+							factor = durationFactor
+							break
+					endswitch
+
+					switch(operation)
+						case 1: // Simple factor
+							WP[i + 1][j][k] = WP[i + 1][j][k] * factor
+							break
+						case 2: // Log
+							// ignore a delta value of exactly zero
+							WP[i + 1][j][k] = WP[i + 1][j][k] == 0 ? 0 : log(WP[i + 1][j][k])
+							break
+						case 3: // Squared
+							WP[i + 1][j][k] = (WP[i + 1][j][k])^2
+							break
+						case 4: // Power
+							WP[i + 1][j][k] = (WP[i + 1][j][k])^factor
+							break
+						default:
+							ASSERT(0, "Unkonwn operation")
+							break
+					endswitch
+				endif
+			endfor
+		endfor
 	endfor
 End
 
-static Function WB_MakeWaveBuilderWave()
+static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
+	Wave WP
+	variable stepCount
+	variable numEpochs
+	string wvName
+
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
 	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount, FIncrement
 
 	dfref dfr = GetWaveBuilderDataPath()
 	Wave/SDFR=dfr SegWvType
-	Make/O/N=0 dfr:WaveBuilderWave/Wave=WaveBuilderWave = 0
-	Make/O/N=0 dfr:SegmentWave/Wave=SegmentWave = 0
+	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
 
-	string customWaveName
-	variable NumberOfSegments, i, type
-	ControlInfo SetVar_WaveBuilder_NoOfSegments
-	NumberOfSegments = v_value
+	string customWaveName, debugMsg
+	variable i, type, accumulatedDuration
 
-	WAVE WP    = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	for(i=0; i < NumberOfSegments; i+=1)
+	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
 
 		Duration                   = WP[0][i][type]
@@ -122,12 +148,14 @@ static Function WB_MakeWaveBuilderWave()
 		DeltaLowPassFiltCoefCount  = WP[29][i][type]
 		FIncrement                 = WP[30][i][type]
 
-		if(Duration < 0)
-			Print "User input has generated a negative epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
-			Duration = 1
+		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, duration, DeltaDur, amplitude, DeltaAmp
+		DEBUGPRINT("params", str=debugMsg)
+
+		if(duration < 0 || !IsFinite(duration))
+			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
+			duration = 1
 		endif
 
-		//Make correct Wave segment with above parameters
 		switch(type)
 			case 0:
 				WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
@@ -223,7 +251,17 @@ static Function WB_MakeWaveBuilderWave()
 			default:
 				ASSERT(0, "Unknown Wave type to create")
 		endswitch
-		Concatenate/NP=0 {SegmentWave}, WaveBuilderWave
+
+		if(stepCount == 0)
+			WAVE epochID = GetEpochID()
+			epochID[i][%timeBegin] = accumulatedDuration
+			epochID[i][%timeEnd]   = accumulatedDuration + duration
+
+			accumulatedDuration += duration
+		endif
+
+		WAVE/SDFR=dfr segmentWave
+		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)
@@ -232,15 +270,20 @@ static Function WB_MakeWaveBuilderWave()
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
 	KillStrings/Z StringHolder
-	KillWaves/F/Z SegmentWave
 End
 
+/// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
+/// @param duration time of the stimulus in ms
 static Function/Wave WB_GetSegmentWave(duration)
 	variable duration
 
 	DFREF dfr = GetWaveBuilderDataPath()
 	variable numPoints = duration / 0.005
 	Wave/Z/SDFR=dfr SegmentWave
+
+	if(duration > MAX_SWEEP_DURATION_IN_MS)
+		Abort "Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!"
+	endif
 
 	// optimization: recreate the wave only if necessary or just resize it
 	if(!WaveExists(SegmentWave))
@@ -249,7 +292,6 @@ static Function/Wave WB_GetSegmentWave(duration)
 		Redimension/N=(numPoints) SegmentWave
 	endif
 
-	SegmentWave = 0
 	SetScale/P x 0,0.005, "ms", SegmentWave
 
 	return SegmentWave
@@ -381,9 +423,7 @@ static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 
 	variable first, last
-	variable scale = 1.2
 	variable baseline, peak
-	variable i
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
 
@@ -394,17 +434,15 @@ static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, D
 	TauDecay2 = 1 / TauDecay2
 	TauDecay2 *= 0.005
 
-	MultiThread SegmentWave[] = ((1 - exp( - TauRise * p))) * amplitude
-	MultiThread SegmentWave[] += (exp( - TauDecay1 * (p)) * (amplitude * (1 - TauDecay2Weight)))
-	MultiThread SegmentWave[] += (exp( - TauDecay2 * (p)) * ((amplitude * (TauDecay2Weight))))
+	MultiThread SegmentWave[] = amplitude * ((1 - exp(-TauRise * p)) + exp(-TauDecay1 * p) * (1 - TauDecay2Weight) + exp(-TauDecay2 * p) * TauDecay2Weight)
 
 	baseline = WaveMin(SegmentWave)
 	peak = WaveMax(SegmentWave)
-	SegmentWave *= Amplitude/(Peak-Baseline)
+	SegmentWave *= abs(amplitude)/(peak - baseline)
 
 	baseline = WaveMin(SegmentWave)
 	SegmentWave -= baseline
-	SegmentWave += OffSet
+	SegmentWave += offset
 End
 
 static Function WB_CustomWaveSegment(CustomOffset, wv)

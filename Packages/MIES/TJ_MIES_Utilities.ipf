@@ -1024,6 +1024,11 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 
 	if(!ParamIsDefault(wv))
 		ASSERT(WaveType(wv), "Expected numeric wave")
+
+		if(DimSize(wv, ROWS) == 0)
+			return $""
+		endif
+
 		numCols = DimSize(wv, COLS)
 		numRows = DimSize(wv, ROWS)
 		if(!ParamIsDefault(colLabel))
@@ -1031,7 +1036,12 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 			ASSERT(col >= 0, "invalid column label")
 		endif
 	else
-		ASSERT(!WaveType(wv), "Expected text wave")
+		ASSERT(!WaveType(wvText), "Expected text wave")
+
+		if(DimSize(wvText, ROWS) == 0)
+			return $""
+		endif
+
 		numCols = DimSize(wvText, COLS)
 		numRows = DimSize(wvText, ROWS)
 		if(!ParamIsDefault(colLabel))
@@ -1053,11 +1063,10 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 		endRow -= 1
 	endif
 
+	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
 	ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
-
-	ASSERT(col >= 0 && col < numCols, "Invalid column")
 
 	Make/FREE/R/N=(numRows) matches = NaN
 
