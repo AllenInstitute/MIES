@@ -12,7 +12,7 @@
 * Start Igor Pro
 
 ## Partial Installation without hardware dependencies
-* There are currently three packages (Located in: "....\MIES-Igor-Master\Packages\MIES") which can be installed on demand:
+* There are currently four packages (Located in: "....\MIES-Igor-Master\Packages\MIES") which can be installed on demand:
 	* The Analysis Browser (TJ_MIES_AnalysisBrowser.ipf)
 	* The Data Browser (TJ_MIES_DataBrowser.ipf)
 	* The Wave Builder (TJ_MIES_WaveBuilderPanel.ipf)
