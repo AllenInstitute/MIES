@@ -318,6 +318,8 @@ End
 /// Columns:
 /// - 0: SetName
 /// - 1: User comment
+/// - 2: DA unit
+/// - 3: AD unit
 ///
 /// Layers:
 /// - Headstage
@@ -327,14 +329,14 @@ Function/Wave DC_SweepDataTxtWvRef(panelTitle)
 	DFREF dfr = GetDevicePath(panelTitle)
 
 	Wave/Z/T/SDFR=dfr wv = SweepTxtData
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 2, -1) wv
+		Redimension/N=(-1, 4, -1) wv
 	else
-		Make/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
+		Make/T/N=(1, 4, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
 	endif
 
 	wv = ""
@@ -638,6 +640,8 @@ End
 /// Columns:
 /// - 0: SetName
 /// - 1: User Comment
+/// - 2: DA unit
+/// - 3: AD unit
 ///
 /// Layers:
 /// - Headstage
@@ -645,16 +649,16 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 2, -1) wv
+		Redimension/N=(-1, 4, -1) wv
 	else
-		Make/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
+		Make/T/N=(1, 4, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	endif
 
 	wv = ""
@@ -674,6 +678,8 @@ End
 /// Columns:
 /// - 0: SetName
 /// - 1: User Comment
+/// - 2: DA unit
+/// - 3: AD unit
 ///
 /// Layers:
 /// - Headstage
@@ -681,16 +687,16 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 2, -1) wv
+		Redimension/N=(-1, 4, -1) wv
 	else
-		Make/T/N=(1, 2, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
+		Make/T/N=(1, 4, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	endif
 
 	wv = ""
