@@ -390,6 +390,10 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	variable serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
 	variable channel = AI_GetAmpChannel(panelTitle, headStage)
 
+	if(!AI_IsValidSerialAndChannel(channel=channel, axonSerial=serial))
+		return 0
+	endif
+
 	STRUCT AxonTelegraph_DataStruct tds
 	Init_AxonTelegraph_DataStruct(tds)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
