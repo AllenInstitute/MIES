@@ -3942,25 +3942,6 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	return 0
 End
 
-//=========================================================================================
-/// @brief Return the main panel name where all subwindow specifications like \#mySubWindow have been removed
-/// @todo get rid of this function
-Function/S DAP_ReturnPanelName()
-	string panelTitle
-
-	GetWindow kwTopWin activesw
-	panelTitle = s_value
-
-	if(StringMatch(panelTitle, "ITC*"))
-		return GetMainWindow(panelTitle)
-	endif
-
-	// we do not return anything useful
-	// all functions that call this function would return an error if this elseif was run
-	return ""
-End
-
-//=========================================================================================
 Function DAP_PopMenuProc_DevTypeChk(s) : PopupMenuControl
 	struct WMPopupAction& s
 

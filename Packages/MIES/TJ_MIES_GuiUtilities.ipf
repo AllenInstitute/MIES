@@ -769,3 +769,10 @@ Function/S GetMainWindow(subwindow)
 
 	return StringFromList(0, subwindow, "#")
 End
+
+/// @brief Return the currently active window
+Function/S GetCurrentWindow()
+
+	GetWindow kwTopWin activesw
+	return s_value
+End

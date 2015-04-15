@@ -162,7 +162,7 @@ Function ITC_BkrdTPFuncMD(s)
 		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
-				panelTitle = DAP_ReturnPanelName()
+				panelTitle = GetMainWindow(GetCurrentWindow())
 				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
 					beep 
