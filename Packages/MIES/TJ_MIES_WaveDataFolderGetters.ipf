@@ -2946,4 +2946,37 @@ Function/S GetDevSpecConfigSttngsWaveAS(panelTitle)
 	string panelTitle
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":configSettings"
 End
-/// @}
+
+///@brief Returns a wave reference to the Asynch response wave
+Function/Wave GetAsynRspWaveRef(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevSpecAsynRspWavePath(panelTitle)
+
+	Wave/T/Z/SDFR=dfr wv = asynRspWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(NUM_HEADSTAGES,1) dfr:asynRspWave/Wave=wv
+	
+	SetDimLabel 0, -1, HeadStage, wv	
+	SetDimLabel 1, 0, cmdID, wv
+
+	return wv
+End
+
+/// @brief Return the datafolder reference to the device specific text documentation
+Function/DF GetDevSpecAsynRspWavePath(panelTitle)
+	string panelTitle
+
+	return createDFWithAllParents(GetDevSpecAsynRspWaveAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:analysisSettings
+Function/S GetDevSpecAsynRspWaveAS(panelTitle)
+	string panelTitle
+
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":cmdID"
+End

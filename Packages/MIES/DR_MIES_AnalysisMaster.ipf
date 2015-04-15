@@ -161,6 +161,9 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)	
 	Wave actionScaleSettingsWave = GetActionScaleSettingsWaveRef(panelTitle)
 	
+	variable len 
+	string responseString
+	
 	// get the DA channel associated with the desired headstage
 	variable daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
 	string scaleControlName
@@ -186,6 +189,24 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		actionScaleSettingsWave[headStage][%result] = scaleFactor
 		print "scale factor that caused AP: ", scaleFactor	
 		
+		//  See if we need to send a response string to the WSE
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(panelTitle)
+		
+		//  See if there is anything in the cmdID space
+		len = strlen(asynRespWave[headstage][%cmdID])
+		
+		if (len >= 1)
+			// build up the response string
+			sprintf responseString, "scaleFactor:%d;", scaleFactor
+			writeAsyncResponse(asynRespWave[headstage][%cmdID], responseString)
+		else
+			print "No asyn response required..."
+		endif 
+		
+		// kill the asynRespWave
+		KillWaves asynRespWave
+		
 		// Now put the scale factor back to 1.0
 		SetSetVariable(panelTitle, scaleControlName, 1.0)	
 		return 1
@@ -199,6 +220,9 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)	
 	Wave actionScaleSettingsWave = GetActionScaleSettingsWaveRef(panelTitle)
+	
+	variable len
+	string responseString
 	
 	// get the DA channel associated with the desired headstage
 	variable daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
@@ -244,6 +268,24 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		// return the scale factor that caused the AP to fire
 		actionScaleSettingsWave[headStage][%result] = scaleFactor
 		print "scale factor that caused AP: ", scaleFactor	
+		
+		//  See if we need to send a response string to the WSE
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(panelTitle)
+		
+		//  See if there is anything in the cmdID space
+		len = strlen(asynRespWave[headstage][%cmdID])
+		
+		if (len >= 1)
+			// build up the response string
+			sprintf responseString, "scaleFactor:%d;", scaleFactor
+			writeAsyncResponse(asynRespWave[headstage][%cmdID], responseString)
+		else
+			print "No asyn response required..."
+		endif 
+		
+		// kill the asynRespWave
+		KillWaves asynRespWave
 		
 		// Now put the scale factor back to 1.0
 		SetSetVariable(panelTitle, scaleControlName, 1.0)			

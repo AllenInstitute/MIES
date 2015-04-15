@@ -371,17 +371,16 @@ Function TangoCommandInput(cmdString)
 	print "igorCmdPortion: ", igorCmdPortion
 	// and append the cmdNumber and the trailing ")"
 	string completeIgorCommand
-	sprintf completeIgorCommand, "%s, cmdID=%d)", igorCmdPortion, cmdID
+	sprintf completeIgorCommand, "%s, cmdID=\"%d\")", igorCmdPortion, cmdID
 	
 	print "completeIgorCommand: ", completeIgorCommand
 	// now call the command 
 	Execute/Z completeIgorCommand
 	if (V_Flag != 0)
 		print "Unable to run command....check command syntax..."
-		writeAck(cmdID, -1)
+		//writeAck(cmdID, -1)
 	else
 		print "Command ran successfully..."
-//		writeLog("Mies command ran successfully....")
 	endif
 End	
 	
@@ -407,7 +406,7 @@ End
 /// @brief Save Mies Experiment as a packed experiment
 Function TangoSave(saveFileName, [cmdID])
 	string saveFileName
-	variable cmdID
+	string cmdID
 	
 	//save as packed experiment
 	SaveExperiment/C/F={1,"",2}/P=home as saveFileName + ".pxp"
@@ -448,6 +447,13 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		
 		Wave actionScaleSettingsWave = GetActionScaleSettingsWaveRef(currentPanel)
 		Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(currentPanel)
+		
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(currentPanel)
+		// and put the cmdID there, if you were passed one
+		if (ParamIsDefault(cmdID) == 0)
+			asynRespWave[headstage][%cmdID] = cmdID
+		endif
 		
 		// put the scaleDelta in the  actionscalesettings wave
 		actionScaleSettingsWave[headStage][%scaleValue] = scaleFactor
@@ -568,12 +574,22 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 	variable headstage
 	string cmdID
 	
+	
 	// save the present data folder
 	string savedDataFolder = GetDataFolder(1)
 	
 	// get the da_ephys panel names
 	string lockedDevList = DAP_ListOfLockedDevs()
 	variable noLockedDevs = ItemsInList(lockedDevList)
+	
+	string waveSelect 
+	string psaMenu
+	string paaMenu
+	string psaCheck
+	string paaCheck
+	string scaleWidgetName
+	
+	print "headStage: ", headStage
 	
 	variable n
 	for (n = 0; n<noLockedDevs; n+= 1)
@@ -597,21 +613,20 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		// reset the result value before starting the cycle
 		actionScaleSettingsWave[headStage][%result] = 0
 		
-		// push the waveSet to the ephys panel
-		// first, build up the control name by using the headstage value
-		string waveSelect 
-		string psaMenu
-		string paaMenu
-		string psaCheck
-		string paaCheck
-		string scaleWidgetName
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(currentPanel)
+		// and put the cmdID there, if passed one
+		if (ParamIsDefault(cmdID) == 0)
+			asynRespWave[headstage][%cmdID] = cmdID
+		endif
 		
-		sprintf waveSelect, "Wave_DA_%02d", headstage
+		// push the waveSet to the ephys panel		
+		sprintf waveSelect, "Wave_DA_0%d", headstage
 		sprintf psaMenu, "PSA_headStage%d", headstage
 		sprintf paaMenu, "PAA_headStage%d", headstage
 		sprintf psaCheck, "headStage%d_postSweepAnalysisOn", headstage
 		sprintf paaCheck, "headStage%d_postAnalysisActionOn", headstage
-		sprintf scaleWidgetName, "Scale_DA_%02d", headStage
+		sprintf scaleWidgetName, "Scale_DA_0%0d", headStage
 		
 		string FolderPath
 		string folder
@@ -719,6 +734,11 @@ Function/T TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		
 		Wave actionScaleSettingsWave = GetActionScaleSettingsWaveRef(currentPanel)
 		Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(currentPanel)
+		
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(currentPanel)
+		// and put the cmdID there
+		asynRespWave[headstage][%cmdID] = cmdID
 		
 		// push the waveSet to the ephys panel
 		// first, build up the control name by using the headstage value
@@ -842,7 +862,7 @@ End
 ///@brief routine to be called from the WSE to start and stop the test pulse
 Function TI_runTestPulse(tpCmd, [cmdID])
 	variable tpCmd
-	variable cmdID
+	string cmdID
 	
 	print "cmdID: ", cmdID
 	
@@ -884,7 +904,7 @@ END
 
 ///@brief Routine to test starting and stopping acquisition by remotely hitting the start/stop button on the DA_Ephys panel
 Function TI_runStopStart([cmdID])
-	variable cmdID
+	string cmdID
 	
 	// get the da_ephys panel names
 	string lockedDevList = DAP_ListOfLockedDevs()
@@ -916,13 +936,13 @@ End
 
 /// @brief function to write the acknowledgement string back to the WSE
 Function writeAck(cmdID, returnValue)
-	Variable cmdID
+	string cmdID
 	Variable returnValue
 	
 	String logMessage
 		
 	// put the response string together...
-	sprintf logMessage, "cmd_id:%d;response:%d", cmdID, returnValue 
+	sprintf logMessage, "cmd_id:%s;response:%d", cmdID, returnValue 
 	print "logMessage: ", logMessage
 	
 	//- function arg: the name of the device on which the commands will be executed 
@@ -991,14 +1011,15 @@ End
 
 /// @brief function to allow for writing async responses back to the WSE
 Function writeAsyncResponse(cmdID, returnString)
-	variable cmdID
+	String cmdID
 	String returnString
 	
 	String responseMessage	
 	variable numberOfReturnItems = ItemsInList(returnString)
+	print "numberOfReturnItems: ", numberOfReturnItems
 	
 	// put the response string together...
-	sprintf logMessage, "cmd_id:%d;%d;%s", cmdID, numberOfReturnItems, returnString
+	sprintf responseMessage, "cmd_id:%s;%d;%s", cmdID, numberOfReturnItems, returnString
 	
 	//- function arg: the name of the device on which the commands will be executed 
 	String dev_name = "mies_device/MiesDevice/test"
