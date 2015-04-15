@@ -1541,20 +1541,15 @@ End
 /// @brief Checks to see if the pulse duration in square pulse stimulus trains is too long
 static Function WBP_ReturnPulseDurationMax()
 
-	variable MaxPulseDur, PulseDuration, Frequency, Duration, MinPulseIntTotDuration
+	variable frequency, duration, minPulseIntTotDuration
 
-	ControlInfo SetVar_WaveBuilder_P0 //Duration
-	Duration = v_value
-	ControlInfo SetVar_WaveBuilder_P6_FD01 //Frequency
-	Frequency = v_value
-	ControlInfo SetVar_WaveBuilder_P8 //Pulse Duration
-	PulseDuration = V_value
+	duration = GetSetVariable(panel, "SetVar_WaveBuilder_P0")
+	frequency = GetSetVariable(panel, "SetVar_WaveBuilder_P6_FD01")
 
-	MinPulseIntTotDuration = ((duration / 1000) * (Frequency - 1)) * 0.01
-	Duration -= MinPulseIntTotDuration
-	MaxPulseDur = ((duration / 1000) / Frequency)
+	minPulseIntTotDuration = (duration / 1000 * (frequency - 1)) * 0.01
+	duration -= MinPulseIntTotDuration
 
-	return MaxPulseDur * 1000
+	return duration / frequency
 End
 
 Function/DF WBP_GetFolderPath()
