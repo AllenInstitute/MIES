@@ -393,6 +393,8 @@ static Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaD
 	Variable PoissonIntPulseInt
 
 	Wave SegmentWave = WB_GetSegmentWave(duration)
+	SegmentWave = 0
+
 	EndPoint = NumberOfPulses
 
 	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
