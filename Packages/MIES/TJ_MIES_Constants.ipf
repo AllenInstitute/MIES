@@ -197,3 +197,9 @@ Constant CHECKBOX_UNSELECTED   = 0
 
 /// Interval in iterations between the switch from live update false to true
 Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
+
+/// @name Constants for FunctionInfo
+/// @anchor FunctionInfoParameterTypes
+/// @{
+Constant STRUCT_PARAMETER_TYPE = 512
+/// @}

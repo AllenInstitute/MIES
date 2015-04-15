@@ -31,6 +31,7 @@
 #include "TJ_MIES_Oscilloscope"
 #include "TJ_MIES_PanelITC"
 #include "TJ_MIES_PressureControl"
+#include "TJ_MIES_ProgrammaticGuiControl"
 #include "TJ_MIES_RepeatedAcquisition"
 #include "TJ_MIES_TestPulse"
 #include "TJ_MIES_TPBackgroundMD"
