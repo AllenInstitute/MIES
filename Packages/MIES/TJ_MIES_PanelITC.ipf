@@ -2204,7 +2204,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_RsCompEnable,value= 0
-	SetVariable setvar_DataAcq_RsCorr,pos={221,212},size={97,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Corretion (%)"
+	SetVariable setvar_DataAcq_RsCorr,pos={215,212},size={104,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Correction (%)"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_RsCorr,limits={0,100,1},value= _NUM:0
