@@ -381,44 +381,36 @@ End
 static Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
 	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
 
-	Variable i = 1
-	Variable PulseStartTime = 0
-	Variable EndPoint
-	Variable SegmentDuration
-	Variable NumberOfPulses = Frequency * (Duration / 1000)
-	Variable TotalPulseTime = PulseDuration * NumberOfPulses
-	Variable TotalBaselineTime = Duration - TotalPulseTime
-	Variable NumberOfInterPulseIntervals = NumberOfPulses - 1
-	Variable InterPulseInterval = TotalBaselineTime/NumberOfInterPulseIntervals
-	Variable PoissonIntPulseInt
+	variable i, pulseStartTime, endIndex
+	variable numRows, numberOfPulses, interPulseInterval
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
-	SegmentWave = 0
+	numberOfPulses = Frequency * (Duration / 1000)
+	interPulseInterval = (duration - pulseDuration * numberOfPulses) / (numberOfPulses - 1)
 
-	EndPoint = NumberOfPulses
+	WAVE segmentWave = WB_GetSegmentWave(duration)
+	segmentWave = 0
+	numRows = DimSize(segmentWave, ROWS)
 
-	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
-		do
-			SegmentWave[(PulseStartTime / 0.005), ((PulseStartTime / 0.005) + (PulseDuration / 0.005))] = Amplitude
-			if(i + 1 == EndPoint)
-				PulseStartTime += ((InterPulseInterval + PulseDuration))
-			else
-				PulseStartTime += ((InterPulseInterval + PulseDuration))
-			endif
-		i += 1
-		while (i < Endpoint)
+	if(!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
+		for(i = 0; i < numberOfPulses - 1; i += 1)
+			endIndex = (pulseStartTime + pulseDuration) / 0.005
+			segmentWave[(pulseStartTime / 0.005), endIndex] = amplitude
+			pulseStartTime += interPulseInterval + pulseDuration
+		endfor
 	else
-		do
-			PoissonIntPulseInt = (-ln(abs(enoise(1))) / Frequency) * 1000
-			PulseStartTime += (PoissonIntPulseInt)
-			if(((PulseStartTime + PulseDuration) / 0.005) < numpnts(segmentWave))
-				SegmentWave[(PulseStartTime / 0.005), ((PulseStartTime / 0.005) + (PulseDuration / 0.005))] = Amplitude
+		for(;;)
+			pulseStartTime += -ln(abs(enoise(1))) / Frequency * 1000
+			endIndex = (pulseStartTime + pulseDuration) / 0.005
+
+			if(endIndex >= numRows)
+				break
 			endif
-		while (((PulseStartTime + PulseDuration) / 0.005) < numpnts(segmentWave))
+
+			segmentWave[(pulseStartTime / 0.005), endIndex] = amplitude
+		endfor
 	endif
 
-	SegmentWave += Offset
-
+	segmentWave += Offset
 End
 
 static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
