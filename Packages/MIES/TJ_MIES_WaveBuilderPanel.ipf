@@ -595,6 +595,20 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_OffsetDeltaMult_P51_5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable SetVar_WB_OffsetDeltaMult_P51_5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_OffsetDeltaMult_P51_5,value= _NUM:1
+	SetVariable SetVar_WaveBuilder_P45,pos={194,152},size={100,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="Num Pulses"
+	SetVariable SetVar_WaveBuilder_P45,userdata(tabnum)=  "5"
+	SetVariable SetVar_WaveBuilder_P45,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo)= A"!!,GR!!#@e!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WaveBuilder_P45,value= _NUM:0
+	CheckBox check_SPT_NumPulses_P46,pos={413,133},size={71,14},disable=1,proc=WBP_CheckProc,title="Use Pulses"
+	CheckBox check_SPT_NumPulses_P46,help={"Allows to define the number of pulses instead of the duration"}
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo)= A"!!,I4J,hp]!!#?A!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_SPT_NumPulses_P46,userdata(tabnum)=  "5"
+	CheckBox check_SPT_NumPulses_P46,userdata(tabcontrol)=  "WBP_WaveType",value= 0
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF1g^]4?7zzzzzzzzzzzzzzzzzzzz"
@@ -785,6 +799,15 @@ static Function WBP_UpdatePanelIfAllowed()
 				EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			else
 				DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+			endif
+			break
+		case 5:
+			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
+				DisableControl(panel, "SetVar_WaveBuilder_P0")
+				EnableControl(panel, "SetVar_WaveBuilder_P45")
+			else
+				EnableControl(panel, "SetVar_WaveBuilder_P0")
+				DisableControl(panel, "SetVar_WaveBuilder_P45")
 			endif
 			break
 		case 7:
@@ -1528,6 +1551,10 @@ End
 static Function WBP_ReturnPulseDurationMax()
 
 	variable frequency, duration, minPulseIntTotDuration
+
+	if(GetCheckBoxState(panel, "check_SPT_NumPulses_P46"))
+		return Inf
+	endif
 
 	duration = GetSetVariable(panel, "SetVar_WaveBuilder_P0")
 	frequency = GetSetVariable(panel, "SetVar_WaveBuilder_P6_FD01")

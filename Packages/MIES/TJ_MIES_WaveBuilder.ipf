@@ -2,6 +2,9 @@
 
 static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
+static Constant SQUARE_PULSE_TRAIN_MODE_DUR   = 0x01
+static Constant SQUARE_PULSE_TRAIN_MODE_PULSE = 0x02
+
 Function WB_MakeStimSet()
 
 	variable i, numEpochs, numSteps, setNumber
@@ -139,8 +142,8 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 	Wave/SDFR=dfr SegWvType
 	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
 
-	string customWaveName, debugMsg
-	variable i, type, accumulatedDuration
+	string customWaveName, debugMsg, defMode
+	variable i, type, accumulatedDuration, tabID
 	STRUCT SegmentParameters params
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
@@ -244,7 +247,21 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 5:
-				WB_SquarePulseTrainSegment(params)
+				tabID = GetTabID("WaveBuilder", "WBP_WaveType")
+				if(WP[46][i][type]) // "Number of pulses" checkbox
+					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_PULSE)
+					if(tabID == 5)
+						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
+					endif
+					defMode = "Pulse"
+				else
+					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_DUR)
+					if(tabID == 5)
+						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
+					endif
+					defMode = "Duration"
+				endif
+
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"               , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                , str="SPT")
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"           , var=params.Frequency)
@@ -252,7 +269,9 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"      , var=params.PulseDuration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration delta", var=params.DeltaPulsedur)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"              , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"        , var=params.DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"        , var=params.DeltaOffset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"    , var=params.NumberOfPulses)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"     , str=defMode, appendCR=1)
 				break
 			case 6:
 				WB_PSCSegment(params)
@@ -412,40 +431,91 @@ static Function WB_SawToothSegment(pa)
 	SegmentWave += pa.offset
 End
 
-static Function WB_SquarePulseTrainSegment(pa)
+static Function WB_SquarePulseTrainSegment(pa, mode)
 	struct SegmentParameters &pa
+	variable mode
 
-	variable i, pulseStartTime, endIndex, usePulses
-	variable numRows, numberOfPulses, interPulseInterval
+	variable i, pulseStartTime, endIndex, startIndex
+	variable numRows, interPulseInterval
 
-	numberOfPulses = pa.frequency * pa.duration / 1000
+	if(!(pa.frequency > 0))
+		printf "Resetting invalid frequency of %gHz to 1Hz\r", pa.frequency
+		pa.frequency = 1.0
+	endif
 
-	interPulseInterval = (pa.duration - pa.pulseDuration * numberOfPulses) / (numberOfPulses - 1)
+	if(mode == SQUARE_PULSE_TRAIN_MODE_PULSE)
+		// user defined number of pulses
+		pa.duration = pa.numberOfPulses / pa.frequency * 1000
+	elseif(mode == SQUARE_PULSE_TRAIN_MODE_DUR)
+		// user defined duration
+		pa.numberOfPulses = pa.frequency * pa.duration / 1000
+	else
+		ASSERT(0, "Invalid mode")
+	endif
+
+	// We want the segment starting and ending with a pulse.
+	// With the following definitions
+	//
+	// duration:             t
+	// pulse duration:       p
+	// inter pulse interval: x
+	// number of pulses:     n
+	// frequency:            f
+	//
+	// we know that
+	//
+	// (p + x)(n - 1) + p = t
+	//
+	// which gives
+	//
+	// x = t - np / (n - 1)
+
+	// We remove one point from the duration.
+	// This is done in order to create, for situations with t = 1000, f = 5, p = 100, the expected five pulses (n = 5)
+	interPulseInterval = ((pa.duration/0.005 - 1) * 0.005 - pa.numberOfPulses * pa.pulseDuration) / (pa.numberOfPulses - 1)
 
 	WAVE segmentWave = WB_GetSegmentWave(pa.duration)
 	segmentWave = 0
 	numRows = DimSize(segmentWave, ROWS)
 
 	if(!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
-		for(i = 0; i < numberOfPulses - 1; i += 1)
-			endIndex = (pulseStartTime + pa.pulseDuration) / 0.005
-			segmentWave[(pulseStartTime / 0.005), endIndex] = pa.amplitude
-			pulseStartTime += interPulseInterval + pa.pulseDuration
-		endfor
-	else
 		for(;;)
-			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
-			endIndex = (pulseStartTime + pa.pulseDuration) / 0.005
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
 
 			if(endIndex >= numRows)
 				break
 			endif
 
-			segmentWave[(pulseStartTime / 0.005), endIndex] = pa.amplitude
+			startIndex = floor(pulseStartTime / 0.005)
+			segmentWave[startIndex, endIndex] = pa.amplitude
+			pulseStartTime += interPulseInterval + pa.pulseDuration
+		endfor
+	else
+		for(;;)
+			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
+
+			if(endIndex >= numRows)
+				break
+			endif
+
+			startIndex = floor(pulseStartTime / 0.005)
+			segmentWave[startIndex, endIndex] = pa.amplitude
 		endfor
 	endif
 
+	// remove the zero part at the end
+	FindValue/V=(0)/S=(startIndex) segmentWave
+	if(V_Value != -1)
+		Redimension/N=(V_Value) segmentWave
+		pa.duration = V_Value * 0.005
+	endif
+
 	segmentWave += pa.offset
+
+	DEBUGPRINT("interPulseInterval", var=interPulseInterval)
+	DEBUGPRINT("numberOfPulses", var=pa.numberOfPulses)
+	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * 0.005, format="%.6f")
 End
 
 static Function WB_PSCSegment(pa)
