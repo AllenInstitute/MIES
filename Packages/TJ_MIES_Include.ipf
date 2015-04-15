@@ -8,6 +8,8 @@
 #include "FixScrolling"
 
 // our includes
+#include "DR_MIES_AnalysisMaster"
+#include "DR_MIES_Menu"
 #include "TJ_MIES_AmplifierInteraction"
 #include "TJ_MIES_BackgroundMD"
 #include "TJ_MIES_BackgroundTimerMD"
@@ -28,6 +30,7 @@
 #include "TJ_MIES_MiesUtilities"
 #include "TJ_MIES_Oscilloscope"
 #include "TJ_MIES_PanelITC"
+#include "TJ_MIES_PressureControl"
 #include "TJ_MIES_RepeatedAcquisition"
 #include "TJ_MIES_TestPulse"
 #include "TJ_MIES_TPBackgroundMD"
@@ -35,12 +38,3 @@
 #include "TJ_MIES_WaveBuilder"
 #include "TJ_MIES_WaveBuilderPanel" menus=0
 #include "TJ_MIES_WaveDataFolderGetters"
-#include "TJ_MIES_PressureControl"
-
-
-
-// Menu includes
-#include "DR_MIES_Menu"
-
-// Analysis Framework Include
-#include "DR_MIES_AnalysisMaster"
