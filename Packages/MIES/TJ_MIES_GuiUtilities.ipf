@@ -749,3 +749,14 @@ Function SetGuiControlState(win, control, controlState)
 
     ModifyControl $control, win=$win, disable=str2num(controlState)
 End
+
+/// @brief Return one if the given control is disabled,
+/// zero otherwise
+Function IsControlDisabled(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	return V_disable & DISABLE_CONTROL_BIT
+End
