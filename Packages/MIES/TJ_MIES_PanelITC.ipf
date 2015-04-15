@@ -2909,233 +2909,234 @@ Function DAP_WindowHook(s)
 
 	return 0
 End
-//=========================================================================================
 
-Function DAP_CheckProc_UnivrslSrchStr(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	String SearchString
-	String panelTitle = DAP_ReturnPanelName()
-	String DAPopUpMenuName
-	String IndexEndPopUpMenuName
-	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
-	String SearchSetVarName
-	String ListOfWaves
+Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
+	struct WMCheckboxAction &cba
 
-	Variable i = 0
-	String popupValue
+	string panelTitle
+	variable i
+	string popupValue
+	string SearchString
+	string DAPopUpMenuName
+	string IndexEndPopUpMenuName
+	string FirstTwoMenuItems = "\"- none -;TestPulse;\""
+	string SearchSetVarName
+	string ListOfWaves
 
-	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder GetWBSvdStimSetDAPath()
+	switch(cba.eventCode)
+		case 2:
+			panelTitle = cba.win
+			DFREF saveDFR = GetDataFolderDFR()
+			SetDataFolder GetWBSvdStimSetDAPath()
 
-	if(checked == 0)
-		SearchString = "*da*"
-		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-		ListOfWaves = wavelist(searchstring,";","")
+			if(!cba.checked)
+				SearchString = "*da*"
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				ListOfWaves = wavelist(searchstring,";","")
 
-		do
-			if(i > 0) // disables search inputs except for Search_DA_00
-				sprintf SearchSetVarName, "Search_DA_%.2d" i
-				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
-	
-				sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
-				PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set		
+				do
+					if(i > 0) // disables search inputs except for Search_DA_00
+						sprintf SearchSetVarName, "Search_DA_%.2d" i
+						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
+
+						sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+						PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set
+					endif
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+
+				i = 0
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				do
+					sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
+					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+			else
+				controlinfo /w = $panelTitle Search_DA_00
+				if(strlen(s_value) == 0)
+					SearchString = "*da*"
+				else
+					SearchString = s_value
+				endif
+
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				ListOfWaves = wavelist(searchstring,";","")
+				do
+					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+					PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
+
+					if(i > 0) // disables search inputs except for Search_DA_00
+						sprintf SearchSetVarName, "Search_DA_%.2d" i
+						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
+					endif
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+
+				i = 0
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				do
+					sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
+					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
 			endif
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
+			Setdatafolder saveDFR
+			break
+	endswitch
 
-		i = 0
-		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-		do
-			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
-			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-
-			i += 1	
-		while(i < NUM_DA_TTL_CHANNELS)
-	elseif(checked == 1)
-
-		controlinfo /w = $panelTitle Search_DA_00
-		if(strlen(s_value) == 0)
-			SearchString = "*da*"
-		else
-			SearchString = s_value
-		endif
-
-		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-		ListOfWaves = wavelist(searchstring,";","")
-		do
-			sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
-			PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
-			
-			if(i > 0) // disables search inputs except for Search_DA_00
-				sprintf SearchSetVarName, "Search_DA_%.2d" i
-				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
-			endif
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-		
-		i = 0
-		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-		do
-			sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
-			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-		
-		
-	endif
-	Setdatafolder saveDFR
+	return 0
 End
-//=========================================================================================
 
-Function DAP_SetVarProc_TTLSearch(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	Variable TTL_No //= ctrlName[11,inf]
-	sscanf ctrlName, "Search_TTL_%d", TTL_No
-	String TTLPopUpMenuName
-	sprintf TTLPopUpMenuName, "Wave_TTL_%0.2d" TTL_No
-	String IndexEndPopUpMenuName
-	sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%0.2d" TTL_No
-	String FirstMenuItem = "\"- none -;\""
-	String SearchString
+Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	variable TTL_No
+	string TTLPopUpMenuName
+	string panelTitle, ctrlName, varstr
+	string IndexEndPopUpMenuName
+	string FirstMenuItem = "\"- none -;\""
+	string SearchString
 	string popupValue, ListOfWaves
-	variable i = 0
-	
-	string panelTitle = DAP_ReturnPanelName()
-	
-	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder GetWBSvdStimSetTTLPath()
-	controlinfo /w = $panelTitle SearchUniversal_TTL_00	
-	
-	if(v_value == 1)
-		controlinfo /w = $panelTitle Search_TTL_00
-		If(strlen(s_value) == 0)
-			sprintf SearchString, "*TTL*"
-		else
-			sprintf SearchString, "%s" s_value
-		endif
+	variable i
 
-		do
-			sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
-			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-			controlupdate /w =  $panelTitle $TTLPopUpMenuName			
-			sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"			
-			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-	
-	else
-		If(strlen(varstr) == 0)
-			sprintf SearchString, "*TTL*"
-//			sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
-			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-			controlupdate /w =  $panelTitle $TTLPopUpMenuName
-//			sprintf IndexEndPopUpMenuName, "Popup_TTL_IndexEnd_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"			
-			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-		else
-//			sprintf DAPopUpMenuName, "Wave_TTL_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", varstr,"\")"
-			popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
-			controlupdate /w =  $panelTitle $TTLPopUpMenuName
-//			sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", varStr,"\")"			
-			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-		endif
-	endif
-	setdatafolder saveDFR
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			panelTitle = sva.win
+			ctrlName   = sva.ctrlName
+			varstr     = sva.sval
+			sscanf ctrlName, "Search_TTL_%d", TTL_No
+			sprintf TTLPopUpMenuName, "Wave_TTL_%0.2d" TTL_No
+			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%0.2d" TTL_No
+
+			DFREF saveDFR = GetDataFolderDFR()
+			SetDataFolder GetWBSvdStimSetTTLPath()
+			controlinfo /w = $panelTitle SearchUniversal_TTL_00
+
+			if(v_value == 1)
+				controlinfo /w = $panelTitle Search_TTL_00
+				If(strlen(s_value) == 0)
+					sprintf SearchString, "*TTL*"
+				else
+					sprintf SearchString, "%s" s_value
+				endif
+
+				do
+					sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					listOfWaves = wavelist(searchstring,";","")
+					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+					controlupdate /w =  $panelTitle $TTLPopUpMenuName
+					sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+			else
+				if(strlen(varstr) == 0)
+					sprintf SearchString, "*TTL*"
+					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					listOfWaves = wavelist(searchstring,";","")
+					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+					controlupdate /w =  $panelTitle $TTLPopUpMenuName
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
+				else
+					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", varstr,"\")"
+					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
+					controlupdate /w =  $panelTitle $TTLPopUpMenuName
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", varStr,"\")"
+					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
+				endif
+			endif
+			SetDataFolder saveDFR
+			break
+		endswitch
+	return 0
 End
-//=========================================================================================
 
-Function DAP_CheckProc_UnivrslSrchTTL(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	String SearchString
-	String panelTitle = DAP_ReturnPanelName()
-	String TTLPopUpMenuName// = "Wave_DA_"
-	String IndexEndPopUpMenuName
-	String FirstTwoMenuItems = "\"- none -;\""
-	String SearchSetVarName
-	String ListOfWaves
-	
-	Variable i = 0
-	String popupValue // = FirstTwoMenuItems + wavelist(searchstring,";","") + "\""	
-	
-	DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-	SetDataFolder GetWBSvdStimSetTTLPath()
-	
-	if(checked == 0)
-		SearchString = "*TTL*"
-		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
-		ListOfWaves = wavelist(searchstring,";","")
+Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
+	struct WMCheckboxAction &cba
 
-		do
-			if(i > 0) // disables search inputs except for Search_TTL_00
-				sprintf SearchSetVarName, "Search_TTL_%.2d" i
-				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
-	
-				sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
-				PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves				
+	string panelTitle
+	string SearchString
+	string TTLPopUpMenuName
+	string IndexEndPopUpMenuName
+	string FirstTwoMenuItems = "\"- none -;\""
+	string SearchSetVarName
+	string ListOfWaves, popupValue
+	variable i
+
+	switch(cba.eventCode)
+		case 2:
+			panelTitle = cba.win
+
+			DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
+			SetDataFolder GetWBSvdStimSetTTLPath()
+
+			if(!cba.checked)
+				SearchString = "*TTL*"
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				ListOfWaves = wavelist(searchstring,";","")
+
+				do
+					if(i > 0) // disables search inputs except for Search_TTL_00
+						sprintf SearchSetVarName, "Search_TTL_%.2d" i
+						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
+
+						sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+						PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
+					endif
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+
+				i = 0
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				do
+					sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
+					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+			else
+				controlinfo /w = $panelTitle Search_TTL_00
+				if(strlen(s_value) == 0)
+					SearchString = "*TTL*"
+				else
+					SearchString = s_value
+				endif
+
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				ListOfWaves = wavelist(searchstring,";","")
+				do
+					sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+					PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
+					if(i > 0) // disables search inputs except for Search_TTL_00
+						sprintf SearchSetVarName, "Search_TTL_%.2d" i
+						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
+					endif
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+
+				i = 0
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				do
+					sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
+					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
 			endif
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-		
-		i = 0
-		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
-		do
-			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
-			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+			SetDatafolder saveDFR
+			break
+	endswitch
 
-	
-			i += 1	
-		while(i < NUM_DA_TTL_CHANNELS)
-	elseif(checked == 1)
-		
-		
-		controlinfo /w = $panelTitle Search_TTL_00
-		if(strlen(s_value) == 0)
-			SearchString = "*TTL*"
-		else
-			SearchString = s_value
-		endif
-		
-
-		sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
-		ListOfWaves = wavelist(searchstring,";","")
-		do
-			sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
-			PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
-			
-			if(i > 0) // disables search inputs except for Search_TTL_00
-				sprintf SearchSetVarName, "Search_TTL_%.2d" i
-				SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
-			endif
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-		
-		i = 0
-		sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
-		do
-			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
-			PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue		
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-		
-		
-	endif
-		setdatafolder saveDFR
-
+	return 0
 End
 
 /// @returns 1 if the device is a "ITC1600"
@@ -3308,97 +3309,109 @@ Function DAP_TabTJHook1(tca)
 End
 
 //=========================================================================================
-Function DAP_SetVarProc_DASearch(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
-	Variable DA_No
-	sscanf ctrlName, "Search_DA_%d", DA_No  //= ctrlName[10,inf]
-	String DAPopUpMenuName
-	sprintf DAPopUpMenuName,  "Wave_DA_%0.2d"  DA_No
-	print ctrlName, da_no, DAPopUpMenuName
-	String IndexEndPopUpMenuName
-	sprintf IndexEndPopUpMenuName, "Popup_DA_IndexEnd_%0.2d" DA_No
-	String FirstTwoMenuItems = "\"- none -;TestPulse;\""
-	String SearchString
+Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	variable DA_No
+	string DAPopUpMenuName
+	string IndexEndPopUpMenuName
+	string FirstTwoMenuItems = "\"- none -;TestPulse;\""
+	string SearchString
 	string popupValue, ListOfWaves
-	variable i = 0
+	string panelTitle, ctrlName, varstr
+	variable i
 
-	string panelTitle = DAP_ReturnPanelName()
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
 
-	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder GetWBSvdStimSetDAPath()
-	controlinfo /w = $panelTitle SearchUniversal_DA_00	
+			panelTitle = sva.win
+			ctrlName   = sva.ctrlName
+			varstr     = sva.sval
 
-	if(v_value == 1) // apply search string to all channels
-		controlinfo /w = $panelTitle Search_DA_00
-		If(strlen(s_value) == 0)
-			sprintf SearchString, "*DA*"
-		else
-			sprintf SearchString, "%s" s_value
+			sscanf ctrlName, "Search_DA_%d", DA_No
+			sprintf DAPopUpMenuName,  "Wave_DA_%0.2d"  DA_No
+			sprintf IndexEndPopUpMenuName, "Popup_DA_IndexEnd_%0.2d" DA_No
+
+			DFREF saveDFR = GetDataFolderDFR()
+			SetDataFolder GetWBSvdStimSetDAPath()
+			controlinfo /w = $panelTitle SearchUniversal_DA_00
+
+			if(v_value == 1) // apply search string to all channels
+				controlinfo /w = $panelTitle Search_DA_00
+				If(strlen(s_value) == 0)
+					sprintf SearchString, "*DA*"
+				else
+					sprintf SearchString, "%s" s_value
+				endif
+
+				do
+					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					listOfWaves = wavelist(searchstring,";","")
+					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+					controlupdate /w =  $panelTitle $DAPopUpMenuName
+					sprintf IndexEndPopUpMenuName,  "Popup_DA_IndexEnd_%.2d" i
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
+					i += 1
+				while(i < NUM_DA_TTL_CHANNELS)
+
+			else // apply search string to associated channel
+				if(strlen(varstr) == 0)
+					sprintf SearchString, "*DA*"
+					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					listOfWaves = wavelist(searchstring,";","")
+					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
+					controlupdate /w =  $panelTitle $DAPopUpMenuName
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
+				else
+					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", varstr,"\")"
+					searchString = varStr
+					listOfWaves = wavelist(searchstring,";","")
+					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = listOfWaves
+					controlupdate /w =  $panelTitle $DAPopUpMenuName
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", varStr,"\")"
+					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
+					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
+				endif
+			endif
+			SetDataFolder saveDFR
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
+	struct WMCheckboxAction &cba
+
+	string DACWave, panelTitle
+
+	switch(cba.eventCode)
+		case 2:
+		paneltitle   = cba.win
+		DACWave      = cba.ctrlName
+		DACwave[0,4] = "wave"
+
+		Controlinfo/W=$panelTitle $DACWave
+		if(stringmatch(s_value,"- none -"))
+			SetCheckBoxState(panelTitle, cba.ctrlName, 0)
+			print "Select " + DACwave[5,7] + " Wave"
 		endif
 
-		do
-			sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-			controlupdate /w =  $panelTitle $DAPopUpMenuName			
-			sprintf IndexEndPopUpMenuName,  "Popup_DA_IndexEnd_%.2d" i
-			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"			
-			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-			i += 1
-		while(i < NUM_DA_TTL_CHANNELS)
-	
-	else // apply search string to associated channel
-		If(strlen(varstr) == 0)
-			sprintf SearchString, "*DA*"
-			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
-			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-			controlupdate /w =  $panelTitle $DAPopUpMenuName
-			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"			
-			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-		else
-			sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", varstr,"\")"
-			searchString = varStr
-			listOfWaves = wavelist(searchstring,";","")
-			popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = listOfWaves
-			controlupdate /w =  $panelTitle $DAPopUpMenuName
-			sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", varStr,"\")"			
-			popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-			controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-		endif
-	endif
-	setdatafolder saveDFR
+		DAP_UpdateITIAcrossSets(panelTitle)
+
+		Controlinfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+		Valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+		break
+	endswitch
 End
-//=========================================================================================
-
-Function DAP_DAorTTLCheckProc(ctrlName,checked) : CheckBoxControl//This procedure checks to see that a DAC or TTL wave is selected before turning on the corresponding channel
-	String ctrlName
-	Variable checked
-	String DACWave = ctrlName
-	DACwave[0,4] = "wave"
-
-	string panelTitle = DAP_ReturnPanelName()
-	
-	controlinfo /w = $panelTitle $DACWave
-	if(stringmatch(s_value,"- none -") == 1)
-		checkbox $ctrlName win = $panelTitle, value = 0
-		print "Select " + DACwave[5,7] + " Wave"
-	endif
-
-	DAP_UpdateITIAcrossSets(panelTitle)
-
-	
-	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-	valDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-	valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-End
-//=========================================================================================
 
 /// @brief One time initialization before data acquisition
 Function DAP_OneTimeInitBeforeDAQ(panelTitle)
@@ -3524,20 +3537,26 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 End
 //=========================================================================================
 
-Function DAP_CheckProc_SaveData(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	string panelTitle = DAP_ReturnPanelName()
+Function DAP_CheckProc_SaveData(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
 
-	If(Checked == 1)
-		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-		string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-		Button DataAcquireButton title=ButtonText
-	else
-		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
-	endif
+	string panelTitle, buttonText
+
+	switch(cba.eventCode)
+		case 2:
+			panelTitle = cba.win
+
+			if(cba.checked)
+				Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
+				buttonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+				buttonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
+				Button DataAcquireButton title=buttonText
+			else
+				Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
+				Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
+			endif
+		break
+	endswitch
 End
 //=========================================================================================
 
@@ -3640,15 +3659,19 @@ Function DAP_RestoreTTLState(panelTitle)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
 	endfor
 End
-//=========================================================================================
-/// DAP_ButtonProc_TTLOff
-Function DAP_ButtonProc_TTLOff(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	
-	DAP_TurnOffAllTTLs(panelTitle)
+
+Function DAP_ButtonProc_TTLOff(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case 2:
+			DAP_TurnOffAllTTLs(ba.win)
+			break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
+
 Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 
@@ -3660,13 +3683,19 @@ Function DAP_TurnOffAllDACs(panelTitle)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
-//=========================================================================================
-Function DAP_ButtonProc_DAOff(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	DAP_TurnOffAllDACs(panelTitle)
+
+Function DAP_ButtonProc_DAOff(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case 2:
+			DAP_TurnOffAllDACs(ba.win)
+			break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
+
 Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 
@@ -3678,13 +3707,19 @@ Function DAP_TurnOffAllADCs(panelTitle)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
-//=========================================================================================
-Function DAP_ButtonProc_ADOff(ctrlName) : ButtonControl
-	String ctrlName
-	string panelTitle = DAP_ReturnPanelName()
-	DAP_TurnOffAllADCs(panelTitle)
+
+Function DAP_ButtonProc_ADOff(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case 2:
+			DAP_TurnOffAllADCs(ba.win)
+			break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
+
 Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
 
@@ -3701,7 +3736,7 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 		endif
 	endfor
 End
-//=========================================================================================
+
 Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -3717,7 +3752,6 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 			break
 	endswitch
 End
-//=========================================================================================
 
 Function DAP_UpdateITIAcrossSets(panelTitle)
 	string panelTitle
@@ -3751,47 +3785,57 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 End
 
 /// @brief Procedure for DA/TTL popupmenus including indexing wave popupmenus
-Function DAP_PopMenuChkProc_StimSetList(ctrlName,popNum,popStr) : PopupMenuControl
-	String ctrlName
-	Variable popNum
-	String popStr
+Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
+	STRUCT WMPopupAction& pa
 
-	string CheckBoxName = ctrlName
+	variable popNum
+	string ctrlName
 	string ListOfWavesInFolder
 	string folderPath
-	string folder
-	string panelTitle = DAP_ReturnPanelName()
-	DFREF saveDFR = GetDataFolderDFR()
+	string folder, checkBoxName
+	string panelTitle
 
-	if(StringMatch(ctrlName, "*indexEnd*") != 1)
-		if(popnum == 1) //if the user selects "none" the channel is automatically turned off
-			CheckBoxName[0,3] = "check"
-			Checkbox $Checkboxname win = $panelTitle, value = 0
-		endif
-	endif
+	switch(pa.eventCode)
+		case 2:
+			ctrlName = pa.ctrlName
+			panelTitle = pa.win
+			popnum     = pa.popNum
 
-	if(StringMatch(ctrlname, "Wave_DA_*"))
-		if(popnum == 2)
-			// prevents the user from selecting the testpulse
-			PopupMenu $ctrlname win = $panelTitle, mode = 3
-		endif
-	endif
+			DFREF saveDFR = GetDataFolderDFR()
 
-	DAP_UpdateITIAcrossSets(panelTitle)
+			if(StringMatch(ctrlName, "*indexEnd*") != 1)
+				if(popnum == 1) //if the user selects "none" the channel is automatically turned off
+					CheckBoxName = ctrlName
+					CheckBoxName[0,3] = "check"
+					Checkbox $Checkboxname win = $panelTitle, value = 0
+				endif
+			endif
 
-	// makes sure data acq starts in the correct folder!!
-	SetDataFolder saveDFR
-	
-	ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
-	if(v_value == 0)
-		ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		ValDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-	else
-		ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-	endif
+			if(StringMatch(ctrlname, "Wave_DA_*"))
+				if(popnum == 2)
+					// prevents the user from selecting the testpulse
+					PopupMenu $ctrlname win = $panelTitle, mode = 3
+				endif
+			endif
+
+			DAP_UpdateITIAcrossSets(panelTitle)
+
+			// makes sure data acq starts in the correct folder!!
+			SetDataFolder saveDFR
+
+			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
+			if(v_value == 0)
+				ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+				ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
+				ValDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+			else
+				ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
+				ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
+				ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+			endif
+			break
+		endswitch
+	return 0
 End
 //=========================================================================================
 Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
@@ -4715,33 +4759,46 @@ Function /s DAP_ListOfITCDevices()
 	string listOfPotentialFollowerDevices = RemoveFromList(ITC1600_FIRST_DEVICE,DAP_ListOfLockedITC1600Devs())
 	return SortList(listOfPotentialFollowerDevices, ";", 16)
 End
-//=========================================================================================
 
-/// The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
-Function DAP_ButtonProc_Lead(ctrlName) : ButtonControl
-	String ctrlName
+/// @brief The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it.
+Function DAP_ButtonProc_Lead(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	String panelTitle = DAP_ReturnPanelName()
+	string panelTitle
 
-	ASSERT(DAP_DeviceCanLead(panelTitle),"This device can not lead")
+	switch(ba.eventcode)
+		case 2:
+			panelTitle = ba.win
+			ASSERT(DAP_DeviceCanLead(panelTitle),"This device can not lead")
 
-	EnableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
-	DisableControl(panelTitle,"button_Hardware_Lead1600")
-	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
+			EnableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
+			DisableControl(panelTitle,"button_Hardware_Lead1600")
+			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
+			break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
 
-Function DAP_ButtonProc_Independent(ctrlName) : ButtonControl
-	String ctrlName
+Function DAP_ButtonProc_Independent(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	String panelTitle = DAP_ReturnPanelName()
+	string panelTitle
 
-	DisableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
-	EnableControl(panelTitle,"button_Hardware_Lead1600")
-	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
+	switch(ba.eventcode)
+		case 2:
+			panelTitle = ba.win
 
-	DAP_RemoveAllYokedDACs(panelTitle)
-	DAP_UpdateAllYokeControls()
+			DisableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
+			EnableControl(panelTitle,"button_Hardware_Lead1600")
+			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
+
+			DAP_RemoveAllYokedDACs(panelTitle)
+			DAP_UpdateAllYokeControls()
+			break
+	endswitch
+
+	return 0
 End
 
 //=========================================================================================
@@ -4825,27 +4882,33 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	endfor
 End
 
-//=========================================================================================
-Function DAP_ButtonProc_YokeRelease(ctrlName) : ButtonControl
-	String ctrlName
+Function DAP_ButtonProc_YokeRelease(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
+	string panelTitle
 	string panelToDeYoke
-	string panelTitle = DAP_ReturnPanelName()
 
-	ControlUpdate/W=$panelTitle popup_Hardware_YokedDACs
-	ControlInfo/W=$panelTitle popup_Hardware_YokedDACs
-	if(V_flag > 0 && V_Value >= 1)
-		panelToDeYoke = S_Value
-	endif
+	switch(ba.eventcode)
+		case 2:
+			panelTitle = ba.win
 
-	if(!windowExists(panelToDeYoke))
-		return 0
-	endif
+			ControlUpdate/W=$panelTitle popup_Hardware_YokedDACs
+			ControlInfo/W=$panelTitle popup_Hardware_YokedDACs
+			if(V_flag > 0 && V_Value >= 1)
+				panelToDeYoke = S_Value
+			endif
 
-	DAP_RemoveYokedDAC(panelToDeYoke)
-	DAP_UpdateYokeControls(panelToDeYoke)
+			if(!windowExists(panelToDeYoke))
+				return 0
+			endif
+
+			DAP_RemoveYokedDAC(panelToDeYoke)
+			DAP_UpdateYokeControls(panelToDeYoke)
+			break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
 
 Function DAP_RemoveYokedDAC(panelToDeYoke)
 	string panelToDeYoke
@@ -5099,45 +5162,51 @@ End
 //=========================================================================================
 // FUNCTION BELOW CONTROLS TP INSERTION INTO SET SWEEPS BEFORE THE SWEEP BEGINSS
 //=========================================================================================
-Function DAP_CheckProc_InsertTP(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
-	
-	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-
-	controlinfo /w =$panelTitle SetVar_DataAcq_TPDuration
-	variable TPDuration = 2 * v_value
-	controlinfo /w =$panelTitle setvar_DataAcq_OnsetDelay
-	variable ExistingOnsetDelay = v_value
-	
-	if(checked == 1)
-		if(ExistingOnsetDelay < TPDuration) // only increases onset delay if it is not big enough to for the TP
-			setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:TPDuration,  limits = {TPDuration, inf, 1}					
-		endif
-	elseif(checked == 0) // resets onset delay by subtracting TPDuration
-		variable OnsetDelayResetValue = max(0, (ExistingOnsetDelay - TPDuration)) // makes sure onset delay is never less than 0
-		setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:OnsetDelayResetValue, limits = {0, inf, 1}	
-	endif
-End
-//=========================================================================================
-Function DAP_SetVarProc_TPDuration(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
+	struct WMCheckBoxAction &cba
 
 	string panelTitle
-	sprintf panelTitle, "%s" DAP_ReturnPanelName()	
-	
-	controlinfo /w = $panelTitle Check_Settings_InsertTP
-	variable Check_Settings_InsertTP = v_value
-	if(Check_Settings_InsertTP == 1)
-		setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:(varNum * 2),  limits = {(varNum * 2), inf, 1}						
-	endif
+	variable testPulseDuration, existingOnsetDelay, onsetDelayResetValue
 
+	switch(cba.eventCode)
+		case 2:
+			panelTitle = cba.win
+			testPulseDuration = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+			existingOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay")
+
+			if(cba.checked)
+				if(ExistingOnsetDelay < testPulseDuration) // only increases onset delay if it is not big enough to for the TP
+					Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:testPulseDuration, limits = {testPulseDuration, inf, 1}
+				endif
+			else
+				onsetDelayResetValue = max(0, (ExistingOnsetDelay - testPulseDuration)) // makes sure onset delay is never less than 0
+				Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:OnsetDelayResetValue, limits = {0, inf, 1}
+			endif
+		break
+	endswitch
+
+	return 0
 End
-//=========================================================================================
+
+Function DAP_SetVarProc_TPDuration(sva) : SetVariableControl
+	struct WMSetVariableAction &sva
+
+	string panelTitle
+	variable val
+
+	switch(sva.eventCode)
+		case 2:
+			panelTitle = sva.win
+			val = sva.dval
+
+			if(GetCheckBoxState(panelTitle, "Check_Settings_InsertTP"))
+				Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:(val * 2), limits = {(val * 2), inf, 1}
+			endif
+			break
+	endswitch
+
+	return 0
+End
 
 Function DAP_UnlockAllDevices()
 
