@@ -1214,7 +1214,7 @@ Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
-			if(!cmpstr(pa.ctrlName,"TTL"))
+			if(!cmpstr(pa.popStr,"TTL"))
 				WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
 			else
 				WBP_ChangeWaveType(STIMULUS_TYPE_DA)
