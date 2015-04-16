@@ -944,7 +944,8 @@ Function WBP_CheckProc(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
-			WBP_UpdateParam(cba.ctrlName, cba.checked)
+			WBP_UpdateControlAndWP(cba.ctrlName, cba.checked)
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 
@@ -1029,50 +1030,32 @@ static Function WBP_ExtractRowNumberFromControl(control)
 End
 
 /// @brief Update the named control and pass its new value into the parameter wave
-static Function WBP_UpdateControl(control, value)
+Function WBP_UpdateControlAndWP(control, value)
 	string control
 	variable value
 
-	variable stimulusType, segmentNo, paramRow
+	variable maxDuration, stimulusType, epoch, paramRow
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	SetControl(panel, control, value)
 
-	ControlInfo/W=$panel WBP_WaveType
-	stimulusType = v_value
+	stimulusType = GetTabID(panel, "WBP_WaveType")
+	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	paramRow     = WBP_ExtractRowNumberFromControl(control)
+	WP[paramRow][epoch][stimulusType] = value
 
-	ControlInfo/W=$panel setvar_WaveBuilder_CurrentEpoch
-	segmentNo = v_value
-
-	paramRow = WBP_ExtractRowNumberFromControl(control)
-
-	WP[paramRow][segmentNo][stimulusType] = value
-	WBP_UpdatePanelIfAllowed()
-End
-
-static Function WBP_UpdateParam(control, value)
-	string control
-	variable value
-
-	variable maxDuration
-
-	WBP_UpdateControl(control, value)
-
-	ControlInfo WBP_WaveType
-	if(v_value == 2)
+	if(stimulusType == 2)
 		WBP_LowPassDeltaLimits()
 		WBP_HighPassDeltaLimits()
 		WBP_CutOffCrossOver()
-	elseif(v_value == 5)
+	elseif(stimulusType == 5)
 		maxDuration = WBP_ReturnPulseDurationMax()
 		SetVariable SetVar_WaveBuilder_P8 limits = {0, maxDuration, 0.1}
 		if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 		endif
 	endif
-
-	WBP_UpdatePanelIfAllowed()
 End
 
 Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
@@ -1082,7 +1065,8 @@ Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_UpdateParam(sva.ctrlName, sva.dval)
+			WBP_UpdateControlAndWP(sva.ctrlName, sva.dval)
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 
@@ -1196,10 +1180,11 @@ static Function WBP_ChangeWaveType(stimulusType)
 		SetVariable SetVar_WaveBuilder_P2 win = $panel, limits = {0,1,1}
 		DisableListOfControls(panel, list)
 
-		WBP_UpdateParam("SetVar_WaveBuilder_P2", 0)
-		WBP_UpdateParam("SetVar_WaveBuilder_P3", 0)
-		WBP_UpdateParam("SetVar_WaveBuilder_P4", 0)
-		WBP_UpdateParam("SetVar_WaveBuilder_P5", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P2", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P3", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P4", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P5", 0)
+		WBP_UpdatePanelIfAllowed()
 
 		WBP_ExecuteAdamsTabcontrol(0)
 	elseif(stimulusType == STIMULUS_TYPE_DA)
@@ -1737,7 +1722,8 @@ Function WBP_DeltaPopup(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
-			WBP_UpdateParam(pa.ctrlName, pa.popNum - 1)
+			WBP_UpdateControlAndWP(pa.ctrlName, pa.popNum - 1)
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 
