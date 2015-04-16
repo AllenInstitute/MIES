@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_IgorHooks.ipf
+/// @brief Various hooks which influence the behaviour at certain global events
+
 /// @brief Remove all strings/variables/waves which should not
 /// survive experiment reload/quit/saving
 ///
