@@ -194,7 +194,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 		return NaN
 	endif
 
-	Wave/SDFR=dfr config = GetConfigWave(sweep)
+	Wave config          = GetConfigWave(sweep)
 	string graph         = DB_GetMainGraph(panelTitle)
 	Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 
