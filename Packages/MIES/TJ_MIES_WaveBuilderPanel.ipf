@@ -742,19 +742,73 @@ static Function WBP_DisplaySetInPanel()
 End
 
 static Function WBP_UpdatePanelIfAllowed()
+
 	string controls, deltaMode
+	variable currentTab
 
 	if(!GetCheckBoxState(panel, "check_PreventUpdate"))
 		WBP_DisplaySetInPanel()
+	endif
 
-		controls = "SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;SetVar_WB_OffsetDeltaMult_P51;SetVar_WB_OffsetDeltaMult_P51_0;SetVar_WB_OffsetDeltaMult_P51_1;SetVar_WB_OffsetDeltaMult_P51_2;SetVar_WB_OffsetDeltaMult_P51_3;SetVar_WB_OffsetDeltaMult_P51_4;SetVar_WB_OffsetDeltaMult_P51_5"
+	// enable controls which might have been disabled on tab 7
+	EnableControl(panel, "SetVar_WaveBuilder_P0")
+	EnableControl(panel, "SetVar_WaveBuilder_P1")
+	EnableControl(panel, "SetVar_WaveBuilder_P2")
+	EnableControl(panel, "SetVar_WaveBuilder_P3")
 
-		deltaMode = GetPopupMenuString(panel,"popup_WaveBuilder_exp_P40")
-		if(!cmpstr(deltaMode, "Power") || !cmpstr(deltaMode, "Multiplier"))
-			EnableListOfControls(panel, controls)
-		else
-			DisableListOfControls(panel, controls)
-		endif
+	switch(GetTabID(panel, "WBP_WaveType"))
+		case 2:
+			if(GetCheckBoxState(panel,"check_Noise_Pink_P41"))
+				SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
+				DisableControl(panel, "Check_Noise_Brown_P42")
+				DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				EnableControl(panel, "SetVar_WaveBuilder_P30")
+			else
+				EnableControl(panel, "Check_Noise_Brown_P42")
+				EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				DisableControl(panel, "SetVar_WaveBuilder_P30")
+			endif
+
+			if(GetCheckBoxState(panel,"Check_Noise_Brown_P42"))
+				SetCheckBoxState(panel,"check_Noise_Pink_P41", 0)
+				DisableControl(panel, "check_Noise_Pink_P41")
+				DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				EnableControl(panel, "SetVar_WaveBuilder_P30")
+			else
+				EnableControl(panel, "check_Noise_Pink_P41")
+				EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				DisableControl(panel, "SetVar_WaveBuilder_P30")
+			endif
+			break
+		case 3:
+			if(GetCheckBoxState(panel,"check_Sin_Chirp_P43"))
+				EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+			else
+				DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+			endif
+			break
+		case 7:
+			DisableControl(panel, "SetVar_WaveBuilder_P0")
+			DisableControl(panel, "SetVar_WaveBuilder_P1")
+			DisableControl(panel, "SetVar_WaveBuilder_P2")
+			DisableControl(panel, "SetVar_WaveBuilder_P3")
+			SetSetVariable(panel, "SetVar_WaveBuilder_P0", 0)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P1", 0)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P2", 0)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P3", 0)
+			break
+		default:
+			// nothing to do
+			break
+	endswitch
+
+	controls = "SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;SetVar_WB_OffsetDeltaMult_P51;SetVar_WB_OffsetDeltaMult_P51_0;SetVar_WB_OffsetDeltaMult_P51_1;SetVar_WB_OffsetDeltaMult_P51_2;SetVar_WB_OffsetDeltaMult_P51_3;SetVar_WB_OffsetDeltaMult_P51_4;SetVar_WB_OffsetDeltaMult_P51_5"
+
+	deltaMode = GetPopupMenuString(panel,"popup_WaveBuilder_exp_P40")
+	if(!cmpstr(deltaMode, "Power") || !cmpstr(deltaMode, "Multiplier"))
+		EnableListOfControls(panel, controls)
+	else
+		DisableListOfControls(panel, controls)
 	endif
 End
 
@@ -888,46 +942,9 @@ End
 Function WBP_CheckProc(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string control
-	variable checked
-
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
-			control = cba.ctrlName
-			checked = cba.checked
-
-			if(!cmpstr(control,"check_Sin_Chirp_P43"))
-				if(checked)
-					EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
-				else
-					DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
-				endif
-			elseif(!cmpstr(control,"check_Noise_Pink_P41"))
-				if(checked)
-					SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
-					DisableControl(panel, "Check_Noise_Brown_P42")
-					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					EnableControl(panel, "SetVar_WaveBuilder_P30")
-				else
-					EnableControl(panel, "Check_Noise_Brown_P42")
-					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					DisableControl(panel, "SetVar_WaveBuilder_P30")
-				endif
-			elseif(!cmpstr(control,"Check_Noise_Brown_P42"))
-				if(checked)
-					SetCheckBoxState(panel,"check_Noise_Pink_P41", 0)
-					DisableControl(panel, "check_Noise_Pink_P41")
-					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					EnableControl(panel, "SetVar_WaveBuilder_P30")
-				else
-					EnableControl(panel, "check_Noise_Pink_P41")
-					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					DisableControl(panel, "SetVar_WaveBuilder_P30")
-				endif
-			endif
-
-			WBP_UpdateParam(control, checked)
-
+			WBP_UpdateParam(cba.ctrlName, cba.checked)
 			break
 	endswitch
 
@@ -949,22 +966,6 @@ Function TabTJHook(tca)
 		// only allow 0th and 5th tab for TTL wave type
 		if(tabnum == 1 || tabnum == 2 || tabnum == 3 || tabnum == 4 || tabnum == 6)
 			return 1
-		endif
-	else
-		if(tabnum == 7)
-			DisableControl(panel, "SetVar_WaveBuilder_P0")
-			DisableControl(panel, "SetVar_WaveBuilder_P1")
-			DisableControl(panel, "SetVar_WaveBuilder_P2")
-			DisableControl(panel, "SetVar_WaveBuilder_P3")
-			SetSetVariable(panel, "SetVar_WaveBuilder_P0", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P1", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P2", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P3", 0)
-		else
-			EnableControl(panel, "SetVar_WaveBuilder_P0")
-			EnableControl(panel, "SetVar_WaveBuilder_P1")
-			EnableControl(panel, "SetVar_WaveBuilder_P2")
-			EnableControl(panel, "SetVar_WaveBuilder_P3")
 		endif
 	endif
 
