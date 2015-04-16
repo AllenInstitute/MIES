@@ -786,7 +786,7 @@ function tools_wave_list (df, list, type, dims)
 		if (strlen(wname) == 0)
 			break
 		endif
-		if (type >= 0 && WaveType(wname) == type)
+		if (type >= 0 && WaveType($wname) == type)
 			list += GetDataFolder(1) + wname + ";"
 		endif
 		i += 1
