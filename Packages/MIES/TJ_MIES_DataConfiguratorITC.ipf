@@ -512,7 +512,6 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 			channelMode  = ChannelClampMode[i][%DAC]
 			if(channelMode == V_CLAMP_MODE)
 				TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-				print "TPAmp",TPAmp
 			elseif(channelMode == I_CLAMP_MODE)
 				TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 			endif
