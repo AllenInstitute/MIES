@@ -7,7 +7,6 @@ Menu "Mies Panels", dynamic
 		"DA_Ephys"                   , /Q, Execute "DA_Ephys()"
 		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
 		"Data Browser"               , /Q, Execute "DataBrowser()"
-		"Initiate Mies"              , /Q, IM_InitiateMies()
 		"Save and Clear Experiment"  , /Q, IM_SaveExperiment(SAVE_AND_CLEAR)
 		"Close Mies"                 , /Q, CloseMies()
 		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
