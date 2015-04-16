@@ -418,7 +418,8 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 		variable channelMode 
 		variable TPDuration   = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-		variable TPAmp
+		variable TPAmpVClamp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+		variable TPAmpIClamp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 		variable TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
 		variable TPEndPoint   = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
 	endif
@@ -511,11 +512,12 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 		if(cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0 && GlobalTPInsert)
 			channelMode  = ChannelClampMode[i][%DAC]
 			if(channelMode == V_CLAMP_MODE)
-				TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpVClamp * DAGain
 			elseif(channelMode == I_CLAMP_MODE)
-				TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpIClamp * DAGain
+			else
+				ASSERT(0, "Unknown clamp mode")
 			endif
-			ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmp * DAGain
 		endif
 		
 		// put the insert test pulse checkbox status into the sweep data wave
