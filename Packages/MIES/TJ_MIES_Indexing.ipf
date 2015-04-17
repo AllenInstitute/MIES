@@ -502,9 +502,13 @@ Function IDX_NumberOfTrialsInSet(panelTitle, setName, channelType)
 	string panelTitle, setName
 	variable channelType
 
-	ASSERT(!isEmpty(setname), "Got empty set name")
-	Wave/SDFR=IDX_GetSetFolder(channelType) wv = $setName
-	return DimSize(wv, COLS)
+	Wave/Z/SDFR=IDX_GetSetFolder(channelType) wv = $setName
+
+	if(WaveExists(wv))
+		return DimSize(wv, COLS)
+	else
+		return 0
+	endif
 End
 
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)

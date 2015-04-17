@@ -6,12 +6,6 @@ static Function/S SB_GetSweepBrowserLeftPanel(graph)
 	return graph + "#P0"
 End
 
-static Function/S SB_GetGraph(win)
-	string win
-
-	return StringFromList(0, win, "#")
-End
-
 static Function/Wave SB_GetSweepBrowserMapFromGraph(graph)
 	string graph
 
@@ -293,7 +287,7 @@ Function SB_CheckboxDisplayDAChannels(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			win   = cba.win
-			graph = SB_GetGraph(win)
+			graph = GetMainWindow(win)
 			idx   = GetPopupMenuIndex(win, "popup_sweep_selector")
 
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
@@ -311,7 +305,7 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			win       = pa.win
-			graph     = SB_GetGraph(pa.win)
+			graph     = GetMainWindow(pa.win)
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 
 			SB_PlotSweep(dfr, SB_GetFormerSweepNumber(win), pa.popNum - 1)
@@ -328,7 +322,7 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			win   = ba.win
-			graph = SB_GetGraph(win)
+			graph = GetMainWindow(win)
 			ctrl  = ba.ctrlName
 
 			currentSweep = GetPopupMenuIndex(win, "popup_sweep_selector")
