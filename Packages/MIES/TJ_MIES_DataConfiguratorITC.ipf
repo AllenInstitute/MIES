@@ -416,16 +416,12 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 	
 	if(GlobalTPInsert) // param for global TP Insertion placed outside of for loop so that they are only called once	
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
-		variable channelMode  = ChannelClampMode[i][0]
+		variable channelMode 
 		variable TPDuration   = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-		variable TPAmp
+		variable TPAmpVClamp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+		variable TPAmpIClamp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 		variable TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
 		variable TPEndPoint   = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
-		if(channelMode == V_CLAMP_MODE)
-			TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-		elseif(channelMode == I_CLAMP_MODE)
-			TPAmp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-		endif
 	endif
 	
 	string CountPath = HSU_DataFullFolderPathString(panelTitle) + ":count"
@@ -514,7 +510,14 @@ Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		// Global TP insertion
 		if(cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0 && GlobalTPInsert)
-			ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmp * DAGain
+			channelMode  = ChannelClampMode[i][%DAC]
+			if(channelMode == V_CLAMP_MODE)
+				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpVClamp * DAGain
+			elseif(channelMode == I_CLAMP_MODE)
+				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpIClamp * DAGain
+			else
+				ASSERT(0, "Unknown clamp mode")
+			endif
 		endif
 		
 		// put the insert test pulse checkbox status into the sweep data wave
