@@ -1647,3 +1647,31 @@ Function SaveExperimentWithDialog(path, filename)
 	SaveExperiment as S_fileName
 	return 0
 End
+
+/// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
+Function GetRowWithSameContent(refWave, sourceWave, row)
+	Wave/T refWave, sourceWave
+	variable row
+
+	variable i, j, numRows, numCols
+	numRows = DimSize(refWave, ROWS)
+	numCols = DimSize(refWave, COLS)
+
+	ASSERT(numCOLS == DimSize(sourceWave, COLS), "mismatched column sizes")
+
+	for(i = 0; i < numRows; i += 1)
+		for(j = 0; j < numCols; j += 1)
+			if(!cmpstr(refWave[i][j], sourceWave[row][j]))
+				if(j == numCols - 1)
+					return i
+				endif
+
+				continue
+			endif
+
+			break
+		endfor
+	endfor
+
+	return NaN
+End

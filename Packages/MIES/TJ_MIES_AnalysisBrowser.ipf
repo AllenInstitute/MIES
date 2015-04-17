@@ -564,7 +564,7 @@ Function AB_ExpandListEntry(row, col)
 	// - calculate the required new rows and insert them
 	// - copy the contents from the backup waves
 	targetRow = row + 1
-	sourceRow = AB_GetRowWithSameContent(expBrowserListBak, expBrowserList, row)
+	sourceRow = GetRowWithSameContent(expBrowserListBak, expBrowserList, row)
 
 	last = AB_GetRowWithNextTreeView(expBrowserSelBak, sourceRow, col)
 	last -= 1
@@ -650,34 +650,6 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 		if(Sum(status, 0, col) > 0)
 			return i
 		endif
-	endfor
-
-	return numRows
-End
-
-/// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
-static Function AB_GetRowWithSameContent(refWave, sourceWave, row)
-	Wave/T refWave, sourceWave
-	variable row
-
-	variable i, j, numRows, numCols, isEqual
-	numRows = DimSize(refWave, ROWS)
-	numCols = DimSize(refWave, COLS)
-
-	ASSERT(numCOLS == DimSize(sourceWave, COLS), "mismatched column sizes")
-
-	for(i = 0; i < numRows; i += 1)
-		for(j = 0; j < numCols; j += 1)
-			if(!cmpstr(refWave[i][j], sourceWave[row][j]))
-				if(j == numCols - 1)
-					return i
-				endif
-
-				continue
-			endif
-
-			break
-		endfor
 	endfor
 
 	return numRows
