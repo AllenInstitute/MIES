@@ -351,7 +351,7 @@ Function TangoCommandInput(cmdString)
 	
 	// parse out the cmd_id from the input cmdString
 	variable cmdNumber
-	variable cmdID
+	string cmdID
 	string cmdPortion
 	string igorCmd
 	cmdNumber = ItemsInList(cmdString)
@@ -359,26 +359,24 @@ Function TangoCommandInput(cmdString)
 	// the first portion of the cmdString should be the "cmd_id:<id>"
 	cmdPortion = StringFromList(0, cmdString)
 	// now parse out the cmd_id
-	sscanf cmdPortion, "cmd_id:%d", cmdID
+	sscanf cmdPortion, "cmd_id:%s", cmdID
 	
 	print "cmdID: ", cmdID
 	
 	// the second portion of the cmdString should be the "cmd_string"
 	igorCmd = StringFromList(1, cmdString)
-	print "igorCmd: ", igorCmd
 	// now strip the trailing ")" off the end of the igorCmd
 	string igorCmdPortion = StringFromList(0, igorCmd, ")")
-	print "igorCmdPortion: ", igorCmdPortion
 	// and append the cmdNumber and the trailing ")"
 	string completeIgorCommand
-	sprintf completeIgorCommand, "%s, cmdID=\"%d\")", igorCmdPortion, cmdID
+	sprintf completeIgorCommand, "%s, cmdID=\"%s\")", igorCmdPortion, cmdID
 	
-	print "completeIgorCommand: ", completeIgorCommand
+//	print "completeIgorCommand: ", completeIgorCommand
 	// now call the command 
 	Execute/Z completeIgorCommand
 	if (V_Flag != 0)
 		print "Unable to run command....check command syntax..."
-		//writeAck(cmdID, -1)
+		writeAck(cmdID, -1)
 	else
 		print "Command ran successfully..."
 	endif
@@ -693,18 +691,13 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		ba.win = currentPanel
 		
 		DAP_ButtonProc_AcquireData(ba)
-		
-		// and then return the scale value
-// this will be enabled once we add async reporting capability to the WSE
-//		print "returning the actionPotential factor..." 
-//		variable firedActionPotentialScale = str2num(analysisSettingsWave[headstage][%PSAResult])
-//		print "firedActionPotentialScale: ", firedActionPotentialScale
 	endfor
 	
+	writeAck(cmdID, 1)
 	 // restore the data folder
 	SetDataFolder savedDataFolder
 	
-	return "RETURN:1"
+	
 End
 
 ///@brief routine to be called from the WSE to select a stimWaveName, a PSA routine, a PAA routine, the scale factor, and which
@@ -888,7 +881,7 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 			
 			TP_ButtonProc_DataAcq_TestPulse(ba)
 			
-			returnValue = 1
+			returnValue = 0
 		elseif(tpCmd == 0) // Turn off the test pulse
 			ITC_STOPTestPulse(currentPanel)
 			ITC_TPDocumentation(currentPanel) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
@@ -1016,10 +1009,12 @@ Function writeAsyncResponse(cmdID, returnString)
 	
 	String responseMessage	
 	variable numberOfReturnItems = ItemsInList(returnString)
-	print "numberOfReturnItems: ", numberOfReturnItems
+	
+	print "returnString: ", returnString
 	
 	// put the response string together...
-	sprintf responseMessage, "cmd_id:%s;%d;%s", cmdID, numberOfReturnItems, returnString
+	sprintf responseMessage, "cmd_id:%s;%s", cmdID, returnString
+	print "responseMessage: ", responseMessage
 	
 	//- function arg: the name of the device on which the commands will be executed 
 	String dev_name = "mies_device/MiesDevice/test"
@@ -1040,7 +1035,7 @@ Function writeAsyncResponse(cmdID, returnString)
 	
 	//- populate argin: <CmdArgIn.cmd> struct member
 	//- name of the command to be executed on <argin.dev> 
-	String cmd = "post_asynch_response"
+	String cmd = "post_response"
 
 	//- verbose
 	print "\rexecuting <" + cmd + ">...\r"

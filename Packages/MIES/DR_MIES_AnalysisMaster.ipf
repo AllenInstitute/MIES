@@ -198,7 +198,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		
 		if (len >= 1)
 			// build up the response string
-			sprintf responseString, "scaleFactor:%d;", scaleFactor
+			sprintf responseString, "scaleFactor:%f", scaleFactor
 			writeAsyncResponse(asynRespWave[headstage][%cmdID], responseString)
 		else
 			print "No asyn response required..."
@@ -249,6 +249,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		
 		// turn on the fineTuneUse
 		actionScaleSettingsWave[headStage][%fineTuneUse] = 1
+		
 		return 0
 	elseif ((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential didn't fire on the fine tuning			
 		// bump up the scale factor by the fine Scale adjustment
@@ -278,7 +279,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		
 		if (len >= 1)
 			// build up the response string
-			sprintf responseString, "scaleFactor:%d;", scaleFactor
+			sprintf responseString, "scaleFactor:%f", scaleFactor
 			writeAsyncResponse(asynRespWave[headstage][%cmdID], responseString)
 		else
 			print "No asyn response required..."
@@ -288,6 +289,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		KillWaves asynRespWave
 		
 		// Now put the scale factor back to 1.0
+		print "setting the scale back to 1..."
 		SetSetVariable(panelTitle, scaleControlName, 1.0)			
 		return 1
 	endif
