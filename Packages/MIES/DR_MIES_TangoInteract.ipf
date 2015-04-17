@@ -370,8 +370,7 @@ Function TangoCommandInput(cmdString)
 	// and append the cmdNumber and the trailing ")"
 	string completeIgorCommand
 	sprintf completeIgorCommand, "%s, cmdID=\"%s\")", igorCmdPortion, cmdID
-	
-//	print "completeIgorCommand: ", completeIgorCommand
+
 	// now call the command 
 	Execute/Z completeIgorCommand
 	if (V_Flag != 0)
