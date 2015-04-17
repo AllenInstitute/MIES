@@ -295,7 +295,8 @@ Function LoadReplaceStimSet([incomingFileName])
 	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
-		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
+		NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
+		HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		else
@@ -370,7 +371,8 @@ Function LoadAdditionalStimSet([incomingFileName])
 	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
-		HDF5OpenFile /R /Z fileID as ""	 // Displays a dialog
+		NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
+		HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		else
@@ -628,7 +630,7 @@ Function LoadConfigSet([incomingFileName])
 	
 	if( ParamIsDefault(incomingFileName) )
 		NewPath/O miesHDF5ConfigStorage, "C:\\MiesHDF5Files\\SavedConfigFiles\\"
-		HDF5OpenFile /R /P=miesHDF5ConfigStorage fileID as ""	 // Displays a dialog
+		HDF5OpenFile /R /Z /P=miesHDF5ConfigStorage fileID as ""	 // Displays a dialog
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		else
@@ -733,7 +735,8 @@ Function LoadDataSet([incomingFileName])
 	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
-		HDF5OpenFile /R /Z fileID as "" // Displays a dialog
+		NewPath/O miesHDF5DataStorage, "C:\\MiesHDF5Files\\SavedDataSets"
+		HDF5OpenFile /R /Z /P=miesHDF5DataStorage fileID as ""	 // Displays a dialog
 		if(V_flag != 0) // User cancelled the dialog
 			print "File load cancelled..."
 			return 0
