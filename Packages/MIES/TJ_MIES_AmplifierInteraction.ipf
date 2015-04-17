@@ -424,7 +424,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 		return 0
 	endif
 
-	variable i, numHS, value
+	variable i, numHS, value, diff
 	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
@@ -473,12 +473,26 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value)
 				break
 			case "setvar_DataAcq_RsCorr":
+				diff = value - AmpStorageWave[5][0][i]
 				AmpStorageWave[5][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
+				if(GetCheckBoxState(panelTitle, "check_DataAcq_Amp_Chain"))
+					value = AmpStorageWave[6][0][i] + diff
+					AmpStorageWave[6][0][i] = value
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
+					AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_RsPred")
+				endif
 				break
 			case "setvar_DataAcq_RsPred":
+				diff = value - AmpStorageWave[6][0][i]
 				AmpStorageWave[6][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
+				if(GetCheckBoxState(panelTitle, "check_DataAcq_Amp_Chain"))
+					value = AmpStorageWave[5][0][i] + diff
+					AmpStorageWave[5][0][i] = value
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
+					AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_RsCorr")
+				endif
 				break
 			case "check_DatAcq_RsCompEnable":
 				AmpStorageWave[7][0][i] = value
@@ -500,6 +514,10 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 			case "button_DataAcq_SlowComp_VC":
 				AmpStorageWave[%SlowCapacitanceComp][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOSLOWCOMP_FUNC, NaN)
+				break
+			case "check_DataAcq_Amp_Chain":
+				AmpStorageWave[%RSCompChaining][0][i] = value
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", headStage)
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -583,6 +601,7 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			setCheckBoxState(panelTitle, "check_DatAcq_WholeCellEnable", AmpStorageWave[%WholeCellEnable][0][MIESHeadStageNo])
 			setSetVariable(panelTitle, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][MIESHeadStageNo])
 			setSetVariable(panelTitle, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][MIESHeadStageNo])
+			SetCheckboxstate(panelTitle, "check_DataAcq_Amp_Chain", AmpStorageWave[%RSCompChaining][0][MIESHeadStageNo])
 			setCheckBoxState(panelTitle, "check_DatAcq_RsCompEnable", AmpStorageWave[%RsCompEnable][0][MIESHeadStageNo])
 			setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffset][0][MIESHeadStageNo])			
 	
