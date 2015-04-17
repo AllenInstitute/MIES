@@ -872,7 +872,7 @@ Window ExperimentBrowser() : Panel
 	ListBox list_experiment_contents,listWave=root:MIES:analysis:expBrowserList
 	ListBox list_experiment_contents,selWave=root:MIES:analysis:expBrowserSel,row= 1
 	ListBox list_experiment_contents,mode= 4
-	ListBox list_experiment_contents,widths={33,125,24,137,55,45,75,130,45,63}
+	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
 	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
 	Button button_select_same_stim_sets,pos={6,67},size={101,33},proc=AB_ButtonProc_SelectStimSets,title="Select same\rstim set sweeps"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)= A"!!,@#!!#??!!#@.!!#=gz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
