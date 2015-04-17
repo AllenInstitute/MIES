@@ -1012,13 +1012,16 @@ End
 Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string path
+	string path, win
 	switch(ba.eventCode)
 		case 2: // mouse up
+				win = ba.win
+				PathInfo/S $GetSetVariableString(win, "setvar_baseFolder")
 				GetFileFolderInfo/D/Q/Z=2
 
 				if(V_flag == 0 && V_isFolder)
-					SetSetVariableString(ba.win, "setvar_baseFolder", S_Path)
+					SetSetVariableString(win, "setvar_baseFolder", S_Path)
+					AB_ScanFolder(win)
 				endif
 			break
 	endswitch
