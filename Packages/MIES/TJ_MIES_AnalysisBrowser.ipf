@@ -3,6 +3,9 @@
 /// @file TJ_MIES_AnalysisBrowser.ipf
 /// This file holds the main analysis browser code and has no dependencies on any hardware related functions
 
+// stock igor
+#include <Resize Controls>
+
 // third party includes
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
