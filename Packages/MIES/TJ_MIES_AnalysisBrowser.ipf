@@ -16,6 +16,7 @@
 #include ":TJ_MIES_Debugging"
 #include ":TJ_MIES_GlobalStringAndVariableAccess"
 #include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_IgorHooks"
 #include ":TJ_MIES_MiesUtilities"
 #include ":TJ_MIES_Utilities"
 #include ":TJ_MIES_WaveDataFolderGetters"
@@ -29,6 +30,7 @@ static Constant DEVICE_TREEVIEW_COLUMN     = 2
 Menu "Mies Panels"
 	"Experiment Browser", AB_OpenExperimentBrowser()
 	"Labnotebook Browser", LBN_OpenLabnotebookBrowser()
+	"TPStorage Browser", LBN_OpenTPStorageBrowser()
 End
 
 static Function AB_ResetSelectionWave()
@@ -297,6 +299,32 @@ static Function GetHighestPossibleSweepNumber(numericValues)
 	return V_max
 End
 
+static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
+	string expFilePath, expFolder, device
+
+	string dataFolderPath, wanted, unwanted, all
+	variable numWavesLoaded
+
+	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
+	dataFolderPath  = GetDeviceTestPulseAsString(device)
+	DFREF saveDFR   = GetDataFolderDFR()
+
+	// we can not determine how many TPStorage waves are in dataFolderPath
+	// therefore we load all waves and throw the ones we don't need away
+	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
+
+	if(numWavesLoaded)
+		wanted   = GetListOfWaves(targetDFR, "^TPStorage(_[[:digit:]]+)?$", fullPath=1)
+		all      = GetListOfWaves(targetDFR, ".*", fullPath=1)
+		unwanted = RemoveFromList(wanted, all)
+
+		CallFunctionForEachListItem(KillOrMoveToTrash, unwanted)
+	endif
+
+	SetDataFolder saveDFR
+	return numWavesLoaded
+End
+
 static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	string expFilePath
 
@@ -388,6 +416,8 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			highestSweepNumber = GetHighestPossibleSweepNumber(numericValues)
 
 			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
+			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
+
 			AB_FillListWave(expFolder, expName, device)
 		endfor
 	endfor

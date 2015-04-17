@@ -6,8 +6,6 @@
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-static StrConstant AXIS_BASE_NAME                = "col"
-
 static Constant GRAPH_DIV_SPACING                = 0.03
 
 /// @brief Extracts the date/time column of the settingsHistory wave
