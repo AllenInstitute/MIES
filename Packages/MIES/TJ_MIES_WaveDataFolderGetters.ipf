@@ -265,6 +265,91 @@ Function/S GetMiesPathAsString()
 	return "root:MIES"
 End
 
+/// @brief Return the ITC data wave
+Function/Wave GetITCDataWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = ITCDataWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:ITCDataWave/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the ITC channel config wave
+Function/Wave GetITCChanConfigWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = ITCChanConfigWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(2, 4) dfr:ITCChanConfigWave/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the ITC fifo available for all channels wave
+Function/Wave GetITCFIFOAvailAllConfigWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = ITCFIFOAvailAllConfigWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(2, 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the ITC fifo available for all channels wave
+Function/Wave GetITCFIFOPositionAllConfigWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = ITCFIFOPositionAllConfigWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(2, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the ITC result data wave
+Function/Wave GetITCResultsWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/I/Z/SDFR=dfr wv = ResultsWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/I/N=(4) dfr:ResultsWave/Wave=wv
+
+	return wv
+End
+
 /// @name Experiment Documentation
 /// @{
 
@@ -756,6 +841,58 @@ End
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
+End
+
+/// @brief Return the ITC testpulse wave
+Function/Wave GetTestPulseITCWave(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TestPulseITC
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:TestPulseITC/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the testpulse instantenous resistance wave
+///
+/// The columns hold the *active* DA channels only and are subject to resizing.
+Function/Wave GetInstResistanceWave(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = InstResistance
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:InstResistance/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the testpulse steady state resistance wave
+///
+/// The columns hold the *active* DA channels only and are subject to resizing.
+Function/Wave GetSSResistanceWave(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = SSResistance
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:SSResistance/Wave=wv
+
+	return wv
 End
 
 /// @}

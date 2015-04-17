@@ -45,6 +45,35 @@ Function HSU_ButtonProc_LockDev(s) : ButtonControl
 End
 //==================================================================================================
 
+/// This function is a relict of the pre-wave-getter times
+/// Once we converted all wave access to getter functions this
+/// function can be removed.
+static Function HSU_MakeWavesAndFolderForLocked(panelTitle)
+	string panelTitle
+
+	GetDevSpecLabNBSettKeyFolder(panelTitle)
+	GetDevSpecLabNBSettHistFolder(panelTitle)
+	GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
+	GetDevSpecLabNBTextDocFolder(panelTitle)
+	GetActiveITCDevicesTimerFolder()
+
+	createDFWithAllParents("root:MIES:Amplifiers:Settings")
+	createDFWithAllParents("root:ImageHardware:Arduino")
+	createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:TestPulse")
+	createDFWithAllParents("root:MIES:Camera")
+	createDFWithAllParents("root:MIES:Manipulators")
+
+	GetITCDataWave(panelTitle)
+	GetITCChanConfigWave(panelTitle)
+	GetITCFIFOAvailAllConfigWave(panelTitle)
+	GetITCFIFOPositionAllConfigWave(panelTitle)
+	GetITCResultsWave(panelTitle)
+
+	GetTestPulseITCWave(panelTitle)
+	GetInstResistanceWave(panelTitle)
+	GetSSResistanceWave(panelTitle)
+End
+
 Function HSU_LockDevice(panelTitle)
 	string panelTitle
 
@@ -67,7 +96,9 @@ Function HSU_LockDevice(panelTitle)
 	locked = 1
 	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
-	IM_MakeGlobalsAndWaves(panelTitleLocked)
+	HSU_MakeWavesAndFolderForLocked(panelTitleLocked)
+	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
+	DAP_FindConnectedAmps(panelTitleLocked)
 	HSU_UpdateListOfITCPanels()
 	HSU_OpenITCDevice(panelTitleLocked)
 	DAP_UpdateAllYokeControls()
@@ -94,22 +125,6 @@ Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
 	
 	GroupBox group_Hardware_FolderPath win = $panelTitle, title = title
 End
-//==================================================================================================
-
-Function HSU_CreateDataFolderForLockdDev(panelTitle)
-	string panelTitle
-	
-	string path = HSU_DataFullFolderPathString(panelTitle)
-
-	createDFWithAllParents(path + ":Data")
-	createDFWithAllParents(path + ":TestPulse")
-
-	GetDevSpecLabNBSettKeyFolder(panelTitle)
-	GetDevSpecLabNBSettHistFolder(panelTitle)
-	GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	GetDevSpecLabNBTextDocFolder(panelTitle)
-End
-//==================================================================================================
 
 /// @brief Returns the device type as string, readout from the popup menu in the Hardware tab
 Function/s HSU_GetDeviceType(panelTitle)

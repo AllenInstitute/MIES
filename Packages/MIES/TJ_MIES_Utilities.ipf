@@ -1628,3 +1628,22 @@ Function/S RemoveEndingRegExp(str, endingRegExp)
 
 	return RemoveEnding(str, endStr)
 End
+
+/// @brief Returns 1 if the user cancelled, zero if SaveExperiment was called
+///
+/// It is currently not possible to check if SaveExperiment was successfull
+/// (E-Mail from Howard Rodstein WaveMetrics, 30 Jan 2015)
+Function SaveExperimentWithDialog(path, filename)
+	string path, filename
+
+	variable refNum
+
+	Open/D/M="Save experiment"/F="All Files:.*;"/P=$path refNum as filename
+
+	if(isEmpty(S_fileName))
+		return 1
+	endif
+
+	SaveExperiment as S_fileName
+	return 0
+End
