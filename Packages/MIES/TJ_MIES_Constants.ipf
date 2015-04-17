@@ -203,3 +203,11 @@ Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
 /// @{
 Constant STRUCT_PARAMETER_TYPE = 512
 /// @}
+
+/// User data which identifies MIES related panels
+StrConstant MIES_PANEL_TYPE_USER_DATA = "MiesPanelType"
+
+/// @names Possible values of  #MIES_PANEL_TYPE_USER_DATA
+/// @{
+StrConstant MIES_DATABROWSER_PANEL = "DataBrowser"
+/// @}
