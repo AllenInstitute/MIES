@@ -809,6 +809,46 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	return 0
 End
 
+Function AB_ScanFolder(win)
+	string win
+
+	string baseFolder, path, pxpList, uxpList, list
+	variable i, numEntries
+
+	baseFolder = GetSetVariableString(win, "setvar_baseFolder")
+	path = UniqueName("scanfolder_path", 12, 1)
+	NewPath/Q/Z $path, baseFolder
+
+	if(V_flag != 0)
+		printf "Could not create the symbolic path referencing %s, maybe the folder does not exist?\r", baseFolder
+		return naN
+	endif
+
+	AB_ClearWaves()
+
+	pxpList = GetFilesRecursively(path, ".pxp")
+	uxpList = GetFilesRecursively(path, ".uxp")
+	KillPath $path
+
+	list = SortList(pxpList + uxpList)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		AB_AddExperimentFile(StringFromList(i, list))
+	endfor
+
+	WAVE expBrowserList = GetExperimentBrowserGUIList()
+	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
+
+	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
+	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
+
+	AB_ResetSelectionWave()
+
+	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
+	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+End
+
 Function AB_OpenExperimentBrowser()
 
 	string panel = "ExperimentBrowser"
@@ -960,45 +1000,9 @@ End
 Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string baseFolder, path, pxpList, uxpList, list
-	variable i, numEntries
-	string win
-
 	switch(ba.eventCode)
 		case 2: // mouse up
-			win = ba.win
-			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
-			path = UniqueName("scanfolder_path", 12, 1)
-			NewPath/Q/Z $path, baseFolder
-
-			if(V_flag != 0)
-				printf "Could not create the symbolic path referencing %s, maybe the folder does not exist?\r", baseFolder
-				break
-			endif
-
-			AB_ClearWaves()
-
-			pxpList = GetFilesRecursively(path, ".pxp")
-			uxpList = GetFilesRecursively(path, ".uxp")
-			KillPath $path
-
-			list = SortList(pxpList + uxpList)
-
-			numEntries = ItemsInList(list)
-			for(i = 0; i < numEntries; i += 1)
-				AB_AddExperimentFile(StringFromList(i, list))
-			endfor
-
-			WAVE expBrowserList = GetExperimentBrowserGUIList()
-			WAVE expBrowserSel  = GetExperimentBrowserGUISel()
-
-			numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-			Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
-
-			AB_ResetSelectionWave()
-
-			WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
-			WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+			AB_ScanFolder(ba.win)
 		break
 	endswitch
 
