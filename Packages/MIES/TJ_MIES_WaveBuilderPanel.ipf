@@ -598,6 +598,20 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_OffsetDeltaMult_P51_5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable SetVar_WB_OffsetDeltaMult_P51_5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_OffsetDeltaMult_P51_5,value= _NUM:1
+	SetVariable SetVar_WaveBuilder_P45,pos={194,152},size={100,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="Num Pulses"
+	SetVariable SetVar_WaveBuilder_P45,userdata(tabnum)=  "5"
+	SetVariable SetVar_WaveBuilder_P45,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo)= A"!!,GR!!#@e!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WaveBuilder_P45,value= _NUM:0
+	CheckBox check_SPT_NumPulses_P46,pos={413,133},size={71,14},disable=1,proc=WBP_CheckProc,title="Use Pulses"
+	CheckBox check_SPT_NumPulses_P46,help={"Allows to define the number of pulses instead of the duration"}
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo)= A"!!,I4J,hp]!!#?A!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_SPT_NumPulses_P46,userdata(tabnum)=  "5"
+	CheckBox check_SPT_NumPulses_P46,userdata(tabcontrol)=  "WBP_WaveType",value= 0
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF1g^]4?7zzzzzzzzzzzzzzzzzzzz"
@@ -745,19 +759,82 @@ static Function WBP_DisplaySetInPanel()
 End
 
 static Function WBP_UpdatePanelIfAllowed()
+
 	string controls, deltaMode
+	variable currentTab
 
 	if(!GetCheckBoxState(panel, "check_PreventUpdate"))
 		WBP_DisplaySetInPanel()
+	endif
 
-		controls = "SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;SetVar_WB_OffsetDeltaMult_P51;SetVar_WB_OffsetDeltaMult_P51_0;SetVar_WB_OffsetDeltaMult_P51_1;SetVar_WB_OffsetDeltaMult_P51_2;SetVar_WB_OffsetDeltaMult_P51_3;SetVar_WB_OffsetDeltaMult_P51_4;SetVar_WB_OffsetDeltaMult_P51_5"
+	// enable controls which might have been disabled on tab 7
+	EnableControl(panel, "SetVar_WaveBuilder_P0")
+	EnableControl(panel, "SetVar_WaveBuilder_P1")
+	EnableControl(panel, "SetVar_WaveBuilder_P2")
+	EnableControl(panel, "SetVar_WaveBuilder_P3")
 
-		deltaMode = GetPopupMenuString(panel,"popup_WaveBuilder_exp_P40")
-		if(!cmpstr(deltaMode, "Power") || !cmpstr(deltaMode, "Multiplier"))
-			EnableListOfControls(panel, controls)
-		else
-			DisableListOfControls(panel, controls)
-		endif
+	switch(GetTabID(panel, "WBP_WaveType"))
+		case 2:
+			if(GetCheckBoxState(panel,"check_Noise_Pink_P41"))
+				SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
+				DisableControl(panel, "Check_Noise_Brown_P42")
+				DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				EnableControl(panel, "SetVar_WaveBuilder_P30")
+			else
+				EnableControl(panel, "Check_Noise_Brown_P42")
+				EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				DisableControl(panel, "SetVar_WaveBuilder_P30")
+			endif
+
+			if(GetCheckBoxState(panel,"Check_Noise_Brown_P42"))
+				SetCheckBoxState(panel,"check_Noise_Pink_P41", 0)
+				DisableControl(panel, "check_Noise_Pink_P41")
+				DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				EnableControl(panel, "SetVar_WaveBuilder_P30")
+			else
+				EnableControl(panel, "check_Noise_Pink_P41")
+				EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				DisableControl(panel, "SetVar_WaveBuilder_P30")
+			endif
+			break
+		case 3:
+			if(GetCheckBoxState(panel,"check_Sin_Chirp_P43"))
+				EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+			else
+				DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+			endif
+			break
+		case 5:
+			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
+				DisableControl(panel, "SetVar_WaveBuilder_P0")
+				EnableControl(panel, "SetVar_WaveBuilder_P45")
+			else
+				EnableControl(panel, "SetVar_WaveBuilder_P0")
+				DisableControl(panel, "SetVar_WaveBuilder_P45")
+			endif
+			break
+		case 7:
+			DisableControl(panel, "SetVar_WaveBuilder_P0")
+			DisableControl(panel, "SetVar_WaveBuilder_P1")
+			DisableControl(panel, "SetVar_WaveBuilder_P2")
+			DisableControl(panel, "SetVar_WaveBuilder_P3")
+			SetSetVariable(panel, "SetVar_WaveBuilder_P0", 0)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P1", 0)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P2", 0)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P3", 0)
+			break
+		default:
+			// nothing to do
+			break
+	endswitch
+
+	controls = "SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;SetVar_WB_OffsetDeltaMult_P51;SetVar_WB_OffsetDeltaMult_P51_0;SetVar_WB_OffsetDeltaMult_P51_1;SetVar_WB_OffsetDeltaMult_P51_2;SetVar_WB_OffsetDeltaMult_P51_3;SetVar_WB_OffsetDeltaMult_P51_4;SetVar_WB_OffsetDeltaMult_P51_5"
+
+	deltaMode = GetPopupMenuString(panel,"popup_WaveBuilder_exp_P40")
+	if(!cmpstr(deltaMode, "Power") || !cmpstr(deltaMode, "Multiplier"))
+		EnableListOfControls(panel, controls)
+	else
+		DisableListOfControls(panel, controls)
 	endif
 End
 
@@ -891,46 +968,10 @@ End
 Function WBP_CheckProc(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string control
-	variable checked
-
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
-			control = cba.ctrlName
-			checked = cba.checked
-
-			if(!cmpstr(control,"check_Sin_Chirp_P43"))
-				if(checked)
-					EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
-				else
-					DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
-				endif
-			elseif(!cmpstr(control,"check_Noise_Pink_P41"))
-				if(checked)
-					SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
-					DisableControl(panel, "Check_Noise_Brown_P42")
-					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					EnableControl(panel, "SetVar_WaveBuilder_P30")
-				else
-					EnableControl(panel, "Check_Noise_Brown_P42")
-					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					DisableControl(panel, "SetVar_WaveBuilder_P30")
-				endif
-			elseif(!cmpstr(control,"Check_Noise_Brown_P42"))
-				if(checked)
-					SetCheckBoxState(panel,"check_Noise_Pink_P41", 0)
-					DisableControl(panel, "check_Noise_Pink_P41")
-					DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					EnableControl(panel, "SetVar_WaveBuilder_P30")
-				else
-					EnableControl(panel, "check_Noise_Pink_P41")
-					EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
-					DisableControl(panel, "SetVar_WaveBuilder_P30")
-				endif
-			endif
-
-			WBP_UpdateParam(control, checked)
-
+			WBP_UpdateControlAndWP(cba.ctrlName, cba.checked)
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 
@@ -952,22 +993,6 @@ Function TabTJHook(tca)
 		// only allow 0th and 5th tab for TTL wave type
 		if(tabnum == 1 || tabnum == 2 || tabnum == 3 || tabnum == 4 || tabnum == 6)
 			return 1
-		endif
-	else
-		if(tabnum == 7)
-			DisableControl(panel, "SetVar_WaveBuilder_P0")
-			DisableControl(panel, "SetVar_WaveBuilder_P1")
-			DisableControl(panel, "SetVar_WaveBuilder_P2")
-			DisableControl(panel, "SetVar_WaveBuilder_P3")
-			SetSetVariable(panel, "SetVar_WaveBuilder_P0", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P1", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P2", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P3", 0)
-		else
-			EnableControl(panel, "SetVar_WaveBuilder_P0")
-			EnableControl(panel, "SetVar_WaveBuilder_P1")
-			EnableControl(panel, "SetVar_WaveBuilder_P2")
-			EnableControl(panel, "SetVar_WaveBuilder_P3")
 		endif
 	endif
 
@@ -1031,50 +1056,32 @@ static Function WBP_ExtractRowNumberFromControl(control)
 End
 
 /// @brief Update the named control and pass its new value into the parameter wave
-static Function WBP_UpdateControl(control, value)
+Function WBP_UpdateControlAndWP(control, value)
 	string control
 	variable value
 
-	variable stimulusType, segmentNo, paramRow
+	variable maxDuration, stimulusType, epoch, paramRow
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	SetControl(panel, control, value)
 
-	ControlInfo/W=$panel WBP_WaveType
-	stimulusType = v_value
+	stimulusType = GetTabID(panel, "WBP_WaveType")
+	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	paramRow     = WBP_ExtractRowNumberFromControl(control)
+	WP[paramRow][epoch][stimulusType] = value
 
-	ControlInfo/W=$panel setvar_WaveBuilder_CurrentEpoch
-	segmentNo = v_value
-
-	paramRow = WBP_ExtractRowNumberFromControl(control)
-
-	WP[paramRow][segmentNo][stimulusType] = value
-	WBP_UpdatePanelIfAllowed()
-End
-
-static Function WBP_UpdateParam(control, value)
-	string control
-	variable value
-
-	variable maxDuration
-
-	WBP_UpdateControl(control, value)
-
-	ControlInfo WBP_WaveType
-	if(v_value == 2)
+	if(stimulusType == 2)
 		WBP_LowPassDeltaLimits()
 		WBP_HighPassDeltaLimits()
 		WBP_CutOffCrossOver()
-	elseif(v_value == 5)
+	elseif(stimulusType == 5)
 		maxDuration = WBP_ReturnPulseDurationMax()
 		SetVariable SetVar_WaveBuilder_P8 limits = {0, maxDuration, 0.1}
 		if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 		endif
 	endif
-
-	WBP_UpdatePanelIfAllowed()
 End
 
 Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
@@ -1084,7 +1091,8 @@ Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_UpdateParam(sva.ctrlName, sva.dval)
+			WBP_UpdateControlAndWP(sva.ctrlName, sva.dval)
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 
@@ -1198,10 +1206,11 @@ static Function WBP_ChangeWaveType(stimulusType)
 		SetVariable SetVar_WaveBuilder_P2 win = $panel, limits = {0,1,1}
 		DisableListOfControls(panel, list)
 
-		WBP_UpdateParam("SetVar_WaveBuilder_P2", 0)
-		WBP_UpdateParam("SetVar_WaveBuilder_P3", 0)
-		WBP_UpdateParam("SetVar_WaveBuilder_P4", 0)
-		WBP_UpdateParam("SetVar_WaveBuilder_P5", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P2", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P3", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P4", 0)
+		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P5", 0)
+		WBP_UpdatePanelIfAllowed()
 
 		WBP_ExecuteAdamsTabcontrol(0)
 	elseif(stimulusType == STIMULUS_TYPE_DA)
@@ -1217,7 +1226,7 @@ Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
-			if(!cmpstr(pa.ctrlName,"TTL"))
+			if(!cmpstr(pa.popStr,"TTL"))
 				WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
 			else
 				WBP_ChangeWaveType(STIMULUS_TYPE_DA)
@@ -1544,20 +1553,15 @@ End
 /// @brief Checks to see if the pulse duration in square pulse stimulus trains is too long
 static Function WBP_ReturnPulseDurationMax()
 
-	variable MaxPulseDur, PulseDuration, Frequency, Duration, MinPulseIntTotDuration
+	variable frequency
 
-	ControlInfo SetVar_WaveBuilder_P0 //Duration
-	Duration = v_value
-	ControlInfo SetVar_WaveBuilder_P6_FD01 //Frequency
-	Frequency = v_value
-	ControlInfo SetVar_WaveBuilder_P8 //Pulse Duration
-	PulseDuration = V_value
+	if(GetCheckBoxState(panel, "check_SPT_NumPulses_P46"))
+		return Inf
+	endif
 
-	MinPulseIntTotDuration = ((duration / 1000) * (Frequency - 1)) * 0.01
-	Duration -= MinPulseIntTotDuration
-	MaxPulseDur = ((duration / 1000) / Frequency)
+	frequency = GetSetVariable(panel, "SetVar_WaveBuilder_P6_FD01")
 
-	return MaxPulseDur * 1000
+	return 1000 / frequency
 End
 
 Function/DF WBP_GetFolderPath()
@@ -1744,7 +1748,8 @@ Function WBP_DeltaPopup(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
-			WBP_UpdateParam(pa.ctrlName, pa.popNum - 1)
+			WBP_UpdateControlAndWP(pa.ctrlName, pa.popNum - 1)
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 

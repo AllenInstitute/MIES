@@ -2,6 +2,9 @@
 
 static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
+static Constant SQUARE_PULSE_TRAIN_MODE_DUR   = 0x01
+static Constant SQUARE_PULSE_TRAIN_MODE_PULSE = 0x02
+
 Function WB_MakeStimSet()
 
 	variable i, numEpochs, numSteps, setNumber
@@ -94,143 +97,192 @@ static Function WB_AddDelta(WP, numEpochs)
 	endfor
 End
 
+Structure SegmentParameters
+	variable duration
+	variable deltaDur
+	variable amplitude
+	variable deltaAmp
+	variable offset
+	variable deltaOffset
+	variable frequency
+	variable deltaFreq
+	variable pulseDuration
+	variable deltaPulsedur
+	variable tauRise
+	variable deltaTauRise
+	variable tauDecay1
+	variable deltaTauDecay1
+	variable tauDecay2
+	variable deltaTauDecay2
+	variable tauDecay2Weight
+	variable deltaTauDecay2Weight
+	variable customOffset
+	variable deltaCustomOffset
+	variable lowPassCutOff
+	variable deltaLowPassCutOff
+	variable highPassCutOff
+	variable deltaHighPassCutOff
+	variable endFrequency
+	variable deltaEndFrequency
+	variable highPassFiltCoefCount
+	variable deltaHighPassFiltCoefCount
+	variable lowPassFiltCoefCount
+	variable deltaLowPassFiltCoefCount
+	variable fIncrement
+	variable numberOfPulses
+EndStructure
+
 static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 	Wave WP
 	variable stepCount
 	variable numEpochs
 	string wvName
 
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
-	variable DeltaTauRise,DeltaTauDecay1,DeltaTauDecay2,DeltaTauDecay2Weight, CustomOffset, DeltaCustomOffset, LowPassCutOff, DeltaLowPassCutOff, HighPassCutOff, DeltaHighPassCutOff, EndFrequency, DeltaEndFrequency
-	variable HighPassFiltCoefCount, DeltaHighPassFiltCoefCount, LowPassFiltCoefCount, DeltaLowPassFiltCoefCount, FIncrement
-
 	dfref dfr = GetWaveBuilderDataPath()
 	Wave/SDFR=dfr SegWvType
 	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
 
-	string customWaveName, debugMsg
-	variable i, type, accumulatedDuration
+	string customWaveName, debugMsg, defMode
+	variable i, type, accumulatedDuration, tabID
+	STRUCT SegmentParameters params
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
 
-		Duration                   = WP[0][i][type]
-		DeltaDur                   = WP[1][i][type]
-		Amplitude                  = WP[2][i][type]
-		DeltaAmp                   = WP[3][i][type]
-		Offset                     = WP[4][i][type]
-		DeltaOffset                = WP[5][i][type]
-		Frequency                  = WP[6][i][type]
-		DeltaFreq                  = WP[7][i][type]
-		PulseDuration              = WP[8][i][type]
-		DeltaPulsedur              = WP[9][i][type]
-		TauRise                    = WP[10][i][type]
-		DeltaTauRise               = WP[11][i][type]
-		TauDecay1                  = WP[12][i][type]
-		DeltaTauDecay1             = WP[13][i][type]
-		TauDecay2                  = WP[14][i][type]
-		DeltaTauDecay2             = WP[15][i][type]
-		TauDecay2Weight            = WP[16][i][type]
-		DeltaTauDecay2Weight       = WP[17][i][type]
-		CustomOffset               = WP[18][i][type]
-		DeltaCustomOffset          = WP[19][i][type]
-		LowPassCutOff              = WP[20][i][type]
-		DeltaLowPassCutOff         = WP[21][i][type]
-		HighPassCutOff             = WP[22][i][type]
-		DeltaHighPassCutOff        = WP[23][i][type]
-		EndFrequency               = WP[24][i][type]
-		DeltaEndFrequency          = WP[25][i][type]
-		HighPassFiltCoefCount      = WP[26][i][type]
-		DeltaHighPassFiltCoefCount = WP[27][i][type]
-		LowPassFiltCoefCount       = WP[28][i][type]
-		DeltaLowPassFiltCoefCount  = WP[29][i][type]
-		FIncrement                 = WP[30][i][type]
+		params.duration                   = WP[0][i][type]
+		params.deltaDur                   = WP[1][i][type]
+		params.amplitude                  = WP[2][i][type]
+		params.deltaAmp                   = WP[3][i][type]
+		params.offset                     = WP[4][i][type]
+		params.deltaOffset                = WP[5][i][type]
+		params.frequency                  = WP[6][i][type]
+		params.deltaFreq                  = WP[7][i][type]
+		params.pulseDuration              = WP[8][i][type]
+		params.deltaPulsedur              = WP[9][i][type]
+		params.tauRise                    = WP[10][i][type]
+		params.deltaTauRise               = WP[11][i][type]
+		params.tauDecay1                  = WP[12][i][type]
+		params.deltaTauDecay1             = WP[13][i][type]
+		params.tauDecay2                  = WP[14][i][type]
+		params.deltaTauDecay2             = WP[15][i][type]
+		params.tauDecay2Weight            = WP[16][i][type]
+		params.deltaTauDecay2Weight       = WP[17][i][type]
+		params.customOffset               = WP[18][i][type]
+		params.deltaCustomOffset          = WP[19][i][type]
+		params.lowPassCutOff              = WP[20][i][type]
+		params.deltaLowPassCutOff         = WP[21][i][type]
+		params.highPassCutOff             = WP[22][i][type]
+		params.deltaHighPassCutOff        = WP[23][i][type]
+		params.endFrequency               = WP[24][i][type]
+		params.deltaEndFrequency          = WP[25][i][type]
+		params.highPassFiltCoefCount      = WP[26][i][type]
+		params.deltaHighPassFiltCoefCount = WP[27][i][type]
+		params.lowPassFiltCoefCount       = WP[28][i][type]
+		params.deltaLowPassFiltCoefCount  = WP[29][i][type]
+		params.fIncrement                 = WP[30][i][type]
+		params.numberOfPulses             = WP[45][i][type]
 
-		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, duration, DeltaDur, amplitude, DeltaAmp
+		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
 		DEBUGPRINT("params", str=debugMsg)
 
-		if(duration < 0 || !IsFinite(duration))
+		if(params.duration < 0 || !IsFinite(params.duration))
 			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
-			duration = 1
+			params.duration = 1
 		endif
 
 		switch(type)
 			case 0:
-				WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				WB_SquareSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"          , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"           , str="Square pulse")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"      , var=Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta amplitude", var=DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"       , var=Duration)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta duration" , var=DeltaDur)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"      , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta amplitude", var=params.DeltaAmp)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"       , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta duration" , var=params.DeltaDur)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 1:
-				WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				WB_RampSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"          , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"           , str="Ramp")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"      , var=Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta amplitude", var=DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"       , var=Duration)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta duration" , var=DeltaDur)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"      , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta amplitude", var=params.DeltaAmp)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"       , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta duration" , var=params.DeltaDur)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 2:
-				WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount, FIncrement)
+				WB_NoiseSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"                  , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                   , str="G-noise")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "SD"                     , var=Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "SD delta"               , var=DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off"       , var=LowPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off delta" , var=DeltaLowPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off"      , var=HighPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off delta", var=DeltaHighPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "SD"                     , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "SD delta"               , var=params.DeltaAmp)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off"       , var=params.LowPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off delta" , var=params.DeltaLowPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off"      , var=params.HighPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off delta", var=params.DeltaHighPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=params.DeltaOffset, appendCR=1)
 				break
 			case 3:
-				WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, DeltaEndFrequency)
+				WB_SinSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"              , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"               , str="Sin Wave")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"          , var=Frequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"    , var=DeltaFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency"      , var=EndFrequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency delta", var=DeltaEndFrequency, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"          , var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"    , var=params.DeltaFreq)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency"      , var=params.EndFrequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency delta", var=params.DeltaEndFrequency, appendCR=1)
 				break
 			case 4:
-				WB_SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				WB_SawToothSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"          , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"           , str="Saw tooth")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"      , var=Frequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta", var=DeltaFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"      , var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta", var=params.DeltaFreq)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 5:
-				WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				tabID = GetTabID("WaveBuilder", "WBP_WaveType")
+				if(WP[46][i][type]) // "Number of pulses" checkbox
+					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_PULSE)
+					if(tabID == 5)
+						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
+					endif
+					defMode = "Pulse"
+				else
+					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_DUR)
+					if(tabID == 5)
+						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
+					endif
+					defMode = "Duration"
+				endif
+
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"               , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                , str="SPT")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"           , var=Frequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"     , var=DeltaFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"      , var=PulseDuration)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration delta", var=DeltaPulsedur)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"              , var=Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"        , var=DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"           , var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"     , var=params.DeltaFreq)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"      , var=params.PulseDuration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration delta", var=params.DeltaPulsedur)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"              , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"        , var=params.DeltaOffset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"    , var=params.NumberOfPulses)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"     , str=defMode, appendCR=1)
 				break
 			case 6:
-				WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
+				WB_PSCSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"             , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"              , str="PSC")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau rise"          , var=TauRise)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 1"       , var=TauDecay1)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2"       , var=TauDecay2)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2 weight", var=TauDecay2Weight)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"            , var=Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"      , var=DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau rise"          , var=params.TauRise)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 1"       , var=params.TauDecay1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2"       , var=params.TauDecay2)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2 weight", var=params.TauDecay2Weight)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"            , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"      , var=params.DeltaOffset, appendCR=1)
 				break
 			case 7:
 				customWaveName = WPT[0][i]
@@ -238,12 +290,12 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				Wave/Z/SDFR=WBP_GetFolderPath() customWave = $customWaveName
 
 				if(WaveExists(customWave))
-					WB_CustomWaveSegment(CustomOffset, customWave)
+					WB_CustomWaveSegment(params.customOffset, customWave)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"       , var=i)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"        , str="Custom Wave")
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=Offset)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=DeltaOffset, appendCR=1)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.Offset)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.DeltaOffset, appendCR=1)
 				elseif(!isEmpty(customWaveName))
 					print "Wave currently selected no longer exists. Please select a new Wave from the pull down menu"
 				endif
@@ -255,9 +307,9 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 		if(stepCount == 0)
 			WAVE epochID = GetEpochID()
 			epochID[i][%timeBegin] = accumulatedDuration
-			epochID[i][%timeEnd]   = accumulatedDuration + duration
+			epochID[i][%timeEnd]   = accumulatedDuration + params.duration
 
-			accumulatedDuration += duration
+			accumulatedDuration += params.duration
 		endif
 
 		WAVE/SDFR=dfr segmentWave
@@ -299,152 +351,196 @@ End
 
 /// @name Functions that build wave types
 /// @{
-static Function WB_SquareSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+static Function WB_SquareSegment(pa)
+	struct SegmentParameters &pa
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
-	SegmentWave = Amplitude
+	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	SegmentWave = pa.amplitude
 End
 
-static Function WB_RampSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+static Function WB_RampSegment(pa)
+	struct SegmentParameters &pa
 
-	variable AmplitudeIncrement = Amplitude/(Duration/0.005)
+	variable amplitudeIncrement = pa.amplitude / pa.duration / 0.005
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
-	MultiThread SegmentWave = AmplitudeIncrement * p
-	SegmentWave += Offset
+	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	MultiThread SegmentWave = amplitudeIncrement * p
+	SegmentWave += pa.offset
 End
 
-static Function WB_NoiseSegment(Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount HighPassCutOff,HighPassFiltCoefCount, FIncrement)
-	variable Amplitude, Duration, OffSet, LowPassCutOff, LowPassFiltCoefCount, HighPassCutOff, HighPassFiltCoefCount, FIncrement
+static Function WB_NoiseSegment(pa)
+	struct SegmentParameters &pa
 
 	variable brownCheck, pinkCheck, PinkOrBrown
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
+	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
 	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink_P41")
 	brownCheck = GetCheckBoxState("Wavebuilder", "Check_Noise_Brown_P42")
 
 	if(!brownCheck && !pinkCheck)
-		SegmentWave = gnoise(Amplitude) // MultiThread didn't impact processing time for gnoise
-		if(duration <= 0)
+		SegmentWave = gnoise(pa.amplitude) // MultiThread didn't impact processing time for gnoise
+		if(pa.duration <= 0)
 			print "WB_NoiseSegment: Can not proceed with non-positive duration"
 			return NaN
 		endif
 
-		if(LowPassCutOff <= 100000 && LowPassCutOff != 0)
-			FilterFIR /DIM = 0 /LO = {(LowPassCutOff / 200000), (LowPassCutOff / 200000), LowPassFiltCoefCount} SegmentWave
+		if(pa.lowPassCutOff <= 100000 && pa.lowPassCutOff != 0)
+			FilterFIR /DIM = 0 /LO = {(pa.lowPassCutOff / 200000), (pa.lowPassCutOff / 200000), pa.lowPassFiltCoefCount} SegmentWave
 		endif
 
-		if(HighPassCutOff > 0 && HighPassCutOff < 100000)
-			FilterFIR /DIM = 0 /Hi = {(HighPassCutOff/200000), (HighPassCutOff/200000), HighPassFiltCoefCount} SegmentWave
+		if(pa.highPassCutOff > 0 && pa.highPassCutOff < 100000)
+			FilterFIR /DIM = 0 /Hi = {(pa.highPassCutOff/200000), (pa.highPassCutOff/200000), pa.highPassFiltCoefCount} SegmentWave
 		endif
 	elseif(pinkCheck)
-		WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, Fincrement, 0)
+		WB_PinkAndBrownNoise(pa, 0)
 	elseif(brownCheck)
-		WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, Fincrement, 1)
+		WB_PinkAndBrownNoise(pa, 1)
 	endif
 
-	SegmentWave += offset
+	SegmentWave += pa.offset
 End
 
-static Function WB_SinSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight, EndFrequency, EndFrequencyDelta
+static Function WB_SinSegment(pa)
+	struct SegmentParameters &pa
+
 	variable k0, k1, k2, k3
 	string cmd
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
+	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
 	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp_P43"))
-		MultiThread SegmentWave = Amplitude * sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
-		SegmentWave += Offset
+		MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 	else
-		 k0 = ln(frequency / 1000)
-		 k1 = (ln(endFrequency / 1000) - k0) / (duration)
+		 k0 = ln(pa.frequency / 1000)
+		 k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration)
 		 k2 = 2 * pi * e^k0 / k1
 		 k3 = mod(k2, 2 * pi)		// LH040117: start on rising edge of sin and don't try to round.
-		 MultiThread SegmentWave = Amplitude * sin(k2 * e^(k1 * x) - k3)
-		 SegmentWave += Offset
+		 MultiThread SegmentWave = pa.amplitude * sin(k2 * e^(k1 * x) - k3)
 	endif
+
+	SegmentWave += pa.offset
 End
 
-static Function WB_SawToothSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+static Function WB_SawToothSegment(pa)
+	struct SegmentParameters &pa
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
+	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
-	SegmentWave = 1 * Amplitude * sawtooth(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * p)
-	SegmentWave += Offset
+	SegmentWave = 1 * pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+	SegmentWave += pa.offset
 End
 
-static Function WB_SquarePulseTrainSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+static Function WB_SquarePulseTrainSegment(pa, mode)
+	struct SegmentParameters &pa
+	variable mode
 
-	Variable i = 1
-	Variable PulseStartTime = 0
-	Variable EndPoint
-	Variable SegmentDuration
-	Variable NumberOfPulses = Frequency * (Duration / 1000)
-	Variable TotalPulseTime = PulseDuration * NumberOfPulses
-	Variable TotalBaselineTime = Duration - TotalPulseTime
-	Variable NumberOfInterPulseIntervals = NumberOfPulses - 1
-	Variable InterPulseInterval = TotalBaselineTime/NumberOfInterPulseIntervals
-	Variable PoissonIntPulseInt
+	variable i, pulseStartTime, endIndex, startIndex
+	variable numRows, interPulseInterval
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
-	SegmentWave = 0
+	if(!(pa.frequency > 0))
+		printf "Resetting invalid frequency of %gHz to 1Hz\r", pa.frequency
+		pa.frequency = 1.0
+	endif
 
-	EndPoint = NumberOfPulses
-
-	if (!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
-		do
-			SegmentWave[(PulseStartTime / 0.005), ((PulseStartTime / 0.005) + (PulseDuration / 0.005))] = Amplitude
-			if(i + 1 == EndPoint)
-				PulseStartTime += ((InterPulseInterval + PulseDuration))
-			else
-				PulseStartTime += ((InterPulseInterval + PulseDuration))
-			endif
-		i += 1
-		while (i < Endpoint)
+	if(mode == SQUARE_PULSE_TRAIN_MODE_PULSE)
+		// user defined number of pulses
+		pa.duration = pa.numberOfPulses / pa.frequency * 1000
+	elseif(mode == SQUARE_PULSE_TRAIN_MODE_DUR)
+		// user defined duration
+		pa.numberOfPulses = pa.frequency * pa.duration / 1000
 	else
-		do
-			PoissonIntPulseInt = (-ln(abs(enoise(1))) / Frequency) * 1000
-			PulseStartTime += (PoissonIntPulseInt)
-			if(((PulseStartTime + PulseDuration) / 0.005) < numpnts(segmentWave))
-				SegmentWave[(PulseStartTime / 0.005), ((PulseStartTime / 0.005) + (PulseDuration / 0.005))] = Amplitude
-			endif
-		while (((PulseStartTime + PulseDuration) / 0.005) < numpnts(segmentWave))
+		ASSERT(0, "Invalid mode")
 	endif
 
-	SegmentWave += Offset
+	// We want the segment starting and ending with a pulse.
+	// With the following definitions
+	//
+	// duration:             t
+	// pulse duration:       p
+	// inter pulse interval: x
+	// number of pulses:     n
+	// frequency:            f
+	//
+	// we know that
+	//
+	// (p + x)(n - 1) + p = t
+	//
+	// which gives
+	//
+	// x = t - np / (n - 1)
 
+	// We remove one point from the duration.
+	// This is done in order to create, for situations with t = 1000, f = 5, p = 100, the expected five pulses (n = 5)
+	interPulseInterval = ((pa.duration/0.005 - 1) * 0.005 - pa.numberOfPulses * pa.pulseDuration) / (pa.numberOfPulses - 1)
+
+	WAVE segmentWave = WB_GetSegmentWave(pa.duration)
+	segmentWave = 0
+	numRows = DimSize(segmentWave, ROWS)
+
+	if(!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
+		for(;;)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
+
+			if(endIndex >= numRows)
+				break
+			endif
+
+			startIndex = floor(pulseStartTime / 0.005)
+			segmentWave[startIndex, endIndex] = pa.amplitude
+			pulseStartTime += interPulseInterval + pa.pulseDuration
+		endfor
+	else
+		for(;;)
+			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
+
+			if(endIndex >= numRows)
+				break
+			endif
+
+			startIndex = floor(pulseStartTime / 0.005)
+			segmentWave[startIndex, endIndex] = pa.amplitude
+		endfor
+	endif
+
+	// remove the zero part at the end
+	FindValue/V=(0)/S=(startIndex) segmentWave
+	if(V_Value != -1)
+		Redimension/N=(V_Value) segmentWave
+		pa.duration = V_Value * 0.005
+	endif
+
+	segmentWave += pa.offset
+
+	DEBUGPRINT("interPulseInterval", var=interPulseInterval)
+	DEBUGPRINT("numberOfPulses", var=pa.numberOfPulses)
+	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * 0.005, format="%.6f")
 End
 
-static Function WB_PSCSegment(Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight)
-	variable Amplitude, DeltaAmp, Duration, DeltaDur, OffSet, DeltaOffset, Frequency, DeltaFreq, PulseDuration, DeltaPulsedur, TauRise,TauDecay1,TauDecay2,TauDecay2Weight
+static Function WB_PSCSegment(pa)
+	struct SegmentParameters &pa
 
-	variable first, last
 	variable baseline, peak
 
-	Wave SegmentWave = WB_GetSegmentWave(duration)
+	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
-	TauRise = 1 / TauRise
-	TauRise *= 0.005
-	TauDecay1 = 1 / TauDecay1
-	TauDecay1 *= 0.005
-	TauDecay2 = 1 / TauDecay2
-	TauDecay2 *= 0.005
+	pa.TauRise = 1 / pa.TauRise
+	pa.TauRise *= 0.005
+	pa.TauDecay1 = 1 / pa.TauDecay1
+	pa.TauDecay1 *= 0.005
+	pa.TauDecay2 = 1 / pa.TauDecay2
+	pa.TauDecay2 *= 0.005
 
-	MultiThread SegmentWave[] = amplitude * ((1 - exp(-TauRise * p)) + exp(-TauDecay1 * p) * (1 - TauDecay2Weight) + exp(-TauDecay2 * p) * TauDecay2Weight)
+	MultiThread SegmentWave[] = pa.amplitude * ((1 - exp(-pa.TauRise * p)) + exp(-pa.TauDecay1 * p) * (1 - pa.TauDecay2Weight) + exp(-pa.TauDecay2 * p) * pa.TauDecay2Weight)
 
 	baseline = WaveMin(SegmentWave)
 	peak = WaveMax(SegmentWave)
-	SegmentWave *= abs(amplitude)/(peak - baseline)
+	SegmentWave *= abs(pa.amplitude)/(peak - baseline)
 
 	baseline = WaveMin(SegmentWave)
 	SegmentWave -= baseline
-	SegmentWave += offset
+	SegmentWave += pa.offset
 End
 
 static Function WB_CustomWaveSegment(CustomOffset, wv)
@@ -458,40 +554,41 @@ static Function WB_CustomWaveSegment(CustomOffset, wv)
 End
 
 /// PinkOrBrown Pink = 0, Brown = 1
-static Function WB_PinkAndBrownNoise(Amplitude, Duration, LowPassCutOff, HighPassCutOff, FrequencyIncrement, PinkOrBrown)
-		variable Amplitude, Duration, LowPassCutOff, HighPassCutOff, frequencyIncrement, PinkOrBrown
+static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
+	struct SegmentParameters &pa
+	variable pinkOrBrown
 
-		variable phase = abs(enoise(2)) * Pi
-		variable numberOfBuildWaves = floor((LowPassCutOff - HighPassCutOff) / FrequencyIncrement)
+	variable phase = abs(enoise(2)) * Pi
+	variable numberOfBuildWaves = floor((pa.lowPassCutOff - pa.highPassCutOff) / pa.fIncrement)
 
-		if(!IsFinite(phase) || !IsFinite(Duration) || !IsFinite(numberOfBuildWaves) || HighPassCutOff == 0)
-			print "Could not create a new pink/brown noise Wave as the input values were non-finite or zero."
-			return NaN
+	if(!IsFinite(phase) || !IsFinite(pa.duration) || !IsFinite(numberOfBuildWaves) || pa.highPassCutOff == 0)
+		print "Could not create a new pink/brown noise Wave as the input values were non-finite or zero."
+		return NaN
+	endif
+
+	Make/FREE/n=(pa.duration / 0.005, NumberOfBuildWaves) BuildWave
+	SetScale/P x 0,0.005,"ms", BuildWave
+	variable frequency = pa.highPassCutOff
+	variable i
+	variable localAmplitude
+
+	for(i = 0; i < numberOfBuildWaves; i += 1)
+		phase = ((abs(enoise(2))) * Pi) // random phase generator
+		if(PinkOrBrown == 0)
+			localAmplitude = 1 / frequency
+		else
+			localAmplitude = 1 / (frequency ^ .5)
 		endif
 
-		Make/FREE/n=(Duration / 0.005, NumberOfBuildWaves) BuildWave
-		SetScale/P x 0,0.005,"ms", BuildWave
-		variable Frequency = HighPassCutOff
-		variable i = 0
-		variable localAmplitude
+		// factoring out Pi * 1e-05 actually makes it a tiny bit slower
+		MultiThread BuildWave[][i] = localAmplitude * sin( Pi * pa.frequency * 1e-05 * p + phase)
+		Frequency += pa.fIncrement
+	endfor
 
-		for(i = 0; i < numberOfBuildWaves; i += 1)
-			phase = ((abs(enoise(2))) * Pi) // random phase generator
-			if(PinkOrBrown == 0)
-				localAmplitude = 1 / Frequency
-			else
-				localAmplitude = 1 / (Frequency ^ .5)
-			endif
+	MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)
+	SetScale/P x 0, 0.005,"ms", SegmentWave
 
-			// factoring out Pi * 1e-05 actually makes it a tiny bit slower
-			MultiThread BuildWave[][i] = localAmplitude * sin( Pi * Frequency * 1e-05 * p + phase)
-			Frequency += FrequencyIncrement
-		endfor
-
-		MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)
-		SetScale/P x 0, 0.005,"ms", SegmentWave
-
-		WaveStats/Q SegmentWave
-		SegmentWave *= Amplitude / V_sdev
+	WaveStats/Q SegmentWave
+	SegmentWave *= pa.amplitude / V_sdev
 End
 /// @}
