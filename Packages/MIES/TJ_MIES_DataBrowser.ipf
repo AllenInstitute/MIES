@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+// stock igor
+#include <Resize Controls>
+
 // third party includes
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
