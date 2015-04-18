@@ -567,7 +567,7 @@ Function AB_ExpandListEntry(row, col)
 	// - calculate the required new rows and insert them
 	// - copy the contents from the backup waves
 	targetRow = row + 1
-	sourceRow = AB_GetRowWithSameContent(expBrowserListBak, expBrowserList, row)
+	sourceRow = GetRowWithSameContent(expBrowserListBak, expBrowserList, row)
 
 	last = AB_GetRowWithNextTreeView(expBrowserSelBak, sourceRow, col)
 	last -= 1
@@ -653,34 +653,6 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 		if(Sum(status, 0, col) > 0)
 			return i
 		endif
-	endfor
-
-	return numRows
-End
-
-/// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
-static Function AB_GetRowWithSameContent(refWave, sourceWave, row)
-	Wave/T refWave, sourceWave
-	variable row
-
-	variable i, j, numRows, numCols, isEqual
-	numRows = DimSize(refWave, ROWS)
-	numCols = DimSize(refWave, COLS)
-
-	ASSERT(numCOLS == DimSize(sourceWave, COLS), "mismatched column sizes")
-
-	for(i = 0; i < numRows; i += 1)
-		for(j = 0; j < numCols; j += 1)
-			if(!cmpstr(refWave[i][j], sourceWave[row][j]))
-				if(j == numCols - 1)
-					return i
-				endif
-
-				continue
-			endif
-
-			break
-		endfor
 	endfor
 
 	return numRows
@@ -875,7 +847,7 @@ Window ExperimentBrowser() : Panel
 	ListBox list_experiment_contents,listWave=root:MIES:analysis:expBrowserList
 	ListBox list_experiment_contents,selWave=root:MIES:analysis:expBrowserSel,row= 1
 	ListBox list_experiment_contents,mode= 4
-	ListBox list_experiment_contents,widths={33,125,24,137,55,45,75,130,45,63}
+	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
 	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
 	Button button_select_same_stim_sets,pos={6,67},size={101,33},proc=AB_ButtonProc_SelectStimSets,title="Select same\rstim set sweeps"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)= A"!!,@#!!#??!!#@.!!#=gz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"

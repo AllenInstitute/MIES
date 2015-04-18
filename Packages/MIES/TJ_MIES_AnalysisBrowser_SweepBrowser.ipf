@@ -147,7 +147,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	string expName, expFolder, device
 	variable sweep
 
-	variable index, foundExperiment, foundExpFolder, foundDevice, foundSweep
+	variable index
 	string sweepStr = num2str(sweep)
 
 	WAVE/T map = SB_GetSweepBrowserMap(sweepBrowser)
@@ -155,12 +155,15 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 	EnsureLargeEnoughWave(map, minimumSize=index)
 
-	foundExperiment = WaveExists(FindIndizes(colLabel="ExperimentName", wvText=map, str=expName, endRow=index))
-	foundExpFolder  = WaveExists(FindIndizes(colLabel="ExperimentFolder", wvText=map, str=expFolder, endRow=index))
-	foundDevice     = WaveExists(FindIndizes(colLabel="Device", wvText=map, str=device, endRow=index))
-	foundSweep      = WaveExists(FindIndizes(colLabel="Sweep", wvText=map, str=sweepStr, endRow=index))
+	Duplicate/FREE/R=[0][]/T map, singleRow
 
-	if(foundExperiment && foundExpFolder && foundDevice && foundSweep)
+	singleRow = ""
+	singleRow[0][%ExperimentName]   = expName
+	singleRow[0][%ExperimentFolder] = expFolder
+	singleRow[0][%Device]           = device
+	singleRow[0][%Sweep]            = sweepStr
+
+	if(IsFinite(GetRowWithSameContent(map, singleRow, 0)))
 		// we already have that sweep in the map
 		return NaN
 	endif
