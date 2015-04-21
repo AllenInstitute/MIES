@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-#include "tango"
+//#include "tango"
 
 static StrConstant amPanel = "analysisMaster"
 
@@ -8,6 +8,19 @@ Menu "Mies Panels"
 		"Start Polling WSE queue", StartTestTask()
 		"Stop Polling WSE queue", StopTestTask()
 End
+
+#if !exists("tango_open_device") // tango XOP was not loaded
+Function StartTestTask()
+	Abort "The tango XOP was not loaded.\rPlease refer to the installation instructions."
+End
+
+Function StopTestTask()
+	Abort "The tango XOP was not loaded.\rPlease refer to the installation instructions."
+End
+
+#else
+#include "tango"
+#include "tango_monitor"
 
 Function writeLog(logMessage)
 	String logMessage
@@ -1077,3 +1090,5 @@ Function writeAsyncResponse(cmdID, returnString)
 	print "\t'-> async response sent\r"
 	
 End
+
+#endif

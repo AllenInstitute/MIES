@@ -2,6 +2,15 @@
 
 static StrConstant amPanel = "analysisMaster"
 
+#if !exists("StartTestTask")
+Function writeAsyncResponse(str1, str2)
+	string str1, str2
+	
+	print "Tango XOP not loaded..."
+End
+#endif
+
+
 /// @file DR_MIES_analysisMaster.ipf
 /// @brief waveform analysis framework
 
