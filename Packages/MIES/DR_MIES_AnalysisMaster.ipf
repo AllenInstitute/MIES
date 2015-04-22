@@ -2,15 +2,6 @@
 
 static StrConstant amPanel = "analysisMaster"
 
-#if !exists("StartTestTask")
-Function writeAsyncResponse(str1, str2)
-	string str1, str2
-	
-	print "Tango XOP not loaded..."
-End
-#endif
-
-
 /// @file DR_MIES_analysisMaster.ipf
 /// @brief waveform analysis framework
 
@@ -208,7 +199,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		if (len >= 1)
 			// build up the response string
 			sprintf responseString, "scaleFactor:%f", scaleFactor
-			writeAsyncResponse(asynRespWave[headstage][%cmdID], responseString)
+			writeAsyncResponseWrapper(asynRespWave[headstage][%cmdID], responseString)
 		else
 			print "No asyn response required..."
 		endif 
@@ -289,7 +280,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		if (len >= 1)
 			// build up the response string
 			sprintf responseString, "scaleFactor:%f", scaleFactor
-			writeAsyncResponse(asynRespWave[headstage][%cmdID], responseString)
+			writeAsyncResponseWrapper(asynRespWave[headstage][%cmdID], responseString)
 		else
 			print "No asyn response required..."
 		endif 
@@ -876,4 +867,10 @@ static Function/S AM_sortAMFunctions(str)
 	endfor
 
 	return editedList
+End
+
+Function AM_writeAsyncResponseProto(cmdID, returnString)
+    string cmdID, returnString
+    
+    Abort "Impossible to find the function writeAsyncResponse\rWas the tango XOP and the includes loaded?"
 End
