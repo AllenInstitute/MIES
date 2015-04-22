@@ -67,9 +67,10 @@ static Function DB_LockDBPanel(panelTitle)
 	panelTitleNew = UniqueName("DB_" + device, 9, 0)
 	DoWindow/W=$panelTitle/C $panelTitleNew
 
-	SetWindow $panelTitleNew, userdata(DataFolderPath) = GetDevicePathAsString(device)
+	SetWindow $panelTitleNew, userdata($MIES_PANEL_TYPE_USER_DATA) = MIES_DATABROWSER_PANEL
+	SetWindow $panelTitleNew, userdata(DataFolderPath)   = GetDevicePathAsString(device)
 	PopupMenu popup_labenotebookViewableCols, win=$panelTitleNew, value=#("DB_GetLabNotebookViewAbleCols(\"" + panelTitleNew + "\")")
-	DB_PlotSweep(panelTitleNew, 0, 0)
+	DB_PlotSweep(panelTitleNew, currentSweep=0)
 End
 
 static Function/S DB_GetListOfSweepWaves(panelTitle)
@@ -123,9 +124,17 @@ static Function DB_ClipSweepNumber(panelTitle, sweepNo)
 	return sweepNo
 End
 
-static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
+/// @brief Plot the given sweep in the locked Data Browser
+///
+/// @param panelTitle                                                                    locked databrowser
+/// @param currentSweep[optional: defaults to the value of `setvar_DataBrowser_SweepNo`] currently displayed sweep or last
+/// @param newSweep[optional: defaults to currentSweep]                                  new sweep to display
+/// @param direction[optionals: ignored by default]                                      numerical offset relative to currentSweep to calculate newSweep
+/// newSweep is clipped to a valid sweep number
+static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	string panelTitle
-	variable currentSweep, newSweep
+	variable currentSweep
+	variable newSweep, direction
 
 	string subWindow = DB_GetNotebookSubWindow(panelTitle)
 	string graph = DB_GetMainGraph(panelTitle)
@@ -139,6 +148,24 @@ static Function DB_PlotSweep(panelTitle, currentSweep, newSweep)
 
 	if(!DataFolderExistsDFR(dfr))
 		return NaN
+	endif
+
+	if(ParamIsDefault(currentSweep))
+		currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+	endif
+
+	if(ParamIsDefault(newSweep) && ParamIsDefault(direction))
+		newSweep = currentSweep
+	elseif(ParamIsDefault(direction))
+		// just use newSweep
+	elseif(ParamIsDefault(newSweep))
+		if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+			newSweep = currentSweep + direction * GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
+		else
+			newSweep = currentSweep + direction
+		endif
+	else
+		ASSERT(0, "Can not accept both newSweep and direction")
 	endif
 
 	newSweep = DB_ClipSweepNumber(panelTitle, newSweep)
@@ -226,10 +253,17 @@ static Function/WAVE DB_GetSettingsHistory(panelTitle)
 	return settingsHistory
 End
 
-Window dataBrowser() : Panel
+Function DB_UpdateToLastSweep(panel)
+	string panel
+
+	if(GetCheckBoxState(panel, "check_DataBrowser_AutoUpdate"))
+		DB_PlotSweep(panel, newSweep=Inf)
+	endif
+End
+
+Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(14,118,1227,838) as "DataBrowser"
-	SetDrawLayer UserBack
 	Button button_DataBrowser_NextSweep,pos={628,628},size={395,36},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-!!#C*J,hnIz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -283,7 +317,7 @@ Window dataBrowser() : Panel
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,J'J,hjM!!#A$!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_AutoUpdate,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataBrowser_AutoUpdate,value= 0
 	CheckBox check_DataBrowser_SweepBaseline,pos={222,53},size={87,14},title="Baseline offset"
 	CheckBox check_DataBrowser_SweepBaseline,userdata(ResizeControlsInfo)= A"!!,Gn!!#>b!!#?g!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_SweepBaseline,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -303,7 +337,7 @@ Window dataBrowser() : Panel
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0^]6bN5QF0*!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= DB_GetAllDevicesWithData()
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
 	Button Button_dataBrowser_lockBrowser,pos={949,673},size={70,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K)5QF2#5QF-0!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -326,7 +360,7 @@ Window dataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo)= A"!!,II!!#D.J,hp#!!#=cz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataBrowser_SweepNo,fSize=24
+	SetVariable setvar_DataBrowser_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
 	SetVariable setvar_DataBrowser_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
 	PopupMenu popup_labenotebookViewableCols,pos={1045,455},size={150,21},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
@@ -417,29 +451,20 @@ Function DB_ButtonProc_Sweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle, ctrl
-	variable currentSweep, newSweep, direction
+	variable currentSweep, direction
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
 			panelTitle = ba.win
 			ctrl       = ba.ctrlName
 
-			currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-
 			if(!cmpstr(ctrl, "button_DataBrowser_PrevSweep"))
-				direction = -1
+				DB_PlotSweep(panelTitle, direction= -1)
 			elseif(!cmpstr(ctrl, "button_DataBrowser_NextSweep"))
-				direction = +1
+				DB_PlotSweep(panelTitle, direction= +1)
 			else
 				ASSERT(0, "unhandled control name")
 			endif
 
-			if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				newSweep = currentSweep + direction * GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
-			else
-				newSweep = currentSweep + direction
-			endif
-
-			DB_PlotSweep(panelTitle, currentSweep, newSweep)
 			break
 	endswitch
 
@@ -471,8 +496,7 @@ Function DB_CheckProc_DADisplay(cba) : CheckBoxControl
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
-			sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-			DB_PlotSweep(panelTitle, sweepNo, sweepNo)
+			DB_PlotSweep(panelTitle)
 			break
 	endswitch
 
@@ -558,7 +582,7 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 				SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {firstSweep, lastSweep , 1}
 			endif
 
-			DB_PlotSweep(panelTitle, formerSweep, sweepNo )
+			DB_PlotSweep(panelTitle, currentSweep=formerSweep, newSweep=sweepNo)
 			break
 	endswitch
 

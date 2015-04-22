@@ -48,6 +48,31 @@ Function DM_SaveITCData(panelTitle)
 
 	//Add wave notes for the factors on the Asyn tab
 	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
+
+	DM_AfterSweepDataSaveHook(panelTitle)
+End
+
+/// @brief General hook function which gets always executed after sweep data saving
+Function DM_AfterSweepDataSaveHook(panelTitle)
+	string panelTitle
+
+	string panelList, dataPath, panel, panelType
+	variable numPanels, i
+
+	panelList = WinList("DB_*", ";", "WIN:64")
+
+	numPanels = ItemsInList(panelList)
+	for(i = 0; i < numPanels; i += 1)
+		panel = StringFromList(i, panelList)
+
+		panelType = GetUserData(panel, "", MIES_PANEL_TYPE_USER_DATA)
+		if(!cmpstr(panelType, MIES_DATABROWSER_PANEL))
+			dataPath   = GetUserData(panel, "", "DataFolderPath")
+			if(!cmpstr(dataPath, GetDevicePathAsString(panelTitle)))
+				DB_UpdateToLastSweep(panel)
+			endif
+		endif
+	endfor
 End
 
 Function DM_CreateScaleTPHoldingWave(panelTitle)
