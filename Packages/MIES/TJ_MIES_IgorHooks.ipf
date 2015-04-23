@@ -30,7 +30,18 @@ static Function KillTemporaries()
 	RemoveEmptyDataFolder(dfr)
 End
 
-Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
+Function IH_UnlockAllDevicesProto()
+
+End
+
+/// @brief Calls `DAP_UnlockAllDevices` if the function can be found,
+/// otherwise calls `IH_UnlockAllDevicesProto` which does nothing.
+static Function UnlockAllDevicesWrapper()
+
+	FUNCREF IH_UnlockAllDevicesProto f = $"DAP_UnlockAllDevices"
+	f()
+End
+
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
 	Variable rN, kind
 	String fileName, path, type, creator
@@ -41,7 +52,7 @@ End
 static Function IgorBeforeQuitHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
-	DAP_UnlockAllDevices()
+	UnlockAllDevicesWrapper()
 	KillTemporaries()
 	return 0
 End
@@ -49,7 +60,7 @@ End
 static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
-	DAP_UnlockAllDevices()
+	UnlockAllDevicesWrapper()
 	KillTemporaries()
 	return 0
 End
