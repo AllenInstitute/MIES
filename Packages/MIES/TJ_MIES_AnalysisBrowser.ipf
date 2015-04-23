@@ -16,6 +16,7 @@
 #include ":TJ_MIES_Debugging"
 #include ":TJ_MIES_GlobalStringAndVariableAccess"
 #include ":TJ_MIES_GuiUtilities"
+#include ":TJ_MIES_IgorHooks"
 #include ":TJ_MIES_MiesUtilities"
 #include ":TJ_MIES_Utilities"
 #include ":TJ_MIES_WaveDataFolderGetters"
@@ -29,6 +30,7 @@ static Constant DEVICE_TREEVIEW_COLUMN     = 2
 Menu "Mies Panels"
 	"Experiment Browser", AB_OpenExperimentBrowser()
 	"Labnotebook Browser", LBN_OpenLabnotebookBrowser()
+	"TPStorage Browser", LBN_OpenTPStorageBrowser()
 End
 
 static Function AB_ResetSelectionWave()
@@ -297,6 +299,32 @@ static Function GetHighestPossibleSweepNumber(numericValues)
 	return V_max
 End
 
+static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
+	string expFilePath, expFolder, device
+
+	string dataFolderPath, wanted, unwanted, all
+	variable numWavesLoaded
+
+	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
+	dataFolderPath  = GetDeviceTestPulseAsString(device)
+	DFREF saveDFR   = GetDataFolderDFR()
+
+	// we can not determine how many TPStorage waves are in dataFolderPath
+	// therefore we load all waves and throw the ones we don't need away
+	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
+
+	if(numWavesLoaded)
+		wanted   = GetListOfWaves(targetDFR, "^TPStorage(_[[:digit:]]+)?$", fullPath=1)
+		all      = GetListOfWaves(targetDFR, ".*", fullPath=1)
+		unwanted = RemoveFromList(wanted, all)
+
+		CallFunctionForEachListItem(KillOrMoveToTrash, unwanted)
+	endif
+
+	SetDataFolder saveDFR
+	return numWavesLoaded
+End
+
 static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	string expFilePath
 
@@ -388,6 +416,8 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			highestSweepNumber = GetHighestPossibleSweepNumber(numericValues)
 
 			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
+			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
+
 			AB_FillListWave(expFolder, expName, device)
 		endfor
 	endfor
@@ -415,7 +445,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 	variable numWavesLoaded, totalNumWavesLoaded
 	variable start, step, stop, i
 
-	DFREF expDataDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
+	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
 	DFREF saveDFR = GetDataFolderDFR()
 
@@ -425,7 +455,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 		stop  = (i + 1) * LOAD_CONFIG_CHUNK_SIZE
 
 		listOfWaves = BuildList("Config_Sweep_%d", start, step, stop)
-		numWavesLoaded = AB_LoadDataWrapper(expDataDFR, expFilePath, dataFolderPath, listOfWaves)
+		numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves)
 
 		if(numWavesLoaded <= 0 && stop >= highestSweepNumber)
 			break
@@ -809,6 +839,46 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	return 0
 End
 
+Function AB_ScanFolder(win)
+	string win
+
+	string baseFolder, path, pxpList, uxpList, list
+	variable i, numEntries
+
+	baseFolder = GetSetVariableString(win, "setvar_baseFolder")
+	path = UniqueName("scanfolder_path", 12, 1)
+	NewPath/Q/Z $path, baseFolder
+
+	if(V_flag != 0)
+		printf "Could not create the symbolic path referencing %s, maybe the folder does not exist?\r", baseFolder
+		return naN
+	endif
+
+	AB_ClearWaves()
+
+	pxpList = GetFilesRecursively(path, ".pxp")
+	uxpList = GetFilesRecursively(path, ".uxp")
+	KillPath $path
+
+	list = SortList(pxpList + uxpList)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		AB_AddExperimentFile(StringFromList(i, list))
+	endfor
+
+	WAVE expBrowserList = GetExperimentBrowserGUIList()
+	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
+
+	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
+	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
+
+	AB_ResetSelectionWave()
+
+	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
+	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+End
+
 Function AB_OpenExperimentBrowser()
 
 	string panel = "ExperimentBrowser"
@@ -960,45 +1030,9 @@ End
 Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string baseFolder, path, pxpList, uxpList, list
-	variable i, numEntries
-	string win
-
 	switch(ba.eventCode)
 		case 2: // mouse up
-			win = ba.win
-			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
-			path = UniqueName("scanfolder_path", 12, 1)
-			NewPath/Q/Z $path, baseFolder
-
-			if(V_flag != 0)
-				printf "Could not create the symbolic path referencing %s, maybe the folder does not exist?\r", baseFolder
-				break
-			endif
-
-			AB_ClearWaves()
-
-			pxpList = GetFilesRecursively(path, ".pxp")
-			uxpList = GetFilesRecursively(path, ".uxp")
-			KillPath $path
-
-			list = SortList(pxpList + uxpList)
-
-			numEntries = ItemsInList(list)
-			for(i = 0; i < numEntries; i += 1)
-				AB_AddExperimentFile(StringFromList(i, list))
-			endfor
-
-			WAVE expBrowserList = GetExperimentBrowserGUIList()
-			WAVE expBrowserSel  = GetExperimentBrowserGUISel()
-
-			numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-			Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
-
-			AB_ResetSelectionWave()
-
-			WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
-			WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+			AB_ScanFolder(ba.win)
 		break
 	endswitch
 
@@ -1008,13 +1042,16 @@ End
 Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string path
+	string path, win
 	switch(ba.eventCode)
 		case 2: // mouse up
+				win = ba.win
+				PathInfo/S $GetSetVariableString(win, "setvar_baseFolder")
 				GetFileFolderInfo/D/Q/Z=2
 
 				if(V_flag == 0 && V_isFolder)
-					SetSetVariableString(ba.win, "setvar_baseFolder", S_Path)
+					SetSetVariableString(win, "setvar_baseFolder", S_Path)
+					AB_ScanFolder(win)
 				endif
 			break
 	endswitch

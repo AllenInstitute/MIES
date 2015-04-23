@@ -211,3 +211,8 @@ StrConstant MIES_PANEL_TYPE_USER_DATA = "MiesPanelType"
 /// @{
 StrConstant MIES_DATABROWSER_PANEL = "DataBrowser"
 /// @}
+
+StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
+
+/// Generic axis name for graphs using split axis
+StrConstant AXIS_BASE_NAME = "col"
