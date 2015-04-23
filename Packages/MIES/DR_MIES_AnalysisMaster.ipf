@@ -870,7 +870,21 @@ static Function/S AM_sortAMFunctions(str)
 End
 
 Function AM_writeAsyncResponseProto(cmdID, returnString)
-    string cmdID, returnString
-    
-    Abort "Impossible to find the function writeAsyncResponse\rWas the tango XOP and the includes loaded?"
+	string cmdID, returnString
+
+	Abort "Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?"
+End
+
+/// @brief Wrapper for the optional tango related function #writeAsyncResponseWrapper
+///
+/// The approach here using a function reference and an interpreted string like `$""` allows
+/// to convert the dependency on the function #writeAsyncResponse from compile time to runtime.
+///
+/// This function will call TI_writeAsyncResponse if it can be found, otherwise AM_writeAsyncResponseProto is called.
+Function writeAsyncResponseWrapper(cmdID, returnString)
+	string cmdID, returnString
+
+	FUNCREF AM_writeAsyncResponseProto f = $"TI_WriteAsyncResponse"
+
+	return f(cmdID, returnString)
 End

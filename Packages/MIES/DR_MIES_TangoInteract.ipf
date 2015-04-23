@@ -1,365 +1,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-//#include "tango"
-
 static StrConstant amPanel = "analysisMaster"
 
-Menu "Mies Panels"
-		"Start Polling WSE queue", StartTestTask()
-		"Stop Polling WSE queue", StopTestTask()
-End
-
-#if !exists("tango_open_device") // tango XOP was not loaded
-Function StartTestTask()
-	Abort "The tango XOP was not loaded.\rPlease refer to the installation instructions."
-End
-
-Function StopTestTask()
-	Abort "The tango XOP was not loaded.\rPlease refer to the installation instructions."
-End
-
-#else
-#include "tango"
-#include "tango_monitor"
-
-Function writeLog(logMessage)
-	String logMessage
-	
-	//- function arg: the name of the device on which the commands will be executed 
-	String dev_name = "logger_device/LoggerDevice/test"
-	
-	//- verbose
-	print "\rStarting <Tango-API::tango_cmd_io> test...\r"
-  
-	//- let's declare our <argin> and <argout> structures. 
-	//- be aware that <argout> will be overwritten (and reset) each time we execute a 
-	//- command it means that you must use another <CmdArgOut> if case you want to 
-	//- store more than one command result at a time. here we reuse both argin and 
-	//- argout for each command.
-
-	//- argin
-	Struct CmdArgIO argin
-	tango_init_cmd_argio (argin)
-	
-	//- argout 
-	Struct CmdArgIO argout
-	tango_init_cmd_argio (argout)
-	
-	//- populate argin: <CmdArgIn.cmd> struct member
-	//- name of the command to be executed on <argin.dev> 
-	String cmd = "log"
-
-	//- verbose
-	print "\rexecuting <" + cmd + ">...\r"
-  
-	//- since the command argin is a string scalar (i.e. single string), we stored its its value 
-	//- into the <str> member of the <CmdArgIn> structure. 
-	argin.str_val = logMessage
-  
-	Variable mst_ref = StartMSTimer
-  
-	Variable mst_dt  
-	//- actual cmd execution
-	//- if an error occurs during command execution, argout is undefined (null or empty members)
-	//- ALWAYS CHECK THE CMD RESULT BEFORE TRYING TO ACCESS ARGOUT: 0 means NO_ERROR, -1 means ERROR
-	if (tango_cmd_inout(dev_name, cmd, arg_in = argin, arg_out = argout) == -1)
-		//- the cmd failed, display error...
-		tango_display_error()
-		//- ... then return error
-		mst_dt = StopMSTimer(mst_ref)		
-		return kERROR
-	endif
-  
-	mst_dt = StopMSTimer(mst_ref)
-	print "\t'-> took " + num2str(mst_dt / 1000) + " ms to complete"
-	
-	//- <argout> is populated (i.e. filled) by <tango_cmd_inout> uppon return of the command.
-	//- since the command ouput argument is a string scalar (i.e. single string), it is stored 
-	//- in the <str> member of the <CmdArgOut> structure.
-
-	//- as previously explained, we are testing our TANGO binding on a TangoTest device. 
-	//- consequently, we check that <argin.str == argout.str> in order to be sure that everything is ok
-//	if (cmpstr(argin.str_val, argout.str_val) != 0)
-//		//- the cmd failed, display error...
-//		tango_display_error_str("ERROR:DevString:unexpected cmd result - aborting test")
-//		//- ... then return error
-//		return kERROR
-//	endif
-  
-	//- verbose
-	print "\t'-> cmd passed\r"
-	
-End
-
-Function initLog(dev)
-	//- function arg: the name of the device on which the commands will be executed 
-	String dev
-	
-  
-	//- verbose
-	print "\rStarting <Tango-API::tango_cmd_io> test...\r"
-  
-	//- let's declare our <argin> and <argout> structures. 
-	//- be aware that <argout> will be overwritten (and reset) each time we execute a 
-	//- command it means that you must use another <CmdArgOut> if case you want to 
-	//- store more than one command result at a time. here we reuse both argin and 
-	//- argout for each command.
-
-	//- argin
-	Struct CmdArgIO argin
-	tango_init_cmd_argio (argin)
-	
-	//- argout 
-	Struct CmdArgIO argout
-	tango_init_cmd_argio (argout)
-	
-	//- populate argin: <CmdArgIn.cmd> struct member
-	//- name of the command to be executed on <argin.dev> 
-	String cmd = "Init"
-
-	//- verbose
-	print "\rexecuting <" + cmd + ">...\r"
-  
-	//- since the command argin is a string scalar (i.e. single string), we stored its its value 
-	//- into the <str> member of the <CmdArgIn> structure. 
-	argin.str_val = "hello world"
-  
-	Variable mst_ref = StartMSTimer
-  
-  	Variable mst_dt
-	//- actual cmd execution
-	//- if an error occurs during command execution, argout is undefined (null or empty members)
-	//- ALWAYS CHECK THE CMD RESULT BEFORE TRYING TO ACCESS ARGOUT: 0 means NO_ERROR, -1 means ERROR
-	if (tango_cmd_inout(dev, cmd, arg_in = argin, arg_out = argout) == -1)
-		//- the cmd failed, display error...
-		tango_display_error()
-		//- ... then return error
-		mst_dt = StopMSTimer(mst_ref)
-		return kERROR
-	endif
-  
-	mst_dt = StopMSTimer(mst_ref)
-	print "\t'-> took " + num2str(mst_dt / 1000) + " ms to complete"
-	
-	//- <argout> is populated (i.e. filled) by <tango_cmd_inout> uppon return of the command.
-	//- since the command ouput argument is a string scalar (i.e. single string), it is stored 
-	//- in the <str> member of the <CmdArgOut> structure.
-
-	//- as previously explained, we are testing our TANGO binding on a TangoTest device. 
-	//- consequently, we check that <argin.str == argout.str> in order to be sure that everything is ok
-//	if (cmpstr(argin.str_val, argout.str_val) != 0)
-//		//- the cmd failed, display error...
-//		tango_display_error_str("ERROR:DevString:unexpected cmd result - aborting test")
-//		//- ... then return error
-//		return kERROR
-//	endif
-  
-	//- verbose
-	print "\t'-> cmd passed\r"
-	
-End
-
-Function readImage(dev_name)
-//- function arg: the name of the device on which the attributes will be read
-	String dev_name
-  
-	//- verbose
-	print "\rStarting <Tango-API::tango_read_attr> test...\r"
-  
-   	//- create a root:tmp datafolder and make it the current datafolder
-  	//- this function is kind enough to create all the datafolders along
-  	//- the speciifed path in case they don't exist. great, isn't it?
-  	tools_df_make("root:tmp", 1)
-  	
-	//- let's declare our <AttributeValue> structure. 
-	//- be aware that <av> will be overwritten (and reset) each time we read
-	//- an attribute. it means that you must use another <AttributeValue> if case 
-	//- you want to store more than one attribue value at a time. here we reuse 
-	//- <av> for each attribute reading 
-	Struct AttributeValue av
-  
-	//- for 'technical reasons', the AttributeValue must be initialized 
-	//- this ensures that everything is properly setup 
-	tango_init_attr_val(av)
-  
-	//- populate attr_val: <dev> struct member
-	//- the name of the device on which the attribute will be read
-	//- NB: since the attributes will be read on the same device (i.e. dev_name), 
-	//- we set the <AttributeValue.dev> struct member only once (i.e. no need to 
-	//- set it not each time we read a attribute)  
-	av.dev = dev_name
-	
-	av.attr = "image"
-	av.val_path=""
-	Variable mst_ref = StartMSTimer 
-	Variable mst_dt
-	if (tango_read_attr (av) == -1)
-		tango_display_error()
-		mst_dt = StopMSTimer(mst_ref)
-		return kERROR
-	endif
- 	mst_dt = StopMSTimer(mst_ref)
-	tango_dump_attribute_value (av)
-	print "\t-read took......." + num2str(mst_dt / 1000) + " ms to complete"
-	
-		//- no error - great!
-	print "\r<Tango-API::tango_read_attr> : TEST PASSED\r"
-	
-	//- for test purpose will delete any datafolder created in this function
-	//tools_df_delete("root:tmp")
-	
-	return kNO_ERROR
-end
-
-Function throwError(dev_name)
-	String dev_name
-	
-	//- verbose
-	print "\rStarting <Tango-API::tango_cmd_io> test...\r"
-  
-	//- let's declare our <argin> and <argout> structures. 
-	//- be aware that <argout> will be overwritten (and reset) each time we execute a 
-	//- command it means that you must use another <CmdArgOut> if case you want to 
-	//- store more than one command result at a time. here we reuse both argin and 
-	//- argout for each command.
-
-	//- argin
-	Struct CmdArgIO argin
-	tango_init_cmd_argio (argin)
-	
-	//- argout 
-	Struct CmdArgIO argout
-	tango_init_cmd_argio (argout)
-	
-	//- populate argin: <CmdArgIn.cmd> struct member
-	//- name of the command to be executed on <argin.dev> 
-	String cmd = "throw"
-
-	//- verbose
-	print "\rexecuting <" + cmd + ">...\r"
-  
-	//- since the command argin is a string scalar (i.e. single string), we stored its its value 
-	//- into the <str> member of the <CmdArgIn> structure. 
-	argin.str_val = "Invalid Mies command"
-  
-	Variable mst_ref = StartMSTimer
-  	Variable mst_dt
-  	
-	//- actual cmd execution
-	//- if an error occurs during command execution, argout is undefined (null or empty members)
-	//- ALWAYS CHECK THE CMD RESULT BEFORE TRYING TO ACCESS ARGOUT: 0 means NO_ERROR, -1 means ERROR
-	if (tango_cmd_inout(dev_name, cmd, arg_in = argin, arg_out = argout) == -1)
-		//- the cmd failed, display error...
-		tango_display_error()
-		//- ... then return error
-		mst_dt = StopMSTimer(mst_ref)
-		return kERROR
-	endif
-  
-	mst_dt = StopMSTimer(mst_ref)
-	print "\t'-> took " + num2str(mst_dt / 1000) + " ms to complete"
-	
-	//- <argout> is populated (i.e. filled) by <tango_cmd_inout> uppon return of the command.
-	//- since the command ouput argument is a string scalar (i.e. single string), it is stored 
-	//- in the <str> member of the <CmdArgOut> structure.
-
-	//- as previously explained, we are testing our TANGO binding on a TangoTest device. 
-	//- consequently, we check that <argin.str == argout.str> in order to be sure that everything is ok
-//	if (cmpstr(argin.str_val, argout.str_val) != 0)
-//		//- the cmd failed, display error...
-//		tango_display_error_str("ERROR:DevString:unexpected cmd result - aborting test")
-//		//- ... then return error
-//		return kERROR
-//	endif
-  
-	//- verbose
-	print "\t'-> throw cmd passed\r"
-	
-End	
-
-Function readSequenceQueue(dev_name)
-	String dev_name
-	
-	//-verbose
-	print "\rStarting Tango based interface to Sequencing Queue...\r"
-
-	//- argin
-	Struct CmdArgIO argin
-	tango_init_cmd_argio (argin)
-	
-	//- argout 
-	Struct CmdArgIO argout
-	tango_init_cmd_argio (argout)	
-	
-	//- populate argin: <CmdArgIn.cmd> struct member
-	//- name of the command to be executed on <argin.dev> 
-	String cmd = "get"
-
-	//- verbose
-	print "\rexecuting <" + cmd + ">...\r"
-  
-	//- since the command argin is a string scalar (i.e. single string), we stored its its value 
-	//- into the <str> member of the <CmdArgIn> structure. 
-	argin.str_val = "hello world"
-  
-	Variable mst_ref = StartMSTimer
-	Variable mst_dt
-	
-	//- actual cmd execution
-	//- if an error occurs during command execution, argout is undefined (null or empty members)
-	//- ALWAYS CHECK THE CMD RESULT BEFORE TRYING TO ACCESS ARGOUT: 0 means NO_ERROR, -1 means ERROR
-	if (tango_cmd_inout(dev_name, cmd, arg_in = argin, arg_out = argout) == -1)
-		//- the cmd failed, display error...
-		print "cmd failed..."
-		tango_display_error()
-		//- ... then return error
-		mst_dt = StopMSTimer(mst_ref)
-		return kERROR
-	endif
-  
-	mst_dt = StopMSTimer(mst_ref)
-	print "\t'-> took " + num2str(mst_dt / 1000) + " ms to complete"
-	
-	//- <argout> is populated (i.e. filled) by <tango_cmd_inout> uppon return of the command.
-	//- since the command ouput argument is a string scalar (i.e. single string), it is stored 
-	//- in the <str> member of the <CmdArgOut> structure.
-
-	//- as previously explained, we are testing our TANGO binding on a TangoTest device. 
-	//- consequently, we check that <argin.str == argout.str> in order to be sure that everything is ok
-	
-	print "Command found: " + argout.str_val
-	string cmdToRun = argout.str_val
-
-	if (cmpStr(cmdToRun, "NONE") == 1)
-		print "No Mies command found on Messaging queue..."
-	else
-		Execute/Z cmdToRun
-		if (V_Flag != 0)
-			print "Unable to run command....check command syntax..."
-			throwError("mies_device/MiesDevice/test")
-			writeLog("improper Mies Command requested...")
-		else
-			print "Command ran successfully..."
-			writeLog("Mies command ran successfully....")
-		endif
-	endif
-	
-//	if (cmpstr(argin.str_val, argout.str_val) != 0)
-//		//- the cmd failed, display error...
-//		print "cmd failed...display error"
-//		tango_display_error_str("ERROR:DevString:unexpected cmd result - aborting test")
-//		//- ... then return error
-//		return kERROR
-//	endif
-  
-	//- verbose
-	print "\t'-> cmd passed\r"
-	
-End
+include "tango"
+include "tango_monitor"
 
 /// @brief function for recieving the command strings from the WSE
 /// the format is "cmd_id:<id>;<cmd_string>"
-Function TangoCommandInput(cmdString)
+Function TI_TangoCommandInput(cmdString)
 	string cmdString
 	
 	// parse out the cmd_id from the input cmdString
@@ -388,33 +36,14 @@ Function TangoCommandInput(cmdString)
 	Execute/Z completeIgorCommand
 	if (V_Flag != 0)
 		print "Unable to run command....check command syntax..."
-		writeAck(cmdID, -1)
+		TI_WriteAck(cmdID, -1)
 	else
 		print "Command ran successfully..."
 	endif
 End	
-	
-Function sequenceTask(s)											// This is the function that will be called periodically
-	STRUCT WMBackgroundStruct &s
-	
-	Printf "Task %s called, ticks=%d\r", s.name, s.curRunTicks
-	readSequenceQueue("mies_device/MiesDevice/test")
-	return 0	// Continue background task
-End
 
-Function StartTestTask()
-	Variable numTicks = 10 * 60		// Run every ten seconds (600 ticks)
-	CtrlNamedBackground Test, period=numTicks, proc=sequenceTask
-	CtrlNamedBackground Test, start
-End
-
-Function StopTestTask()
-	print "Ending polling task..."
-	CtrlNamedBackground Test, stop
-End
-
-/// @brief Save Mies Experiment as a packed experiment
-Function TangoSave(saveFileName, [cmdID])
+/// @brief Save Mies Experiment as a packed experiment.  This saves the entire Tango data space.  Will be supplimented in the future with a second function that will save the Sweep Data only.
+Function TI_TangoSave(saveFileName, [cmdID])
 	string saveFileName
 	string cmdID
 	
@@ -424,7 +53,7 @@ Function TangoSave(saveFileName, [cmdID])
 	
 	// determine if the cmdID was provided
 	if (ParamIsDefault(cmdID) == 0)
-		writeAck(cmdID, 1)
+		TI_WriteAck(cmdID, 1)
 	endif
 End
 
@@ -561,17 +190,15 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		ba.win = currentPanel
 		
 		DAP_ButtonProc_AcquireData(ba)
-		
-		// and then return the scale value
-		print "returning the actionPotential factor..." 
-		variable firedActionPotentialScale = str2num(analysisSettingsWave[headstage][%PSAResult])
-		print "firedActionPotentialScale: ", firedActionPotentialScale
 	endfor
+	
+	// determine if the cmdID was provided
+	if (ParamIsDefault(cmdID) == 0)
+		TI_WriteAck(cmdID, 1)
+	endif
 	
 	 // restore the data folder
 	SetDataFolder savedDataFolder
-	
-	return "RETURN:1"
 End
 
 ///@brief routine to be called from the WSE to select a stimWaveName, a PSA routine(returnActionPotential), a PAA routine(bracketScaleFactor), the coarse scale adjustment factor, 
@@ -617,7 +244,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		// put the coarse scale factor in the  actionscalesettings wave
 		actionScaleSettingsWave[headStage][%coarseScaleValue] = coarseScaleFactor
 		// put the fine scale factor in the  actionscalesettings wave
-		actionScaleSettingsWave[headStage][%fineScaleValue] = coarseScaleFactor
+		actionScaleSettingsWave[headStage][%fineScaleValue] = fineScaleFactor
 		// put the threshold in the  actionscalesettings wave
 		actionScaleSettingsWave[headStage][%apThreshold] = threshold
 		// reset the result value before starting the cycle
@@ -705,11 +332,13 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		DAP_ButtonProc_AcquireData(ba)
 	endfor
 	
-	writeAck(cmdID, 1)
+	// determine if the cmdID was provided
+	if (ParamIsDefault(cmdID) == 0)
+		TI_WriteAck(cmdID, 1)
+	endif
+
 	 // restore the data folder
-	SetDataFolder savedDataFolder
-	
-	
+	SetDataFolder savedDataFolder	
 End
 
 ///@brief routine to be called from the WSE to select a stimWaveName, a PSA routine, a PAA routine, the scale factor, and which
@@ -835,8 +464,10 @@ Function/T TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 	// restore the data folder
 	SetDataFolder savedDataFolder
 	
-	// and finish
-	return "RETURN: 1"
+	// determine if the cmdID was provided
+	if (ParamIsDefault(cmdID) == 0)	
+		TI_WriteAck(cmdID, 1)
+	endif
 End
 
 ///@brief routine to be called from the WSE to see if the Action Potential has fired
@@ -860,8 +491,10 @@ Function/S TI_runAPResult(headstage, [cmdID])
 		sprintf returnResult, "RETURN: %s" analysisSettingsWave[headstage][%PSAResult]
 	endfor
 	
-	//return the result
-	return returnResult
+	// determine if the cmdID was provided
+	if (ParamIsDefault(cmdID) == 0)	
+		TI_WriteAck(cmdID, 1)
+	endif
 End
 
 ///@brief routine to be called from the WSE to start and stop the test pulse
@@ -902,9 +535,12 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 			returnValue = -1
 		endif
 	endfor
-	
-	writeAck(cmdID, returnValue)
-END
+
+	// determine if the cmdID was provided
+	if (ParamIsDefault(cmdID) == 0)	
+		TI_WriteAck(cmdID, returnValue)
+	endif
+End
 
 
 ///@brief Routine to test starting and stopping acquisition by remotely hitting the start/stop button on the DA_Ephys panel
@@ -935,12 +571,12 @@ Function TI_runStopStart([cmdID])
 	
 	// determine if the cmdID was provided
 	if (ParamIsDefault(cmdID) == 0)
-		writeAck(cmdID, 1)
+		TI_WriteAck(cmdID, 1)
 	endif
 End
 
 /// @brief function to write the acknowledgement string back to the WSE
-Function writeAck(cmdID, returnValue)
+Function TI_WriteAck(cmdID, returnValue)
 	string cmdID
 	Variable returnValue
 	
@@ -999,23 +635,11 @@ Function writeAck(cmdID, returnValue)
 	//- since the command ouput argument is a string scalar (i.e. single string), it is stored 
 	//- in the <str> member of the <CmdArgOut> structure.
 
-	//- as previously explained, we are testing our TANGO binding on a TangoTest device. 
-	//- consequently, we check that <argin.str == argout.str> in order to be sure that everything is ok
-//	if (cmpstr(argin.str_val, argout.str_val) != 0)
-//		//- the cmd failed, display error...
-//		tango_display_error_str("ERROR:DevString:unexpected cmd result - aborting test")
-//		//- ... then return error
-//		return kERROR
-//	endif
-  
-	//- verbose
 	print "\t'-> ack sent\r"
-	
 End
 
-
 /// @brief function to allow for writing async responses back to the WSE
-Function writeAsyncResponse(cmdID, returnString)
+Function TI_WriteAsyncResponse(cmdID, returnString)
 	String cmdID
 	String returnString
 	
@@ -1073,22 +697,5 @@ Function writeAsyncResponse(cmdID, returnString)
 	mst_dt = StopMSTimer(mst_ref)
 	print "\t'-> took " + num2str(mst_dt / 1000) + " ms to complete"
 	
-	//- <argout> is populated (i.e. filled) by <tango_cmd_inout> uppon return of the command.
-	//- since the command ouput argument is a string scalar (i.e. single string), it is stored 
-	//- in the <str> member of the <CmdArgOut> structure.
-
-	//- as previously explained, we are testing our TANGO binding on a TangoTest device. 
-	//- consequently, we check that <argin.str == argout.str> in order to be sure that everything is ok
-//	if (cmpstr(argin.str_val, argout.str_val) != 0)
-//		//- the cmd failed, display error...
-//		tango_display_error_str("ERROR:DevString:unexpected cmd result - aborting test")
-//		//- ... then return error
-//		return kERROR
-//	endif
-  
-	//- verbose
-	print "\t'-> async response sent\r"
-	
+	print "\t'-> async response sent\r"	
 End
-
-#endif
