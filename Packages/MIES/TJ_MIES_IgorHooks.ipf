@@ -31,6 +31,7 @@ static Function KillTemporaries()
 End
 
 Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
+static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
 	Variable rN, kind
 	String fileName, path, type, creator
 
