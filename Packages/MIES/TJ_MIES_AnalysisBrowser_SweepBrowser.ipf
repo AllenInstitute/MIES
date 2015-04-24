@@ -253,7 +253,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	string device, expFolder, panel
 	variable sweep, newWaveDisplayed, currentWaveDisplayed
-	variable displayDAC, overlaySweep
+	variable displayDAC, overlaySweep, overlayChannels
 
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
@@ -298,10 +298,11 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/SDFR=dfr numericValues
 
-	displayDAC   = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
-	overlaySweep = GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay")
+	displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
+	overlaySweep    = GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay")
+	overlayChannels = GetCheckBoxState(panel, "check_sweepbrowser_OverlayChan")
 
-	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, displayDAC, overlaySweep, sweepDFR=newSweepDFR)
+	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, displayDAC, overlaySweep, overlayChannels, sweepDFR=newSweepDFR)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)
@@ -445,7 +446,7 @@ Function/S SB_GetSweepList(graph)
 	return list
 End
 
-Function SB_CheckboxDisplayDAChannels(cba) : CheckBoxControl
+Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
 	string graph, win

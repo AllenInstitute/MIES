@@ -195,21 +195,17 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", newSweep)
 	Wave/Z/SDFR=dfr wv = $("Sweep_" + num2str(newSweep))
 
-	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_Overlay")) // normal plotting
-		if(WaveExists(wv))
-			DB_TilePlotForDataBrowser(panelTitle, wv, newSweep)
-			Notebook $subWindow selection={startOfFile, endOfFile} // select entire contents of notebook
-			Notebook $subWindow text = "Sweep note: \r " + note(wv) // replaces selected notebook content with new wave note.
-			DB_SetFormerSweepNumber(panelTitle, newSweep)
-		else
-			Notebook $subWindow selection={startOfFile, endOfFile}
-			Notebook $subWindow text = "Sweep does not exist."
-			if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-				RemoveTracesFromGraph(DB_GetMainGraph(panelTitle))
-			endif			
-		endif		
+	if(WaveExists(wv))
+		DB_TilePlotForDataBrowser(panelTitle, wv, newSweep)
+		Notebook $subWindow selection={startOfFile, endOfFile} // select entire contents of notebook
+		Notebook $subWindow text = "Sweep note: \r " + note(wv) // replaces selected notebook content with new wave note.
+		DB_SetFormerSweepNumber(panelTitle, newSweep)
 	else
-		DEBUGPRINT("channel overlay - not yet implemented")
+		Notebook $subWindow selection={startOfFile, endOfFile}
+		Notebook $subWindow text = "Sweep does not exist."
+		if(!GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
+			RemoveTracesFromGraph(DB_GetMainGraph(panelTitle))
+		endif
 	endif
 End
 
@@ -228,10 +224,11 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	string graph         = DB_GetMainGraph(panelTitle)
 	Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
 
-	variable displayDAC   = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
-	variable overlaySweep = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
+	variable displayDAC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
+	variable overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
+	variable overlayChannels = GetCheckBoxState(panelTitle, "check_sweepbrowser_OverlayChan")
 
-	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, sweepWave=sweep)
+	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, sweepWave=sweep)
 End
 
 static Function DB_ClearGraph(panelTitle)
@@ -282,16 +279,16 @@ Window DataBrowser() : Panel
 	ValDisplay valdisp_DataBrowser_LastSweep,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataBrowser_LastSweep,value= #"0"
 	ValDisplay valdisp_DataBrowser_LastSweep,barBackColor= (56576,56576,56576)
-	CheckBox check_DataBrowser_DisplayDAchan,pos={20,6},size={116,14},proc=DB_CheckProc_DADisplay,title="Display DA channels"
+	CheckBox check_DataBrowser_DisplayDAchan,pos={20,6},size={116,14},proc=DB_CheckProc_ChangedSetting,title="Display DA channels"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo)= A"!!,BY!!#:\"!!#@L!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayDAchan,value= 0
-	CheckBox check_DataBrowser_Overlay,pos={429,6},size={101,14},title="Overlay Channels"
-	CheckBox check_DataBrowser_Overlay,userdata(ResizeControlsInfo)= A"!!,I<J,hjM!!#@.!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_Overlay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_Overlay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_Overlay,fColor=(65280,43520,0),value= 0
+	CheckBox check_sweepbrowser_OverlayChan,pos={429,5},size={101,14},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
+	CheckBox check_sweepbrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,I<J,hjM!!#@.!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_sweepbrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_sweepbrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_sweepbrowser_OverlayChan,value= 1
 	CheckBox check_DataBrowser_ChanBaseline,pos={451,22},size={87,14},title="Baseline offset"
 	CheckBox check_DataBrowser_ChanBaseline,userdata(ResizeControlsInfo)= A"!!,IGJ,hm>!!#?g!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_ChanBaseline,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -443,6 +440,8 @@ Function DB_DataBrowserStartupSettings()
 		SetCheckBoxState(panelTitle, StringFromList(i, allCheckBoxes), CHECKBOX_UNSELECTED)
 	endfor
 
+	SetCheckBoxState(panelTitle, "check_sweepbrowser_OverlayChan", CHECKBOX_SELECTED)
+
 	DB_ClearGraph(panelTitle)
 	SetPopupMenuIndex(panelTitle, "popup_labenotebookViewableCols", 0)
 End
@@ -480,23 +479,6 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 			panelTitle = ba.win
 			SetAxis/A/W=$DB_GetMainGraph(panelTitle)
 			SetAxis/A/W=$DB_GetLabNotebookGraph(panelTitle)
-			break
-	endswitch
-
-	return 0
-End
-
-Function DB_CheckProc_DADisplay(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	variable sweepNo
-	string panelTitle
-
-	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
-			panelTitle = cba.win
-
-			DB_PlotSweep(panelTitle)
 			break
 	endswitch
 
@@ -637,6 +619,23 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 			WAVE settingsHistory = DB_GetSettingsHistory(panelTitle)
 
 			SwitchLBGraphXAxis(graph, settingsHistory)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	variable sweepNo
+	string panelTitle
+
+	switch(cba.eventCode)
+		case EVENT_MOUSE_UP:
+			panelTitle = cba.win
+
+			DB_PlotSweep(panelTitle)
 			break
 	endswitch
 
