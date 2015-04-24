@@ -2967,14 +2967,14 @@ Function/Wave GetAsynRspWaveRef(panelTitle)
 	return wv
 End
 
-/// @brief Return the datafolder reference to the device specific text documentation
+/// @brief Return the datafolder reference to the device specific Asyn Response Wave..used for holding the cmd_id required by the workflow sequencing engine
 Function/DF GetDevSpecAsynRspWavePath(panelTitle)
 	string panelTitle
 
 	return createDFWithAllParents(GetDevSpecAsynRspWaveAS(panelTitle))
 End
 
-/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:analysisSettings
+/// @brief Return the full path to the device specific Asyn Response wave for holding the cmd_id value
 Function/S GetDevSpecAsynRspWaveAS(panelTitle)
 	string panelTitle
 
