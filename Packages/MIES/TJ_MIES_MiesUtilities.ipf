@@ -432,13 +432,13 @@ End
 /// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
 /// Passing in sweepDFR assumes the new format of split waves, one wave for each AD, DA, TTL channel, with one dimension
 ///
-/// @param graph   window
-/// @param config  ITC config wave
-/// @param sweepNo number of the sweep
-/// @param settingsHistory numerical labnotebook wave
-/// @param displayDAC display the DA channel, yes or no
-/// @param overlaySweep overlay the sweeps, yes or no
-/// @param sweepDFR [optional] datafolder with 1D waves extraced from the sweep wave
+/// @param graph                window
+/// @param config               ITC config wave
+/// @param sweepNo              number of the sweep
+/// @param settingsHistory      numerical labnotebook wave
+/// @param displayDAC           display the DA channel, yes or no
+/// @param overlaySweep         overlay the sweeps, yes or no
+/// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
 /// @param sweepWave [optional] sweep wave with multiple columns
 Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, [sweepDFR, sweepWave])
 	string graph
