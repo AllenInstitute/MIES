@@ -803,13 +803,18 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable versionOfNewWave = 1
+
 	Wave/Z/SDFR=dfr wv = TPStorage
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, -1, 10) wv
+	else
+		Make/N=(128, NUM_AD_CHANNELS, 10) dfr:TPStorage/Wave=wv
 	endif
 
-	Make/N=(128, NUM_AD_CHANNELS, 9) dfr:TPStorage/Wave=wv
 	wv = NaN
 
 	SetDimLabel COLS,  -1, ADChannel            , wv
@@ -823,10 +828,13 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
 	SetDimLabel LAYERS, 7, Rss_Slope            , wv
 	SetDimLabel LAYERS, 8, Pressure             , wv
+	SetDimLabel LAYERS, 9, TimeStamp            , wv
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
 	Note/NOCR wv, DIMENSION_SCALING_LAST_INVOC + ":0;"
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
