@@ -432,20 +432,21 @@ End
 /// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
 /// Passing in sweepDFR assumes the new format of split waves, one wave for each AD, DA, TTL channel, with one dimension
 ///
-/// @param graph   window
-/// @param config  ITC config wave
-/// @param sweepNo number of the sweep
-/// @param settingsHistory numerical labnotebook wave
-/// @param displayDAC display the DA channel, yes or no
-/// @param overlaySweep overlay the sweeps, yes or no
-/// @param sweepDFR [optional] datafolder with 1D waves extraced from the sweep wave
+/// @param graph                window
+/// @param config               ITC config wave
+/// @param sweepNo              number of the sweep
+/// @param settingsHistory      numerical labnotebook wave
+/// @param displayDAC           display the DA channel, yes or no
+/// @param overlaySweep         overlay the sweeps, yes or no
+/// @param overlayChannels      use a separate axis for each DA/AD channel, yes or no
+/// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
 /// @param sweepWave [optional] sweep wave with multiple columns
-Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, [sweepDFR, sweepWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, [sweepDFR, sweepWave])
 	string graph
 	WAVE config
 	variable sweepNo
 	WAVE settingsHistory
-	variable displayDAC, overlaySweep
+	variable displayDAC, overlaySweep, overlayChannels
 	DFREF sweepDFR
 	WAVE/Z sweepWave
 
@@ -459,8 +460,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
 	// the max allows for uneven number of AD and DA channels
 	variable numChannels = max(NumberOfDAchannels, NumberOfADchannels)
-	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh, YaxisHigh, YaxisLow
+	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh
 	variable headstage, red, green, blue, i, axisIndex, splitSweepMode
+	variable firstDAC = 1
+	variable firstADC = 1
+
 	string axis, trace, adc, dac
 	string configNote = note(config)
 	string unit
@@ -476,10 +480,19 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	endif
 
 	if(displayDAC)
-		ADYaxisSpacing = 0.8 / numChannels
-		DAYaxisSpacing = 0.2 / numChannels
+		ADYaxisSpacing = 0.8
+		DAYaxisSpacing = 0.2
+
+		if(!overlayChannels)
+			ADYaxisSpacing /= numChannels
+			DAYaxisSpacing /= numChannels
+		endif
 	else
-		ADYaxisSpacing = 1 / NumberOfADchannels
+		ADYaxisSpacing = 1
+
+		if(!overlayChannels)
+			ADYaxisSpacing /= NumberOfADchannels
+		endif
 	endif
 
 	if(displayDAC)
@@ -503,14 +516,15 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 
 	for(i = 0; i < numChannels; i += 1)
 		if(displayDAC && i < NumberOfDAchannels)
-			YaxisHigh = DAYaxisHigh
-			YaxisLow = DAYaxisLow
 			dac = StringFromList(i, DAChannelList)
-
-			axis = AXIS_BASE_NAME + num2str(axisIndex)
-			axisIndex += 1
-
 			trace = "DA" + dac
+
+			if(overlayChannels)
+				axis = AXIS_BASE_NAME + "_DA"
+			else
+				axis = AXIS_BASE_NAME + num2str(axisIndex)
+				axisIndex += 1
+			endif
 
 			if(splitSweepMode)
 				WAVE/SDFR=sweepDFR wv = $("DA_" + dac)
@@ -519,11 +533,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 				AppendToGraph/W=$graph/L=$axis sweepWave[][i]/TN=$trace
 			endif
 
-			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
-			unit = StringFromList(i, configNote)
-			Label/W=$graph $axis, trace + "\r(" + unit + ")"
-			ModifyGraph/W=$graph lblPosMode = 1
-			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+			if(firstDAC || !overlayChannels)
+				ModifyGraph/W=$graph axisEnab($axis) = {DAYaxisLow, DAYaxisHigh}
+				unit = StringFromList(i, configNote)
+				Label/W=$graph $axis, trace + "\r(" + unit + ")"
+				ModifyGraph/W=$graph lblPosMode = 1
+				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+				firstDAC = 0
+			endif
 
 			headstage = GetRowIndex(statusDAC, str=dac)
 			if(!IsFinite(headstage))
@@ -536,15 +553,16 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 		endif
 
-		//AD wave to plot
-		YaxisHigh = ADYaxisHigh
-		YaxisLow  = ADYaxisLow
-
 		if(i < NumberOfADchannels)
 			adc = StringFromList(i, ADChannelList)
-			axis = AXIS_BASE_NAME + num2str(axisIndex)
-			axisIndex += 1
 			trace = "AD" + adc
+
+			if(overlayChannels)
+				axis = AXIS_BASE_NAME + "_AD"
+			else
+				axis = AXIS_BASE_NAME + num2str(axisIndex)
+				axisIndex += 1
+			endif
 
 			if(splitSweepMode)
 				WAVE/Z/SDFR=sweepDFR wv = $("AD_" + adc)
@@ -558,11 +576,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 				AppendToGraph/W=$graph/L=$axis sweepWave[][i + NumberOfDAchannels]/TN=$trace
 			endif
 
-			ModifyGraph/W=$graph axisEnab($axis) = {YaxisLow, YaxisHigh}
-			unit = StringFromList(i + NumberOfDAchannels, configNote)
-			Label/W=$graph $axis, trace + "\r(" + unit + ")"
-			ModifyGraph/W=$graph lblPosMode = 1
-			ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+			if(firstADC || !overlayChannels)
+				ModifyGraph/W=$graph axisEnab($axis) = {ADYaxisLow, ADYaxisHigh}
+				unit = StringFromList(i + NumberOfDAchannels, configNote)
+				Label/W=$graph $axis, trace + "\r(" + unit + ")"
+				ModifyGraph/W=$graph lblPosMode = 1
+				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+				firstADC = 0
+			endif
 
 			headstage = GetRowIndex(statusADC, str=adc)
 			if(!IsFinite(headstage))
@@ -575,21 +596,23 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 		endif
 
-		if(i >= NumberOfDAchannels)
-			DAYaxisSpacing = 0
-		endif
+		if(!overlayChannels)
+			if(i >= NumberOfDAchannels)
+				DAYaxisSpacing = 0
+			endif
 
-		if(i >= NumberOfADchannels)
-			ADYaxisSpacing = 0
-		endif
+			if(i >= NumberOfADchannels)
+				ADYaxisSpacing = 0
+			endif
 
-		if(displayDAC)
-			DAYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
-			DAYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
-		endif
+			if(displayDAC)
+				DAYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
+				DAYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
+			endif
 
-		ADYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
-		ADYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
+			ADYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
+			ADYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
+		endif
 	endfor
 
 	SetAxesRanges(graph, ranges)
