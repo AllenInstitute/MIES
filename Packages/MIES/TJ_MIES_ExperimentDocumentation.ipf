@@ -360,7 +360,8 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
 	Variable sweepCount
 
-	variable i
+	variable i, j
+	string clampModeString
 
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
 
@@ -424,18 +425,33 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle)
 
-	// document active headstages
-	Make/FREE/N=(3, 1)/T headstagesKey
-	headstagesKey = ""
+	// document active headstages and their clamp modes
+	Make/FREE/N=(3, 2)/T numKeys
+	numKeys = ""
 
-	headstagesKey[0][0] =  "Headstage Active"
-	headstagesKey[1][0] =  "On/Off"
-	headstagesKey[2][0] =  "-"
+	numKeys[0][0] =  "Headstage Active"
+	numKeys[1][0] =  "On/Off"
+	numKeys[2][0] =  "-"
 
-	Make/FREE/N=(1, 1, NUM_HEADSTAGES) headstagesWave
-	headStagesWave[0][0][] = statusHS[r]
+	numKeys[0][1] =  "Clamp Mode"
+	numKeys[1][1] =  ""
+	numKeys[2][1] =  "-"
 
-	ED_createWaveNotes(headstagesWave, headstagesKey, SweepCount, panelTitle)
+	Make/FREE/N=(1, 2, NUM_HEADSTAGES) numSettings = NaN
+	numSettings[0][0][] = statusHS[r]
+
+	// clamp mode string only holds entries for active headstages
+	clampModeString = TP_ClampModeString(panelTitle)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		numSettings[0][1][i] = str2num(StringFromList(j, clampModeString))
+		j += 1
+	endfor
+
+	ED_createWaveNotes(numSettings, numKeys, SweepCount, panelTitle)
 
 	Make/FREE/T/N=(3, 2) keys
 	keys = ""
