@@ -49,6 +49,7 @@ End
 
 /// @brief Save Mies Experiment as a packed experiment.  This saves the entire Tango data space.  Will be supplimented in the future with a second function that will save the Sweep Data only.
 /// @param saveFileName		file name for the saved packed experiment
+///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_TangoSave(saveFileName, [cmdID])
 	string saveFileName
 	string cmdID
@@ -69,6 +70,7 @@ End
 ///@param scaleFactor			scale factor adjustment value
 ///@param threshold				threshold value to indicate AP firing
 ///@param headstage				headstage to be used
+///@param cmdID					optional parameter...if being called from WSE, this will be present.  
 Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, threshold, headstage, [cmdID])
 	string stimWaveName
 	variable initScaleFactor
@@ -88,8 +90,6 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 	string psaCheck
 	string paaCheck
 	string scaleWidgetName
-	string FolderPath
-	string folder
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
 	string psaFuncList
@@ -135,10 +135,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		sprintf scaleWidgetName, "Scale_DA_%02d", headStage
 		
 		// build up the list of available wave sets
-		FolderPath = GetWBSvdStimSetDAPathAsString()
-		folder = "*DA*"
-		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-		ListOfWavesInFolder = Wavelist(Folder,";","") 
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
 		
 		// make sure that the incoming StimWaveName is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
@@ -218,6 +215,7 @@ End
 ///@param fineScaleFactor			fine scale adjustment factor
 ///@param threshold				threshold for AP firing
 ///@param headstage				headstage to use
+///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFactor, threshold, headstage, [cmdID])
 	string stimWaveName
 	variable coarseScaleFactor
@@ -235,8 +233,6 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 	string psaCheck
 	string paaCheck
 	string scaleWidgetName
-	string FolderPath
-	string folder
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
 	string psaFuncList
@@ -289,10 +285,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		sprintf scaleWidgetName, "Scale_DA_0%0d", headStage
 		
 		// build up the list of available wave sets
-		FolderPath = GetWBSvdStimSetDAPathAsString()
-		folder = "*DA*"
-		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-		ListOfWavesInFolder = Wavelist(Folder,";","") 
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
 		
 		// make sure that the incoming StimWaveName is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
@@ -361,6 +354,7 @@ End
 ///@param stimWaveName		stimWaveName to be used
 ///@param scaleFactor			scale factor to run the stim wave at
 ///@param headstage				headstage to use
+///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 	string stimWaveName
 	variable scaleFactor
@@ -396,10 +390,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		sprintf scaleWidgetName, "Scale_DA_%02d", headStage
 		
 		// build up the list of available wave sets
-		FolderPath = GetWBSvdStimSetDAPathAsString()
-		folder = "*DA*"
-		setdatafolder FolderPath // sets the wavelist for the DA popup menu to show all waves in DAC folder
-		ListOfWavesInFolder = Wavelist(Folder,";","") 
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
 		
 		// make sure that the incoming StimWaveName is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
@@ -436,6 +427,7 @@ End
 
 ///@brief routine to be called from the WSE to see if the Action Potential has fired
 ///@param headstage		indicate which headstage to look for the AP
+///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function/S TI_runAPResult(headstage, [cmdID])
 	variable headstage
 	string cmdID
@@ -470,6 +462,7 @@ End
 
 ///@brief routine to be called from the WSE to start and stop the test pulse
 ///@param tpCmd		1 to turn on Test Pulse, 0 to turn off Test Pulse
+///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_runTestPulse(tpCmd, [cmdID])
 	variable tpCmd
 	string cmdID
@@ -517,6 +510,7 @@ End
 
 
 ///@brief Routine to test starting and stopping acquisition by remotely hitting the start/stop button on the DA_Ephys panel
+///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_runStopStart([cmdID])
 	string cmdID
 	
