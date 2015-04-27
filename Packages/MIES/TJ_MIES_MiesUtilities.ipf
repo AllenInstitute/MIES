@@ -508,12 +508,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	WAVE/Z statusDAC = GetLastSetting(settingsHistory, sweepNo, "DAC")
 	WAVE/Z statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
 
-	if(!WaveExists(statusDAC) && !WaveExists(statusADC))
-		print "The DAC or ADC setting could not be found in the lab notebook."
-		print "Is that a BUG or something we should handle gracefully?"
-		return NaN
-	endif
-
 	for(i = 0; i < numChannels; i += 1)
 		if(displayDAC && i < NumberOfDAchannels)
 			dac = StringFromList(i, DAChannelList)
@@ -542,14 +536,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 				firstDAC = 0
 			endif
 
-			headstage = GetRowIndex(statusDAC, str=dac)
-			if(!IsFinite(headstage))
-				// use a different color to tell the user that we can't query the headstage information
-				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-			else
-				GetTraceColor(headstage, red, green, blue)
-			endif
-
+			headstage = WaveExists(statusDAC) ? GetRowIndex(statusDAC, str=dac) : NaN
+			// use a different color if we can't query the headstage
+			GetTraceColor(IsFinite(headstage) ? headstage : NUM_HEADSTAGES, red, green, blue)
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 		endif
 
@@ -585,14 +574,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 				firstADC = 0
 			endif
 
-			headstage = GetRowIndex(statusADC, str=adc)
-			if(!IsFinite(headstage))
-				// use a different color to tell the user that we can't query the headstage information
-				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-			else
-				GetTraceColor(headstage, red, green, blue)
-			endif
-
+			headstage = WaveExists(statusADC) ? GetRowIndex(statusADC, str=adc) : NaN
+			// use a different color if we can't query the headstage
+			GetTraceColor(IsFinite(headstage) ? headstage : NUM_HEADSTAGES, red, green, blue)
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 		endif
 
