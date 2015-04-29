@@ -171,7 +171,6 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable 		TPDurInms 							= v_value
 	PulseDuration 									= (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
 	GlobalTPDurationVariable 							= PulseDuration
-	variable 		ITCdataWaveLength 					= DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	variable 		Amplitude 							= v_value
