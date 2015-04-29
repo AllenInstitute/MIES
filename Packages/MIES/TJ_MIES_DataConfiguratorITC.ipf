@@ -252,7 +252,6 @@ End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
-/// @todo Create a seperate function to return a wave reference for this wave.
 /// @param panelTitle  panel title
 static Function DC_MakeITCConfigAllConfigWave(panelTitle)
 	string panelTitle
@@ -264,7 +263,6 @@ End
 
 /// @brief Creates ITCDataWave; The wave that the ITC device takes DA and TTL data from and passes AD data to for all channels.
 ///
-/// @todo Create a seperate function to return a wave reference to this wave.
 /// Config all refers to configuring all the channels at once
 ///
 /// @param panelTitle  panel title
