@@ -1675,3 +1675,24 @@ Function GetRowWithSameContent(refWave, sourceWave, row)
 
 	return NaN
 End
+
+/// @brief Random shuffle of the wave contents
+///
+/// Function was taken from: http://www.igorexchange.com/node/1614
+/// author s.r.chinn
+///
+/// @param inwave The wave that will have its rows shuffled.
+Function InPlaceRandomShuffle(inwave)
+	wave inwave
+
+	variable N = numpnts(inwave)
+	variable i, j, emax, temp
+	for(i = N; i>1; i-=1)
+		emax = i / 2
+		j =  floor(emax + enoise(emax))		//	random index
+// 		emax + enoise(emax) ranges in random value from 0 to 2*emax = i
+		temp		= inwave[j]
+		inwave[j]	= inwave[i-1]
+		inwave[i-1]	= temp
+	endfor
+end

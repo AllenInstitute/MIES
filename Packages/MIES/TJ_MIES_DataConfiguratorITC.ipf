@@ -690,7 +690,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 	string SequenceWaveName = WavePath + ":" + SetName + num2str(daorttl) + num2str(channelNo) + "_S"//s is for sequence
 	if(waveexists($SequenceWaveName) == 0)
 		make /o /n = (ColumnsInSet) $SequenceWaveName = 0
-		DC_shuffle( $SequenceWaveName)
+		InPlaceRandomShuffle( $SequenceWaveName)
 	endif
 	wave /z WorkingSequenceWave = $SequenceWaveName	
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
@@ -725,7 +725,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 					cycleCount = 0
 				else // set step sequence is random
 					if(localCount == 0)
-						DC_shuffle(WorkingSequenceWave)
+					InPlaceRandomShuffle(WorkingSequenceWave)
 					endif
 					column = WorkingSequenceWave[localcount]
 					cycleCount = 0
@@ -737,7 +737,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 					cycleCount = 1
 				else
 					if(mod((localCount), columnsInSet) == 0)
-						DC_shuffle(WorkingSequenceWave) // added to handle 1 channel, unlocked indexing
+						InPlaceRandomShuffle(WorkingSequenceWave) // added to handle 1 channel, unlocked indexing
 					endif
 					column = WorkingSequenceWave[mod((localCount), columnsInSet)]
 					cycleCount = 1
@@ -751,7 +751,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 				make /o /n = (ColumnsInSet) $SequenceWaveName
 				wave WorkingSequenceWave = $SequenceWaveName
 				WorkingSequenceWave = x
-				DC_shuffle(WorkingSequenceWave)
+			InPlaceRandomShuffle(WorkingSequenceWave)
 				column = WorkingSequenceWave[0]
 			endif
 		endif
@@ -777,24 +777,6 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 	return column_CycleCount
 end
 
-///@brief Shuffles the rows of the inwave
-///
-///@param inwave The wave that will have its rows shuffled.
-/// Function was taken from: http://www.igorexchange.com/node/1614
-/// author s.r.chinn
-static Function DC_shuffle(inwave)	//	in-place random permutation of input wave elements
-	wave inwave
-	variable N	=	numpnts(inwave)
-	variable i, j, emax, temp
-	for(i = N; i>1; i-=1)
-		emax = i / 2
-		j =  floor(emax + enoise(emax))		//	random index
-// 		emax + enoise(emax) ranges in random value from 0 to 2*emax = i
-		temp		= inwave[j]
-		inwave[j]		= inwave[i-1]
-		inwave[i-1]	= temp
-	endfor
-end
 
 ///@brief Adjust the length of the ITCdataWave according to the onset and termination delay set on the data acquisition tab of the DA_Ephys panel
 ///
