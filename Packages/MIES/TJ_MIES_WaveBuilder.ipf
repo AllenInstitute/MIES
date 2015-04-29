@@ -361,7 +361,7 @@ End
 static Function WB_RampSegment(pa)
 	struct SegmentParameters &pa
 
-	variable amplitudeIncrement = pa.amplitude / pa.duration / 0.005
+	variable amplitudeIncrement = pa.amplitude * 0.005 / pa.duration
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 	MultiThread SegmentWave = amplitudeIncrement * p
