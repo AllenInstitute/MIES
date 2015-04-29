@@ -167,9 +167,9 @@ End
 /// endfor
 /// @endcode
 ///
-/// @param graph                                 sweep browser name
-/// @param channel                               type of the channel, one of #ITC_CHANNEL_NAMES
-/// @param experiment[optional: defaults to all] name of the experiment the channel wave should originate from
+/// @param graph                                  sweep browser name
+/// @param channel                                type of the channel, one of #ITC_CHANNEL_NAMES
+/// @param experiment [optional, defaults to all] name of the experiment the channel wave should originate from
 Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	string graph, channel, experiment
 
