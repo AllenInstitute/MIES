@@ -3639,26 +3639,26 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
 	endfor
 End
-//=========================================================================================
 
 Function DAP_StoreTTLState(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string /g $WavePath + ":StoredTTLState" = DC_ControlStatusListString("TTL", "Check", panelTitle)
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	string/G dfr:StoredTTLState = Convert1DWaveToList(DC_ControlStatusWave(panelTitle, "TTL"))
 End
-//=========================================================================================
 
 Function DAP_RestoreTTLState(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	SVAR StoredTTLState = $WavePath + ":StoredTTLState"
-	variable i, NoOfTTLs, CheckBoxState
-	string TTLCheckBoxName
-	
+
+	variable i, state
+	string control
+
+	SVAR/SDFR=GetDevicePath(panelTitle) StoredTTLState
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
-		CheckBoxState = str2num(stringfromlist(i , StoredTTLState,";"))
-		CheckBox $TTLCheckBoxName win = $panelTitle, value = CheckBoxState
+		control = "Check_TTL_0" + num2str(i)
+		state = str2num(StringFromList(i , StoredTTLState))
+		SetCheckBoxState(panelTitle, control, state)
 	endfor
 End
 

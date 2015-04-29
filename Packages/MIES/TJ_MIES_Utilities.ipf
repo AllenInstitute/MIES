@@ -1696,3 +1696,18 @@ Function InPlaceRandomShuffle(inwave)
 		inwave[i-1]	= temp
 	endfor
 end
+
+/// @brief Convert a 1D numeric wave to a list
+Function/S Convert1DWaveToList(wv)
+	Wave wv
+
+	variable numEntries, i
+	string list = ""
+
+	numEntries = DimSize(wv, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		list = AddListItem(num2str(wv[i]), list, ";", Inf)
+	endfor
+
+	return list
+End

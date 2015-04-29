@@ -666,25 +666,18 @@ Function ITC_CalcDataAcqStopCollPoint(panelTitle)
 	return DC_CalculateLongestSweep(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)
 End
 
-//======================================================================================
-
-Function ITC_ZeroITCOnActiveChan(panelTitle) // sets active DA channels to Zero - used after TP MD
+/// @brief Sets active DA channels to Zero - used after TP MD
+Function ITC_ZeroITCOnActiveChan(panelTitle)
 	string panelTitle // function operates on active device - does not check to see if a device is open.
-	string WavePath
-	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
-	string DAChannelStatusList  =""
-	sprintf  DAChannelStatusList, "%s" DC_ControlStatusListString("DA", "check", panelTitle)
+
 	string cmd
-	variable NoOfDAChannels = itemsinList(DAChannelStatusList, ";")
 	variable i
-	
-	for(i = 0; i < NoOfDAChannels; i += 1)
-		if(str2num(stringfromlist(i, DAChannelStatusList)) == 1)
-			sprintf cmd, "ITCSetDAC /z = 0 %d, 0" i 
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		if(statusDA[i])
+			sprintf cmd, "ITCSetDAC /z = 0 %d, 0" i
 			Execute cmd
 		endif
 	endfor
-
-END
-
-
+End
