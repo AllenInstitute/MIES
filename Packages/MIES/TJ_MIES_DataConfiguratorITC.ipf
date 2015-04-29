@@ -337,11 +337,11 @@ End
 static Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
 
-	variable i, col, headstage, numEntries
+	variable i, col, headstage, numEntries, isTestPulse
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
-	string setNameList, setName, setNameFullPath
+	string setNameList, setName
 	string ctrl, comment
 	variable DAGain, DAScale, setColumn, insertStart, insertEnd, endRow, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
@@ -405,9 +405,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		sweepData[0][4][HeadStage] = DAScale // document the DA scale
 
-		// get the wave name
 		setName = StringFromList(i, setNameList)
-		setNameFullPath = GetWBSvdStimSetDAPathAsString() + ":" + setName
+		isTestPulse = TP_IsTestPulseSet(setName)
 
 		sweepTxTData[0][0][HeadStage] = setName
 		sweepTxTData[0][1][HeadStage] = comment
@@ -415,7 +414,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		sweepTxTData[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)
 
-		if(!cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse"))
+		if(isTestPulse)
 			setColumn   = 0
 			insertStart = 0
 			insertEnd   = 0
@@ -433,7 +432,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		if(scalingZero && (indexingLocked || !indexing))
 			// makes sure test pulse wave scaling is maintained
-			if(cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0)
+			if(!isTestPulse)
 				if(oneFullCycle) // checks if set has completed one full cycle
 					DAScale = 0
 				endif
@@ -441,14 +440,14 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		endif
 
 		// resample the wave to min samp interval and place in ITCDataWave
-		Wave stimSet = $setNameFullPath
+		Wave/SDFR=GetWBSvdStimSetDAPath() stimSet = $setName
 		endRow = (DimSize(stimSet, ROWS) / decimationFactor - 1) + insertEnd
 		sweepData[0][5][HeadStage] = setColumn // document the set column
 
 		Multithread ITCDataWave[insertStart, endRow][col] = (DAGain * DAScale) * stimSet[DecimationFactor * (p - insertStart)][setColumn]
 
 		// Global TP insertion
-		if(cmpstr(setNameFullPath,"root:MIES:WaveBuilder:SavedStimulusSets:DA:testpulse") != 0 && globalTPInsert)
+		if(!isTestPulse && globalTPInsert)
 			channelMode  = ChannelClampMode[i][%DAC]
 			if(channelMode == V_CLAMP_MODE)
 				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpVClamp * DAGain

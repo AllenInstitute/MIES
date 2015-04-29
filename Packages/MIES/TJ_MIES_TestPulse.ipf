@@ -816,3 +816,10 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 	//ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
 	return V_value - FirstADColumn
 End
+
+/// @brief Return one if the given set is the special testpulse set, zero otherwise
+Function TP_IsTestPulseSet(setName)
+	string setName
+
+	return !cmpstr(setName, "testpulse")
+End
