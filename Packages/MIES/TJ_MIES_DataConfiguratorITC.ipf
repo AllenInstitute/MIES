@@ -11,8 +11,8 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	variable numADCs
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
-	DC_MakeITCConfigAllConfigWave(panelTitle)  
-	DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)  
+	DC_MakeITCConfigAllConfigWave(panelTitle)
+	DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
 
@@ -33,8 +33,6 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	endif
 End
 
-//==========================================================================================
-
 /// @brief The minimum sampling interval is determined by the rack with the most channels selected
 ///
 /// Minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds
@@ -42,18 +40,17 @@ Function DC_ITCMinSamplingInterval(panelTitle)
 	string panelTitle
 
 	variable Rack0DAMinInt, Rack0ADMinInt, Rack1DAMinInt, Rack1ADMinInt
-	
+
 	Rack0DAMinInt = DC_DAMinSampInt(0, panelTitle)
 	Rack1DAMinInt = DC_DAMinSampInt(1, panelTitle)
-	
+
 	Rack0ADMinInt = DC_ADMinSampInt(0, panelTitle)
 	Rack1ADMinInt = DC_ADMinSampInt(1, panelTitle)
-	
+
 	return max(max(Rack0DAMinInt,Rack1DAMinInt), max(Rack0ADMinInt,Rack1ADMinInt))
 End
 
-//==========================================================================================
-Function DC_NoOfChannelsSelected(channelType, panelTitle) // channelType = DA, AD, or TTL
+Function DC_NoOfChannelsSelected(channelType, panelTitle)
 	string channelType, panelTitle
 
 	return sum(DC_ControlStatusWave(panelTitle, channelType))
@@ -111,23 +108,23 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 	return wv
 End
 
-//==========================================================================================
 /// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
 ///
 /// @param panelTitle  panel title
 static Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 	string panelTitle
+
 	Variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)
 	Variable NoOfADChannelsSelected = DC_NoOfChannelsSelected("AD", panelTitle)
 	Variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(0,panelTitle)
 	Variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(1,panelTitle)
 	Variable ChannelCount
-	
+
 	ChannelCount = NoOfDAChannelsSelected + NoOfADChannelsSelected + AreRack0FrontTTLsUsed + AreRack1FrontTTLsUsed
 	
 	return ChannelCount
 END
-//==========================================================================================
+
 /// @brief Returns the ON/OFF status of the front TTLs on a specified rack.
 ///
 /// @param RackNo Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0
@@ -135,6 +132,7 @@ END
 static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 	variable RackNo
 	string panelTitle
+
 	variable a
 	variable b
 	string TTLsInUse = DC_ControlStatusListString("TTL", "Check",panelTitle)
@@ -144,12 +142,12 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 		 a = 0
 		 b = 3
 	endif
-	
+
 	if(RackNo == 1)
 		 a = 4
 		 b = 7
 	endif
-	
+
 	do
 		If(str2num(stringfromlist(a,TTLsInUse,";")) == 1)
 			RackTTLStatus = 1
@@ -162,7 +160,6 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 	return RackTTLStatus
 End
 
-//=========================================================================================
 /// @brief Returns the list of selected waves in pop up menus
 ///
 /// @param ChannelType DA, AD or TTL
@@ -185,9 +182,8 @@ static Function/s DC_PopMenuStringList(ChannelType, ControlType, panelTitle)
 	return ControlWaveList
 End
 
-//=========================================================================================
 /// @brief Returns the output wave with the most points (rows)
-/// 
+///
 /// @param channelType channel type Ex. DA, AD, or TTL
 /// @param panelTitle  panel title
 static Function DC_LongestOutputWave(channelType, panelTitle)
@@ -213,64 +209,66 @@ static Function DC_LongestOutputWave(channelType, panelTitle)
 	return maxNumRows
 End
 
-//==========================================================================================
 //// @brief Returns the length of the ITCDataWave
 ///
-/// The ITCdatawave length = 2^x where is the first integer large enough to contain the longest output wave plus one. 
+/// The ITCdatawave length = 2^x where is the first integer large enough to contain the longest output wave plus one.
 /// X also has a minimum value of 17 to ensure sufficient time for communication with the ITC device to prevent FIFO overflow or underrun.
 ///
 /// @param panelTitle  panel title
 /// @param DataAcqOrTP For data aquisition, DataAcqOrTP = 0. For the test pulse, DataAcqOrTP = 1.
 Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)
 	string panelTitle
-	variable DataAcqOrTP // 0 = DataAcq, 1 = TP
+	variable DataAcqOrTP
 	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle)
 	variable exponent = ceil(log(LongestSweep)/log(2))
 
 	if(DataAcqOrTP == 0)
 		exponent += 1
 	endif
-	
+
 	if(exponent < 17)
 		exponent = 17
 	endif
 
 	return (2^exponent)
 end
-//==========================================================================================
-///@brief Returns the longest sweep in a stimulus set across all active DA and TTL channels.
+
+/// @brief Returns the longest sweep in a stimulus set across all active DA and TTL channels.
 ///
 /// @param panelTitle  panel title
-Function DC_CalculateLongestSweep(panelTitle) // returns the longest sweep in points
+Function DC_CalculateLongestSweep(panelTitle)
 	string panelTitle
 	variable LongestSweep
-	
+
 	if (DC_LongestOutputWave("DA", panelTitle) >= DC_LongestOutputWave("TTL", panelTitle))
 		LongestSweep = DC_LongestOutputWave("DA", panelTitle)
 	else
 		LongestSweep = DC_LongestOutputWave("TTL", panelTitle)
 	endif
 	LongestSweep /= (DC_ITCMinSamplingInterval(panelTitle) / 5)
-	
+
 	return ceil(LongestSweep)
 End
-//==========================================================================================
-///@brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
+
+/// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
 /// @todo Create a seperate function to return a wave reference for this wave.
 /// @param panelTitle  panel title
 static Function DC_MakeITCConfigAllConfigWave(panelTitle)
 	string panelTitle
+
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make /I /o /n = (DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCChanConfigWave/Wave=Wv
-	Wv=0
+	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCChanConfigWave/Wave=wv
+	wv = 0
 End
-//==========================================================================================
-///@brief Creates ITCDataWave; The wave that the ITC device takes DA and TTL data from and passes AD data to for all channels.
+
+/// @brief Creates ITCDataWave; The wave that the ITC device takes DA and TTL data from and passes AD data to for all channels.
 ///
 /// @todo Create a seperate function to return a wave reference to this wave.
+/// Config all refers to configuring all the channels at once
+///
 /// @param panelTitle  panel title
-static Function DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)// config all refers to configuring all the channels at once
+static Function DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)
 	string panelTitle
 	variable DataAcqOrTP
 
@@ -286,18 +284,17 @@ static Function DC_MakeITCConfigAllDataWave(panelTitle, DataAcqOrTP)// config al
 	SetScale/P x 0, DC_ITCMinSamplingInterval(panelTitle) / 1000, "ms", ITCDataWave
 End
 
-//==========================================================================================
-///@brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
+/// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
 ///
 /// @param panelTitle  panel title
-static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle)//MakeITCUpdateFIFOPosAllConfigWave
+static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle)
 	string panelTitle
 	DFREF dfr = GetDevicePath(panelTitle)
 	Make /I /o /n = (DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCFIFOPositionAllConfigWave/Wave=Wv
 	Wv = 0
 End
-//==========================================================================================
-///@brief Creates the ITCFIFOAvailAllConfigWave used to recieve FIFO position data
+
+/// @brief Creates the ITCFIFOAvailAllConfigWave used to recieve FIFO position data
 ///
 /// @param panelTitle  panel title
 static Function DC_MakeFIFOAvailAllConfigWave(panelTitle)
@@ -306,8 +303,8 @@ static Function DC_MakeFIFOAvailAllConfigWave(panelTitle)
 	Make /I /o /n = (DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCFIFOAvailAllConfigWave/Wave=Wv
 	Wv = 0
 End
-//==========================================================================================
-///@brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave 
+
+/// @brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave
 ///
 /// @param panelTitle  panel title
 static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
@@ -370,8 +367,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	ITCChanConfigWave[][3] = 0
 End
 
-//==========================================================================================
-/// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave. 
+/// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
 /// Also records certain DA_Ephys GUI settings into sweepData and sweepTxTData
 /// @param panelTitle  panel title
 static Function DC_PlaceDataInITCDataWave(panelTitle)
@@ -388,10 +384,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable/C ret
 	variable GlobalTPInsert = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
 	variable ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
-	
-	if(GlobalTPInsert) // param for global TP Insertion placed outside of for loop so that they are only called once	
+
+	if(GlobalTPInsert) // param for global TP Insertion placed outside of for loop so that they are only called once
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
-		variable channelMode 
+		variable channelMode
 		variable TPDuration   = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 		variable TPAmpVClamp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 		variable TPAmpIClamp = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
@@ -494,7 +490,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 				ASSERT(0, "Unknown clamp mode")
 			endif
 		endif
-		
+
 		// put the insert test pulse checkbox status into the sweep data wave
 		sweepData[0][6][HeadStage] = GlobalTPInsert
 		sweepData[0][7][HeadStage] = ITI
@@ -540,36 +536,38 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		ITCDataWave[insertStart, endRow][col] = TTLWave[DecimationFactor * (p - insertStart)]
 	endif
 End
-//=========================================================================================
-///@brief Populates the ITCFIFOPositionAllConfigWave
+
+/// @brief Populates the ITCFIFOPositionAllConfigWave
 ///
 /// @param panelTitle  panel title
-static Function DC_PDInITCFIFOPositionAllCW(panelTitle)//PlaceDataInITCFIFOPositionAllConfigWave()
+static Function DC_PDInITCFIFOPositionAllCW(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCFIFOPositionAllConfigWave = $WavePath+":ITCFIFOPositionAllConfigWave" , ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 	ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
-	ITCFIFOPositionAllConfigWave[][2]=-1
-	ITCFIFOPositionAllConfigWave[][3]=0
+	ITCFIFOPositionAllConfigWave[][2]   = -1
+	ITCFIFOPositionAllConfigWave[][3]   = 0
 End
-//=========================================================================================
-///@brief Populates the ITCFIFOAvailAllConfigWave
+
+/// @brief Populates the ITCFIFOAvailAllConfigWave
 ///
 /// @param panelTitle  panel title
-static Function DC_PDInITCFIFOAvailAllCW(panelTitle)//PlaceDataInITCFIFOAvailAllConfigWave()
+static Function DC_PDInITCFIFOAvailAllCW(panelTitle)
 	string panelTitle
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCFIFOAvailAllConfigWave = $WavePath+":ITCFIFOAvailAllConfigWave", ITCChanConfigWave = $WavePath+":ITCChanConfigWave"
 	ITCFIFOAvailAllConfigWave[][0,1] = ITCChanConfigWave
-	ITCFIFOAvailAllConfigWave[][2] = 0
-	ITCFIFOAvailAllConfigWave[][3] = 0
+	ITCFIFOAvailAllConfigWave[][2]   = 0
+	ITCFIFOAvailAllConfigWave[][3]   = 0
 End
-//=========================================================================================
-///@brief Combines the TTL stimulus sweeps across different TTL channels into a single wave 
+
+/// @brief Combines the TTL stimulus sweeps across different TTL channels into a single wave
 ///
-///@param RackNo Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks, rack 0 and rack 1. Rack number for all other devices is zero.
-///@param panelTitle  panel title
-static Function DC_MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
+/// Makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
+///
+/// @param RackNo Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks, rack 0 and rack 1. Rack number for all other devices is zero.
+/// @param panelTitle  panel title
+static Function DC_MakeITCTTLWave(RackNo, panelTitle)
 	variable RackNo
 	string panelTitle
 	variable a, i, TTLChannelStatus,Code
@@ -582,7 +580,7 @@ static Function DC_MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for
 	if(RackNo == 0)
 		a = 0
 	endif
-	
+
 	if(RackNo == 1)
 		a = 4
 	endif
@@ -603,17 +601,19 @@ static Function DC_MakeITCTTLWave(RackNo, panelTitle)//makes single ttl wave for
 			sprintf cmd, "%sTTLWave+=(%d)*(%s%s%d%s)" wavepath, code, TTLWaveName,"[p][",DC_CalculateChannelColumnNo(panelTitle, stringfromlist(a,TTLWaveList,";"),i,1),"]"
 			execute cmd
 		endif
+
 		a += 1
 		i += 1
-	while( i <4)
+	while(i < 4)
 End
-//=========================================================================================
-///@brief Returns the minimum possible sampling interval of the ITC device based on the number of active DA channels.
+
+/// @brief Returns the minimum possible sampling interval of the ITC device based on the number of active DA channels.
 ///
-///@param RackNo Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks, rack 0 and rack 1. Rack number for all other devices is zero.
+/// @param rackNo      Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks,
+///                    rack 0 and rack 1. Rack number for all other devices is zero.
 /// @param panelTitle  panel title
-static Function DC_DAMinSampInt(RackNo, panelTitle)
-	variable RackNo
+static Function DC_DAMinSampInt(rackNo, panelTitle)
+	variable rackNo
 	string panelTitle
 
 	variable a, i, DAChannelStatus,SampInt
@@ -624,7 +624,7 @@ static Function DC_DAMinSampInt(RackNo, panelTitle)
 	SampInt = 0
 	i = 0
 	
-	do 
+	do
 		DAChannelStatus = str2num(stringfromlist(a,DAStatusString,";"))
 		SampInt += 5*DAChannelStatus
 		a += 1
@@ -633,11 +633,12 @@ static Function DC_DAMinSampInt(RackNo, panelTitle)
 	
 	return SampInt
 End
-//=========================================================================================
-///@brief Returns the minimum possible sampling interval of the ITC device based on the number of active AD channels.
+
+/// @brief Returns the minimum possible sampling interval of the ITC device based on the number of active AD channels.
 ///
-///@param RackNo Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks, rack 0 and rack 1. Rack number for all other devices is zero.
-///@param panelTitle  panel title
+/// @param RackNo      Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks,
+///                    rack 0 and rack 1. Rack number for all other devices is zero.
+/// @param panelTitle  panel title
 static Function DC_ADMinSampInt(RackNo, panelTitle)
 	variable RackNo
 	string panelTitle
@@ -651,7 +652,7 @@ static Function DC_ADMinSampInt(RackNo, panelTitle)
 	Bank2SampInt = 0
 	i = 0
 	
-	do 
+	do
 		ADChannelStatus = str2num(stringfromlist(a,ADStatusString,";"))
 		Bank1SampInt += 5 * ADChannelStatus
 		a += 1
@@ -659,7 +660,7 @@ static Function DC_ADMinSampInt(RackNo, panelTitle)
 	while(i < 4)
 	
 	i = 0
-	do 
+	do
 		ADChannelStatus = str2num(stringfromlist(a,ADStatusString,";"))
 		Bank2SampInt += 5 * ADChannelStatus
 		a += 1
@@ -668,16 +669,18 @@ static Function DC_ADMinSampInt(RackNo, panelTitle)
 	
 	return max(Bank1SampInt,Bank2SampInt)
 End
-//=========================================================================================
-///@brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through (as defined by SetVar_DataAcq_SetRepeats)
+
+/// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through
+///        (as defined by SetVar_DataAcq_SetRepeats)
 ///
-///@param panelTitle  panel title
-///@param SetName A string that contains the path and name of the stimulus set.
-///@param channelNo The DA or TTL channel number
-///@param DAorTTL The channel type. DA = 0. TTL = 1
-static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)// setname is a string that contains the full wave path
+/// @param panelTitle panel title
+/// @param SetName    A string that contains the path and name of the stimulus set.
+/// @param channelNo  The DA or TTL channel number
+/// @param DAorTTL    The channel type. DA = 0. TTL = 1
+static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)
 	string panelTitle, SetName
 	variable ChannelNo, DAorTTL
+
 	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
@@ -778,10 +781,10 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 end
 
 
-///@brief Adjust the length of the ITCdataWave according to the onset and termination delay set on the data acquisition tab of the DA_Ephys panel
+/// @brief Adjust the length of the ITCdataWave according to the onset and termination delay set on the data acquisition tab of the DA_Ephys panel
 ///
-////Only gets called for data acquisition cycles (non TP).
-///@param panelTitle  panel title
+/// Only gets called for data acquisition cycles (non TP).
+/// @param panelTitle  panel title
 static Function DC_GlobalChangesToITCDataWave(panelTitle)
 	string panelTitle
 	controlinfo /w = $panelTitle setvar_DataAcq_OnsetDelay
