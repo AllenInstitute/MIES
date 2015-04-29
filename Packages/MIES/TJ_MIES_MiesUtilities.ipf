@@ -984,3 +984,27 @@ Function IM_SaveExperiment(mode, [zeroSweeps, keepOtherWaves])
 
 	SaveExperiment
 End
+
+/// @brief Return the maximum count of the given channel type
+Function GetNumberFromChannelType(channelType)
+	string channelType
+
+	strswitch(channelType)
+		case "AsyncAD":
+			return NUM_ASYNC_CHANNELS
+			break
+		case "DA":
+		case "TTL":
+			return NUM_DA_TTL_CHANNELS
+			break
+		case "DataAcq_HS":
+			return NUM_HEADSTAGES
+			break
+		case "AD":
+			return NUM_AD_CHANNELS
+			break
+		default:
+			ASSERT(0, "invalid type")
+			break
+	endswitch
+End

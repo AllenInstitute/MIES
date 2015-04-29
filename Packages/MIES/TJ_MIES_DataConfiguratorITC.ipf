@@ -71,7 +71,7 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	String ChannelType, panelTitle
 	string ControlType
 
-	variable TotalPossibleChannels = DC_GetNumberFromType(channelType)
+	variable TotalPossibleChannels = GetNumberFromChannelType(channelType)
 
 	String ControlStatusList = ""
 	String ControlName
@@ -88,31 +88,6 @@ Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	return ControlStatusList
 End
 
-static Function DC_GetNumberFromType(channelType)
-	string channelType
-
-	strswitch(channelType)
-		case "AsyncAD":
-			return NUM_ASYNC_CHANNELS
-			break
-		case "DA":
-		case "TTL":
-			return NUM_DA_TTL_CHANNELS
-			break
-		case "DataAcq_HS":
-			return NUM_HEADSTAGES
-			break
-		case "AD":
-			return NUM_AD_CHANNELS
-			break
-		default:
-			ASSERT(0, "invalid type")
-			break
-	endswitch
-
-	return 0
-End
-
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
 ///
 /// @param type        one of DA, AD, TTL, DataAcq_HS or AsyncAD
@@ -124,7 +99,7 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 	string ctrl
 	variable i, numEntries
 
-	numEntries = DC_GetNumberFromType(type)
+	numEntries = GetNumberFromChannelType(type)
 
 	Make/FREE/U/B/N=(numEntries) wv
 
@@ -200,7 +175,7 @@ static Function/s DC_PopMenuStringList(ChannelType, ControlType, panelTitle)
 	String ControlName
 	variable i, numEntries
 
-	numEntries = DC_GetNumberFromType(channelType)
+	numEntries = GetNumberFromChannelType(channelType)
 	for(i = 0; i < numEntries; i += 1)
 		sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
 		ControlInfo /w = $panelTitle $ControlName
