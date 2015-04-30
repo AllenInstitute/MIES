@@ -14,7 +14,7 @@ Function ITC_DataAcq(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
-	variable stopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
+	variable stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
@@ -104,7 +104,7 @@ Function ITC_BkrdDataAcq(panelTitle)
 	string ITCChanConfigWavePath           = WavePath + ":ITCChanConfigWave"
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = ITC_CalcDataAcqStopCollPoint(panelTitle)
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -272,7 +272,7 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	string cmd
 
 	TP_ResetTPStorage(panelTitle)
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
+	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", panelTitle)
 
 	string  ITCDataWavePath = WavePath + ":ITCDataWave"
@@ -507,7 +507,7 @@ Function ITC_StartTestPulse(panelTitle)
 
 	string cmd
 	variable i = 0
-	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle)
+	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
@@ -656,14 +656,6 @@ Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 			beep
 		endif
 	endif
-End
-
-/// @brief Calculates the stop colleciton point, includes global adjustments to set on and off set.
-Function ITC_CalcDataAcqStopCollPoint(panelTitle)
-	string panelTitle
-
-	// returns longest sweep in points - accounts for sampling interval
-	return DC_CalculateLongestSweep(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)
 End
 
 /// @brief Sets active DA channels to Zero - used after TP MD

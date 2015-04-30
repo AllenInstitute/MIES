@@ -182,12 +182,15 @@ End
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)
+static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable LongestSweep = DC_CalculateLongestSweep(panelTitle)
-	variable exponent = ceil(log(LongestSweep)/log(2))
+	variable longestSweep, exponent
+
+	longestSweep = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+
+	exponent = ceil(log(longestSweep)/log(2))
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1
@@ -204,7 +207,7 @@ end
 ///
 /// @param panelTitle  panel title
 /// @return number of data points, *not* time
-Function DC_CalculateLongestSweep(panelTitle)
+static Function DC_CalculateLongestSweep(panelTitle)
 	string panelTitle
 
 	variable longestSweep
@@ -759,4 +762,18 @@ Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay]
 	endif
 
 	return onsetDelayVal + terminationDelayVal
+End
+
+/// @brief Calculates the stop collection point, includes global adjustments to set on and off set.
+Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+	string panelTitle
+	variable dataAcqOrTP
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		return DC_CalculateLongestSweep(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		return DC_CalculateLongestSweep(panelTitle)
+	else
+		ASSERT(0, "unknown mode")
+	endif
 End
