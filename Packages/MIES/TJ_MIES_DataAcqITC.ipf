@@ -657,15 +657,13 @@ Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 		endif
 	endif
 End
-//======================================================================================
 
-Function ITC_CalcDataAcqStopCollPoint(panelTitle) // calculates the stop colleciton point, includes global adjustments to set on and off set.
+/// @brief Calculates the stop colleciton point, includes global adjustments to set on and off set.
+Function ITC_CalcDataAcqStopCollPoint(panelTitle)
 	string panelTitle
-	variable stopCollectionPoint
-	Variable LongestSweep = DC_CalculateLongestSweep(panelTitle) // returns longest sweep in points - accounts for sampling interval
-	Variable GobalOnsetOffsetSum = DC_ReturnTotalLengthIncrease(panelTitle)
-	stopCollectionPoint = LongestSweep + GobalOnsetOffsetSum
-	return stopCollectionPoint
+
+	// returns longest sweep in points - accounts for sampling interval
+	return DC_CalculateLongestSweep(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)
 End
 
 //======================================================================================

@@ -126,10 +126,10 @@ End
 
 /// @brief Plot the given sweep in the locked Data Browser
 ///
-/// @param panelTitle                                                                    locked databrowser
-/// @param currentSweep[optional: defaults to the value of `setvar_DataBrowser_SweepNo`] currently displayed sweep or last
-/// @param newSweep[optional: defaults to currentSweep]                                  new sweep to display
-/// @param direction[optionals: ignored by default]                                      numerical offset relative to currentSweep to calculate newSweep
+/// @param panelTitle                                                                     locked databrowser
+/// @param currentSweep [optional, defaults to the value of `setvar_DataBrowser_SweepNo`] currently displayed sweep or last
+/// @param newSweep [optional, defaults to currentSweep]                                  new sweep to display
+/// @param direction [optional, ignored by default]                                       numerical offset relative to currentSweep to calculate newSweep
 /// newSweep is clipped to a valid sweep number
 static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	string panelTitle

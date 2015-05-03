@@ -14,7 +14,7 @@ Function DM_SaveITCData(panelTitle)
 	string savedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(sweepNo)
 	string savedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(sweepNo)
 
-	variable rowsToCopy = ITC_CalcDataAcqStopCollPoint(panelTitle)
+	variable rowsToCopy = ITC_CalcDataAcqStopCollPoint(panelTitle) - 1
 
 	Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
 	Duplicate/O ITCChanConfigWave $savedSetUpWaveName
