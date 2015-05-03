@@ -13,6 +13,8 @@ StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 StrConstant ITC1600_FIRST_DEVICE = "ITC1600_Dev_0"
 StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 
+StrConstant amPanel = "analysisMaster"
+
 /// This regular expression matches all sweep waves
 StrConstant DATA_SWEEP_REGEXP = "(?i)^Sweep_[[:digit:]]+$"
 

@@ -1,7 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-static StrConstant amPanel = "analysisMaster"
-
 /// @file DR_MIES_analysisMaster.ipf
 /// @brief waveform analysis framework
 
@@ -11,33 +9,36 @@ Function AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 	
+	variable headStageCounter
+	string analysisAction
+	string editedAnalysisAction
+	variable analysisResult
+	string postAnalysisFunction
+	string editedPostAnalysisFunction
+	variable postAnalysisResult
+			
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	
 	// Go through the analysisSettingsWave and decode the settings to invoke analysis routines
-	variable headStageCounter
 	for(headStageCounter = 0; headStageCounter < NUM_HEADSTAGES; headStageCounter += 1)
 		if(str2num(analysisSettingsWave[headStageCounter][%PSAOnOff]) == 1) // do the post sweep analysis
-			string analysisAction
-			string editedAnalysisAction
 			editedAnalysisAction = analysisSettingsWave[headStageCounter][%PSAType]
 			
 			sprintf analysisAction, "AM_PSA_%s", editedAnalysisAction
 			
 			// put the analysisAction into a form that can be used to call a function
 			FUNCREF protoAnalysisFunc psaf = $analysisAction
-			variable analysisResult = psaf(panelTitle, headStageCounter)
+			analysisResult = psaf(panelTitle, headStageCounter)
 			analysisSettingsWave[headStageCounter][%PSAResult] = num2str(analysisResult)
 				
 			if(str2num(analysisSettingsWave[headStageCounter][%PAAOnOff]) == 1) // do the post analysis action		
-				string postAnalysisFunction
-				string editedPostAnalysisFunction
 				editedPostAnalysisFunction = analysisSettingsWave[headStageCounter][%PAAType]
 					
 				sprintf postAnalysisFunction, "AM_PAA_%s", editedPostAnalysisFunction
 				
 				// put the analysisAction into a form that can be used to call a function
 				FUNCREF protoAnalysisFunc paaf = $postAnalysisFunction
-				variable postAnalysisResult = paaf(panelTitle, headStageCounter)
+				postAnalysisResult = paaf(panelTitle, headStageCounter)
 				analysisSettingsWave[headStageCounter][%PAAResult] = num2str(postAnalysisResult)
 			endif					
 		endif
@@ -49,6 +50,10 @@ End
 Function AM_analysisMasterMidSweep(panelTitle)
 	string panelTitle
 	
+	string analysisAction
+	string editedAnalysisAction
+	variable analysisResult
+	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
 	
@@ -56,15 +61,13 @@ Function AM_analysisMasterMidSweep(panelTitle)
 	variable headStageCounter
 	for(headStageCounter = 0; headStageCounter < NUM_HEADSTAGES; headStageCounter += 1)
 		if(str2num(analysisSettingsWave[headStageCounter][%MSAOnOff]) == 1) // do the mid sweep analysis
-			string analysisAction
-			string editedAnalysisAction
 			editedAnalysisAction = analysisSettingsWave[headStageCounter][%MSAType]
 			
 			sprintf analysisAction, "AM_MSA_%s", editedAnalysisAction
 			
 			// put the analysisAction into a form that can be used to call a function
 			FUNCREF protoAnalysisFunc psaf = $analysisAction
-			variable analysisResult = psaf(panelTitle, headStageCounter)
+			analysisResult = psaf(panelTitle, headStageCounter)
 			analysisSettingsWave[headStageCounter][%MSAResult] = num2str(analysisResult)
 		endif
 	endfor
@@ -85,30 +88,38 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
+	variable sweepNo
+	variable x
+	string ADChannelList
+	string DAChannelList
+	variable numDACs
+	variable idx
+	Variable apLevelValue
+	variable xPoint
 	
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave
 	
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
-	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
 	Wave/Z sweep = GetSweepWave(paneltitle, (sweepNo-1))
 	if(!WaveExists(sweep))
      		Abort "***Error getting current sweep wave..."
 	endif
 	
 	Wave config = GetConfigWave(sweep)	
-	variable x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
+	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
 	
-	string ADChannelList = GetADCListFromConfig(config)
-	string DAChannelList = GetDACListFromConfig(config)
-	variable numDACs = ItemsInList(DAChannelList)
-	variable idx = WhichListItem(num2str(x), ADChannelList)
+	ADChannelList = GetADCListFromConfig(config)
+	DAChannelList = GetDACListFromConfig(config)
+	numDACs = ItemsInList(DAChannelList)
+	idx = WhichListItem(num2str(x), ADChannelList)
 	ASSERT(idx != -1, "Missing AD channel")
 		
 	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
 	
-	Variable apLevelValue = actionScaleSettingsWave[headStage][%apThreshold]
+	apLevelValue = actionScaleSettingsWave[headStage][%apThreshold]
 	FindLevel/P/Q/EDGE=1 SingleAD, apLevelValue
-	variable xPoint=V_LevelX
+	xPoint=V_LevelX
 	if (V_flag == 0)
 		print "AP level found at" , xPoint
 		DAP_StopOngoingDataAcquisition(panelTitle)
@@ -120,35 +131,43 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
+	variable sweepNo
+	variable x
+	string ADChannelList
+	string DAChannelList
+	variable numDACs
+	variable idx
+	variable tracePeakValue
+	
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
-	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
 	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
 	endif
 	
 	Wave config = GetConfigWave(sweep)
-	variable x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
+	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
 	
-	string ADChannelList = GetADCListFromConfig(config)
-	string DAChannelList = GetDACListFromConfig(config)
-	variable numDACs = ItemsInList(DAChannelList)
-	variable idx = WhichListItem(num2str(x), ADChannelList)
+	ADChannelList = GetADCListFromConfig(config)
+	DAChannelList = GetDACListFromConfig(config)
+	numDACs = ItemsInList(DAChannelList)
+	idx = WhichListItem(num2str(x), ADChannelList)
 	ASSERT(idx != -1, "Missing AD channel")
 		
 	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
 			
-	variable tracePeakValue = WaveMax(singleAD)	
+	tracePeakValue = WaveMax(singleAD)	
 		
 	// see if the tracePeakValue is greater then the apThreshold value...if so, indicate that the action potential fired
-	if (tracePeakValue > actionScaleSettingsWave[headStage][%apThreshold])	
+	if(tracePeakValue > actionScaleSettingsWave[headStage][%apThreshold])	
 		print "AP Fired: HS#" + num2str(headStage)
-		analysisSettingsWave[headStage][%PSAResult] = num2str(1)
+		analysisSettingsWave[headStage][%PSAResult] = "1"
 		return 1
 	else
-		analysisSettingsWave[headStage][%PSAResult] = num2str(0)
+		analysisSettingsWave[headStage][%PSAResult] = "0"
 		return 0
 	endif
 End	
@@ -161,19 +180,26 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)	
 	Wave actionScaleSettingsWave = GetActionScaleSettingsWaveRef(panelTitle)
 	
-	// get the DA channel associated with the desired headstage
-	variable daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
+	variable len 
+	string responseString
+	variable daChannel
 	string scaleControlName
+	variable scaleFactor
+	variable incValue
+	variable analysisResult
+	
+	// get the DA channel associated with the desired headstage
+	daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
-	variable scaleFactor = GetSetVariable(panelTitle, scaleControlName)
+	scaleFactor = GetSetVariable(panelTitle, scaleControlName)
 	
 	// for this, use the coarse scale factor for the adjustment	
-	variable incValue = actionScaleSettingsWave[headStage][%coarseScaleValue]
+	incValue = actionScaleSettingsWave[headStage][%coarseScaleValue]
 	
 	// Fetch the post sweep analysis result
-	variable analysisResult = str2num(analysisSettingsWave[headStage][%PSAResult])
+	analysisResult = str2num(analysisSettingsWave[headStage][%PSAResult])
 	
-	if (analysisResult == 0)	// action potential did not fire
+	if(analysisResult == 0)	// action potential did not fire
 		scaleFactor = scaleFactor + incValue
 		print "New scaleFactor: ", scaleFactor
 		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
@@ -185,6 +211,24 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		// return the scale factor that caused the AP to fire
 		actionScaleSettingsWave[headStage][%result] = scaleFactor
 		print "scale factor that caused AP: ", scaleFactor	
+		
+		//  See if we need to send a response string to the WSE
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(panelTitle)
+		
+		//  See if there is anything in the cmdID space
+		len = strlen(asynRespWave[headstage][%cmdID])
+		
+		if(len >= 1)
+			// build up the response string
+			sprintf responseString, "scaleFactor:%f", scaleFactor
+			writeAsyncResponseWrapper(asynRespWave[headstage][%cmdID], responseString)
+		else
+			print "No asyn response required..."
+		endif 
+		
+		// kill the asynRespWave
+		KillWaves asynRespWave
 		
 		// Now put the scale factor back to 1.0
 		SetSetVariable(panelTitle, scaleControlName, 1.0)	
@@ -200,22 +244,29 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)	
 	Wave actionScaleSettingsWave = GetActionScaleSettingsWaveRef(panelTitle)
 	
-	// get the DA channel associated with the desired headstage
-	variable daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
-	
+	variable len
+	string responseString
+	variable daChannel
 	string scaleControlName
+	variable scaleFactor
+	variable initialScaleFactor
+	variable analysisResult
+	
+	// get the DA channel associated with the desired headstage
+	daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
+	
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
-	variable scaleFactor = GetSetVariable(panelTitle, scaleControlName)
-	variable initialScaleFactor = scaleFactor
+	scaleFactor = GetSetVariable(panelTitle, scaleControlName)
+	initialScaleFactor = scaleFactor
 	
 	// Fetch the post sweep analysis result
-	variable analysisResult = str2num(analysisSettingsWave[headStage][%PSAResult])
+	analysisResult = str2num(analysisSettingsWave[headStage][%PSAResult])
 	
-	if ((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))	 // action potential did not fire while using coarse tune
+	if((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))	 // action potential did not fire while using coarse tune
 		scaleFactor = scaleFactor + actionScaleSettingsWave[headStage][%coarseScaleValue]
 		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
 		return 0
-	elseif ((analysisResult == 1) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))	// action potential fired on the coarse tuning
+	elseif((analysisResult == 1) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))	// action potential fired on the coarse tuning
 		print "switching to fine factor..."
 		// bump the scale back one step of the coarse incValue
 		SetSetVariable(panelTitle, scaleControlName, (scaleFactor - actionScaleSettingsWave[headStage][%coarseScaleValue]))
@@ -225,14 +276,15 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		
 		// turn on the fineTuneUse
 		actionScaleSettingsWave[headStage][%fineTuneUse] = 1
+		
 		return 0
-	elseif ((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential didn't fire on the fine tuning			
+	elseif((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential didn't fire on the fine tuning			
 		// bump up the scale factor by the fine Scale adjustment
 		scaleFactor = scaleFactor + actionScaleSettingsWave[headStage][% fineScaleValue]
 		
 		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
 		return 0
-	elseif ((analysisResult == 1) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential fired on the fine tuning
+	elseif((analysisResult == 1) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential fired on the fine tuning
 		print "found the AP!"
 		// Stop the ongoing data acquisition
 		DAP_StopOngoingDataAcquisition(panelTitle)
@@ -244,6 +296,24 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		// return the scale factor that caused the AP to fire
 		actionScaleSettingsWave[headStage][%result] = scaleFactor
 		print "scale factor that caused AP: ", scaleFactor	
+		
+		//  See if we need to send a response string to the WSE
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(panelTitle)
+		
+		//  See if there is anything in the cmdID space
+		len = strlen(asynRespWave[headstage][%cmdID])
+		
+		if(len >= 1)
+			// build up the response string
+			sprintf responseString, "scaleFactor:%f", scaleFactor
+			writeAsyncResponseWrapper(asynRespWave[headstage][%cmdID], responseString)
+		else
+			print "No asyn response required..."
+		endif 
+		
+		// kill the asynRespWave
+		KillWaves asynRespWave
 		
 		// Now put the scale factor back to 1.0
 		SetSetVariable(panelTitle, scaleControlName, 1.0)			
@@ -404,17 +474,20 @@ End
 Function AM_configAnalysis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 	
+	string itcPanel
+	string controlName
+	variable headstageNumber
+	
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:		
 			// get the am panel name
-			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 				print "Please lock a device...."
 				return NAN
 			endif
 			// decipher which headstage we are dealing with
-			string controlName = ba.ctrlName
-			variable headstageNumber
+			controlName = ba.ctrlName
 			sscanf controlName, "PAA_headStage%d", headStageNumber
 			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			configureAnalysis(headStageNumber, itcPanel)
@@ -426,9 +499,13 @@ End
 Function AM_LockedDeviceMenu(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 	
-	Variable popNum = pa.popNum
-	String popStr = pa.popStr
-	String panel = pa.win		// window that hosts the popup menu
+	Variable popNum
+	String popStr
+	String panel
+	
+	popNum = pa.popNum
+	popStr = pa.popStr
+	panel = pa.win		// window that hosts the popup menu
 	
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -444,8 +521,11 @@ End
 Function AM_HeadStagePSCheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	Variable checked = cba.checked
-	string controlName = cba.ctrlName
+	Variable checked
+	string controlName
+	
+	checked = cba.checked
+	controlName = cba.ctrlName
 	
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -462,16 +542,21 @@ Function AM_PostSweepCheckBox(ctrlName, checked)
 	string ctrlName
 	Variable checked
 	
+	string itcPanel
+	Variable headStageClicked
+	string configButton
+	string midSweepAnalysisCheck
+	string midSweepMenu
+	
 	// get the am panel name
-	string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-	if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+	itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+	if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 		print "Please lock a device...."
 		return NAN
 	endif
 	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 		
-	Variable headStageClicked
 	sscanf ctrlName, "headStage%d_postSweepAnalysisOn", headStageClicked
 	ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 	
@@ -480,18 +565,15 @@ Function AM_PostSweepCheckBox(ctrlName, checked)
 	ASSERT(WindowExists(amPanel), "Analysis master panel must exist")
 	
 	//build up the string for enabling the config button
-	string configButton
 	sprintf configButton, "PAA_headStage%dConfig", headStageClicked
 	
 	//build up the strings for disabling the mid sweep checkbox
-	string midSweepAnalysisCheck
 	sprintf midSweepAnalysisCheck, "headStage%d_midSweepAnalysisOn", headStageClicked
 	
 	//build up the string for disabling the mid sweep pull down menu 
-	string midSweepMenu
 	sprintf midSweepMenu, "MSA_headStage%d", headStageClicked
 	
-	if (checked)	
+	if(checked)	
 		print "postSweepAnalysis turned on for headstage #", headStageClicked
 		//enable the config button
 		EnableControl(amPanel, configButton)
@@ -517,9 +599,12 @@ end
 ///@brief function to handle the PA check box control
 Function AM_HeadStagePACheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
-
-	Variable checked = cba.checked
-	string controlName = cba.ctrlName
+	
+	Variable checked
+	string controlName
+	
+	checked = cba.checked
+	controlName = cba.ctrlName
 	
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -535,44 +620,45 @@ End
 Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 	
+	Variable headStageClicked
+	string configButtonEnable
+	string midSweepAnalysisCheck
+	string midSweepMenu
+	string postSweepAnalysisCheck
+	
 	switch(cba.eventCode)
 		case 2: // mouse up
 			string ctrlName = cba.ctrlName
 			Variable checked = cba.checked	
 			// get the da_ephys panel name
 			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 				print "Please lock a device...."
 				return NAN
 			endif
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
-			Variable headStageClicked
 			sscanf ctrlName, "headStage%d_postAnalysisActionOn", headStageClicked 
 			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 						
 			//build up the string for enabling the config button
-			string configButtonEnable
 			sprintf configButtonEnable, "PAA_headStage%dConfig", headStageClicked
 			
 			//build up the strings for disabling the mid sweep checkbox
-			string midSweepAnalysisCheck
 			sprintf midSweepAnalysisCheck, "headStage%d_midSweepAnalysisOn", headStageClicked
 			
 			//build up the string for disabling the mid sweep pull down menu 
-			string midSweepMenu
 			sprintf midSweepMenu, "MSA_headStage%d", headStageClicked
 			
 			//build up the string for enabling the post sweep analysis---the post analysis action needs the post sweep analysis enabled to work
-			string postSweepAnalysisCheck
 			sprintf postSweepAnalysisCheck, "headStage%d_postSweepAnalysisOn", headStageClicked
 			
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
 			ASSERT(V_flag != 0, "non-existing window or control")
 			
-			if (checked)	
+			if(checked)	
 				print "postAnalysisAction turned on for headstage #", headStageClicked	
 				//enable the config button
 				EnableControl(amPanel, configButtonEnable)
@@ -622,46 +708,50 @@ End
 Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 	
+	string ctrlName 
+	Variable checked
+	string itcPanel
+	Variable headStageClicked
+	string configButtonEnable
+	string postSweepAnalysisCheck
+	string postAnalysisActionCheck
+	string postSweepMenu
+	string postAnalysisMenu
+	
 	switch(cba.eventCode)
 		case 2: // mouse up
-			string ctrlName = cba.ctrlName
-			Variable checked = cba.checked
+			ctrlName = cba.ctrlName
+			checked = cba.checked
 			
-			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 				print "Please lock a device...."
 				return NAN
 			endif
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
-			Variable headStageClicked
 			sscanf ctrlName, "headStage%d_midSweepAnalysisOn", headStageClicked 
 			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
 			//build up the string for enabling the config button
-			string configButtonEnable
 			sprintf configButtonEnable, "PAA_headStage%dConfig", headStageClicked
 			
 			//build up the strings for disabling the post sweep checkboxes
-			string postSweepAnalysisCheck
-			string postAnalysisActionCheck
 			sprintf postSweepAnalysisCheck, "headStage%d_postSweepAnalysisOn", headStageClicked
 			sprintf postAnalysisActionCheck, "headStage%d_postAnalysisActionOn", headStageClicked
 			
 			//build up the string for disabling the post sweep analysis pull down menu 
-			string postSweepMenu
 			sprintf postSweepMenu, "PSA_headStage%d", headStageClicked
 			
 			//build up the string for disabling the post sweep analysis pull down menu 
-			string postAnalysisMenu
 			sprintf postAnalysisMenu, "PAA_headStage%d", headStageClicked
 			
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
 			ASSERT(V_flag != 0, "non-existing window or control")
 			
-			if (checked)	
+			if(checked)	
 				print "midSweepAnalysisAction turned on for headstage #", headStageClicked
 				//enable the config button
 				EnableControl(amPanel, configButtonEnable)
@@ -691,22 +781,27 @@ End
 Function AM_PS_PopMenuChk(pa) : PopupMenuControl  
 	STRUCT WMPopupAction &pa
 	
+	variable popNum
+	String popStr
+	string  ctrlName
+	string itcPanel
+	Variable headStageSelected
+	
 	switch(pa.eventCode)
 		case 2: // mouse up
-			variable popNum = pa.popNum
-			String popStr = pa.popStr
-			string  ctrlName = pa.ctrlName
+			popNum = pa.popNum
+			popStr = pa.popStr
+			ctrlName = pa.ctrlName
 				
 			// get the da_ephys panel name
-			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 				print "Please lock a device...."
 				return NAN
 			endif
 				
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
-			Variable headStageSelected
 			sscanf ctrlName, "PSA_headStage%d", headStageSelected
 			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
@@ -725,22 +820,27 @@ End
 Function AM_PA_PopMenuChk(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
+	variable popNum
+	String popStr
+	string  ctrlName
+	string itcPanel
+	Variable headStageSelected
+	
 	switch(pa.eventCode)
 		case 2: // mouse up
-			variable popNum = pa.popNum
-			String popStr = pa.popStr
-			string  ctrlName = pa.ctrlName
+			popNum = pa.popNum
+			popStr = pa.popStr
+			ctrlName = pa.ctrlName
 		
 			// get the da_ephys panel name
-			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 				print "Please lock a device...."
 				return NAN
 			endif
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
-			Variable headStageSelected
 			sscanf ctrlName, "PAA_headStage%d", headStageSelected
 			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
@@ -759,22 +859,27 @@ End
 Function AM_MS_PopMenuChk(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
+	variable popNum
+	String popStr
+	string  ctrlName
+	string itcPanel
+	Variable headStageSelected
+
 	switch(pa.eventCode)
 		case 2: // mouse up
-			variable popNum = pa.popNum
-			String popStr = pa.popStr
-			string  ctrlName = pa.ctrlName
+			popNum = pa.popNum
+			popStr = pa.popStr
+			ctrlName = pa.ctrlName
 		
 			// get the da_ephys panel name
-			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if (HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
+			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
 				print "Please lock a device...."
 				return NAN
 			endif
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
-			Variable headStageSelected
 			sscanf ctrlName, "MSA_headStage%d", headStageSelected
 			ASSERT(V_flag == 1, "unexpected number of sscanf reads")
 			
@@ -808,14 +913,19 @@ End
 static Function/S AM_sortAMFunctions(str)
 	string str
 	
-	string funcList = FunctionList("*" + str + "*", ";", "")
-	variable noFunctions = ItemsInList(funcList)
-	string editedList = "-None-"
+	string funcList
+	variable noFunctions
+	string editedList
 	string func, editedFunc
-	string funcTemplate = "AM_" + str + "_%s"
+	string funcTemplate
 	variable i
 	
-	for (i = 0; i < noFunctions; i += 1)
+	funcList = FunctionList("*" + str + "*", ";", "")
+	noFunctions = ItemsInList(funcList)
+	editedList = "-None-"
+	funcTemplate = "AM_" + str + "_%s"
+	
+	for(i = 0; i < noFunctions; i += 1)
 	    func = StringFromList(i, funcList)
 	    sscanf func, funcTemplate, editedFunc
 	    ASSERT(V_flag == 1, "unexpected number of sscanf reads")
@@ -823,4 +933,22 @@ static Function/S AM_sortAMFunctions(str)
 	endfor
 
 	return editedList
+End
+
+Function AM_writeAsyncResponseProto(cmdID, returnString)
+	string cmdID, returnString
+
+	Abort "Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?"
+End
+
+/// @brief Wrapper for the optional tango related function #writeAsyncResponseWrapper
+/// The approach here using a function reference and an interpreted string like `$""` allows
+/// to convert the dependency on the function writeAsyncResponse from compile time to runtime.
+/// This function will call TI_writeAsyncResponse if it can be found, otherwise AM_writeAsyncResponseProto is called.
+Static Function writeAsyncResponseWrapper(cmdID, returnString)
+	string cmdID, returnString
+
+	FUNCREF AM_writeAsyncResponseProto f = $"TI_WriteAsyncResponse"
+
+	return f(cmdID, returnString)
 End
