@@ -618,7 +618,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
-	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,14,1},value= _NUM:0
+	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,0,1},value= _NUM:0
 	CheckBox Check_Settings_SaveData,pos={34,237},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
 	CheckBox Check_Settings_SaveData,help={"Use cautiously - intended primarily for software development"}
 	CheckBox Check_Settings_SaveData,userdata(tabnum)=  "5"
@@ -2273,7 +2273,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TPBuffer,pos={173,106},size={103,16},disable=1,title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:4
+	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:1
 	CheckBox check_Settings_SaveAmpSettings,pos={306,566},size={108,14},disable=1,title="Save Amp Settings"
 	CheckBox check_Settings_SaveAmpSettings,help={"Adds amplifier settings to lab note book for Multiclamp 700Bs ONLY!"}
 	CheckBox check_Settings_SaveAmpSettings,userdata(tabnum)=  "5"
@@ -2792,7 +2792,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	PopupMenu popup_MoreSettings_DeviceType WIN = $panelTitle,mode=1 // ,popvalue="ITC1600",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
 	PopupMenu popup_moreSettings_DeviceNo WIN = $panelTitle,mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
 
-	SetVariable SetVar_Sweep WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_Sweep WIN = $panelTitle, limits={0,0,1}, value= _NUM:0
 
 	SetVariable SetVar_DataAcq_OnsetDelay WIN = $panelTitle,value= _NUM:1
 	ValDisplay valdisp_DataAcq_SweepsInSet WIN = $panelTitle,value= _NUM:1
@@ -2806,6 +2806,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Check_DataAcq1_IndexingLocked WIN = $panelTitle, value= 0
 
 	SetVariable SetVar_DataAcq_ListRepeats WIN = $panelTitle,limits={1,inf,1},value= _NUM:1
+
+	SetVariable setvar_Settings_TPBuffer WIN = $panelTitle, value= _NUM:1
 
 	CheckBox check_DataAcq_IndexRandom WIN = $panelTitle, fColor=(65280,43520,0),value= 0
 	SetVariable SetVar_DataAcq_TotalStepOveride WIN = $panelTitle,fColor=(65280,43520,0),value= _NUM:0
