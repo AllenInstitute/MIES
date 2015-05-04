@@ -340,15 +340,15 @@ End
 static Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
 
-	variable i, col, headstage, numEntries, isTestPulse
+	variable i, itcDataColumn, headstage, numEntries, isTestPulse
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
 	string ctrl, comment
-	variable DAGain, DAScale, setColumn, insertStart, insertEnd, endRow, oneFullCycle, val
+	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
-	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing
+	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, onSetDelay
 	variable/C ret
 
 	globalTPInsert  = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -357,6 +357,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	indexingLocked  = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	indexing        = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
 	comment         = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
+	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay)
 
 	if(globalTPInsert)
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
@@ -420,16 +421,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		if(isTestPulse)
 			setColumn   = 0
 			insertStart = 0
-			insertEnd   = 0
 		else
 			// only call DC_CalculateChannelColumnNo for real data acquisition
 			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, DATA_ACQUISITION_MODE)
 			oneFullCycle = imag(ret)
-			setColumn   = real(ret)
-			if(col == 0)
-				insertStart = DC_GlobalChangesToITCDataWave(panelTitle)
-				insertEnd   = insertStart
-			endif
+			setColumn    = real(ret)
+			insertStart  = onsetDelay
 		endif
 
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
@@ -444,18 +441,19 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		// resample the wave to min samp interval and place in ITCDataWave
 		Wave/SDFR=GetWBSvdStimSetDAPath() stimSet = $setName
-		endRow = (DimSize(stimSet, ROWS) / decimationFactor - 1) + insertEnd
+		setLength = (DimSize(stimSet, ROWS) / decimationFactor - 1)
 		sweepData[0][5][HeadStage] = setColumn // document the set column
 
-		Multithread ITCDataWave[insertStart, endRow][col] = (DAGain * DAScale) * stimSet[DecimationFactor * (p - insertStart)][setColumn]
+		Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
 
-		// Global TP insertion
+		// space in ITCDataWave for the testpulse is allocated via an automatic increase
+		// of the onset delay
 		if(!isTestPulse && globalTPInsert)
-			channelMode  = ChannelClampMode[i][%DAC]
+			channelMode = ChannelClampMode[i][%DAC]
 			if(channelMode == V_CLAMP_MODE)
-				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpVClamp * DAGain
+				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpVClamp * DAGain
 			elseif(channelMode == I_CLAMP_MODE)
-				ITCDataWave[TPStartPoint, TPEndPoint][col] = TPAmpIClamp * DAGain
+				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpIClamp * DAGain
 			else
 				ASSERT(0, "Unknown clamp mode")
 			endif
@@ -465,7 +463,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		sweepData[0][6][HeadStage] = GlobalTPInsert
 		sweepData[0][7][HeadStage] = ITI
 
-		col += 1 // col determines what column of the ITCData wave the DAC wave is inserted into
+		itcDataColumn += 1
 	endfor
 
 	WAVE statusAD = DC_ControlStatusWave(panelTitle, "AD")
@@ -494,16 +492,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	if(DC_AreTTLsInRackChecked(0, panelTitle))
 		DC_MakeITCTTLWave(0, panelTitle)
 		WAVE/SDFR=deviceDFR TTLwave
-		endRow = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1 + insertEnd
-		ITCDataWave[insertStart, endRow][col] = TTLWave[decimationFactor * (p - insertStart)]
-		col += 1
+		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
+		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+		itcDataColumn += 1
 	endif
 
 	if(DC_AreTTLsInRackChecked(1, panelTitle))
 		DC_MakeITCTTLWave(1, panelTitle)
 		WAVE/SDFR=deviceDFR TTLwave
-		endRow = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1 + insertEnd
-		ITCDataWave[insertStart, endRow][col] = TTLWave[decimationFactor * (p - insertStart)]
+		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
+		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 	endif
 End
 
@@ -719,30 +717,15 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 	return cmplx(column, cycleCount)
 End
 
-/// @brief Adjust the length of the ITCdataWave according to the onset and termination delay set on the data acquisition tab of the DA_Ephys panel
+/// @brief Returns the length increase of the ITCDataWave following onset/termination delay insertion and
+/// distributed data aquisition.
 ///
-/// Only gets called for data acquisition cycles (non TP).
-/// @param panelTitle  panel title
-static Function DC_GlobalChangesToITCDataWave(panelTitle)
-	string panelTitle
-
-	variable totalLengthIncrease, onsetDelay, additionalRows
-
-	totalLengthIncrease = DC_ReturnTotalLengthIncrease(panelTitle, onsetDelay=onsetDelay)
-	additionalRows = round(totalLengthIncrease * 5)
-
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	Redimension/N=(DimSize(ITCDataWave, ROWS) + additionalRows, -1, -1, -1) ITCDataWave
-
-	return onsetDelay
-End
-
-/// @brief Returns the lenght increase of the ITCDataWave following onset and/or termination delay insertion.
+/// All returned values are in number of points, *not* in time.
 ///
-/// @param[in] panelTitle                   panel title
-/// @param[out] onsetDelay [optional]       onset delay
-/// @param[out] terminationDelay [optional] termination delay
-Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay])
+/// @param[in] panelTitle                      panel title
+/// @param[out] onsetDelay [optional]          onset delay
+/// @param[out] terminationDelay [optional]    termination delay
+static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay])
 	string panelTitle
 	variable &onsetDelay, &terminationDelay
 
