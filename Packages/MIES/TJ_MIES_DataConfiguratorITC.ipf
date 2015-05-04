@@ -345,10 +345,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
-	string ctrl, comment
+	string ctrl, comment, firstSetName
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
-	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, onSetDelay
+	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
+	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage
 	variable/C ret
 
 	globalTPInsert  = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -357,7 +358,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	indexingLocked  = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	indexing        = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
 	comment         = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
-	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay)
+	distributedDAQ  = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
 	if(globalTPInsert)
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
@@ -385,6 +387,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable decimationFactor = DC_ITCMinSamplingInterval(panelTitle) / 5
 	setNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
 
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -411,6 +414,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		setName = StringFromList(i, setNameList)
 		isTestPulse = TP_IsTestPulseSet(setName)
+		Wave/SDFR=GetWBSvdStimSetDAPath() stimSet = $setName
+		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
+
+		if(distributedDAQ)
+			if(itcDataColumn == 0)
+				firstSetName = setName
+			else
+				ASSERT(!cmpstr(firstSetName, setName), "Non-equal stim sets")
+			endif
+		endif
 
 		sweepTxTData[0][0][HeadStage] = setName
 		sweepTxTData[0][1][HeadStage] = comment
@@ -426,7 +439,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, DATA_ACQUISITION_MODE)
 			oneFullCycle = imag(ret)
 			setColumn    = real(ret)
-			insertStart  = onsetDelay
+			if(distributedDAQ)
+				indexActiveHeadStage = sum(statusHS, 0, headstage)
+				ASSERT(indexActiveHeadStage > 0, "Invalid index")
+				insertStart = onsetDelay + (indexActiveHeadStage - 1) * (distributedDAQDelay + setLength)
+			else
+				insertStart = onsetDelay
+			endif
 		endif
 
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
@@ -439,10 +458,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 			endif
 		endif
 
-		// resample the wave to min samp interval and place in ITCDataWave
-		Wave/SDFR=GetWBSvdStimSetDAPath() stimSet = $setName
-		setLength = (DimSize(stimSet, ROWS) / decimationFactor - 1)
-		sweepData[0][5][HeadStage] = setColumn // document the set column
+		sweepData[0][5][HeadStage] = setColumn
 
 		Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
 
@@ -725,16 +741,20 @@ End
 /// @param[in] panelTitle                      panel title
 /// @param[out] onsetDelay [optional]          onset delay
 /// @param[out] terminationDelay [optional]    termination delay
-static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay])
+/// @param[out] distributedDAQDelay [optional] distributed DAQ delay
+static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay, distributedDAQDelay])
 	string panelTitle
-	variable &onsetDelay, &terminationDelay
+	variable &onsetDelay, &terminationDelay, &distributedDAQDelay
 
-	variable minSamplingInterval, onsetDelayVal, terminationDelayVal
+	variable minSamplingInterval, onsetDelayVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
+	variable distributedDAQ
 
-	minSamplingInterval = DC_ITCMinSamplingInterval(panelTitle)
-
-	onsetDelayVal = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
-	terminationDelayVal = GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000)
+	numActiveDACs          = DC_NoOfChannelsSelected("DA", panelTitle)
+	minSamplingInterval    = DC_ITCMinSamplingInterval(panelTitle)
+	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	onsetDelayVal          = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
+	terminationDelayVal    = GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000)
+	distributedDAQDelayVal = GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000)
 
 	if(!ParamIsDefault(onsetDelay))
 		onsetDelay = onsetDelayVal
@@ -744,19 +764,37 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 		terminationDelay = terminationDelayVal
 	endif
 
-	return onsetDelayVal + terminationDelayVal
+	if(!ParamIsDefault(distributedDAQDelay))
+		distributedDAQDelay = distributedDAQDelayVal
+	endif
+
+	if(distributedDAQ)
+		ASSERT(numActiveDACs > 0, "Number of DACs must be at least one")
+		return onsetDelayVal + terminationDelayVal + distributedDAQDelayVal * (numActiveDACs - 1)
+	else
+		return onsetDelayVal + terminationDelayVal
+	endif
 End
 
-/// @brief Calculates the stop collection point, includes global adjustments to set on and off set.
+/// @brief Calculate the stop collection point, includes all required global adjustments
 Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
+	variable longestSweep, totalIncrease
+
+	longestSweep  = DC_CalculateLongestSweep(panelTitle)
+	totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
+
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return DC_CalculateLongestSweep(panelTitle) + DC_ReturnTotalLengthIncrease(panelTitle)
+		if(GetCheckBoxState(panelTitle,"Check_DataAcq1_DistribDaq"))
+			return longestSweep * DC_NoOfChannelsSelected("DA", panelTitle) + totalIncrease
+		else
+			return longestSweep + totalIncrease
+		endif
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		return DC_CalculateLongestSweep(panelTitle)
-	else
-		ASSERT(0, "unknown mode")
+		return longestSweep
 	endif
+
+	ASSERT(0, "unknown mode")
 End
