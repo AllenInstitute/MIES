@@ -1,5 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+#if exists("tango_open_device") // tango XOP has been found
+
 #include "tango"
 #include "tango_monitor"
 
@@ -680,3 +682,5 @@ Function TI_WriteAsyncResponse(cmdID, returnString)
 	
 	print "\t'-> async response sent\r"	
 End
+
+#endif
