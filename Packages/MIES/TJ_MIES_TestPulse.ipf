@@ -128,7 +128,6 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
 	variable /g 	$TPGlobalPath + ":AmplitudeIC"
 	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
-	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z 		ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
@@ -163,7 +162,6 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
 	variable /g 	$TPGlobalPath + ":AmplitudeIC"
 	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
-	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z 		ITCChanConfigWave 					= $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
