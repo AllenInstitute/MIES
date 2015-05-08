@@ -4704,7 +4704,7 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	endif
 
 	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	KillVariables count
+	KillVariables/Z count
 	print "Data acquisition was manually terminated"
 End
 
