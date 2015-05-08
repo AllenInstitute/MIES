@@ -482,7 +482,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		for(;;)
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
 
-			if(endIndex >= numRows)
+			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
@@ -495,7 +495,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
 
-			if(endIndex >= numRows)
+			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
