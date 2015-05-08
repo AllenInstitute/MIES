@@ -4688,33 +4688,26 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
-//=========================================================================================
-/// DAP_StopOngoingDataAcqMD
-Function DAP_StopOngoingDataAcqMD(panelTitle) // MD = multiple devices
+Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
-	string cmd 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	SVAR/z panelTitleG = $WavePath + ":panelTitleG"
-	
-	if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD") == 1) // stops the testpulse
+
+	if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD")) // stops the testpulse
 		 ITC_StopTPMD(panelTitle)
 	endif
-	
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD") == 1) // stops the background timer
+
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD")) // stops the background timer
 		ITC_StopTimerForDeviceMD(panelTitle)
 	endif
-	
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitorMD") == 1) // stops ongoing bacground data aquistion
+
+	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
-	
-	string CountPathString
-	sprintf CountPathString, "%s:Count" WavePath
-	killvariables $CountPathString
+
+	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
+	KillVariables count
 	print "Data acquisition was manually terminated"
-End 
-//=========================================================================================
-/// DAP_AcqDataButtonToStopButton
+End
+
 Function DAP_AcqDataButtonToStopButton(panelTitle)
 	string panelTitle
 	controlinfo /w = $panelTitle Check_Settings_SaveData
