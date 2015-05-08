@@ -928,7 +928,7 @@ Function P_DAforManPpulse(panelTitle, Headstage)
 	variable 	lastPressureCom		= pressureDataWv[Headstage][%LastPressureCommand]
 	variable 	DAGain				= pressureDataWv[Headstage][%DAC_Gain]
 	variable 	PressureCom		= pressureDataWv[headStage][%ManPPPressure]
-	variable 	PPEndPoint			= PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / 0.005)
+	variable 	PPEndPoint			= PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / MINIMUM_SAMPLING_INTERVAL)
 
 	if((PressureCom) < MAX_REGULATOR_PRESSURE && PressureCom > MIN_REGULATOR_PRESSURE)
 		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)

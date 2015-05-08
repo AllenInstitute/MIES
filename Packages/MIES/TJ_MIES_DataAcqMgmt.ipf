@@ -445,7 +445,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	TestPulsePath = GetWBSvdStimSetDAPathAsString() + ":TestPulse"
 	make /o /n = 0 $TestPulsePath
 	wave TestPulse = $TestPulsePath
-	SetScale /P x 0,0.005,"ms", TestPulse // test pulse wave made at max possible samp frequency
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse // test pulse wave made at max possible samp frequency
 
 	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
 
@@ -459,7 +459,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 	// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / 0.005))
+	variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / MINIMUM_SAMPLING_INTERVAL))
 
 	if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
 		NewNoOfPoints = 2^15

@@ -53,7 +53,7 @@ Function RA_Start(panelTitle)
 		string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 		make /o /n = 0 $TestPulsePath
 		wave TestPulse = $TestPulsePath
-		SetScale /P x 0, 0.005, "ms", TestPulse
+		SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
 		TP_UpdateTestPulseWave(TestPulse,panelTitle)
 
 		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
@@ -156,7 +156,7 @@ Function RA_Counter(panelTitle)
 				string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 				make /o /n = 0 $TestPulsePath
 				wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-				SetScale /P x 0, 0.005, "ms", TestPulse
+				SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
 				TP_UpdateTestPulseWave(TestPulse, panelTitle)
 				
 				make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
@@ -224,7 +224,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 		make /o /n = 0 $TestPulsePath
 		wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-		SetScale/P x 0, 0.005, "ms", TestPulse
+		SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
 		TP_UpdateTestPulseWave(TestPulse, panelTitle)
 		
 		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList

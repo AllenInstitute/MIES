@@ -318,7 +318,7 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)
 
-	SetScale /P x 0, 0.005, "ms", WaveBuilderWave
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", WaveBuilderWave
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
 	KillStrings/Z StringHolder
@@ -330,7 +330,7 @@ static Function/Wave WB_GetSegmentWave(duration)
 	variable duration
 
 	DFREF dfr = GetWaveBuilderDataPath()
-	variable numPoints = duration / 0.005
+	variable numPoints = duration / MINIMUM_SAMPLING_INTERVAL
 	Wave/Z/SDFR=dfr SegmentWave
 
 	if(duration > MAX_SWEEP_DURATION_IN_MS)
@@ -344,7 +344,7 @@ static Function/Wave WB_GetSegmentWave(duration)
 		Redimension/N=(numPoints) SegmentWave
 	endif
 
-	SetScale/P x 0,0.005, "ms", SegmentWave
+	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", SegmentWave
 
 	return SegmentWave
 End
@@ -361,7 +361,7 @@ End
 static Function WB_RampSegment(pa)
 	struct SegmentParameters &pa
 
-	variable amplitudeIncrement = pa.amplitude * 0.005 / pa.duration
+	variable amplitudeIncrement = pa.amplitude * MINIMUM_SAMPLING_INTERVAL / pa.duration
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 	MultiThread SegmentWave = amplitudeIncrement * p
@@ -472,7 +472,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 
 	// We remove one point from the duration.
 	// This is done in order to create, for situations with t = 1000, f = 5, p = 100, the expected five pulses (n = 5)
-	interPulseInterval = ((pa.duration/0.005 - 1) * 0.005 - pa.numberOfPulses * pa.pulseDuration) / (pa.numberOfPulses - 1)
+	interPulseInterval = ((pa.duration/MINIMUM_SAMPLING_INTERVAL - 1) * MINIMUM_SAMPLING_INTERVAL - pa.numberOfPulses * pa.pulseDuration) / (pa.numberOfPulses - 1)
 
 	WAVE segmentWave = WB_GetSegmentWave(pa.duration)
 	segmentWave = 0
@@ -480,26 +480,26 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 
 	if(!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
 		for(;;)
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / MINIMUM_SAMPLING_INTERVAL)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / 0.005)
+			startIndex = floor(pulseStartTime / MINIMUM_SAMPLING_INTERVAL)
 			segmentWave[startIndex, endIndex] = pa.amplitude
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	else
 		for(;;)
 			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / 0.005)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / MINIMUM_SAMPLING_INTERVAL)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / 0.005)
+			startIndex = floor(pulseStartTime / MINIMUM_SAMPLING_INTERVAL)
 			segmentWave[startIndex, endIndex] = pa.amplitude
 		endfor
 	endif
@@ -508,14 +508,14 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	FindValue/V=(0)/S=(startIndex) segmentWave
 	if(V_Value != -1)
 		Redimension/N=(V_Value) segmentWave
-		pa.duration = V_Value * 0.005
+		pa.duration = V_Value * MINIMUM_SAMPLING_INTERVAL
 	endif
 
 	segmentWave += pa.offset
 
 	DEBUGPRINT("interPulseInterval", var=interPulseInterval)
 	DEBUGPRINT("numberOfPulses", var=pa.numberOfPulses)
-	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * 0.005, format="%.6f")
+	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * MINIMUM_SAMPLING_INTERVAL, format="%.6f")
 End
 
 static Function WB_PSCSegment(pa)
@@ -526,11 +526,11 @@ static Function WB_PSCSegment(pa)
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
 	pa.TauRise = 1 / pa.TauRise
-	pa.TauRise *= 0.005
+	pa.TauRise *= MINIMUM_SAMPLING_INTERVAL
 	pa.TauDecay1 = 1 / pa.TauDecay1
-	pa.TauDecay1 *= 0.005
+	pa.TauDecay1 *= MINIMUM_SAMPLING_INTERVAL
 	pa.TauDecay2 = 1 / pa.TauDecay2
-	pa.TauDecay2 *= 0.005
+	pa.TauDecay2 *= MINIMUM_SAMPLING_INTERVAL
 
 	MultiThread SegmentWave[] = pa.amplitude * ((1 - exp(-pa.TauRise * p)) + exp(-pa.TauDecay1 * p) * (1 - pa.TauDecay2Weight) + exp(-pa.TauDecay2 * p) * pa.TauDecay2Weight)
 
@@ -566,8 +566,8 @@ static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 		return NaN
 	endif
 
-	Make/FREE/n=(pa.duration / 0.005, NumberOfBuildWaves) BuildWave
-	SetScale/P x 0,0.005,"ms", BuildWave
+	Make/FREE/n=(pa.duration / MINIMUM_SAMPLING_INTERVAL, NumberOfBuildWaves) BuildWave
+	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", BuildWave
 	variable frequency = pa.highPassCutOff
 	variable i
 	variable localAmplitude
@@ -586,7 +586,7 @@ static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 	endfor
 
 	MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)
-	SetScale/P x 0, 0.005,"ms", SegmentWave
+	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", SegmentWave
 
 	WaveStats/Q SegmentWave
 	SegmentWave *= pa.amplitude / V_sdev
