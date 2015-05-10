@@ -90,6 +90,9 @@ static Function WB_AddDelta(WP, numEpochs)
 						case 4: // Power
 							WP[i + 1][j][k] = (WP[i + 1][j][k])^factor
 							break
+						case 5: // Alternate
+							WP[i + 1][j][k] *= -1
+							break
 						default:
 							ASSERT(0, "Unkonwn operation")
 							break
