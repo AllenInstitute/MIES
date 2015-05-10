@@ -448,7 +448,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		pa.duration = pa.numberOfPulses / pa.frequency * 1000
 	elseif(mode == SQUARE_PULSE_TRAIN_MODE_DUR)
 		// user defined duration
-		pa.numberOfPulses = pa.frequency * pa.duration / 1000
+		pa.numberOfPulses = round(pa.frequency * pa.duration / 1000)
 	else
 		ASSERT(0, "Invalid mode")
 	endif
