@@ -116,7 +116,6 @@ Function RA_Counter(panelTitle)
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	If(v_value == 1)// if indexing is activated, indexing is applied.
 		if(count == 1)
-			IDX_MakeIndexingStorageWaves(panelTitle)
 			IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
 		//print "active set count "+num2str(activesetcount)
@@ -385,7 +384,6 @@ Function RA_CounterMD(panelTitle)
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	If(v_value == 1)// if indexing is activated, indexing is applied.
 		if(count == 1)
-			IDX_MakeIndexingStorageWaves(panelTitle)
 			IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
 		//print "active set count "+num2str(activesetcount)
@@ -449,7 +447,6 @@ Function RA_CounterMD(panelTitle)
 					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
 					If(v_value == 1)// if indexing is activated, indexing is applied.
 						if(count == 1)
-							IDX_MakeIndexingStorageWaves(followerPanelTitle)
 							IDX_StoreStartFinishForIndexing(followerPanelTitle)
 						endif
 						//print "active set count "+num2str(activesetcount)
