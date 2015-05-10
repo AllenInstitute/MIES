@@ -41,7 +41,6 @@ Function HSU_ButtonProc_LockDev(s) : ButtonControl
 	s.blockReentry = 1
 
 	HSU_LockDevice(s.win)
-	MCC_FindServers /Z = 1 // this is here to make sure the amp controls funciton, after a device is locked. /Z = 1 supresses errors
 End
 //==================================================================================================
 
