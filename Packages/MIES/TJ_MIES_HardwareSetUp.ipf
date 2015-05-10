@@ -307,6 +307,8 @@ Function HSU_OpenITCDevice(panelTitle)
 	print "ITC Device ID = ",DevID[0], "is locked."
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	ITCDeviceIDGlobal = DevID[0]
+
+	KillWaves/Z DevID
 End
 //==================================================================================================
 
