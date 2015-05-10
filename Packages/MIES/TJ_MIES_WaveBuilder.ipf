@@ -98,6 +98,15 @@ static Function WB_AddDelta(WP, numEpochs)
 			endfor
 		endfor
 	endfor
+
+	// number of pulses has a non-standard delta position
+	for(j = 0; j < numEpochs; j += 1)
+		for(k = 0; k < numEpochTypes; k += 1)
+			if(WP[46][j][k]) // use pulses checkbox
+				WP[45][j][k] += WP[47][j][k]
+			endif
+		endfor
+	endfor
 End
 
 Structure SegmentParameters
