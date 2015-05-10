@@ -62,6 +62,9 @@ static Function WB_AddDelta(WP, numEpochs)
 					amplitudeFactor = WP[50][j][k]
 					offsetFactor    = WP[51][j][k]
 					switch(i)
+						case 0:
+							factor = durationFactor
+							break
 						case 2:
 							factor = amplitudeFactor
 							break
@@ -69,7 +72,7 @@ static Function WB_AddDelta(WP, numEpochs)
 							factor = offsetFactor
 							break
 						default:
-							factor = durationFactor
+							factor = 1
 							break
 					endswitch
 
