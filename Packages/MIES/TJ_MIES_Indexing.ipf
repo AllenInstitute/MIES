@@ -55,7 +55,7 @@ Function IDX_IndexingDoIt(panelTitle)
 				PopUpMenu $ctrl win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 			endif
 		else
-			ASSERT(0, "invalid channel type")
+			// do nothing
 		endif
 	endfor
 
@@ -76,7 +76,7 @@ Function IDX_IndexingDoIt(panelTitle)
 				PopUpMenu $ctrl win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 			endif
 		else
-			ASSERT(0, "invalid channel type")
+			// do nothing
 		endif
 	endfor
 
