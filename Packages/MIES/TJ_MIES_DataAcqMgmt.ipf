@@ -95,16 +95,16 @@ Function ITC_ConfigUploadDAC(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	string cmd = ""
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd
+	ExecuteITCOperation(cmd)
 	
 	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
 	string ITCDataWavePath = WavePath + ":ITCDataWave"//, ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-	Execute cmd	
+	ExecuteITCOperation(cmd)
 	
 	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	execute cmd// this also seems necessary to update the DA channel data to the board!!
+	ExecuteITCOperation(cmd)// this also seems necessary to update the DA channel data to the board!!
 End
 //=================================================================================================================
 // TP MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
