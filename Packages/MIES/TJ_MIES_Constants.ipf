@@ -218,3 +218,6 @@ StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 
 /// Generic axis name for graphs using split axis
 StrConstant AXIS_BASE_NAME = "col"
+
+/// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
+Constant MINIMUM_SAMPLING_INTERVAL = 0.005

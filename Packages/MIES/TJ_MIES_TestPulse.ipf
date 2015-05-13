@@ -219,7 +219,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 			string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 			Make/O/N=0 $TestPulsePath
 			WAVE TestPulse = $TestPulsePath
-			SetScale /P x 0,0.005,"ms", TestPulse
+			SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
 
 			TP_UpdateTPBufferSizeGlobal(panelTitle)
 			TP_UpdateTestPulseWave(TestPulse, panelTitle)
@@ -748,7 +748,7 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	variable 	amplitude
 	Wave 	TPWave
 	variable 	numberOfSquarePulses
-	variable  	longestSweepPoints = (((1000 / Frequency) * 2) / 0.005)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / 0.005))
+	variable  	longestSweepPoints = (((1000 / Frequency) * 2) / MINIMUM_SAMPLING_INTERVAL)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / MINIMUM_SAMPLING_INTERVAL))
 	//print "longest sweep =", longestSweepPoints
 	variable 	exponent = ceil(log(longestSweepPoints)/log(2))
 	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
@@ -759,13 +759,13 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	make /FREE /n = (2 ^ exponent)  CosBuildWave
 	make /FREE /n = (2 ^ exponent)  BuildWave
 
-	SetScale /P x 0,0.005, "ms", SinBuildWave
-	SetScale /P x 0,0.005, "ms", CosBuildWave
-	SetScale /P x 0,0.005, "ms", BuildWave
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL,  "ms", SinBuildWave
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL,  "ms", CosBuildWave
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL,  "ms", BuildWave
 	
 	Frequency /= 1.5
 	// the point offset is 1/4 of a cos wave cycle in points. The is used to make the baseline before the first pulse the same length as the interpulse interval
-	variable PointOffset = ((1 / Frequency) / 0.000005) * 0.25
+	variable PointOffset = ((1 / Frequency) / MINIMUM_SAMPLING_INTERVAL) * 0.25
 	Multithread SinBuildWave =  .49 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * (p + PointOffset))
 	Multithread CosBuildWave = 0.49 * - cos(2 * Pi * ((Frequency* 2) * 1000) * (5 / 1000000000) * (p + PointOffset))
 	Multithread BuildWave = SinBuildWave + CosBuildWave
