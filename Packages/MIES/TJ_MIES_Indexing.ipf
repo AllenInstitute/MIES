@@ -1,65 +1,39 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-
-Function IDX_MakeIndexingStorageWaves(panelTitle)
-	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)// determines ITC device 
-	make /o /n = (4, NUM_DA_TTL_CHANNELS) $WavePath + ":TTLIndexingStorageWave"
-	make /o /n = (4, NUM_DA_TTL_CHANNELS) $WavePath + ":DACIndexingStorageWave"
-End
-
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)// determines ITC device 
-	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
-	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
-	variable i 
-	string TTLPopUpNameIndexStart, DACPopUpNameIndexStart, TTLPopUpNameIndexEnd, DACPopUpNameIndexEnd
+
+	variable i
+	string ctrl
+
+	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	
-	For(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		if(i < 10)
-			DACPopUpNameIndexStart = "Wave_DA_0"+num2str(i)
-			controlInfo /w = $panelTitle $DACPopUpNameIndexStart
-			DACIndexingStorageWave[0][i] = v_value
-			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_0" + num2str(i)
-			controlInfo/w = $panelTitle $DACPopUpNameIndexEnd
-			DACIndexingStorageWave[1][i] = v_value + 1 // added " +1 " because indexing end no longer has test pulse listed *******************
-		else
-			DACPopUpNameIndexStart = "Wave_DA_"+num2str(i)
-			controlInfo /w = $panelTitle $DACPopUpNameIndexStart
-			DACIndexingStorageWave[0][i] = v_value
-			DACPopUpNameIndexEnd = "Popup_DA_IndexEnd_"+num2str(i)
-			controlInfo /w =$panelTitle $DACPopUpNameIndexEnd
-			DACIndexingStorageWave[1][i] = v_value + 1 // added " +1 " because indexing end no longer has test pulse listed *******************
-		endif
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ControlInfo/W=$panelTitle $ctrl
+		DACIndexingStorageWave[0][i] = V_Value
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ControlInfo/W=$panelTitle $ctrl
+		DACIndexingStorageWave[1][i] = V_Value + 1 // added " +1 " because indexing end no longer has test pulse listed
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ControlInfo/W=$panelTitle $ctrl
+		TTLIndexingStorageWave[0][i] = V_Value
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ControlInfo/W=$panelTitle $ctrl
+		TTLIndexingStorageWave[1][i] = V_Value
 	endfor 
-		
-	For(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		if(i < 10)
-			TTLPopUpNameIndexStart = "Wave_TTL_0"+num2str(i)
-			controlInfo /w = $panelTitle $TTLPopUpNameIndexStart
-			TTLIndexingStorageWave[0][i] = v_value
-			TTLPopUpNameIndexEnd = "Popup_TTL_IndexEnd_0" + num2str(i)
-			controlInfo /w = $panelTitle $TTLPopUpNameIndexEnd
-			TTLIndexingStorageWave[1][i] = v_value
-		else
-			TTLPopUpNameIndexStart = "Wave_TTL_"+num2str(i)
-			controlInfo /w = $panelTitle $TTLPopUpNameIndexStart
-			TTLIndexingStorageWave[0][i] = v_value
-			TTLPopUpNameIndexEnd = "Popup_TTL_IndexEnd_" + num2str(i)
-			controlInfo /w = $panelTitle $TTLPopUpNameIndexEnd
-			TTLIndexingStorageWave[1][i] = v_value
-		endif
-	endfor
 End
 
 /// @brief Locked indexing, indexes all active channels at once
 Function IDX_IndexingDoIt(panelTitle)
 	string panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave DACIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
-	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	variable i
 	string ctrl
 
@@ -81,7 +55,7 @@ Function IDX_IndexingDoIt(panelTitle)
 				PopUpMenu $ctrl win = $panelTitle, mode = DACIndexingStorageWave[0][i]
 			endif
 		else
-			ASSERT(0, "invalid channel type")
+			// do nothing
 		endif
 	endfor
 
@@ -102,7 +76,7 @@ Function IDX_IndexingDoIt(panelTitle)
 				PopUpMenu $ctrl win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
 			endif
 		else
-			ASSERT(0, "invalid channel type")
+			// do nothing
 		endif
 	endfor
 
@@ -115,9 +89,8 @@ Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	variable channelType, i
 
 	variable popIdx
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave DACIndexingStorageWave = $wavePath + ":DACIndexingStorageWave"
-	wave TTLIndexingStorageWave = $wavePath + ":TTLIndexingStorageWave"
+	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string ctrl
 
 	ctrl = GetPanelControl(panelTitle, i, channelType, CHANNEL_CONTROL_WAVE)
@@ -539,10 +512,10 @@ End
 Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	string panelTitle
 	variable ChannelNumber, DAorTTL
+
 	variable TotalListSteps
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)// determines ITC device 
-	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
-	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName, ChannelTypeName
 	variable i, ListOffset
 	
@@ -612,10 +585,10 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	variable channelNo, DAorTTL, count
 	variable column, i, StepsInSummedSets, listOffSet, totalListSteps
 	string ChannelTypeName, DAorTTLWavePath, ChannelPopUpMenuName,PopUpMenuList
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)// determines ITC device 
-	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
-	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
-	
+
+	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
+
 	if(DAorTTL == 0)
 	ChannelTypeName = "DA"
 	ListOffset = 3
@@ -699,9 +672,8 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
 	variable count, channelNumber, DAorTTL
 	variable AtSetBorder=0
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)// determines ITC device 
-	wave DAIndexingStorageWave = $wavePath+":DACIndexingStorageWave"
-	wave TTLIndexingStorageWave = $wavePath+":TTLIndexingStorageWave"
+	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
 	variable i, StepsInSummedSets, ListOffset, TotalListSteps
 	

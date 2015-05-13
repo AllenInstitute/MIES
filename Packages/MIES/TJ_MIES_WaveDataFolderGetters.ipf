@@ -2988,3 +2988,53 @@ Function/S GetDevSpecAsynRspWaveAS(panelTitle)
 
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":cmdID"
 End
+
+/// @brief Return the TTL indexing storage wave
+///
+/// Rows:
+/// 0: Popup menu index of TTL wave
+/// 1: Popup menu index of Indexing end wave
+/// 2-3: Unused
+///
+/// Columns:
+/// - TLL channels
+Function/Wave GetTTLIndexingStorageWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = TTLIndexingStorageWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(4, NUM_DA_TTL_CHANNELS) dfr:TTLIndexingStorageWave/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the DAC indexing storage wave
+///
+/// Rows:
+/// 0: Popup menu index of DAC wave
+/// 1: Popup menu index of Indexing end wave
+/// 2-3: Unused
+///
+/// Columns:
+/// - DACs
+Function/Wave GetDACIndexingStorageWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = DACIndexingStorageWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(4, NUM_DA_TTL_CHANNELS) dfr:DACIndexingStorageWave/Wave=wv
+
+	return wv
+End
