@@ -1,5 +1,32 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
+///
+/// @deprecated use @ref DC_ControlStatusWave() instead
+///
+/// @param ChannelType  one of DA, AD, or TTL
+/// @param ControlType  currently restricted to "Check"
+/// @param panelTitle   panel title
+static Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
+	String ChannelType, panelTitle
+	string ControlType
+
+	variable TotalPossibleChannels = GetNumberFromChannelType(channelType)
+
+	String ControlStatusList = ""
+	String ControlName
+	variable i
+
+	i=0
+	do
+		sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
+		ControlInfo /w = $panelTitle $ControlName
+		ControlStatusList = AddlistItem(num2str(v_value), ControlStatusList, ";",i)
+		i+=1
+	while(i <= (TotalPossibleChannels - 1))
+
+	return ControlStatusList
+End
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
 
@@ -290,7 +317,6 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	
 		i += 1
 	while(i < itemsinlist(TTLChannelStatusList, ";"))
-	print MaxNoOfSweeps
 	return MaxNoOfSweeps
 End
 

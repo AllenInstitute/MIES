@@ -14,7 +14,7 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	string cmd
 	sprintf cmd, ""
 	
-	variable StopCollectionPoint = DC_CalculateLongestSweep(panelTitle) // used to determine when a sweep should terminate
+	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle) // channel that is monitored to determine when a sweep should terminate
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	

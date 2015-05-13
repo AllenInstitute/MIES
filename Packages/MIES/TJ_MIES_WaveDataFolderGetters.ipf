@@ -271,13 +271,13 @@ Function/Wave GetITCDataWave(panelTitle)
 
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/Z/SDFR=dfr wv = ITCDataWave
+	WAVE/W/Z/SDFR=dfr wv = ITCDataWave
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:ITCDataWave/Wave=wv
+	Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:ITCDataWave/Wave=wv
 
 	return wv
 End
@@ -288,13 +288,13 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/Z/SDFR=dfr wv = ITCChanConfigWave
+	WAVE/I/Z/SDFR=dfr wv = ITCChanConfigWave
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(2, 4) dfr:ITCChanConfigWave/Wave=wv
+	Make/I/N=(2, 4) dfr:ITCChanConfigWave/Wave=wv
 
 	return wv
 End
@@ -305,13 +305,13 @@ Function/Wave GetITCFIFOAvailAllConfigWave(panelTitle)
 
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/Z/SDFR=dfr wv = ITCFIFOAvailAllConfigWave
+	WAVE/I/Z/SDFR=dfr wv = ITCFIFOAvailAllConfigWave
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(2, 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
+	Make/I/N=(2, 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
 
 	return wv
 End
@@ -322,13 +322,13 @@ Function/Wave GetITCFIFOPositionAllConfigWave(panelTitle)
 
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/Z/SDFR=dfr wv = ITCFIFOPositionAllConfigWave
+	WAVE/I/Z/SDFR=dfr wv = ITCFIFOPositionAllConfigWave
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(2, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
+	Make/I/N=(2, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
 
 	return wv
 End

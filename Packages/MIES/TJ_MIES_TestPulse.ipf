@@ -1,114 +1,122 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Function TP_SelectTestPulseWave(panelTitle)//Selects Test Pulse output wave for all checked DA channels
+/// @brief Selects Test Pulse output wave for all checked DA channels
+Function TP_SelectTestPulseWave(panelTitle)
 	string 	panelTitle
-	string 	ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string 	DAPopUpMenu
-	variable 	i
-	
+
+	string control
+	variable i
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
 	do
-		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
-			DAPopUpMenu = "Wave_DA_0"+num2str(i)
-			popUpMenu $DAPopUpMenu mode = 2, win = $panelTitle
+		if(statusDA[i])
+			control = "Wave_DA_0" + num2str(i)
+			PopUpMenu $control mode = 2, win = $panelTitle
 		endif
-	i += 1
-	while(i < itemsinlist(ListOfCheckedDA))
+		i += 1
+	while(i < NUM_DA_TTL_CHANNELS)
 End
-//=============================================================================================
+
 Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	wave 	SelectedDACWaveList
+	Wave 	SelectedDACWaveList
 	string 	panelTitle
-	string 	ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string 	DAPopUpMenu
-	variable 	i
-	
+
+	string control
+	variable i
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
 	do
-		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
-			DAPopUpMenu = "Wave_DA_0"+num2str(i)
-			controlinfo /w = $panelTitle $DAPopUpMenu 
+		if(statusDA[i])
+			control = "Wave_DA_0" + num2str(i)
+			ControlInfo /w = $panelTitle $control
 			SelectedDACWaveList[i] = v_value
 		endif
-	i += 1
-	while(i < itemsinlist(ListOfCheckedDA))
+		i += 1
+	while(i < NUM_DA_TTL_CHANNELS)
 end
-//=============================================================================================
+
 Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	wave 	SelectedDACWaveList
+	Wave 	SelectedDACWaveList
 	string 	panelTitle
-	string 	ListOfCheckedDA 	= DC_ControlStatusListString("DA", "Check", panelTitle)
-	string 	DAPopUpMenu
-	variable 	i 					= 0
+
+	string control
+	variable i
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
 	do
-		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
-			DAPopUpMenu = "Wave_DA_0"+num2str(i)
-			popupMenu $DAPopUpMenu mode = SelectedDACWaveList[i], win = $panelTitle
+		if(statusDA[i])
+			control = "Wave_DA_0" + num2str(i)
+			PopupMenu $control mode = SelectedDACWaveList[i], win = $panelTitle
 		endif
-	i += 1
-	while(i < itemsinlist(ListOfCheckedDA))
+		i += 1
+	while(i < NUM_DA_TTL_CHANNELS)
 End
-//=============================================================================================
+
 Function TP_StoreDAScale(SelectedDACScale, panelTitle)
-	wave 	SelectedDACScale
+	Wave 	SelectedDACScale
 	string 	panelTitle
-	string 	ListOfCheckedDA = DC_ControlStatusListString("DA", "Check", panelTitle)
-	string 	DAPopUpMenu
-	variable 	i
-	
+
+	string control
+	variable i
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
 	do
-		if((str2num(stringfromlist(i,ListOfCheckedDA,";"))) == 1)
-			DAPopUpMenu = "Scale_DA_0"+num2str(i)
-			controlinfo /w = $panelTitle $DAPopUpMenu 
+		if(statusDA[i])
+			control = "Scale_DA_0" + num2str(i)
+			ControlInfo /w = $panelTitle $control
 			SelectedDACScale[i] = v_value
 		endif
-	i += 1
-	while(i < itemsinlist(ListOfCheckedDA))
-end
-//=============================================================================================
+		i += 1
+	while(i < NUM_DA_TTL_CHANNELS)
+End
+
 Function TP_SetDAScaleToOne(panelTitle)
 	string 	panelTitle
 
-	string 	ListOfCheckedDA 	= DC_ControlStatusListString("DA", "Check", panelTitle)
-	string 	DASetVariable
-	Wave 	ChannelClampMode 	= GetChannelClampMode(panelTitle)
-	variable 	ScalingFactor
-	variable 	i
-	
+	string control
+	variable scalingFactor, i
+	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
 	do
-		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
-			//DASetVariable = "Scale_DA_0"+num2str(i)
-			sprintf DASetVariable, "Scale_DA_0%s" num2str(i)
-			if(ChannelClampMode[i][0] == 0)
-				ScalingFactor = 1
-			endif
-			
-			if(ChannelClampMode[i][0] == 1) // this adjust the scaling in current clamp so that the TP wave (constructed based on v-clamp param) is converted into the I clamp amp
+		if(statusDA[i])
+			control = "Scale_DA_0" + num2str(i)
+			if(ChannelClampMode[i][0] == V_CLAMP_MODE)
+				scalingFactor = 1
+			elseif(ChannelClampMode[i][0] == I_CLAMP_MODE)
+				// this adjust the scaling in current clamp so that the TP wave
+				// (constructed based on v-clamp param) is converted into the I clamp amp
 				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-				ScalingFactor = v_value
+				scalingFactor = v_value
 				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-				ScalingFactor /= v_value
+				scalingFactor /= v_value
+			else
+				ASSERT(0, "no other modes are supported")
 			endif
-			
-			setvariable $DASetVariable WIN = $panelTitle,  value =_num:ScalingFactor 
+
+			SetSetVariable(panelTitle, control, scalingFactor)
 		endif
-	i += 1
-	while(i < itemsinlist(ListOfCheckedDA))
-end
-//=============================================================================================
+		i += 1
+	while(i < NUM_DA_TTL_CHANNELS)
+End
+
 Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
-	wave 	SelectedDACScale
+	Wave 	SelectedDACScale
 	string 	panelTitle
-	string 	ListOfCheckedDA 	= DC_ControlStatusListString("DA", "Check", panelTitle)
-	string 	DASetVariable
-	variable 	i 					= 0
+
+	string control
+	variable i
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+
 	do
-		if((str2num(stringfromlist(i, ListOfCheckedDA,";"))) == 1)
-		DASetVariable = "Scale_DA_0"+num2str(i)
-		setvariable $DASetVariable value = _num:SelectedDACScale[i], win = $panelTitle
+		if(statusDA[i])
+			control = "Scale_DA_0" + num2str(i)
+			SetSetVariable(panelTitle, control, SelectedDACScale[i])
 		endif
-	i += 1
-	while(i < itemsinlist(ListOfCheckedDA))
+		i += 1
+	while(i < NUM_DA_TTL_CHANNELS)
 end
-//=============================================================================================
+
 Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	wave 		TestPulse
 	string 		panelTitle
@@ -120,7 +128,6 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
 	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
 	variable /g 	$TPGlobalPath + ":AmplitudeIC"
 	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
-	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z 		ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
@@ -155,7 +162,6 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
 	variable /g 	$TPGlobalPath + ":AmplitudeIC"
 	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
-	make /o /n = 8 $TPGlobalPath + ":Resistance"
 	wave /z 		ITCChanConfigWave 					= $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
 	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
 	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
@@ -163,7 +169,6 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full
 	variable 		TPDurInms 							= v_value
 	PulseDuration 									= (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
 	GlobalTPDurationVariable 							= PulseDuration
-	variable 		ITCdataWaveLength 					= DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP) // wave length in points
 	// need to deal with units here to ensure that resistance is calculated correctly
 	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
 	variable 		Amplitude 							= v_value
@@ -808,4 +813,11 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 	endif
 	//ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
 	return V_value - FirstADColumn
+End
+
+/// @brief Return one if the given set is the special testpulse set, zero otherwise
+Function TP_IsTestPulseSet(setName)
+	string setName
+
+	return !cmpstr(setName, "testpulse")
 End
