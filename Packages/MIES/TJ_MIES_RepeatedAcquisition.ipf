@@ -173,22 +173,29 @@ Function RA_Counter(panelTitle)
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale, panelTitle)
 			else
-				DAP_StopButtonToAcqDataButton(panelTitle)
-				ITC_StopITCDeviceTimer(panelTitle)
-				NVAR DataAcqState = $GetDataAcqState(panelTitle)
-				DataAcqState = 0
-				print "Repeated acquisition is complete"
-				Killvariables Count
-				killvariables /z Start, RunTime
-				Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
+				RA_FinishAcquisition(panelTitle)
 			endif
 		else //background aquisition is on
-				ITC_BkrdDataAcq(panelTitle)
+			ITC_BkrdDataAcq(panelTitle)
 		endif
+	else
+		RA_FinishAcquisition(panelTitle)
 	endif
 End
 
-//====================================================================================================
+static Function RA_FinishAcquisition(panelTitle)
+	string panelTitle
+
+	DAP_StopButtonToAcqDataButton(panelTitle)
+	ITC_StopITCDeviceTimer(panelTitle)
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 0
+
+	KillVariables/Z Count
+	KillVariables/Z Start, RunTime
+	KillStrings /z FunctionNameA, FunctionNameB
+End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
