@@ -112,7 +112,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     code = "}"
   }
   # begin of function declaration
-  else if(!insideFunction && ( match(code,/[[:space:]]function[\/[[:space:]]/) || match(code,/^function[\/[[:space:]]/) ) )
+  else if(!insideFunction && ( match(code,/[[:space:]]function[\/[:space:]]/) || match(code,/^function[\/[:space:]]/)))
   {
     insideFunction=1
     # remove whitespace between function and return type flag
