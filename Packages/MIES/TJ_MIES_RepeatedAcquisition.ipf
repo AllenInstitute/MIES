@@ -29,6 +29,11 @@ Function RA_Start(panelTitle)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
 	endif
+
+	if(TotTrials == 1)
+		return RA_FinishAcquisition(panelTitle)
+	endif
+
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))//updates trials remaining in panel
 
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
