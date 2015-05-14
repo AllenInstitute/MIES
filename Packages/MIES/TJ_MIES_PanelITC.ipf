@@ -7,6 +7,9 @@ static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hard
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
 
+static Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
+static Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
+
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(287,62,769,844)
@@ -4708,36 +4711,48 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
-Function DAP_AcqDataButtonToStopButton(panelTitle)
-	string panelTitle
-	controlinfo /w = $panelTitle Check_Settings_SaveData
-	if(v_value == 0) // Save data
-		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-		Button DataAcquireButton title = "\\Z14\\f01Stop\rAcquistion", win = $panelTitle
-	else // Don't save data
-		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-		string ButtonText = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
-		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-		Button DataAcquireButton title=ButtonText, win = $panelTitle
-	endif	
-End
-//=========================================================================================
-/// DAP_StopButtonToAcqDataButton
 Function DAP_StopButtonToAcqDataButton(panelTitle)
 	string panelTitle
-	controlinfo /w = $panelTitle Check_Settings_SaveData
-	if(v_value == 0) // Save data
-		Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-		Button DataAcquireButton title = "\\Z14\\f01Acquire\rData", win = $panelTitle
+
+	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
+end
+
+Function DAP_AcqDataButtonToStopButton(panelTitle)
+	string panelTitle
+
+	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
+end
+
+static Function DAP_ToggleAcquisitionButton(panelTitle, mode)
+	string panelTitle
+	variable mode
+
+	ASSERT(mode == DATA_ACQ_BUTTON_TO_STOP || mode == DATA_ACQ_BUTTON_TO_DAQ, "Invalid mode")
+
+	STRUCT RGBColor color
+	string text
+
+	if(!GetCheckBoxstate(panelTitle, "Check_Settings_SaveData"))
+		if(mode == DATA_ACQ_BUTTON_TO_STOP)
+			text = "\\Z14\\f01Stop\rAcquistion"
+		elseif(mode == DATA_ACQ_BUTTON_TO_DAQ)
+			text = "\\Z14\\f01Acquire\rData"
+		endif
 	else // Don't save data
-		Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-		string ButtonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-		ButtonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-		Button DataAcquireButton title=ButtonText, win = $panelTitle
+		color.red = 52224
+
+		if(mode == DATA_ACQ_BUTTON_TO_STOP)
+			text  = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
+			text += "\r\\Z08\\f00 (autosave state is in settings tab)"
+		elseif(mode == DATA_ACQ_BUTTON_TO_DAQ)
+			text  = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
+			text += "\r\\Z08\\f00 (autosave state is in settings tab)"
+		endif
 	endif
+
+	Button DataAcquireButton title=text, fcolor=(color.red, color.green, color.blue), win = $panelTitle
 End
 
-//=========================================================================================
 Function/s DAP_ListOfUnlockedDevs()
 
 	return WinList("DA_Ephys*", ";", "WIN:64" )
