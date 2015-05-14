@@ -522,8 +522,11 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	// remove the zero part at the end
 	FindValue/V=(0)/S=(startIndex) segmentWave
 	if(V_Value != -1)
+		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
 		Redimension/N=(V_Value) segmentWave
 		pa.duration = V_Value * MINIMUM_SAMPLING_INTERVAL
+	else
+		DEBUGPRINT("No removal of points")
 	endif
 
 	segmentWave += pa.offset
