@@ -205,11 +205,8 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 
 			DAP_StopOngoingDataAcquisition(panelTitle)
 
-			string WavePath = HSU_DataFullFolderPathString(panelTitle)
-			string CountPath =  WavePath + ":count"
-			if(exists(CountPath) == 2)
-				killvariables $CountPath
-			endif
+			NVAR count = $GetCount(panelTitle)
+			KillVariables/Z count
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
@@ -233,7 +230,7 @@ Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 			TP_SetDAScaleToOne(panelTitle)
 
 			DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-			WAVE TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
+			WAVE/SDFR=GetDeviceTestPulse(panelTitle) TestPulseITC
 			SCOPE_CreateGraph(TestPulseITC,panelTitle)
 
 			if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))// runs background TP
@@ -278,15 +275,9 @@ Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
 			DAP_StopOngoingDataAcqMD(panelTitle) // stop any ongoing data aquisition
 			DisableControl(panelTitle, ba.ctrlName)
 
-			// Determine the data folder path for the DAC
-			string WavePath = HSU_DataFullFolderPathString(panelTitle)
-
 			// @todo Need to modify (killing count global) for yoked devices
-			// Kill the global variable Count if it exists - if it was allowed to exist the user would not be able to stop the TP using the space bar
-			string CountPath = WavePath + ":count"
-			if(exists(CountPath) == 2)
-				killvariables $CountPath
-			endif
+			NVAR count = $GetCount(panelTitle)
+			KillVariables/Z count
 
 			TP_UpdateTPBufferSizeGlobal(panelTitle)
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)

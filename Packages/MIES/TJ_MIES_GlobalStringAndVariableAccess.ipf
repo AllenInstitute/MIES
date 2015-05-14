@@ -173,3 +173,14 @@ Function/S GetTPBufferSizeGlobal(panelTitle)
 
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "n", initialValue=NaN)
 End
+
+/// @brief Returns the absolute path to the global variable `count` storing the
+///        number of data acquisition still left to perform.
+///
+///        The initial value of NaN has the same semantics as the previous non existence
+///        of this variable. Both meaning that no data acquisition is done right now.
+Function/S GetCount(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "count", initialValue=NaN)
+End
