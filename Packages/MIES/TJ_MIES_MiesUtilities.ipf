@@ -1008,3 +1008,42 @@ Function GetNumberFromChannelType(channelType)
 			break
 	endswitch
 End
+
+#if defined(DEBUGGING_ENABLED)
+
+/// @brief Execute a given ITC XOP operation
+///
+/// Includes debug output.
+///
+/// @return 0 if sucessfull, 1 on error
+Function ExecuteITCOperation(cmd)
+	string &cmd
+
+	string msg
+
+	sprintf msg, "Executing ITC command for %s: \"%s\"", GetRTStackInfo(2), cmd
+	DEBUGPRINT("", str=msg)
+	Execute cmd
+
+	NVAR ITCError, ITCXOPError
+	sprintf msg, "ITCError=%#X, ITCXOPError=%#X", ITCError, ITCXOPError
+	DEBUGPRINT("Result:", str=msg)
+
+	return ITCError != 0 || ITCXOPError != 0
+End
+
+#else
+
+/// @brief Execute a given ITC XOP operation
+///
+/// @return 0 if sucessfull, 1 on error
+Function ExecuteITCOperation(cmd)
+	string &cmd
+
+	Execute cmd
+
+	NVAR ITCError, ITCXOPError
+	return ITCError != 0 || ITCXOPError != 0
+End
+
+#endif

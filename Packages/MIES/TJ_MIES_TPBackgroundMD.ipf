@@ -25,7 +25,7 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd
+	ExecuteITCOperation(cmd)
 	
 	if (TP_IsBackgrounOpRunning(panelTitle, "ITC_BkrdTPFuncMD") == 0)
 		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
@@ -33,10 +33,11 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	endif
 
 	if(TriggerMode == 0) // Start data acquisition triggered on immediate - triggered is used for syncronizing/yoking multiple DACs
-		Execute "ITCStartAcq" 
+		sprintf cmd, "ITCStartAcq"
+		ExecuteITCOperation(cmd)
 	elseif(TriggerMode > 0)
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode  // Trigger mode 256 = use external trigger
-		Execute cmd	
+		ExecuteITCOperation(cmd)
 	endif
 End
 //======================================================================================
@@ -86,10 +87,10 @@ Function ITC_BkrdTPFuncMD(s)
 		//print "PointsInTP =",PointsInTP
 		// works with a active device
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
-		execute cmd		
+		ExecuteITCOperation(cmd)
 	
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
-		Execute cmd	
+		ExecuteITCOperation(cmd)
 		variable TPSweepCount = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
 		variable PointsCompletedInITCDataWave = (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave))
 //		print PointsCompletedInITCDataWave
@@ -99,7 +100,7 @@ Function ITC_BkrdTPFuncMD(s)
 			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
 			FIFOAdvance[][2] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]) // the abs prevents a neg number
 			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the DA FIFO pointers back to the start
-			execute cmd
+			ExecuteITCOperation(cmd)
 			ActiveDeviceList[i][3] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2])
 		endif
 		
@@ -134,19 +135,21 @@ Function ITC_BkrdTPFuncMD(s)
 		// the code stops and starts the data acquisition to correct FIFO error
 			if(stringmatch(WavePath,"*ITC1600*") == 0) // checks to see if the device is not a ITC1600
 				if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] <= (ActiveDeviceList[i][5] + 1) && ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (ActiveDeviceList[i][5] - 1)) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
-					Execute "ITCStopAcq" // stop and restart acquisition
+					sprintf cmd, "ITCStopAcq" // stop and restart acquisition
+					ExecuteITCOperation(cmd)
 					ITCFIFOAvailAllConfigWave[][2] =0
 					string ITCChanConfigWavePath
 					sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
 					string ITCDataWavePath
 					sprintf ITCDataWavePath, "%s:ITCDataWave" WavePath
 					sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
-					Execute cmd	
+					ExecuteITCOperation(cmd)
 					string ITCFIFOPosAllConfigWvPthStr
 					sprintf ITCFIFOPosAllConfigWvPthStr, "%s:ITCFIFOPositionAllConfigWave" WavePath
 					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPosAllConfigWvPthStr// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-					execute cmd
-					Execute "ITCStartAcq"
+					ExecuteITCOperation(cmd)
+					sprintf cmd, "ITCStartAcq"
+					ExecuteITCOperation(cmd)
 					print "FIFO over/underrun, acq restarted"
 				endif
 			endif
@@ -211,7 +214,7 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd
+	ExecuteITCOperation(cmd)
 
 	// code section below is used to get the state of the DAC
 	string StateWavePathString 
@@ -219,11 +222,11 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 	Make /I/O/N=4 $StateWavePathString
 	wave StateWave = $StateWavePathString
 	sprintf cmd, "ITCGetState /R=1 %s" StateWavePathString
-	execute cmd
+	ExecuteITCOperation(cmd)
 
 	if(StateWave[0] != 0) // makes sure the device being stopped is actually running
 		sprintf cmd, "ITCStopAcq"
-		execute cmd
+		ExecuteITCOperation(cmd)
 		
 		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 		ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)

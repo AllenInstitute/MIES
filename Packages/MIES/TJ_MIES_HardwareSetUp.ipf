@@ -12,11 +12,11 @@ Function HSU_QueryITCDevice(panelTitle)
 	DeviceNumber = str2num(HSU_GetDeviceNumber(panelTitle))
 	
 	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
-	Execute cmd
+	ExecuteITCOperation(cmd)
 	DoAlert /t = "Ready light check"  0, "Click \"OK\" when finished checking device"
-	
-	sprintf cmd, "ITCCloseDevice" 
-	execute cmd
+
+	sprintf cmd, "ITCCloseDevice"
+	ExecuteITCOperation(cmd)
 End
 //==================================================================================================
 
@@ -41,7 +41,6 @@ Function HSU_ButtonProc_LockDev(s) : ButtonControl
 	s.blockReentry = 1
 
 	HSU_LockDevice(s.win)
-	MCC_FindServers /Z = 1 // this is here to make sure the amp controls funciton, after a device is locked. /Z = 1 supresses errors
 End
 //==================================================================================================
 
@@ -216,9 +215,9 @@ Function HSU_UnlockDevice(panelTitle)
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 	string cmd
 	sprintf cmd, "ITCSelectDevice/Z %d" ITCDeviceIDGlobal
-	Execute cmd
+	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCCloseDevice"
-	Execute cmd
+	ExecuteITCOperation(cmd)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	HSU_UpdateListOfITCPanels()
@@ -272,7 +271,7 @@ Function HSU_IsDeviceTypeConnected(panelTitle)
 
 	Make/O/I/N=1 localwave
 	sprintf cmd, "ITCGetDevices /Z=0 %d, localWave" deviceType
-	Execute cmd
+	ExecuteITCOperation(cmd)
 	if(LocalWave[0] == 0)
 		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
 	else
@@ -303,11 +302,13 @@ Function HSU_OpenITCDevice(panelTitle)
 
 	Make/O/I/U/N=1 DevID = 50
 	sprintf cmd, "ITCOpenDevice %d, %d, DevID", deviceType, deviceNumber
-	Execute cmd
+	ExecuteITCOperation(cmd)
 
 	print "ITC Device ID = ",DevID[0], "is locked."
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	ITCDeviceIDGlobal = DevID[0]
+
+	KillWaves/Z DevID
 End
 //==================================================================================================
 
@@ -424,8 +425,9 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
 		sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
-		Execute cmd
-		Execute "ITCInitialize /M = 1"
+		ExecuteITCOperation(cmd)
+		sprintf cmd, "ITCInitialize /M = 1"
+		ExecuteITCOperation(cmd)
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
 	// TB: what does this comment mean?
@@ -566,8 +568,5 @@ Function HSU_CanSelectDevice(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice/Z %d", ITCDeviceIDGlobal
-	Execute cmd
-
-	NVAR ITCError, ITCXOPError
-	return ITCError != 0 || ITCXOPError != 0
+	return ExecuteITCOperation(cmd)
 End

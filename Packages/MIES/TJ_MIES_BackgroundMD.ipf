@@ -18,7 +18,7 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd
+	ExecuteITCOperation(cmd)
 
 	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
 	variable RepeatedAcqOnOrOff = v_value
@@ -27,10 +27,11 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 		if(RepeatedAcqOnOrOff == 1)
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
-		Execute "ITCStartAcq" 
+		sprintf cmd, "ITCStartAcq"
+		ExecuteITCOperation(cmd)
 	elseif(TriggerMode > 0)
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
-		Execute cmd	
+		ExecuteITCOperation(cmd)
 	endif
 	//print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 
@@ -77,10 +78,10 @@ End
 			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
 			
 			sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
-			execute cmd
+			ExecuteITCOperation(cmd)
 			sprintf cmd, "ITCFIFOAvailableALL/z=0, %s" PathToITCFIFOAvailAllConfigWave
 			//print cmd
-			Execute cmd	
+			ExecuteITCOperation(cmd)
 			//print "FIFO available = ", ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2]
 			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2]))	// ActiveDeviceList[i][1] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
 				print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
@@ -122,14 +123,14 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	string CountPath = WavePath + ":count"
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd	
+	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCStopAcq /z = 0"
-	Execute cmd
+	ExecuteITCOperation(cmd)
 
 	itcdatawave[0][0] += 0 // Force onscreen update
 	
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
-	Execute cmd	
+	ExecuteITCOperation(cmd)
 	
 	ControlInfo /w = $panelTitle Check_Settings_SaveData
 	If(v_value == 0)
@@ -165,9 +166,9 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 
 	// stop data acq on device passsed in
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	execute cmd	
+	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCStopAcq /z = 0"
-	Execute cmd
+	ExecuteITCOperation(cmd)
 	
 	ITC_ZeroITCOnActiveChan(panelTitle)
 	

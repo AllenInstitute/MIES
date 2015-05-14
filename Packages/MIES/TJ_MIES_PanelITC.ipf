@@ -4660,7 +4660,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ITC_STOPFifoMonitor()
 
 		sprintf cmd, "ITCStopAcq /z = 0"
-		Execute cmd
+		ExecuteITCOperation(cmd)
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
 
@@ -4967,8 +4967,9 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	string cmd
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
 	sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
-	Execute cmd
-	Execute "ITCInitialize /M = 0"
+	ExecuteITCOperation(cmd)
+	sprintf cmd, "ITCInitialize /M = 0"
+	ExecuteITCOperation(cmd)
 End
 //=========================================================================================
 
