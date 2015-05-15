@@ -5,14 +5,11 @@
 Function RA_Start(panelTitle)
 	string panelTitle
 	variable ITI
-	variable IndexingState
-	variable i = 0
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
-	string CountPath = WavePath + ":Count"
-	variable /g $CountPath = 0
-	NVAR Count = $CountPath
+	NVAR count = $GetCount(panelTitle)
+	count = 0
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -20,9 +17,8 @@ Function RA_Start(panelTitle)
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
 	ActiveSetCount *= v_value
-	//ActiveSetCount -= 1
 	variable TotTrials
-	
+
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -33,49 +29,43 @@ Function RA_Start(panelTitle)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
 	endif
-	
-	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-	//TotTrials = (TotTrials * v_value) + 1
-	
-	//Count += 1
-	//ActiveSetCount -= 1
+
+	if(TotTrials == 1)
+		return RA_FinishAcquisition(panelTitle)
+	endif
+
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))//updates trials remaining in panel
-	
+
 	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
 	ITI = v_value
-	
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	IndexingState = v_value
-	
 
-		DAP_StoreTTLState(panelTitle)//preparations for test pulse begin here
-		DAP_TurnOffAllTTLs(panelTitle)
-		string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
-		make /o /n = 0 $TestPulsePath
-		wave TestPulse = $TestPulsePath
-		SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
-		TP_UpdateTestPulseWave(TestPulse,panelTitle)
+	DAP_StoreTTLState(panelTitle)//preparations for test pulse begin here
+	DAP_TurnOffAllTTLs(panelTitle)
+	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+	make /o /n = 0 $TestPulsePath
+	wave TestPulse = $TestPulsePath
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
+	TP_UpdateTestPulseWave(TestPulse,panelTitle)
 
-		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
-		TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
-		TP_SelectTestPulseWave(panelTitle)
+	make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
+	TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
 
-		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
-		TP_StoreDAScale(SelectedDACScale, panelTitle)
-		TP_SetDAScaleToOne(panelTitle)
-		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
+	make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
+	TP_StoreDAScale(SelectedDACScale, panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 
-		SCOPE_CreateGraph(TestPulseITC, panelTitle)
+	SCOPE_CreateGraph(TestPulseITC, panelTitle)
 
-		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
-		ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
-		ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
-		
-		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-		TP_RestoreDAScale(SelectedDACScale,panelTitle)
+	ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
+	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
+
+	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 End
-//====================================================================================================
 
 Function RA_Counter(panelTitle)
 	string panelTitle
@@ -85,8 +75,7 @@ Function RA_Counter(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	string CountPath = WavePath + ":Count"
-	NVAR Count = $CountPath
+	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -175,22 +164,29 @@ Function RA_Counter(panelTitle)
 				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 				TP_RestoreDAScale(SelectedDACScale, panelTitle)
 			else
-				DAP_StopButtonToAcqDataButton(panelTitle)
-				ITC_StopITCDeviceTimer(panelTitle)
-				NVAR DataAcqState = $GetDataAcqState(panelTitle)
-				DataAcqState = 0
-				print "Repeated acquisition is complete"
-				Killvariables Count
-				killvariables /z Start, RunTime
-				Killstrings /z FunctionNameA, FunctionNameB//, FunctionNameC
+				RA_FinishAcquisition(panelTitle)
 			endif
 		else //background aquisition is on
-				ITC_BkrdDataAcq(panelTitle)
+			ITC_BkrdDataAcq(panelTitle)
 		endif
+	else
+		RA_FinishAcquisition(panelTitle)
 	endif
 End
 
-//====================================================================================================
+static Function RA_FinishAcquisition(panelTitle)
+	string panelTitle
+
+	DAP_StopButtonToAcqDataButton(panelTitle)
+	ITC_StopITCDeviceTimer(panelTitle)
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 0
+
+	KillVariables/Z Count
+	KillVariables/Z Start, RunTime
+	KillStrings /z FunctionNameA, FunctionNameB
+End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
@@ -199,9 +195,8 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
-	string CountPath = WavePath + ":Count"
-	NVAR Count = $CountPath
-		
+	NVAR count = $GetCount(panelTitle)
+
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
@@ -266,11 +261,8 @@ Function RA_StartMD(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
-	string CountPathString
-	sprintf  CountPathString, "%s:Count"  WavePath
-	variable /g $CountPathString = 0
-	print "count global variable was created here:",CountPathString
-	NVAR Count = $CountPathString
+	NVAR count = $GetCount(panelTitle)
+	count = 0
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath = v_value
@@ -321,12 +313,9 @@ Function RA_StartMD(panelTitle)
 				
 					TotTrials = max(TotTrials, followerTotTrials)
 					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count)) // updates a status value on follower panels
-					
-					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
-					sprintf  CountPathString, "%s:Count"  WavePath
-					variable /g $CountPathString = 0
-					NVAR /z followerCount = $CountPathString
-					
+
+					NVAR followerCount = $GetCount(followerPanelTitle)
+					followerCount = 0
 					i += 1
 			
 				while(i < numberOfFollowerDevices)
@@ -356,9 +345,7 @@ Function RA_CounterMD(panelTitle)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
 	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	string CountPathString
-	sprintf CountPathString, "%s:Count" WavePath
-	NVAR Count = $CountPathString
+	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	variable i = 0
@@ -423,13 +410,9 @@ Function RA_CounterMD(panelTitle)
 				
 				do
 					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-					print "follower panel title =", followerPanelTitle
-					
-					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
-					sprintf CountPathString, "%s:Count" WavePath
-					NVAR /z FollowerCount = $CountPathString
-					FollowerCount += 1
-					
+					NVAR followerCount = $GetCount(followerPanelTitle)
+					followerCount += 1
+
 					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
 					if(v_value == 0)
 						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
@@ -497,10 +480,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
-	string CountPathString
-	sprintf countPathString, "%s:Count"  WavePath
-	NVAR Count = $countPathString
-	
+	NVAR count = $GetCount(panelTitle)
+
 	// check if indexing is selected
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	if(v_value == 0)
@@ -581,14 +562,11 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			if(numberOfFollowerDevices != 0) // there are followers
 				i = 0
 				do
-					followerPanelTitle = stringfromlist(i,listOfFollowerDevices, ";")
-					WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
-					sprintf CountPathString, "%s:Count" WavePath
-					NVAR /z FollowerCount = $CountPathString
-					print "killing:" ,CountPathString
-					Killvariables FollowerCount
+					followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+					NVAR followerCount = $GetCount(followerPanelTitle)
+					KillVariables/Z followerCount
 					i += 1
-			
+
 				while(i < numberOfFollowerDevices)
 			
 			endif

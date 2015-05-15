@@ -120,7 +120,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	string cmd
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
-	string CountPath = WavePath + ":count"
+	NVAR count = $GetCount(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
@@ -136,10 +136,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	If(v_value == 0)
 		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps, one for saved waves, one for the oscilloscope
 	endif
-	
+
 	DM_ScaleITCDataWave(panelTitle)
-	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
-	controlinfo /w = $panelTitle Check_DataAcq1_RepeatAcq
+	if(!IsFinite(count))
+		ControlInfo/W=$panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
 			// RA_StartMD(panelTitle)  // *************THIS NEEDS TO BE POSTPONED FOR YOKED DEVICES*********************************
 			YokedRA_StartMD(panelTitle)

@@ -134,7 +134,6 @@ Function ITC_StopDataAcq()
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
 	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	string CountPath = WavePath + ":count"
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -152,10 +151,11 @@ Function ITC_StopDataAcq()
 	If(v_value == 0)
 		DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
 	endif
-	
-	 DM_ScaleITCDataWave(panelTitleG)
-	if(exists(CountPath) == 0)//If the global variable count does not exist, it is the first trial of repeated acquisition
-	controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
+
+	DM_ScaleITCDataWave(panelTitleG)
+	NVAR count = $GetCount(panelTitleG)
+	if(!IsFinite(count))
+		controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
 			RA_Start(PanelTitleG)
 		else
@@ -312,11 +312,10 @@ Function ITC_TestPulseFunc(s)
 	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	Wave ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
 	string ResultsWavePath = WavePath + ":ResultsWave"
-	string CountPath = WavePath + ":count"
 	NVAR DeviceID = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" DeviceID
 	ExecuteITCOperation(cmd)
-	
+
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	ExecuteITCOperation(cmd) // this also seems necessary to update the DA channel data to the board!!
 	sprintf cmd, "ITCStartAcq"
@@ -341,7 +340,8 @@ Function ITC_TestPulseFunc(s)
 		SCOPE_UpdateGraph(panelTitle)
 	endif
 
-	if(!exists(countPath)) // uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
+	NVAR count = $GetCount(panelTitle)
+	if(!IsFinite(count))
 		Keyboard = KeyboardState("")
 		if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 			beep
