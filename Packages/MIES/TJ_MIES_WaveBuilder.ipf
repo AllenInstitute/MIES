@@ -463,31 +463,14 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		pa.duration = pa.numberOfPulses / pa.frequency * 1000
 	elseif(mode == SQUARE_PULSE_TRAIN_MODE_DUR)
 		// user defined duration
-		pa.numberOfPulses = round(pa.frequency * pa.duration / 1000)
+		pa.numberOfPulses = pa.frequency * pa.duration / 1000
 	else
 		ASSERT(0, "Invalid mode")
 	endif
 
-	// We want the segment starting and ending with a pulse.
-	// With the following definitions
-	//
-	// duration:             t
-	// pulse duration:       p
-	// inter pulse interval: x
-	// number of pulses:     n
-	// frequency:            f
-	//
-	// we know that
-	//
-	// (p + x)(n - 1) + p = t
-	//
-	// which gives
-	//
-	// x = t - np / (n - 1)
-
-	// We remove one point from the duration.
-	// This is done in order to create, for situations with t = 1000, f = 5, p = 100, the expected five pulses (n = 5)
-	interPulseInterval = ((pa.duration/MINIMUM_SAMPLING_INTERVAL - 1) * MINIMUM_SAMPLING_INTERVAL - pa.numberOfPulses * pa.pulseDuration) / (pa.numberOfPulses - 1)
+	// we want always to have the correct interpulse interval
+	// independent of the duration
+	interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
 
 	WAVE segmentWave = WB_GetSegmentWave(pa.duration)
 	segmentWave = 0
@@ -522,8 +505,11 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	// remove the zero part at the end
 	FindValue/V=(0)/S=(startIndex) segmentWave
 	if(V_Value != -1)
+		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
 		Redimension/N=(V_Value) segmentWave
 		pa.duration = V_Value * MINIMUM_SAMPLING_INTERVAL
+	else
+		DEBUGPRINT("No removal of points")
 	endif
 
 	segmentWave += pa.offset
