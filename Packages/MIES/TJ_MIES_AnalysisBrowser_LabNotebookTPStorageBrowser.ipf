@@ -91,7 +91,7 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
 	LBN_UpdateTPSGraphLegend(graph, traceList=traceList)
 End
 
-Function LBN_UpdateTPSGraphLegend(graph, [traceList])
+static Function LBN_UpdateTPSGraphLegend(graph, [traceList])
 	string graph, traceList
 
 	string str, trace, entry, key
