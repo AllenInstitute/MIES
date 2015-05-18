@@ -949,11 +949,13 @@ Window ExperimentBrowser() : Panel
 	Button button_base_folder_scan,userdata(ResizeControlsInfo)= A"!!,@#!!#>2!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_base_folder_scan, help={"Start scanning the base folder recursively for packed/unpacked experiments holding MIES data"}
 	SetVariable setvar_baseFolder,pos={118,17},size={338,16}
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)= A"!!,FQ!!#<@!!#Bc!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_baseFolder,value= _STR:"",noedit= 1
+	SetVariable setvar_baseFolder, help={"Base folder which is recursively searched for packed/unpacked experiments holding MIES data"}
 	ListBox list_experiment_contents,pos={119,44},size={748,429},proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo)= A"!!,FS!!#>>!!#D1J,hs7J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -963,18 +965,25 @@ Window ExperimentBrowser() : Panel
 	ListBox list_experiment_contents,mode= 4
 	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
 	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
+	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
 	Button button_select_same_stim_sets,pos={6,67},size={101,33},proc=AB_ButtonProc_SelectStimSets,title="Select same\rstim set sweeps"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)= A"!!,@#!!#??!!#@.!!#=gz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_select_same_stim_sets, help={"Starting from one selected sweep, select all other sweeps which were acquired with the same stimset"}
 	Button button_select_directory,pos={6,14},size={100,20},proc=AB_ButtonProc_SelectDirectory,title="Select directory"
 	Button button_select_directory,userdata(ResizeControlsInfo)= A"!!,@#!!#;m!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_select_directory, help={"Open a directory selection dialog"}
 	Button button_collapse_all,pos={7,123},size={100,23},proc=AB_ButtonProc_CollapseAll,title="Collapse all"
+	Button button_collapse_all, help={"Collapse all entries giving the most compact view"}
 	Button button_expand_all,pos={7,158},size={100,19},proc=AB_ButtonProc_ExpandAll,title="Expand all"
+	Button button_expand_all, help={"Expand all entries giving the longest view"}
 	Button button_load_selection,pos={7,190},size={100,25},proc=AB_ButtonProc_LoadSelection,title="Load Selection"
-	Button button_show_usercomments,pos={7,226},size={100,25},proc=AB_ButtonProc_OpenCommentNB,title="Open comment NB"
+	Button button_load_selection, help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps are loaded from them."}
+	Button button_show_usercomments,pos={7,226},size={100,25},proc=AB_ButtonProc_OpenCommentNB,title="Open comment NB"	
+	Button button_show_usercomments, help={"Open a read-only notebook showing the user comment for the currently selected experiment."}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#DQ^]6a@J,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
