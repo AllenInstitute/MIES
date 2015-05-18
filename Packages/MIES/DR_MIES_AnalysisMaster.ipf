@@ -337,119 +337,119 @@ Window analysisMaster() : Panel
 	DrawText 15,220,"HeadStage 6"
 	DrawText 15,245,"HeadStage 7"
 	PopupMenu lockedDeviceMenu,pos={100,5},size={125,20},bodyWidth=125,title="Locked Device", proc=AM_LockedDeviceMenu
-	PopupMenu lockedDeviceMenu,mode=1,popvalue="-None-",value= #"DAP_ListOfLockedDevs()"	
+	PopupMenu lockedDeviceMenu,mode=1,popvalue="-None-",value= #"DAP_ListOfLockedDevs()", help={"List of locked ITC panels"}
 	CheckBox headStage0_midSweepAnalysisOn,pos={100,57},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage0_midSweepAnalysisOn,value= 0
+	CheckBox headStage0_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 0"}
 	CheckBox headStage2_midSweepAnalysisOn,pos={100,82},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage2_midSweepAnalysisOn,value= 0
+	CheckBox headStage2_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 1"}
 	CheckBox headStage1_midSweepAnalysisOn,pos={100,107},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage1_midSweepAnalysisOn,value= 0
+	CheckBox headStage1_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 2"}
 	CheckBox headStage3_midSweepAnalysisOn,pos={100,132},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage3_midSweepAnalysisOn,value= 0
+	CheckBox headStage3_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 3"}
 	CheckBox headStage4_midSweepAnalysisOn,pos={100,157},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage4_midSweepAnalysisOn,value= 0
+	CheckBox headStage4_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 4"}
 	CheckBox headStage5_midSweepAnalysisOn,pos={100,182},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage5_midSweepAnalysisOn,value= 0
+	CheckBox headStage5_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 5"}
 	CheckBox headStage6_midSweepAnalysisOn,pos={100,207},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage6_midSweepAnalysisOn,value= 0
+	CheckBox headStage6_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 6"}
 	CheckBox headStage7_midSweepAnalysisOn,pos={100,232},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
-	CheckBox headStage7_midSweepAnalysisOn,value= 0
+	CheckBox headStage7_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 7"}
 	PopupMenu MSA_headStage0,pos={120,53},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage0,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage0,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 0"}
 	PopupMenu MSA_headStage1,pos={120,78},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage1,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage1,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 1"}
 	PopupMenu MSA_headStage2,pos={120,103},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage2,mode=2,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage2,mode=2,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 2"}
 	PopupMenu MSA_headStage3,pos={120,128},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage3,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage3,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 3"}
 	PopupMenu MSA_headStage4,pos={120,153},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage4,mode=4,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage4,mode=4,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 4"}
 	PopupMenu MSA_headStage5,pos={120,178},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage5,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage5,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 5"}
 	PopupMenu MSA_headStage6,pos={120,203},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage6,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage6,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 6"}
 	PopupMenu MSA_headStage7,pos={119,228},size={125,21},bodyWidth=125,proc=AM_MS_PopMenuChk
-	PopupMenu MSA_headStage7,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()"
+	PopupMenu MSA_headStage7,mode=1,popvalue="-None-",value= #"AM_MS_sortFunctions()", help={"Select a post sweep action routine for headstage 7"}
 	CheckBox headStage0_postSweepAnalysisOn,pos={275,57},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage0_postSweepAnalysisOn,value= 0
+	CheckBox headStage0_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 0"}
 	CheckBox headStage1_postSweepAnalysisOn,pos={275,82},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage1_postSweepAnalysisOn,value= 0
+	CheckBox headStage1_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 1"}
 	CheckBox headStage2_postSweepAnalysisOn,pos={275,107},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage2_postSweepAnalysisOn,value= 0
+	CheckBox headStage2_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 2"}
 	CheckBox headStage3_postSweepAnalysisOn,pos={275,132},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage3_postSweepAnalysisOn,value= 0
+	CheckBox headStage3_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 3"}
 	CheckBox headStage4_postSweepAnalysisOn,pos={275,157},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage4_postSweepAnalysisOn,value= 0
+	CheckBox headStage4_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 4"}
 	CheckBox headStage5_postSweepAnalysisOn,pos={275,182},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage5_postSweepAnalysisOn,value= 0
+	CheckBox headStage5_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 5"}
 	CheckBox headStage6_postSweepAnalysisOn,pos={275,207},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage6_postSweepAnalysisOn,value= 0
+	CheckBox headStage6_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 6"}
 	CheckBox headStage7_postSweepAnalysisOn,pos={275,232},size={16,14},proc=AM_HeadStagePSCheckBox,title=""
-	CheckBox headStage7_postSweepAnalysisOn,value= 0
+	CheckBox headStage7_postSweepAnalysisOn,value= 0, help={"Activate post analysis action routine for headstage 7"}
 	PopupMenu PSA_headStage0,pos={300,53},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage0,mode=2,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage0,mode=2,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 0"}
 	PopupMenu PSA_headStage1,pos={300,78},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage1,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage1,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 1"}
 	PopupMenu PSA_headStage2,pos={300,103},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage2,mode=2,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage2,mode=2,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 2"}
 	PopupMenu PSA_headStage3,pos={300,128},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage3,mode=3,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage3,mode=3,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 3"}
 	PopupMenu PSA_headStage4,pos={300,153},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage4,mode=3,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage4,mode=3,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 4"}
 	PopupMenu PSA_headStage5,pos={300,178},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage5,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage5,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 5"}
 	PopupMenu PSA_headStage6,pos={300,203},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage6,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage6,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 6"}
 	PopupMenu PSA_headStage7,pos={300,228},size={125,21},bodyWidth=125,proc=AM_PS_PopMenuChk
-	PopupMenu PSA_headStage7,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()"
+	PopupMenu PSA_headStage7,mode=1,popvalue="-None-",value= #"AM_PS_sortFunctions()", help={"Select a post sweep analysis routine for headstage 7"}
 	CheckBox headStage0_postAnalysisActionOn,pos={450,57},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage0_postAnalysisActionOn,value= 0
+	CheckBox headStage0_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 0"}
 	CheckBox headStage1_postAnalysisActionOn,pos={450,82},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage1_postAnalysisActionOn,value= 0
+	CheckBox headStage1_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 1"}
 	CheckBox headStage2_postAnalysisActionOn,pos={450,107},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage2_postAnalysisActionOn,value= 0
+	CheckBox headStage2_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 2"}
 	CheckBox headStage3_postAnalysisActionOn,pos={450,132},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage3_postAnalysisActionOn,value= 0
+	CheckBox headStage3_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 3"}
 	CheckBox headStage4_postAnalysisActionOn,pos={450,157},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage4_postAnalysisActionOn,value= 0
+	CheckBox headStage4_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 4"}
 	CheckBox headStage5_postAnalysisActionOn,pos={450,182},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage5_postAnalysisActionOn,value= 0
+	CheckBox headStage5_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 5"}
 	CheckBox headStage6_postAnalysisActionOn,pos={450,207},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage6_postAnalysisActionOn,value= 0
+	CheckBox headStage6_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 6"}
 	CheckBox headStage7_postAnalysisActionOn,pos={450,232},size={16,14},proc=AM_HeadStagePACheckBox,title=""
-	CheckBox headStage7_postAnalysisActionOn,value= 0
+	CheckBox headStage7_postAnalysisActionOn,value= 0, help={"Activate post analysis action routine for headstage 7"}
 	PopupMenu PAA_headStage0,pos={475,53},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage0,mode=2,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage0,mode=2,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 0"}
 	PopupMenu PAA_headStage1,pos={475,78},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage1,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage1,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 1"}
 	PopupMenu PAA_headStage2,pos={475,103},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage2,mode=2,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage2,mode=2,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 2"}
 	PopupMenu PAA_headStage3,pos={475,128},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage3,mode=3,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage3,mode=3,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 3"}
 	PopupMenu PAA_headStage4,pos={475,153},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage4,mode=3,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage4,mode=3,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 4"}
 	PopupMenu PAA_headStage5,pos={475,178},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage5,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage5,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 5"}
 	PopupMenu PAA_headStage6,pos={475,203},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage6,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage6,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 6"}
 	PopupMenu PAA_headStage7,pos={475,228},size={125,21},bodyWidth=125,proc=AM_PA_PopMenuChk
-	PopupMenu PAA_headStage7,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()"
+	PopupMenu PAA_headStage7,mode=1,popvalue="-None-",value= #"AM_PA_sortFunctions()", help={"Select a post analysis action routine for headstage 7"}
 	Button PAA_headStage0Config, pos={625, 53},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 0"
-	Button PAA_headStage0Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage0Config, help={"Configure the Post Analysis Action routine for headstage 0"}, disable=2
 	Button PAA_headStage1Config, pos={625, 78},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 1"
-	Button PAA_headStage1Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage1Config, help={"Configure the Post Analysis Action routine for headstage 1"}, disable=2
 	Button PAA_headStage2Config, pos={625, 103},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 2"
-	Button PAA_headStage2Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage2Config, help={"Configure the Post Analysis Action routine for headstage 2"}, disable=2
 	Button PAA_headStage3Config, pos={625, 128},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 3"
-	Button PAA_headStage3Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage3Config, help={"Configure the Post Analysis Action routine for headstage 3"}, disable=2
 	Button PAA_headStage4Config, pos={625, 153},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 4"
-	Button PAA_headStage4Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage4Config, help={"Configure the Post Analysis Action routine for headstage 4"}, disable=2
 	Button PAA_headStage5Config, pos={625, 178},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 5"
-	Button PAA_headStage5Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage5Config, help={"Configure the Post Analysis Action routine for headstage 5"}, disable=2
 	Button PAA_headStage6Config, pos={625, 203},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 6"
-	Button PAA_headStage6Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage6Config, help={"Configure the Post Analysis Action routine for headstage 6"}, disable=2
 	Button PAA_headStage7Config, pos={625, 228},size={150, 21},proc=AM_configAnalysis, title="Config Analysis HS 7"
-	Button PAA_headStage7Config, help={"Configure the Post Analysis Action routine"}, disable=2
+	Button PAA_headStage7Config, help={"Configure the Post Analysis Action routine for headstage 7"}, disable=2
 EndMacro
 
 Function configureAnalysis(headStageNumber, itcPanel)
