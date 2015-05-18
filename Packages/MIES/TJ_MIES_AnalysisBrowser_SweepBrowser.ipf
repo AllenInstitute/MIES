@@ -403,13 +403,13 @@ Function/DF SB_CreateNewSweepBrowser()
 
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,383) as " "
 	ModifyPanel fixedSize=0
-	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxDisplayDAChannels,title="Display DA channels"
+	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
 	SetVariable setvar_SweepBrowser_OverlaySkip,pos={38,49},size={64,16},title="Step"
 	SetVariable setvar_SweepBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
 	CheckBox check_sweepbrowser_OverlayChan,pos={19,69},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
 	CheckBox check_sweepbrowser_OverlayChan,value= 1
-	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},title="Overlay Sweeps"
+	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},proc=SB_CheckboxChangedSettings,title="Overlay Sweeps"
 	CheckBox check_SweepBrowser_SweepOverlay,value= 0
 	GroupBox group_sweep,pos={9,90},size={139,74},title="Sweep"
 	GroupBox group_postSynPot,pos={9,266},size={137,92},title="Post-synaptic potentials"
