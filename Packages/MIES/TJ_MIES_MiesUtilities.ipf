@@ -17,9 +17,10 @@ Function/WAVE GetSettingsHistoryDateTime(settingsHistory)
 
 	DFREF dfr = GetWavesDataFolderDFR(settingsHistory)
 	WAVE/Z/SDFR=dfr settingsHistoryDat
+	variable nextRowIndex = GetNumberFromWaveNote(settingsHistory, NOTE_INDEX)
 
-	if(!WaveExists(settingsHistoryDat))
-		Duplicate/R=[0, DimSize(settingsHistory, ROWS)][1][-1][-1] settingsHistory, dfr:settingsHistoryDat/Wave=settingsHistoryDat
+	if(!WaveExists(settingsHistoryDat) || DimSize(settingsHistoryDat, ROWS) != DimSize(settingsHistory, ROWS) || DimSize(settingsHistoryDat, ROWS) < nextRowIndex || !IsFinite(settingsHistoryDat[nextRowIndex - 1]))
+		Duplicate/O/R=[0, DimSize(settingsHistory, ROWS)][1][-1][-1] settingsHistory, dfr:settingsHistoryDat/Wave=settingsHistoryDat
 		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
 		Redimension/N=-1 settingsHistoryDat
 		// redimension has the odd behaviour to change a wave with zero rows to one with 1 row and then initializes that point to zero
