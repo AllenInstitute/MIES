@@ -2918,6 +2918,8 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 	return wv
 End
 
+/// @}
+
 ///@brief Returns a wave reference to the new config settings Wave
 Function/Wave GetConfigSettingsWaveRef(panelTitle)
 	string panelTitle
