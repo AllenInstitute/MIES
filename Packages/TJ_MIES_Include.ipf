@@ -24,6 +24,7 @@
 #include "TJ_MIES_DataManagementNew"
 #include "TJ_MIES_Debugging"
 #include "TJ_MIES_Downsample" menus=0
+#include "TJ_MIES_EnhancedWMRoutines"
 #include "TJ_MIES_ExperimentDocumentation"
 #include "TJ_MIES_GlobalStringAndVariableAccess"
 #include "TJ_MIES_GuiUtilities"
