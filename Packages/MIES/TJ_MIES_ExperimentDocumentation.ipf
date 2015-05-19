@@ -26,7 +26,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 	string panelTitle
 	variable sweepNo
 
-	variable idx, rowIndex, numCols, lastValidIncomingLayer, i
+	variable rowIndex, numCols, lastValidIncomingLayer, i
 
 	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
 	WAVE/D/Z/SDFR=settingsHistoryDFR settingsHistory
@@ -70,9 +70,9 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 	settingsHistory[rowIndex][0] = sweepNo
 	settingsHistory[rowIndex][1] = DateTime
 
-	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=idx, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
 
-	settingsHistoryDat[idx] = settingsHistory[idx][1]
+	settingsHistoryDat[rowIndex] = settingsHistory[rowIndex][1]
 
 	numCols = DimSize(incomingSettingsWave, COLS)
 	lastValidIncomingLayer = DimSize(incomingSettingsWave, LAYERS) == 0 ? 0 : DimSize(incomingSettingsWave, LAYERS) - 1
