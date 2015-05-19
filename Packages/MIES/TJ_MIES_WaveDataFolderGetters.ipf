@@ -3040,3 +3040,12 @@ Function/Wave GetDACIndexingStorageWave(panelTitle)
 
 	return wv
 End
+
+/// @brief Return a unique temporary folder below the MIES hierarchy, e.g. root:mies:trash_$digit.
+///
+/// As soon as you discard the latest reference to the folder it will
+/// be slated for removal at some point in the future.
+Function/DF GetUniqueTempPath()
+
+	return UniqueDataFolder(GetMiesPath(), TRASH_FOLDER_PREFIX)
+End

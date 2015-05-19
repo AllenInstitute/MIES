@@ -308,7 +308,7 @@ Function/S GetAllDevicesWithData()
 End
 
 /// @brief Delete a datafolder or wave. If this is not possible, because Igor
-/// has locked the file, the wave or datafolder is moved into a unique folder
+/// has locked the file, the wave or datafolder is moved into a trash folder
 /// named `root:mies:trash_$digit`.
 ///
 /// The trash folders will be removed, if possible, from KillTemporaries().
@@ -326,8 +326,7 @@ Function KillOrMoveToTrash(path)
 			return NaN
 		endif
 
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		DFREF tmpDFR = GetUniqueTempPath()
 		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
 		MoveDataFolder $path, $dest
 	elseif(WaveExists($path))
@@ -338,8 +337,7 @@ Function KillOrMoveToTrash(path)
 			return NaN
 		endif
 
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		DFREF tmpDFR = GetUniqueTempPath()
 		MoveWave wv, tmpDFR
 	else
 		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
