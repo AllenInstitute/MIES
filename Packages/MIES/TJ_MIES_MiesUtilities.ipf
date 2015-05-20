@@ -465,7 +465,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	variable firstDAC = 1
 	variable firstADC = 1
 
-	string axis, trace, adc, dac
+	string axis, trace, adc, dac, traceType
 	string configNote = note(config)
 	string unit
 
@@ -511,7 +511,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	for(i = 0; i < numChannels; i += 1)
 		if(displayDAC && i < NumberOfDAchannels)
 			dac = StringFromList(i, DAChannelList)
-			trace = "DA" + dac
+			traceType = "DA" + dac
+			trace = UniqueTraceName(graph, traceType)
 
 			if(overlayChannels)
 				axis = AXIS_BASE_NAME + "_DA"
@@ -530,7 +531,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			if(firstDAC || !overlayChannels)
 				ModifyGraph/W=$graph axisEnab($axis) = {DAYaxisLow, DAYaxisHigh}
 				unit = StringFromList(i, configNote)
-				Label/W=$graph $axis, trace + "\r(" + unit + ")"
+				Label/W=$graph $axis, traceType + "\r(" + unit + ")"
 				ModifyGraph/W=$graph lblPosMode = 1
 				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 				firstDAC = 0
@@ -544,7 +545,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 
 		if(i < NumberOfADchannels)
 			adc = StringFromList(i, ADChannelList)
-			trace = "AD" + adc
+			traceType = "AD" + adc
+			trace = UniqueTraceName(graph, traceType)
 
 			if(overlayChannels)
 				axis = AXIS_BASE_NAME + "_AD"
@@ -568,7 +570,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			if(firstADC || !overlayChannels)
 				ModifyGraph/W=$graph axisEnab($axis) = {ADYaxisLow, ADYaxisHigh}
 				unit = StringFromList(i + NumberOfDAchannels, configNote)
-				Label/W=$graph $axis, trace + "\r(" + unit + ")"
+				Label/W=$graph $axis, traceType + "\r(" + unit + ")"
 				ModifyGraph/W=$graph lblPosMode = 1
 				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 				firstADC = 0
