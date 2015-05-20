@@ -451,14 +451,25 @@ End
 Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, win
-	variable idx
+	string graph, win, ctrl
+	variable idx, checked
 	DFREF sweepDFR
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			win   = cba.win
-			graph = GetMainWindow(win)
+			ctrl    = cba.ctrlName
+			checked = cba.checked
+			win     = cba.win
+			graph   = GetMainWindow(win)
+
+			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
+				if(checked)
+					DisableControl(win, "check_SweepBrowser_DisplayDAC")
+				else
+					EnableControl(win, "check_SweepBrowser_DisplayDAC")
+				endif
+			endif
+
 			idx   = GetPopupMenuIndex(win, "popup_sweep_selector")
 
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
