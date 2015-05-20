@@ -112,6 +112,106 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	return GetLastSetting(numericValues, sweep, key)
 End
 
+static Function SB_AverageWavesIfRequested(graph)
+	string graph
+
+	string averageWaveName, listOfWaves, fullPath, panel
+	variable i, j, k, numAxes, numTraces, numWaves, ret
+	variable red, green, blue
+	string info, axis, trace, axList, traceList, baseName
+
+	panel = SB_GetSweepBrowserLeftPanel(graph)
+	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+
+	if(!GetCheckBoxState(panel, "check_SweepBrowser_AveragTraces"))
+		listOfWaves = GetListOfWaves(sweepBrowserDFR, "average.*", fullPath=1)
+		numWaves = ItemsInList(listOfWaves)
+		for(i = 0; i < numWaves; i += 1)
+			WAVE wv = $StringFromList(i, listOfWaves)
+			RemoveTracesFromGraph(graph, wv=wv)
+		endfor
+		CallFunctionForEachListItem(KillOrMoveToTrash, listOfWaves)
+		return NaN
+	endif
+
+	axList = AxisList(graph)
+	axList = RemoveFromList("bottom", axList)
+	numAxes = ItemsInList(axList)
+	traceList = TraceNameList(graph, ";", 0+1)
+	traceList = ListMatch(traceList, "!average*")
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+		listOfWaves = ""
+		for(j = 0; j < numTraces; j += 1)
+			trace = StringFromList(j, traceList)
+			info = TraceInfo(graph, trace, 0)
+			if(!cmpstr(axis, StringByKey("YAXIS", info)))
+				fullPath = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
+				listOfWaves = AddListItem(fullPath, listOfWaves, ";", Inf)
+			endif
+		endfor
+
+		numWaves = ItemsInList(listOfWaves)
+		if(numWaves <= 1)
+			continue
+		endif
+
+		if(SB_WaveListHasSameWaveNames(listOfWaves, baseName))
+			averageWaveName = "average_" + baseName
+		elseif(StringMatch(axis, AXIS_BASE_NAME + "*"))
+			averageWaveName = "average" + RemovePrefix(axis, startStr=AXIS_BASE_NAME)
+		else
+			sprintf averageWaveName, "average_%d", k
+			k += 1
+		endif
+
+		ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, sweepBrowserDFR) + averageWaveName, "")
+		ASSERT(ret != -1, "Wave averaging failed")
+		WAVE/SDFR=sweepBrowserDFR averageWave = $averageWaveName
+		RemoveTracesFromGraph(graph, wv=averageWave)
+		AppendToGraph/W=$graph/L=$axis averageWave
+
+		GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
+
+		Note/K averageWave, "SourceWavesForAverage: " + listOfWaves
+		AppendMiesVersionToWaveNote(averageWave)
+	endfor
+End
+
+/// @brief Checks wether the wave names of all waves in the list are equal
+/// Returns 1 if true, 0 if false and NaN for empty lists
+///
+/// @param      listOfWaves list of waves with full path
+/// @param[out] baseName    Returns the common baseName if one was found, otherwise
+///                         this will be an empty string.
+static Function SB_WaveListHasSameWaveNames(listOfWaves, baseName)
+	string listOfWaves
+	string &baseName
+
+	baseName = ""
+
+	string str, firstBaseName
+	variable numWaves, i
+	numWaves = ItemsInList(listOfWaves)
+
+	if(numWaves == 0)
+		return NaN
+	endif
+
+	firstBaseName = GetBaseName(StringFromList(0, listOfWaves))
+	for(i = 1; i < numWaves; i += 1)
+		str = GetBaseName(StringFromList(i, listOfWaves))
+		if(cmpstr(firstBaseName, str))
+			return 0
+		endif
+	endfor
+
+	baseName = firstBaseName
+	return 1
+End
+
 /// @brief Return a list of experiments from which the sweeps in the sweep browser
 /// graph originated from
 ///
@@ -281,8 +381,10 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 			RemoveTracesFromGraph(graph, dfr=currentSweepDFR)
 			SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 			SB_SetFormerSweepNumber(panel, newMapIndex)
+			SB_AverageWavesIfRequested(graph)
 			return NaN
 		elseif(newWaveDisplayed)
+			SB_AverageWavesIfRequested(graph)
 			return NaN
 		endif
 	endif
@@ -306,6 +408,8 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)
+
+	SB_AverageWavesIfRequested(graph)
 End
 
 Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
@@ -405,6 +509,9 @@ Function/DF SB_CreateNewSweepBrowser()
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
+	CheckBox check_SweepBrowser_AveragTraces,pos={20,243},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
+	CheckBox check_SweepBrowser_AveragTraces,value= 0
 	SetVariable setvar_SweepBrowser_OverlaySkip,pos={38,49},size={64,16},title="Step"
 	SetVariable setvar_SweepBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
 	CheckBox check_sweepbrowser_OverlayChan,pos={19,69},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
@@ -451,14 +558,25 @@ End
 Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, win
-	variable idx
+	string graph, win, ctrl
+	variable idx, checked
 	DFREF sweepDFR
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			win   = cba.win
-			graph = GetMainWindow(win)
+			ctrl    = cba.ctrlName
+			checked = cba.checked
+			win     = cba.win
+			graph   = GetMainWindow(win)
+
+			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
+				if(checked)
+					DisableControl(win, "check_SweepBrowser_DisplayDAC")
+				else
+					EnableControl(win, "check_SweepBrowser_DisplayDAC")
+				endif
+			endif
+
 			idx   = GetPopupMenuIndex(win, "popup_sweep_selector")
 
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)

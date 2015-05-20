@@ -300,7 +300,7 @@ Window DataBrowser() : Panel
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
 	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
-	CheckBox check_DataBrowser_SweepOverlay,pos={205,6},size={95,14},title="Overlay Sweeps"
+	CheckBox check_DataBrowser_SweepOverlay,pos={205,6},size={95,14},proc=DB_CheckProc_ChangedSetting,title="Overlay Sweeps"
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo)= A"!!,G]!!#:\"!!#@\"!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -628,12 +628,22 @@ End
 Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable sweepNo
-	string panelTitle
+	variable checked
+	string panelTitle, ctrl
 
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
+			ctrl       = cba.ctrlName
+			checked    = cba.checked
+
+			if(!cmpstr(ctrl, "check_DataBrowser_SweepOverlay"))
+				if(checked)
+					DisableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+				else
+					EnableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+				endif
+			endif
 
 			DB_PlotSweep(panelTitle)
 			break

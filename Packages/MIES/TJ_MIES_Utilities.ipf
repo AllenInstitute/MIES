@@ -1711,3 +1711,38 @@ Function/S Convert1DWaveToList(wv)
 
 	return list
 End
+
+/// @brief Return a unique trace name in the graph
+///
+/// Remember that it might be necessary to call `DoUpdate`
+/// if you added possibly colliding trace names in the current
+/// function run.
+///
+/// @param baseName base name of the trace, must not be empty
+Function/S UniqueTraceName(graph, baseName)
+	string graph, baseName
+
+	variable i = 1
+	variable numTrials
+	string trace, traceList
+
+	ASSERT(windowExists(graph), "graph must exist")
+	ASSERT(!isEmpty(baseName), "baseName must not be empty")
+
+	traceList = TraceNameList(graph, ";", 0+1)
+	// use an upper limit of trials to ease calculation
+	numTrials = 2 * ItemsInList(traceList) + 1
+
+	trace = baseName
+	do
+		if(WhichListItem(trace, traceList) == -1)
+			return trace
+		endif
+
+		trace = baseName + "_" + num2str(i)
+		i += 1
+
+	while(i < numTrials)
+
+	ASSERT(0, "Could not find a trace name")
+End

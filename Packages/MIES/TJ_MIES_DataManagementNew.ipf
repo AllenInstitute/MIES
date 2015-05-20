@@ -20,8 +20,7 @@ Function DM_SaveITCData(panelTitle)
 	Duplicate/O ITCChanConfigWave $savedSetUpWaveName
 	note dataWave, Time()
 	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
-	SVAR miesVersion = $GetMiesVersion()
-	Note dataWave, "MiesVersion: " + miesVersion
+	AppendMiesVersionToWaveNote(dataWave)
 
 	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)

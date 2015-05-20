@@ -309,7 +309,7 @@ Function/S GetAllDevicesWithData()
 End
 
 /// @brief Delete a datafolder or wave. If this is not possible, because Igor
-/// has locked the file, the wave or datafolder is moved into a unique folder
+/// has locked the file, the wave or datafolder is moved into a trash folder
 /// named `root:mies:trash_$digit`.
 ///
 /// The trash folders will be removed, if possible, from KillTemporaries().
@@ -327,8 +327,7 @@ Function KillOrMoveToTrash(path)
 			return NaN
 		endif
 
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		DFREF tmpDFR = GetUniqueTempPath()
 		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
 		MoveDataFolder $path, $dest
 	elseif(WaveExists($path))
@@ -339,8 +338,7 @@ Function KillOrMoveToTrash(path)
 			return NaN
 		endif
 
-		DFREF miesDFR = GetMiesPath()
-		DFREF tmpDFR = UniqueDataFolder(miesDFR, TRASH_FOLDER_PREFIX)
+		DFREF tmpDFR = GetUniqueTempPath()
 		MoveWave wv, tmpDFR
 	else
 		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
@@ -466,7 +464,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	variable firstDAC = 1
 	variable firstADC = 1
 
-	string axis, trace, adc, dac
+	string axis, trace, adc, dac, traceType
 	string configNote = note(config)
 	string unit
 
@@ -512,7 +510,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	for(i = 0; i < numChannels; i += 1)
 		if(displayDAC && i < NumberOfDAchannels)
 			dac = StringFromList(i, DAChannelList)
-			trace = "DA" + dac
+			traceType = "DA" + dac
+			trace = UniqueTraceName(graph, traceType)
 
 			if(overlayChannels)
 				axis = AXIS_BASE_NAME + "_DA"
@@ -531,7 +530,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			if(firstDAC || !overlayChannels)
 				ModifyGraph/W=$graph axisEnab($axis) = {DAYaxisLow, DAYaxisHigh}
 				unit = StringFromList(i, configNote)
-				Label/W=$graph $axis, trace + "\r(" + unit + ")"
+				Label/W=$graph $axis, traceType + "\r(" + unit + ")"
 				ModifyGraph/W=$graph lblPosMode = 1
 				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 				firstDAC = 0
@@ -545,7 +544,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 
 		if(i < NumberOfADchannels)
 			adc = StringFromList(i, ADChannelList)
-			trace = "AD" + adc
+			traceType = "AD" + adc
+			trace = UniqueTraceName(graph, traceType)
 
 			if(overlayChannels)
 				axis = AXIS_BASE_NAME + "_AD"
@@ -569,7 +569,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			if(firstADC || !overlayChannels)
 				ModifyGraph/W=$graph axisEnab($axis) = {ADYaxisLow, ADYaxisHigh}
 				unit = StringFromList(i + NumberOfDAchannels, configNote)
-				Label/W=$graph $axis, trace + "\r(" + unit + ")"
+				Label/W=$graph $axis, traceType + "\r(" + unit + ")"
 				ModifyGraph/W=$graph lblPosMode = 1
 				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 				firstADC = 0
@@ -1048,3 +1048,11 @@ Function ExecuteITCOperation(cmd)
 End
 
 #endif
+
+/// @brief Append the MIES version to the wave's note
+Function AppendMiesVersionToWaveNote(wv)
+	Wave wv
+
+	SVAR miesVersion = $GetMiesVersion()
+	Note wv, "MiesVersion: " + miesVersion
+End

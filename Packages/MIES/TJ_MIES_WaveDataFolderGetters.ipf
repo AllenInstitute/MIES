@@ -2918,6 +2918,8 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 	return wv
 End
 
+/// @}
+
 ///@brief Returns a wave reference to the new config settings Wave
 Function/Wave GetConfigSettingsWaveRef(panelTitle)
 	string panelTitle
@@ -3037,4 +3039,13 @@ Function/Wave GetDACIndexingStorageWave(panelTitle)
 	Make/N=(4, NUM_DA_TTL_CHANNELS) dfr:DACIndexingStorageWave/Wave=wv
 
 	return wv
+End
+
+/// @brief Return a unique temporary folder below the MIES hierarchy, e.g. root:mies:trash_$digit.
+///
+/// As soon as you discard the latest reference to the folder it will
+/// be slated for removal at some point in the future.
+Function/DF GetUniqueTempPath()
+
+	return UniqueDataFolder(GetMiesPath(), TRASH_FOLDER_PREFIX)
 End
