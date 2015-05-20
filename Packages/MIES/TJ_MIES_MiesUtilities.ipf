@@ -1047,3 +1047,11 @@ Function ExecuteITCOperation(cmd)
 End
 
 #endif
+
+/// @brief Append the MIES version to the wave's note
+Function AppendMiesVersionToWaveNote(wv)
+	Wave wv
+
+	SVAR miesVersion = $GetMiesVersion()
+	Note wv, "MiesVersion: " + miesVersion
+End
