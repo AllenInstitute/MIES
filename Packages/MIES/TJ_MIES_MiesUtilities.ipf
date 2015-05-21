@@ -1056,3 +1056,45 @@ Function AppendMiesVersionToWaveNote(wv)
 	SVAR miesVersion = $GetMiesVersion()
 	Note wv, "MiesVersion: " + miesVersion
 End
+
+/// @brief Extract an one dimensional wave with channel data from the ITC sweep wave
+///
+/// @param config        ITC configuration wave
+/// @param sweep         ITC sweep wave
+/// @param channelType   channel type, one item of #ITC_CHANNEL_NAMES
+/// @param channelNumber 0-based index of the channel
+///
+/// @returns a reference to a free wave with the single channel data
+Function/Wave ExtractOneDimDataFromSweep(config, sweep, channelType, channelNumber)
+	Wave config, sweep
+	string channelType
+	variable channelNumber
+
+	variable numRows, i
+	string channelUnit
+
+	ASSERT(IsFinite(channelNumber), "Non-finite channel number")
+	ASSERT(WhichListItem(channelType, ITC_CHANNEL_NAMES) != -1, "Unknown channel type")
+
+	numRows = DimSize(config, ROWS)
+	for(i = 0; i < numRows; i += 1)
+
+		if(cmpstr(channelType, StringFromList(config[i][0], ITC_CHANNEL_NAMES)))
+			continue
+		endif
+
+		if(channelNumber != config[i][1])
+			continue
+		endif
+
+		MatrixOP/FREE data = col(sweep, i)
+
+		SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
+		channelUnit = StringFromList(i, note(config))
+		SetScale d, 0, 0, channelUnit, data
+
+		return data
+	endfor
+
+	ASSERT(0, "Could not find the given channelType and/or channelNumber")
+End
