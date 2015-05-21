@@ -153,6 +153,7 @@ Constant TEST_PULSE_MODE       = 1
 /// @}
 
 /// @name Constants for three Amplifier modes
+/// @anchor AmplifierClampModes
 /// @{
 Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1

@@ -453,7 +453,6 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
 	NVAR GlobalTPDurationVariable = $TPDurationGlobalPath
 	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, GlobalTPDurationVariable)  // first TP so start point = 0
-	TP_ClampModeString(panelTitle)
 
 	// configures data for ITC with testpulse wave selected
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)

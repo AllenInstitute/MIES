@@ -361,7 +361,6 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	Variable sweepCount
 
 	variable i, j
-	string clampModeString
 
 	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
 
@@ -441,7 +440,7 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numSettings[0][0][] = statusHS[r]
 
 	// clamp mode string only holds entries for active headstages
-	clampModeString = TP_ClampModeString(panelTitle)
+	SVAR clampModeString = $GetClampModeString(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
 			continue
@@ -576,8 +575,8 @@ Function ED_TPDocumentation(panelTitle)
 
 	variable sweepNo, RTolerance
 	variable i, j, clampMode, numHS
-	string clampModeString = TP_ClampModeString(panelTitle)
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	SVAR clampModeString = $GetClampModeString(panelTitle)
 
 	WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
 	WAVE/SDFR=dfr InstResistance // wave that contains the peak resistance calculation result from the TP

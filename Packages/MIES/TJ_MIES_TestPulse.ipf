@@ -623,32 +623,6 @@ Function TP_ResetTPStorage(panelTitle)
 		TPStorage = NaN
 	endif
 End
-//=============================================================================================
-/// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
-///
-/// In the order of the ADchannels in ITCDataWave - i.e. numerical order
-Function/S TP_ClampModeString(panelTitle)
-	string 	panelTitle
-
-	string 	WavePath 			= HSU_DataFullFolderPathString(panelTitle)
-	string /g $WavePath + ":TestPulse:ADChannelList"
-	SVAR 	ADChannelList		= $WavePath + ":TestPulse:ADChannelList"
-	wave 	ITCChanConfigWave 	= $WavePath + ":ITCChanConfigWave"
-			ADChannelList		= GetADCListFromConfig(ITCChanConfigWave)
-
-	variable i, numChannels, headstage
-	string /g $WavePath + ":TestPulse:ClampModeString"
-	SVAR 	ClampModeString 	= $WavePath + ":TestPulse:ClampModeString"
-			ClampModeString 	= ""
-	
-	numChannels = ItemsInList(ADChannelList)
-	for(i = 0; i < numChannels; i += 1)
-		headstage = TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList)))
-		ClampModeString += num2str(AI_MIESHeadstageMode(panelTitle, headstage)) + ";"
-	endfor
-
-	return ClampModeString
-End
 
 /// @brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
