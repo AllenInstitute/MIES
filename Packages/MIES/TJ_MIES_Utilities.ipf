@@ -1718,6 +1718,7 @@ End
 /// if you added possibly colliding trace names in the current
 /// function run.
 ///
+/// @param graph existing graph
 /// @param baseName base name of the trace, must not be empty
 Function/S UniqueTraceName(graph, baseName)
 	string graph, baseName
