@@ -6,13 +6,12 @@ static Constant FLOAT_64BIT = 0x04
 Function DM_SaveITCData(panelTitle)
 	string panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
 
-	string savedDataWaveName = WavePath + ":Data:" + "Sweep_" +  num2str(sweepNo)
-	string savedSetUpWaveName = WavePath + ":Data:" + "Config_Sweep_" + num2str(sweepNo)
+	string savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
+	string savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
 
 	variable rowsToCopy = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) - 1
 
@@ -80,9 +79,8 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	dfref testPulseDFR = GetDeviceTestPulse(panelTitle)
 
 	NVAR duration = $GetTestpulseDuration(panelTitle)
-	Wave/Z/SDFR=GetDevicePath(panelTitle) ITCDataWave
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
-	ASSERT(WaveExists(ITCDataWave), "ITCDataWave is missing")
 	ASSERT(Duration > 0, "duration is not strictly positive")
 	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
 
@@ -95,15 +93,13 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	string panelTitle
 	variable startPoint, NoOfPointsInTP
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	ITCDataWave[0][0] += 0
 	variable RowsToCopy = NoOfPointsInTP
-	string TestPulseITCPath = WavePath + ":TestPulse:TestPulseITC"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+
+	ITCDataWave[0][0] += 0
 	startPoint += RowsToCopy / 4
-	Duplicate /o /r = [startPoint,(startPoint + RowsToCopy)][] ITCDataWave $TestPulseITCPath
-	//Duplicate /o /r = [((startPoint + RowsToCopy)/4),(((startPoint + RowsToCopy)/4)+(startPoint + RowsToCopy))][] ITCDataWave $TestPulseITCPath
-	wave TestPulseITC = $TestPulseITCPath
+	Duplicate/O/R=[startPoint,(startPoint + RowsToCopy)][] ITCDataWave, TestPulseITC
 	Redimension/Y=(FLOAT_64BIT) TestPulseITC
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
@@ -113,8 +109,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCChanConfigWave = $WavePath + ":ITCChanConfigWave"
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	string ADChannelList   = GetADCListFromConfig(ITCChanConfigWave)
 	variable StartOfADColumns = DC_NoOfChannelsSelected("da", panelTitle)
 	variable gain, i, numEntries, adc

@@ -12,8 +12,7 @@ Function FunctionStartDataAcq(panelTitle) // this function handles the calls to 
 	variable i
 	variable TriggerMode = 0
 	variable numberOfFollowerDevices = 0
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave /z ITCDataWave = $WavePath + ":ITCDataWave"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	string followerPanelTitle = ""
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	SCOPE_CreateGraph(ITCDataWave, panelTitle)
@@ -34,8 +33,7 @@ Function FunctionStartDataAcq(panelTitle) // this function handles the calls to 
 					do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
-						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
-						wave /z ITCDataWave = $WavePath + ":ITCDataWave"
+						WAVE ITCDataWave = GetITCDataWave(followerPanelTitle)
 						SCOPE_CreateGraph(ITCDataWave, followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
@@ -85,27 +83,28 @@ End
 //=================================================================================================================
 
 /// @brief Configures ITC DACs
-/// ITC_ConfigUploadDAC selects the ITC device based on the panelTitle passed into the function.
-/// ITC_ConfigUploadDAC configures all the DAC channels at once using the ITCconfigAllChannels command
-/// ITC_ConfigUploadDAC resets the DAC FIFOs using the ITCUpdateFIFOPositionAll command
-/// ITC_ConfigUploadDAC
+/// selects the ITC device based on the panelTitle passed into the function.
+/// configures all the DAC channels at once using the ITCconfigAllChannels command
+/// resets the DAC FIFOs using the ITCUpdateFIFOPositionAll command
 Function ITC_ConfigUploadDAC(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	string cmd = ""
+
+	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
+
+	string cmd
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
-	
-	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	string ITCDataWavePath = WavePath + ":ITCDataWave"//, ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+
+	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 	
-	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	ExecuteITCOperation(cmd)// this also seems necessary to update the DA channel data to the board!!
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	ExecuteITCOperation(cmd)
 End
+
 //=================================================================================================================
 // TP MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
 //=================================================================================================================
@@ -117,10 +116,11 @@ Function StartTestPulse(panelTitle)
 	string panelTitle
 	string TestPulsePath
 	variable i = 0
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable DataAcqOrTP = 1
 	variable TriggerMode
 	variable NewNoOfPoints
+
+	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
 	TP_ResetTPStorage(panelTitle)
@@ -131,9 +131,9 @@ Function StartTestPulse(panelTitle)
 			print "TP Started on independent ITC1600"
 			TP_TPSetUp(panelTitle)
 			ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-			wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-			wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
+			WAVE/SDFR=deviceDFR SelectedDACWaveList
 			TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+			WAVE/SDFR=deviceDFR SelectedDACScale
 			TP_RestoreDAScale(SelectedDACScale,panelTitle)	
 		elseif(DAP_DeviceCanLead(panelTitle))
 			SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
@@ -150,24 +150,24 @@ Function StartTestPulse(panelTitle)
 					while(i < numberOfFollowerDevices)
 					i = 0
 					TriggerMode = 256
-					
+
 					//Lead board commands
 					TP_TPSetUp(panelTitle)
 					ITC_BkrdTPMD(TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
-					wave /z SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-					wave /z SelectedDACScale = $(WavePath + ":SelectedDACScale")
+					WAVE/SDFR=deviceDFR SelectedDACWaveList
 					TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle) // restores lead board settings
+					WAVE/SDFR=deviceDFR SelectedDACScale
 					TP_RestoreDAScale(SelectedDACScale,panelTitle)
 					
 					//Follower board commands
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+
 						TP_UpdateTPBufferSizeGlobal(followerPanelTitle)
-						WavePath = HSU_DataFullFolderPathString(followerPanelTitle)
 						ITC_BkrdTPMD(TriggerMode, followerPanelTitle) // Sets lead board in wait for trigger mode
-						wave /z SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-						wave /z SelectedDACScale = $(WavePath + ":SelectedDACScale")
+						WAVE/SDFR=GetDevicePath(followerPanelTitle) SelectedDACWaveList
 						TP_ResetSelectedDACWaves(SelectedDACWaveList,followerPanelTitle) // restores lead board settings
+						WAVE/SDFR=GetDevicePath(followerPanelTitle) SelectedDACScale
 						TP_RestoreDAScale(SelectedDACScale,followerPanelTitle)					
 						i += 1
 					while(i < numberOfFollowerDevices)
@@ -178,26 +178,26 @@ Function StartTestPulse(panelTitle)
 				elseif(numberOfFollowerDevices == 0)
 					TP_TPSetUp(panelTitle)
 					ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-					wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-					wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
+					WAVE/SDFR=deviceDFR SelectedDACWaveList
 					TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+					WAVE/SDFR=deviceDFR SelectedDACScale
 					TP_RestoreDAScale(SelectedDACScale,panelTitle)
 				endif
 			else
 				TP_TPSetUp(panelTitle)
 				ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-				wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-				wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
+				WAVE/SDFR=deviceDFR SelectedDACWaveList
 				TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+				WAVE/SDFR=deviceDFR SelectedDACScale
 				TP_RestoreDAScale(SelectedDACScale,panelTitle)		
 			endif
 		endif
 	else
 		TP_TPSetUp(panelTitle)
 		ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-		wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
-		wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
+		WAVE/SDFR=deviceDFR SelectedDACWaveList
 		TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+		WAVE/SDFR=deviceDFR SelectedDACScale
 		TP_RestoreDAScale(SelectedDACScale,panelTitle)
 	endif
 End
@@ -422,21 +422,19 @@ End
 Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure just prior to calling TP start - don't forget to reset the panel config for data acq following TP
 	string panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string TestPulsePath
+	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	DAP_StoreTTLState(panelTitle)
 	print "TTL state of:", panelTitle, "stored"
 	DAP_TurnOffAllTTLs(panelTitle)
 
 	// stores panel settings
-	make /o /n = 8 $(WavePath + ":SelectedDACWaveList")
-	wave SelectedDACWaveList = $(WavePath + ":SelectedDACWaveList")
+	Make/O/N=8 deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
 	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	TP_SelectTestPulseWave(panelTitle)
 
-	make /o /n = 8 $(WavePath + ":SelectedDACScale")
-	wave SelectedDACScale = $(WavePath + ":SelectedDACScale")
+	Make/O/N=8 deviceDFR:SelectedDACScale/Wave=SelectedDACScale
 	TP_StoreDAScale(SelectedDACScale,panelTitle)
 	TP_SetDAScaleToOne(panelTitle)
 
@@ -454,7 +452,7 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	// configures data for ITC with testpulse wave selected
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 	// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / MINIMUM_SAMPLING_INTERVAL))
 
 	if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
@@ -462,8 +460,8 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 	endif
 	redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
 
-	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	SCOPE_CreateGraph(TestPulseITC,panelTitle)
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	SCOPE_CreateGraph(TestPulseITC, panelTitle)
 	ITC_ConfigUploadDAC(panelTitle)
 	SCOPE_OpenScopeWindow(panelTitle)
 End
