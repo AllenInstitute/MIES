@@ -170,11 +170,12 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle)
 	TP_UpdateGlobals(panelTitle)
 
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR duration
 	NVAR/SDFR=testPulseDFR amplitudeVC
 
 	variable/G testPulseDFR:TPPulseCount
 	NVAR/SDFR=testPulseDFR TPPulseCount
+
+	NVAR duration = $GetTestpulseDuration(panelTitle)
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	frequency = 1000 / (pulseDuration * 2)

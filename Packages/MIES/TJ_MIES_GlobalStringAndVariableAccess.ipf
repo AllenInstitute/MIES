@@ -194,3 +194,12 @@ Function/S GetClampModeString(panelTitle)
 
 	return GetSVARAsString(GetDeviceTestPulse(panelTitle), "clampModeString")
 End
+
+/// @brief Return the absolute path to the testpulse duration variable
+///
+/// The duration is *not* in units of time.
+Function/S GetTestpulseDuration(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "duration", initialValue=NaN)
+End

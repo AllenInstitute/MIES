@@ -79,7 +79,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 
 	dfref testPulseDFR = GetDeviceTestPulse(panelTitle)
 
-	NVAR/SDFR=testPulseDFR duration
+	NVAR duration = $GetTestpulseDuration(panelTitle)
 	Wave/Z/SDFR=GetDevicePath(panelTitle) ITCDataWave
 
 	ASSERT(WaveExists(ITCDataWave), "ITCDataWave is missing")

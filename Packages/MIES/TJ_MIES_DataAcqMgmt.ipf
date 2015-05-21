@@ -120,7 +120,6 @@ Function StartTestPulse(panelTitle)
 	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable DataAcqOrTP = 1
 	variable TriggerMode
-	string TPDurationGlobalPath
 	variable NewNoOfPoints
 
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
@@ -449,10 +448,8 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 
 	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
 
-	string TPDurationGlobalPath
-	sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
-	NVAR GlobalTPDurationVariable = $TPDurationGlobalPath
-	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, GlobalTPDurationVariable)  // first TP so start point = 0
+	NVAR duration = $GetTestpulseDuration(panelTitle)
+	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, duration)  // first TP so start point = 0
 
 	// configures data for ITC with testpulse wave selected
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
