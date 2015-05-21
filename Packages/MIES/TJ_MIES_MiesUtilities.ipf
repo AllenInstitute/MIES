@@ -540,6 +540,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			// use a different color if we can't query the headstage
 			GetTraceColor(IsFinite(headstage) ? headstage : NUM_HEADSTAGES, red, green, blue)
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+			ModifyGraph/W=$graph userData($trace)={channelType, 0, "DA"}
+			ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(i)}
 		endif
 
 		if(i < NumberOfADchannels)
@@ -579,6 +581,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			// use a different color if we can't query the headstage
 			GetTraceColor(IsFinite(headstage) ? headstage : NUM_HEADSTAGES, red, green, blue)
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+			ModifyGraph/W=$graph userData($trace)={channelType, 0, "AD"}
+			ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(i)}
 		endif
 
 		if(!overlayChannels)
