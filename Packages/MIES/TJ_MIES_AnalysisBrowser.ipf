@@ -809,7 +809,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	Wave sweepWave
 
 	variable numRows, i, channelNumber
-	string channelType, str, channelUnit
+	string channelType, str
 
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
 	Wave config = GetAnalysisConfigWave(expFolder, device, sweep)
@@ -824,14 +824,11 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = config[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
+
+		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, channelType, channelNumber)
+
 		str = channelType + "_" + num2istr(channelNumber)
-
-		MatrixOP sweepFolder:$str = col(sweepWave, i)
-
-		Wave/SDFR=sweepFolder data = $str
-		SetScale/P x, DimOffset(sweepWave, ROWS), DimDelta(sweepWave, ROWS), WaveUnits(sweepWave, ROWS), data
-		channelUnit = StringFromList(i, note(config))
-		SetScale d, 0, 0, channelUnit, data
+		MoveWave data, sweepFolder:$str
 	endfor
 
 	string/G sweepFolder:note = note(sweepWave)

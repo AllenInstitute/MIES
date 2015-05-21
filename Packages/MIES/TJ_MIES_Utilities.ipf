@@ -1718,6 +1718,7 @@ End
 /// if you added possibly colliding trace names in the current
 /// function run.
 ///
+/// @param graph existing graph
 /// @param baseName base name of the trace, must not be empty
 Function/S UniqueTraceName(graph, baseName)
 	string graph, baseName
@@ -1745,4 +1746,36 @@ Function/S UniqueTraceName(graph, baseName)
 	while(i < numTrials)
 
 	ASSERT(0, "Could not find a trace name")
+End
+
+/// @brief Checks wether the wave names of all waves in the list are equal
+/// Returns 1 if true, 0 if false and NaN for empty lists
+///
+/// @param      listOfWaves list of waves with full path
+/// @param[out] baseName    Returns the common baseName if the list has one,
+///                         otherwise this will be an empty string.
+Function WaveListHasSameWaveNames(listOfWaves, baseName)
+	string listOfWaves
+	string &baseName
+
+	baseName = ""
+
+	string str, firstBaseName
+	variable numWaves, i
+	numWaves = ItemsInList(listOfWaves)
+
+	if(numWaves == 0)
+		return NaN
+	endif
+
+	firstBaseName = GetBaseName(StringFromList(0, listOfWaves))
+	for(i = 1; i < numWaves; i += 1)
+		str = GetBaseName(StringFromList(i, listOfWaves))
+		if(cmpstr(firstBaseName, str))
+			return 0
+		endif
+	endfor
+
+	baseName = firstBaseName
+	return 1
 End

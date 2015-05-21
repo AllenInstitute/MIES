@@ -139,8 +139,8 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	string subWindow = DB_GetNotebookSubWindow(panelTitle)
 	string graph = DB_GetMainGraph(panelTitle)
 
-	string traceList, trace
-	variable numTraces, i, sweepNo
+	string traceList, trace, device
+	variable numTraces, i, sweepNo, averageTraces
 	variable firstSweep, lastSweep
 	variable newWaveDisplayed, currentWaveDisplayed
 
@@ -149,6 +149,10 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	if(!DataFolderExistsDFR(dfr))
 		return NaN
 	endif
+
+	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	DFREF dataBrowserDFR = GetDeviceDataBrowserPath(device)
+	averageTraces        = GetCheckboxState(panelTitle, "check_DataBrowser_AverageTraces")
 
 	if(ParamIsDefault(currentSweep))
 		currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
@@ -186,8 +190,10 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 			sweepNo = DB_ClipSweepNumber(panelTitle, newSweep)
 			SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", sweepNo)
 			DB_SetFormerSweepNumber(panelTitle, sweepNo)
+			AverageWavesFromSameYAxisIfReq(graph, averageTraces, dataBrowserDFR)
 			return NaN
 		elseif(newWaveDisplayed)
+			AverageWavesFromSameYAxisIfReq(graph, averageTraces, dataBrowserDFR)
 			return NaN
 		endif
 	endif
@@ -207,6 +213,8 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 			RemoveTracesFromGraph(DB_GetMainGraph(panelTitle))
 		endif
 	endif
+
+	AverageWavesFromSameYAxisIfReq(graph, averageTraces, dataBrowserDFR)
 End
 
 static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
@@ -349,6 +357,11 @@ Window DataBrowser() : Panel
 	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DB_DispADChan,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataBrowser_AverageTraces,pos={431,38},size={90,14},proc=DB_CheckProc_ChangedSetting,title="Average traces"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo)= A"!!,G]!!#:\"!!#@\"!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_AverageTraces,value= 0
 	Button button_DataBrowser_setaxis,pos={20,681},size={150,23},proc=DB_ButtonProc_AutoScale,title="Autoscale"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BY!!#D:5QF.e!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"

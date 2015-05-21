@@ -6,10 +6,10 @@
 * Make the VTD2.xop available in Igor Pro
 * Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files"
 	* In "User Procedures" a shortcut pointing to
-		* Packages\Arduino
-		* Packages\HDF
-		* Packages\MIES
-		* Packages\Tango
+		* "Packages\Arduino"
+		* "Packages\HDF"
+		* "Packages\MIES"
+		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\TJ_MIES_Include.ipf
 	* In "Igor Extensions" a shortcut pointing to XOPs and XOP-tango
 	* In "Igor Help File"  a shortcut pointing to HelpFiles
