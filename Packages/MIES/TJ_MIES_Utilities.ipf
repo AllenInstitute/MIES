@@ -1380,16 +1380,27 @@ Function/S GetExperimentName()
 End
 
 /// @brief Return a formatted timestamp of the form "YY_MM_DD_HHMMSS"
-//
+///
+/// @param humanReadable [optional, default to false]                                Returns a format viable for display in a GUI
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
-Function/S GetTimeStamp([secondsSinceIgorEpoch])
-	variable secondsSinceIgorEpoch
+Function/S GetTimeStamp([secondsSinceIgorEpoch, humanReadable])
+	variable secondsSinceIgorEpoch, humanReadable
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
 		secondsSinceIgorEpoch = DateTime
 	endif
 
-	return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
+	if(ParamIsDefault(humanReadable))
+		humanReadable = 0
+	else
+		humanReadable = !!humanReadable
+	endif
+
+	if(humanReadable)
+		return Secs2Time(secondsSinceIgorEpoch, 1)  + " " + Secs2Date(secondsSinceIgorEpoch, -2, "/")
+	else
+		return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
+	endif
 End
 
 /// @brief Function prototype for use with CallFunctionForEachList
