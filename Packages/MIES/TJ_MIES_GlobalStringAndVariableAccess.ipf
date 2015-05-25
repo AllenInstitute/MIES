@@ -203,3 +203,10 @@ Function/S GetTestpulseDuration(panelTitle)
 
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "duration", initialValue=NaN)
 End
+
+/// @brief Return the absolute path to the user comment string
+Function/S GetUserComment(panelTitle)
+	string panelTitle
+
+	return GetSVARAsString(GetDevicePath(panelTitle), "userComment")
+End

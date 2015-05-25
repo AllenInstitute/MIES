@@ -965,6 +965,9 @@ Function SaveExperimentSpecial(mode)
 		path = GetLabNotebookFolderAsString()
 		killFunc(path)
 
+		list = DAP_ListOfLockedDevs()
+		CallFunctionForEachListItem(DAP_ClearCommentNotebook, list)
+
 		// remove other waves from active devices
 		activeDevices = GetAllActiveDevices()
 		numDevices = ItemsInList(activeDevices)

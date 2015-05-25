@@ -10,6 +10,9 @@ static StrConstant LEADER                = "Leader"
 static Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
 static Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
 
+static StrConstant COMMENT_PANEL          = "UserComments"
+static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
+
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(287,62,769,844)
@@ -429,7 +432,7 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_07,limits={-inf,inf,10},value= _NUM:1
-	SetVariable SetVar_DataAcq_Comment,pos={48,692},size={384,16},disable=1,title="Comment"
+	SetVariable SetVar_DataAcq_Comment,pos={47,692},size={362,16},disable=1,title="Comment"
 	SetVariable SetVar_DataAcq_Comment,help={"Appends a comment to wave note of next sweep"}
 	SetVariable SetVar_DataAcq_Comment,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_Comment,userdata(tabcontrol)=  "ADC"
@@ -437,7 +440,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
-	Button DataAcquireButton,pos={44,711},size={389,40},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
+	Button DataAcquireButton,pos={44,711},size={395,42},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,Ch!!#C6J,hsRJ,ho(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -2529,6 +2532,10 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_dDAQDelay,limits={0,inf,1},value= _NUM:0
+	Button button_DataAcq_OpenCommentNB,pos={409,691},size={30,18},disable=1,proc=DAP_ButtonProc_OpenCommentNB,title="NB"
+	Button button_DataAcq_OpenCommentNB,help={"Open a notebook displaying the comments of all sweeps and allowing free form additions by the user."}
+	Button button_DataAcq_OpenCommentNB,userdata(tabnum)=  "0"
+	Button button_DataAcq_OpenCommentNB,userdata(tabcontrol)=  "ADC"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -4185,7 +4192,7 @@ Function DAP_CheckSettings(panelTitle)
 			sprintf msg, "The amount of free memory is below %gGB,\r would you like to start a new experiment?", FREE_MEMORY_LOWER_LIMIT
 			DoAlert/T="Low memory warning" 1, msg
 			if(V_flag == 1)
-				IM_SaveExperiment(SAVE_AND_SPLIT, zeroSweeps=0, keepOtherWaves=1)
+				SaveExperimentSpecial(SAVE_AND_SPLIT)
 				print "Please restart data acquisition"
 				return 1
 			else
@@ -5295,4 +5302,220 @@ Function DAP_SetVarProc_ITI(sva) : SetVariableControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Return the comment panel name
+Function/S DAP_GetCommentPanel(panelTitle)
+	string panelTitle
+
+	return panelTitle + "#" + COMMENT_PANEL
+End
+
+/// @brief Return the full window path to the comment notebook
+Function/S  DAP_GetCommentNotebook(panelTitle)
+	string panelTitle
+
+	return DAP_GetCommentPanel(panelTitle) + "#" + COMMENT_PANEL_NOTEBOOK
+End
+
+/// @brief Create the comment panel
+static Function DAP_OpenCommentPanel(panelTitle)
+	string panelTitle
+
+	string commentPanel, commentNotebook
+
+	AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+
+	commentPanel = DAP_GetCommentPanel(panelTitle)
+	if(windowExists(commentPanel))
+		return NaN
+	endif
+
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+
+	NewPanel/HOST=$panelTitle/N=$COMMENT_PANEL/EXT=2/W=(0,0,483,373)
+	NewNotebook/HOST=$commentPanel/F=0/N=$COMMENT_PANEL_NOTEBOOK/FG=(FL,FT,FR,FB)
+	SetWindow $commentPanel, hook(mainHook)=DAP_CommentPanelHook
+
+	SVAR userComment = $GetUserComment(panelTitle)
+	Notebook $commentNotebook, text=userComment
+End
+
+Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			panelTitle = ba.win
+
+			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			DAP_AddUserComment(panelTitle)
+			break
+	endswitch
+
+	return 0
+End
+
+static Function/S DAP_FormatCommentString(panelTitle, comment, sweepNo)
+	string panelTitle
+	string comment
+	variable sweepNo
+
+	string str, contents, commentNotebook
+	variable length
+
+	ASSERT(!IsEmpty(comment), "Comment can not be empty")
+
+	sprintf str, "%s, % 5d: %s\r", GetTimeStamp(humanReadable=1), sweepNo, comment
+
+	DAP_OpenCommentPanel(panelTitle)
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+	Notebook $commentNotebook selection={endOfFile,endOfFile}, findText={"",1}
+	Notebook $commentNotebook getData=2
+	contents = S_value
+
+	// add a carriage return if the last line does not end with one
+	length = strlen(contents)
+	if(length > 0 && cmpstr(contents[length - 1], "\r"))
+		str = "\r" + str
+	endif
+
+	return str
+End
+
+/// @brief Add the current user comment of the previous sweep
+///        to the comment notebook and to the labnotebook.
+///
+/// The `SetVariable` for the user comment is also cleared
+Function DAP_AddUserComment(panelTitle)
+	string panelTitle
+
+	string commentNotebook, comment, formattedComment
+	variable sweepNo
+
+	DAP_OpenCommentPanel(panelTitle)
+
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	comment = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
+
+	if(isEmpty(comment))
+		return NaN
+	endif
+
+	formattedComment = DAP_FormatCommentString(panelTitle, comment, sweepNo)
+
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+	Notebook $commentNotebook text=formattedComment
+	Notebook $commentNotebook selection={endOfFile,endOfFile}, findText={"",1}
+
+	// after writing the user comment, clear it
+	ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
+	SetSetVariableString(panelTitle, "SetVar_DataAcq_Comment", "")
+End
+
+/// @brief Make the comment notebook read-only
+Function DAP_LockCommentNotebook(panelTitle)
+	string panelTitle
+
+	string commentPanel, commentNotebook
+
+	commentPanel = DAP_GetCommentPanel(panelTitle)
+	if(!windowExists(commentPanel))
+		return NaN
+	endif
+
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+	Notebook $commentNotebook, writeProtect=1, changeableByCommandOnly=1
+	DoWindow/W=$commentPanel/T $COMMENT_PANEL, COMMENT_PANEL + " (Lock device to make it writeable again)"
+End
+
+/// @brief Make the comment notebook writeable
+Function DAP_UnlockCommentNotebook(panelTitle)
+	string panelTitle
+
+	string commentPanel, commentNotebook
+
+	commentPanel = DAP_GetCommentPanel(panelTitle)
+	if(!windowExists(commentPanel))
+		return NaN
+	endif
+
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+	Notebook $commentNotebook, writeProtect=0, changeableByCommandOnly=0
+
+	DoWindow/W=$commentPanel/T $COMMENT_PANEL, COMMENT_PANEL
+End
+
+/// @brief Clear the comment notebook's content and the serialized string
+Function DAP_ClearCommentNotebook(panelTitle)
+	string panelTitle
+
+	string commentPanel, commentNotebook
+
+	SVAR userComment = $GetUserComment(panelTitle)
+	userComment = ""
+
+	commentPanel = DAP_GetCommentPanel(panelTitle)
+	if(!windowExists(commentPanel))
+		return NaN
+	endif
+
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+	Notebook $commentNotebook selection={startOfFile, endOfFile}
+	Notebook $commentNotebook, text=""
+End
+
+/// @brief Serialize all comment notebooks
+Function DAP_SerializeAllCommentNBs()
+
+	string list = DAP_ListOfLockedDevs()
+	CallFunctionForEachListItem(DAP_SerializeCommentNotebook, list)
+End
+
+/// @brief Copy the contents of the comment notebook to the user comment string
+Function DAP_SerializeCommentNotebook(panelTitle)
+	string panelTitle
+
+	string commentPanel, commentNotebook
+
+	commentPanel = DAP_GetCommentPanel(panelTitle)
+	if(!windowExists(commentPanel))
+		return NaN
+	endif
+
+	commentNotebook = DAP_GetCommentNotebook(panelTitle)
+	Notebook $commentNotebook selection={startOfFile, endOfFile}
+	GetSelection notebook, $commentNotebook, 2
+
+	if(isEmpty(S_Selection))
+		return NaN
+	endif
+
+	SVAR userComment = $GetUserComment(panelTitle)
+	userComment = S_Selection
+
+	// move selection to end of file
+	Notebook $commentNotebook selection={endOfFile,endOfFile}, findText={"",1}
+End
+
+Function DAP_CommentPanelHook(s)
+	STRUCT WMWinHookStruct &s
+
+	variable hookResult
+	string panelTitle
+
+	switch(s.eventCode)
+		case 2: // kill
+			hookResult = 1
+			panelTitle = GetMainWindow(s.winName)
+
+			if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+				DAP_SerializeCommentNotebook(panelTitle)
+			endif
+			break
+	endswitch
+
+	return hookResult		// 0 if nothing done, else 1
 End

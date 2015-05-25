@@ -418,10 +418,6 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	// call the function that will create the text wave notes
 	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle)
 
-	// after writing the user comment, clear it
-	ED_WriteUserCommentToLabNB(panelTitle, sweepCount)
-	SetSetVariableString(panelTitle, "SetVar_DataAcq_Comment", "")
-
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle)
 
@@ -481,9 +477,10 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 End
 
 /// @brief Write the user comment from the DA_Ephys panel to the labnotebook
-Function ED_WriteUserCommentToLabNB(panelTitle, sweepCount)
+Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 	string panelTitle
-	variable sweepCount
+	string comment
+	variable sweepNo
 
 	Make/FREE/N=(3, 1)/T keys
 	keys = ""
@@ -493,9 +490,9 @@ Function ED_WriteUserCommentToLabNB(panelTitle, sweepCount)
 	keys[2][0] =  "-"
 
 	Make/FREE/T/N=(1, 1, NUM_HEADSTAGES) values
-	values = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
+	values = comment
 
-	ED_createTextNotes(values, keys, sweepCount, panelTitle)
+	ED_createTextNotes(values, keys, sweepNo, panelTitle)
 End
 
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
