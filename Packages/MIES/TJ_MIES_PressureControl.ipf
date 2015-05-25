@@ -589,11 +589,10 @@ End
 Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	string 	panelTitle
 
-	wave 	TPStorageWave 		= GetTPStorage(panelTitle)
-	wave 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
-	DFREF 	dfr 				= $HSU_DataFullFolderPathString(panelTitle)
-	/// @todo Make wave reference function for ITCChanConfigWave
-	Wave/SDFR = dfr  ITCChanConfigWave
+	WAVE TPStorageWave     = GetTPStorage(panelTitle)
+	WAVE PressureDataWv    = P_GetPressureDataWaveRef(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+
 	string 	ADChannelList = GetADCListFromConfig(ITCChanConfigWave)
 	variable TPCycleCount = GetNumberFromWaveNote(TPStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent resistance value from TP storage wave
 	variable Row

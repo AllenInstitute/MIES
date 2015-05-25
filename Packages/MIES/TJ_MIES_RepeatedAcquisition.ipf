@@ -5,13 +5,13 @@
 Function RA_Start(panelTitle)
 	string panelTitle
 	variable ITI
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
+	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath = v_value
 	NVAR ActiveSetCount = $ActiveSetCountPath
@@ -69,14 +69,14 @@ End
 
 Function RA_Counter(panelTitle)
 	string panelTitle
+
 	variable TotTrials
 	variable ITI
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	NVAR count = $GetCount(panelTitle)
-	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
+	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
@@ -190,8 +190,8 @@ End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
+
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
@@ -258,12 +258,12 @@ Function RA_StartMD(panelTitle)
 
 	variable ITI
 	variable i = 0
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
-	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
+	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
 	variable /g $ActiveSetCountPath = v_value
 	NVAR ActiveSetCount = $ActiveSetCountPath
@@ -341,12 +341,11 @@ Function RA_CounterMD(panelTitle)
 
 	variable TotTrials
 	variable ITI
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
-	wave TestPulseITC = $WavePath + ":TestPulse:TestPulseITC"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	NVAR count = $GetCount(panelTitle)
-	string ActiveSetCountPath = WavePath + ":ActiveSetCount"
+	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	variable i = 0
 	Count += 1
@@ -475,9 +474,9 @@ End
 //====================================================================================================
 Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	wave TestPulseITC = $WavePath+":TestPulse:TestPulseITC"
-	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
+
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	WAVE TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)

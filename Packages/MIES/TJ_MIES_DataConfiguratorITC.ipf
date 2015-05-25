@@ -31,6 +31,33 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
 	endif
+
+	DC_UpdateClampModeString(panelTitle)
+End
+
+/// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
+///
+/// In the order of the ADchannels in ITCDataWave - i.e. numerical order
+static Function DC_UpdateClampModeString(panelTitle)
+	string panelTitle
+
+	variable i, numChannels, headstage
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	string/G testPulseDFR:ADChannelList
+	SVAR/SDFR=testPulseDFR ADChannelList
+
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	ADChannelList= GetADCListFromConfig(ITCChanConfigWave)
+
+	SVAR clampModeString = $GetClampModeString(panelTitle)
+	clampModeString = ""
+
+	numChannels = ItemsInList(ADChannelList)
+	for(i = 0; i < numChannels; i += 1)
+		headstage = TP_HeadstageUsingADC(panelTitle, str2num(StringFromList(i, ADChannelList)))
+		clampModeString += num2str(AI_MIESHeadstageMode(panelTitle, headstage)) + ";"
+	endfor
 End
 
 /// @brief The minimum sampling interval is determined by the rack with the most channels selected

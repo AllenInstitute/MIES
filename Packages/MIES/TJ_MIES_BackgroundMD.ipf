@@ -10,8 +10,7 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 //	Variable start = stopmstimer(-2)
 	string cmd
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	variable TimerStart
 
@@ -118,9 +117,8 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	Variable ITCDeviceIDGlobal
 
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
 	NVAR count = $GetCount(panelTitle)
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)

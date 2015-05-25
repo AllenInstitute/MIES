@@ -117,70 +117,71 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 end
 
-Function TP_UpdateTestPulseWave(TestPulse, panelTitle) // full path name
-	wave 		TestPulse
-	string 		panelTitle
-	variable 		PulseDuration
-	string 		TPGlobalPath = HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
-	variable /g  	$TPGlobalPath + ":Duration"
-	NVAR 		GlobalTPDurationVariable 				= $(TPGlobalPath + ":Duration")
-	variable /g 	$TPGlobalPath + ":AmplitudeVC"
-	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
-	variable /g 	$TPGlobalPath + ":AmplitudeIC"
-	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
-	wave /z 		ITCChanConfigWave = $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
-	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
-	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-	PulseDuration = (v_value) // duration of the TP in ms
-	GlobalTPDurationVariable = (PulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000))
-	variable 		PointsInTPWave 	= (2 * PulseDuration) 
-	PointsInTPWave *= 200
-	redimension /n = (PointsInTPWave) TestPulse
+static Function TP_UpdateGlobals(panelTitle)
+	string panelTitle
+
+	variable pulseDuration
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	variable/G testPulseDFR:duration
+	NVAR/SDFR=testPulseDFR duration
+
+	variable/G testPulseDFR:AmplitudeVC
+	NVAR/SDFR=testPulseDFR AmplitudeVC
+
+	variable/G testPulseDFR:AmplitudeIC
+	NVAR/SDFR=testPulseDFR AmplitudeIC
+
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+
+	string/G testPulseDFR:ADChannelList  = GetADCListFromConfig(ITCChanConfigWave)
+	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected("da", panelTitle)
+
+	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	duration = pulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
+
 	// need to deal with units here to ensure that resistance is calculated correctly
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude // the scaling converts the V-clamp TP to an I-clamp TP as appropriate (i.e. it is not done here)
-	variable 		TPamp = v_value
-	PulseDuration *= 2
-	TestPulse[round(0.25 * PointsInTPWave), round(0.75 * PointsInTPWave)] = TPamp
-	GlobalTPAmplitudeVariableVC 	= TPamp
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-	GlobalTPAmplitudeVariableIC = v_value
+	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 End
-//=============================================================================================
-Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // Testpulse = full path name; creates wave with enought TPs to fill min wave size(2^17)
-	wave 		TestPulse											// this function is only used with MD functions
-	string 		panelTitle
-	variable 		i 									= 0
-	variable 		PulseDuration
-	variable 		DataAcqOrTP 						= 1 // test pulse function
-	string 		TPGlobalPath 						= HSU_DataFullFolderPathString(panelTitle) + ":TestPulse"
-	variable 		MinSampInt 							= DC_ITCMinSamplingInterval(panelTitle)
-	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
-	variable /g  	$TPGlobalPath + ":Duration"
-	NVAR 		GlobalTPDurationVariable 				= $(TPGlobalPath + ":Duration")
-	variable /g 	$TPGlobalPath + ":AmplitudeVC"
-	NVAR 		GlobalTPAmplitudeVariableVC 			= $(TPGlobalPath + ":AmplitudeVC")
-	variable /g 	$TPGlobalPath + ":AmplitudeIC"
-	NVAR 		GlobalTPAmplitudeVariableIC 			= $(TPGlobalPath + ":AmplitudeIC")	
-	wave /z 		ITCChanConfigWave 					= $(HSU_DataFullFolderPathString(panelTitle) + ":ITCChanConfigWave")
-	string /g 		$(TPGlobalPath + ":ADChannelList") 	= GetADCListFromConfig(ITCChanConfigWave)
-	variable /g $(TPGlobalPath + ":NoOfActiveDA") = DC_NoOfChannelsSelected("da", panelTitle)
-	controlinfo /w 									= $panelTitle SetVar_DataAcq_TPDuration
-	variable 		TPDurInms 							= v_value
-	PulseDuration 									= (TPDurInms  / (MinSampInt/1000))  // pulse duration in points - should be called pulse points
-	GlobalTPDurationVariable 							= PulseDuration
-	// need to deal with units here to ensure that resistance is calculated correctly
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-	variable 		Amplitude 							= v_value
-	variable 		Frequency 							= 1000 / (TPDurInms * 2)
-	variable /g 	$(TPGlobalPath + ":TPPulseCount")
-	NVAR 		TPPulseCount 						= $(TPGlobalPath + ":TPPulseCount")
-	TPPulseCount									= TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TestPulse)
-	GlobalTPAmplitudeVariableVC 						= v_value
-	controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-	GlobalTPAmplitudeVariableIC 						= v_value
+
+Function TP_UpdateTestPulseWave(TestPulse, panelTitle)
+	Wave TestPulse
+	string panelTitle
+
+	variable pointsInTPWave, pulseDuration
+	TP_UpdateGlobals(panelTitle)
+
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	NVAR/SDFR=testPulseDFR amplitudeVC
+
+	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	pointsInTPWave = (2 * pulseDuration) * 200
+	Redimension/N=(pointsInTPWave) TestPulse
+	TestPulse[round(0.25 * pointsInTPWave), round(0.75 * pointsInTPWave)] = amplitudeVC
 End
-//=============================================================================================
+
+/// @brief MD-variant of #TP_UpdateTestPulseWave
+Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle)
+	wave TestPulse
+	string panelTitle
+
+	variable frequency, pulseDuration
+	TP_UpdateGlobals(panelTitle)
+
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	NVAR/SDFR=testPulseDFR amplitudeVC
+
+	variable/G testPulseDFR:TPPulseCount
+	NVAR/SDFR=testPulseDFR TPPulseCount
+
+	NVAR duration = $GetTestpulseDuration(panelTitle)
+
+	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	frequency = 1000 / (pulseDuration * 2)
+	TPPulseCount = TP_CreateSquarePulseWave(panelTitle, frequency, amplitudeVC, TestPulse)
+End
+
 // mV and pA = Mohm
 Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
@@ -623,32 +624,6 @@ Function TP_ResetTPStorage(panelTitle)
 		TPStorage = NaN
 	endif
 End
-//=============================================================================================
-/// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
-///
-/// In the order of the ADchannels in ITCDataWave - i.e. numerical order
-Function/S TP_ClampModeString(panelTitle)
-	string 	panelTitle
-
-	string 	WavePath 			= HSU_DataFullFolderPathString(panelTitle)
-	string /g $WavePath + ":TestPulse:ADChannelList"
-	SVAR 	ADChannelList		= $WavePath + ":TestPulse:ADChannelList"
-	wave 	ITCChanConfigWave 	= $WavePath + ":ITCChanConfigWave"
-			ADChannelList		= GetADCListFromConfig(ITCChanConfigWave)
-
-	variable i, numChannels, headstage
-	string /g $WavePath + ":TestPulse:ClampModeString"
-	SVAR 	ClampModeString 	= $WavePath + ":TestPulse:ClampModeString"
-			ClampModeString 	= ""
-	
-	numChannels = ItemsInList(ADChannelList)
-	for(i = 0; i < numChannels; i += 1)
-		headstage = TP_HeadstageUsingADC(panelTitle, str2num(stringfromlist(i,ADChannelList)))
-		ClampModeString += num2str(AI_MIESHeadstageMode(panelTitle, headstage)) + ";"
-	endfor
-
-	return ClampModeString
-End
 
 /// @brief Find the headstage using a particular AD channel
 Function TP_HeadstageUsingADC(panelTitle, AD)
@@ -733,7 +708,7 @@ End
 //=============================================================================================
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
 /// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
-Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
+static Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	string 	panelTitle
 	variable 	frequency
 	variable 	amplitude

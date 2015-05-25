@@ -184,3 +184,22 @@ Function/S GetCount(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "count", initialValue=NaN)
 End
+
+/// @brief Return the absolute path to the clamp mode string
+///
+/// This string holds the clamp modes of the active ADCs.
+/// See also @ref AmplifierClampModes.
+Function/S GetClampModeString(panelTitle)
+	string panelTitle
+
+	return GetSVARAsString(GetDeviceTestPulse(panelTitle), "clampModeString")
+End
+
+/// @brief Return the absolute path to the testpulse duration variable
+///
+/// The duration is *not* in units of time.
+Function/S GetTestpulseDuration(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "duration", initialValue=NaN)
+End

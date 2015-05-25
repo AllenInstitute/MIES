@@ -117,7 +117,7 @@ Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
 
 	string title
 	if(locked)
-		title = "Data folder path = " + HSU_DataFullFolderPathString(panelTitle)
+		title = "Data folder path = " + GetDevicePathAsString(panelTitle)
 	else
 		title = "Lock a device to generate device folder structure"
 	endif
@@ -160,16 +160,6 @@ Function HSU_GetDeviceNumberIndex(panelTitle)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	return V_value - 1
 End
-
-//==================================================================================================
-
-///@todo remove
-Function/S HSU_DataFullFolderPathString(panelTitle)
-	string panelTitle
-
-	return GetDevicePathAsString(panelTitle)
-End
-//==================================================================================================
 
 Function HSU_ButProc_Hrdwr_UnlckDev(s) : ButtonControl
 	struct WMButtonAction& s

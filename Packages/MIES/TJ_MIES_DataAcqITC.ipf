@@ -10,29 +10,30 @@ Function ITC_DataAcq(panelTitle)
 
 	string cmd
 	variable i
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	wave ITCDataWave = $WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
-	variable stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
-	string ITCDataWavePath = WavePath + ":ITCDataWave", ITCFIFOAvailAllConfigWavePath= WavePath + ":ITCFIFOAvailAllConfigWave"
-	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-	string ResultsWavePath = WavePath + ":ResultsWave"
-	make /O /I /N = 4 $ResultsWavePath 
-	
+
+	variable ADChannelToMonitor    = DC_NoOfChannelsSelected("DA", panelTitle)
+	variable stopCollectionPoint   = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
+	string oscilloscopeSubwindow   = SCOPE_GetGraph(panelTitle)
+
+	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
+	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
+	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
+	ResultsWave = 0
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
-		
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+
+	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 
 	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
 	variable RepeatedAcqOnOrOff = v_value
 
 	do
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		ExecuteITCOperation(cmd)// this also seems necessary to update the DA channel data to the board!!
 
 		if(RepeatedAcqOnOrOff)
@@ -43,14 +44,14 @@ Function ITC_DataAcq(panelTitle)
 		ExecuteITCOperation(cmd)
 
 		do
-			sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" ITCFIFOAvailAllConfigWavePath
+			sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 			ExecuteITCOperation(cmd)
 			ITCDataWave[0][0] += 0
 			DoUpdate/W=$oscilloscopeSubwindow
 		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
 
 		//Check Status
-		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
+		sprintf cmd, "ITCGetState /R /O /C /E %s" GetWavesDataFolder(ResultsWave, 2)
 		ExecuteITCOperation(cmd)
 		sprintf cmd, "ITCStopAcq /z = 0"
 		ExecuteITCOperation(cmd)
@@ -92,17 +93,13 @@ Function ITC_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
 
-	WAVE ITCDataWave = $WavePath+ ":ITCDataWave"
-	WAVE ITCFIFOAvailAllConfigWave = $WavePath + ":ITCFIFOAvailAllConfigWave"
-
-	string ITCDataWavePath                 = WavePath + ":ITCDataWave"
-	string ITCFIFOAvailAllConfigWavePath   = WavePath + ":ITCFIFOAvailAllConfigWave"
-	string ITCChanConfigWavePath           = WavePath + ":ITCChanConfigWave"
-	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
+	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
 
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -110,12 +107,12 @@ Function ITC_BkrdDataAcq(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
 
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 
 	// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	// this also seems necessary to update the DA channel data to the board!!
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2)
 	ExecuteITCOperation(cmd)
 
 	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
@@ -130,10 +127,7 @@ End
 //======================================================================================
 Function ITC_StopDataAcq()
 	string cmd
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint, ADChannelToMonitor = root:MIES:ITCDevices:StopCollectionPoint
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
-	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
-	wave ITCDataWave = $WavePath + ":ITCDataWave"
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -142,7 +136,8 @@ Function ITC_StopDataAcq()
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 
-	itcdatawave[0][0] += 0 // Force onscreen update
+	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
+	ITCDataWave[0][0] += 0 // Force onscreen update
 
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	ExecuteITCOperation(cmd)
@@ -177,20 +172,20 @@ End
 Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
+	string cmd
+
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
 	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
-	String cmd
-	string WavePath = HSU_DataFullFolderPathString(PanelTitleG)
-	WAVE ITCDataWave = $WavePath + ":ITCDataWave"
-	WAVE ITCFIFOAvailAllConfigWave= $WavePath + ":ITCFIFOAvailAllConfigWave"
-	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	WAVE ITCFIFOAvailAllConfigWave = GetITCFIFOAvailAllConfigWave(panelTitleG)
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
+	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 	ExecuteITCOperation(cmd)
 
+	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
 	ITCDataWave[0][0] += 0 //forces on screen update
 
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
@@ -262,7 +257,6 @@ End
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
 	string /G root:MIES:ITCDevices:panelTitleG
 	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 	panelTitleG = panelTitle
@@ -272,14 +266,14 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", panelTitle)
 
-	string  ITCDataWavePath = WavePath + ":ITCDataWave"
-	string  ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
-	
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+
+	sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 
 	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
@@ -306,34 +300,31 @@ Function ITC_TestPulseFunc(s)
 	endif
 
 	String cmd, Keyboard
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
+	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
+	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
 
-	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	string ITCFIFOAvailAllConfigWavePath = WavePath + ":ITCFIFOAvailAllConfigWave"
-	Wave ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
-	string ResultsWavePath = WavePath + ":ResultsWave"
 	NVAR DeviceID = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d" DeviceID
 	ExecuteITCOperation(cmd)
 
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	ExecuteITCOperation(cmd) // this also seems necessary to update the DA channel data to the board!!
 	sprintf cmd, "ITCStartAcq"
 	ExecuteITCOperation(cmd)
 
 	do
-		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
+		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
 	while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 5000 IS CHOSEN AS A POINT THAT IS A BIT LARGER THAN THE OUTPUT DATA
 
-	sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
+	sprintf cmd, "ITCGetState /R /O /C /E %s", GetWavesDataFolder(ResultsWave, 2)
 	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated
 	ExecuteITCOperation(cmd)
 	DM_CreateScaleTPHoldingWave(panelTitle)
-	TP_ClampModeString(panelTitle)
 	TP_Delta(panelTitle)
 
 	if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
@@ -502,48 +493,41 @@ End
 Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 
-	string cmd
-	variable i = 0
+	string cmd, keyboard
+	variable i
 	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	string ITCChanConfigWavePath = WavePath + ":ITCChanConfigWave"
-	string ITCDataWavePath = WavePath + ":ITCDataWave"
-	wave ITCFIFOAvailAllConfigWave = $WavePath+ ":ITCFIFOAvailAllConfigWave"//, ChannelConfigWave, UpdateFIFOWave, RecordedWave
-	string ITCFIFOAvailAllConfigWavePath = WavePath+ ":ITCFIFOAvailAllConfigWave"
-	
-	string ITCFIFOPositionAllConfigWavePth = WavePath + ":ITCFIFOPositionAllConfigWave"
-	
-	string ResultsWavePath = WavePath + ":ResultsWave"
-	
-	string Keyboard
 
-	make /O /I /N = 4 $ResultsWavePath 
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
+	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
+	WAVE ResultsWave                  = GetITCResultsWave(paneltitle)
+	ResultsWave = 0
 
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+	sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 	do
 		// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 		// this also seems necessary to update the DA channel data to the board!!
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPositionAllConfigWavePth
+		sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
 		sprintf cmd, "ITCStartAcq"
 		ExecuteITCOperation(cmd)
 
 		do
-			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" ITCFIFOAvailAllConfigWavePath
+			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 			ExecuteITCOperation(cmd)
 		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
 
-		sprintf cmd, "ITCGetState /R /O /C /E %s" ResultsWavePath
+		sprintf cmd, "ITCGetState /R /O /C /E %s", GetWavesDataFolder(ResultsWave, 2)
 		ExecuteITCOperation(cmd)
 		sprintf cmd, "ITCStopAcq /z = 0"
 		ExecuteITCOperation(cmd)
 		DM_CreateScaleTPHoldingWave(panelTitle)
-		TP_ClampModeString(panelTitle)
 		TP_Delta(panelTitle)
 		DoUpdate/W=$oscilloscopeSubwindow
 		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
@@ -570,18 +554,18 @@ END
 Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
 	variable Channel
 	string panelTitle
-	variable ChannelValue
+
+	variable channelValue
 	string cmd
-	string WavePath = HSU_DataFullFolderPathString(panelTitle)
-	make /o /n = 1 $WavePath + ":AsyncChannelData"
-	string AsyncChannelDataPath = WavePath+":AsyncChannelData"
-	wave AsyncChannelData = $AsyncChannelDataPath
-	sprintf cmd, "ITCReadADC /V = 1 %d, %s" Channel, AsyncChannelDataPath
+	DFREF deviceDFR = GetDevicePath(panelTitle)
+
+	Make/O/N=1 deviceDFR:AsyncChannelData/Wave=AsyncChannelData
+	sprintf cmd, "ITCReadADC /V = 1 %d, %s" Channel, GetWavesDataFolder(AsyncChannelData, 2)
 	ExecuteITCOperation(cmd)
-	ChannelValue = AsyncChannelData[0]
-	//print channelValue
-	killwaves /f AsyncChannelData
-	return ChannelValue
+
+	channelValue = AsyncChannelData[0]
+	KillWaves/F AsyncChannelData
+	return channelValue
 End 
 
 Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)

@@ -3,24 +3,12 @@
 Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
 	variable TriggerMode
 	string panelTitle
-	string WavePath
-	sprintf WavePath, "%s" HSU_DataFullFolderPathString(panelTitle)
-	string  ITCDataWavePath
-	sprintf ITCDataWavePath, "%s:ITCDataWave" WavePath
-	string ITCChanConfigWavePath
-	sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
-	string ITCFIFOAvailAllConfigWavePath
-	sprintf ITCFIFOAvailAllConfigWavePath, "%s:ITCFIFOAvailAllConfigWave" WavePath
+
 	string cmd
-	sprintf cmd, ""
-	
 	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle) // channel that is monitored to determine when a sweep should terminate
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	
-	WAVE ITCDataWave = $ITCDataWavePath // ITC data wave is the wave that is uploaded to the DAC and contains the DA (output) data and place holder for the input data
-	WAVE ITCFIFOAvailAllConfigWave = $ITCFIFOAvailAllConfigWavePath
-	
+
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
 	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
 	
@@ -50,15 +38,10 @@ Function ITC_BkrdTPFuncMD(s)
 	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
 	variable i = 0
 	variable NumberOfActiveDevices
-	string WavePath
-	string CountPath
 	variable ADChannelToMonitor
 	variable StopCollectionPoint
-	variable NumberOfChannels
-	variable sweepCount
 	variable startPoint
 	variable PointsInTP
-	string TPDurationGlobalPath 
 	variable PointsInTPITCDataWave
 
 	if(s.wmbs.started)
@@ -71,35 +54,31 @@ Function ITC_BkrdTPFuncMD(s)
 	do // works through list of active devices
 		// update parameters for a particular active device
 		panelTitle = ActiveDeviceTextList[i]
-		WavePath = HSU_DataFullFolderPathString(panelTitle)
-		WAVE /z FIFOAdvance = $WavePath + ":FifoAdvance"
-		sprintf TPDurationGlobalPath, "%s:TestPulse:Duration" WavePath
-		NVAR GlobalTPDurationVariable = $TPDurationGlobalPath // number of points in a single test pulse
-		
+		DFREF deviceDFR = GetDevicePath(panelTitle)
+		NVAR GlobalTPDurationVariable = $GetTestpulseDuration(panelTitle) // number of points in a single test pulse
+
 		WAVE ITCDataWave = ActiveDeviceWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
-		WAVE ITCFIFOPositionAllConfigWavePth = ActiveDeviceWavePathWave[i][2] //  ActiveDeviceWavePathWave contains wave references
-		CountPath = GetWavesDataFolder(ActiveDeviceWavePathWave[i][0],1) + "count"
+		WAVE ITCFIFOPositionAllConfigWave = ActiveDeviceWavePathWave[i][2] //  ActiveDeviceWavePathWave contains wave references
 		ADChannelToMonitor = ActiveDeviceList[i][1]
 		StopCollectionPoint = ActiveDeviceList[i][2]
-		PointsInTP = (GlobalTPDurationVariable * 3) //
+		PointsInTP = (GlobalTPDurationVariable * 3)
 		PointsInTPITCDataWave = dimsize(ITCDataWave,0)
 		//print "PointsInTP =",PointsInTP
 		// works with a active device
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
 		ExecuteITCOperation(cmd)
 	
-		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" (WavePath + ":ITCFIFOAvailAllConfigWave")
+		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
 		variable TPSweepCount = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
 		variable PointsCompletedInITCDataWave = (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave))
 //		print PointsCompletedInITCDataWave
 		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .05)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
 			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
-			duplicate /o /r = [0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, $WavePath + ":FifoAdvance" // creates a wave that will take DA FIFO advance parameter
-			WAVE FIFOAdvance = $WavePath + ":FifoAdvance"
+			Duplicate/O/R=[0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, deviceDFR:FIFOAdvance/Wave=FIFOAdvance // creates a wave that will take DA FIFO advance parameter
 			FIFOAdvance[][2] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]) // the abs prevents a neg number
-			sprintf cmd, "ITCUpdateFIFOPositionAll , %s" (WavePath + ":FifoAdvance") // goal is to move the DA FIFO pointers back to the start
+			sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(FIFOAdvance, 2) // goal is to move the DA FIFO pointers back to the start
 			ExecuteITCOperation(cmd)
 			ActiveDeviceList[i][3] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2])
 		endif
@@ -133,20 +112,18 @@ Function ITC_BkrdTPFuncMD(s)
 		
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct FIFO error
-			if(stringmatch(WavePath,"*ITC1600*") == 0) // checks to see if the device is not a ITC1600
+			if(!DAP_DeviceCanLead(panelTitle))
+				WAVE/SDFR=deviceDFR FIFOAdvance
 				if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] <= (ActiveDeviceList[i][5] + 1) && ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (ActiveDeviceList[i][5] - 1)) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
 					sprintf cmd, "ITCStopAcq" // stop and restart acquisition
 					ExecuteITCOperation(cmd)
-					ITCFIFOAvailAllConfigWave[][2] =0
-					string ITCChanConfigWavePath
-					sprintf ITCChanConfigWavePath, "%s:ITCChanConfigWave" WavePath
-					string ITCDataWavePath
-					sprintf ITCDataWavePath, "%s:ITCDataWave" WavePath
-					sprintf cmd, "ITCconfigAllchannels, %s, %s" ITCChanConfigWavePath, ITCDataWavePath
+					ITCFIFOAvailAllConfigWave[][2] = 0
+					WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+					WAVE ITCDataWave = GetITCDataWave(panelTitle)
+
+					sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 					ExecuteITCOperation(cmd)
-					string ITCFIFOPosAllConfigWvPthStr
-					sprintf ITCFIFOPosAllConfigWvPthStr, "%s:ITCFIFOPositionAllConfigWave" WavePath
-					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" ITCFIFOPosAllConfigWvPthStr// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 					ExecuteITCOperation(cmd)
 					sprintf cmd, "ITCStartAcq"
 					ExecuteITCOperation(cmd)
@@ -162,7 +139,8 @@ Function ITC_BkrdTPFuncMD(s)
 
 			ActiveDeviceList[i][3] += 1
 		
-		if(exists(countPath) == 0)// uses the presence of a global variable that is created by the activation of repeated aquisition to determine if the space bar can turn off the TP
+		NVAR count = $GetCount(panelTitle)
+		if(!IsFinite(count))
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				panelTitle = GetMainWindow(GetCurrentWindow())
@@ -207,21 +185,19 @@ End
 //======================================================================================
 Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test pulse on a particular panel
 	string panelTitle
+
 	string cmd
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
-	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	string DeviceIDGlobalPathString
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
 
+	///@todo rename to ResultsWave if possible
+	Make/I/O/N=4 deviceDFR:StateWave/Wave=StateWave
 	// code section below is used to get the state of the DAC
-	string StateWavePathString 
-	sprintf StateWavePathString, "%s:StateWave" DeviceFolderPath
-	Make /I/O/N=4 $StateWavePathString
-	wave StateWave = $StateWavePathString
-	sprintf cmd, "ITCGetState /R=1 %s" StateWavePathString
+	sprintf cmd, "ITCGetState /R=1 %s", GetWavesDataFolder(StateWave, 2)
 	ExecuteITCOperation(cmd)
 
 	if(StateWave[0] != 0) // makes sure the device being stopped is actually running
@@ -248,9 +224,7 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 	DFREF activeDevicesTestPulse = createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:TestPulse")
 	WAVE/Z/SDFR=activeDevicesTestPulse ActiveDeviceList
 
-	string TPFolderPath
-	sprintf TPFolderPath, "%s:TestPulse:TPPulseCount" HSU_DataFullFolderPathString(panelTitle)
-	NVAR TPPulseCount = $TPFolderPath
+	NVAR/SDFR=GetDeviceTestPulse(panelTitle) TPPulseCount
 	if (AddorRemoveDevice == 1) // add a ITC device
 		if(!WaveExists(ActiveDeviceList))
 			Make/N=(1, 6) activeDevicesTestPulse:ActiveDeviceList/Wave=ActiveDeviceList
@@ -305,33 +279,33 @@ End
  End
 //=============================================================================================================================
 
-Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) // creates wave that contains wave references
-	String panelTitle
-	Variable AddOrRemoveDevice, RowToRemove
-	//Variable start = stopmstimer(-2)
-	string DeviceFolderPath = HSU_DataFullFolderPathString(panelTitle)
-	WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
-	if (AddOrRemoveDevice == 1) 
-		if (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave) == 0)
-			Make /WAVE /n = (1,5) root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
-			WAVE /Z /WAVE ActiveDevWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
-			// print devicefolderpath + ":itcdatawave"
-			ActiveDevWavePathWave[0][0] = $(DeviceFolderPath + ":ITCDataWave") 
-			ActiveDevWavePathWave[0][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
-			ActiveDevWavePathWave[0][2] = $(DeviceFolderPath + ":ITCFIFOPositionAllConfigWave") 
-			ActiveDevWavePathWave[0][3] = $(DeviceFolderPath + ":ResultsWave") 			
-			ActiveDevWavePathWave[0][4] = $(DeviceFolderPath + ":ITCChanConfigWave") 
-		elseif (WaveExists(root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave) == 1)
-			Variable numberOfRows = DimSize(ActiveDevWavePathWave, 0)
-			Redimension /n = (numberOfRows + 1,5) ActiveDevWavePathWave
-			ActiveDevWavePathWave[numberOfRows][0] = $(DeviceFolderPath + ":ITCDataWave") 
-			ActiveDevWavePathWave[numberOfRows][1] = $(DeviceFolderPath + ":ITCFIFOAvailAllConfigWave") 
-			ActiveDevWavePathWave[numberOfRows][2] = $(DeviceFolderPath + ":ITCFIFOPositionAllConfigWave") 
-			ActiveDevWavePathWave[numberOfRows][3] = $(DeviceFolderPath + ":ResultsWave")
-			ActiveDevWavePathWave[numberOfRows][4] = $(DeviceFolderPath + ":ITCChanConfigWave") 
+static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) // creates wave that contains wave references
+	string panelTitle
+	variable AddOrRemoveDevice, RowToRemove
+
+	variable numberOfRows
+	DFREF deviceDFR = GetDevicePath(panelTitle)
+	DFREF dfr = root:MIES:ITCDevices:ActiveITCDevices:testPulse
+
+	WAVE/Z/WAVE/SDFR=dfr ActiveDevWavePathWave
+	if(AddOrRemoveDevice == 1)
+		if(!WaveExists(ActiveDevWavePathWave))
+			Make/WAVE/N=(1,5) dfr:ActiveDevWavePathWave/Wave=ActiveDevWavePathWave
+			ActiveDevWavePathWave[0][0] = deviceDFR:ITCDataWave
+			ActiveDevWavePathWave[0][1] = deviceDFR:ITCFIFOAvailAllConfigWave
+			ActiveDevWavePathWave[0][2] = deviceDFR:ITCFIFOPositionAllConfigWave
+			ActiveDevWavePathWave[0][3] = deviceDFR:ResultsWave
+			ActiveDevWavePathWave[0][4] = deviceDFR:ITCChanConfigWave
+		else
+			numberOfRows = DimSize(ActiveDevWavePathWave, ROWS)
+			Redimension/N=(numberOfRows + 1, 5) ActiveDevWavePathWave
+			ActiveDevWavePathWave[numberOfRows][0] = deviceDFR:ITCDataWave
+			ActiveDevWavePathWave[numberOfRows][1] = deviceDFR:ITCFIFOAvailAllConfigWave
+			ActiveDevWavePathWave[numberOfRows][2] = deviceDFR:ITCFIFOPositionAllConfigWave
+			ActiveDevWavePathWave[numberOfRows][3] = deviceDFR:ResultsWave
+			ActiveDevWavePathWave[numberOfRows][4] = deviceDFR:ITCChanConfigWave
 		endif
-	elseif (AddOrRemoveDevice == -1)
+	elseif(AddOrRemoveDevice == -1)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave
 	endif
-	//print "reference wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End
