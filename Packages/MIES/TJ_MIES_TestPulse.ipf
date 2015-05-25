@@ -756,7 +756,7 @@ Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
 	
 	Frequency /= 1.5
 	// the point offset is 1/4 of a cos wave cycle in points. The is used to make the baseline before the first pulse the same length as the interpulse interval
-	variable PointOffset = ((1 / Frequency) / MINIMUM_SAMPLING_INTERVAL) * 0.25
+	variable PointOffset = ((1 / Frequency) / 0.000005) * 0.25
 	Multithread SinBuildWave =  .49 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * (p + PointOffset))
 	Multithread CosBuildWave = 0.49 * - cos(2 * Pi * ((Frequency* 2) * 1000) * (5 / 1000000000) * (p + PointOffset))
 	Multithread BuildWave = SinBuildWave + CosBuildWave
