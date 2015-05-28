@@ -333,6 +333,22 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 	return numWavesLoaded
 End
 
+static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
+	string expFilePath, expFolder, device
+
+	string dataFolderPath
+	variable numStringsLoaded
+
+	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
+	dataFolderPath  = GetDevicePathAsString(device)
+	DFREF saveDFR   = GetDataFolderDFR()
+
+	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags=LOAD_DATA_TYPE_STRING)
+
+	SetDataFolder saveDFR
+	return numStringsLoaded
+End
+
 static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	string expFilePath
 
@@ -425,6 +441,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
 			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
+			AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 
 			AB_FillListWave(expFolder, expName, device)
 		endfor
