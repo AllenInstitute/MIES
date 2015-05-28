@@ -27,7 +27,7 @@ Function AI_RetrieveADGain(panelTitle, axonSerial, channel)
 	variable channel
 
 	STRUCT AxonTelegraph_DataStruct tds
-	Init_AxonTelegraph_DataStruct(tds)
+	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
@@ -45,7 +45,7 @@ Function AI_RetrieveDAGain(panelTitle, axonSerial, channel)
 	variable channel
 
 	STRUCT AxonTelegraph_DataStruct tds
-	Init_AxonTelegraph_DataStruct(tds)
+	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
@@ -75,7 +75,7 @@ Function AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
 	endif
 End
 
-Function Init_AxonTelegraph_DataStruct(tds)
+static Function AI_InitAxonTelegraphStruct(tds)
 	struct AxonTelegraph_DataStruct& tds
 
 	tds.version = 13
@@ -395,7 +395,7 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	endif
 
 	STRUCT AxonTelegraph_DataStruct tds
-	Init_AxonTelegraph_DataStruct(tds)
+	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
 
 	return (tds.operatingMode == AI_MIESHeadstageMode(panelTitle, headStage))
@@ -788,7 +788,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		// save the axon telegraph settings as well
 		// get the data structure to get axon telegraph information
 		STRUCT AxonTelegraph_DataStruct tds
-		Init_AxonTelegraph_DataStruct(tds)
+		AI_InitAxonTelegraphStruct(tds)
 
 		AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 		ampSettingsWave[0][16][i] = tds.SerialNum
@@ -827,7 +827,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
-function createDummySettingsWave(panelTitle, SweepCount)
+Function AI_createDummySettingsWave(panelTitle, SweepCount)
 	string panelTitle
 	Variable SweepCount
 

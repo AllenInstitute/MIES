@@ -24,7 +24,7 @@ Function DM_SaveITCData(panelTitle)
 	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		// function for debugging
-		// createDummySettingsWave(panelTitle, SweepNo)
+		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 	
 	// Adding in the post sweep analysis function here
@@ -217,5 +217,3 @@ Function DM_DeleteDataWaves(panelTitle, SweepNo)
 
 	SetDataFolder saveDFR
 End
-
-//=============================================================================================================
