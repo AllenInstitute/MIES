@@ -253,7 +253,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	string device, expFolder, panel
 	variable sweep, newWaveDisplayed, currentWaveDisplayed
-	variable displayDAC, overlaySweep, overlayChannels, averageTraces
+	variable displayDAC, overlaySweep, overlayChannels
 
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
@@ -265,8 +265,10 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 		return 0
 	endif
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
-	averageTraces = GetCheckBoxState(panel, "check_sweepbrowser_AveragTraces")
+	Struct PostPlotSettings pps
+	pps.averageDataFolder = sweepBrowserDFR
+	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
+	pps.zeroTraces        = GetCheckBoxState(panel, "check_SweepBrowser_ZeroTraces")
 
 	// With overlay enabled:
 	// if the last plotted sweep is already on the graph remove it and return
@@ -284,10 +286,10 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 			RemoveTracesFromGraph(graph, dfr=currentSweepDFR)
 			SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 			SB_SetFormerSweepNumber(panel, newMapIndex)
-			AverageWavesFromSameYAxisIfReq(graph, averageTraces, sweepBrowserDFR)
+			PostPlotTransformations(graph, pps)
 			return NaN
 		elseif(newWaveDisplayed)
-			AverageWavesFromSameYAxisIfReq(graph, averageTraces, sweepBrowserDFR)
+			PostPlotTransformations(graph, pps)
 			return NaN
 		endif
 	endif
@@ -311,8 +313,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)
-
-	AverageWavesFromSameYAxisIfReq(graph, averageTraces, sweepBrowserDFR)
+	PostPlotTransformations(graph, pps)
 End
 
 Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
@@ -415,6 +416,9 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_AveragTraces,pos={20,243},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
+	CheckBox check_SweepBrowser_ZeroTraces,pos={20,263},size={94,14},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all tracese"}
+	CheckBox check_SweepBrowser_ZeroTraces,value= 0
 	SetVariable setvar_SweepBrowser_OverlaySkip,pos={38,49},size={64,16},title="Step"
 	SetVariable setvar_SweepBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
 	CheckBox check_sweepbrowser_OverlayChan,pos={19,69},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
@@ -422,7 +426,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},proc=SB_CheckboxChangedSettings,title="Overlay Sweeps"
 	CheckBox check_SweepBrowser_SweepOverlay,value= 0
 	GroupBox group_sweep,pos={9,90},size={139,74},title="Sweep"
-	GroupBox group_postSynPot,pos={9,266},size={137,92},title="Post-synaptic potentials"
+	GroupBox group_postSynPot,pos={9,285},size={136,74},title="Post-synaptic potentials"
 	Button button_SweepBrowser_NextSweep,pos={84,136},size={60,20},title="Next",proc=SB_ButtonProc_ChangeSweep
 	Button button_SweepBrowser_PrevSweep,pos={14,136},size={60,20},title="Previous",proc=SB_ButtonProc_ChangeSweep
 	GroupBox group_actionPot,pos={9,175},size={138,60},title="Action potentials"

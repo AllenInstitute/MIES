@@ -8,3 +8,14 @@ Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
 	int32 count ///< Number of invocations of background function
 EndStructure
+
+Structure PostPlotSettings
+	/// @name Trace averaging settings
+	/// @{
+	variable averageTraces
+	DFREF averageDataFolder
+	/// @}
+
+	/// Zero traces settings
+	variable zeroTraces
+EndStructure
