@@ -329,9 +329,9 @@ End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
 ///
-/// @param wv                        wave to replace by its backup
-/// @param nonExistingBackupIsFatal  behaviour for the case that there is no backup. Passing a non-zero value
-///                                  will abort if the backup wave does not exist, for zero it will just do nothing.
+/// @param wv                       wave to replace by its backup
+/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup. Passing a non-zero value
+///                                 will abort if the backup wave does not exist, for zero it will just do nothing.
 /// @returns one if the original wave was successfully replaced, zero otherwise.
 Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Wave wv
