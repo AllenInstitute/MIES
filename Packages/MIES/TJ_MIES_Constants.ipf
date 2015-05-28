@@ -224,3 +224,11 @@ StrConstant AXIS_BASE_NAME = "col"
 
 /// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
 Constant MINIMUM_SAMPLING_INTERVAL = 0.005
+
+/// @name Constants for the type flag of `LoadData`
+/// @anchor LoadDataConstants
+/// @{
+Constant LOAD_DATA_TYPE_WAVES   = 1
+Constant LOAD_DATA_TYPE_NUMBERS = 2
+Constant LOAD_DATA_TYPE_STRING  = 4
+/// @}

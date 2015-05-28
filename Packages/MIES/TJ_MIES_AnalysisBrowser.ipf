@@ -239,12 +239,15 @@ End
 /// @param tmpDFR		  Temporary work folder, function returns with that folder as CDF
 /// @param expFilePath    full path to the experiment file on disc
 /// @param datafolderPath igor datafolder to look for the waves inside the experiment
-/// @param listOfWaves    list of waves to load
+/// @param listOfNames    list of names of waves/strings/numbers to load
+/// @param typeFlags      [optional, defaults to 1 (waves)] data types to load, valid values
+///                       are the same as for `LoadData`, see also @ref LoadDataConstants
 ///
-/// @returns number of loaded waves
-static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfWaves)
+/// @returns number of loaded items
+static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNames, [typeFlags])
 	DFREF tmpDFR
-	string expFilePath, datafolderPath, listOfWaves
+	string expFilePath, datafolderPath, listOfNames
+	variable typeFlags
 
 	variable err
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
@@ -252,7 +255,11 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfWa
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
 	ASSERT(!isEmpty(dataFolderPath), "empty datafolder path")
-	ASSERT(strlen(listOfWaves) < 1000, "LoadData limit for listOfWaves length reached")
+	ASSERT(strlen(listOfNames) < 1000, "LoadData limit for listOfNames length reached")
+
+	if(ParamIsDefault(typeFlags))
+		typeFlags = 1
+	endif
 
 	fileNameWOExtension = GetBaseName(expFilePath)
 	baseFolder          = ParseFilePath(1, expFilePath, ":", 1, 0)
@@ -273,9 +280,9 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfWa
 	try
 		GetFileFolderInfo/Q/Z expFileOrFolder
 		if(V_isFile)
-			LoadData/Q/R/L=1/S=dataFolderPath/J=listOfWaves/O=1 expFileOrFolder; AbortOnRTE
+			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
 		elseif(V_isFolder)
-			LoadData/Q/D/R/L=1/J=listOfWaves/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+			LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
 		else
 			ASSERT(0, "Unknown return from GetFileFolderInfo")
 			return 0
