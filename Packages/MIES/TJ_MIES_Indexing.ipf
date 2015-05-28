@@ -7,7 +7,7 @@
 /// @param ChannelType  one of DA, AD, or TTL
 /// @param ControlType  currently restricted to "Check"
 /// @param panelTitle   panel title
-static Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitle)
+static Function/S IDX_ControlStatusListString(ChannelType, ControlType, panelTitle)
 	String ChannelType, panelTitle
 	string ControlType
 
@@ -27,6 +27,7 @@ static Function/S DC_ControlStatusListString(ChannelType, ControlType, panelTitl
 
 	return ControlStatusList
 End
+
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
 
@@ -165,8 +166,8 @@ End
 
 Function IDX_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for each indexing step
 	string panelTitle
-	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
 	variable MaxCycleIndexSteps= (IDX_MaxSets(panelTitle)+1)
 	variable MaxSteps
@@ -182,8 +183,8 @@ End
 Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
 	string panelTitle
 	variable IndexNo
-	string DAChannelStatusList = DC_ControlStatusListString("DA", "check", panelTitle)
-	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check", panelTitle)
+	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
 	variable MaxSteps = 0, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
 	string setName
@@ -252,8 +253,8 @@ End
 
 Function IDX_MaxSets(panelTitle)// returns the number of sets on the active channel with the most sets.
 	string panelTitle
-	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
 	variable MaxSets = 0
 	variable ChannelSets
 	string popMenuIndexStartName, popMenuIndexEndName
@@ -297,8 +298,8 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	string panelTitle
 	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
 	variable MaxNoOfSweeps = 0
-	string DAChannelStatusList = DC_ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = DC_ControlStatusListString("TTL", "check",panelTitle)
+	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
+	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
 	variable i = 0
  
  	do
@@ -517,11 +518,11 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	string ActivechannelList 
 	
 	if(DAorTTL==0)
-		ActiveChannelList = DC_ControlStatusListString("DA","check",panelTitle)
+		ActiveChannelList = IDX_ControlStatusListString("DA","check",panelTitle)
 	endif
 	
 	if(DAorTTL==1)
-		ActiveChannelList = DC_ControlStatusListString("TTL","check",panelTitle)
+		ActiveChannelList = IDX_ControlStatusListString("TTL","check",panelTitle)
 	endif
 	
 	do
