@@ -279,8 +279,9 @@ Function SaveStimSet()
 End
 
 /// @brief Load stim sets from HDF5 file and replace all of the current stimulus waves
-Function LoadReplaceStimSet([incomingFileName])
+Function LoadReplaceStimSet([incomingFileName, cmdID])
 	string incomingFileName
+	string cmdID
 	    
 	variable fileID, waveCounter
 	string dataSet
@@ -351,7 +352,12 @@ Function LoadReplaceStimSet([incomingFileName])
 	print "Stimulus Set Loaded..."
 	
 	// restore the data folder
-	SetDataFolder savedDataFolder   	
+	SetDataFolder savedDataFolder
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 1)
+	endif   	
 End
 
 /// @brief Load stim sets from HDF5 file and add to the current stimulus waves.  If there is a wave with a matching name already present, it will be overwritten and replaced
@@ -431,18 +437,21 @@ Function SaveSweepData()
 	variable value
 	string currentPanel
 	string groupString
-	variable i
-
-	// set up the filename for the hdf5 file
+	string fileLocation
+	string dateTimeStamp
 	String filename
 	Variable root_id, h5_id
-
-	// save the present data folder
-	string savedDataFolder = GetDataFolder(1)
+	variable i
+	
+	 // build up the filename using the time and date functions
+ 	fileLocation = "C:\\MiesHDF5Files\\SavedDataSets\\"
+    	
+	// Call this new function to insure that the folder actually exists on the disk
+	CreateFolderOnDisk(fileLocation)
+    	
+    	dateTimeStamp = GetTimeStamp()
 
 	// build up the filename using the time and date functions
-	String fileLocation = "c:\\MiesHDF5Files\\SavedDataSets\\"
-	string dateTimeStamp = GetTimeStamp()
 	sprintf filename, "%ssavedData_%s.h5", fileLocation, dateTimeStamp
 
 	HDF5CreateFile h5_id as filename
@@ -494,8 +503,9 @@ Function SaveSweepData()
 End
 
 ///@brief Routine for saving all gui settings/switches/check boxes 
-Function SaveConfiguration()
-
+Function SaveConfiguration([cmdID])
+	string cmdID
+	
 	// define variables
 	string lockedDevList
 	variable noLockedDevs
@@ -602,13 +612,19 @@ Function SaveConfiguration()
 	endif
     	
 	// restore the data folder
-	SetDataFolder savedDataFolder	
+	SetDataFolder savedDataFolder
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAckResponse(cmdID, 1)
+	endif	
 End	
 		
 /// @brief Load config settings from HDF5 file
-Function LoadConfigSet([incomingFileName])
+Function LoadConfigSet([incomingFileName, cmdID])
 	string incomingFileName
-	    	    
+	string cmdID
+	
 	Variable fileID, waveCounter
 	string dataSet
 	string savedDataFolder
@@ -710,7 +726,12 @@ Function LoadConfigSet([incomingFileName])
 	print "Configuration Settings Loaded..."
 	
 	// restore the data folder
-	SetDataFolder savedDataFolder		   	
+	SetDataFolder savedDataFolder
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 1)
+	endif		   	
 End
 
 /// @brief Load previous data sets from HDF5 file for viewing with the wave browser.  If there is a data wave with a matching name already present, it will be overwritten and replaced
