@@ -3539,10 +3539,10 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 				//Data collection
 				DataAcqState = 1
 				DAP_AcqDataButtonToStopButton(panelTitle)
-				FunctionStartDataAcq(panelTitle) // initiates background aquisition
+				DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
 			else // data aquistion is ongoing, stop data acq
 				DataAcqState = 0
-				Yoked_ITCStopDataAcq(panelTitle)
+				DAM_StopDataAcq(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
 				DAP_StopButtonToAcqDataButton(panelTitle)
 			endif
