@@ -2087,7 +2087,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Hardware_YokedDACs,pos={223,240},size={110,21},bodyWidth=110,disable=3,title="Yoked ITC1600s"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_YokedDACs,mode=0,value= #"GUIListOfYokedDACs()"
+	PopupMenu popup_Hardware_YokedDACs,mode=0,value= #"DAP_GUIListOfYokedDevices()"
 	TitleBox title_hardware_Release,pos={225,222},size={152,13},disable=3,title="Release follower ITC1600 DACs"
 	TitleBox title_hardware_Release,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Release,userdata(tabnum)=  "6"
@@ -2862,7 +2862,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Independent",noedit= 1
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
-	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=GUIListOfYokedDACs()
+	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=DAP_GUIListOfYokedDevices()
 
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
@@ -3235,7 +3235,7 @@ Function DAP_GetTabNumber(panelTitle)
 	return V_value
 End
 
-Function/S GUIListOfYokedDACs()
+Function/S DAP_GUIListOfYokedDevices()
 
 	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 	if(SVAR_Exists(listOfFollowerDevices) && cmpstr(listOfFollowerDevices, "") != 0)
@@ -3266,7 +3266,7 @@ Function DAP_UpdateYokeControls(panelTitle)
 		else
 			TitleBox title_hardware_1600inst win = $panelTitle, title = "To yoke devices go to panel: " + ITC1600_FIRST_DEVICE
 		endif
-		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:GUIListOfYokedDACs()
+		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:DAP_GUIListOfYokedDevices()
 	endif
 End
 
