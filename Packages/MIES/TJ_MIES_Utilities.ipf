@@ -1403,14 +1403,14 @@ Function/S GetTimeStamp([secondsSinceIgorEpoch, humanReadable])
 	endif
 End
 
-/// @brief Function prototype for use with CallFunctionForEachList
+/// @brief Function prototype for use with #CallFunctionForEachListItem
 Function CALL_FUNCTION_LIST_PROTOTYPE(str)
 	string str
 End
 
 /// @brief Convenience function to call the function f with each list item
 ///
-/// The function's type must be CALL_FUNCTION_LIST_PROTOTYPE where the return
+/// The function's type must be #CALL_FUNCTION_LIST_PROTOTYPE where the return
 /// type is ignored.
 Function CallFunctionForEachListItem(f, list, [sep])
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f
