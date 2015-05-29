@@ -81,7 +81,7 @@ static Function AI_InitAxonTelegraphStruct(tds)
 	tds.version = 13
 End
 
-Structure AxonTelegraph_DataStruct
+static Structure AxonTelegraph_DataStruct
 	uint32 Version	///< Structure version.  Value should always be 13.
 	uint32 SerialNum
 	uint32 ChannelID
