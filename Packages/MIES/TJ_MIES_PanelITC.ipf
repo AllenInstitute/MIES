@@ -4537,7 +4537,8 @@ End
 /// @brief Return information readout from various gui controls
 ///
 /// @param[in]  panelTitle  panel
-/// @param[in]  ctrl        control can be either Radio_ClampMode_ or Check_DataAcq_HS_
+/// @param[in]  ctrl        control can be either `Radio_ClampMode_*` or `Check_DataAcq_HS_*`
+///                         referring to an existing control
 /// @param[out] ctrlNo      number of the control (everything behind the last "_" of ctrl)
 /// @param[out] mode        I_CLAMP_MODE or V_CLAMP_MODE
 /// @param[out] headStage   number of the headstage
