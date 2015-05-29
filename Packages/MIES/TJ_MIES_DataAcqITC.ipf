@@ -1,10 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-Structure BackgroundStruct
-	STRUCT WMBackgroundStruct wmbs
-	int32 count ///< Number of invocations of background function
-EndStructure
-
 Function ITC_DataAcq(panelTitle)
 	string panelTitle
 

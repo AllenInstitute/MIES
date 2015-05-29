@@ -37,6 +37,7 @@
 #include "TJ_MIES_PressureControl"
 #include "TJ_MIES_ProgrammaticGuiControl"
 #include "TJ_MIES_RepeatedAcquisition"
+#include "TJ_MIES_Structures"
 #include "TJ_MIES_TestPulse"
 #include "TJ_MIES_TPBackgroundMD"
 #include "TJ_MIES_Utilities"
