@@ -3450,6 +3450,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 			DM_DeleteDataWaves(panelTitle, nextSweep)
 		endif
 	endif
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 1
+	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 End
 
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
@@ -3485,13 +3488,9 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					ITC_DataAcq(panelTitle)
 					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-						DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
-						DAP_AcqDataButtonToStopButton(panelTitle) // when RA code is modified to have foreground TP during RA, this will not be needed
 						RA_Start(panelTitle)
 					endif
 				else
-					DataAcqState = 1
-					DAP_AcqDataButtonToStopButton(panelTitle)
 					ITC_BkrdDataAcq(panelTitle)
 				endif
 			else // data aquistion is ongoing
@@ -3535,10 +3534,6 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 				endif
 
 				DAP_OneTimeCallBeforeDAQ(panelTitle)
-
-				//Data collection
-				DataAcqState = 1
-				DAP_AcqDataButtonToStopButton(panelTitle)
 				DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
 			else // data aquistion is ongoing, stop data acq
 				DataAcqState = 0
@@ -4716,12 +4711,6 @@ Function DAP_StopButtonToAcqDataButton(panelTitle)
 	string panelTitle
 
 	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
-end
-
-Function DAP_AcqDataButtonToStopButton(panelTitle)
-	string panelTitle
-
-	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 end
 
 static Function DAP_ToggleAcquisitionButton(panelTitle, mode)
