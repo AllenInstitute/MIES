@@ -177,11 +177,8 @@ End
 static Function RA_FinishAcquisition(panelTitle)
 	string panelTitle
 
-	DAP_StopButtonToAcqDataButton(panelTitle)
 	ITC_StopITCDeviceTimer(panelTitle)
-
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 0
+	DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	KillVariables/Z Count
 	KillVariables/Z Start, RunTime
@@ -240,10 +237,8 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	else
 		ED_TPDocumentation(panelTitle)
-		DAP_StopButtonToAcqDataButton(panelTitle) // 
+		DAP_OneTimeCallAfterDAQ(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
-		NVAR DataAcqState = $GetDataAcqState(panelTitle)
-		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		Killvariables Count
 		killvariables /z Start, RunTime
@@ -547,9 +542,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	else
 		ED_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
-		DAP_StopButtonToAcqDataButton(panelTitle)
-		NVAR DataAcqState = $GetDataAcqState(panelTitle)
-		DataAcqState = 0
+		DAP_OneTimeCallAfterDAQ(panelTitle)
 		print "Repeated acquisition is complete"
 		print "**************************Killing count on:", panelTitle
 		Killvariables Count

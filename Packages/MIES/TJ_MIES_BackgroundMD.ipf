@@ -142,9 +142,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 			// RA_StartMD(panelTitle)  // *************THIS NEEDS TO BE POSTPONED FOR YOKED DEVICES*********************************
 			DAM_YokedRAStartMD(panelTitle)
 		else
-			DAP_StopButtonToAcqDataButton(panelTitle)
-			NVAR DataAcqState = $GetDataAcqState(panelTitle)
-			DataAcqState = 0
+			DAP_OneTimeCallAfterDAQ(panelTitle)
 		endif
 	else
 		DAM_YokedRABckgTPCallRACounter(panelTitle)
@@ -193,13 +191,8 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	if(NVAR_Exists(count))
 		KillVariables count
 	endif
-	
-	// sets the global variable that records the devices aquisition state to 0, indicating no onging acquisition.
-	DataAcqState = 0
-	
-	// sets the state of the data acq button to reflect that data acq has terminated
-	DAP_StopButtonToAcqDataButton(panelTitle)
 
+	DAP_OneTimeCallAfterDAQ(panelTitle)
 END
 //=============================================================================================================================
 

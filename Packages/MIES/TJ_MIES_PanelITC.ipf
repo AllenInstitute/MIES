@@ -3431,7 +3431,8 @@ End
 Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	string panelTitle
 
-	variable nextSweep
+	variable nextSweep, numHS, i
+	string ctrl
 
 	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
 	if(NVAR_Exists(count))
@@ -3450,9 +3451,48 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 			DM_DeleteDataWaves(panelTitle, nextSweep)
 		endif
 	endif
+
+	// disable the clamp mode checkboxes of all active headstages
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+
+	numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		EnableControl(panelTitle, ctrl)
+		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
+		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
+	endfor
+
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 1
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
+End
+
+/// @brief One time cleaning up after data acquisition
+Function DAP_OneTimeCallAfterDAQ(panelTitle)
+	string panelTitle
+
+	string ctrl
+	variable numHS, i
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+
+	numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+
+		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		EnableControl(panelTitle, ctrl)
+		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
+		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
+	endfor
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 0
+	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 End
 
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
@@ -3536,10 +3576,9 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 				DAP_OneTimeCallBeforeDAQ(panelTitle)
 				DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
 			else // data aquistion is ongoing, stop data acq
-				DataAcqState = 0
 				DAM_StopDataAcq(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
-				DAP_StopButtonToAcqDataButton(panelTitle)
+				DAP_OneTimeCallAfterDAQ(panelTitle)
 			endif
 		break
 	endswitch
@@ -4678,12 +4717,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 	endif
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	if(DataAcqState)
-		DataAcqState = 0
-	endif
-
-	DAP_StopButtonToAcqDataButton(panelTitle)
+	DAP_OneTimeCallAfterDAQ(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
@@ -4706,12 +4740,6 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	KillVariables/Z count
 	print "Data acquisition was manually terminated"
 End
-
-Function DAP_StopButtonToAcqDataButton(panelTitle)
-	string panelTitle
-
-	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
-end
 
 static Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	string panelTitle
