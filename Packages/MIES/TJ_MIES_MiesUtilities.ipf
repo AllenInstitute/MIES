@@ -872,27 +872,23 @@ Function SwitchLBGraphXAxis(graph, settingsHistory)
 End
 
 /// @brief Save the current experiment under a new name and clear all/some data
-/// @param mode                                       mode for generating the experiment name, one of @ref SaveExperimentModes
-/// @param zeroSweeps       [optional: default true]  should the sweep number be resetted to zero
-/// @param keepOtherWaves   [optional: default false] only delete the sweep and sweep config waves
-Function IM_SaveExperiment(mode, [zeroSweeps, keepOtherWaves])
+/// @param mode mode for generating the experiment name, one of @ref SaveExperimentModes
+Function SaveExperimentSpecial(mode)
 	variable mode
-	variable zeroSweeps, keepOtherWaves
 
 	variable numDevices, i, ret, pos
+	variable zeroSweeps, keepOtherData
 	string path, devicesWithData, activeDevices, device, expLoc, list, refNum
 	string expName, substr
 
-	if(ParamIsDefault(zeroSweeps))
-		zeroSweeps = 1
+	if(mode == SAVE_AND_CLEAR)
+		zeroSweeps    = 1
+		keepOtherData = 0
+	elseif(mode == SAVE_AND_SPLIT)
+		zeroSweeps    = 0
+		keepOtherData = 1
 	else
-		zeroSweeps = !!zeroSweeps
-	endif
-
-	if(ParamIsDefault(keepOtherWaves))
-		keepOtherWaves = 0
-	else
-		keepOtherWaves = !!keepOtherWaves
+		ASSERT(0, "Unknown mode")
 	endif
 
 	// We want never to loose data so we do the following:
@@ -936,8 +932,6 @@ Function IM_SaveExperiment(mode, [zeroSweeps, keepOtherWaves])
 		expName += SIBLING_FILENAME_SUFFIX
 	elseif(mode == SAVE_AND_CLEAR)
 		expName = "_" + GetTimeStamp()
-	else
-		ASSERT(0, "unknown mode")
 	endif
 
 	// saved experiments are stored in the symbolic path "home"
@@ -966,7 +960,7 @@ Function IM_SaveExperiment(mode, [zeroSweeps, keepOtherWaves])
 		endif
 	endfor
 
-	if(!keepOtherWaves)
+	if(!keepOtherData)
 		// remove labnotebook
 		path = GetLabNotebookFolderAsString()
 		killFunc(path)

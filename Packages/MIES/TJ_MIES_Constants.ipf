@@ -141,7 +141,7 @@ StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 /// @}
 
-/// @name Modes for IM_SaveExperiment
+/// @name Modes for SaveExperimentSpecial
 /// @anchor SaveExperimentModes
 /// @{
 Constant SAVE_AND_CLEAR            = 0x01
