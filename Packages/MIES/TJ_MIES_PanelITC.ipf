@@ -3428,7 +3428,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 End
 
 /// @brief One time initialization before data acquisition
-Function DAP_OneTimeInitBeforeDAQ(panelTitle)
+Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	string panelTitle
 
 	variable nextSweep
@@ -3473,7 +3473,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					ITC_STOPTestPulse(panelTitle)
 				endif
 
-				DAP_OneTimeInitBeforeDAQ(panelTitle)
+				DAP_OneTimeCallBeforeDAQ(panelTitle)
 
 				// Data collection
 				// Function that assess how many 1d waves in set??
@@ -3534,7 +3534,7 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 					endfor
 				endif
 
-				DAP_OneTimeInitBeforeDAQ(panelTitle)
+				DAP_OneTimeCallBeforeDAQ(panelTitle)
 
 				//Data collection
 				DataAcqState = 1
