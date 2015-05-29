@@ -909,7 +909,7 @@ Function/S AM_MS_sortFunctions()
 	return AM_sortAMFunctions("MSA")
 End 	
 
-///@brief function for sorting PA and PS function for populating pull down menus
+///@brief function for sorting MS, PA and PS functions for populating pull down menus
 static Function/S AM_sortAMFunctions(str)
 	string str
 	
@@ -918,13 +918,14 @@ static Function/S AM_sortAMFunctions(str)
 	string editedList
 	string func, editedFunc
 	string funcTemplate
+	
 	variable i
 	
-	funcList = FunctionList("*" + str + "*", ";", "")
+	funcList = FunctionList("AM_" + str + "*", ";", "")
 	noFunctions = ItemsInList(funcList)
 	editedList = "-None-"
 	funcTemplate = "AM_" + str + "_%s"
-	
+		
 	for(i = 0; i < noFunctions; i += 1)
 	    func = StringFromList(i, funcList)
 	    sscanf func, funcTemplate, editedFunc

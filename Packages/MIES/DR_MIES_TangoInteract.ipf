@@ -17,8 +17,8 @@ Function TI_TangoCommandInput(cmdString)
 	string igorCmdPortion
 	string completeIgorCommand
 	
-	// make sure the incoming cmdString has the cmd_id and a TI function call
-	if(!((GrepString(cmdString, "cmd_id:")) && (GrepString(cmdString, "TI_"))))
+	// make sure the incoming cmdString has the cmd_id
+	if(!((GrepString(cmdString, "cmd_id:"))))
 		print "Command is not properly formatted..."
 		abort
 	endif
