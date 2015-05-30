@@ -140,14 +140,14 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 		ControlInfo/W=$panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
 			// RA_StartMD(panelTitle)  // *************THIS NEEDS TO BE POSTPONED FOR YOKED DEVICES*********************************
-			YokedRA_StartMD(panelTitle)
+			DAM_YokedRAStartMD(panelTitle)
 		else
 			DAP_StopButtonToAcqDataButton(panelTitle)
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 			DataAcqState = 0
 		endif
 	else
-		YokedRA_BckgTPwCallToRACounter(panelTitle)
+		DAM_YokedRABckgTPCallRACounter(panelTitle)
 	endif
 END
 

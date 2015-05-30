@@ -329,10 +329,10 @@ Function RA_StartMD(panelTitle)
 	ITI = v_value
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-	StartTestPulse(panelTitle)
+	DAM_StartTestPulseMD(panelTitle)
 
 	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
-	ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
+	ITC_StartBackgroundTimerMD(ITI,"DAM_StopTPMD(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 End
 //====================================================================================================
 
@@ -467,7 +467,7 @@ Function RA_CounterMD(panelTitle)
 
 	if(Count < TotTrials)
 		variable DataAcqOrTP = 0
-		FunctionStartDataAcq(panelTitle)
+		DAM_FunctionStartDataAcq(panelTitle)
 	endif
 End
 
@@ -541,9 +541,9 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
-		StartTestPulse(panelTitle)
+		DAM_StartTestPulseMD(panelTitle)
 
-		ITC_StartBackgroundTimerMD(ITI,"ITCStopTP(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
+		ITC_StartBackgroundTimerMD(ITI,"DAM_StopTPMD(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 	else
 		ED_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials

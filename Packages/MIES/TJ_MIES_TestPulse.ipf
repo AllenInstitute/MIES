@@ -283,7 +283,7 @@ Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
 			TP_UpdateTPBufferSizeGlobal(panelTitle)
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
-			StartTestPulse(panelTitle)
+			DAM_StartTestPulseMD(panelTitle)
 
 			// Enable pressure buttons
 			variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage

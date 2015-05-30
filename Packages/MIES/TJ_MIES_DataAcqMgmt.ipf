@@ -1,12 +1,19 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-// DATA ACQ MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
+/// @file TJ_MIES_DataAcqMgmt.ipf
+/// @brief Data Acquisition Management - Handles multiple devices including yoked devices
 
 /// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
 ///
-/// FunctionStartDataAcq determines what device is being started and begins aquisition in the appropriate manner for the device
-/// FunctionStartDataAcq is used when MD support is enabled in the settings tab of DA_ephys. If MD is not enabled, alternate functions are used to run data acquisition.
-Function FunctionStartDataAcq(panelTitle) // this function handles the calls to the data configurator (DC) functions and BackgroundMD - it is required because of the special handling syncronous ITC1600s require
+/// DAM_FunctionStartDataAcq determines what device is being started and begins aquisition in
+/// the appropriate manner for the device
+///
+/// DAM_FunctionStartDataAcq is used when MD support is enabled in the settings tab of DA_ephys.
+/// If MD is not enabled, alternate functions are used to run data acquisition.
+///
+/// Handles the calls to the data configurator (DC) functions and BackgroundMD
+/// it is required because of the special handling syncronous ITC1600s require
+Function DAM_FunctionStartDataAcq(panelTitle)
 	string panelTitle
 	Variable start = stopmstimer(-2)
 	variable i
@@ -22,7 +29,7 @@ Function FunctionStartDataAcq(panelTitle) // this function handles the calls to 
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
 			print "Data Acq started on independent ITC1600"
-			ITC_ConfigUploadDAC(panelTitle)
+			DAM_ConfigUploadDAC(panelTitle)
 			ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 		elseif(DAP_DeviceCanLead(panelTitle)) // it is ITC1600 device 0; potentially the lead device for a group of yoked devices
 			SVAR /z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
@@ -42,12 +49,12 @@ Function FunctionStartDataAcq(panelTitle) // this function handles the calls to 
 					
 					do // LOOP that preconfigures each DAC to
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						ITC_ConfigUploadDAC(followerPanelTitle)
+						DAM_ConfigUploadDAC(followerPanelTitle)
 					i += 1
 					while(i < numberOfFollowerDevices)
 					
 					i = 0
-					ITC_ConfigUploadDAC(panelTitle) // configures lead device
+					DAM_ConfigUploadDAC(panelTitle) // configures lead device
 					print "Call to ITC_BkrdDataAcqMD; panel title of lead device:", panelTitle
 					ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // starts data acq on Lead device
 					
@@ -66,27 +73,26 @@ Function FunctionStartDataAcq(panelTitle) // this function handles the calls to 
 					print "DATA Acquisition initiated"				
 					ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!! THIS TRIGGERS THE YOKED ITC1600s
 				else
-					ITC_ConfigUploadDAC(panelTitle)
+					DAM_ConfigUploadDAC(panelTitle)
 					ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 				endif
 			else
-				ITC_ConfigUploadDAC(panelTitle)
+				DAM_ConfigUploadDAC(panelTitle)
 				ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 			endif
 		endif	
 	else
-		ITC_ConfigUploadDAC(panelTitle)
+		DAM_ConfigUploadDAC(panelTitle)
 		ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 	endif
 	print "Data Acquisition took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
-//=================================================================================================================
 
 /// @brief Configures ITC DACs
 /// selects the ITC device based on the panelTitle passed into the function.
 /// configures all the DAC channels at once using the ITCconfigAllChannels command
 /// resets the DAC FIFOs using the ITCUpdateFIFOPositionAll command
-Function ITC_ConfigUploadDAC(panelTitle)
+static Function DAM_ConfigUploadDAC(panelTitle)
 	string panelTitle
 
 	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
@@ -105,14 +111,11 @@ Function ITC_ConfigUploadDAC(panelTitle)
 	ExecuteITCOperation(cmd)
 End
 
-//=================================================================================================================
-// TP MANAGEMENT - HANDLES MULTIPLE DEVICES INCLUDING YOKED DEVICES
-//=================================================================================================================
-/// @brief StartTestPulse start the test pulse when MD support is activated.
-/// @param panelTitle panel title
-/// StartTestPulse handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
+/// @brief Start the test pulse when MD support is activated.
+///
+/// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
-Function StartTestPulse(panelTitle)
+Function DAM_StartTestPulseMD(panelTitle)
 	string panelTitle
 	string TestPulsePath
 	variable i = 0
@@ -129,7 +132,7 @@ Function StartTestPulse(panelTitle)
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
 			print "TP Started on independent ITC1600"
-			TP_TPSetUp(panelTitle)
+			DAM_TPSetup(panelTitle)
 			ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 			WAVE/SDFR=deviceDFR SelectedDACWaveList
 			TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
@@ -145,14 +148,14 @@ Function StartTestPulse(panelTitle)
 					
 					do // configure follower device for TP acquistion
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						TP_TPSetUp(followerPanelTitle)
+						DAM_TPSetup(followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
 					i = 0
 					TriggerMode = 256
 
 					//Lead board commands
-					TP_TPSetUp(panelTitle)
+					DAM_TPSetup(panelTitle)
 					ITC_BkrdTPMD(TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
 					WAVE/SDFR=deviceDFR SelectedDACWaveList
 					TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle) // restores lead board settings
@@ -176,7 +179,7 @@ Function StartTestPulse(panelTitle)
 					ARDStartSequence()
 					
 				elseif(numberOfFollowerDevices == 0)
-					TP_TPSetUp(panelTitle)
+					DAM_TPSetup(panelTitle)
 					ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 					WAVE/SDFR=deviceDFR SelectedDACWaveList
 					TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
@@ -184,7 +187,7 @@ Function StartTestPulse(panelTitle)
 					TP_RestoreDAScale(SelectedDACScale,panelTitle)
 				endif
 			else
-				TP_TPSetUp(panelTitle)
+				DAM_TPSetup(panelTitle)
 				ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 				WAVE/SDFR=deviceDFR SelectedDACWaveList
 				TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
@@ -193,7 +196,7 @@ Function StartTestPulse(panelTitle)
 			endif
 		endif
 	else
-		TP_TPSetUp(panelTitle)
+		DAM_TPSetup(panelTitle)
 		ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 		WAVE/SDFR=deviceDFR SelectedDACWaveList
 		TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
@@ -201,9 +204,9 @@ Function StartTestPulse(panelTitle)
 		TP_RestoreDAScale(SelectedDACScale,panelTitle)
 	endif
 End
-//=========================================================================================
 
-Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simultaneously 
+/// @brief Stop DAQ on yoked devices simultaneously
+Function DAM_StopDataAcq(panelTitle)
 	string panelTitle
 
 	variable i
@@ -242,9 +245,9 @@ Function Yoked_ITCStopDataAcq(panelTitle) // stops the TP on yoked devices simul
 		DAP_StopOngoingDataAcqMD(panelTitle)
 	endif
 End
-//=========================================================================================
 
-Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously 
+/// @brief Stop the TP on yoked devices simultaneously
+Function DAM_StopTPMD(panelTitle)
 
 	string panelTitle
 	variable i = 0
@@ -288,9 +291,10 @@ Function ITCStopTP(panelTitle) // stops the TP on yoked devices simultaneously
 	endif
 End
 
-// if devices are yoked, RA_StartMD is only called once the last device has finished the TP, and it is called for the lead device
-// if devices are not yoked, it is the same as it would be if RA_StartMD was called directly
-Function YokedRA_StartMD(panelTitle)
+/// @brief if devices are yoked, RA_StartMD is only called once the last device has finished the TP,
+/// and it is called for the lead device if devices are not yoked, it is the same as it would be if
+/// RA_StartMD was called directly
+Function DAM_YokedRAStartMD(panelTitle)
 	string panelTitle
 
 	variable i
@@ -353,11 +357,11 @@ Function YokedRA_StartMD(panelTitle)
 		RA_StartMD(panelTitle)
 	endif	
 End
-//=========================================================================================
 
-Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_BckgTPwithCallToRACounterMD(panelTitle) gets called if the panel title is the same as the last follower device
+/// @brief If devices are yoked, RA_BckgTPwithCallToRACounterMD(panelTitle) gets called if the panel title is the same as the last follower device
+Function DAM_YokedRABckgTPCallRACounter(panelTitle)
 	string panelTitle
-	
+
 	variable i
 
 	if(DAP_DeviceIsYokeable(panelTitle)) // if the device is a ITC1600 i.e., capable of yoking
@@ -417,9 +421,8 @@ Function YokedRA_BckgTPwCallToRACounter(panelTitle) // if devices are yoked, RA_
 	endif	
 End
 
-//=========================================================================================
-
-Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure just prior to calling TP start - don't forget to reset the panel config for data acq following TP
+/// @brief Prepares device for TP - use this procedure just prior to calling TP start - don't forget to reset the panel config for data acq following TP
+static Function DAM_TPSetup(panelTitle)
 	string panelTitle
 
 	string TestPulsePath
@@ -462,6 +465,6 @@ Function TP_TPSetUp(panelTitle) // prepares device for TP - use this procedure j
 
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	SCOPE_CreateGraph(TestPulseITC, panelTitle)
-	ITC_ConfigUploadDAC(panelTitle)
+	DAM_ConfigUploadDAC(panelTitle)
 	SCOPE_OpenScopeWindow(panelTitle)
 End

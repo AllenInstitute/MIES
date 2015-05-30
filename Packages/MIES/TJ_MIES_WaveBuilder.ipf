@@ -112,7 +112,7 @@ static Function WB_AddDelta(WP, numEpochs)
 	endfor
 End
 
-Structure SegmentParameters
+static Structure SegmentParameters
 	variable duration
 	variable deltaDur
 	variable amplitude
