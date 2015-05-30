@@ -329,9 +329,9 @@ End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
 ///
-/// @param wv                        wave to replace by its backup
-/// @param nonExistingBackupIsFatal  behaviour for the case that there is no backup. Passing a non-zero value
-///                                  will abort if the backup wave does not exist, for zero it will just do nothing.
+/// @param wv                       wave to replace by its backup
+/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup. Passing a non-zero value
+///                                 will abort if the backup wave does not exist, for zero it will just do nothing.
 /// @returns one if the original wave was successfully replaced, zero otherwise.
 Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Wave wv
@@ -1778,4 +1778,16 @@ Function WaveListHasSameWaveNames(listOfWaves, baseName)
 
 	baseName = firstBaseName
 	return 1
+End
+
+/// @brief Zero the wave using differentiation and integration
+///
+/// Overwrites the input wave
+///
+/// 2D waves are zeroed along each row
+Function ZeroWave(wv)
+	WAVE wv
+
+	Differentiate/DIM=0/EP=1 wv/D=wv
+	Integrate/DIM=0 wv/D=wv
 End

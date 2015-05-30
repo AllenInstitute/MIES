@@ -1103,13 +1103,46 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, channelType, channelNumb
 	ASSERT(0, "Could not find the given channelType and/or channelNumber")
 End
 
+/// @brief Perform common transformations on the graphs traces
+///
+/// Keeps track of all internal details wrt. to the order of
+/// the operations, backups, etc.
+///
+/// @param graph graph with sweep traces
+/// @param pps   settings
+Function PostPlotTransformations(graph, pps)
+	string graph
+	STRUCT PostPlotSettings &pps
+
+	string traceList, trace
+	variable numTraces, i
+
+	traceList = TraceNameList(graph, ";", 0+1)
+	traceList = ListMatch(traceList, "!average*")
+
+	// switch all waves back to their backup so
+	// that we have a clean start again
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
+	endfor
+
+	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
+	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
+End
+
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
 ///
 /// @param graph             graph with traces create by #CreateTiledChannelGraph
+/// @param traceList         all traces of the graph except suplimentary ones like the average trace
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
-Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFolder)
+static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnabled, averageDataFolder)
 	string graph
+	string traceList
 	variable averagingEnabled
 	DFREF averageDataFolder
 
@@ -1117,7 +1150,7 @@ Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFold
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue
-	string info, axis, trace, axList, traceList, baseName
+	string info, axis, trace, axList, baseName
 	string channelType, channelNumber, fullPath, panel
 
 	if(!averagingEnabled)
@@ -1135,8 +1168,6 @@ Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFold
 	axList = AxisList(graph)
 	axList = RemoveFromList("bottom", axList)
 	numAxes = ItemsInList(axList)
-	traceList = TraceNameList(graph, ";", 0+1)
-	traceList = ListMatch(traceList, "!average*")
 	numTraces = ItemsInList(traceList)
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, axList)
@@ -1217,5 +1248,28 @@ Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFold
 		Note/K averageWave, "SourceWavesForAverage: " + listOfWaves
 		AppendMiesVersionToWaveNote(averageWave)
 		KillDataFolder tmpDFR
+	endfor
+End
+
+/// @brief Zero all given traces
+static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
+	string graph
+	variable zeroTraces
+	string traceList
+
+	string trace
+	variable numTraces, i
+
+	if(!zeroTraces)
+		return NaN
+	endif
+
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		CreateBackupWave(wv)
+		ZeroWave(wv)
 	endfor
 End
