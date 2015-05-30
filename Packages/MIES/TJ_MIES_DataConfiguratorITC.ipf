@@ -372,7 +372,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
-	string ctrl, comment, firstSetName
+	string ctrl, firstSetName
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
@@ -384,7 +384,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	scalingZero     = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
 	indexingLocked  = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	indexing        = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
-	comment         = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
 	distributedDAQ  = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
@@ -453,7 +452,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		endif
 
 		sweepTxTData[0][0][HeadStage] = setName
-		sweepTxTData[0][1][HeadStage] = comment
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		sweepTxTData[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)

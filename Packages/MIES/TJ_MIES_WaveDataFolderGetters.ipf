@@ -415,7 +415,7 @@ End
 ///
 /// Columns:
 /// - 0: SetName
-/// - 1: User comment
+/// - 1: Unused
 /// - 2: DA unit
 /// - 3: AD unit
 ///
@@ -737,7 +737,7 @@ End
 ///
 /// Columns:
 /// - 0: SetName
-/// - 1: User Comment
+/// - 1: Unused
 /// - 2: DA unit
 /// - 3: AD unit
 ///
@@ -775,7 +775,7 @@ End
 ///
 /// Columns:
 /// - 0: SetName
-/// - 1: User Comment
+/// - 1: Unused
 /// - 2: DA unit
 /// - 3: AD unit
 ///
