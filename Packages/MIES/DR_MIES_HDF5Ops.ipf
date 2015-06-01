@@ -6,7 +6,7 @@
 Menu "HDF5 Tools"
 		"-"
 		"Open HDF5 Browser", CreateNewHDF5Browser()
-		"Save HDF5 File", convert_to_hdf5("menuSaveFile.h5")
+		"Save HDF5 File", HD_Convert_To_HDF5("menuSaveFile.h5")
 		"Save Stim Set", HD_SaveStimSet()
 		"Load and Replace Stim Set", HD_LoadReplaceStimSet()
 		"Load Additional Stim Set", HD_LoadAdditionalStimSet()	
@@ -20,11 +20,11 @@ End
 Function HD_TangoHDF5Save(saveFilename)
 	string saveFilename
 
-	convert_to_hdf5(saveFilename)
+	HD_Convert_To_HDF5(saveFilename)
 End
 
 /// @brief dump all experiment data to HDF5 file
-Static Function convert_to_hdf5(filename)
+Static Function HD_Convert_To_HDF5(filename)
     String filename
     Variable root_id, h5_id
     
@@ -55,7 +55,7 @@ end
 
 
 /// @brief creates high-level group structure of HDF5 file
-Static Function hdf5_structure(h5_id)
+Static Function HD_HDF5_Structure(h5_id)
 	Variable h5_id
 	Variable root_id, grp_id
 	// initialize HDF5 format
@@ -74,7 +74,7 @@ Static Function hdf5_structure(h5_id)
 End
 
 /// @brief creates dataset for saving the entire MIES dataspace
-Static Function create_dataset(h5_id, sweep_name, data)
+Static Function HD_Create_Dataset(h5_id, sweep_name, data)
 	Variable h5_id
 	String sweep_name
 	Wave data
@@ -113,7 +113,7 @@ Static Function create_dataset(h5_id, sweep_name, data)
 	endif
 	// categorize stimulus and save that data
 	Make /n=5 /o stim_characteristics
-	ident_stimulus(current_0, dt[0], stim_characteristics)
+	HD_Ident_Stimulus(current_0, dt[0], stim_characteristics)
 	HDF5SaveData /O /Z stim_characteristics, grp_id
 	if (V_flag != 0)
 		print "HDF5SaveData failed (stim_characteristics)"
@@ -145,7 +145,7 @@ static Constant TYPE_RAMP    = 4
 /// @}
 
 /// @brief Categorize stimulus and extract some features
-Static Function ident_stimulus(current, dt, stim_characteristics)
+Static Function HD_Ident_Stimulus(current, dt, stim_characteristics)
 	Wave current
 	variable dt
 	Wave stim_characteristics
@@ -243,7 +243,7 @@ Function HD_SaveStimSet([cmdID])
 	string fileLocation
 	string dateTimeStamp
 	variable root_id, h5_id
-	variable returnValue = 0
+	variable returnValue
 	string fileLocationResponseString
 	    	
  	// build up the filename using the time and date functions
@@ -306,7 +306,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
 	string savedDataFolder
 	string groupList
 	variable groupItems
-	variable returnValue = 0
+	variable returnValue
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -394,7 +394,7 @@ Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 	string savedDataFolder
 	string groupList 
 	variable groupItems
-	variable returnValue = 0
+	variable returnValue
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -478,7 +478,7 @@ Function HD_SaveSweepData([cmdID])
 	Variable root_id, h5_id
 	variable i
 	string fileLocationResponseString
-	variable returnValue = 0
+	variable returnValue
 	
 	 // build up the filename using the time and date functions
  	fileLocation = "C:\\MiesHDF5Files\\SavedDataSets\\"
@@ -576,7 +576,7 @@ Function HD_SaveConfiguration([cmdID])
 	string controlState
 	variable configWaveSize
 	string fileLocationResponseString
-	variable returnValue = 0
+	variable returnValue
 	
 	// get the da_ephys panel names
 	lockedDevList = DAP_ListOfLockedDevs()
@@ -708,7 +708,7 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 	variable configWaveSize
 	variable controlCounter
 	variable controlType
-	variable returnValue = 0
+	variable returnValue
 	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -826,7 +826,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 	variable dataObjectsPresent
 	variable nextSweepNumber
 	string advanceSweepNumberString
-	variable returnValue = 0
+	variable returnValue
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -965,17 +965,17 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 	endif 
 End
 
-/// @brief function to allow HDF5 function to write async responses, with return strings, to the WSE
+/// @brief Prototype function to allow HDF5 function to write async responses, with return strings, to the WSE
 Function HD_WriteAsyncResponseProto(cmdID, returnString)
 	string cmdID, returnString
 
 	Abort "Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?"
 End
 
-/// @brief Wrapper for the optional tango related function #writeAsyncResponseWrapper
+/// @brief Wrapper for the optional tango related function #HD_WriteAsyncResponseWrapper
 /// The approach here using a function reference and an interpreted string like `$""` allows
-/// to convert the dependency on the function writeAsyncResponse from compile time to runtime.
-/// This function will call TI_writeAsyncResponse if it can be found, otherwise AM_writeAsyncResponseProto is called.
+/// to convert the dependency on the function TI_WriteAsyncResponse from compile time to runtime.
+/// This function will call TI_WriteAsyncResponse if it can be found, otherwise HD_WriteAsyncResponseProto is called.
 Static Function HD_WriteAsyncResponseWrapper(cmdID, returnString)
 	string cmdID, returnString
 
@@ -984,7 +984,7 @@ Static Function HD_WriteAsyncResponseWrapper(cmdID, returnString)
 	return f(cmdID, returnString)
 End
 
-/// @brief function to allow HDF5 function to write ack responses to the WSE
+/// @brief Prototype function to allow HDF5 functions to write ack responses to the WSE
 Function HD_WriteAckProto(cmdID, returnValue)
 	string cmdID
 	variable returnValue
@@ -992,10 +992,10 @@ Function HD_WriteAckProto(cmdID, returnValue)
 	Abort "Impossible to find the function TI_WriteAck\rWas the tango XOP and the includes loaded?"
 End
 
-/// @brief Wrapper for the optional tango related function #writeAckResponseWrapper
+/// @brief Wrapper for the optional tango related function #HD_WriteAckWrapper
 /// The approach here using a function reference and an interpreted string like `$""` allows
-/// to convert the dependency on the function writeAsyncResponse from compile time to runtime.
-/// This function will call TI_writeAck if it can be found, otherwise AM_writeAckResponseProto is called.
+/// to convert the dependency on the function TI_WriteAck from compile time to runtime.
+/// This function will call TI_WriteAck if it can be found, otherwise HD_WriteAckProto is called.
 Static Function HD_WriteAckWrapper(cmdID, returnValue)
 	string cmdID
 	variable returnValue
