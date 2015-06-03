@@ -149,12 +149,10 @@ Function ITC_StopDataAcq()
 		if(v_value == 1)//repeated aquisition is selected
 			RA_Start(PanelTitleG)
 		else
-			DAP_StopButtonToAcqDataButton(panelTitleG)
-			NVAR DataAcqState = $GetDataAcqState(panelTitleG)
-			DataAcqState = 0
+			DAP_OneTimeCallAfterDAQ(panelTitleG)
 		endif
 	else
-		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ
 	endif
 END
 

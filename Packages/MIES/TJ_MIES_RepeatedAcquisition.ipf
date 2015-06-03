@@ -177,11 +177,8 @@ End
 static Function RA_FinishAcquisition(panelTitle)
 	string panelTitle
 
-	DAP_StopButtonToAcqDataButton(panelTitle)
 	ITC_StopITCDeviceTimer(panelTitle)
-
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 0
+	DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	KillVariables/Z Count
 	KillVariables/Z Start, RunTime
@@ -230,7 +227,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TP_SetDAScaleToOne(panelTitle)
 		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 		SCOPE_CreateGraph(TestPulseITC, panelTitle)
-		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
+		ED_TPDocumentation(panelTitle)
 
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTestPulse(panelTitle)
@@ -239,11 +236,9 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 		TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	else
-		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
-		DAP_StopButtonToAcqDataButton(panelTitle) // 
+		ED_TPDocumentation(panelTitle)
+		DAP_OneTimeCallAfterDAQ(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
-		NVAR DataAcqState = $GetDataAcqState(panelTitle)
-		DataAcqState = 0
 		print "Repeated acquisition is complete"
 		Killvariables Count
 		killvariables /z Start, RunTime
@@ -547,9 +542,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	else
 		ED_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
-		DAP_StopButtonToAcqDataButton(panelTitle)
-		NVAR DataAcqState = $GetDataAcqState(panelTitle)
-		DataAcqState = 0
+		DAP_OneTimeCallAfterDAQ(panelTitle)
 		print "Repeated acquisition is complete"
 		print "**************************Killing count on:", panelTitle
 		Killvariables Count

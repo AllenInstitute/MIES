@@ -3428,10 +3428,11 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 End
 
 /// @brief One time initialization before data acquisition
-Function DAP_OneTimeInitBeforeDAQ(panelTitle)
+Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	string panelTitle
 
-	variable nextSweep
+	variable nextSweep, numHS, i
+	string ctrl
 
 	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
 	if(NVAR_Exists(count))
@@ -3450,6 +3451,48 @@ Function DAP_OneTimeInitBeforeDAQ(panelTitle)
 			DM_DeleteDataWaves(panelTitle, nextSweep)
 		endif
 	endif
+
+	// disable the clamp mode checkboxes of all active headstages
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+
+	numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		EnableControl(panelTitle, ctrl)
+		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
+		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
+	endfor
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 1
+	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
+End
+
+/// @brief One time cleaning up after data acquisition
+Function DAP_OneTimeCallAfterDAQ(panelTitle)
+	string panelTitle
+
+	string ctrl
+	variable numHS, i
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+
+	numHS = DimSize(statusHS, ROWS)
+	for(i = 0; i < numHS; i += 1)
+
+		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		EnableControl(panelTitle, ctrl)
+		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
+		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
+	endfor
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	DataAcqState = 0
+	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 End
 
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
@@ -3473,7 +3516,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					ITC_STOPTestPulse(panelTitle)
 				endif
 
-				DAP_OneTimeInitBeforeDAQ(panelTitle)
+				DAP_OneTimeCallBeforeDAQ(panelTitle)
 
 				// Data collection
 				// Function that assess how many 1d waves in set??
@@ -3485,13 +3528,9 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					ITC_DataAcq(panelTitle)
 					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-						DataAcqState = 1 // because the TP during repeated acq is, at this time, always run in the background. there is the opportunity to hit the data acq button during RA. this stops data acq
-						DAP_AcqDataButtonToStopButton(panelTitle) // when RA code is modified to have foreground TP during RA, this will not be needed
 						RA_Start(panelTitle)
 					endif
 				else
-					DataAcqState = 1
-					DAP_AcqDataButtonToStopButton(panelTitle)
 					ITC_BkrdDataAcq(panelTitle)
 				endif
 			else // data aquistion is ongoing
@@ -3534,17 +3573,12 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 					endfor
 				endif
 
-				DAP_OneTimeInitBeforeDAQ(panelTitle)
-
-				//Data collection
-				DataAcqState = 1
-				DAP_AcqDataButtonToStopButton(panelTitle)
+				DAP_OneTimeCallBeforeDAQ(panelTitle)
 				DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
 			else // data aquistion is ongoing, stop data acq
-				DataAcqState = 0
 				DAM_StopDataAcq(panelTitle)
 				ITC_StopITCDeviceTimer(panelTitle)
-				DAP_StopButtonToAcqDataButton(panelTitle)
+				DAP_OneTimeCallAfterDAQ(panelTitle)
 			endif
 		break
 	endswitch
@@ -4537,7 +4571,8 @@ End
 /// @brief Return information readout from various gui controls
 ///
 /// @param[in]  panelTitle  panel
-/// @param[in]  ctrl        control can be either Radio_ClampMode_ or Check_DataAcq_HS_
+/// @param[in]  ctrl        control can be either `Radio_ClampMode_*` or `Check_DataAcq_HS_*`
+///                         referring to an existing control
 /// @param[out] ctrlNo      number of the control (everything behind the last "_" of ctrl)
 /// @param[out] mode        I_CLAMP_MODE or V_CLAMP_MODE
 /// @param[out] headStage   number of the headstage
@@ -4682,12 +4717,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 	endif
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	if(DataAcqState)
-		DataAcqState = 0
-	endif
-
-	DAP_StopButtonToAcqDataButton(panelTitle)
+	DAP_OneTimeCallAfterDAQ(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
@@ -4710,18 +4740,6 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	KillVariables/Z count
 	print "Data acquisition was manually terminated"
 End
-
-Function DAP_StopButtonToAcqDataButton(panelTitle)
-	string panelTitle
-
-	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
-end
-
-Function DAP_AcqDataButtonToStopButton(panelTitle)
-	string panelTitle
-
-	return DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
-end
 
 static Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	string panelTitle
