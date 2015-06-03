@@ -232,3 +232,5 @@ Constant LOAD_DATA_TYPE_WAVES   = 1
 Constant LOAD_DATA_TYPE_NUMBERS = 2
 Constant LOAD_DATA_TYPE_STRING  = 4
 /// @}
+
+StrConstant WAVE_BACKUP_SUFFIX = "_bak"
