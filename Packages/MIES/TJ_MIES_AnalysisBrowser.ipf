@@ -720,8 +720,14 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	variable sweep
 
 	variable numWavesLoaded
+	string sweepWaveList = ""
 	string sweepWaveName, dataPath, sweepFolder, msg
-	sweepWaveName = "sweep_" + num2str(sweep)
+
+	// we load the backup wave also
+	// in case it exists, it holds the original unmodified data
+	sweepWaveName  = "sweep_" + num2str(sweep)
+	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName, ";", Inf)
+	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName + WAVE_BACKUP_SUFFIX, ";", Inf)
 
 	ASSERT(!isEmpty(expFilePath), "Empty expFileOrFolder")
 	ASSERT(!isEmpty(expFolder), "Empty expFolder")
@@ -738,7 +744,7 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	dataPath = GetDeviceDataPathAsString(device)
 	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, sweepWaveName)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, sweepWaveList)
 
 	if(numWavesLoaded <= 0)
 		printf "Could not load sweep %d of device %s and %s\r", sweep, device, expFilePath
@@ -748,6 +754,11 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	endif
 
 	Wave sweepWave = $sweepWaveName
+
+	if(numWavesLoaded == 2)
+		ReplaceWaveWithBackup(sweepWave)
+	endif
+
 	DFREF sweepDataDFR = createDFWithAllParents(sweepFolder)
 	MoveWave sweepWave, sweepDataDFR
 	SetDataFolder saveDFR
