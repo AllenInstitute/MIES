@@ -21,6 +21,7 @@
 #include ":TJ_MIES_GlobalStringAndVariableAccess"
 #include ":TJ_MIES_GuiUtilities"
 #include ":TJ_MIES_Utilities"
+#include ":TJ_MIES_Structures"
 #include ":TJ_MIES_WaveDataFolderGetters"
 
 Menu "Mies Panels", dynamic

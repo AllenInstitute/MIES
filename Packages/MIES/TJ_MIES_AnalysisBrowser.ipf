@@ -19,6 +19,7 @@
 #include ":TJ_MIES_GuiUtilities"
 #include ":TJ_MIES_IgorHooks"
 #include ":TJ_MIES_MiesUtilities"
+#include ":TJ_MIES_Structures"
 #include ":TJ_MIES_Utilities"
 #include ":TJ_MIES_WaveDataFolderGetters"
 
