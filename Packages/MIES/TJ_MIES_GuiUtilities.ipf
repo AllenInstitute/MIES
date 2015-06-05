@@ -776,3 +776,26 @@ Function/S GetCurrentWindow()
 	GetWindow kwTopWin activesw
 	return s_value
 End
+
+/// @brief Restore the given cursor
+///
+/// @param graph      name of the graph
+/// @param cursorInfo the returned string of `CsrInfo`
+Function RestoreCursor(graph, cursorInfo)
+	string graph, cursorInfo
+
+	string cursorTrace, traceList
+
+	if(isEmpty(cursorInfo))
+		return NaN
+	endif
+
+	cursorTrace = StringByKey("TNAME", cursorInfo)
+
+	traceList = TraceNameList(graph, ";", 0 + 1)
+	if(FindListItem(cursorTrace, traceList) == -1)
+		return NaN
+	endif
+
+	Execute StringByKey("RECREATION", cursorInfo)
+End

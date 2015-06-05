@@ -1113,21 +1113,25 @@ Function PostPlotTransformations(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
 
-	string traceList, trace
+	string traceList, trace, crsA, crsB
 	variable numTraces, i
+
+	crsA = CsrInfo(A, graph)
+	crsB = CsrInfo(B, graph)
 
 	traceList = GetAllSweepTraces(graph)
 
-	// switch all waves back to their backup so
-	// that we have a clean start again
-	numTraces = ItemsInList(traceList)
-	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
-
-		WAVE wv = TraceNameToWaveRef(graph, trace)
-		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-		Note/K wv
-	endfor
+	if(!pps.timeAlignment)
+		// switch all waves back to their backup so
+		// that we have a clean start again
+		numTraces = ItemsInList(traceList)
+		for(i = 0; i < numTraces; i += 1)
+			trace = StringFromList(i, traceList)
+			WAVE wv = TraceNameToWaveRef(graph, trace)
+			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
+			Note/K wv
+		endfor
+	endif
 
 	SVAR miesVersion = $GetMiesVersion()
 
@@ -1141,7 +1145,16 @@ Function PostPlotTransformations(graph, pps)
 	endfor
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
+	if(pps.timeAlignment)
+		TimeAlignmentIfReq(graph, traceList, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
+	endif
 	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
+
+	RestoreCursor(graph, crsA)
+	RestoreCursor(graph, crsB)
+
+	pps.finalUpdateHook(graph)
+End
 
 /// @brief Return all traces with real data
 Function/S GetAllSweepTraces(graph)
@@ -1291,4 +1304,119 @@ static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
 		ZeroWave(wv)
 		AddEntryIntoWaveNoteAsList(wv, "Zeroed", str="true")
 	endfor
+End
+
+/// @brief Perform time alignment of features in the sweep traces
+static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
+	string panel
+	string traceList, refTrace
+	variable mode, level
+
+	string csrA, csrB, str, axList, refAxis, axis
+	string trace, graph
+	variable offset
+	variable csrAx, csrBx, first, last, pos, numTraces, i, j
+
+	ASSERT(windowExists(panel), "Graph must exist")
+	graph = GetMainWindow(panel)
+
+	if(mode == TIME_ALIGNMENT_NONE) // nothing to do
+		return NaN
+	endif
+
+	csrA = CsrInfo(A, graph)
+	csrB = CsrInfo(B, graph)
+
+	if(isEmpty(csrA) || isEmpty(csrB))
+		return NaN
+	endif
+
+	csrAx = xcsr(A, graph)
+	csrBx = xcsr(B, graph)
+
+	first = min(csrAx, csrBx)
+	last  = max(csrAx, csrBx)
+
+	sprintf str, "first=%g, last=%g", first, last
+	DEBUGPRINT(str)
+
+	// now determine the feature's time position
+	// using the traces from the same axis as the reference trace
+	axList  = AxisList(graph)
+	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
+
+	numTraces = ItemsInList(traceList)
+	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
+
+		if(cmpstr(axis, refAxis))
+			continue
+		endif
+
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		pos = CalculateFeatureLoc(wv, mode, level, first, last)
+
+		if(!IsFinite(pos))
+			printf "The alignment of trace %s could not be performed, aborting\r", trace
+			return NaN
+		endif
+
+		featurePos[i]  = pos
+		sweepNumber[i] = str2num(GetUserData(graph, trace, "sweepNumber"))
+	endfor
+
+	// now shift all traces from all sweeps according to their relative offsets
+	// to the reference position
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+
+		j = GetRowIndex(sweepNumber, str=GetUserData(graph, trace, "sweepNumber"))
+		ASSERT(IsFinite(j), "Could not find sweep number")
+		WAVE backup = CreateBackupWave(wv)
+		offset = DimOffset(wv, ROWS) - featurePos[j]
+		DEBUGPRINT("trace", str=trace)
+		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
+		DEBUGPRINT("new DimOffset", var=offset)
+		SetScale/P x, offset, DimDelta(wv, ROWS), wv
+		offset = DimOffset(backup, ROWS) - DimOffset(wv, ROWS)
+		AddEntryIntoWaveNoteAsList(wv, "TimeAlignmentTotalOffset", var=offset)
+	endfor
+End
+
+/// @brief Find the given feature in the given wave range
+/// `first` and `last` are in x coordinates and clipped to valid values
+static Function CalculateFeatureLoc(wv, mode, level, first, last)
+	Wave wv
+	variable mode, level, first, last
+
+	variable edgeType
+
+	ASSERT(mode == TIME_ALIGNMENT_NONE || mode == TIME_ALIGNMENT_LEVEL_RISING || mode == TIME_ALIGNMENT_LEVEL_FALLING || mode == TIME_ALIGNMENT_MIN || mode == TIME_ALIGNMENT_MAX, "Invalid mode")
+
+	first = max(first, leftx(wv))
+	last  = min(last, rightx(wv))
+
+	if(mode == TIME_ALIGNMENT_MIN || mode == TIME_ALIGNMENT_MAX)
+		WaveStats/M=1/Q/R=(first, last) wv
+
+		if(mode == TIME_ALIGNMENT_MAX)
+			return V_maxLoc
+		else
+			return V_minLoc
+		endif
+	elseif(mode == TIME_ALIGNMENT_LEVEL_RISING || mode == TIME_ALIGNMENT_LEVEL_FALLING)
+		if(mode == TIME_ALIGNMENT_LEVEL_RISING)
+			edgeType = 1
+		else
+			edgeType = 2
+		endif
+		FindLevel/Q/R=(first, last)/EDGE=(edgeType) wv, level
+		if(V_Flag) // found no level
+			return NaN
+		endif
+		return V_LevelX
+	endif
 End

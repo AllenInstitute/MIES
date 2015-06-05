@@ -231,4 +231,13 @@ Constant MINIMUM_SAMPLING_INTERVAL = 0.005
 Constant LOAD_DATA_TYPE_WAVES   = 1
 Constant LOAD_DATA_TYPE_NUMBERS = 2
 Constant LOAD_DATA_TYPE_STRING  = 4
+
+/// @name Constants for the time alignment mode of TimeAlignmentIfReq
+/// @anchor TimeAlignmentConstants
+/// @{
+Constant TIME_ALIGNMENT_NONE          = -1
+Constant TIME_ALIGNMENT_LEVEL_RISING  = 0
+Constant TIME_ALIGNMENT_LEVEL_FALLING = 1
+Constant TIME_ALIGNMENT_MIN           = 2
+Constant TIME_ALIGNMENT_MAX           = 3
 /// @}
