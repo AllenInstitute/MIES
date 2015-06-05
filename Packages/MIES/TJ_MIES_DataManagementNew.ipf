@@ -124,8 +124,9 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
+			// w' = w  / (g * s)
 			gain *= 3200
-			WaveToScale[][(StartOfADColumns + i)] /= gain
+			MultiThread WaveToScale[][(StartOfADColumns + i)] /= gain
 		endif
 	endfor
 end
@@ -148,8 +149,9 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)
-			WaveToScale[][i] /= 3200
-			WaveToScale[][i] *= gain
+			// w' = w * g / s
+			gain /= 3200
+			MultiThread WaveToScale[][i] *= gain
 		endif
 	endfor
 end
