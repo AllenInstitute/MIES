@@ -1,9 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-static Function/S SB_GetSweepBrowserLeftPanel(graph)
-	string graph
+static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
+	string graphOrPanel
 
-	return graph + "#P0"
+	return GetMainWindow(graphOrPanel) + "#P0"
 End
 
 static Function/Wave SB_GetSweepBrowserMapFromGraph(graph)
