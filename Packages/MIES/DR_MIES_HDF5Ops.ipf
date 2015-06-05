@@ -243,7 +243,6 @@ Function HD_SaveStimSet([cmdID])
 	string fileLocation
 	string dateTimeStamp
 	variable root_id, h5_id
-	variable returnValue
 	string fileLocationResponseString
 	    	
  	// build up the filename using the time and date functions
@@ -264,8 +263,7 @@ Function HD_SaveStimSet([cmdID])
 		
 		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 		if(!ParamIsDefault(cmdID))
-			returnValue  = -1
-			HD_WriteAckWrapper(cmdID, returnValue)
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 		endif	
 		return 0		
 	endif
@@ -306,7 +304,6 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
 	string savedDataFolder
 	string groupList
 	variable groupItems
-	variable returnValue
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -325,8 +322,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
 			print "Not a valid stim set file....exiting..."
 			// determine if the cmdID was provided
 			if(!ParamIsDefault(cmdID))
-				returnValue = -1
-				HD_WriteAckWrapper(cmdID, returnValue)
+				HD_WriteAckWrapper(cmdID,TI_WRITEACK_FAILURE)
 			endif
 			return 0
 		else
@@ -377,7 +373,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		HD_WriteAckWrapper(cmdID, returnValue)  // send a 0 for success
+		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)  // send a 0 for success
 	endif   	
 End
 
@@ -394,7 +390,6 @@ Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 	string savedDataFolder
 	string groupList 
 	variable groupItems
-	variable returnValue
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -413,8 +408,7 @@ Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 			print "Not a valid stim set file....exiting..."
 			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 			if(!ParamIsDefault(cmdID))
-				returnValue = -1
-				HD_WriteAckWrapper(cmdID, returnValue)
+				HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 			endif
 			return 0
 		else
@@ -455,7 +449,7 @@ Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		HD_WriteAckWrapper(cmdID, returnValue)
+		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)
 	endif   	
 End
 
@@ -478,7 +472,6 @@ Function HD_SaveSweepData([cmdID])
 	Variable root_id, h5_id
 	variable i
 	string fileLocationResponseString
-	variable returnValue
 	
 	 // build up the filename using the time and date functions
  	fileLocation = "C:\\MiesHDF5Files\\SavedDataSets\\"
@@ -500,8 +493,7 @@ Function HD_SaveSweepData([cmdID])
 		print "Check file name format..."
 		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 		if(!ParamIsDefault(cmdID))
-			returnValue = -1
-			HD_WriteAckWrapper(cmdID, returnValue)
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 		endif
 		return 0
 	endif
@@ -576,7 +568,6 @@ Function HD_SaveConfiguration([cmdID])
 	string controlState
 	variable configWaveSize
 	string fileLocationResponseString
-	variable returnValue
 	
 	// get the da_ephys panel names
 	lockedDevList = DAP_ListOfLockedDevs()
@@ -604,8 +595,7 @@ Function HD_SaveConfiguration([cmdID])
 		
 		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 		if(!ParamIsDefault(cmdID))
-			returnValue = -1
-			HD_WriteAckWrapper(cmdID, returnValue)
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 		endif
 		return 0
 	else
@@ -619,8 +609,7 @@ Function HD_SaveConfiguration([cmdID])
 			
 			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 			if(!ParamIsDefault(cmdID))
-				returnValue = -1
-				HD_WriteAckWrapper(cmdID, returnValue)
+				HD_WriteAckWrapper(cmdID,TI_WRITEACK_FAILURE)
 			endif
 			return 0
 		endif
@@ -708,7 +697,6 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 	variable configWaveSize
 	variable controlCounter
 	variable controlType
-	variable returnValue
 	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -734,8 +722,7 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 			
 			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 			if(!ParamIsDefault(cmdID))
-				returnValue = -1
-				HD_WriteAckWrapper(cmdID, returnValue)
+				HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 			endif
 			return 0
 		else
@@ -804,7 +791,7 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		HD_WriteAckWrapper(cmdID, returnValue)
+		HD_WriteAckWrapper(cmdID,TI_WRITEACK_SUCCESS)
 	endif		   	
 End
 
@@ -826,7 +813,6 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 	variable dataObjectsPresent
 	variable nextSweepNumber
 	string advanceSweepNumberString
-	variable returnValue
     	
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
@@ -843,8 +829,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 		
 		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 		if(!ParamIsDefault(cmdID))
-			returnValue = -1
-			HD_WriteAckWrapper(cmdID, returnValue)
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 		endif
 		return 0
 	else
@@ -862,8 +847,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 		print "This is not a valid data set file.  Please select a valid data set file..."
 		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 		if(!ParamIsDefault(cmdID))
-			returnValue = -1
-			HD_WriteAckWrapper(cmdID, returnValue)
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 		endif
 		return 0
 	endif 
@@ -884,8 +868,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 					print "Sweep Data Restore cancelled..."
 					// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 					if(!ParamIsDefault(cmdID))
-						returnValue = -1
-						HD_WriteAckWrapper(cmdID, returnValue)
+						HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 					endif
 					return 0
 				else
@@ -905,8 +888,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 					print "Sweep Data Restore cancelled..."
 					// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 					if(!ParamIsDefault(cmdID))
-						returnValue = -1
-						HD_WriteAckWrapper(cmdID, returnValue)
+						HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
 					endif
 					return 0
 				else
@@ -961,7 +943,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		HD_WriteAckWrapper(cmdID, returnValue)
+		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)
 	endif 
 End
 
@@ -1004,5 +986,3 @@ Static Function HD_WriteAckWrapper(cmdID, returnValue)
 
 	return f(cmdID, returnValue)
 End
-
-
