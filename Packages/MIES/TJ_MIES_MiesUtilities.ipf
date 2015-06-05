@@ -1126,6 +1126,18 @@ Function PostPlotTransformations(graph, pps)
 
 		WAVE wv = TraceNameToWaveRef(graph, trace)
 		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
+		Note/K wv
+	endfor
+
+	SVAR miesVersion = $GetMiesVersion()
+
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		Note/K wv
+		AddEntryIntoWaveNoteAsList(wv, "MiesVersion", str=miesVersion)
 	endfor
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
@@ -1252,8 +1264,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
 
-		Note/K averageWave, "SourceWavesForAverage: " + listOfWaves
-		AppendMiesVersionToWaveNote(averageWave)
+		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
 		KillDataFolder tmpDFR
 	endfor
 End
@@ -1278,5 +1289,6 @@ static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
 		WAVE wv = TraceNameToWaveRef(graph, trace)
 		CreateBackupWave(wv)
 		ZeroWave(wv)
+		AddEntryIntoWaveNoteAsList(wv, "Zeroed", str="true")
 	endfor
 End
