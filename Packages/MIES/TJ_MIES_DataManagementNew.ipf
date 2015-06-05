@@ -89,7 +89,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
-Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// TestPulseITC is the TP (test pulse) holding wave.
+Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)
 	string panelTitle
 	variable startPoint, NoOfPointsInTP
 
@@ -105,7 +105,7 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
-Function DM_ADScaling(WaveToScale, panelTitle)
+static Function DM_ADScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
@@ -130,7 +130,7 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 	endfor
 end
 
-Function DM_DAScaling(WaveToScale, panelTitle)
+static Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
@@ -158,8 +158,7 @@ end
 Function DM_ScaleITCDataWave(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	WAVE/SDFR=dfr ITCDataWave
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	Redimension/Y=(FLOAT_64BIT) ITCDataWave
 
 	DM_ADScaling(ITCDataWave,panelTitle)
