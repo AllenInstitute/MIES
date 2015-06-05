@@ -542,6 +542,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 			ModifyGraph/W=$graph userData($trace)={channelType, 0, "DA"}
 			ModifyGraph/W=$graph userData($trace)={channelNumber, 0, dac}
+			ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
 		endif
 
 		if(i < NumberOfADchannels)
@@ -583,6 +584,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 			ModifyGraph/W=$graph userData($trace)={channelType, 0, "AD"}
 			ModifyGraph/W=$graph userData($trace)={channelNumber, 0, adc}
+			ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
 		endif
 
 		if(!overlayChannels)
