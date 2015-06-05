@@ -354,7 +354,7 @@ Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
 	variable hookResult, direction, currentSweep, newSweep
-	string folder, graph, panel, win
+	string folder, graph, panel
 
 	switch(s.eventCode)
 		case 2:	 // Kill
@@ -366,6 +366,7 @@ Function SB_SweepBrowserWindowHook(s)
 			KillOrMoveToTrash(folder)
 
 			hookResult = 1
+			break
 		case 22: // mouse wheel
 			graph = s.winName
 
@@ -373,16 +374,14 @@ Function SB_SweepBrowserWindowHook(s)
 				break
 			endif
 
-			win = SB_GetSweepBrowserLeftPanel(graph)
-
 			direction =  sign(s.wheelDy)
 			folder = SB_GetSweepBrowserFolder(graph)
-			panel = SB_GetSweepBrowserLeftPanel(graph)
 
+			panel = SB_GetSweepBrowserLeftPanel(graph)
 			currentSweep = GetPopupMenuIndex(panel, "popup_sweep_selector")
 
-			if(GetCheckBoxState(win, "check_SweepBrowser_SweepOverlay"))
-				newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_OverlaySkip")
+			if(GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay"))
+				newSweep = currentSweep + direction * GetSetVariable(panel, "setvar_SweepBrowser_OverlaySkip")
 			else
 				newSweep = currentSweep + direction
 			endif
