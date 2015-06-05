@@ -84,6 +84,7 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	experimentMap[index][%ExperimentName] = fileName
 
 	expFolderName = CleanupName(GetBaseName(expFilePath), 0)
+	KillOrMoveToTrash(GetAnalysisExpFolderAS(expFolderName))
 	experimentMap[index][%ExperimentFolder] = expFolderName
 
 	index += 1
