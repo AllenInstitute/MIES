@@ -36,7 +36,7 @@ Function DM_SaveITCData(panelTitle)
 
 	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
-	Redimension/Y=(FLOAT_64BIT) dataWave
+	Redimension/Y=(GetRawDataFPType(panelTitle)) dataWave
 
 	DM_ADScaling(dataWave, panelTitle)
 	DM_DAScaling(dataWave, panelTitle)
@@ -85,7 +85,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
 
 	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
-	Redimension/Y=(FLOAT_64BIT) TestPulseITC
+	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
@@ -100,7 +100,7 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)
 	ITCDataWave[0][0] += 0
 	startPoint += RowsToCopy / 4
 	Duplicate/O/R=[startPoint,(startPoint + RowsToCopy)][] ITCDataWave, TestPulseITC
-	Redimension/Y=(FLOAT_64BIT) TestPulseITC
+	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
@@ -161,7 +161,7 @@ Function DM_ScaleITCDataWave(panelTitle)
 	string panelTitle
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	Redimension/Y=(FLOAT_64BIT) ITCDataWave
+	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 
 	DM_ADScaling(ITCDataWave,panelTitle)
 end
@@ -217,4 +217,13 @@ Function DM_DeleteDataWaves(panelTitle, SweepNo)
 	while(i < itemsinlist(ListOfDataWaves))
 
 	SetDataFolder saveDFR
+End
+
+/// @brief Return the floating point type for storing the raw data
+///
+/// The returned values are the same as for `WaveType`
+static Function GetRawDataFPType(panelTitle)
+	string panelTitle
+
+	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? FLOAT_64BIT : FLOAT_32BIT
 End

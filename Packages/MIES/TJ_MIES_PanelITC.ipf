@@ -633,6 +633,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_SaveData,value= 0
+	CheckBox Check_Settings_UseDoublePrec,pos={243,236},size={151,14},disable=1,title="Use Double Precision Floats"
+	CheckBox Check_Settings_UseDoublePrec,help={"Enable the saving of the raw data in double precision. If unchecked the raw data will be saved in single precision, which should be good enough for most use cases"}
+	CheckBox Check_Settings_UseDoublePrec,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_UseDoublePrec,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo)= A"!!,HT!!#?-!!#?C!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_UseDoublePrec,value= 0
 	CheckBox Check_AsyncAD_00,pos={172,46},size={42,14},disable=1,title="AD 0"
 	CheckBox Check_AsyncAD_00,help={"hello!"},userdata(tabnum)=  "4"
 	CheckBox Check_AsyncAD_00,userdata(tabcontrol)=  "ADC"
@@ -2650,6 +2658,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_DataAcq_SetRepeats WIN = $panelTitle,value= _NUM:1
 
 	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
+	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
 	CheckBox Check_AsyncAD_01 WIN = $panelTitle,value= 0
 	CheckBox Check_AsyncAD_02 WIN = $panelTitle,value= 0
