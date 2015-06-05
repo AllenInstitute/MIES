@@ -7,7 +7,7 @@
 /// survive experiment reload/quit/saving
 ///
 /// Mainly useful for temporaries which you want to recreate on initialization
-static Function KillTemporaries()
+static Function IH_KillTemporaries()
 
 	string trashFolders, path, allFolders
 	variable numFolders, i
@@ -30,15 +30,29 @@ static Function KillTemporaries()
 	RemoveEmptyDataFolder(dfr)
 End
 
+/// @brief Prototype function for #IH_UnlockAllDevicesWrapper
 Function IH_UnlockAllDevicesProto()
 
 End
 
-/// @brief Calls `DAP_UnlockAllDevices` if the function can be found,
+/// @brief Prototype function for #IH_SerAllCommentNBsWrapper
+Function IH_SerAllCommentNBsProto()
+
+End
+
+/// @brief Calls `DAP_UnlockAllDevices` if it can be found,
 /// otherwise calls `IH_UnlockAllDevicesProto` which does nothing.
-static Function UnlockAllDevicesWrapper()
+static Function IH_UnlockAllDevicesWrapper()
 
 	FUNCREF IH_UnlockAllDevicesProto f = $"DAP_UnlockAllDevices"
+	f()
+End
+
+/// @brief Calls #DAP_SerializeAllCommentNBs if it can be found,
+/// otherwise calls #IH_SerAllCommentNBsProto which does nothing.
+static Function IH_SerAllCommentNBsWrapper()
+
+	FUNCREF IH_SerAllCommentNBsProto f = $"DAP_SerializeAllCommentNBs"
 	f()
 End
 
@@ -46,21 +60,22 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	Variable rN, kind
 	String fileName, path, type, creator
 
-	KillTemporaries()
+	IH_SerAllCommentNBsWrapper()
+	IH_KillTemporaries()
 End
 
 static Function IgorBeforeQuitHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
-	UnlockAllDevicesWrapper()
-	KillTemporaries()
+	IH_UnlockAllDevicesWrapper()
+	IH_KillTemporaries()
 	return 0
 End
 
 static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
-	UnlockAllDevicesWrapper()
-	KillTemporaries()
+	IH_UnlockAllDevicesWrapper()
+	IH_KillTemporaries()
 	return 0
 End

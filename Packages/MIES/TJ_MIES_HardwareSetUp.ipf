@@ -104,6 +104,7 @@ Function HSU_LockDevice(panelTitle)
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(panelTitleLocked)
 	WBP_UpdateITCPanelPopUps(panelTitleLocked)
+	DAP_UnlockCommentNotebook(panelTitleLocked)
 
 	// the first time call of this function is expensive
 	// call it here, in order to avoid problems later on
@@ -181,6 +182,9 @@ Function HSU_UnlockDevice(panelTitle)
 		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
 		return NaN
 	endif
+
+	DAP_SerializeCommentNotebook(panelTitle)
+	DAP_LockCommentNotebook(panelTitle)
 
 	if(DAP_DeviceIsLeader(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)

@@ -90,6 +90,8 @@ Constant CONTROL_TYPE_TAB         = 8
 /// @}
 
 /// See "Control Structure eventMod Field"
+/// @deprecated as the numerical values are dependent on the
+/// control type this approach here will give a huge mess of constants
 Constant EVENT_MOUSE_UP = 2
 
 // Conversion factor from ticks to seconds, exact value is 1/60
@@ -139,7 +141,7 @@ StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 /// @}
 
-/// @name Modes for IM_SaveExperiment
+/// @name Modes for SaveExperimentSpecial
 /// @anchor SaveExperimentModes
 /// @{
 Constant SAVE_AND_CLEAR            = 0x01
@@ -222,3 +224,11 @@ StrConstant AXIS_BASE_NAME = "col"
 
 /// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
 Constant MINIMUM_SAMPLING_INTERVAL = 0.005
+
+/// @name Constants for the type flag of `LoadData`
+/// @anchor LoadDataConstants
+/// @{
+Constant LOAD_DATA_TYPE_WAVES   = 1
+Constant LOAD_DATA_TYPE_NUMBERS = 2
+Constant LOAD_DATA_TYPE_STRING  = 4
+/// @}

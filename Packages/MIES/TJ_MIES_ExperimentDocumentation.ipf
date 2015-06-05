@@ -376,6 +376,8 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	// And now populate the wave
 	sweepSettingsTxtKey[0][0] =  STIM_WAVE_NAME_KEY
+	// leave the key as "User Comment" here in
+	// order to avoid rearranging all waves
 	sweepSettingsTxtKey[0][1] =  "User Comment"
 	sweepSettingsTxtKey[0][2] =  "DA unit"
 	sweepSettingsTxtKey[0][3] =  "AD unit"
@@ -392,8 +394,6 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 		// Save info into the stimSettingsWave
 		// set name
 		sweepSettingsTxtWave[0][0][i] = sweepDataTxtWave[0][0][i]
-		// user comment
-		sweepSettingsTxtWave[0][1][i] = sweepDataTxtWave[0][1][i]
 		// DA unit
 		sweepSettingsTxtWave[0][2][i] = sweepDataTxtWave[0][2][i]
 		// AD unit
@@ -417,9 +417,6 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	// call the function that will create the text wave notes
 	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle)
-
-	// after writing the text notes, clear the user comment
-	SetSetVariableString(panelTitle, "SetVar_DataAcq_Comment", "")
 
 	// call the function that will create the numerical wave notes
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle)
@@ -479,7 +476,25 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	ED_createTextNotes(values, keys, SweepCount, panelTitle)
 End
 
-//======================================================================================
+/// @brief Write the user comment from the DA_Ephys panel to the labnotebook
+Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
+	string panelTitle
+	string comment
+	variable sweepNo
+
+	Make/FREE/N=(3, 1)/T keys
+	keys = ""
+
+	keys[0][0] =  "User comment"
+	keys[1][0] =  ""
+	keys[2][0] =  "-"
+
+	Make/FREE/T/N=(1, 1, NUM_HEADSTAGES) values
+	values = comment
+
+	ED_createTextNotes(values, keys, sweepNo, panelTitle)
+End
+
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
 function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
