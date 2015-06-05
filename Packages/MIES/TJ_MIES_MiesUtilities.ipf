@@ -1116,8 +1116,7 @@ Function PostPlotTransformations(graph, pps)
 	string traceList, trace
 	variable numTraces, i
 
-	traceList = TraceNameList(graph, ";", 0+1)
-	traceList = ListMatch(traceList, "!average*")
+	traceList = GetAllSweepTraces(graph)
 
 	// switch all waves back to their backup so
 	// that we have a clean start again
@@ -1131,6 +1130,15 @@ Function PostPlotTransformations(graph, pps)
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
+
+/// @brief Return all traces with real data
+Function/S GetAllSweepTraces(graph)
+	string graph
+
+	string traceList
+
+	traceList = TraceNameList(graph, ";", 0+1)
+	return ListMatch(traceList, "!average*")
 End
 
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
