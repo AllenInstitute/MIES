@@ -36,7 +36,7 @@ Function DM_SaveITCData(panelTitle)
 
 	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
-	Redimension/Y=(FLOAT_64BIT) dataWave
+	Redimension/Y=(GetRawDataFPType(panelTitle)) dataWave
 
 	DM_ADScaling(dataWave, panelTitle)
 	DM_DAScaling(dataWave, panelTitle)
@@ -85,11 +85,11 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
 
 	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
-	Redimension/Y=(FLOAT_64BIT) TestPulseITC
+	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
-Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// TestPulseITC is the TP (test pulse) holding wave.
+Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)
 	string panelTitle
 	variable startPoint, NoOfPointsInTP
 
@@ -100,12 +100,12 @@ Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)// 
 	ITCDataWave[0][0] += 0
 	startPoint += RowsToCopy / 4
 	Duplicate/O/R=[startPoint,(startPoint + RowsToCopy)][] ITCDataWave, TestPulseITC
-	Redimension/Y=(FLOAT_64BIT) TestPulseITC
+	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
 	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 
-Function DM_ADScaling(WaveToScale, panelTitle)
+static Function DM_ADScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
@@ -124,13 +124,14 @@ Function DM_ADScaling(WaveToScale, panelTitle)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
+			// w' = w  / (g * s)
 			gain *= 3200
-			WaveToScale[][(StartOfADColumns + i)] /= gain
+			MultiThread WaveToScale[][(StartOfADColumns + i)] /= gain
 		endif
 	endfor
 end
 
-Function DM_DAScaling(WaveToScale, panelTitle)
+static Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
@@ -148,8 +149,9 @@ Function DM_DAScaling(WaveToScale, panelTitle)
 		gain = GetSetVariable(panelTitle, ctrl)
 
 		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)
-			WaveToScale[][i] /= 3200
-			WaveToScale[][i] *= gain
+			// w' = w * g / s
+			gain /= 3200
+			MultiThread WaveToScale[][i] *= gain
 		endif
 	endfor
 end
@@ -158,9 +160,8 @@ end
 Function DM_ScaleITCDataWave(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	WAVE/SDFR=dfr ITCDataWave
-	Redimension/Y=(FLOAT_64BIT) ITCDataWave
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 
 	DM_ADScaling(ITCDataWave,panelTitle)
 end
@@ -216,4 +217,13 @@ Function DM_DeleteDataWaves(panelTitle, SweepNo)
 	while(i < itemsinlist(ListOfDataWaves))
 
 	SetDataFolder saveDFR
+End
+
+/// @brief Return the floating point type for storing the raw data
+///
+/// The returned values are the same as for `WaveType`
+static Function GetRawDataFPType(panelTitle)
+	string panelTitle
+
+	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? FLOAT_64BIT : FLOAT_32BIT
 End
