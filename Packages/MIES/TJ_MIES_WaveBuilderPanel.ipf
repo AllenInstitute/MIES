@@ -1506,6 +1506,8 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 		WBP_ExecuteAdamsTabcontrol(SegWvType[SegmentNo - 1])
 	endif
 
+	SetVariable setvar_WaveBuilder_CurrentEpoch limits = {0, SegmentNo - 1, 1}
+
 	WBP_UpdatePanelIfAllowed()
 End
 
@@ -1516,10 +1518,6 @@ Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariabl
 	String varName
 
 	variable stimulusType
-
-	ControlInfo SetVar_WaveBuilder_NoOfEpochs
-	// sets the maximum segment to edit number to be equal to the numbeer of segments specified
-	SetVariable setvar_WaveBuilder_CurrentEpoch limits = {0, v_value - 1, 1}
 
 	Wave SegWvType = GetSegmentWave()
 	stimulusType = SegWvType[varNum] //selects the appropriate tab based on the data in the SegWvType wave
