@@ -22,7 +22,7 @@ StrConstant UNTITLED_EXPERIMENT           = "Untitled"
 StrConstant PACKED_FILE_EXPERIMENT_SUFFIX = ".pxp"
 
 /// Amount of free memory required to perform data aquisition in GB
-Constant FREE_MEMORY_LOWER_LIMIT = 0.5
+Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 
 /// @name Pressure Control constants
 /// @{
