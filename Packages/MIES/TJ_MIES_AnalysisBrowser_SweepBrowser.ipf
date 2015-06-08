@@ -1,9 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-static Function/S SB_GetSweepBrowserLeftPanel(graph)
-	string graph
+static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
+	string graphOrPanel
 
-	return graph + "#P0"
+	return GetMainWindow(graphOrPanel) + "#P0"
 End
 
 static Function/Wave SB_GetSweepBrowserMapFromGraph(graph)
@@ -78,6 +78,48 @@ static Function SB_GetFormerSweepNumber(win)
 	string win
 
 	return str2num(GetUserData(win, "popup_sweep_selector", LAST_SWEEP_USER_DATA))
+End
+
+static Function SB_PanelUpdate(graphOrPanel)
+	string graphOrPanel
+
+	variable alignMode
+	string panel, graph
+
+	graph = GetMainWindow(graphOrPanel)
+	panel = SB_GetSweepBrowserLeftPanel(graph)
+
+	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
+		EnableListOfControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+
+		alignMode = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
+		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
+			EnableControl(panel, "setvar_sweepBrowser_tAlignLevel")
+		else
+			DisableControl(panel, "setvar_sweepBrowser_tAlignLevel")
+		endif
+	else
+		DisableListOfControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+	endif
+
+	SB_HandleCursorDisplay(graph)
+	ControlUpdate/W=$panel popup_sweepBrowser_tAlignMaster
+End
+
+static Function SB_InitPostPlotSettings(graph, pps)
+	string graph
+	STRUCT PostPlotSettings &pps
+
+	string	panel = SB_GetSweepBrowserLeftPanel(graph)
+
+	pps.averageDataFolder = $SB_GetSweepBrowserFolder(graph)
+	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
+	pps.zeroTraces        = GetCheckBoxState(panel, "check_SweepBrowser_ZeroTraces")
+	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
+	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_sweepBrowser_tAlignLevel")
+	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = SB_PanelUpdate
 End
 
 /// @brief Return numeric labnotebook entries
@@ -265,10 +307,8 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 		return 0
 	endif
 
-	Struct PostPlotSettings pps
-	pps.averageDataFolder = sweepBrowserDFR
-	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
-	pps.zeroTraces        = GetCheckBoxState(panel, "check_SweepBrowser_ZeroTraces")
+	STRUCT PostPlotSettings pps
+	SB_InitPostPlotSettings(graph, pps)
 
 	// With overlay enabled:
 	// if the last plotted sweep is already on the graph remove it and return
@@ -350,11 +390,24 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
 
+static Function SB_HandleTimeAlignPropChange(graphOrPanel)
+	string graphOrPanel
+
+	string panel, graph
+	graph = GetMainWindow(graphOrPanel)
+	panel = SB_GetSweepBrowserLeftPanel(graph)
+
+	STRUCT PostPlotSettings pps
+	SB_InitPostPlotSettings(graph, pps)
+	pps.timeAlignment = GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign")
+	PostPlotTransformations(graph, pps)
+End
+
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
 	variable hookResult, direction, currentSweep, newSweep
-	string folder, graph, panel, win
+	string folder, graph, panel
 
 	switch(s.eventCode)
 		case 2:	 // Kill
@@ -366,6 +419,7 @@ Function SB_SweepBrowserWindowHook(s)
 			KillOrMoveToTrash(folder)
 
 			hookResult = 1
+			break
 		case 22: // mouse wheel
 			graph = s.winName
 
@@ -373,16 +427,14 @@ Function SB_SweepBrowserWindowHook(s)
 				break
 			endif
 
-			win = SB_GetSweepBrowserLeftPanel(graph)
-
 			direction =  sign(s.wheelDy)
 			folder = SB_GetSweepBrowserFolder(graph)
-			panel = SB_GetSweepBrowserLeftPanel(graph)
 
+			panel = SB_GetSweepBrowserLeftPanel(graph)
 			currentSweep = GetPopupMenuIndex(panel, "popup_sweep_selector")
 
-			if(GetCheckBoxState(win, "check_SweepBrowser_SweepOverlay"))
-				newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_OverlaySkip")
+			if(GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay"))
+				newSweep = currentSweep + direction * GetSetVariable(panel, "setvar_SweepBrowser_OverlaySkip")
 			else
 				newSweep = currentSweep + direction
 			endif
@@ -398,6 +450,7 @@ End
 
 Function/DF SB_CreateNewSweepBrowser()
 
+	string panel
 	DFREF dfr = $"root:"
 	DFREF sweepBrowserDFR = UniqueDataFolder(dfr, "sweepBrowser")
 
@@ -413,11 +466,11 @@ Function/DF SB_CreateNewSweepBrowser()
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
-	CheckBox check_SweepBrowser_AveragTraces,pos={20,243},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,pos={20,260},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
-	CheckBox check_SweepBrowser_ZeroTraces,pos={20,263},size={94,14},proc=SB_CheckboxChangedSettings,title="Zero Traces"
-	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all tracese"}
+	CheckBox check_SweepBrowser_ZeroTraces,pos={20,280},size={94,14},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
 	SetVariable setvar_SweepBrowser_OverlaySkip,pos={38,49},size={64,16},title="Step"
 	SetVariable setvar_SweepBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
@@ -426,10 +479,17 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},proc=SB_CheckboxChangedSettings,title="Overlay Sweeps"
 	CheckBox check_SweepBrowser_SweepOverlay,value= 0
 	GroupBox group_sweep,pos={9,90},size={139,74},title="Sweep"
-	GroupBox group_postSynPot,pos={9,285},size={136,74},title="Post-synaptic potentials"
 	Button button_SweepBrowser_NextSweep,pos={84,136},size={60,20},title="Next",proc=SB_ButtonProc_ChangeSweep
 	Button button_SweepBrowser_PrevSweep,pos={14,136},size={60,20},title="Previous",proc=SB_ButtonProc_ChangeSweep
-	GroupBox group_actionPot,pos={9,175},size={138,60},title="Action potentials"
+	CheckBox check_SweepBrowser_TimeAlign,pos={20,171},size={90,14},proc=SB_TimeAlignmentProc,title="Time Alignment"
+	CheckBox check_SweepBrowser_TimeAlign,value= 0
+	PopupMenu popup_sweepBrowser_tAlignMode,pos={16,190},size={129,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_sweepBrowser_tAlignLevel,pos={64,215},size={80,16},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
+	PopupMenu popup_sweepBrowser_tAlignMaster,pos={14,234},size={130,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="invalid",value= #("SB_GetAllTraces(\"" + graph + "\")")
+	Button button_SweepBrowser_DoTimeAlign,pos={116,169},size={30,20},proc=SB_DoTimeAlignment,title="Do!"
 	PopupMenu popup_sweep_selector,pos={17,110},size={124,21}
 	PopupMenu popup_sweep_selector,mode=1,proc=SB_PopupMenuSelectSweep,value=#("SB_GetSweepList(" + "\"" +  graph + "\")")
 	SetActiveSubwindow ##
@@ -441,6 +501,8 @@ Function/DF SB_CreateNewSweepBrowser()
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
 	Notebook kwTopWin, zdataEnd= 1
 	SetActiveSubwindow ##
+
+	SB_PanelUpdate(graph)
 
 	return sweepBrowserDFR
 End
@@ -460,6 +522,12 @@ Function/S SB_GetSweepList(graph)
 	endfor
 
 	return list
+End
+
+Function/S SB_GetAllTraces(graph)
+	string graph
+
+	return TraceNameList(graph, ";", 1 + 2)
 End
 
 Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
@@ -539,6 +607,98 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 			SB_PlotSweep(dfr, currentSweep, newSweep)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Adds or removes the cursors from the graphs depending on the
+///        panel settings
+static Function SB_HandleCursorDisplay(graph)
+	string graph
+
+	string traceList, trace, csrA, csrB, panel
+	variable length
+
+	traceList = GetAllSweepTraces(graph)
+	if(isEmpty(traceList))
+		return NaN
+	endif
+
+	panel = SB_GetSweepBrowserLeftPanel(graph)
+
+	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
+
+		// ensure that trace is really on the graph
+		trace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+		if(FindListItem(trace, traceList) == -1)
+			trace = StringFromList(0, traceList)
+		endif
+
+		length = DimSize(TraceNameToWaveRef(graph, trace), ROWS)
+
+		csrA = CsrInfo(A, graph)
+		if(IsEmpty(csrA))
+			Cursor/W=$graph/A=1/N=1/P A $trace length / 3
+		endif
+
+		csrB = CsrInfo(B, graph)
+		if(isEmpty(csrB))
+			Cursor/W=$graph/A=1/N=1/P B $trace length * 2 / 3
+		endif
+	else
+		Cursor/K/W=$graph A
+		Cursor/K/W=$graph B
+	endif
+End
+
+Function SB_TimeAlignmentProc(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			if(cba.checked)
+				SB_PanelUpdate(cba.win)
+			else
+				SB_HandleTimeAlignPropChange(cba.win)
+			endif
+			break
+	endswitch
+End
+
+Function SB_TimeAlignmentPopup(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			SB_PanelUpdate(pa.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_TimeAlignmentLevel(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			SB_PanelUpdate(sva.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_DoTimeAlignment(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			SB_HandleTimeAlignPropChange(ba.win)
 			break
 	endswitch
 

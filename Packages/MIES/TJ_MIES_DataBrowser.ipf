@@ -156,6 +156,8 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
 	pps.averageTraces     = GetCheckboxState(panelTitle, "check_DataBrowser_AverageTraces")
 	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
+	pps.timeAlignRefTrace = ""
+	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
 
 	if(ParamIsDefault(currentSweep))
 		currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
