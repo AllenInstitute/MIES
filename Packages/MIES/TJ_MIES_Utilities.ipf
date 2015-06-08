@@ -298,7 +298,8 @@ End
 /// exist or if `forceCreation` is true.
 ///
 /// The backup wave will be located in the same data folder and
-/// its name will be the original name with suffix "_bak".
+/// its name will be the original name with #WAVE_BACKUP_SUFFIX
+/// appended.
 Function/Wave CreateBackupWave(wv, [forceCreation])
 	Wave wv
 	variable forceCreation
@@ -307,7 +308,7 @@ Function/Wave CreateBackupWave(wv, [forceCreation])
 	dfref dfr
 
 	ASSERT(WaveExists(wv), "missing wave")
-	backupname = NameOfWave(wv) + "_bak"
+	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	dfr        = GetWavesDataFolderDFR(wv)
 
 	if(ParamIsDefault(forceCreation))
@@ -346,7 +347,7 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 
 	ASSERT(WaveExists(wv), "Found no original wave")
 
-	backupname = NameOfWave(wv) + "_bak"
+	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	dfr        = GetWavesDataFolderDFR(wv)
 
 	Wave/Z/SDFR=dfr backup = $backupname
