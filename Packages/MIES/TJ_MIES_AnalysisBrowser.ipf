@@ -68,17 +68,6 @@ static Function AB_ClearWaves()
 	sel = NaN
 End
 
-static Function/S AB_DeriveExperimentFolder(expFilePath)
-	string expFilePath
-
-	string fileNameWOExtension
-
-	DFREF anaDFR = GetAnalysisFolder()
-
-	fileNameWOExtension = GetBaseName(expFilePath)
-	return CleanupName(fileNameWOExtension, 0)
-End
-
 static Function AB_AddExperimentMapEntry(expFilePath)
 	string expFilePath
 
@@ -94,7 +83,8 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	fileName = ParseFilePath(0, expFilePath, ":", 1, 0)
 	experimentMap[index][%ExperimentName] = fileName
 
-	expFolderName = AB_DeriveExperimentFolder(expFilePath)
+	expFolderName = CleanupName(GetBaseName(expFilePath), 0)
+	KillOrMoveToTrash(GetAnalysisExpFolderAS(expFolderName))
 	experimentMap[index][%ExperimentFolder] = expFolderName
 
 	index += 1
