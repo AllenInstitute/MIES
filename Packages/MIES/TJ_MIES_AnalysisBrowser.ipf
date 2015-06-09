@@ -288,7 +288,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
-static Function GetHighestPossibleSweepNumber(numericValues)
+static Function AB_GetHighestPossibleSweepNum(numericValues)
 	WAVE numericValues
 
 	variable sweepCol = GetSweepColumn(numericValues)
@@ -428,7 +428,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 				SetDimensionLabels(numericKeys, numericValues)
 			endif
 
-			highestSweepNumber = GetHighestPossibleSweepNumber(numericValues)
+			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericValues)
 
 			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
 			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
