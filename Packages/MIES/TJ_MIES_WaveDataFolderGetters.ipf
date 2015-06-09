@@ -2864,7 +2864,7 @@ End
 
 /// @brief Return the text wave used in the listbox of the experiment browser
 ///
-/// The "experiment" column in the second layer maps to the corresponding row in he experimentMap.
+/// The "experiment" column in the second layer maps to the corresponding row in the experimentMap.
 Function/Wave GetExperimentBrowserGUIList()
 
 	DFREF dfr = GetAnalysisFolder()
