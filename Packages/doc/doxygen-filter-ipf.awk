@@ -1,9 +1,9 @@
 # Proof of concept implementation for using doxygen to document Igor Pro procedures
 # This awk script serves as input filter for Igor procedures and produces a C-ish version of the declarations
-# Tested with Igor Pro 6.34A and doxygen 1.8.7
+# Tested with Igor Pro 6.36 and doxygen 1.8.9.1
 #
-# Thomas Braun: 9/2014
-# Version: 0.23
+# Thomas Braun: 6/2015
+# Version: 0.24
 
 # Supported Features:
 # -Functions
@@ -190,6 +190,13 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   {
     insideStructure=0
     code = "}"
+  }
+
+  # translate "#if defined(symbol)" to "#ifdef symbol"
+  if(!insideFunction && !insideMacro && !insideMenu && !insideStructure && match(code,/^#if[[:space:]]+defined\(.+\)[[:space:]]*$/))
+  {
+    gsub(/^#if[[:space:]]+defined\(/,"#ifdef ",code)
+    gsub(/)/,"",code)
   }
 
   # menu definition
