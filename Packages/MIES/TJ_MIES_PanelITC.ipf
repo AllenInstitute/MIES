@@ -4643,11 +4643,13 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 
 	string panelTitle
 	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo
+	variable testPulseMode
 
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
+			testPulseMode = TP_StopTestPulse(panelTitle)
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
 			pairedRadioButtonNo = mode == V_CLAMP_MODE ? ctrlNo + 1 : ctrlNo - 1
 			SetCheckboxState(panelTitle, "Radio_ClampMode_" + num2str(pairedRadioButtonNo), CHECKBOX_UNSELECTED)
@@ -4663,6 +4665,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			TP_RestartTestPulse(panelTitle, testPulseMode)
 		break
 	endswitch
 

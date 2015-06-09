@@ -751,3 +751,41 @@ Function TP_IsTestPulseSet(setName)
 
 	return !cmpstr(setName, "testpulse")
 End
+
+/// @brief Stop any running background test pulses
+///
+/// Assumes that single device and multi device do not run at the same time.
+/// @return One of @ref TestPulseRunModes
+Function TP_StopTestPulse(panelTitle)
+	string panelTitle
+
+	if(IsBackgroundTaskRunning("TestPulse"))
+		ITC_StopTestPulseSingleDevice(panelTitle)
+		return TEST_PULSE_BG_SINGLE_DEVICE
+	elseif(IsBackgroundTaskRunning("TestPulseMD"))
+		ITC_StopTPMD(panelTitle)
+		return TEST_PULSE_BG_MULTI_DEVICE
+	endif
+
+	return TEST_PULSE_NOT_RUNNING
+End
+
+/// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
+Function TP_RestartTestPulse(panelTitle, testPulseMode)
+	string panelTitle
+	variable testPulseMode
+
+	switch(testPulseMode)
+		case TEST_PULSE_NOT_RUNNING:
+			break // nothing to do
+		case TEST_PULSE_BG_SINGLE_DEVICE:
+			TP_StartTestPulseSingleDevice(panelTitle)
+			break
+		case TEST_PULSE_BG_MULTI_DEVICE:
+			TP_StartTestPulseMultiDevice(panelTitle)
+			break
+		default:
+			ASSERT(0, "Unhandled case in ITC_RestartTestPulse")
+			break
+	endswitch
+End
