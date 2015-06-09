@@ -924,7 +924,6 @@ End
 Window ExperimentBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(180,275,1057,764)
-	ShowTools/A
 	Button button_base_folder_scan,pos={6,41},size={100,20},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo)= A"!!,@#!!#>2!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -933,13 +932,13 @@ Window ExperimentBrowser() : Panel
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)= A"!!,FQ!!#<@!!#Bc!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_baseFolder,value= _STR:"H:tim-data:Data:",noedit= 1
+	SetVariable setvar_baseFolder,value= _STR:"",noedit= 1
 	ListBox list_experiment_contents,pos={119,44},size={748,429},proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo)= A"!!,FS!!#>>!!#D1J,hs7J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ListBox list_experiment_contents,listWave=root:MIES:analysis:expBrowserList
-	ListBox list_experiment_contents,selWave=root:MIES:analysis:expBrowserSel,row= 1
+	ListBox list_experiment_contents,listWave=root:MIES:Analysis:expBrowserList
+	ListBox list_experiment_contents,selWave=root:MIES:Analysis:expBrowserSel,row= 1
 	ListBox list_experiment_contents,mode= 4
 	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
 	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
