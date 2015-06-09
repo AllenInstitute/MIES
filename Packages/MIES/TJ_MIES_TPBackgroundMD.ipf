@@ -159,34 +159,13 @@ Function ITC_BkrdTPFuncMD(s)
 	
 	return 0
 End
-//======================================================================================
-Function ITC_FinishTestPulseMD(panelTitle)
-	string panelTitle
-	string cmd
 
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
-
-	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
-		Button StartTestPulseButton, win = $panelTitle, disable = 0
-	endif
-
-	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
-		V_disable = V_disable & ~0x2
-		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
-	endif
-
-	DAP_RestoreTTLState(panelTitle)
-
-	// Update pressure buttons
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-	P_LoadPressureButtonState(panelTitle, headStage)
-End
-//======================================================================================
-Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test pulse on a particular panel
+/// @brief Stop the test pulse in multi device mode
+Function ITC_StopTPMD(panelTitle)
 	string panelTitle
 
 	string cmd
+	variable headstage
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
@@ -203,18 +182,23 @@ Function ITC_StopTPMD(panelTitle) // This function is designed to stop the test 
 	if(StateWave[0] != 0) // makes sure the device being stopped is actually running
 		sprintf cmd, "ITCStopAcq"
 		ExecuteITCOperation(cmd)
-		
+
 		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 		ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 		if (dimsize(ActiveDeviceTextList, 0) == 0) 
 			CtrlNamedBackground TestPulseMD, stop
 			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
-			ITC_FinishTestPulseMD(panelTitle) // makes appropriate updates to locked DA ephys panel following termination of the TP, ex. enables TP button
 		endif
 	endif
+
+	SCOPE_KillScopeWindowIfRequest(panelTitle)
+	EnableControl(panelTitle, "StartTestPulseButton")
+	DAP_RestoreTTLState(panelTitle)
+
+	headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
-//======================================================================================
 
 Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle
