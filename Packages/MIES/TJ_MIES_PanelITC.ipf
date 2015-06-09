@@ -3528,7 +3528,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 			if(!DataAcqState) // data aquisition is stopped
 
 				// stops test pulse if it is running
-				if(TP_IsBackgrounOpRunning(panelTitle, "testpulse"))
+				if(IsBackgroundTaskRunning("testpulse"))
 					ITC_STOPTestPulse(panelTitle)
 				endif
 
@@ -3578,7 +3578,7 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 
 			if(!DataAcqState)
 				 // stops test pulse if it is running
-				if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD"))
+				if(IsBackgroundTaskRunning("TestPulseMD"))
 					WAVE/T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 					variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
 					variable i = 0
@@ -4701,15 +4701,15 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 
 	string cmd
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
-		ITC_STOPTestPulse(panelTitle)
+	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
+		ITC_StopTestPulseSingleDevice(panelTitle)
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
+	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
 		CtrlNamedBackground ITC_Timer, stop
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
+	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
 		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
 		ITC_STOPFifoMonitor()
 
@@ -4740,15 +4740,15 @@ End
 Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD")) // stops the testpulse
+	if(IsBackgroundTaskRunning("TestPulseMD")) // stops the testpulse
 		 ITC_StopTPMD(panelTitle)
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD")) // stops the background timer
+	if(IsBackgroundTaskRunning("ITC_TimerMD")) // stops the background timer
 		ITC_StopTimerForDeviceMD(panelTitle)
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
+	if(IsBackgroundTaskRunning("ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
 

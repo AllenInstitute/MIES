@@ -697,15 +697,7 @@ Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
 	endfor
 	return NaN
 End
-//=============================================================================================
 
-Function TP_IsBackgrounOpRunning(panelTitle, OpName)
-	string 	panelTitle, OpName
-
-	CtrlNamedBackground $OpName, status
-	return ( str2num(StringFromList(2, s_info, ";")[4]) != 0 )
-End
-//=============================================================================================
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
 /// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
 static Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
