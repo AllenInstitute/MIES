@@ -4349,7 +4349,13 @@ Function DAP_CheckSettings(panelTitle)
 				return 1
 			endif
 		endfor
+
+		if(GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration") <= 0)
+			print "The testpulse duration must be greater than 0 ms"
+			return 1
+		endif
 	endfor
+
 	return 0
 End
 
