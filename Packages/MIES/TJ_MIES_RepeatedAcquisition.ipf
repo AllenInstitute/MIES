@@ -5,6 +5,11 @@ static Function RA_HandleITI_MD(panelTitle)
 
 	variable ITI
 	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+		ITC_StartBackgroundTimerMD(ITI, "RA_CounterMD(\"" + panelTitle + "\")", "", "", panelTitle)
+		return NaN
+	endif
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 	DAM_StartTestPulseMD(panelTitle)
@@ -19,6 +24,13 @@ static Function RA_HandleITI(panelTitle)
 	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 
 	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+		ITC_StartBackgroundTimer(ITI, "RA_Counter(\"" + panelTitle + "\")", "", "", panelTitle)
+		return NaN
+	endif
+
+	/// @todo create one function which does the TP initialization
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
@@ -40,15 +52,15 @@ static Function RA_HandleITI(panelTitle)
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
-	ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
+	ITC_StartBackgroundTestPulse(panelTitle)
 	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 
 	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 End
 
-//this proc gets activated after first trial is already acquired if repeated acquisition is on.
-// it looks like the test pulse is always run in the ITI!!! it should be user selectable
+/// @brief Function gets called after the first trial is already
+/// acquired and if repeated acquisition is on
 Function RA_Start(panelTitle)
 	string panelTitle
 	variable ITI
