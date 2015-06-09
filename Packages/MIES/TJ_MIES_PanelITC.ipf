@@ -461,7 +461,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:0
-	Button StartTestPulseButton,pos={51,404},size={384,40},disable=1,proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
+	Button StartTestPulseButton,pos={51,404},size={384,40},disable=1,proc=DAP_ButtonProc_TestPulse,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,help={"Starts generating test pulses. Can be stopped by pressing space bar."}
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -5219,11 +5219,9 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 
 	if(disableOrEnable)
 		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TPMD
 		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireDataMD
 	else
 		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TestPulse
 		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireData
 	endif
 End
@@ -5331,6 +5329,25 @@ Function DAP_SetVarProc_ITI(sva) : SetVariableControl
 			DAP_SyncGuiFromLeaderToFollower(sva.win)
 			break
 		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+
+	switch(ba.eventcode)
+		case 2:
+			panelTitle = ba.win
+			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+				TP_StartTestPulseMultiDevice(panelTitle)
+			else
+				TP_StartTestPulseSingleDevice(panelTitle)
+			endif
 			break
 	endswitch
 
