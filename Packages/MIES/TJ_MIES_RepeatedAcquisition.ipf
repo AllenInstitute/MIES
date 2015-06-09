@@ -53,7 +53,7 @@ static Function RA_HandleITI(panelTitle)
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
 	ITC_StartBackgroundTestPulse(panelTitle)
-	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
+	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 
 	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	TP_RestoreDAScale(SelectedDACScale,panelTitle)

@@ -498,8 +498,7 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 			
 			returnValue = 0
 		elseif(tpCmd == 0) // Turn off the test pulse
-			ITC_STOPTestPulse(currentPanel)
-			ED_TPDocumentation(currentPanel)
+			ITC_StopTestPulseSingleDevice(currentPanel)
 			returnValue = 0
 		else
 			returnValue = -1

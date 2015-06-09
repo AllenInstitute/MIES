@@ -3529,7 +3529,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 
 				// stops test pulse if it is running
 				if(IsBackgroundTaskRunning("testpulse"))
-					ITC_STOPTestPulse(panelTitle)
+					ITC_StopTestPulseSingleDevice(panelTitle)
 				endif
 
 				DAP_OneTimeCallBeforeDAQ(panelTitle)
