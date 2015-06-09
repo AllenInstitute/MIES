@@ -477,6 +477,10 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endfor
 End
 
+/// @brief Low level implementation for starting the test pulse
+///
+/// Please check before calling this function if not the functions #TP_StartTestPulseSingleDevice
+/// or #TP_StartTestPulseMultiDevice are better suited for your application.
 Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 
