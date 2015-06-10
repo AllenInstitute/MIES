@@ -4743,7 +4743,6 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	endif
 
 	DAP_OneTimeCallAfterDAQ(panelTitle)
-	print "Data acquisition was manually terminated"
 End
 
 Function DAP_StopOngoingDataAcqMD(panelTitle)
