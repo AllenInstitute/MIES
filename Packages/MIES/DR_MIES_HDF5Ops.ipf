@@ -6,25 +6,25 @@
 Menu "HDF5 Tools"
 		"-"
 		"Open HDF5 Browser", CreateNewHDF5Browser()
-		"Save HDF5 File", convert_to_hdf5("menuSaveFile.h5")
-		"Save Stim Set", SaveStimSet()
-		"Load and Replace Stim Set", LoadReplaceStimSet()
-		"Load Additional Stim Set", LoadAdditionalStimSet()	
-		"Save Sweep Data", SaveSweepData()
-		"Save Configuration", SaveConfiguration()
-		"Load Configuration", LoadConfigSet()
-		"Load Sweep Data", LoadDataSet()
+		"Save HDF5 File", HD_Convert_To_HDF5("menuSaveFile.h5")
+		"Save Stim Set", HD_SaveStimSet()
+		"Load and Replace Stim Set", HD_LoadReplaceStimSet()
+		"Load Additional Stim Set", HD_LoadAdditionalStimSet()	
+		"Save Sweep Data", HD_SaveSweepData()
+		"Save Configuration", HD_SaveConfiguration()
+		"Load Configuration", HD_LoadConfigSet()
+		"Load Sweep Data", HD_LoadDataSet()
 End
 
 /// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
-Function TangoHDF5Save(saveFilename)
+Function HD_TangoHDF5Save(saveFilename)
 	string saveFilename
 
-	convert_to_hdf5(saveFilename)
+	HD_Convert_To_HDF5(saveFilename)
 End
 
 /// @brief dump all experiment data to HDF5 file
-Function convert_to_hdf5(filename)
+Static Function HD_Convert_To_HDF5(filename)
     String filename
     Variable root_id, h5_id
     
@@ -55,7 +55,7 @@ end
 
 
 /// @brief creates high-level group structure of HDF5 file
-Function hdf5_structure(h5_id)
+Static Function HD_HDF5_Structure(h5_id)
 	Variable h5_id
 	Variable root_id, grp_id
 	// initialize HDF5 format
@@ -74,7 +74,7 @@ Function hdf5_structure(h5_id)
 End
 
 /// @brief creates dataset for saving the entire MIES dataspace
-Function create_dataset(h5_id, sweep_name, data)
+Static Function HD_Create_Dataset(h5_id, sweep_name, data)
 	Variable h5_id
 	String sweep_name
 	Wave data
@@ -113,7 +113,7 @@ Function create_dataset(h5_id, sweep_name, data)
 	endif
 	// categorize stimulus and save that data
 	Make /n=5 /o stim_characteristics
-	ident_stimulus(current_0, dt[0], stim_characteristics)
+	HD_Ident_Stimulus(current_0, dt[0], stim_characteristics)
 	HDF5SaveData /O /Z stim_characteristics, grp_id
 	if (V_flag != 0)
 		print "HDF5SaveData failed (stim_characteristics)"
@@ -145,7 +145,7 @@ static Constant TYPE_RAMP    = 4
 /// @}
 
 /// @brief Categorize stimulus and extract some features
-Function ident_stimulus(current, dt, stim_characteristics)
+Static Function HD_Ident_Stimulus(current, dt, stim_characteristics)
 	Wave current
 	variable dt
 	Wave stim_characteristics
@@ -236,11 +236,14 @@ Function ident_stimulus(current, dt, stim_characteristics)
 End
 
 ///@brief Save stim sets to HDF5 file
-Function SaveStimSet()
+Function HD_SaveStimSet([cmdID])
+	string cmdID
+	
 	string filename
 	string fileLocation
 	string dateTimeStamp
 	variable root_id, h5_id
+	string fileLocationResponseString
 	    	
  	// build up the filename using the time and date functions
  	fileLocation = "C:\\MiesHDF5Files\\SavedStimSets\\"
@@ -258,7 +261,11 @@ Function SaveStimSet()
 		print "HDF5Create File failed for ", filename
 		print "Check file name format..."
 		
-		return -1
+		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+		if(!ParamIsDefault(cmdID))
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+		endif	
+		return 0		
 	endif
 	    	
 	// Set the data folder for saving all the Wave Builder stuff
@@ -275,11 +282,17 @@ Function SaveStimSet()
 	    	
 	HDF5CloseFile h5_id
 	print "HDF5 file save complete..."
-	    	
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		// build up the response string containing the file location for passing back to the WSE
+		sprintf fileLocationResponseString "stimFile:%s", filename 
+		HD_WriteAsyncResponseWrapper(cmdID, fileLocationResponseString)
+	endif
 End
 
 /// @brief Load stim sets from HDF5 file and replace all of the current stimulus waves
-Function LoadReplaceStimSet([incomingFileName, cmdID])
+Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
 	string incomingFileName
 	string cmdID
 	    
@@ -305,8 +318,12 @@ Function LoadReplaceStimSet([incomingFileName, cmdID])
 			return 0
 		endif
 	else
-		if(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
+		if(StringMatch(incomingFileName, "*stim*") != 1)
 			print "Not a valid stim set file....exiting..."
+			// determine if the cmdID was provided
+			if(!ParamIsDefault(cmdID))
+				HD_WriteAckWrapper(cmdID,TI_WRITEACK_FAILURE)
+			endif
 			return 0
 		else
 			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
@@ -356,13 +373,14 @@ Function LoadReplaceStimSet([incomingFileName, cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, 1)
+		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)  // send a 0 for success
 	endif   	
 End
 
 /// @brief Load stim sets from HDF5 file and add to the current stimulus waves.  If there is a wave with a matching name already present, it will be overwritten and replaced
-Function LoadAdditionalStimSet([incomingFileName])
+Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 	string incomingFileName
+	string cmdID
 	    
 	variable fileID, waveCounter
 	string dataSet
@@ -386,8 +404,12 @@ Function LoadAdditionalStimSet([incomingFileName])
 			return 0
 		endif
 	else
-		if(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedStimSets\\stim*") != 1)
+		if(StringMatch(incomingFileName, "*stim*") != 1)
 			print "Not a valid stim set file....exiting..."
+			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+			if(!ParamIsDefault(cmdID))
+				HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+			endif
 			return 0
 		else
 			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
@@ -423,12 +445,18 @@ Function LoadAdditionalStimSet([incomingFileName])
 	print "Stimulus Set Loaded..."
 	
 	// restore the data folder
-	SetDataFolder savedDataFolder   	
+	SetDataFolder savedDataFolder
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)
+	endif   	
 End
 
 ///@brief Routine for saving the sweep data in hdf5 format.  This will allow for saving data in a smaller file size.
-Function SaveSweepData()
-
+Function HD_SaveSweepData([cmdID])
+	string cmdID
+	
 	// get the names of all the devices that have data present, regardless of being locked or not
 	string dataPresentDevList = GetAllDevicesWithData()
 	variable noDataPresentDevs = ItemsInList(dataPresentDevList)
@@ -438,10 +466,12 @@ Function SaveSweepData()
 	string currentPanel
 	string groupString
 	string fileLocation
+	string savedDataFolder
 	string dateTimeStamp
 	String filename
 	Variable root_id, h5_id
 	variable i
+	string fileLocationResponseString
 	
 	 // build up the filename using the time and date functions
  	fileLocation = "C:\\MiesHDF5Files\\SavedDataSets\\"
@@ -450,6 +480,9 @@ Function SaveSweepData()
 	CreateFolderOnDisk(fileLocation)
     	
     	dateTimeStamp = GetTimeStamp()
+    	
+    	// save the present data folder
+	savedDataFolder = GetDataFolder(1)
 
 	// build up the filename using the time and date functions
 	sprintf filename, "%ssavedData_%s.h5", fileLocation, dateTimeStamp
@@ -458,7 +491,11 @@ Function SaveSweepData()
 	if (V_Flag != 0 ) // HDF5CreateFile failed
 		print "HDF5Create File failed for ", filename
 		print "Check file name format..."
-		return -1
+		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+		if(!ParamIsDefault(cmdID))
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+		endif
+		return 0
 	endif
 
 	// Save the list of devices with dataPresent
@@ -500,10 +537,17 @@ Function SaveSweepData()
 
 	// restore the data folder
 	SetDataFolder savedDataFolder
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		// build up the response string containing the file location for passing back to the WSE
+		sprintf fileLocationResponseString "dataFile:%s", filename 
+		HD_WriteAsyncResponseWrapper(cmdID, fileLocationResponseString)
+	endif
 End
 
 ///@brief Routine for saving all gui settings/switches/check boxes 
-Function SaveConfiguration([cmdID])
+Function HD_SaveConfiguration([cmdID])
 	string cmdID
 	
 	// define variables
@@ -523,6 +567,7 @@ Function SaveConfiguration([cmdID])
 	string currentControl
 	string controlState
 	variable configWaveSize
+	string fileLocationResponseString
 	
 	// get the da_ephys panel names
 	lockedDevList = DAP_ListOfLockedDevs()
@@ -547,7 +592,12 @@ Function SaveConfiguration([cmdID])
 		
 		// restore the data folder
 		SetDataFolder savedDataFolder 
-		return -1
+		
+		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+		if(!ParamIsDefault(cmdID))
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+		endif
+		return 0
 	else
 		HDF5CreateFile h5_id as filename
 		if (V_Flag != 0 ) // HDF5CreateFile failed
@@ -556,7 +606,12 @@ Function SaveConfiguration([cmdID])
 		
 			// restore the data folder
 			SetDataFolder savedDataFolder 
-			return -1
+			
+			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+			if(!ParamIsDefault(cmdID))
+				HD_WriteAckWrapper(cmdID,TI_WRITEACK_FAILURE)
+			endif
+			return 0
 		endif
 		
 		for (n = 0; n<noLockedDevs; n+= 1)
@@ -616,15 +671,17 @@ Function SaveConfiguration([cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		TI_WriteAckResponse(cmdID, 1)
+		// build up the response string containing the file location for passing back to the WSE
+		sprintf fileLocationResponseString "configFile:%s", filename
+		HD_WriteAsyncResponseWrapper(cmdID, fileLocationResponseString)
 	endif	
 End	
 		
 /// @brief Load config settings from HDF5 file
-Function LoadConfigSet([incomingFileName, cmdID])
+Function HD_LoadConfigSet([incomingFileName, cmdID])
 	string incomingFileName
 	string cmdID
-	
+	    	    
 	Variable fileID, waveCounter
 	string dataSet
 	string savedDataFolder
@@ -663,6 +720,10 @@ Function LoadConfigSet([incomingFileName, cmdID])
 			// restore the data folder
 			SetDataFolder savedDataFolder
 			
+			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+			if(!ParamIsDefault(cmdID))
+				HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+			endif
 			return 0
 		else
 			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
@@ -730,14 +791,15 @@ Function LoadConfigSet([incomingFileName, cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, 1)
+		HD_WriteAckWrapper(cmdID,TI_WRITEACK_SUCCESS)
 	endif		   	
 End
 
 /// @brief Load previous data sets from HDF5 file for viewing with the wave browser.  If there is a data wave with a matching name already present, it will be overwritten and replaced
-Function LoadDataSet([incomingFileName])
+Function HD_LoadDataSet([incomingFileName, cmdID])
 	string incomingFileName
-
+	string cmdID
+	
 	variable fileID, waveCounter
 	string dataSet
 	string dataFolderString
@@ -762,8 +824,13 @@ Function LoadDataSet([incomingFileName])
 			print "File load cancelled..."
 			return 0
 		endif
-	elseif(StringMatch(incomingFileName, "c:\\MiesHDF5Files\\SavedDataSets\\savedData*") != 1)
+	elseif(StringMatch(incomingFileName, "*savedData*") != 1)
 		print "Not a valid data set file....exiting..."
+		
+		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+		if(!ParamIsDefault(cmdID))
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+		endif
 		return 0
 	else
 		HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
@@ -778,6 +845,10 @@ Function LoadDataSet([incomingFileName])
 	// check and make sure this is a saved data set
 	if (FindListItem("dataPresentList", groupList) == -1)
 		print "This is not a valid data set file.  Please select a valid data set file..."
+		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+		if(!ParamIsDefault(cmdID))
+			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+		endif
 		return 0
 	endif 
 
@@ -795,6 +866,10 @@ Function LoadDataSet([incomingFileName])
 				DoAlert/T="Sweep Data Restore" 1, "Sweep Data has already been collected.  Restoring a Sweep Data Set will overwrite this data.  Do you wish to proceed with the Restore Sweep Data?"
 				if(V_flag == 2)
 					print "Sweep Data Restore cancelled..."
+					// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+					if(!ParamIsDefault(cmdID))
+						HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+					endif
 					return 0
 				else
 					print "Sweep Data being restored..."
@@ -811,6 +886,10 @@ Function LoadDataSet([incomingFileName])
 				DoAlert/T="Sweep Data Restore" 1, "Settings History Data has already been collected.  Restoring a Sweep Data Set will overwrite this data.  Do you wish to proceed with the Restore Sweep Data?"
 				if(V_flag == 2)
 					print "Sweep Data Restore cancelled..."
+					// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
+					if(!ParamIsDefault(cmdID))
+						HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
+					endif
 					return 0
 				else
 					print "Sweep Data being restored..."
@@ -860,5 +939,50 @@ Function LoadDataSet([incomingFileName])
 	endif
 	
 	// restore the original data folder
-	SetDataFolder savedDataFolder 
+	SetDataFolder savedDataFolder
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)
+	endif 
+End
+
+/// @brief Prototype function to allow HDF5 function to write async responses, with return strings, to the WSE
+Function HD_WriteAsyncResponseProto(cmdID, returnString)
+	string cmdID, returnString
+
+	Abort "Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?"
+End
+
+/// @brief Wrapper for the optional tango related function #HD_WriteAsyncResponseWrapper
+/// The approach here using a function reference and an interpreted string like `$""` allows
+/// to convert the dependency on the function TI_WriteAsyncResponse from compile time to runtime.
+/// This function will call TI_WriteAsyncResponse if it can be found, otherwise HD_WriteAsyncResponseProto is called.
+Static Function HD_WriteAsyncResponseWrapper(cmdID, returnString)
+	string cmdID, returnString
+
+	FUNCREF HD_WriteAsyncResponseProto f = $"TI_WriteAsyncResponse"
+
+	return f(cmdID, returnString)
+End
+
+/// @brief Prototype function to allow HDF5 functions to write ack responses to the WSE
+Function HD_WriteAckProto(cmdID, returnValue)
+	string cmdID
+	variable returnValue
+
+	Abort "Impossible to find the function TI_WriteAck\rWas the tango XOP and the includes loaded?"
+End
+
+/// @brief Wrapper for the optional tango related function #HD_WriteAckWrapper
+/// The approach here using a function reference and an interpreted string like `$""` allows
+/// to convert the dependency on the function TI_WriteAck from compile time to runtime.
+/// This function will call TI_WriteAck if it can be found, otherwise HD_WriteAckProto is called.
+Static Function HD_WriteAckWrapper(cmdID, returnValue)
+	string cmdID
+	variable returnValue
+
+	FUNCREF HD_WriteAckProto f = $"TI_WriteAck"
+
+	return f(cmdID, returnValue)
 End
