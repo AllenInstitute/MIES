@@ -4741,8 +4741,6 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
 		endif
 	endif
-
-	DAP_OneTimeCallAfterDAQ(panelTitle)
 End
 
 Function DAP_StopOngoingDataAcqMD(panelTitle)
