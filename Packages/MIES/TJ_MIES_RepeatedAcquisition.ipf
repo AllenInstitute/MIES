@@ -1,7 +1,66 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-//this proc gets activated after first trial is already acquired if repeated acquisition is on.
-// it looks like the test pulse is always run in the ITI!!! it should be user selectable
+static Function RA_HandleITI_MD(panelTitle)
+	string panelTitle
+
+	variable ITI
+	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+		ITC_StartBackgroundTimerMD(ITI, "RA_CounterMD(\"" + panelTitle + "\")", "", "", panelTitle)
+		return NaN
+	endif
+
+	ITI -= ITC_StopITCDeviceTimer(panelTitle)
+	DAM_StartTestPulseMD(panelTitle)
+
+	ITC_StartBackgroundTimerMD(ITI,"DAM_StopTPMD(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
+End
+
+static Function RA_HandleITI(panelTitle)
+	string panelTitle
+
+	variable ITI
+	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
+
+	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+		ITI -= ITC_StopITCDeviceTimer(panelTitle)
+		ITC_StartBackgroundTimer(ITI, "RA_Counter(\"" + panelTitle + "\")", "", "", panelTitle)
+		return NaN
+	endif
+
+	/// @todo create one function which does the TP initialization
+	DAP_StoreTTLState(panelTitle)
+	DAP_TurnOffAllTTLs(panelTitle)
+
+	MAKE/O/N = 0 $TestPulsePath/Wave=TestPulse
+	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
+	TP_UpdateTestPulseWave(TestPulse,panelTitle)
+
+	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
+	TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
+
+	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
+	TP_StoreDAScale(SelectedDACScale, panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
+
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	SCOPE_CreateGraph(TestPulseITC, panelTitle)
+
+	ITI -= ITC_StopITCDeviceTimer(panelTitle)
+
+	ITC_StartBackgroundTestPulse(panelTitle)
+	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
+
+	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_RestoreDAScale(SelectedDACScale,panelTitle)
+End
+
+/// @brief Function gets called after the first trial is already
+/// acquired and if repeated acquisition is on
 Function RA_Start(panelTitle)
 	string panelTitle
 	variable ITI
@@ -35,43 +94,13 @@ Function RA_Start(panelTitle)
 	endif
 
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))//updates trials remaining in panel
-
-	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-	ITI = v_value
-
-	DAP_StoreTTLState(panelTitle)//preparations for test pulse begin here
-	DAP_TurnOffAllTTLs(panelTitle)
-	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
-	make /o /n = 0 $TestPulsePath
-	wave TestPulse = $TestPulsePath
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
-	TP_UpdateTestPulseWave(TestPulse,panelTitle)
-
-	make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale, panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-
-	SCOPE_CreateGraph(TestPulseITC, panelTitle)
-
-	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-
-	ITC_StartBackgroundTestPulse(panelTitle)// modify thes line and the next to make the TP during ITI a user option
-	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
-
-	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_RestoreDAScale(SelectedDACScale,panelTitle)
+	RA_HandleITI(panelTitle)
 End
 
 Function RA_Counter(panelTitle)
 	string panelTitle
 
 	variable TotTrials
-	variable ITI
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
@@ -98,8 +127,6 @@ Function RA_Counter(panelTitle)
 	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
 	//TotTrials = (TotTrials * v_value) + 1
 	
-	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-	ITI = v_value
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
 	
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
@@ -138,31 +165,7 @@ Function RA_Counter(panelTitle)
 		If(v_value == 0)//No background aquisition
 			ITC_DataAcq(panelTitle)
 			if(Count < (TotTrials - 1)) //prevents test pulse from running after last trial is acquired
-				DAP_StoreTTLState(panelTitle)
-				DAP_TurnOffAllTTLs(panelTitle)
-				
-				string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
-				make /o /n = 0 $TestPulsePath
-				wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-				SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
-				TP_UpdateTestPulseWave(TestPulse, panelTitle)
-				
-				make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
-				TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-				TP_SelectTestPulseWave(panelTitle)
-			
-				make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
-				TP_StoreDAScale(SelectedDACScale, panelTitle)
-				TP_SetDAScaleToOne(panelTitle)
-				DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-				SCOPE_CreateGraph(TestPulseITC,panelTitle)
-				
-				ITI -= ITC_StopITCDeviceTimer(panelTitle)
-				ITC_StartBackgroundTestPulse(panelTitle)
-				ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulse(" + "\"" + panelTitle+"\"" + ")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
-				
-				TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-				TP_RestoreDAScale(SelectedDACScale, panelTitle)
+				RA_HandleITI(panelTitle)
 			else
 				RA_FinishAcquisition(panelTitle)
 			endif
@@ -190,7 +193,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-	variable ITI
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)
 
@@ -205,36 +207,8 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		TotTrials = v_value
 	endif
 	
-	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-	ITI = v_value
-			
 	if(Count < (TotTrials - 1))
-		DAP_StoreTTLState(panelTitle)
-		DAP_TurnOffAllTTLs(panelTitle)
-		
-		string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
-		make /o /n = 0 $TestPulsePath
-		wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
-		SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
-		TP_UpdateTestPulseWave(TestPulse, panelTitle)
-		
-		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
-		TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-		TP_SelectTestPulseWave(panelTitle)
-	
-		make /free /N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
-		TP_StoreDAScale(SelectedDACScale, panelTitle)
-		TP_SetDAScaleToOne(panelTitle)
-		DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-		SCOPE_CreateGraph(TestPulseITC, panelTitle)
-		ED_TPDocumentation(panelTitle)
-
-		ITI -= ITC_StopITCDeviceTimer(panelTitle)
-		ITC_StartBackgroundTestPulse(panelTitle)
-		ITC_StartBackgroundTimer(ITI, "ITC_StopTestPulse(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
-		
-		TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-		TP_RestoreDAScale(SelectedDACScale, panelTitle)
+		RA_HandleITI(panelTitle)
 	else
 		ED_TPDocumentation(panelTitle)
 		DAP_OneTimeCallAfterDAQ(panelTitle)
@@ -319,15 +293,7 @@ Function RA_StartMD(panelTitle)
 	endif
 
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count)) // updates trials remaining in panel
-
-	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-	ITI = v_value
-
-	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-	DAM_StartTestPulseMD(panelTitle)
-
-	print " in	RA_StartMD:", panelTitle, "Count =", "count, TP was just started"
-	ITC_StartBackgroundTimerMD(ITI,"DAM_StopTPMD(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
+	RA_HandleITI_MD(panelTitle)
 End
 //====================================================================================================
 
@@ -534,11 +500,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			
 	if(Count < (TotTrials - 1))
 		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
-
-		ITI -= ITC_StopITCDeviceTimer(panelTitle)
-		DAM_StartTestPulseMD(panelTitle)
-
-		ITC_StartBackgroundTimerMD(ITI,"DAM_StopTPMD(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
+		RA_HandleITI_MD(panelTitle)
 	else
 		ED_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
