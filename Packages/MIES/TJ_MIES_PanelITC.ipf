@@ -2776,7 +2776,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle,value= 0
 
-	CheckBox check_Settings_ITITP WIN = $panelTitle, fColor=(65280,43520,0),value= 0
+	CheckBox check_Settings_ITITP WIN = $panelTitle, value= 0
 
 	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
 
