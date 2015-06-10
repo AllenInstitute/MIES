@@ -210,7 +210,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	if(Count < (TotTrials - 1))
 		RA_HandleITI(panelTitle)
 	else
-		ED_TPDocumentation(panelTitle)
 		DAP_OneTimeCallAfterDAQ(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 		print "Repeated acquisition is complete"
@@ -499,10 +498,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	ITI = v_value
 			
 	if(Count < (TotTrials - 1))
-		ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. from the last time the TP was run. Should append them to the subsequent sweep
 		RA_HandleITI_MD(panelTitle)
 	else
-		ED_TPDocumentation(panelTitle) // documents TP for run just prior to last sweep in repeated acquisition.
 		print "totalTrials =", TotTrials
 		DAP_OneTimeCallAfterDAQ(panelTitle)
 		print "Repeated acquisition is complete"
