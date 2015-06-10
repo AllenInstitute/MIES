@@ -2276,7 +2276,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_Override_Set_ITI,value= 0
-	SetVariable setvar_Settings_TPBuffer,pos={173,106},size={103,16},disable=1,title="TP Buffer size"
+	SetVariable setvar_Settings_TPBuffer,pos={326,109},size={103,16},disable=1,title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:1
@@ -2289,7 +2289,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:5
-	CheckBox check_Settings_TP_SaveTPRecord,pos={309,107},size={93,14},disable=1,title="Save TP record"
+	CheckBox check_Settings_TP_SaveTPRecord,pos={336,135},size={93,14},disable=1,title="Save TP record"
 	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC",value= 0
@@ -2544,6 +2544,14 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_OpenCommentNB,help={"Open a notebook displaying the comments of all sweeps and allowing free form additions by the user."}
 	Button button_DataAcq_OpenCommentNB,userdata(tabnum)=  "0"
 	Button button_DataAcq_OpenCommentNB,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_TPAfterDAQ,pos={172,109},size={124,14},disable=1,title="Activate TP after DAQ"
+	CheckBox check_Settings_TPAfterDAQ,help={"Immediately start a test pulse after DAQ finishes"}
+	CheckBox check_Settings_TPAfterDAQ,userdata(tabnum)=  "5"
+	CheckBox check_Settings_TPAfterDAQ,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo)= A"!!,Ch!!#@F!!#A,!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_Settings_TPAfterDAQ,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2777,6 +2785,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle,value= 0
 
 	CheckBox check_Settings_ITITP WIN = $panelTitle, value= 0
+	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
 
 	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
 
@@ -3516,6 +3525,20 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinshForIndexing(panelTitle)
+	endif
+
+	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", allowMissingControl=1))
+		return NaN
+	endif
+
+	// 0: holds all calling functions
+	// 1: is the current function
+	ASSERT(ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) == 1 , "Recursion detected, aborting")
+
+	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+		TP_StartTestPulseMultiDevice(panelTitle)
+	else
+		TP_StartTestPulseSingleDevice(panelTitle)
 	endif
 End
 
