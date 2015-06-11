@@ -465,7 +465,7 @@ Function DB_DataBrowserStartupSettings()
 	endfor
 
 	SetCheckBoxState(panelTitle, "check_databrowser_OverlayChan", CHECKBOX_SELECTED)
-	EnableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+	EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
 
 	DB_ClearGraph(panelTitle)
 	SetPopupMenuIndex(panelTitle, "popup_labenotebookViewableCols", 0)
@@ -664,9 +664,9 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_DataBrowser_SweepOverlay"))
 				if(checked)
-					DisableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+					DisableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
 				else
-					EnableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+					EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
 				endif
 			endif
 
