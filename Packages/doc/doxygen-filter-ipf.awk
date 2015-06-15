@@ -3,7 +3,7 @@
 # Tested with Igor Pro 6.36 and doxygen 1.8.9.1
 #
 # Thomas Braun: 6/2015
-# Version: 0.24
+# Version: 0.25
 
 # Supported Features:
 # -Functions
@@ -157,7 +157,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
         {
           paramsToHandle--
           # now replace __Param__$i with the real parameter type
-          if(entries[1] == "struct")
+          if(entries[1] == "struct" || entries[1] == "funcref")
             paramType = entries[2]
           else
             paramType = tolower(entries[1])
@@ -178,6 +178,16 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     code = "}"
   }
 
+  if(insideFunction || insideMacro)
+  {
+    # invalidate the names of functions behind proc=
+    gsub(/\yproc\y=[[:space:]]*/,"&__", code)
+    # invalidate the names of functions behind hook(.+)=
+    gsub(/\yhook\y(\([^\)]+\))?[[:space:]]*=[[:space:]]*/, "&__", code)
+    # comment out FUNCREF lines
+    gsub(/^FUNCREF/, "//&", code)
+  }
+
   # structure declaration
   if(!insideFunction && !insideMacro && ( match(code,/[[:space:]]structure[[:space:]]/) || match(code,/^structure[[:space:]]/) )  )
   {
@@ -185,8 +195,15 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     gsub(/structure/,"struct",code)
     code = code "{"
   }
-
-  if(insideStructure && match(code,/EndStructure/))
+  else if(insideStructure && match(code,/^FUNCREF/))
+  {
+    # remove the name of the prototype function
+    # in C/C++ we don't use function pointer the igor way
+    # so there is little sense in keeping it
+    numEntries = splitIntoWords(code, entries)
+    code = "funcref " entries[numEntries]
+  }
+  else if(insideStructure && match(code,/EndStructure/))
   {
     insideStructure=0
     code = "}"
