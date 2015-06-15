@@ -288,7 +288,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
-static Function GetHighestPossibleSweepNumber(numericValues)
+static Function AB_GetHighestPossibleSweepNum(numericValues)
 	WAVE numericValues
 
 	variable sweepCol = GetSweepColumn(numericValues)
@@ -428,7 +428,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 				SetDimensionLabels(numericKeys, numericValues)
 			endif
 
-			highestSweepNumber = GetHighestPossibleSweepNumber(numericValues)
+			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericValues)
 
 			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
 			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
@@ -924,7 +924,6 @@ End
 Window ExperimentBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(180,275,1057,764)
-	ShowTools/A
 	Button button_base_folder_scan,pos={6,41},size={100,20},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo)= A"!!,@#!!#>2!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -933,13 +932,13 @@ Window ExperimentBrowser() : Panel
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)= A"!!,FQ!!#<@!!#Bc!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_baseFolder,value= _STR:"H:tim-data:Data:",noedit= 1
+	SetVariable setvar_baseFolder,value= _STR:"",noedit= 1
 	ListBox list_experiment_contents,pos={119,44},size={748,429},proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo)= A"!!,FS!!#>>!!#D1J,hs7J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ListBox list_experiment_contents,listWave=root:MIES:analysis:expBrowserList
-	ListBox list_experiment_contents,selWave=root:MIES:analysis:expBrowserSel,row= 1
+	ListBox list_experiment_contents,listWave=root:MIES:Analysis:expBrowserList
+	ListBox list_experiment_contents,selWave=root:MIES:Analysis:expBrowserSel,row= 1
 	ListBox list_experiment_contents,mode= 4
 	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
 	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
@@ -951,9 +950,10 @@ Window ExperimentBrowser() : Panel
 	Button button_select_directory,userdata(ResizeControlsInfo)= A"!!,@#!!#;m!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_collapse_all,pos={8,123},size={98,23},proc=AB_ButtonProc_CollapseAll,title="Collapse all"
-	Button button_expand_all,pos={6,157},size={100,19},proc=AB_ButtonProc_ExpandAll,title="Expand all"
-	Button button_load_selection,pos={8,190},size={97,25},proc=AB_ButtonProc_LoadSelection,title="Load Selection"
+	Button button_collapse_all,pos={7,123},size={100,23},proc=AB_ButtonProc_CollapseAll,title="Collapse all"
+	Button button_expand_all,pos={7,158},size={100,19},proc=AB_ButtonProc_ExpandAll,title="Expand all"
+	Button button_load_selection,pos={7,190},size={100,25},proc=AB_ButtonProc_LoadSelection,title="Load Selection"
+	Button button_show_usercomments,pos={7,226},size={100,25},proc=AB_ButtonProc_OpenCommentNB,title="Open comment NB"
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#DQ^]6a@J,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
@@ -1158,6 +1158,56 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 				AB_ExpandListEntry(row, col)
 			endif
 
+			break
+	endswitch
+
+	return 0
+End
+
+Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	variable row, mapIndex
+	string device, expName, expFolder, expFilePath
+	string titleString, commentNotebook, comment
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
+			WAVE/T experimentMap  = GetExperimentMap()
+
+			WAVE/Z indizes = FindIndizes(col=0, var=1, wv=expBrowserSel)
+
+			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
+				print "Please select a sweep belonging to a device to use this feature"
+				break
+			endif
+
+			row = indizes[0]
+			mapIndex = str2num(expBrowserList[row][%experiment][1])
+
+			device = GetLastNonEmptyEntry(expBrowserList, "device", row)
+			if(isEmpty(device))
+				print "Please select a sweep belonging to a device to use this feature"
+				break
+			endif
+
+			expName     = experimentMap[mapIndex][%ExperimentName]
+			expFolder   = experimentMap[mapIndex][%ExperimentFolder]
+			expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+
+			SVAR/Z/SDFR=GetAnalysisDeviceFolder(expFolder, device) userComment
+			if(!SVAR_Exists(userComment))
+				comment = "The user comment string does not exist for the given device!"
+			else
+				comment = userComment
+			endif
+
+			sprintf titleString, "Experiment %s and Device %s", expName, device
+			commentNotebook = UniqueName("EB_UserComment", 10, 0)
+			NewNoteBook/K=1/F=0/OPTS=(2^2 + 2^3)/N=$commentNotebook/W=(0,0,300,400) as titleString
+			Notebook $commentNotebook text=comment
 			break
 	endswitch
 
