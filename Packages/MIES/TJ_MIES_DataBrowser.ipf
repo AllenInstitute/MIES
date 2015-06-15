@@ -239,7 +239,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 	variable displayDAC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
 	variable overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
-	variable overlayChannels = GetCheckBoxState(panelTitle, "check_sweepbrowser_OverlayChan")
+	variable overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
 
 	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, sweepWave=sweep)
 End
@@ -297,11 +297,11 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayDAchan,value= 0
-	CheckBox check_sweepbrowser_OverlayChan,pos={429,5},size={101,14},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
-	CheckBox check_sweepbrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,I<J,hjM!!#@.!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_sweepbrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_sweepbrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_sweepbrowser_OverlayChan,value= 1
+	CheckBox check_databrowser_OverlayChan,pos={429,5},size={101,14},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,I<J,hjM!!#@.!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_databrowser_OverlayChan,value= 1
 	CheckBox check_DataBrowser_ChanBaseline,pos={451,22},size={87,14},title="Baseline offset"
 	CheckBox check_DataBrowser_ChanBaseline,userdata(ResizeControlsInfo)= A"!!,IGJ,hm>!!#?g!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_ChanBaseline,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -464,8 +464,8 @@ Function DB_DataBrowserStartupSettings()
 		SetCheckBoxState(panelTitle, StringFromList(i, allCheckBoxes), CHECKBOX_UNSELECTED)
 	endfor
 
-	SetCheckBoxState(panelTitle, "check_sweepbrowser_OverlayChan", CHECKBOX_SELECTED)
-	EnableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+	SetCheckBoxState(panelTitle, "check_databrowser_OverlayChan", CHECKBOX_SELECTED)
+	EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
 
 	DB_ClearGraph(panelTitle)
 	SetPopupMenuIndex(panelTitle, "popup_labenotebookViewableCols", 0)
@@ -664,9 +664,9 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_DataBrowser_SweepOverlay"))
 				if(checked)
-					DisableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+					DisableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
 				else
-					EnableControl(panelTitle, "check_DataBrowser_DisplayDAchan")
+					EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
 				endif
 			endif
 

@@ -546,9 +546,9 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
 				if(checked)
-					DisableControl(win, "check_SweepBrowser_DisplayDAC")
+					DisableListOfControls(win, "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan")
 				else
-					EnableControl(win, "check_SweepBrowser_DisplayDAC")
+					EnableListOfControls(win, "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan")
 				endif
 			endif
 
