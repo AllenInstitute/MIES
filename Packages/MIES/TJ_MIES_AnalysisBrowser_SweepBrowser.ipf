@@ -432,12 +432,7 @@ Function SB_SweepBrowserWindowHook(s)
 
 			panel = SB_GetSweepBrowserLeftPanel(graph)
 			currentSweep = GetPopupMenuIndex(panel, "popup_sweep_selector")
-
-			if(GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay"))
-				newSweep = currentSweep + direction * GetSetVariable(panel, "setvar_SweepBrowser_OverlaySkip")
-			else
-				newSweep = currentSweep + direction
-			endif
+			newSweep = currentSweep + direction * GetSetVariable(panel, "setvar_SweepBrowser_SweepStep")
 
 			SB_PlotSweep($folder, currentSweep, newSweep)
 
@@ -466,32 +461,33 @@ Function/DF SB_CreateNewSweepBrowser()
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
-	CheckBox check_SweepBrowser_AveragTraces,pos={20,260},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,pos={17,265},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
-	CheckBox check_SweepBrowser_ZeroTraces,pos={20,280},size={94,14},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_ZeroTraces,pos={17,285},size={76,14},proc=SB_CheckboxChangedSettings,title="Zero Traces"
 	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
-	SetVariable setvar_SweepBrowser_OverlaySkip,pos={38,49},size={64,16},title="Step"
-	SetVariable setvar_SweepBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
-	CheckBox check_sweepbrowser_OverlayChan,pos={19,69},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
+	SetVariable setvar_SweepBrowser_SweepStep,pos={46,141},size={64,16},title="Step"
+	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
+	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
+	CheckBox check_sweepbrowser_OverlayChan,pos={17,50},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
 	CheckBox check_sweepbrowser_OverlayChan,value= 1
 	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},proc=SB_CheckboxChangedSettings,title="Overlay Sweeps"
 	CheckBox check_SweepBrowser_SweepOverlay,value= 0
-	GroupBox group_sweep,pos={9,90},size={139,74},title="Sweep"
-	Button button_SweepBrowser_NextSweep,pos={84,136},size={60,20},title="Next",proc=SB_ButtonProc_ChangeSweep
-	Button button_SweepBrowser_PrevSweep,pos={14,136},size={60,20},title="Previous",proc=SB_ButtonProc_ChangeSweep
-	CheckBox check_SweepBrowser_TimeAlign,pos={20,171},size={90,14},proc=SB_TimeAlignmentProc,title="Time Alignment"
+	GroupBox group_sweep,pos={6,71},size={139,98},title="Sweep"
+	Button button_SweepBrowser_NextSweep,pos={81,117},size={60,20},proc=SB_ButtonProc_ChangeSweep,title="Next"
+	Button button_SweepBrowser_PrevSweep,pos={11,117},size={60,20},proc=SB_ButtonProc_ChangeSweep,title="Previous"
+	CheckBox check_SweepBrowser_TimeAlign,pos={17,176},size={90,14},proc=SB_TimeAlignmentProc,title="Time Alignment"
 	CheckBox check_SweepBrowser_TimeAlign,value= 0
-	PopupMenu popup_sweepBrowser_tAlignMode,pos={16,190},size={129,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
-	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_sweepBrowser_tAlignLevel,pos={64,215},size={80,16},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	PopupMenu popup_sweepBrowser_tAlignMode,pos={13,195},size={129,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_sweepBrowser_tAlignLevel,pos={61,219},size={80,16},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_sweepBrowser_tAlignMaster,pos={14,234},size={130,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
-	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="invalid",value= #("SB_GetAllTraces(\"" + graph + "\")")
-	Button button_SweepBrowser_DoTimeAlign,pos={116,169},size={30,20},proc=SB_DoTimeAlignment,title="Do!"
-	PopupMenu popup_sweep_selector,pos={17,110},size={124,21}
-	PopupMenu popup_sweep_selector,mode=1,proc=SB_PopupMenuSelectSweep,value=#("SB_GetSweepList(" + "\"" +  graph + "\")")
+	PopupMenu popup_sweepBrowser_tAlignMaster,pos={11,239},size={130,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="",value= #("SB_GetAllTraces(\"" + graph + "\")")
+	Button button_SweepBrowser_DoTimeAlign,pos={113,174},size={30,20},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	PopupMenu popup_sweep_selector,pos={13,91},size={127,21},bodyWidth=127,proc=SB_PopupMenuSelectSweep
+	PopupMenu popup_sweep_selector,mode=12,popvalue="",value= #("SB_GetSweepList(\"" + graph + "\")")
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,383) as "Analysis Results"
 	ModifyPanel fixedSize=0
@@ -599,12 +595,7 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 				ASSERT(0, "unhandled control name")
 			endif
 
-			if(GetCheckBoxState(win, "check_SweepBrowser_SweepOverlay"))
-				newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_OverlaySkip")
-			else
-				newSweep = currentSweep + direction
-			endif
-
+			newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_SweepStep")
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 			SB_PlotSweep(dfr, currentSweep, newSweep)
 			break

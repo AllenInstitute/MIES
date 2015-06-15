@@ -168,11 +168,7 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	elseif(ParamIsDefault(direction))
 		// just use newSweep
 	elseif(ParamIsDefault(newSweep))
-		if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
-			newSweep = currentSweep + direction * GetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip")
-		else
-			newSweep = currentSweep + direction
-		endif
+		newSweep = currentSweep + direction * GetSetVariable(panelTitle, "setvar_DataBrowser_SweepStep")
 	else
 		ASSERT(0, "Can not accept both newSweep and direction")
 	endif
@@ -318,11 +314,6 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_SweepOverlay,value= 0
-	SetVariable setvar_DataBrowser_OverlaySkip,pos={223,22},size={87,30},title="Every\rsweeps"
-	SetVariable setvar_DataBrowser_OverlaySkip,userdata(ResizeControlsInfo)= A"!!,Go!!#<h!!#?g!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_DataBrowser_OverlaySkip,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	SetVariable setvar_DataBrowser_OverlaySkip,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataBrowser_OverlaySkip,limits={1,inf,1},value= _NUM:1
 	CheckBox check_DataBrowser_AutoUpdate,pos={602,6},size={149,14},title="Display last sweep acquired"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,J'J,hjM!!#A$!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -399,6 +390,12 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_ZeroTraces,value= 0
+	SetVariable setvar_DataBrowser_SweepStep,pos={499,674},size={66,16},bodyWidth=40,title="Step"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo)= A"!!,I_J,htcJ,hoh!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(lastSweep)=  "0",fSize=12
+	SetVariable setvar_DataBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
@@ -452,7 +449,7 @@ Function DB_DataBrowserStartupSettings()
 	Notebook $subWindow selection={startOfFile, endOfFile}
 	Notebook $subWindow text = ""
 	SetPopupMenuIndex(panelTitle, "popup_DB_lockedDevices", 0)
-	SetSetVariable(panelTitle, "setvar_DataBrowser_OverlaySkip", 1)
+	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepStep", 1)
 
 	SetWindow $panelTitle, userdata(DataFolderPath) = ""
 	DB_SetFormerSweepNumber(panelTitle, NaN)
