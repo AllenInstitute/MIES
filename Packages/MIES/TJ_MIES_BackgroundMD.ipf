@@ -87,11 +87,11 @@ End
 				DeviceIDGlobal = ActiveDeviceList[i][0]
 				ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
 				ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-				ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal) 
 				if (dimsize(ActiveDeviceTextList, 0) == 0) 
 					print "no more active devices, stopping named background"
 					CtrlNamedBackground ITC_FIFOMonitorMD, stop
 				endif
+				ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
 				NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 			endif
 		i += 1
