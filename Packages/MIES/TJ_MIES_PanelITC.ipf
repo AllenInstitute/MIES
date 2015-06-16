@@ -3545,6 +3545,8 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 					ITC_DataAcq(panelTitle)
 					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 						RA_Start(panelTitle)
+					else
+						DAP_OneTimeCallAfterDAQ(panelTitle)
 					endif
 				else
 					ITC_BkrdDataAcq(panelTitle)
