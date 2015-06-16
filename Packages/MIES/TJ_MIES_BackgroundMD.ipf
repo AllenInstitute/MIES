@@ -91,11 +91,8 @@ End
 				if (dimsize(ActiveDeviceTextList, 0) == 0) 
 					print "no more active devices, stopping named background"
 					CtrlNamedBackground ITC_FIFOMonitorMD, stop
-					//ITC_StopBckrdFIFOMonitorMD() // stops FIFO monitor when there are no devices left to monitor
 				endif
-				//print "i = ",i
 				NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
-				//print " number of active devices = ",NumberOfActiveDevices
 			endif
 		i += 1
 		itcdatawave[0][0] += 0
@@ -104,13 +101,7 @@ End
 	while(i < NumberOfActiveDevices)
 	
 	return 0
-End // Function ITC_FIFOMonitorMD(s)
-//=============================================================================================================================
-
-Function ITC_StopBckrdFIFOMonitorMD()
-	CtrlNamedBackground ITC_FIFOMonitorMD, stop
 End
-//=============================================================================================================================
 
 Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
