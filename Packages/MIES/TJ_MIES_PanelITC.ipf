@@ -4630,7 +4630,7 @@ static Function DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage
 	endif
 
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE, "unexpected mode")
- End
+End
 
 Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
