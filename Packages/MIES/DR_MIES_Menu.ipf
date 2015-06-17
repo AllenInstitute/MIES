@@ -13,6 +13,11 @@ Menu "Mies Panels", dynamic
 		"Open AnalysisMaster Panel", /Q, analysisMaster()
 		"-"
 		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
+		"-"
+	SubMenu "Advanced"
+		"Enable debug mode", /Q, EnableDebugMode()
+		"Disable debug mode", /Q, DisableDebugMode()
+	End
 End
 
 Menu "HDF5 Tools", dynamic

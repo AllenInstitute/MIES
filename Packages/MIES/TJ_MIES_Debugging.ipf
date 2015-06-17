@@ -1,16 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file TJ_MIES_Debugging.ipf
-/// This file holds debug helpers.
 ///
-/// Enable debugging with
-/// @code
-/// SetIgorOption poundDefine=DEBUGGING_ENABLED
-/// @endcode
-/// and disable it with
-/// @code
-/// SetIgorOption poundUnDefine=DEBUGGING_ENABLED
-/// @endcode
+/// @brief Holds functions for handling debugging information
 
 #if defined(DEBUGGING_ENABLED)
 
@@ -183,3 +175,15 @@ Function DEBUGPRINT(msg, [var, str, format])
 End
 
 #endif
+
+///@brief Enable debug mode
+Function EnableDebugMode()
+	Execute/P/Q "SetIgorOption poundDefine=DEBUGGING_ENABLED"
+	Execute/P/Q "COMPILEPROCEDURES "
+End
+
+///@brief Disable debug mode
+Function DisableDebugMode()
+	Execute/P/Q "SetIgorOption poundUnDefine=DEBUGGING_ENABLED"
+	Execute/P/Q "COMPILEPROCEDURES "
+End
