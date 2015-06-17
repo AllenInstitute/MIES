@@ -552,15 +552,8 @@ Function GetAxisRange(graph, axis, minimum, maximum)
 	endif
 End
 
-/// @name Constants for GetAxisOrientation
-/// @{
-static Constant AXIS_ORIENTATION_LEFT   = 0x01
-static Constant AXIS_ORIENTATION_RIGHT  = 0x02
-static Constant AXIS_ORIENTATION_BOTTOM = 0x04
-static Constant AXIS_ORIENTATION_TOP    = 0x08
-/// @}
-
 /// @brief Return the orientation of the axis as numeric value
+/// @returns one of @ref AxisOrientationConstants
 Function GetAxisOrientation(graph, axes)
 	string graph, axes
 
