@@ -56,6 +56,31 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 	endfor 
 End
 
+/// @brief Resets the selected set popupmenus stored by #IDX_StoreStartFinishForIndexing
+Function IDX_ResetStartFinshForIndexing(panelTitle)
+	string panelTitle
+
+	variable i
+	string ctrl
+
+	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
+	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[0][i] - 1)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[1][i] - 2)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[0][i] - 1)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[1][i] - 1)
+	endfor
+End
+
 /// @brief Locked indexing, indexes all active channels at once
 Function IDX_IndexingDoIt(panelTitle)
 	string panelTitle

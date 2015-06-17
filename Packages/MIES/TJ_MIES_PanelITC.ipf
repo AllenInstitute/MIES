@@ -3513,6 +3513,10 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	KillVariables count
 
+	// restore the selected sets before DAQ
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+		IDX_ResetStartFinshForIndexing(panelTitle)
+	endif
 End
 
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
