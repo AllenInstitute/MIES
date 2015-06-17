@@ -461,7 +461,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:0
-	Button StartTestPulseButton,pos={51,404},size={384,40},disable=1,proc=TP_ButtonProc_DataAcq_TestPulse,title="\\Z14\\f01Start Test \rPulse"
+	Button StartTestPulseButton,pos={51,404},size={384,40},disable=1,proc=DAP_ButtonProc_TestPulse,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,help={"Starts generating test pulses. Can be stopped by pressing space bar."}
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3528,8 +3528,8 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 			if(!DataAcqState) // data aquisition is stopped
 
 				// stops test pulse if it is running
-				if(TP_IsBackgrounOpRunning(panelTitle, "testpulse"))
-					ITC_STOPTestPulse(panelTitle)
+				if(IsBackgroundTaskRunning("testpulse"))
+					ITC_StopTestPulseSingleDevice(panelTitle)
 				endif
 
 				DAP_OneTimeCallBeforeDAQ(panelTitle)
@@ -3578,7 +3578,7 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 
 			if(!DataAcqState)
 				 // stops test pulse if it is running
-				if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD"))
+				if(IsBackgroundTaskRunning("TestPulseMD"))
 					WAVE/T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 					variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
 					variable i = 0
@@ -4349,7 +4349,13 @@ Function DAP_CheckSettings(panelTitle)
 				return 1
 			endif
 		endfor
+
+		if(GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration") <= 0)
+			print "The testpulse duration must be greater than 0 ms"
+			return 1
+		endif
 	endfor
+
 	return 0
 End
 
@@ -4630,18 +4636,20 @@ static Function DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage
 	endif
 
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE, "unexpected mode")
- End
+End
 
 Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	string panelTitle
 	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo
+	variable testPulseMode
 
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
+			testPulseMode = TP_StopTestPulse(panelTitle)
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
 			pairedRadioButtonNo = mode == V_CLAMP_MODE ? ctrlNo + 1 : ctrlNo - 1
 			SetCheckboxState(panelTitle, "Radio_ClampMode_" + num2str(pairedRadioButtonNo), CHECKBOX_UNSELECTED)
@@ -4657,6 +4665,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			TP_RestartTestPulse(panelTitle, testPulseMode)
 		break
 	endswitch
 
@@ -4701,15 +4710,15 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 
 	string cmd
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "testpulse") == 1) // stops the testpulse
-		ITC_STOPTestPulse(panelTitle)
+	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
+		ITC_StopTestPulseSingleDevice(panelTitle)
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_Timer") == 1) // stops the background timer
+	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
 		CtrlNamedBackground ITC_Timer, stop
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
+	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
 		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
 		ITC_STOPFifoMonitor()
 
@@ -4740,15 +4749,15 @@ End
 Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD")) // stops the testpulse
+	if(IsBackgroundTaskRunning("TestPulseMD")) // stops the testpulse
 		 ITC_StopTPMD(panelTitle)
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_TimerMD")) // stops the background timer
+	if(IsBackgroundTaskRunning("ITC_TimerMD")) // stops the background timer
 		ITC_StopTimerForDeviceMD(panelTitle)
 	endif
 
-	if(TP_IsBackgrounOpRunning(panelTitle, "ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
+	if(IsBackgroundTaskRunning("ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
 
@@ -5213,11 +5222,9 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 
 	if(disableOrEnable)
 		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TPMD
 		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireDataMD
 	else
 		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		Button StartTestPulseButton WIN=$panelTitle, proc=TP_ButtonProc_DataAcq_TestPulse
 		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireData
 	endif
 End
@@ -5325,6 +5332,25 @@ Function DAP_SetVarProc_ITI(sva) : SetVariableControl
 			DAP_SyncGuiFromLeaderToFollower(sva.win)
 			break
 		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+
+	switch(ba.eventcode)
+		case 2:
+			panelTitle = ba.win
+			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+				TP_StartTestPulseMultiDevice(panelTitle)
+			else
+				TP_StartTestPulseSingleDevice(panelTitle)
+			endif
 			break
 	endswitch
 

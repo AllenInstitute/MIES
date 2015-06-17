@@ -37,7 +37,7 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
 	
-	if (TP_IsBackgrounOpRunning(panelTitle, "ITC_BckgrdFIFOMonitorMD") == 0)
+	if (IsBackgroundTaskRunning("ITC_BckgrdFIFOMonitorMD") == 0)
 		// print "background data acq is not running"
 		ITC_StartBckrdFIFOMonitorMD()
 	endif

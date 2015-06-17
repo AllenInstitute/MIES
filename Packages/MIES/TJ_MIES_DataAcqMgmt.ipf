@@ -258,7 +258,6 @@ Function DAM_StopTPMD(panelTitle)
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0)
 			print "TP stopped on independent ITC1600"
 			ITC_StopTPMD(panelTitle)
-			ITC_FinishTestPulseMD(panelTitle)
 		else
 			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			if(SVAR_Exists(listOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
@@ -268,26 +267,21 @@ Function DAM_StopTPMD(panelTitle)
 	                
 					//Lead board commands
 					ITC_StopTPMD(panelTitle)
-					ITC_FinishTestPulseMD(panelTitle)
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 						ITC_StopTPMD(followerPanelTitle)
-						ITC_FinishTestPulseMD(followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
 	                
 				else
 					ITC_StopTPMD(panelTitle)
-					ITC_FinishTestPulseMD(panelTitle)
 				endif
 			else
 				ITC_StopTPMD(panelTitle)
-				ITC_FinishTestPulseMD(panelTitle)
 			endif
 		endif
 	else
 		ITC_StopTPMD(panelTitle)
-		ITC_FinishTestPulseMD(panelTitle)
 	endif
 End
 

@@ -483,23 +483,14 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
-
-		// structure needed for communicating with the start acquisition button on the DA_Ephys panel
-		STRUCT WMButtonAction ba
 		
 		if(tpCmd == 1)	// Turn on the test pulse
-		
-			// setting the ba structure
-			ba.eventCode = 2
-			ba.ctrlName = "StartTestPulseButton"
-			ba.win = currentPanel
-			
-			TP_ButtonProc_DataAcq_TestPulse(ba)
-			
+
+			TP_StartTestPulseSingleDevice(currentPanel)
+
 			returnValue = 0
 		elseif(tpCmd == 0) // Turn off the test pulse
-			ITC_STOPTestPulse(currentPanel)
-			ED_TPDocumentation(currentPanel)
+			ITC_StopTestPulseSingleDevice(currentPanel)
 			returnValue = 0
 		else
 			returnValue = -1

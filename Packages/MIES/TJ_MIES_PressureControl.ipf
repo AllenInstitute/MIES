@@ -1257,10 +1257,10 @@ Function P_IsTPActive(panelTitle)
 
 	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 		if(getControlDisable(panelTitle, "StartTestPulseButton")) // check if TP is running on this particular device by seeing if the TP button is disabled
-			return TP_IsBackgrounOpRunning(panelTitle, "TestPulseMD") // check if the background function that runs the TP is also active
+			return IsBackgroundTaskRunning("TestPulseMD") // check if the background function that runs the TP is also active
 		endif
 	else
-		return TP_IsBackgrounOpRunning(panelTitle, "testpulse")
+		return IsBackgroundTaskRunning("testpulse")
 	endif
 
 	return 0

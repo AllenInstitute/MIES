@@ -1803,3 +1803,11 @@ Function ZeroWave(wv)
 	Differentiate/DIM=0/EP=1 wv/D=wv
 	Integrate/DIM=0 wv/D=wv
 End
+
+/// @brief Check wether the given background task is currently running
+Function IsBackgroundTaskRunning(func)
+	string func
+
+	CtrlNamedBackground $func, status
+	return NumberByKey("RUN", s_info)
+End

@@ -281,7 +281,7 @@ Function ITC_TestPulseFunc(s)
 	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
 	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
 	SVAR panelTitleG         = root:MIES:ITCDevices:PanelTitleG
-	// create a copy as panelTitleG is killed in ITC_STOPTestPulse
+	// create a copy as panelTitleG is killed in ITC_StopTestPulseSingleDevice
 	// but we still need it afterwards
 	string panelTitle        = panelTitleG
 
@@ -329,37 +329,31 @@ Function ITC_TestPulseFunc(s)
 		Keyboard = KeyboardState("")
 		if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 			beep
-			ITC_STOPTestPulse(panelTitle)
-			ED_TPDocumentation(panelTitle) // documents the TP Vrest, peak and steady state resistance values. for manually terminated TPs
+			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
 	endif
 
 	return 0
 End
-//======================================================================================
 
-Function ITC_STOPTestPulse(panelTitle)
+Function ITC_StopTestPulseSingleDevice(panelTitle)
 	string panelTitle
-	string cmd
+
+	variable headstage
+
 	CtrlNamedBackground TestPulse, stop
 	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	DAP_RestoreTTLState(panelTitle)
-	//killwaves /z root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse// this line generates an error. hence the /z. not sure why.
-	ControlInfo /w = $panelTitle StartTestPulseButton
-	if(V_disable == 2) // 0 = normal, 1 = hidden, 2 = disabled, visible
-		Button StartTestPulseButton, win = $panelTitle, disable = 0
-	endif
-	if(V_disable == 3) // 0 = normal, 1 = hidden, 2 = disabled, visible
-		V_disable = V_disable & ~0x2
-		Button StartTestPulseButton, win = $panelTitle, disable =  V_disable
-	endif
-	killvariables /z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	killstrings /z root:MIES:ITCDevices:PanelTitleG
-	
-	// Update pressure buttons
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
+	EnableControl(panelTitle, "StartTestPulseButton")
+
+	KilLVariables/Z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
+	KillStrings/Z root:MIES:ITCDevices:PanelTitleG
+
+	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)
+
+	ED_TPDocumentation(panelTitle)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
@@ -483,6 +477,10 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endfor
 End
 
+/// @brief Low level implementation for starting the test pulse
+///
+/// Please check before calling this function if not the functions #TP_StartTestPulseSingleDevice
+/// or #TP_StartTestPulseMultiDevice are better suited for your application.
 Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 

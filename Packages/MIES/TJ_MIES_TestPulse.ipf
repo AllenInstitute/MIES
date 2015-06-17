@@ -182,114 +182,86 @@ Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle)
 	TPPulseCount = TP_CreateSquarePulseWave(panelTitle, frequency, amplitudeVC, TestPulse)
 End
 
-// mV and pA = Mohm
-Function TP_ButtonProc_DataAcq_TestPulse(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
+/// @brief Start a single device test pulse, either in background
+/// or in foreground mode depending on the settings
+Function TP_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
-	switch(ba.eventcode)
-		case 2:
-			panelTitle = ba.win
+	variable headstage
+	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 
-			AbortOnValue DAP_CheckSettings(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle),1
 
-			PauseUpdate
-			SetDataFolder root:
+	PauseUpdate
+	SetDataFolder root:
 
-			ControlInfo/W=$panelTitle SetVar_DataAcq_TPDuration
-			if(v_value == 0)
-				abort "Give test pulse a duration greater than 0 ms"
-			endif
+	DisableControl(panelTitle, "StartTestPulseButton")
+	DAP_StopOngoingDataAcquisition(panelTitle)
 
-			DisableControl(panelTitle, ba.ctrlName)
+	NVAR count = $GetCount(panelTitle)
+	KillVariables/Z count
 
-			DAP_StopOngoingDataAcquisition(panelTitle)
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
-			NVAR count = $GetCount(panelTitle)
-			KillVariables/Z count
+	DAP_StoreTTLState(panelTitle)
+	DAP_TurnOffAllTTLs(panelTitle)
 
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	Make/O/N=0 $TestPulsePath/Wave=TestPulse
+	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
 
-			DAP_StoreTTLState(panelTitle)
-			DAP_TurnOffAllTTLs(panelTitle)
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 
-			string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
-			Make/O/N=0 $TestPulsePath
-			WAVE TestPulse = $TestPulsePath
-			SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
+	Make/FREE/N=8 SelectedDACWaveList
+	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
 
-			TP_UpdateTPBufferSizeGlobal(panelTitle)
-			TP_UpdateTestPulseWave(TestPulse, panelTitle)
+	Make/FREE/N=8 SelectedDACScale
+	TP_StoreDAScale(SelectedDACScale,panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
 
-			Make/FREE/N=8 SelectedDACWaveList
-			TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-			TP_SelectTestPulseWave(panelTitle)
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
+	WAVE/SDFR=GetDeviceTestPulse(panelTitle) TestPulseITC
+	SCOPE_CreateGraph(TestPulseITC,panelTitle)
 
-			Make/FREE/N=8 SelectedDACScale
-			TP_StoreDAScale(SelectedDACScale,panelTitle)
-			TP_SetDAScaleToOne(panelTitle)
+	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
+		ITC_StartBackgroundTestPulse(panelTitle)
+	else
+		ITC_StartTestPulse(panelTitle)
+		SCOPE_KillScopeWindowIfRequest(panelTitle)
+	endif
 
-			DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-			WAVE/SDFR=GetDeviceTestPulse(panelTitle) TestPulseITC
-			SCOPE_CreateGraph(TestPulseITC,panelTitle)
+	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
+	TP_RestoreDAScale(SelectedDACScale,panelTitle)
 
-			if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))// runs background TP
-				ITC_StartBackgroundTestPulse(panelTitle)
-			else // runs TP
-				ITC_StartTestPulse(panelTitle)
-				SCOPE_KillScopeWindowIfRequest(panelTitle)
-			endif
-
-			TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-			TP_RestoreDAScale(SelectedDACScale,panelTitle)
-
-			// Enable pressure buttons
-			variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-			P_LoadPressureButtonState(panelTitle, headStage)
-			break
-	endswitch
-
-	return 0
+	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
-//=============================================================================================
-/// @brief  Test pulse button call function
-Function TP_ButtonProc_DataAcq_TPMD(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
 
+/// @brief Start a multi device test pulse, always done in background mode
+Function TP_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
-	switch(ba.eventcode)
-		case 2:
 
-			panelTitle = ba.win
-			AbortOnValue DAP_CheckSettings(panelTitle),1
+	variable headstage
+	AbortOnValue DAP_CheckSettings(panelTitle),1
 
-			SetDataFolder root:
+	SetDataFolder root:
 
-			// *** need to modify for yoked devices becuase it is only looking at the lead device
-			// Check if TP uduration is greater than 0 ms
-			controlinfo /w = $panelTitle SetVar_DataAcq_TPDuration
-			if(v_value == 0)
-				Abort "Give test pulse a duration greater than 0 ms"
-			endif
+	DAP_StopOngoingDataAcqMD(panelTitle)
+	DisableControl(panelTitle, "StartTestPulseButton")
 
-			DAP_StopOngoingDataAcqMD(panelTitle) // stop any ongoing data aquisition
-			DisableControl(panelTitle, ba.ctrlName)
+	// @todo Need to modify (killing count global) for yoked devices
+	NVAR count = $GetCount(panelTitle)
+	KillVariables/Z count
 
-			// @todo Need to modify (killing count global) for yoked devices
-			NVAR count = $GetCount(panelTitle)
-			KillVariables/Z count
+	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
-			TP_UpdateTPBufferSizeGlobal(panelTitle)
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAM_StartTestPulseMD(panelTitle)
 
-			DAM_StartTestPulseMD(panelTitle)
-
-			// Enable pressure buttons
-			variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-			P_LoadPressureButtonState(panelTitle, headStage)
-			break
-	endswitch
+	// Enable pressure buttons
+	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
 /// @brief Updates the global variable n in the TP folder
@@ -697,15 +669,7 @@ Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
 	endfor
 	return NaN
 End
-//=============================================================================================
 
-Function TP_IsBackgrounOpRunning(panelTitle, OpName)
-	string 	panelTitle, OpName
-
-	CtrlNamedBackground $OpName, status
-	return ( str2num(StringFromList(2, s_info, ";")[4]) != 0 )
-End
-//=============================================================================================
 /// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
 /// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
 static Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
@@ -786,4 +750,42 @@ Function TP_IsTestPulseSet(setName)
 	string setName
 
 	return !cmpstr(setName, "testpulse")
+End
+
+/// @brief Stop any running background test pulses
+///
+/// Assumes that single device and multi device do not run at the same time.
+/// @return One of @ref TestPulseRunModes
+Function TP_StopTestPulse(panelTitle)
+	string panelTitle
+
+	if(IsBackgroundTaskRunning("TestPulse"))
+		ITC_StopTestPulseSingleDevice(panelTitle)
+		return TEST_PULSE_BG_SINGLE_DEVICE
+	elseif(IsBackgroundTaskRunning("TestPulseMD"))
+		ITC_StopTPMD(panelTitle)
+		return TEST_PULSE_BG_MULTI_DEVICE
+	endif
+
+	return TEST_PULSE_NOT_RUNNING
+End
+
+/// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
+Function TP_RestartTestPulse(panelTitle, testPulseMode)
+	string panelTitle
+	variable testPulseMode
+
+	switch(testPulseMode)
+		case TEST_PULSE_NOT_RUNNING:
+			break // nothing to do
+		case TEST_PULSE_BG_SINGLE_DEVICE:
+			TP_StartTestPulseSingleDevice(panelTitle)
+			break
+		case TEST_PULSE_BG_MULTI_DEVICE:
+			TP_StartTestPulseMultiDevice(panelTitle)
+			break
+		default:
+			ASSERT(0, "Unhandled case in ITC_RestartTestPulse")
+			break
+	endswitch
 End
