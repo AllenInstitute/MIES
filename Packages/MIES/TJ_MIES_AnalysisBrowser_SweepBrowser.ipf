@@ -1,5 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"
+
 static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
 	string graphOrPanel
 
@@ -103,6 +105,7 @@ static Function SB_PanelUpdate(graphOrPanel)
 	endif
 
 	SB_HandleCursorDisplay(graph)
+	SB_ScaleAxes(graph)
 	ControlUpdate/W=$panel popup_sweepBrowser_tAlignMaster
 End
 
@@ -403,6 +406,32 @@ static Function SB_HandleTimeAlignPropChange(graphOrPanel)
 	PostPlotTransformations(graph, pps)
 End
 
+static Function SB_ScaleAxes(graphOrPanel)
+	string graphOrPanel
+
+	string panel, graph
+	variable visXRange, equalY, equalYIgn, level
+
+	panel      = SB_GetSweepBrowserLeftPanel(graphOrPanel)
+	graph      = GetMainWindow(panel)
+	visXRange  = GetCheckBoxState(panel, "check_SB_visibleXRange")
+	equalY     = GetCheckBoxState(panel, "check_SB_equalYRanges")
+	equalYIgn  = GetCheckBoxState(panel, "check_SB_equalYIgnLevelCross")
+
+	ASSERT(visXRange + equalY + equalYIgn <= 1, "Only one scaling mode is allowed to be selected")
+
+	if(visXRange)
+		AutoscaleVertAxisVisXRange(graph)
+	elseif(equalY)
+		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=0)
+	elseif(equalYIgn)
+		level = GetSetVariable(panel, "setvar_SB_equalYLevel")
+		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=1, level=level)
+	else
+		// do nothing
+	endif
+End
+
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
@@ -488,6 +517,18 @@ Function/DF SB_CreateNewSweepBrowser()
 	Button button_SweepBrowser_DoTimeAlign,pos={113,174},size={30,20},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	PopupMenu popup_sweep_selector,pos={13,91},size={127,21},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,mode=12,popvalue="",value= #("SB_GetSweepList(\"" + graph + "\")")
+	GroupBox group_SB_axes_scaling,pos={11,310},size={133,60},title="Axes Scaling"
+	CheckBox check_SB_visibleXRange,pos={19,329},size={42,14},proc=SB_AxisScaling,title="Vis X"
+	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
+	CheckBox check_SB_visibleXRange,value= 0
+	CheckBox check_SB_equalYRanges,pos={69,329},size={55,14},proc=SB_AxisScaling,title="Equal Y"
+	CheckBox check_SB_equalYRanges,help={"Equalize the vertical axes ranges"},value= 0
+	CheckBox check_SB_equalYIgnLevelCross,pos={19,348},size={75,14},proc=SB_AxisScaling,title="Equal Y ign."
+	CheckBox check_SB_equalYIgnLevelCross,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
+	CheckBox check_SB_equalYIgnLevelCross,value= 0
+	SetVariable setvar_SB_equalYLevel,pos={98,348},size={25,16},proc=SB_AxisScalingLevelCross
+	SetVariable setvar_SB_equalYLevel,help={"Crossing level value for 'Equal Y ign.\""}
+	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0,disable=2
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,383) as "Analysis Results"
 	ModifyPanel fixedSize=0
@@ -691,6 +732,51 @@ Function SB_DoTimeAlignment(ba) : ButtonControl
 	switch( ba.eventCode )
 		case 2: // mouse up
 			SB_HandleTimeAlignPropChange(ba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_AxisScaling(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string ctrls, panel
+	variable numCtrls, i
+	switch( cba.eventCode )
+		case 2: // mouse up
+			panel = cba.win
+			if(cba.checked)
+				ctrls = ListMatch(AXES_SCALING_CHECKBOXES, "!" + cba.ctrlName)
+				numCtrls = ItemsInList(ctrls)
+				for(i = 0; i < numCtrls; i += 1)
+					SetCheckBoxState(panel, StringFromList(i, ctrls), CHECKBOX_UNSELECTED)
+				endfor
+			endif
+
+			if(GetCheckBoxState(panel, "check_SB_equalYIgnLevelCross"))
+				EnableControl(panel, "setvar_SB_equalYLevel")
+			else
+				DisableControl(panel, "setvar_SB_equalYLevel")
+			endif
+
+			SB_ScaleAxes(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_AxisScalingLevelCross(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			if(GetCheckBoxState(sva.win, "check_SB_equalYIgnLevelCross"))
+				SB_ScaleAxes(sva.win)
+			endif
 			break
 	endswitch
 

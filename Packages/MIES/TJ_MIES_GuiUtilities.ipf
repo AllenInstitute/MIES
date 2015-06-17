@@ -792,3 +792,22 @@ Function RestoreCursor(graph, cursorInfo)
 
 	Execute StringByKey("RECREATION", cursorInfo)
 End
+
+/// @brief Autoscale all vertical axes in the visible x range
+Function AutoscaleVertAxisVisXRange(graph)
+	string graph
+
+	string axList, axis
+	variable i, numAxes, axisOrient
+
+	axList = AxisList(graph)
+	numAxes = ItemsInList(axList)
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+
+		axisOrient = GetAxisOrientation(graph, axis)
+		if(axisOrient == AXIS_ORIENTATION_LEFT || axisOrient == AXIS_ORIENTATION_RIGHT)
+			SetAxis/W=$graph/A=2 $axis
+		endif
+	endfor
+End

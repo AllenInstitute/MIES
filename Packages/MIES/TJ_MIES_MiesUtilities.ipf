@@ -1420,3 +1420,108 @@ static Function CalculateFeatureLoc(wv, mode, level, first, last)
 		return V_LevelX
 	endif
 End
+
+/// @brief Equalize all vertical axes ranges so that they cover the same range
+///
+/// @param graph graph
+/// @param ignoreAxesWithLevelCrossing [optional, defaults to false] ignore all vertical axis which
+/// cross the given level in the visible range
+/// @param level [optional, defaults to zero] level to be used for ignoreAxesWithLevelCrossing=1`
+Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
+	string graph
+	variable ignoreAxesWithLevelCrossing
+	variable level
+
+	string axList, axis, traceList, trace, info
+	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd, axisWithMaxYRange
+	variable beginY, endY
+	variable maxYRange, numTraces
+
+	if(ParamIsDefault(ignoreAxesWithLevelCrossing))
+		ignoreAxesWithLevelCrossing = 0
+	else
+		ignoreAxesWithLevelCrossing = !!ignoreAxesWithLevelCrossing
+	endif
+
+	if(ParamIsDefault(level))
+		level = 0
+	else
+		ASSERT(ignoreAxesWithLevelCrossing, "Optional argument level makes only sense if ignoreAxesWithLevelCrossing is enabled")
+	endif
+
+	GetAxis/W=$graph/Q bottom
+	ASSERT(!V_flag, "Axis bottom expected to be used in the graph")
+	xRangeBegin = V_min
+	xRangeEnd   = V_max
+
+	traceList = GetAllSweepTraces(graph)
+	numTraces = ItemsInList(traceList)
+	axList = AxisList(graph)
+	numAxes = ItemsInList(axList)
+
+	Make/FREE/D/N=(numAxes, 2) YValues = NaN
+	SetDimLabel COLS, 0, minimum, YValues
+	SetDimLabel COLS, 1, maximum, YValues
+
+	// collect the y ranges of the visible x range of all vertical axis
+	// respecting ignoreAxesWithLevelCrossing
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+
+		axisOrient = GetAxisOrientation(graph, axis)
+		if(axisOrient != AXIS_ORIENTATION_LEFT && axisOrient != AXIS_ORIENTATION_RIGHT)
+			continue
+		endif
+
+		for(j = 0; j < numTraces; j += 1)
+			trace = StringFromList(j, traceList)
+			info = TraceInfo(graph, trace, 0)
+			if(cmpstr(axis, StringByKey("YAXIS", info)))
+				continue
+			endif
+
+			WAVE wv = TraceNameToWaveRef(graph, trace)
+
+			if(ignoreAxesWithLevelCrossing)
+				FindLevel/Q/R=(xRangeBegin, xRangeEnd) wv, level
+				if(!V_flag)
+					continue
+				endif
+			endif
+
+			WaveStats/M=2/Q/R=(xRangeBegin, xRangeEnd) wv
+			YValues[i][%minimum] = V_min
+			YValues[i][%maximum] = V_max
+			if(abs(V_max - V_min) > maxYRange)
+				maxYRange = abs(V_max - V_min)
+				axisWithMaxYRange = i
+			endif
+		endfor
+	endfor
+
+	if(maxYRange == 0) // too few traces
+		return NaN
+	endif
+
+	// and now set vertical axis ranges to the maximum
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+
+		axisOrient = GetAxisOrientation(graph, axis)
+		if(axisOrient != AXIS_ORIENTATION_LEFT && axisOrient != AXIS_ORIENTATION_RIGHT)
+			continue
+		endif
+
+		if(!IsFinite(YValues[i][%minimum]) || !IsFinite(YValues[i][%minimum]))
+			continue
+		endif
+
+		beginY = YValues[i][%minimum]
+		endY   = YValues[i][%minimum] + maxYRange
+		DebugPrint("Setting new axis ranges for:", str=axis)
+		DebugPrint("beginY:", var=beginY)
+		DebugPrint("endY:", var=endY)
+
+		SetAxis/W=$graph $axis, beginY, endY
+	endfor
+End

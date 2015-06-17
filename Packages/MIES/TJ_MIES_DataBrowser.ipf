@@ -396,6 +396,11 @@ Window DataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataBrowser_SweepStep,userdata(lastSweep)=  "0",fSize=12
 	SetVariable setvar_DataBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
+	PopupMenu popup_DB_AutoScaleVertAxVisX,pos={180,681},size={110,21},bodyWidth=110,proc=DB_ScaleAxisPopup,title="Autoscale Y Axis"
+	PopupMenu popup_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo)= A"!!,GD!!#D:5QF.+!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	PopupMenu popup_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_DB_AutoScaleVertAxVisX,mode=0,value= #"\"Visible X range\""
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
@@ -668,6 +673,18 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			endif
 
 			DB_PlotSweep(panelTitle)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_ScaleAxisPopup(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			AutoscaleVertAxisVisXRange(DB_GetMainGraph(pa.win))
 			break
 	endswitch
 
