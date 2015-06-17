@@ -21,7 +21,6 @@ static Function RA_HandleITI(panelTitle)
 	string panelTitle
 
 	variable ITI
-	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 
 	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
@@ -34,8 +33,7 @@ static Function RA_HandleITI(panelTitle)
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
-	MAKE/O/N = 0 $TestPulsePath/Wave=TestPulse
-	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
+	WAVE TestPulse = GetTestPulse()
 	TP_UpdateTestPulseWave(TestPulse,panelTitle)
 
 	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
@@ -103,7 +101,6 @@ Function RA_Counter(panelTitle)
 	variable TotTrials
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
@@ -191,7 +188,6 @@ End
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
 
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)
@@ -216,7 +212,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 		Killvariables Count
 		killvariables /z Start, RunTime
 		Killstrings /z FunctionNameA, FunctionNameB
-		killwaves /f TestPulse
 	endif
 End
 //====================================================================================================
@@ -303,7 +298,6 @@ Function RA_CounterMD(panelTitle)
 	variable ITI
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
@@ -436,7 +430,6 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	WAVE TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)

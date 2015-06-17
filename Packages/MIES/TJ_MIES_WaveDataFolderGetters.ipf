@@ -1417,6 +1417,23 @@ Function/S GetWBSvdStimSetTTLPathAsString()
 	return GetWBSvdStimSetPathAsString() + ":TTL"
 End
 
+/// @brief Return the testpulse stimulus set
+Function/WAVE GetTestPulse()
+
+	dfref dfr = GetWBSvdStimSetDAPath()
+	WAVE/Z/SDFR=dfr wv = TestPulse
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	/// create dummy wave
+	Make/N=(0) dfr:TestPulse/Wave=wv
+	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", wv
+
+	return wv
+End
+
 /// @brief Return the parameter wave for the wave builder panel
 ///
 /// Rows:
