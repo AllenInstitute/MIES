@@ -21,7 +21,6 @@ static Function RA_HandleITI(panelTitle)
 	string panelTitle
 
 	variable ITI
-	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 
 	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
@@ -34,8 +33,7 @@ static Function RA_HandleITI(panelTitle)
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
-	MAKE/O/N = 0 $TestPulsePath/Wave=TestPulse
-	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
+	WAVE TestPulse = GetTestPulse()
 	TP_UpdateTestPulseWave(TestPulse,panelTitle)
 
 	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
@@ -66,7 +64,6 @@ Function RA_Start(panelTitle)
 	variable ITI
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -102,8 +99,6 @@ Function RA_Counter(panelTitle)
 
 	variable TotTrials
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
@@ -182,17 +177,11 @@ static Function RA_FinishAcquisition(panelTitle)
 
 	ITC_StopITCDeviceTimer(panelTitle)
 	DAP_OneTimeCallAfterDAQ(panelTitle)
-
-	KillVariables/Z Count
-	KillVariables/Z Start, RunTime
-	KillStrings /z FunctionNameA, FunctionNameB
 End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
 
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)
 
@@ -210,13 +199,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	if(Count < (TotTrials - 1))
 		RA_HandleITI(panelTitle)
 	else
-		DAP_OneTimeCallAfterDAQ(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
-		print "Repeated acquisition is complete"
-		Killvariables Count
-		killvariables /z Start, RunTime
-		Killstrings /z FunctionNameA, FunctionNameB
-		killwaves /f TestPulse
+		RA_FinishAcquisition(panelTitle)
 	endif
 End
 //====================================================================================================
@@ -228,7 +211,6 @@ Function RA_StartMD(panelTitle)
 	variable i = 0
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
@@ -302,8 +284,6 @@ Function RA_CounterMD(panelTitle)
 	variable TotTrials
 	variable ITI
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	wave TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
@@ -435,8 +415,6 @@ End
 Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	WAVE TestPulse = root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse
 	variable ITI
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)
@@ -500,13 +478,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	if(Count < (TotTrials - 1))
 		RA_HandleITI_MD(panelTitle)
 	else
-		print "totalTrials =", TotTrials
-		DAP_OneTimeCallAfterDAQ(panelTitle)
-		print "Repeated acquisition is complete"
-		print "**************************Killing count on:", panelTitle
-		Killvariables Count
-		ITC_StopITCDeviceTimer(panelTitle)
-		
+		RA_FinishAcquisition(panelTitle)
+
 		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
 			print "*****************path to list of follower devices exists"
 			numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)

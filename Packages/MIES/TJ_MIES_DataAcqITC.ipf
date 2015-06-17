@@ -347,8 +347,8 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 	DAP_RestoreTTLState(panelTitle)
 	EnableControl(panelTitle, "StartTestPulseButton")
 
-	KilLVariables/Z  StopCollectionPoint, ADChannelToMonitor, BackgroundTaskActive
-	KillStrings/Z root:MIES:ITCDevices:PanelTitleG
+	DFREF dfr = GetITCDevicesFolder()
+	KillStrings/Z dfr:PanelTitleG
 
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)

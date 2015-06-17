@@ -158,6 +158,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	pointsInTPWave = (2 * pulseDuration) * 200
 	Redimension/N=(pointsInTPWave) TestPulse
+	FastOp TestPulse = 0
 	TestPulse[round(0.25 * pointsInTPWave), round(0.75 * pointsInTPWave)] = amplitudeVC
 End
 
@@ -188,7 +189,6 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
 	variable headstage
-	string TestPulsePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:TestPulse"
 
 	AbortOnValue DAP_CheckSettings(panelTitle),1
 
@@ -206,10 +206,8 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
-	Make/O/N=0 $TestPulsePath/Wave=TestPulse
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse
-
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	WAVE TestPulse = GetTestPulse()
 	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 
 	Make/FREE/N=8 SelectedDACWaveList

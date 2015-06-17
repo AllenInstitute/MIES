@@ -435,12 +435,7 @@ static Function DAM_TPSetup(panelTitle)
 	TP_StoreDAScale(SelectedDACScale,panelTitle)
 	TP_SetDAScaleToOne(panelTitle)
 
-	// creates test pulse wave
-	TestPulsePath = GetWBSvdStimSetDAPathAsString() + ":TestPulse"
-	make /o /n = 0 $TestPulsePath
-	wave TestPulse = $TestPulsePath
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", TestPulse // test pulse wave made at max possible samp frequency
-
+	WAVE TestPulse = GetTestPulse()
 	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
 
 	NVAR duration = $GetTestpulseDuration(panelTitle)
