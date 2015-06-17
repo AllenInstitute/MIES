@@ -499,6 +499,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetActiveSubwindow ##
 
 	SB_PanelUpdate(graph)
+	WMZoomBrowser#AddZoomBrowserPanel()
 
 	return sweepBrowserDFR
 End

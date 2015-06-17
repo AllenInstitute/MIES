@@ -3,6 +3,7 @@
 
 // stock igor
 #include <Resize Controls>
+#include <ZoomBrowser>
 
 // third party includes
 #include "ACL_TabUtilities"
