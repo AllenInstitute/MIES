@@ -177,10 +177,6 @@ static Function RA_FinishAcquisition(panelTitle)
 
 	ITC_StopITCDeviceTimer(panelTitle)
 	DAP_OneTimeCallAfterDAQ(panelTitle)
-
-	KillVariables/Z Count
-	KillVariables/Z Start, RunTime
-	KillStrings /z FunctionNameA, FunctionNameB
 End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
@@ -205,10 +201,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	else
 		DAP_OneTimeCallAfterDAQ(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
-		print "Repeated acquisition is complete"
-		Killvariables Count
-		killvariables /z Start, RunTime
-		Killstrings /z FunctionNameA, FunctionNameB
+		KillVariables count
 	endif
 End
 //====================================================================================================
@@ -490,7 +483,6 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		print "totalTrials =", TotTrials
 		DAP_OneTimeCallAfterDAQ(panelTitle)
 		print "Repeated acquisition is complete"
-		print "**************************Killing count on:", panelTitle
 		Killvariables Count
 		ITC_StopITCDeviceTimer(panelTitle)
 		
