@@ -3509,6 +3509,10 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 0
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
+
+	NVAR count = $GetCount(panelTitle)
+	KillVariables count
+
 End
 
 Function DAP_ButtonProc_AcquireData(ba) : ButtonControl

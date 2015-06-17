@@ -199,9 +199,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	if(Count < (TotTrials - 1))
 		RA_HandleITI(panelTitle)
 	else
-		DAP_OneTimeCallAfterDAQ(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
-		KillVariables count
+		RA_FinishAcquisition(panelTitle)
 	endif
 End
 //====================================================================================================
@@ -480,12 +478,8 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	if(Count < (TotTrials - 1))
 		RA_HandleITI_MD(panelTitle)
 	else
-		print "totalTrials =", TotTrials
-		DAP_OneTimeCallAfterDAQ(panelTitle)
-		print "Repeated acquisition is complete"
-		Killvariables Count
-		ITC_StopITCDeviceTimer(panelTitle)
-		
+		RA_FinishAcquisition(panelTitle)
+
 		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
 			print "*****************path to list of follower devices exists"
 			numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
