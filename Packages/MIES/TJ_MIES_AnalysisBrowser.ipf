@@ -630,6 +630,26 @@ Function AB_ExpandListEntry(row, col)
 	expBrowserSel[targetRow, targetRow + length - 1][]    = expBrowserSelBak[sourceRow - targetRow + p][q]
 End
 
+/// @returns 0 if the treeview could be expanded, zero otherwise
+static Function AB_ExpandIfCollapsed(sweepBrowser, row, subSectionColumn)
+	DFREF sweepBrowser
+	variable row, subSectionColumn
+
+	WAVE expBrowserSel = GetExperimentBrowserGUISel()
+
+	ASSERT(subSectionColumn == EXPERIMENT_TREEVIEW_COLUMN || subSectionColumn == DEVICE_TREEVIEW_COLUMN, "Invalid subsection column")
+	if(!(expBrowserSel[row][subSectionColumn] & LISTBOX_TREEVIEW))
+		// entry is not a tree view
+		return 1
+	endif
+
+	if(!(expBrowserSel[row][subSectionColumn] & LISTBOX_TREEVIEW_EXPANDED))
+		AB_ExpandListEntry(row, subSectionColumn)
+		expBrowserSel[row][subSectionColumn] = expBrowserSel[row][subSectionColumn] | LISTBOX_TREEVIEW_EXPANDED
+		return 0
+	endif
+End
+
 /// @returns 0 if at least one sweep could be loaded, 1 otherwise
 static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColumn)
 	DFREF sweepBrowser
@@ -1006,6 +1026,24 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 			endif
 
 			DFREF sweepBrowserDFR = SB_CreateNewSweepBrowser()
+
+			// expand all selected treeviews
+			// as indizes might change during the loop run we have to determine the
+			// dimension size in the loop condition
+			for(i = 0; i < DimSize(indizes, ROWS); i += 1)
+				row = indizes[i]
+
+				// we have to refetch the selected entries
+				if(!AB_ExpandIfCollapsed(sweepBrowserDFR, row, EXPERIMENT_TREEVIEW_COLUMN))
+					WAVE indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+					i = 0
+				endif
+
+				if(!AB_ExpandIfCollapsed(sweepBrowserDFR, row, DEVICE_TREEVIEW_COLUMN))
+					WAVE indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+					i = 0
+				endif
+			endfor
 
 			// the matches might include rows with devices or experiments only.
 			// In that case we load everything from the experiment or device.
