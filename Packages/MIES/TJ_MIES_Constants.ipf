@@ -257,3 +257,12 @@ Constant TEST_PULSE_BG_MULTI_DEVICE  = 0x02
 Constant TEST_PULSE_FG_SINGLE_DEVICE = 0x04
 // foreground multi device does not exist
 /// @}
+
+/// @name Constants for GetAxisOrientation
+/// @anchor AxisOrientationConstants
+/// @{
+Constant AXIS_ORIENTATION_LEFT   = 0x01
+Constant AXIS_ORIENTATION_RIGHT  = 0x02
+Constant AXIS_ORIENTATION_BOTTOM = 0x04
+Constant AXIS_ORIENTATION_TOP    = 0x08
+/// @}

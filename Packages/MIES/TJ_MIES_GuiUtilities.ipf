@@ -552,15 +552,8 @@ Function GetAxisRange(graph, axis, minimum, maximum)
 	endif
 End
 
-/// @name Constants for GetAxisOrientation
-/// @{
-static Constant AXIS_ORIENTATION_LEFT   = 0x01
-static Constant AXIS_ORIENTATION_RIGHT  = 0x02
-static Constant AXIS_ORIENTATION_BOTTOM = 0x04
-static Constant AXIS_ORIENTATION_TOP    = 0x08
-/// @}
-
 /// @brief Return the orientation of the axis as numeric value
+/// @returns one of @ref AxisOrientationConstants
 Function GetAxisOrientation(graph, axes)
 	string graph, axes
 
@@ -798,4 +791,23 @@ Function RestoreCursor(graph, cursorInfo)
 	endif
 
 	Execute StringByKey("RECREATION", cursorInfo)
+End
+
+/// @brief Autoscale all vertical axes in the visible x range
+Function AutoscaleVertAxisVisXRange(graph)
+	string graph
+
+	string axList, axis
+	variable i, numAxes, axisOrient
+
+	axList = AxisList(graph)
+	numAxes = ItemsInList(axList)
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+
+		axisOrient = GetAxisOrientation(graph, axis)
+		if(axisOrient == AXIS_ORIENTATION_LEFT || axisOrient == AXIS_ORIENTATION_RIGHT)
+			SetAxis/W=$graph/A=2 $axis
+		endif
+	endfor
 End
