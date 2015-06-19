@@ -185,8 +185,8 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 				thisXMin= thisXMax
 				thisXMax= tmp
 			endif
-			firstAvePoint= ceil(x2pnt(AveW,thisXMin))	// truncate the partial point numbers...
-			lastAvePoint= floor(x2pnt(AveW,thisXMax))	// ... by indenting slightly
+			firstAvePoint= ceil(x2pntWithFrac(AveW,thisXMin))	// truncate the partial point numbers...
+			lastAvePoint= floor(x2pntWithFrac(AveW,thisXMax))	// ... by indenting slightly
 			WAVE wy=$StringFromList(i,ListOfWaves)
 			Wave/Z wx= $StringFromList(i,ListOfXWaves)
 			if(WaveExists(wx))
@@ -216,8 +216,8 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 					thisXMin= thisXMax
 					thisXMax= tmp
 				endif
-				firstAvePoint= ceil(x2pnt(AveW,thisXMin))	// truncate the partial point numbers...
-				lastAvePoint= floor(x2pnt(AveW,thisXMax))	// ... by indenting slightly
+				firstAvePoint= ceil(x2pntWithFrac(AveW,thisXMin))	// truncate the partial point numbers...
+				lastAvePoint= floor(x2pntWithFrac(AveW,thisXMax))	// ... by indenting slightly
 				WAVE wy=$StringFromList(i,ListOfWaves)
 				Wave/Z wx= $StringFromList(i,ListOfXWaves)
 				for (point = firstAvePoint; point <= lastAvePoint; point += 1)
@@ -263,5 +263,14 @@ static Function MonotonicCheck(wx,smallestXIncrement)
 	smallestXIncrement= V_Min
 
 	return isMonotonic && smallestXIncrement != 0
+End
+
+// We need the fractional point number but x2pnt
+// doesn't return that.
+static Function x2pntWithFrac(wv, scaledDim)
+	WAVE wv
+	variable scaledDim
+
+	return (scaledDim - DimOffset(wv, 0)) / DimDelta(wv,0)
 End
 /// @}
