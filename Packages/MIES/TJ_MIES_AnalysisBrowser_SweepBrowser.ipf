@@ -210,6 +210,137 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	return GetLastSetting(numericValues, sweep, key)
 End
 
+/// @brief Duplicate the sweep browser graph to a user given folder and name
+///
+/// Only duplicates the main graph without external subwindows
+static Function SB_DuplicateSweepBrowser(graph)
+	string graph
+
+	string trace, folder, newPrefix, analysisPrefix, relativeDest
+	string newGraphName, graphMacro, saveDFR, traceList
+	variable numTraces, i, pos, numLines, useCursorRange, resetWaveZero
+	variable beginX, endX, xcsrA, xcsrB, beginXPerWave, endXPerWave
+	variable manualRangeBegin, manualRangeEnd, clipXRange
+
+	folder           = "myFolder"
+	newGraphName     = "myGraph"
+	useCursorRange   = 0
+	resetWaveZero    = 0
+	manualRangeBegin = NaN
+	manualRangeEnd   = NaN
+
+	Prompt folder,           "Datafolder: "
+	Prompt newGraphName,     "Graph name: "
+	Prompt useCursorRange,   "Duplicate only the cursor range: "
+	Prompt manualRangeBegin, "Manual X range begin: "
+	Prompt manualRangeEnd,   "Manual X range end: "
+	Prompt resetWaveZero,    "Reset the wave's dim offset to zero: "
+
+	DoPrompt/HELP="No help available" "Please provide some information for the duplicated graph", folder, newGraphName, useCursorRange, manualRangeBegin, manualRangeEnd, resetWaveZero
+	if(V_flag)
+		return NaN
+	endif
+
+	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	newPrefix      = GetDataFolder(1, UniqueDataFolder($"root:", folder))
+	newPrefix      = RemoveEnding(newPrefix, ":")
+	analysisPrefix = GetAnalysisFolderAS()
+
+	if(useCursorRange)
+		xcsrA  = xcsr(A, graph)
+		xcsrB  = xcsr(B, graph)
+		beginX = min(xcsrA, xcsrB)
+		endX   = max(xcsrA, xcsrB)
+		clipXRange = 1
+	elseif(isFinite(manualRangeBegin) && IsFinite(manualRangeEnd))
+		beginX = manualRangeBegin
+		endX   = manualRangeEnd
+		clipXRange = 1
+	endif
+
+	traceList = TraceNameList(graph, ";", 0 + 1)
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+
+		// the waves can be in two locations, either in root:$sweepBrowser
+		// or done below in root:MIES:analysis:$Experiment:$Device:sweep:$X
+		DFREF loc = GetWavesDataFolderDFR(wv)
+		if(DataFolderRefsEqual(loc, sweepBrowserDFR))
+			DFREF dfr = createDFWithAllParents(newPrefix)
+		else
+			relativeDest = RemovePrefix(GetDataFolder(1, loc), startStr=analysisPrefix)
+			DFREF dfr = createDFWithAllParents(newPrefix + relativeDest)
+		endif
+
+		if(clipXRange)
+			beginXPerWave = max(leftx(wv), beginX)
+			endXPerWave   = min(rightx(wv), endX)
+		else
+			beginXPerWave = leftx(wv)
+			endXPerWave   = rightx(wv)
+		endif
+
+		Duplicate/R=(beginXPerWave, endXPerWave) wv, dfr:$NameOfWave(wv)/WAVE=dup
+		WaveClear wv
+		if(clipXRange)
+			AddEntryIntoWaveNoteAsList(dup, "CursorA", var=beginX)
+			AddEntryIntoWaveNoteAsList(dup, "CursorB", var=endX)
+		endif
+		if(resetWaveZero)
+			AddEntryIntoWaveNoteAsList(dup, "OldDimOffset", var=DimOffset(dup, ROWS))
+			SetScale/P x, 0, DimDelta(dup, ROWS), WaveUnits(dup, ROWS), dup
+		endif
+	endfor
+
+	graphMacro = WinRecreation(graph, 0)
+
+	// everything we don't need anymore starts in the line with SetWindow
+	// ranging to the macro's end
+	pos = strsearch(graphMacro, "SetWindow kwTopWin" , 0)
+	if(pos != -1)
+		graphMacro = graphMacro[0, pos - 2]
+	endif
+	// remove setting the CDF, we do that ourselves later on
+	graphMacro = ListMatch(graphMacro, "!*SetDataFolder fldrSav*", "\r")
+
+	// remove setting the bottom axis range, as this might be wrong
+	graphMacro = ListMatch(graphMacro, "!*SetAxis bottom*", "\r")
+
+	// replace the old data location with the new one
+	graphMacro = ReplaceString(analysisPrefix, graphMacro, newPrefix)
+
+	// replace relative reference to sweepBrowserDFR
+	// with absolut ones to newPrefix
+	folder = GetDataFolder(1, sweepBrowserDFR)
+	folder = RemovePrefix(folder, startStr="root:")
+	folder = ":::::::" + folder
+	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
+
+	saveDFR = GetDataFolder(1)
+	// The first three lines are:
+	// Window SweepBrowser1() : Graph
+	//		PauseUpdate; Silent 1		// building window...
+	// 		String fldrSav0= GetDataFolder(1)
+	numLines = ItemsInList(graphMacro, "\r")
+	for(i = 3; i < numLines; i += 1)
+		string line = StringFromList(i, graphMacro, "\r")
+		Execute/Q line
+	endfor
+
+	// rename the graph
+	newGraphName = CleanUpName(newGraphName, 0)
+	if(windowExists(newGraphName))
+		newGraphName = UniqueName(newGraphName, 6, 0)
+	endif
+	SVAR S_name
+	RenameWindow $S_name, $newGraphName
+
+	Execute/P/Q "KillStrings/Z S_name"
+	Execute/P/Q "SetDataFolder " + saveDFR
+End
+
 /// @brief Return a list of experiments from which the sweeps in the sweep browser
 /// graph originated from
 ///
@@ -534,13 +665,13 @@ Function/DF SB_CreateNewSweepBrowser()
 
 	SB_GetSweepBrowserMap(sweepBrowserDFR)
 
-	Display/W=(220.5,208.25,654,495.5)/K=1/N=$UniqueName("SweepBrowser", 9, 1)
+	Display /W=(169.5,269,603,574.25)/K=1/N=$UniqueName("SweepBrowser", 9, 1)
 	string/G sweepBrowserDFR:graph = S_name
 	SVAR/SDFR=sweepBrowserDFR graph
 
 	SetWindow $graph, hook(cleanup)=SB_SweepBrowserWindowHook, userdata(folder)=GetDataFolder(1, sweepBrowserDFR)
 
-	NewPanel/HOST=#/EXT=1/W=(156,0,0,383) as " "
+	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
@@ -584,8 +715,9 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_SB_equalYLevel,pos={98,348},size={25,16},proc=SB_AxisScalingLevelCross
 	SetVariable setvar_SB_equalYLevel,help={"Crossing level value for 'Equal Y ign.\""}
 	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0,disable=2
+	Button button_SweepBrowser_DupGraph,pos={32,376},size={88,25},proc=SB_ButtonProc_DupGraph,title="Duplicate Graph"
 	SetActiveSubwindow ##
-	NewPanel/HOST=#/EXT=0/W=(0,0,214,383) as "Analysis Results"
+	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
 	ModifyPanel fixedSize=0
 	NewNotebook /F=0 /N=NB0 /W=(16,29,196,362) /HOST=#
 	Notebook kwTopWin, defaultTab=20, statusWidth=0, autoSave=1
@@ -882,6 +1014,18 @@ Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
 			CheckBox check_SB_channelSel_AD_14,pos={13,316},size={30,14},title="14",value= 0, proc=SB_CheckboxChangedSettings
 			CheckBox check_SB_channelSel_AD_15,pos={13,338},size={30,14},title="15",value= 0, proc=SB_CheckboxChangedSettings
 			SB_ChannelSelWaveToGUI(graph)
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_ButtonProc_DupGraph(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			SB_DuplicateSweepBrowser(GetMainWindow(ba.win))
 			break
 	endswitch
 
