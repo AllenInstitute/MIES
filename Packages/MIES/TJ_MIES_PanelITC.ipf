@@ -4186,8 +4186,9 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 	return 0
 End
-//=========================================================================================
-Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices)
+
+/// @brief Check the settings across yoked devices
+static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices)
 	string listOfFollowerDevices
 
 	string panelTitle
@@ -4245,13 +4246,14 @@ End
 
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
-/// For invalid settings an informative message is printed into the history area
+/// For invalid settings an informative message is printed into the history area.
+/// @param panelTitle device
 /// @return 0 for valid settings, 1 for invalid settings
 Function DAP_CheckSettings(panelTitle)
 	string panelTitle
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
-	variable mode, headStage, ctrlNo
+	variable headStage
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
@@ -4376,8 +4378,7 @@ Function DAP_CheckSettings(panelTitle)
 			if(!statusHS[i])
 				continue
 			endif
-			sprintf ctrl, "Check_DataAcq_HS_%02d", i
-			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
+
 			if(DAP_CheckHeadStage(panelTitle, headStage, mode))
 				return 1
 			endif
@@ -4393,13 +4394,13 @@ Function DAP_CheckSettings(panelTitle)
 End
 
 /// @brief Returns 1 if the headstage has invalid settings, and zero if everything is okay
-Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
+static Function DAP_CheckHeadStage(panelTitle, headStage)
 	string panelTitle
-	variable headStage, clampMode
+	variable headStage
 
 	string ctrl, dacWave, endWave, unit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale
+	variable gain, scale, ctrlNo, clampMode
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -4412,6 +4413,9 @@ Function DAP_CheckHeadStage(panelTitle, headStage, clampMode)
 		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
 		return 1
 	endif
+
+	sprintf ctrl, "Check_DataAcq_HS_%02d", headStage
+	DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
 
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
