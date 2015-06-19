@@ -190,7 +190,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	variable headstage
 
-	AbortOnValue DAP_CheckSettings(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	PauseUpdate
 	SetDataFolder root:
@@ -241,7 +241,7 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
 	variable headstage
-	AbortOnValue DAP_CheckSettings(panelTitle),1
+	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	SetDataFolder root:
 

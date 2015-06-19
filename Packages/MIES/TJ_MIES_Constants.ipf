@@ -148,7 +148,8 @@ Constant SAVE_AND_CLEAR            = 0x01
 Constant SAVE_AND_SPLIT            = 0x02
 /// @}
 
-/// @name Constants for DC_ConfigureDataForITC
+/// @name Constants for both data acquisition modes
+/// @anchor DataAcqModes
 /// @{
 Constant DATA_ACQUISITION_MODE = 0
 Constant TEST_PULSE_MODE       = 1
