@@ -426,6 +426,38 @@ Function/S BuildDeviceString(deviceType, deviceNumber)
 	return deviceType + "_Dev_" + deviceNumber
 End
 
+static Function RemoveDisabledChannels(channelSelWave, ADChannelList, DAChannelList, configNote)
+	WAVE/Z channelSelWave
+	string &ADChannelList
+	string &DAChannelList
+	string &configNote
+
+	variable numADCs, numDACs, i, chan
+
+	if(!WaveExists(channelSelWave))
+		return NaN
+	endif
+
+	numADCs = ItemsInList(ADChannelList)
+	numDACs = ItemsInList(DAChannelList)
+
+	for(i = numADCs - 1; i >= 0; i -= 1)
+		chan = str2num(StringFromList(i, ADChannelList))
+		if(!channelSelWave[chan][%AD])
+			ADChannelList = RemoveListItem(i, ADChannelList)
+			configNote    = RemoveListItem(numDACs + i, configNote)
+		endif
+	endfor
+
+	for(i = numDACs - 1; i >= 0; i -= 1)
+		chan = str2num(StringFromList(i, DAChannelList))
+		if(!channelSelWave[chan][%DA])
+			DAChannelList = RemoveListItem(i, DAChannelList)
+			configNote    = RemoveListItem(i, configNote)
+		endif
+	endfor
+End
+
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
@@ -440,7 +472,8 @@ End
 /// @param overlayChannels      use a separate axis for each DA/AD channel, yes or no
 /// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
 /// @param sweepWave [optional] sweep wave with multiple columns
-Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, [sweepDFR, sweepWave])
+/// @param channelSelWave [optional] channel selection wave
+Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, [sweepDFR, sweepWave, channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -448,6 +481,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	variable displayDAC, overlaySweep, overlayChannels
 	DFREF sweepDFR
 	WAVE/Z sweepWave
+	WAVE/Z channelSelWave
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -455,6 +489,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 
 	string ADChannelList = GetADCListFromConfig(config)
 	string DAChannelList = GetDACListFromConfig(config)
+	string configNote = note(config)
+	RemoveDisabledChannels(channelSelWave, ADChannelList, DAChannelList, configNote)
 	variable NumberOfDAchannels = ItemsInList(DAChannelList)
 	variable NumberOfADchannels = ItemsInList(ADChannelList)
 	// the max allows for uneven number of AD and DA channels
@@ -465,7 +501,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	variable firstADC = 1
 
 	string axis, trace, adc, dac, traceType
-	string configNote = note(config)
 	string unit
 
 	if(!ParamIsDefault(sweepDFR))
@@ -508,6 +543,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	WAVE/Z statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
 
 	for(i = 0; i < numChannels; i += 1)
+
+		DEBUGPRINT("DAYAxisHigh", var=DAYAxisHigh)
+		DEBUGPRINT("DAYAxisLow", var=DAYAxisLow)
+		DEBUGPRINT("ADYAxisHigh", var=ADYAxisHigh)
+		DEBUGPRINT("ADYAxisLow", var=ADYAxisLow)
+
 		if(displayDAC && i < NumberOfDAchannels)
 			dac = StringFromList(i, DAChannelList)
 			traceType = "DA" + dac

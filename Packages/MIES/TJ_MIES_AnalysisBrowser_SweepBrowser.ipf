@@ -2,6 +2,12 @@
 
 static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"
 
+static Function/S SB_GetSweepBrowserChanSelPanel(graphOrPanel)
+	string graphOrPanel
+
+	return GetMainWindow(graphOrPanel) + "#channelSel"
+End
+
 static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
 	string graphOrPanel
 
@@ -123,6 +129,53 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
 
 	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = SB_PanelUpdate
+End
+
+static Function/WAVE SB_GetChannelSelWave(graph)
+	string graph
+
+	DFREF dfr = $SB_GetSweepBrowserFolder(graph)
+
+	WAVE/Z/SDFR=dfr wv = channelSelection
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS), 2) dfr:channelSelection/Wave=wv
+
+	SetDimLabel COLS, 0, DA, wv
+	SetDimLabel COLS, 1, AD, wv
+
+	// by default all channels are selected
+	wv = 1
+
+	return wv
+End
+
+static Function SB_ParseChannelSelCtrl(ctrl, channelType, channelNum)
+	string ctrl
+	string &channelType
+	variable &channelNum
+
+	sscanf ctrl, "check_SB_channelSel_%[^_]_%d", channelType, channelNum
+	ASSERT(V_flag == 2, "Unexpected control name format")
+End
+
+static Function SB_ChannelSelWaveToGUI(graph)
+	string graph
+
+	string list, channelType, ctrl, panel
+	variable channelNum, numEntries, i
+
+	WAVE channelSel = SB_GetChannelSelWave(graph)
+	panel = SB_GetSweepBrowserChanSelPanel(graph)
+	list = ControlNameList(panel, ";", "check_SB_channelSel_*")
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+		SB_ParseChannelSelCtrl(ctrl, channelType, channelNum)
+		SetCheckBoxState(panel, ctrl, channelSel[channelNum][%$channelType])
+	endfor
 End
 
 /// @brief Return numeric labnotebook entries
@@ -351,8 +404,9 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
 	overlaySweep    = GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay")
 	overlayChannels = GetCheckBoxState(panel, "check_sweepbrowser_OverlayChan")
+	WAVE channelSelWave = SB_GetChannelSelWave(graph)
 
-	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, displayDAC, overlaySweep, overlayChannels, sweepDFR=newSweepDFR)
+	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, displayDAC, overlaySweep, overlayChannels, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)
@@ -517,6 +571,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	Button button_SweepBrowser_DoTimeAlign,pos={113,174},size={30,20},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	PopupMenu popup_sweep_selector,pos={13,91},size={127,21},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,mode=12,popvalue="",value= #("SB_GetSweepList(\"" + graph + "\")")
+	Button button_SweepBrowser_OpenChanSel,pos={118,29},size={33,17},proc=SB_OpenChannelSelectionPanel,title="Chan"
 	GroupBox group_SB_axes_scaling,pos={11,310},size={133,60},title="Axes Scaling"
 	CheckBox check_SB_visibleXRange,pos={19,329},size={42,14},proc=SB_AxisScaling,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
@@ -571,15 +626,15 @@ End
 Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, win, ctrl
-	variable idx, checked
+	string graph, win, ctrl, channelType
+	variable idx, checked, channelNum
 	DFREF sweepDFR
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			ctrl    = cba.ctrlName
 			checked = cba.checked
-			win     = cba.win
+			win     = SB_GetSweepBrowserLeftPanel(cba.win)
 			graph   = GetMainWindow(win)
 
 			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
@@ -588,6 +643,10 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 				else
 					EnableListOfControls(win, "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan")
 				endif
+			elseif(StringMatch(ctrl, "check_SB_channelSel_*"))
+				WAVE channelSel = SB_GetChannelSelWave(graph)
+				SB_ParseChannelSelCtrl(cba.ctrlName, channelType, channelNum)
+				channelSel[channelNum][%$channelType] = checked
 			endif
 
 			idx   = GetPopupMenuIndex(win, "popup_sweep_selector")
@@ -777,6 +836,52 @@ Function SB_AxisScalingLevelCross(sva) : SetVariableControl
 			if(GetCheckBoxState(sva.win, "check_SB_equalYIgnLevelCross"))
 				SB_ScaleAxes(sva.win)
 			endif
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string graph
+	switch(ba.eventCode)
+		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
+			if(windowExists(SB_GetSweepBrowserChanSelPanel(graph)))
+				break
+			endif
+			NewPanel/HOST=$graph/EXT=1/W=(107,0,0,383)/N=channelSel as " "
+			// DAC
+			GroupBox group_SB_channelSel_DA,pos={56,5},size={44,199},title="DA"
+			CheckBox check_SB_channelSel_DA_0,pos={66,21},size={24,14},title="0",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_1,pos={66,42},size={24,14},title="1",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_2,pos={66,63},size={24,14},title="2",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_3,pos={66,84},size={24,14},title="3",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_4,pos={66,105},size={24,14},title="4",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_5,pos={66,126},size={24,14},title="5",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_6,pos={66,147},size={24,14},title="6",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_DA_7,pos={66,168},size={24,14},title="7",value= 0, proc=SB_CheckboxChangedSettings
+			// ADC
+			GroupBox group_SB_channelSel_AD,pos={5,5},size={45,360},title="AD"
+			CheckBox check_SB_channelSel_AD_0,pos={13,21},size={24,14},title="0",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_1,pos={13,42},size={24,14},title="1",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_2,pos={13,63},size={24,14},title="2",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_3,pos={13,84},size={24,14},title="3",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_4,pos={13,105},size={24,14},title="4",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_5,pos={13,126},size={24,14},title="5",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_6,pos={13,147},size={24,14},title="6",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_7,pos={13,168},size={24,14},title="7",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_8,pos={13,190},size={24,14},title="8",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_9,pos={13,211},size={24,14},title="9",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_10,pos={13,232},size={30,14},title="10",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_11,pos={13,253},size={30,14},title="11",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_12,pos={13,274},size={30,14},title="12",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_13,pos={13,295},size={30,14},title="13",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_14,pos={13,316},size={30,14},title="14",value= 0, proc=SB_CheckboxChangedSettings
+			CheckBox check_SB_channelSel_AD_15,pos={13,338},size={30,14},title="15",value= 0, proc=SB_CheckboxChangedSettings
+			SB_ChannelSelWaveToGUI(graph)
 			break
 	endswitch
 
