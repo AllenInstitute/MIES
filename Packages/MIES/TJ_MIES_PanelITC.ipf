@@ -3552,7 +3552,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 			SetDataFolder root:
 			panelTitle = ba.win
 
-			AbortOnValue DAP_CheckSettings(panelTitle),1
+			AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
@@ -3605,7 +3605,7 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 			SetDataFolder root:
 			panelTitle = ba.win
 
-			AbortOnValue DAP_CheckSettings(panelTitle),1
+			AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
@@ -4188,14 +4188,19 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 End
 
 /// @brief Check the settings across yoked devices
-static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices)
+static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	string listOfFollowerDevices
+	variable mode
 
 	string panelTitle
 	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderRepeatSets, leaderdDAQDelay
 	variable leaderdDAQ
 	variable i, numEntries
 	string leaderSampInt
+
+	if(mode == TEST_PULSE_MODE)
+		return 0
+	endif
 
 	leaderdDAQ       = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq  = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_RepeatAcq")
@@ -4248,9 +4253,11 @@ End
 ///
 /// For invalid settings an informative message is printed into the history area.
 /// @param panelTitle device
+/// @param mode       One of @ref DataAcqModes
 /// @return 0 for valid settings, 1 for invalid settings
-Function DAP_CheckSettings(panelTitle)
+Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
+	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
 	variable headStage
@@ -4261,6 +4268,8 @@ Function DAP_CheckSettings(panelTitle)
 		print "Invalid empty string for panelTitle, can not proceed"
 		return 1
 	endif
+
+	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
 	if(GetFreeMemory() < FREE_MEMORY_LOWER_LIMIT)
 		DFREF dfr = GetMiesPath()
@@ -4284,7 +4293,7 @@ Function DAP_CheckSettings(panelTitle)
 	if(DAP_DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices))
-			if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices))
+			if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
 				return 1
 			endif
 			list = AddListItem(list, listOfFollowerDevices, ";", inf)
@@ -4323,52 +4332,54 @@ Function DAP_CheckSettings(panelTitle)
 			return 1
 		endif
 
-		// check all selected TTLs
-		indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
-		Wave statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
-		numEntries = DimSize(statusTTL, ROWS)
-		for(i=0; i < numEntries; i+=1)
-			if(!statusTTL[i])
-				continue
-			endif
-
-			ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ttlWave = GetPopupMenuString(panelTitle, ctrl)
-			if(!CmpStr(ttlWave, NONE))
-				printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
-				return 1
-			endif
-
-			if(indexingEnabled)
-				ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-				endWave = GetPopupMenuString(panelTitle, ctrl)
-				if(!CmpStr(endWave, NONE))
-					printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
-					return 1
-				elseif(!CmpStr(ttlWave, endWave))
-					printf "(%s) Please select a indexing end wave different as the main wave for TTL channel %d\r", panelTitle, i
-					return 1
-				endif
-			endif
-		endfor
-
-		// for distributed acquisition all stim sets must be the same
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
-			numEntries = DimSize(statusDA, ROWS)
+		if(mode == DATA_ACQUISITION_MODE)
+			// check all selected TTLs
+			indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+			Wave statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
+			numEntries = DimSize(statusTTL, ROWS)
 			for(i=0; i < numEntries; i+=1)
-				if(!statusDA[i])
+				if(!statusTTL[i])
 					continue
 				endif
 
-				ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				dacWave = GetPopupMenuString(panelTitle, ctrl)
-				if(isEmpty(refDacWave))
-					refDacWave = dacWave
-				elseif(CmpStr(refDacWave, dacWave))
-					printf "(%s) Please select the same stim sets for all DACs when distributed acquisition is used\r", panelTitle
+				ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+				ttlWave = GetPopupMenuString(panelTitle, ctrl)
+				if(!CmpStr(ttlWave, NONE))
+					printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
 					return 1
 				endif
+
+				if(indexingEnabled)
+					ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+					endWave = GetPopupMenuString(panelTitle, ctrl)
+					if(!CmpStr(endWave, NONE))
+						printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
+						return 1
+					elseif(!CmpStr(ttlWave, endWave))
+						printf "(%s) Please select a indexing end wave different as the main wave for TTL channel %d\r", panelTitle, i
+						return 1
+					endif
+				endif
 			endfor
+
+			// for distributed acquisition all stim sets must be the same
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+				numEntries = DimSize(statusDA, ROWS)
+				for(i=0; i < numEntries; i+=1)
+					if(!statusDA[i])
+						continue
+					endif
+
+					ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+					dacWave = GetPopupMenuString(panelTitle, ctrl)
+					if(isEmpty(refDacWave))
+						refDacWave = dacWave
+					elseif(CmpStr(refDacWave, dacWave))
+						printf "(%s) Please select the same stim sets for all DACs when distributed acquisition is used\r", panelTitle
+						return 1
+					endif
+				endfor
+			endif
 		endif
 
 		// check all active headstages
@@ -4394,9 +4405,9 @@ Function DAP_CheckSettings(panelTitle)
 End
 
 /// @brief Returns 1 if the headstage has invalid settings, and zero if everything is okay
-static Function DAP_CheckHeadStage(panelTitle, headStage)
+static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
-	variable headStage
+	variable headStage, mode
 
 	string ctrl, dacWave, endWave, unit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
@@ -4498,22 +4509,24 @@ static Function DAP_CheckHeadStage(panelTitle, headStage)
 		return 1
 	endif
 
-	ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	dacWave = GetPopupMenuString(panelTitle, ctrl)
-	if(!CmpStr(dacWave, NONE) || !CmpStr(dacWave, "TestPulse"))
-		printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
-		return 1
-	endif
+	if(mode == DATA_ACQUISITION_MODE)
+		ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		dacWave = GetPopupMenuString(panelTitle, ctrl)
+		if(!CmpStr(dacWave, NONE) || !CmpStr(dacWave, "TestPulse"))
+			printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+			return 1
+		endif
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-		ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		endWave = GetPopupMenuString(panelTitle, ctrl)
-		if(!CmpStr(endWave, NONE))
-			printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
-			return 1
-		elseif(!CmpStr(dacWave, endWave))
-			printf "(%s) Please select a different indexing end wave than the DAC wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
-			return 1
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+			ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			endWave = GetPopupMenuString(panelTitle, ctrl)
+			if(!CmpStr(endWave, NONE))
+				printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+				return 1
+			elseif(!CmpStr(dacWave, endWave))
+				printf "(%s) Please select a different indexing end wave than the DAC wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+				return 1
+			endif
 		endif
 	endif
 
