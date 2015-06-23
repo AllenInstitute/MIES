@@ -527,6 +527,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		sweepTxTData[0][3][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+
+		itcDataColumn += 1
 	endfor
 
 	// Place TTL waves into ITCDataWave
