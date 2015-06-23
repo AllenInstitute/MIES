@@ -609,7 +609,7 @@ static Function DC_MakeITCTTLWave(RackNo, panelTitle)
 		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(a, TTLWaveList)
 		// assumes that the first active stim set is the largest one
 		if(needsInitialization)
-			Make/O/N=(DimSize(TTLStimSet, ROWS)) deviceDFR:TTLWave/Wave=TTLWave
+			Make/O/N=(DimSize(TTLStimSet, ROWS)) deviceDFR:TTLWave/Wave=TTLWave = 0
 			needsInitialization = 0
 		else
 			WAVE/SDFR=deviceDFR TTLWave
