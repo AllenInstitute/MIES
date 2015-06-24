@@ -1071,7 +1071,9 @@ Function ExecuteITCOperation(cmd)
 	Execute cmd
 
 	NVAR ITCError, ITCXOPError
-	sprintf msg, "ITCError=%#X, ITCXOPError=%#X", ITCError, ITCXOPError
+	// we only need the lower 32bits of the error
+	ITCError = ITCError & 0x00000000ffffffff
+	sprintf msg, "ITCError=%#x, ITCXOPError=%#x", ITCError, ITCXOPError
 	DEBUGPRINT("Result:", str=msg)
 
 	return ITCError != 0 || ITCXOPError != 0
