@@ -252,7 +252,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	KillVariables/Z count
 
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
 	DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
 	DAM_StartTestPulseMD(panelTitle)
