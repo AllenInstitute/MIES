@@ -267,3 +267,10 @@ Constant AXIS_ORIENTATION_RIGHT  = 0x02
 Constant AXIS_ORIENTATION_BOTTOM = 0x04
 Constant AXIS_ORIENTATION_TOP    = 0x08
 /// @}
+
+/// @name Constants for DAP_ToggleAcquisitionButton
+/// @anchor ToggleAcquisitionButtonConstants
+/// @{
+Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
+Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
+/// @}

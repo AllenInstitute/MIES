@@ -7,9 +7,6 @@ static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hard
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
 
-static Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
-static Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
-
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
@@ -4813,7 +4810,11 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
-static Function DAP_ToggleAcquisitionButton(panelTitle, mode)
+/// @brief Set the acquisition button text and color
+///
+/// @param panelTitle device
+/// @param mode       One of @ref ToggleAcquisitionButtonConstants
+Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	string panelTitle
 	variable mode
 
