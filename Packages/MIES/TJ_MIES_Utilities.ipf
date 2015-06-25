@@ -915,7 +915,7 @@ Function MDsort(w, keyColPrimary, [keyColSecondary, keyColTertiary, reversed])
 		else
 			Sort/A keyPrimary, valindex
 		endif
-	elseif(!ParamIsDefault(keyColSecondary))
+	elseif(!ParamIsDefault(keyColSecondary) && ParamIsDefault(keyColTertiary))
 		if(reversed)
 			Sort/A/R {keyPrimary, keySecondary}, valindex
 		else
