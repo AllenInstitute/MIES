@@ -304,8 +304,9 @@ End
 static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string panelTitle
 
-	variable i, j, numEntries
-	string ctrl, unitList = ""
+	variable i, j, numEntries, ret
+	string ctrl, deviceType, deviceNumber
+	string unitList = ""
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
@@ -345,10 +346,17 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 	Note ITCChanConfigWave, unitList
 
-	// Place TTL config data
 	if(DC_AreTTLsInRackChecked(0, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-		ITCChanConfigWave[j][1] = 0
+
+		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+		ASSERT(ret, "Could not parse device string")
+
+		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
+			ITCChanConfigWave[j][1] = 1
+		else
+			ITCChanConfigWave[j][1] = 0
+		endif
 		j += 1
 	endif
 
