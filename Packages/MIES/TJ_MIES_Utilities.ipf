@@ -1556,6 +1556,15 @@ Function/S GetBaseName(filePathWithSuffix)
 	return ParseFilePath(3, filePathWithSuffix, ":", 1, 0)
 End
 
+/// @brief Return the folder of the file
+///
+/// Given `path/file.suffix` this gives `path`.
+Function/S GetFolder(filePathWithSuffix)
+	string filePathWithSuffix
+
+	return ParseFilePath(1, filePathWithSuffix, ":", 1, 0)
+End
+
 /// @brief Set the given bit mask in var
 Function SetBit(var, bit)
 	variable var, bit
