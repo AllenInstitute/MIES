@@ -1820,3 +1820,22 @@ Function IsBackgroundTaskRunning(func)
 	CtrlNamedBackground $func, status
 	return NumberByKey("RUN", s_info)
 End
+
+/// @brief Count the number of in a binary number
+///
+/// @param value will be truncated to an integer value
+Function PopCount(value)
+	variable value
+
+	variable count
+
+	value = trunc(value)
+	do
+		if(value & 1)
+			count += 1
+		endif
+		value = trunc(value / 2^1) // shift one to the right
+	while(value > 0)
+
+	return count
+End
