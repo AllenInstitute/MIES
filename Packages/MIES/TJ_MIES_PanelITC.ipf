@@ -3995,7 +3995,7 @@ End
 Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
 	string panelTitle
 
-	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DC_ITCMinSamplingInterval(panelTitle))
+	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", SI_CalculateMinSampInterval(panelTitle))
 End
 
 //=========================================================================================

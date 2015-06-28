@@ -226,6 +226,10 @@ StrConstant AXIS_BASE_NAME = "col"
 /// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
 Constant MINIMUM_SAMPLING_INTERVAL = 0.005
 
+/// Fallback value for  the sampling interval in milliseconds (1e-3) used by
+/// #SI_CalculateMinSampInterval if the lookup table could not be found on disk.
+Constant SAMPLING_INTERVAL_FALLBACK = 0.050
+
 /// @name Constants for the type flag of `LoadData`
 /// @anchor LoadDataConstants
 /// @{

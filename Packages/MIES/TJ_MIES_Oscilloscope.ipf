@@ -222,8 +222,8 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 
 	if(!cmpstr(dataName, "TestPulseITC"))
 		NVAR duration = $GetTestpulseDuration(panelTitle)
-		SetAxis/W=$graph bottom 0, duration * (DC_ITCMinSamplingInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
+		SetAxis/W=$graph bottom 0, duration * (SI_CalculateMinSampInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
 	else
-		SetAxis/W=$graph bottom 0, (DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)) * (DC_ITCMinSamplingInterval(panelTitle) / 1000)
+		SetAxis/W=$graph bottom 0, (DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)) * (SI_CalculateMinSampInterval(panelTitle) / 1000)
 	endif
 End
