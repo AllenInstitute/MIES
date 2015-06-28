@@ -3079,3 +3079,14 @@ Function/DF GetUniqueTempPath()
 
 	return UniqueDataFolder(GetMiesPath(), TRASH_FOLDER_PREFIX)
 End
+
+/// @brief Return the datafolder reference to the static data location, e.g. root:mies:StaticData:
+Function/DF GetStaticDataFolder()
+	return createDFWithAllParents(GetStaticDataFolderAS())
+End
+
+/// @brief Return the full path to the static data location
+Function/S GetStaticDataFolderAS()
+
+	return GetMiesPathAsString() + ":StaticData"
+End
