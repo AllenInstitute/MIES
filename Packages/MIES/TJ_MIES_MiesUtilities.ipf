@@ -35,40 +35,57 @@ Function/WAVE GetSettingsHistoryDateTime(settingsHistory)
 	return settingsHistoryDat
 End
 
-/// @brief Returns a list of all active DA channels
-/// @todo change function to return a numeric wave of variable length
-/// and merge with GetADCListFromConfig
-Function/S GetDACListFromConfig(ITCChanConfigWave)
-	Wave ITCChanConfigWave
+/// @brief Return a list of the AD channels from the ITC config
+Function/WAVE GetADCListFromConfig(config)
+	WAVE config
 
-	return RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
+	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_ADC)
 End
 
-/// @brief Returns a list of all active AD channels
-Function/S GetADCListFromConfig(ITCChanConfigWave)
-	Wave ITCChanConfigWave
+/// @brief Return a list of the DA channels from the ITC config
+Function/WAVE GetDACListFromConfig(config)
+	WAVE config
 
-	return RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_DAC)
 End
 
-/// @brief Returns the data from the data column based on matched values in the ref column
+/// @brief Return a list of the TTL channels from the ITC config
+Function/WAVE GetTTLListFromConfig(config)
+	WAVE config
+
+	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_TTL)
+End
+
+/// @brief Return a wave with all active channels
 ///
-/// For ITCDataWave 0 (value) in Ref column = AD channel, 1 = DA channel
-static Function/s RefToPullDatafrom2DWave(refValue, refColumn, dataColumn, twoDWave)
-	wave twoDWave
-	variable refValue, refColumn, dataColumn
+/// @todo change to return a 0/1 wave with constant size a la DC_ControlStatusWave
+///
+/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
+static Function/WAVE GetChanneListFromITCConfig(config, channelType)
+	WAVE config
+	variable channelType
 
-	variable i, numRows
-	string list = ""
+	variable numRows, numCols, itcChan, i, j
 
-	numRows = DimSize(twoDWave, ROWS)
+	numRows = DimSize(config, ROWS)
+	numCols = DimSize(config, COLS)
+
+	ASSERT(numRows > 0, "Can not handle wave with zero rows")
+	ASSERT(numCols == 4, "Expected a wave with 4 columns")
+
+	Make/U/B/FREE/N=(numRows) activeChannels
+
 	for(i = 0; i < numRows; i += 1)
-		if(TwoDwave[i][refColumn] == refValue)
-			list = AddListItem(num2str(TwoDwave[i][DataColumn]), list, ";", i)
+		if(channelType == config[i][0])
+			activeChannels[j] = config[i][1]
+			j += 1
 		endif
 	endfor
 
-	return list
+	Redimension/N=(j) activeChannels
+
+	return activeChannels
 End
 
 /// @brief Returns the name of a control from the DA_EPHYS panel
@@ -426,34 +443,33 @@ Function/S BuildDeviceString(deviceType, deviceNumber)
 	return deviceType + "_Dev_" + deviceNumber
 End
 
-static Function RemoveDisabledChannels(channelSelWave, ADChannelList, DAChannelList, configNote)
+static Function RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
 	WAVE/Z channelSelWave
-	string &ADChannelList
-	string &DAChannelList
+	WAVE ADCs, DACs
 	string &configNote
 
-	variable numADCs, numDACs, i, chan
+	variable numADCs, numDACs, i
 
 	if(!WaveExists(channelSelWave))
 		return NaN
 	endif
 
-	numADCs = ItemsInList(ADChannelList)
-	numDACs = ItemsInList(DAChannelList)
+	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
 
+	// start at the end of the config wave
+	// we always have the order DA/AD/TTLs
 	for(i = numADCs - 1; i >= 0; i -= 1)
-		chan = str2num(StringFromList(i, ADChannelList))
-		if(!channelSelWave[chan][%AD])
-			ADChannelList = RemoveListItem(i, ADChannelList)
-			configNote    = RemoveListItem(numDACs + i, configNote)
+		if(!channelSelWave[ADCs[i]][%AD])
+			DeletePoints/M=(ROWS) i, 1, ADCs
+			configNote = RemoveListItem(numDACs + i, configNote)
 		endif
 	endfor
 
 	for(i = numDACs - 1; i >= 0; i -= 1)
-		chan = str2num(StringFromList(i, DAChannelList))
-		if(!channelSelWave[chan][%DA])
-			DAChannelList = RemoveListItem(i, DAChannelList)
-			configNote    = RemoveListItem(i, configNote)
+		if(!channelSelWave[DACs[i]][%DA])
+			DeletePoints/M=(ROWS) i, 1, DACs
+			configNote = RemoveListItem(i, configNote)
 		endif
 	endfor
 End
@@ -487,12 +503,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
 	ASSERT(ParamIsDefault(sweepDFR) + ParamIsDefault(sweepWave), "Caller must supply exactly one of sweepDFR and sweepWave")
 
-	string ADChannelList = GetADCListFromConfig(config)
-	string DAChannelList = GetDACListFromConfig(config)
+	WAVE ADCs = GetADCListFromConfig(config)
+	WAVE DACs = GetDACListFromConfig(config)
 	string configNote = note(config)
-	RemoveDisabledChannels(channelSelWave, ADChannelList, DAChannelList, configNote)
-	variable NumberOfDAchannels = ItemsInList(DAChannelList)
-	variable NumberOfADchannels = ItemsInList(ADChannelList)
+	RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
+	variable NumberOfDAchannels = DimSize(DACs, ROWS)
+	variable NumberOfADchannels = DimSize(ADCs, ROWS)
 	// the max allows for uneven number of AD and DA channels
 	variable numChannels = max(NumberOfDAchannels, NumberOfADchannels)
 	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh
@@ -550,7 +566,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 		DEBUGPRINT("ADYAxisLow", var=ADYAxisLow)
 
 		if(displayDAC && i < NumberOfDAchannels)
-			dac = StringFromList(i, DAChannelList)
+			dac = num2str(DACs[i])
 			traceType = "DA" + dac
 			trace = UniqueTraceName(graph, traceType)
 
@@ -587,7 +603,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 		endif
 
 		if(i < NumberOfADchannels)
-			adc = StringFromList(i, ADChannelList)
+			adc = num2str(ADCs[i])
 			traceType = "AD" + adc
 			trace = UniqueTraceName(graph, traceType)
 

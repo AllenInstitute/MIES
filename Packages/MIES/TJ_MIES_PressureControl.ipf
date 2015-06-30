@@ -593,7 +593,7 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	WAVE PressureDataWv    = P_GetPressureDataWaveRef(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
-	string 	ADChannelList = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	variable TPCycleCount = GetNumberFromWaveNote(TPStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent resistance value from TP storage wave
 	variable Row
 	// pull data from TPStorageWave, apply it to headStage using TP_HeadstageUsingADC(panelTitle, AD)
@@ -602,11 +602,9 @@ Function P_UpdateSSRSlopeAndSSR(panelTitle)
 		ColumnsInTPStorageWave = 1
 	endif
 
-	variable ADC
 	variable i
 	for(i = 0; i < ColumnsInTPStorageWave; i += 1)
-		ADC = str2num(StringFromList(i, ADChannelList))
-		Row = TP_HeadstageUsingADC(panelTitle, ADC)
+		Row = TP_HeadstageUsingADC(panelTitle, ADCs[i])
 		ASSERT(TPCycleCount >= 0, "Expecting a strictly positive TPCycleCount")
 		PressureDataWv[Row][%PeakR] = TPStorageWave[TPCycleCount][i][1] // update the peak resistance value
 		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[TPCycleCount][i][2]	// update the steady state resistance value

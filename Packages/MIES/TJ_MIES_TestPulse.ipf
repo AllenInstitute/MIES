@@ -134,7 +134,7 @@ static Function TP_UpdateGlobals(panelTitle)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
-	string/G testPulseDFR:ADChannelList  = GetADCListFromConfig(ITCChanConfigWave)
+	string/G testPulseDFR:ADChannelList  = Convert1DWaveToList(GetADCListFromConfig(ITCChanConfigWave))
 	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected("da", panelTitle)
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")

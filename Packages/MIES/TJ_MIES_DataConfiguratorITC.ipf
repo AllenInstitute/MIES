@@ -23,7 +23,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
-		numADCs = ItemsInList(GetADCListFromConfig(ITCChanConfigWave))
+		numADCs = DimSize(GetADCListFromConfig(ITCChanConfigWave), ROWS)
 
 		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 		DFREF dfr = GetDeviceTestPulse(panelTitle)
@@ -42,21 +42,19 @@ static Function DC_UpdateClampModeString(panelTitle)
 	string panelTitle
 
 	variable i, numChannels, headstage
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-
-	string/G testPulseDFR:ADChannelList
-	SVAR/SDFR=testPulseDFR ADChannelList
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	ADChannelList= GetADCListFromConfig(ITCChanConfigWave)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	string/G testPulseDFR:ADChannelList = Convert1DWaveToList(ADCs)
 
 	SVAR clampModeString = $GetClampModeString(panelTitle)
 	clampModeString = ""
 
-	numChannels = ItemsInList(ADChannelList)
+	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
-		headstage = TP_HeadstageUsingADC(panelTitle, str2num(StringFromList(i, ADChannelList)))
-		clampModeString += num2str(AI_MIESHeadstageMode(panelTitle, headstage)) + ";"
+		headstage = TP_HeadstageUsingADC(panelTitle, ADCs[i])
+		clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
 	endfor
 End
 
