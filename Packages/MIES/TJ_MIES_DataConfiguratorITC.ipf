@@ -452,7 +452,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 			insertStart = 0
 		else
 			// only call DC_CalculateChannelColumnNo for real data acquisition
-			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, DATA_ACQUISITION_MODE)
+			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, CHANNEL_TYPE_DAC)
 			oneFullCycle = imag(ret)
 			setColumn    = real(ret)
 			if(distributedDAQ)
@@ -606,7 +606,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 			WAVE/SDFR=deviceDFR TTLWave
 		endif
 
-		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(a, TTLWaveList), i, TEST_PULSE_MODE)
+		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(a, TTLWaveList), i, CHANNEL_TYPE_TTL)
 		TTLWave += (2^i) * TTLStimSet[p][col]
 	endfor
 End
@@ -614,15 +614,15 @@ End
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through
 ///        (as defined by SetVar_DataAcq_SetRepeats)
 ///
-/// @param panelTitle panel title
-/// @param SetName    A string that contains the path and name of the stimulus set.
-/// @param channelNo  The DA or TTL channel number
-/// @param DAorTTL    The channel type. DA = 0. TTL = 1
-static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)
+/// @param panelTitle    panel title
+/// @param SetName       name of the stimulus set
+/// @param channelNo     channel number
+/// @param channelType   channel type, one of @ref CHANNEL_TYPE_DAC or @ref CHANNEL_TYPE_TTL
+static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, channelType)
 	string panelTitle, SetName
-	variable ChannelNo, DAorTTL
+	variable ChannelNo, channelType
 
-	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
+	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, channelType)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
 	variable localCount
@@ -632,7 +632,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 	NVAR/Z/SDFR=devicePath count
 
 	// wave exists only if random set sequence is selected
-	sequenceWaveName = SetName + num2str(DAorTTL) + num2str(channelNo) + "_S"
+	sequenceWaveName = SetName + num2str(channelType) + num2str(channelNo) + "_S"
 	WAVE/Z/SDFR=devicePath WorkingSequenceWave = $sequenceWaveName
 
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
@@ -653,7 +653,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 				localCount -= ActiveSetCount // active set count keeps track of how many steps of the largest currently selected set on all active channels has been taken
 			else //indexing is unlocked
 				// calculate where in list global count is
-				localCount = IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
+				localCount = IDX_UnlockedIndexingStepNo(panelTitle, channelNo, channelType, count)
 			endif
 		endif
 
