@@ -56,12 +56,7 @@ Function ITC_DataAcq(panelTitle)
 		i += 1
 	while(i < 1)
 
-	ControlInfo /w = $panelTitle Check_Settings_SaveData
-	if(v_value == 0)
-		DM_SaveITCData(panelTitle)
-	endif
-
-	DM_ScaleITCDataWave(panelTitle)
+	DM_SaveAndScaleITCData(panelTitle)
 End
 
 /// @brief Returns the device channel offset for the given device
@@ -136,13 +131,9 @@ Function ITC_StopDataAcq()
 
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	ExecuteITCOperation(cmd)
-	
-	ControlInfo /w = $panelTitleG Check_Settings_SaveData
-	If(v_value == 0)
-		DM_SaveITCData(panelTitleG)// saving always comes before scaling - there are two independent scaling steps
-	endif
 
-	DM_ScaleITCDataWave(panelTitleG)
+	DM_SaveAndScaleITCData(panelTitleG)
+
 	NVAR count = $GetCount(panelTitleG)
 	if(!IsFinite(count))
 		controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq

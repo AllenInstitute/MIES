@@ -4778,13 +4778,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ExecuteITCOperation(cmd)
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
+		DM_SaveAndScaleITCData(panelTitle)
 
-		ControlInfo /w = $panelTitle Check_Settings_SaveData
-		if(v_value == 0)
-			DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
-		endif
-
-		DM_ScaleITCDataWave(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
