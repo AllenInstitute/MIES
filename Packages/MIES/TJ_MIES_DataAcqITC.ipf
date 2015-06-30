@@ -182,8 +182,8 @@ Function ITC_FIFOMonitor(s)
 	ITCDataWave[0][0] += 0 //forces on screen update
 
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
-		ITC_StopDataAcq()
 		ITC_STOPFifoMonitor()
+		ITC_StopDataAcq()
 	endif
 	
 	AM_analysisMasterMidSweep(panelTitleG)

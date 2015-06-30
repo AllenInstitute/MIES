@@ -4759,13 +4759,16 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
 
 	string cmd
+	variable needsOTCAfterDAQ = 0
 
 	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
 		ITC_StopTestPulseSingleDevice(panelTitle)
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 	endif
 
 	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
-		CtrlNamedBackground ITC_Timer, stop
+		ITC_StopBackgroundTimerTask()
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 	endif
 
 	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing background data aquistion
@@ -4782,13 +4785,19 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		endif
 
 		DM_ScaleITCDataWave(panelTitle)
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
 		NVAR count = $GetCount(panelTitle)
 
 		if(IsFinite(count))
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		endif
+	endif
+
+	if(needsOTCAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(panelTitle)
 	endif
 End
 
