@@ -575,39 +575,48 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	variable rackNo
 	string panelTitle
 
-	variable a, i, channelStatus, col
-	variable needsInitialization = 1
+	variable first, last, i, col, maxRows, lastIdx, bit
 
 	WAVE statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
 	string TTLWaveList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
 	DFREF setDFR    = GetWBSvdStimSetTTLPath()
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	if(RackNo == 0)
-		a = 0
+	if(rackNo == RACK_ZERO)
+		first = 0
+		last  = 3
+	elseif(RackNo == RACK_ONE)
+		first = 4
+		last  = 7
+	else
+		ASSERT(0, "Invalid rackNo parameter")
 	endif
 
-	if(RackNo == 1)
-		a = 4
-	endif
+	for(i = first; i <= last; i += 1)
 
-	for(i = 0; i < 4; i +=1, a += 1)
-
-		if(!statusTTL[a])
+		if(!statusTTL[i])
 			continue
 		endif
 
-		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(a, TTLWaveList)
-		// assumes that the first active stim set is the largest one
-		if(needsInitialization)
-			Make/O/N=(DimSize(TTLStimSet, ROWS)) deviceDFR:TTLWave/Wave=TTLWave = 0
-			needsInitialization = 0
-		else
-			WAVE/SDFR=deviceDFR TTLWave
+		WAVE/SDFR=setDFR wv = $StringFromList(i, TTLWaveList)
+		maxRows = max(maxRows, DimSize(wv, ROWS))
+	endfor
+
+	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
+	Make/W/O/N=(maxRows) deviceDFR:TTLWave/Wave=TTLWave = 0
+
+	for(i = first; i <= last; i += 1)
+
+		if(!statusTTL[i])
+			continue
 		endif
 
-		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(a, TTLWaveList), i, CHANNEL_TYPE_TTL)
-		TTLWave += (2^i) * TTLStimSet[p][col]
+		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(i, TTLWaveList)
+
+		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(i, TTLWaveList), i, CHANNEL_TYPE_TTL)
+		lastIdx = DimSize(TTLStimSet, ROWS) - 1
+		bit = 2^(i - first)
+		TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
 	endfor
 End
 
