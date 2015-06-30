@@ -138,7 +138,7 @@ static Function TP_UpdateGlobals(panelTitle)
 	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected("da", panelTitle)
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	duration = pulseDuration / (DC_ITCMinSamplingInterval(panelTitle) / 1000)
+	duration = pulseDuration / (SI_CalculateMinSampInterval(panelTitle) / 1000)
 
 	// need to deal with units here to ensure that resistance is calculated correctly
 	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
@@ -252,7 +252,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	KillVariables/Z count
 
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
 	DAP_UpdateITCMinSampIntDisplay(panelTitle)
 
 	DAM_StartTestPulseMD(panelTitle)
@@ -676,7 +675,7 @@ static Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWav
 	variable 	amplitude
 	Wave 	TPWave
 	variable 	numberOfSquarePulses
-	variable  	longestSweepPoints = (((1000 / Frequency) * 2) / MINIMUM_SAMPLING_INTERVAL)  * (1 / (DC_ITCMinSamplingInterval(panelTitle) / MINIMUM_SAMPLING_INTERVAL))
+	variable  	longestSweepPoints = (((1000 / Frequency) * 2) / MINIMUM_SAMPLING_INTERVAL)  * (1 / (SI_CalculateMinSampInterval(panelTitle) / MINIMUM_SAMPLING_INTERVAL))
 	//print "longest sweep =", longestSweepPoints
 	variable 	exponent = ceil(log(longestSweepPoints)/log(2))
 	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size

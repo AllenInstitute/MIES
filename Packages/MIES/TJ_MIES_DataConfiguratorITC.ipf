@@ -60,23 +60,6 @@ static Function DC_UpdateClampModeString(panelTitle)
 	endfor
 End
 
-/// @brief The minimum sampling interval is determined by the rack with the most channels selected
-///
-/// Minimum sampling intervals are 5, 10, 15, 20 or 25 microseconds
-Function DC_ITCMinSamplingInterval(panelTitle)
-	string panelTitle
-
-	variable Rack0DAMinInt, Rack0ADMinInt, Rack1DAMinInt, Rack1ADMinInt
-
-	Rack0DAMinInt = DC_DAMinSampInt(0, panelTitle)
-	Rack1DAMinInt = DC_DAMinSampInt(1, panelTitle)
-
-	Rack0ADMinInt = DC_ADMinSampInt(0, panelTitle)
-	Rack1ADMinInt = DC_ADMinSampInt(1, panelTitle)
-
-	return max(max(Rack0DAMinInt,Rack1DAMinInt), max(Rack0ADMinInt,Rack1ADMinInt))
-End
-
 /// @brief Return the number of channels of the given type
 Function DC_NoOfChannelsSelected(channelType, panelTitle)
 	string channelType, panelTitle
@@ -115,8 +98,8 @@ static Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 
 	variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)
 	variable NoOfADChannelsSelected = DC_NoOfChannelsSelected("AD", panelTitle)
-	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(0,panelTitle)
-	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(1,panelTitle)
+	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
+	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
 
 	return NoOfDAChannelsSelected + NoOfADChannelsSelected + AreRack0FrontTTLsUsed + AreRack1FrontTTLsUsed
 END
@@ -240,7 +223,7 @@ static Function DC_CalculateLongestSweep(panelTitle)
 	variable longestSweep
 
 	longestSweep  = max(DC_LongestOutputWave("DA", panelTitle), DC_LongestOutputWave("TTL", panelTitle))
-	longestSweep /= DC_ITCMinSamplingInterval(panelTitle) / 5
+	longestSweep /= SI_CalculateMinSampInterval(panelTitle) / 5
 
 	return ceil(longestSweep)
 End
@@ -275,7 +258,7 @@ static Function DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
 	Make/W/O/N=(numRows, numCols) dfr:ITCDataWave/Wave=ITCDataWave
 
 	FastOp ITCDataWave = 0
-	SetScale/P x 0, DC_ITCMinSamplingInterval(panelTitle) / 1000, "ms", ITCDataWave
+	SetScale/P x 0, SI_CalculateMinSampInterval(panelTitle) / 1000, "ms", ITCDataWave
 End
 
 /// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
@@ -304,8 +287,9 @@ End
 static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string panelTitle
 
-	variable i, j, numEntries
-	string ctrl, unitList = ""
+	variable i, j, numEntries, ret
+	string ctrl, deviceType, deviceNumber
+	string unitList = ""
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
@@ -345,19 +329,26 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 	Note ITCChanConfigWave, unitList
 
-	// Place TTL config data
-	if(DC_AreTTLsInRackChecked(0, panelTitle))
+	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-		ITCChanConfigWave[j][1] = 0
+
+		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+		ASSERT(ret, "Could not parse device string")
+
+		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
+			ITCChanConfigWave[j][1] = 1
+		else
+			ITCChanConfigWave[j][1] = 0
+		endif
 		j += 1
 	endif
 
-	if(DC_AreTTLsInRackChecked(1, panelTitle))
+	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 		ITCChanConfigWave[j][1] = 3
 	endif
 
-	ITCChanConfigWave[][2] = DC_ITCMinSamplingInterval(panelTitle)
+	ITCChanConfigWave[][2] = SI_CalculateMinSampInterval(panelTitle)
 	ITCChanConfigWave[][3] = 0
 End
 
@@ -410,7 +401,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	endif
 
 	//Place DA waves into ITCDataWave
-	variable decimationFactor = DC_ITCMinSamplingInterval(panelTitle) / 5
+	variable decimationFactor = SI_CalculateMinSampInterval(panelTitle) / 5
 	setNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
@@ -461,7 +452,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 			insertStart = 0
 		else
 			// only call DC_CalculateChannelColumnNo for real data acquisition
-			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, DATA_ACQUISITION_MODE)
+			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, CHANNEL_TYPE_DAC)
 			oneFullCycle = imag(ret)
 			setColumn    = real(ret)
 			if(distributedDAQ)
@@ -527,19 +518,21 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		sweepTxTData[0][3][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+
+		itcDataColumn += 1
 	endfor
 
 	// Place TTL waves into ITCDataWave
-	if(DC_AreTTLsInRackChecked(0, panelTitle))
-		DC_MakeITCTTLWave(0, panelTitle)
+	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+		DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
 		WAVE/SDFR=deviceDFR TTLwave
 		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
 		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		itcDataColumn += 1
 	endif
 
-	if(DC_AreTTLsInRackChecked(1, panelTitle))
-		DC_MakeITCTTLWave(1, panelTitle)
+	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+		DC_MakeITCTTLWave(RACK_ONE, panelTitle)
 		WAVE/SDFR=deviceDFR TTLwave
 		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
 		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
@@ -576,114 +569,69 @@ End
 
 /// @brief Combines the TTL stimulus sweeps across different TTL channels into a single wave
 ///
-/// Makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
-///
-/// @param RackNo Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks, rack 0 and rack 1. Rack number for all other devices is zero.
+/// @param rackNo Front TTL rack aka number of ITC devices. Only the ITC1600 has two racks, see @ref RackConstants. Rack number for all other devices is #RACK_ZERO.
 /// @param panelTitle  panel title
-static Function DC_MakeITCTTLWave(RackNo, panelTitle)
-	variable RackNo
+static Function DC_MakeITCTTLWave(rackNo, panelTitle)
+	variable rackNo
 	string panelTitle
 
-	variable a, i, channelStatus, col
-	variable needsInitialization = 1
+	variable first, last, i, col, maxRows, lastIdx, bit
 
 	WAVE statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
 	string TTLWaveList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
 	DFREF setDFR    = GetWBSvdStimSetTTLPath()
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	if(RackNo == 0)
-		a = 0
+	if(rackNo == RACK_ZERO)
+		first = 0
+		last  = 3
+	elseif(RackNo == RACK_ONE)
+		first = 4
+		last  = 7
+	else
+		ASSERT(0, "Invalid rackNo parameter")
 	endif
 
-	if(RackNo == 1)
-		a = 4
-	endif
+	for(i = first; i <= last; i += 1)
 
-	for(i = 0; i < 4; i +=1, a += 1)
-
-		if(!statusTTL[a])
+		if(!statusTTL[i])
 			continue
 		endif
 
-		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(a, TTLWaveList)
-		// assumes that the first active stim set is the largest one
-		if(needsInitialization)
-			Make/O/N=(DimSize(TTLStimSet, ROWS)) deviceDFR:TTLWave/Wave=TTLWave
-			needsInitialization = 0
-		else
-			WAVE/SDFR=deviceDFR TTLWave
+		WAVE/SDFR=setDFR wv = $StringFromList(i, TTLWaveList)
+		maxRows = max(maxRows, DimSize(wv, ROWS))
+	endfor
+
+	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
+	Make/W/O/N=(maxRows) deviceDFR:TTLWave/Wave=TTLWave = 0
+
+	for(i = first; i <= last; i += 1)
+
+		if(!statusTTL[i])
+			continue
 		endif
 
-		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(a, TTLWaveList), i, TEST_PULSE_MODE)
-		TTLWave += (2^i) * TTLStimSet[p][col]
+		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(i, TTLWaveList)
+
+		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(i, TTLWaveList), i, CHANNEL_TYPE_TTL)
+		lastIdx = DimSize(TTLStimSet, ROWS) - 1
+		bit = 2^(i - first)
+		TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
 	endfor
-End
-
-/// @brief Returns the minimum possible sampling interval of the ITC device based on the number of active DA channels.
-///
-/// @param rackNo      Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks,
-///                    rack 0 and rack 1. Rack number for all other devices is zero.
-/// @param panelTitle  panel title
-static Function DC_DAMinSampInt(rackNo, panelTitle)
-	variable rackNo
-	string panelTitle
-
-	variable a, i, sampInt
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
-
-	a = RackNo * 4
-
-	do
-		sampInt += 5 * statusDA[a]
-		a += 1
-		i += 1
-	while(i < 4)
-
-	return sampInt
-End
-
-/// @brief Returns the minimum possible sampling interval of the ITC device based on the number of active AD channels.
-///
-/// @param RackNo      Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks,
-///                    rack 0 and rack 1. Rack number for all other devices is zero.
-/// @param panelTitle  panel title
-static Function DC_ADMinSampInt(RackNo, panelTitle)
-	variable RackNo
-	string panelTitle
-
-	variable a, i, Bank1SampInt, Bank2SampInt
-	WAVE statusAD = DC_ControlStatusWave(panelTitle, "AD")
-
-	a = RackNo*8
-
-	do
-		Bank1SampInt += 5 * statusAD[a]
-		a += 1
-		i += 1
-	while(i < 4)
-
-	do
-		Bank2SampInt += 5 * statusAD[a]
-		a += 1
-		i += 1
-	while(i < 4)
-
-	return max(Bank1SampInt, Bank2SampInt)
 End
 
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through
 ///        (as defined by SetVar_DataAcq_SetRepeats)
 ///
-/// @param panelTitle panel title
-/// @param SetName    A string that contains the path and name of the stimulus set.
-/// @param channelNo  The DA or TTL channel number
-/// @param DAorTTL    The channel type. DA = 0. TTL = 1
-static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DAorTTL)
+/// @param panelTitle    panel title
+/// @param SetName       name of the stimulus set
+/// @param channelNo     channel number
+/// @param channelType   channel type, one of @ref CHANNEL_TYPE_DAC or @ref CHANNEL_TYPE_TTL
+static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, channelType)
 	string panelTitle, SetName
-	variable ChannelNo, DAorTTL
+	variable ChannelNo, channelType
 
-	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, DAorTTL)
+	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, channelType)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
 	variable localCount
@@ -693,7 +641,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 	NVAR/Z/SDFR=devicePath count
 
 	// wave exists only if random set sequence is selected
-	sequenceWaveName = SetName + num2str(DAorTTL) + num2str(channelNo) + "_S"
+	sequenceWaveName = SetName + num2str(channelType) + num2str(channelNo) + "_S"
 	WAVE/Z/SDFR=devicePath WorkingSequenceWave = $sequenceWaveName
 
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
@@ -714,7 +662,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, DA
 				localCount -= ActiveSetCount // active set count keeps track of how many steps of the largest currently selected set on all active channels has been taken
 			else //indexing is unlocked
 				// calculate where in list global count is
-				localCount = IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
+				localCount = IDX_UnlockedIndexingStepNo(panelTitle, channelNo, channelType, count)
 			endif
 		endif
 
@@ -775,7 +723,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 	variable distributedDAQ
 
 	numActiveDACs          = DC_NoOfChannelsSelected("DA", panelTitle)
-	minSamplingInterval    = DC_ITCMinSamplingInterval(panelTitle)
+	minSamplingInterval    = SI_CalculateMinSampInterval(panelTitle)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	onsetDelayVal          = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
 	terminationDelayVal    = GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000)

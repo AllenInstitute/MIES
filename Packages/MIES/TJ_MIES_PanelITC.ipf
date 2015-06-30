@@ -7,9 +7,6 @@ static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hard
 static StrConstant FOLLOWER              = "Follower"
 static StrConstant LEADER                = "Leader"
 
-static Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
-static Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
-
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
@@ -38,9 +35,8 @@ Window DA_Ephys() : Panel
 	TabControl ADC,tabLabel(1)="DA",tabLabel(2)="AD",tabLabel(3)="TTL"
 	TabControl ADC,tabLabel(4)="Asynchronous",tabLabel(5)="Settings"
 	TabControl ADC,tabLabel(6)="Hardware",value= 6
-	CheckBox Check_AD_00,pos={20,75},size={24,14},disable=1,proc=DAP_CheckProc_UnpdateMinSampInt,title="0"
-	CheckBox Check_AD_00,help={"hello!"},userdata(tabnum)=  "2"
-	CheckBox Check_AD_00,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_AD_00,pos={20,75},size={24,14},disable=1,title="0"
+	CheckBox Check_AD_00,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo)= A"!!,B)!!#>F!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -3999,14 +3995,7 @@ End
 Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
 	string panelTitle
 
-	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DC_ITCMinSamplingInterval(panelTitle))
-End
-//=========================================================================================
-
-Function DAP_CheckProc_UnpdateMinSampInt(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	DAP_UpdateITCMinSampIntDisplay(cba.win)
+	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", SI_CalculateMinSampInterval(panelTitle))
 End
 
 //=========================================================================================
@@ -4813,7 +4802,11 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
-static Function DAP_ToggleAcquisitionButton(panelTitle, mode)
+/// @brief Set the acquisition button text and color
+///
+/// @param panelTitle device
+/// @param mode       One of @ref ToggleAcquisitionButtonConstants
+Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	string panelTitle
 	variable mode
 

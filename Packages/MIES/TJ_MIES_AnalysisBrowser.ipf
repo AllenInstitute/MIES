@@ -254,7 +254,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	endif
 
 	fileNameWOExtension = GetBaseName(expFilePath)
-	baseFolder          = ParseFilePath(1, expFilePath, ":", 1, 0)
+	baseFolder          = GetFolder(expFilePath)
 	extension           = ParseFilePath(4, expFilePath, ":", 1, 0)
 
 	/// @todo this is not 100% correct as users might choose a different name for the unpacked experiment folder

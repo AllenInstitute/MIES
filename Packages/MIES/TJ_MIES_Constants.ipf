@@ -226,6 +226,10 @@ StrConstant AXIS_BASE_NAME = "col"
 /// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
 Constant MINIMUM_SAMPLING_INTERVAL = 0.005
 
+/// Fallback value for  the sampling interval in milliseconds (1e-3) used by
+/// #SI_CalculateMinSampInterval if the lookup table could not be found on disk.
+Constant SAMPLING_INTERVAL_FALLBACK = 0.050
+
 /// @name Constants for the type flag of `LoadData`
 /// @anchor LoadDataConstants
 /// @{
@@ -266,4 +270,18 @@ Constant AXIS_ORIENTATION_LEFT   = 0x01
 Constant AXIS_ORIENTATION_RIGHT  = 0x02
 Constant AXIS_ORIENTATION_BOTTOM = 0x04
 Constant AXIS_ORIENTATION_TOP    = 0x08
+/// @}
+
+/// @name Constants for DAP_ToggleAcquisitionButton
+/// @anchor ToggleAcquisitionButtonConstants
+/// @{
+Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
+Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
+/// @}
+
+/// @name Constants for functions using rack number parameters
+/// @anchor RackConstants
+/// @{
+Constant RACK_ZERO = 0x00
+Constant RACK_ONE  = 0x01
 /// @}

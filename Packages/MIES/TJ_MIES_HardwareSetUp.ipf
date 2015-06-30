@@ -105,6 +105,8 @@ Function HSU_LockDevice(panelTitle)
 	GetAmplifierParamStorageWave(panelTitleLocked)
 	WBP_UpdateITCPanelPopUps(panelTitleLocked)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
+	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
+	SI_CalculateMinSampInterval(panelTitleLocked)
 
 	// the first time call of this function is expensive
 	// call it here, in order to avoid problems later on
