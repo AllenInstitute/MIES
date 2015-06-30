@@ -872,16 +872,23 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		return 1
 	endif
 
+	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
+	WAVE/T/SDFR=dfr numericValues
+
 	numRows = DimSize(config, ROWS)
 	for(i = 0; i < numRows; i += 1)
-		channelType   = StringFromList(config[i][0], ITC_CHANNEL_NAMES)
+		channelType = StringFromList(config[i][0], ITC_CHANNEL_NAMES)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = config[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
+		str = channelType + "_" + num2istr(channelNumber)
 
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, channelType, channelNumber)
 
-		str = channelType + "_" + num2istr(channelNumber)
+		if(!cmpstr(channelType, "TTL"))
+			AB_SplitTTLWaveIntoComponents(data, DC_GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
+		endif
+
 		MoveWave data, sweepFolder:$str
 	endfor
 
@@ -889,6 +896,30 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	KillWaves sweepWave
 
 	return 0
+End
+
+static Function AB_SplitTTLWaveIntoComponents(data, ttlBits, sweepFolder, wvName)
+	WAVE data
+	variable ttlBits
+	DFREF sweepFolder
+	string wvName
+
+	if(!IsFinite(ttlBits))
+		return NaN
+	endif
+
+	variable i, bit
+
+	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
+
+		bit = 2^i
+		if(!(ttlBits & bit))
+			continue
+		endif
+
+		Duplicate data, sweepFolder:$(wvName + "_" + num2str(i))/Wave=dest
+		MultiThread dest[] = dest[p] & bit
+	endfor
 End
 
 Function AB_ScanFolder(win)

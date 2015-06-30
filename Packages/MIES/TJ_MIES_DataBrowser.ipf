@@ -229,15 +229,19 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 		return NaN
 	endif
 
-	Wave config          = GetConfigWave(sweep)
-	string graph         = DB_GetMainGraph(panelTitle)
-	Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
+	Wave config              = GetConfigWave(sweep)
+	string graph             = DB_GetMainGraph(panelTitle)
+	Wave settingsHistory     = DB_GetSettingsHistory(panelTitle)
+	Wave settingsHistoryText = DB_GetSettingsHistoryText(panelTitle)
 
-	variable displayDAC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
-	variable overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
-	variable overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
+	STRUCT TiledGraphSettings tgs
+	tgs.displayDAC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
+	tgs.displayTTL      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayTTL")
+	tgs.displayADC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan")
+	tgs.overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
+	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
 
-	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, sweepWave=sweep)
+	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, settingsHistoryText, tgs, sweepWave=sweep)
 End
 
 static Function DB_ClearGraph(panelTitle)
@@ -257,6 +261,17 @@ static Function/WAVE DB_GetSettingsHistory(panelTitle)
 	WAVE/SDFR=GetDevSpecLabNBSettHistFolder(device) settingsHistory
 
 	return settingsHistory
+End
+
+static Function/WAVE DB_GetSettingsHistoryText(panelTitle)
+	string panelTitle
+
+	string device
+
+	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	WAVE/SDFR=GetDevSpecLabNBTextDocFolder(device) txtDocWave
+
+	return txtDocWave
 End
 
 Function DB_UpdateToLastSweep(panel)
@@ -343,16 +358,16 @@ Window DataBrowser() : Panel
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K)5QF2#5QF-0!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DB_DispTTLChan,pos={21,30},size={122,14},title="Display TTL Channels"
-	CheckBox check_DB_DispTTLChan,userdata(ResizeControlsInfo)= A"!!,Ba!!#=S!!#@X!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DB_DispTTLChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DB_DispTTLChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DB_DispTTLChan,fColor=(65280,43520,0),value= 0
-	CheckBox check_DB_DispADChan,pos={21,52},size={117,14},title="Display AD Channels"
-	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo)= A"!!,Ba!!#>^!!#@N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DB_DispADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DB_DispADChan,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataBrowser_DisplayTTL,pos={21,30},size={122,14},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,Ba!!#=S!!#@X!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_DisplayTTL,value= 0
+	CheckBox check_DataBrowser_DisplayADChan,pos={21,52},size={117,14},proc=DB_CheckProc_ChangedSetting,title="Display AD Channels"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo)= A"!!,Ba!!#>^!!#@N!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_DisplayADChan,value= 1
 	CheckBox check_DataBrowser_AverageTraces,pos={429,36},size={90,14},proc=DB_CheckProc_ChangedSetting,title="Average traces"
 	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo)= A"!!,I<J,hnI!!#?m!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -467,7 +482,8 @@ Function DB_DataBrowserStartupSettings()
 	endfor
 
 	SetCheckBoxState(panelTitle, "check_databrowser_OverlayChan", CHECKBOX_SELECTED)
-	EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
+	SetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
+	EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
 
 	DB_ClearGraph(panelTitle)
 	SetPopupMenuIndex(panelTitle, "popup_labenotebookViewableCols", 0)
@@ -666,9 +682,9 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_DataBrowser_SweepOverlay"))
 				if(checked)
-					DisableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
+					DisableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
 				else
-					EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan")
+					EnableListOfControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
 				endif
 			endif
 
