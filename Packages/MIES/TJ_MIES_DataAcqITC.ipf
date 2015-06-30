@@ -182,7 +182,6 @@ Function ITC_FIFOMonitor(s)
 	ITCDataWave[0][0] += 0 //forces on screen update
 
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
-		print "stopped data acq"
 		ITC_StopDataAcq()
 		ITC_STOPFifoMonitor()
 	endif

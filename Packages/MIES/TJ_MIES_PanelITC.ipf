@@ -4768,8 +4768,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		CtrlNamedBackground ITC_Timer, stop
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
-		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
+	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing background data aquistion
 		ITC_STOPFifoMonitor()
 
 		sprintf cmd, "ITCStopAcq /z = 0"
