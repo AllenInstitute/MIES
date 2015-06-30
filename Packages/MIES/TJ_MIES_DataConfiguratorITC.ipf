@@ -98,8 +98,8 @@ static Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 
 	variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)
 	variable NoOfADChannelsSelected = DC_NoOfChannelsSelected("AD", panelTitle)
-	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(0,panelTitle)
-	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(1,panelTitle)
+	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
+	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
 
 	return NoOfDAChannelsSelected + NoOfADChannelsSelected + AreRack0FrontTTLsUsed + AreRack1FrontTTLsUsed
 END
@@ -329,7 +329,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 	Note ITCChanConfigWave, unitList
 
-	if(DC_AreTTLsInRackChecked(0, panelTitle))
+	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
 		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
@@ -343,7 +343,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 		j += 1
 	endif
 
-	if(DC_AreTTLsInRackChecked(1, panelTitle))
+	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 		ITCChanConfigWave[j][1] = 3
 	endif
@@ -523,16 +523,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	endfor
 
 	// Place TTL waves into ITCDataWave
-	if(DC_AreTTLsInRackChecked(0, panelTitle))
-		DC_MakeITCTTLWave(0, panelTitle)
+	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+		DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
 		WAVE/SDFR=deviceDFR TTLwave
 		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
 		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		itcDataColumn += 1
 	endif
 
-	if(DC_AreTTLsInRackChecked(1, panelTitle))
-		DC_MakeITCTTLWave(1, panelTitle)
+	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+		DC_MakeITCTTLWave(RACK_ONE, panelTitle)
 		WAVE/SDFR=deviceDFR TTLwave
 		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
 		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
@@ -569,12 +569,10 @@ End
 
 /// @brief Combines the TTL stimulus sweeps across different TTL channels into a single wave
 ///
-/// Makes single ttl wave for each rack. each ttl wave is added to the next after being multiplied by its bit number
-///
-/// @param RackNo Front TTL rack (break out box) number of ITC devices. Only the ITC1600 has two racks, rack 0 and rack 1. Rack number for all other devices is zero.
+/// @param rackNo Front TTL rack aka number of ITC devices. Only the ITC1600 has two racks, see @ref RackConstants. Rack number for all other devices is #RACK_ZERO.
 /// @param panelTitle  panel title
-static Function DC_MakeITCTTLWave(RackNo, panelTitle)
-	variable RackNo
+static Function DC_MakeITCTTLWave(rackNo, panelTitle)
+	variable rackNo
 	string panelTitle
 
 	variable a, i, channelStatus, col

@@ -278,3 +278,10 @@ Constant AXIS_ORIENTATION_TOP    = 0x08
 Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
 Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
 /// @}
+
+/// @name Constants for functions using rack number parameters
+/// @anchor RackConstants
+/// @{
+Constant RACK_ZERO = 0x00
+Constant RACK_ONE  = 0x01
+/// @}
