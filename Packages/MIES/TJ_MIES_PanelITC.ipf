@@ -4784,9 +4784,9 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		DM_ScaleITCDataWave(panelTitle)
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
-		NVAR/Z/SDFR=GetDevicePath(panelTitle) count
+		NVAR count = $GetCount(panelTitle)
 
-		if(NVAR_Exists(count))
+		if(IsFinite(count))
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
 		endif
 	endif
