@@ -3452,7 +3452,7 @@ End
 Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	string panelTitle
 
-	variable nextSweep, numHS, i
+	variable numHS, i
 	string ctrl
 
 	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
@@ -3462,15 +3462,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 
 	TP_UpdateTPBufferSizeGlobal(panelTitle)
 
-	// History management
-	// if overwrite old waves is checked in data panel, the following
-	// code will delete the old waves
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
-		// Checks for manual roll back of Next Sweep
-		if(DM_IsLastSwpGreatrThnNxtSwp(panelTitle))
-			nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
-			DM_DeleteDataWaves(panelTitle, nextSweep)
-		endif
+		DM_DeleteDataWaves(panelTitle, GetSetVariable(panelTitle, "SetVar_Sweep"))
 	endif
 
 	// disable the clamp mode checkboxes of all active headstages
