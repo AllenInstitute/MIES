@@ -362,6 +362,8 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, labNotebookPath, labNotebookWaves)
 
 	if(numWavesLoaded <= 0)
+		SetDataFolder saveDFR
+		KillOrMoveToTrash(GetDataFolder(1, newDFR))
 		return ""
 	endif
 
@@ -439,7 +441,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	endfor
 
 	SetDataFolder saveDFR
-	KillDataFolder newDFR
+	KillOrMoveToTrash(GetDataFolder(1, newDFR))
 
 	return deviceList
 End
@@ -772,7 +774,7 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	DFREF sweepDataDFR = createDFWithAllParents(sweepFolder)
 	MoveWave sweepWave, sweepDataDFR
 	SetDataFolder saveDFR
-	KillDataFolder newDFR
+	KillOrMoveToTrash(GetDataFolder(1, newDFR))
 
 	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, expFilePath
 	DEBUGPRINT(msg)
@@ -833,14 +835,14 @@ static Function AB_LoadStimSet(expFilePath, expFolder, device, sweep)
 		if(numWavesLoaded <= 0)
 			printf "Could not load stimset %s of sweep %d, device %s and %s\r", stimsetWaveName, sweep, device, expFilePath
 			SetDataFolder saveDFR
-			KillDataFolder newDFR
+			KillOrMoveToTrash(GetDataFolder(1, newDFR))
 			return 1
 		endif
 
 		WAVE stimset = $stimsetWaveName
 		MoveWave stimset, stimsetdfr
 		SetDataFolder saveDFR
-		KillDataFolder newDFR
+		KillOrMoveToTrash(GetDataFolder(1, newDFR))
 
 		sprintf msg, "Loaded stimset %s of sweep %d, device %s and %s\r", stimsetWaveName, sweep, device, expFilePath
 		DEBUGPRINT(msg)
