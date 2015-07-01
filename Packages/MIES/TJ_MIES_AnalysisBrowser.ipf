@@ -160,8 +160,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 		name = StringFromList(i, listOfSweepConfigWaves)
 		EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 
-		sscanf name, "Config_Sweep_%d" , sweepNo
-		ASSERT(V_flag == 1, "Mismatched sscanf invocation")
+		sweepNo = ExtractSweepNumber(name)
 
 		list[index][%sweep][0] = num2str(sweepNo)
 
