@@ -187,7 +187,12 @@ End
 Function ITC_StopITCDeviceTimer(panelTitle)
 	string panelTitle
 
-	WAVE/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
+	WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
+
+	if(!WaveExists(CycleTimeStorageWave))
+		return NaN
+	endif
+
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	return stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000

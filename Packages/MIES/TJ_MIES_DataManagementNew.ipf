@@ -3,8 +3,17 @@
 static Constant FLOAT_32BIT = 0x02
 static Constant FLOAT_64BIT = 0x04
 
-Function DM_SaveITCData(panelTitle)
+Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
+	DM_ADScaling(ITCDataWave, panelTitle)
+
+	// the checkbox text reads "Do not save data" so we have to check for true
+	if(GetCheckBoxState(panelTitle, "Check_Settings_SaveData"))
+		return NaN
+	endif
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -36,9 +45,6 @@ Function DM_SaveITCData(panelTitle)
 
 	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
-	Redimension/Y=(GetRawDataFPType(panelTitle)) dataWave
-
-	DM_ADScaling(dataWave, panelTitle)
 	DM_DAScaling(dataWave, panelTitle)
 
 	//Add wave notes for the stim wave name and scale factor
@@ -154,16 +160,6 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 			MultiThread WaveToScale[][i] *= gain
 		endif
 	endfor
-end
-
-// Used after single trial of data aquisition - cannot be used when the same wave is output multiple times by the DAC
-Function DM_ScaleITCDataWave(panelTitle)
-	string panelTitle
-
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
-
-	DM_ADScaling(ITCDataWave,panelTitle)
 end
 
 Function DM_ReturnLastSweepAcquired(panelTitle)

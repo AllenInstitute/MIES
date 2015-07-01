@@ -4748,37 +4748,40 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
 
 	string cmd
+	variable needsOTCAfterDAQ = 0
 
 	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
 		ITC_StopTestPulseSingleDevice(panelTitle)
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 	endif
 
 	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
-		CtrlNamedBackground ITC_Timer, stop
+		ITC_StopBackgroundTimerTask()
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing bacground data aquistion
-		 //ITC_StopDataAcq() - has calls to repeated aquistion so this cannot be used
+	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing background data aquistion
 		ITC_STOPFifoMonitor()
 
 		sprintf cmd, "ITCStopAcq /z = 0"
 		ExecuteITCOperation(cmd)
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
+		DM_SaveAndScaleITCData(panelTitle)
 
-		ControlInfo /w = $panelTitle Check_Settings_SaveData
-		if(v_value == 0)
-			DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
-		endif
-
-		DM_ScaleITCDataWave(panelTitle)
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
-		NVAR/Z/SDFR=GetDevicePath(panelTitle) count
+		NVAR count = $GetCount(panelTitle)
 
-		if(NVAR_Exists(count))
+		if(IsFinite(count))
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		endif
+	endif
+
+	if(needsOTCAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(panelTitle)
 	endif
 End
 

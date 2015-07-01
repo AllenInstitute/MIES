@@ -121,12 +121,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	ExecuteITCOperation(cmd)
 	
-	ControlInfo /w = $panelTitle Check_Settings_SaveData
-	If(v_value == 0)
-		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps, one for saved waves, one for the oscilloscope
-	endif
-
-	DM_ScaleITCDataWave(panelTitle)
+	DM_SaveAndScaleITCData(panelTitle)
 	if(!IsFinite(count))
 		ControlInfo/W=$panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
@@ -168,16 +163,9 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 		print "no more active devices, stopping named background"
 		CtrlNamedBackground ITC_FIFOMonitorMD, stop
 	endif
-	
-	// Save data if save data check box is selected
-	ControlInfo /w = $panelTitle Check_Settings_SaveData
-	If(v_value == 0)
-		DM_SaveITCData(panelTitle)// saving always comes before scaling - there are two independent scaling steps
-	endif
-	
-	// Scale the ITC Data wave for display
-	DM_ScaleITCDataWave(panelTitle)
-	
+
+	DM_SaveAndScaleITCData(panelTitle)
+
 	// kills the global variable associated with ongoing repeated data acquisition
 	if(NVAR_Exists(count))
 		KillVariables count

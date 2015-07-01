@@ -282,7 +282,6 @@ Function RA_CounterMD(panelTitle)
 	string panelTitle
 
 	variable TotTrials
-	variable ITI
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
@@ -303,8 +302,6 @@ Function RA_CounterMD(panelTitle)
 	endif
 	print "count = " + num2str(count), "in RA_CounterMD"
 	
-	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-	ITI = v_value
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
 	
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
@@ -415,7 +412,6 @@ End
 Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
-	variable ITI
 	variable TotTrials
 	NVAR count = $GetCount(panelTitle)
 
@@ -469,11 +465,6 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			endif
 		endif
 	endif	
-	
-	
-	// determine ITI
-	controlinfo /w = $panelTitle SetVar_DataAcq_ITI
-	ITI = v_value
 			
 	if(Count < (TotTrials - 1))
 		RA_HandleITI_MD(panelTitle)
