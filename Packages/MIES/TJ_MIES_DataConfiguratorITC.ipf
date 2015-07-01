@@ -582,10 +582,10 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 
 	if(rackNo == RACK_ZERO)
 		first = 0
-		last  = 3
+		last  = NUM_TTL_BITS_PER_RACK - 1
 	elseif(RackNo == RACK_ONE)
-		first = 4
-		last  = 7
+		first = NUM_TTL_BITS_PER_RACK
+		last  = 2 * NUM_TTL_BITS_PER_RACK - 1
 	else
 		ASSERT(0, "Invalid rackNo parameter")
 	endif
