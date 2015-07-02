@@ -1568,3 +1568,10 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 		SetAxis/W=$graph $axis, beginY, endY
 	endfor
 End
+
+/// @brief Extract the sweep number from a `Sweep_*` or `Config_Sweep_*` wave
+Function ExtractSweepNumber(sweepOrConfig)
+	string sweepOrConfig
+
+	return str2num(StringFromList(ItemsInList(sweepOrConfig, "_") - 1, sweepOrConfig, "_"))
+End

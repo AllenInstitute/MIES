@@ -170,49 +170,30 @@ Function DM_ReturnLastSweepAcquired(panelTitle)
 	list = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 	return ItemsInList(list) - 1
 End
-//=============================================================================================================
-Function DM_IsLastSwpGreatrThnNxtSwp(panelTitle)
+
+/// @brief Delete all sweep and config waves having a sweep number
+/// of `sweepNo` and higher
+Function DM_DeleteDataWaves(panelTitle, sweepNo)
 	string panelTitle
-	variable NextSweep
-	controlinfo /w = $panelTitle SetVar_Sweep
-	NextSweep = v_value
-	
-	if(NextSweep > DM_ReturnLastSweepAcquired(panelTitle))
-		return 0
-	else
-		return 1
-	endif
-End
-//=============================================================================================================
-Function DM_DeleteDataWaves(panelTitle, SweepNo)
-	string panelTitle
-	variable SweepNo
-	variable i = SweepNo
+	variable sweepNo
 
-	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder GetDeviceDataPath(panelTitle)
+	string list, path, name
+	variable i, numItems, waveSweepNo
 
-	string ListOfDataWaves = wavelist("Sweep_*", ";", "MINCOLS:2")
-	string WaveNameUnderConsideration
-	do
-		WaveNameUnderConsideration = stringfromlist(i, ListOfDataWaves, ";")
-		if(itemsinlist(ListOfDataWaves) > 0)
-			killwaves /z /f $WaveNameUnderConsideration
+	path  = GetDeviceDataPathAsString(panelTitle)
+	list  = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	list += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP, waveProperty="MINCOLS:2")
+
+	numItems = ItemsInList(list)
+	for(i = 0; i < numItems; i += 1)
+		name = StringFromList(i, list)
+		waveSweepNo = ExtractSweepNumber(name)
+
+		if(waveSweepNo < sweepNo)
+			continue
 		endif
-		i+=1
-	while(i < itemsinlist(ListOfDataWaves))
-
-	i = SweepNo
-	ListOfDataWaves = wavelist("Config_Sweep_*", ";", "MINCOLS:2")
-	do
-		WaveNameUnderConsideration = stringfromlist(i, ListOfDataWaves, ";")
-		if(itemsinlist(ListOfDataWaves) > 0)
-			killwaves /z /f $WaveNameUnderConsideration
-		endif
-		i += 1
-	while(i < itemsinlist(ListOfDataWaves))
-
-	SetDataFolder saveDFR
+		KillOrMoveToTrash(path + ":" + name)
+	endfor
 End
 
 /// @brief Return the floating point type for storing the raw data

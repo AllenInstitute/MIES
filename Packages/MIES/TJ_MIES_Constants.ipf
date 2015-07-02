@@ -15,8 +15,11 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 
 StrConstant amPanel = "analysisMaster"
 
-/// This regular expression matches all sweep waves
-StrConstant DATA_SWEEP_REGEXP = "(?i)^Sweep_[[:digit:]]+$"
+/// @name RegExps matching all sweep and config waves
+/// @{
+StrConstant DATA_SWEEP_REGEXP  = "(?i)^Sweep_[[:digit:]]+$"
+StrConstant DATA_CONFIG_REGEXP = "(?i)^Config_Sweep_[[:digit:]]+$"
+/// @}
 
 StrConstant UNTITLED_EXPERIMENT           = "Untitled"
 StrConstant PACKED_FILE_EXPERIMENT_SUFFIX = ".pxp"
