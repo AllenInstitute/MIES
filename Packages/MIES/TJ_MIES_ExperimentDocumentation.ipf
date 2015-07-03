@@ -1,7 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-static StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
-
 /// @brief Add notation of settings to an experiment DataWave.  This function
 /// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
 ///
@@ -353,73 +351,20 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextDocKeyWave, textDocWave, sweepNo)
 End
 
-//======================================================================================
-/// always create a WaveNote for each sweep that indicates the Stim Wave Name and the Stim scale factor
-// a function to create waveNote tags for the stim wave name and scale factor
-function ED_createWaveNoteTags(panelTitle, sweepCount)
+/// @brief Add sweep specific information to the labnotebook
+Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
-	Variable sweepCount
+	variable sweepCount
 
 	variable i, j
 
-	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
-
-	// Create the numerical wave for saving the settings
-	Wave sweepSettingsWave = GetSweepSettingsWave(panelTitle)
-	Wave/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
-
-	// Create the txt wave to be used for saving the sweep set name
-	Wave/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
-	Wave/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
-	sweepSettingsTxtWave = ""
-	sweepSettingsWave    = NaN
-
-	// And now populate the wave
-	sweepSettingsTxtKey[0][0] =  STIM_WAVE_NAME_KEY
-	// leave the key as "User Comment" here in
-	// order to avoid rearranging all waves
-	sweepSettingsTxtKey[0][1] =  "User Comment"
-	sweepSettingsTxtKey[0][2] =  "DA unit"
-	sweepSettingsTxtKey[0][3] =  "AD unit"
-
-	// Get the wave reference to the new Sweep Data wave
-	Wave sweepDataWave      = DC_SweepDataWvRef(panelTitle)
-	Wave/T sweepDataTxtWave = DC_SweepDataTxtWvRef(panelTitle)
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		if (!statusHS[i])
-			continue
-		endif
-
-		// Save info into the stimSettingsWave
-		// set name
-		sweepSettingsTxtWave[0][0][i] = sweepDataTxtWave[0][0][i]
-		// DA unit
-		sweepSettingsTxtWave[0][2][i] = sweepDataTxtWave[0][2][i]
-		// AD unit
-		sweepSettingsTxtWave[0][3][i] = sweepDataTxtWave[0][3][i]
-		// scale factor
-		sweepSettingsWave[0][0][i] = sweepDataWave[0][4][i]
-		// DAC
-		sweepSettingsWave[0][1][i] = sweepDataWave[0][0][i]
-		// ADC
-		sweepSettingsWave[0][2][i] = sweepDataWave[0][1][i]
-		// DA Gain
-		sweepSettingsWave[0][3][i] = sweepDataWave[0][2][i]
-		// AD Gain
-		sweepSettingsWave[0][4][i] = sweepDataWave[0][3][i]
-		// Set Sweep Count
-		sweepSettingsWave[0][5][i] = sweepDataWave[0][5][i]
-		// TP Insert Checkbox
-		sweepSettingsWave[0][6][i] = sweepDataWave[0][6][i]
-		sweepSettingsWave[0][7][i] = sweepDataWave[0][7][i]
-	endfor
-
-	// call the function that will create the text wave notes
-	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle)
-
-	// call the function that will create the numerical wave notes
+	WAVE sweepSettingsWave = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
 	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle)
+
+	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
+	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
+	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle)
 
 	// document active headstages and their clamp modes
 	Make/FREE/N=(3, 2)/T numKeys
@@ -432,6 +377,8 @@ function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys[0][1] =  "Clamp Mode"
 	numKeys[1][1] =  ""
 	numKeys[2][1] =  "-"
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
 
 	Make/FREE/N=(1, 2, NUM_HEADSTAGES) numSettings = NaN
 	numSettings[0][0][] = statusHS[r]

@@ -289,3 +289,5 @@ Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
 Constant RACK_ZERO = 0x00
 Constant RACK_ONE  = 0x01
 /// @}
+
+StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"

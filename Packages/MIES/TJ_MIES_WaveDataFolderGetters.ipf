@@ -366,83 +366,6 @@ End
 /// @name Experiment Documentation
 /// @{
 
-/// @brief Returns a wave reference to the SweepData
-///
-/// SweepData is used to store GUI configuration info which can then be transferred into the documenting functions
-///
-/// Rows:
-/// - Only one
-///
-/// Columns:
-/// - 0: DAC
-/// - 1: ADC
-/// - 2: DA Gain
-/// - 3: AD Gain
-/// - 4: DA Scale
-/// - 5: Set sweep count 
-/// - 6: TP Insert On/Off
-/// - 7: Inter-trial interval
-///
-/// Layers:
-/// - Headstage
-Function/Wave DC_SweepDataWvRef(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevicePath(panelTitle)
-
-	Wave/Z/SDFR=dfr wv = SweepData
-	variable versionOfNewWave = 1
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 8,-1) wv
-	else
-		Make/N=(1, 8, NUM_HEADSTAGES) dfr:SweepData/Wave=wv
-	endif
-
-	wv = NaN
-	SetWaveVersion(wv, versionOfNewWave)
-
-	return wv
-End
-
-/// @brief Returns a wave reference to the SweepTxtData
-///
-/// SweepTxtData is used to store the set name used on a particular headstage
-/// Rows:
-/// - Only one
-///
-/// Columns:
-/// - 0: SetName
-/// - 1: Unused
-/// - 2: DA unit
-/// - 3: AD unit
-///
-/// Layers:
-/// - Headstage
-Function/Wave DC_SweepDataTxtWvRef(panelTitle)
-	string panelTitle
-	
-	DFREF dfr = GetDevicePath(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = SweepTxtData
-	variable versionOfNewWave = 2
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4, -1) wv
-	else
-		Make/T/N=(1, 4, NUM_HEADSTAGES) dfr:SweepTxtData/Wave=wv
-	endif
-
-	wv = ""
-	SetWaveVersion(wv, versionOfNewWave)
-
-	return wv
-End
-
 /// @brief Return the datafolder reference to the lab notebook
 Function/DF GetLabNotebookFolder()
 
@@ -614,14 +537,7 @@ End
 ///  - One row
 ///
 /// Columns:
-/// - 0: Stim Scale Factor
-/// - 1: DAC
-/// - 2: ADC
-/// - 3: DA Gain
-/// - 4: AD Gain
-/// - 5: Set sweep count
-/// - 6: Insert TP on/off
-/// - 7: Inter-trial interval
+/// - Same as #GetSweepSettingsKeyWave
 ///
 /// Layers:
 /// - Headstage
@@ -629,19 +545,19 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/SDFR=dfr wv = sweepSettingsWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 8, -1) wv
+		Redimension/N=(-1, 12, -1) wv
 	else
-		Make/N=(1, 8, NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
+		Make/N=(1, 12, NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
 	endif
 
-	wv = Nan
+	wv = NaN
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -658,14 +574,18 @@ End
 /// - 2: Tolerance Factor
 ///
 /// Columns:
-/// - 0: Stim Scale Factor
-/// - 1: DAC
-/// - 2: ADC
-/// - 3: DA Gain
-/// - 4: AD Gain
-/// - 5: Set sweep count
-/// - 6: Insert TP on/off
-/// - 7: Inter-trial interval
+/// - 0:  Stim Scale Factor
+/// - 1:  DAC
+/// - 2:  ADC
+/// - 3:  DA Gain
+/// - 4:  AD Gain
+/// - 5:  Set sweep count
+/// - 6:  Insert TP on/off
+/// - 7:  Inter-trial interval
+/// - 8:  TTL rack zero bits
+/// - 9:  TTL rack one bits
+/// - 10: TTL rack zero channel
+/// - 11: TTL rack one channel
 ///
 /// Layers:
 /// - Headstage
@@ -673,16 +593,16 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 8) wv
+		Redimension/N=(-1, 12) wv
 	else
-		Make/T/N=(3, 8) dfr:sweepSettingsKeyWave/Wave=wv
+		Make/T/N=(3, 12) dfr:sweepSettingsKeyWave/Wave=wv
 	endif
 
 	wv = ""
@@ -723,6 +643,22 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][7]     = "s"
 	wv[%Tolerance][7] = "0.01"
 
+	wv[%Parameter][8] = "TTL rack zero bits"
+	wv[%Units][8]     = "bit mask"
+	wv[%Tolerance][8] = "-"
+
+	wv[%Parameter][9] = "TTL rack one bits"
+	wv[%Units][9]     = "bit mask"
+	wv[%Tolerance][9] = "-"
+
+	wv[%Parameter][10] = "TTL rack zero channel"
+	wv[%Units][10]     = ""
+	wv[%Tolerance][10] = "-"
+
+	wv[%Parameter][11] = "TTL rack one channel"
+	wv[%Units][11]     = ""
+	wv[%Tolerance][11] = "-"
+
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -736,10 +672,7 @@ End
 /// - Only one
 ///
 /// Columns:
-/// - 0: SetName
-/// - 1: Unused
-/// - 2: DA unit
-/// - 3: AD unit
+/// - Same as #GetSweepSettingsTextKeyWave
 ///
 /// Layers:
 /// - Headstage
@@ -747,16 +680,16 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4, -1) wv
+		Redimension/N=(-1, 5, -1) wv
 	else
-		Make/T/N=(1, 4, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
+		Make/T/N=(1, 5, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	endif
 
 	wv = ""
@@ -774,10 +707,11 @@ End
 /// - Only one
 ///
 /// Columns:
-/// - 0: SetName
-/// - 1: Unused
-/// - 2: DA unit
-/// - 3: AD unit
+/// - 0: Stim set
+/// - 1: DA unit
+/// - 2: AD unit
+/// - 3: TTL rack zero stim sets
+/// - 4: TTL rack one stim sets
 ///
 /// Layers:
 /// - Headstage
@@ -785,19 +719,25 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4, -1) wv
+		Redimension/N=(-1, 5, -1) wv
 	else
-		Make/T/N=(1, 4, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
+		Make/T/N=(1, 5, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	endif
 
 	wv = ""
+
+	wv[0][0] =  STIM_WAVE_NAME_KEY
+	wv[0][1] =  "DA unit"
+	wv[0][2] =  "AD unit"
+	wv[0][3] =  "TTL rack zero stim sets"
+	wv[0][4] =  "TTL rack zero stim sets"
 
 	SetWaveVersion(wv, versionOfNewWave)
 
