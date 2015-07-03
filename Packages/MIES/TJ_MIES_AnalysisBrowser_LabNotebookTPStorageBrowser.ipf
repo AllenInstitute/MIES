@@ -91,7 +91,7 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
 	LBN_UpdateTPSGraphLegend(graph, traceList=traceList)
 End
 
-Function LBN_UpdateTPSGraphLegend(graph, [traceList])
+static Function LBN_UpdateTPSGraphLegend(graph, [traceList])
 	string graph, traceList
 
 	string str, trace, entry, key
@@ -153,18 +153,23 @@ Window LabnotebookBrowser() : Graph
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KCJ,ht*J,hp!!!#<pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	BUtton button_clearlabnotebookgraph, help={"Remove all traces from the graph"}
 	PopupMenu popup_select_experiment,pos={29,94},size={199,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Experiment:"
 	PopupMenu popup_select_experiment,mode=1,value= #"LBN_GetAllExperiments()"
+	PopupMenu popup_select_experiment,help={"Select an experiment from the ones open in the experiment browser"}
 	PopupMenu popup_select_device,pos={46,123},size={161,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Device: "
 	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment(\"LabnotebookBrowser\")"
+	PopupMenu popup_select_device,help={"Select a device from the currently selected experiment"}
 	PopupMenu popup_labenotebookViewableCols,pos={27,12},size={150,21},bodyWidth=150,proc=LBN_PopMenuProc_LBNViewableCols
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	PopupMenu popup_labenotebookViewableCols,mode=1,value= #"LBN_GetLabNotebookViewAbleCols(\"LabnotebookBrowser\")"
+	PopupMenu popup_labenotebookViewableCols,help={"All keys from the numeric labnotebook. Selecting one will add it to the graph."}
 	Button button_switch,pos={58,63},size={72,23},proc=LBN_ButtonProc_SwitchXaxisType,title="Switch x-axis"
+	Button button_switch,help={"Switch between timestamp and sweep numbers as x axis type"}
 	CheckBox check_sync_with_sweepBrowser,pos={17,194},size={141,14},proc=LBN_CheckProc_SyncSweepBrowser,title="Sync with Sweep Browser"
-	CheckBox check_sync_with_sweepBrowser,value= 0, disable=2
+	CheckBox check_sync_with_sweepBrowser,value= 0, disable=2, help={"Synchronize the currently selected experiment and device to the current sweep from the top sweep browser"}
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 EndMacro
@@ -198,14 +203,19 @@ Window TPStorageBrowser() : Graph
 	NewPanel/K=2/HOST=#/EXT=1/W=(258,0,0,332) as " "
 	ModifyPanel fixedSize=0
 	Button button_cleargraph,pos={59,37},size={73,23},proc=LBN_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_cleargraph, help={"Remove all traces from the graph"}
 	PopupMenu popup_select_experiment,pos={29,94},size={199,21},proc=LBN_PopMenuProc_TPSAllSelector,title="Experiment:"
 	PopupMenu popup_select_experiment,mode=1,value= #"LBN_GetAllExperiments()"
+	PopupMenu popup_select_experiment,help={"Select an experiment from the ones open in the experiment browser"}
 	PopupMenu popup_select_device,pos={46,123},size={161,21},proc=LBN_PopMenuProc_TPSAllSelector,title="Device: "
 	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment(\"TPStorageBrowser\")"
+	PopupMenu popup_select_device,help={"Select a device from the currently selected experiment"}
 	PopupMenu popup_select_tpstorage,pos={46,150},size={161,21},proc=LBN_PopMenuProc_TPSAllSelector,title="TPStorage: "
 	PopupMenu popup_select_tpstorage,mode=1,popvalue="TPStorage",value= #"LBN_GetAllTPStorageForExpDev(\"TPStorageBrowser\")"
+	PopupMenu popup_select_tpstorage,help={"Select the main TPStorage wave or one of the backup waves"}
 	PopupMenu popup_TPStorageViewableCols,pos={27,12},size={150,21},bodyWidth=150,proc=LBN_PopMenuProc_TPSViewEntries
 	PopupMenu popup_TPStorageViewableCols,mode=1,value= #"LBN_TPStorageViewAbleCols(\"TPStorageBrowser\")"
+	PopupMenu popup_TPStorageViewableCols,help={"All keys sorted by active channel from the currently selected TPStorage wave. Selecting one will add it to the graph."}
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 EndMacro

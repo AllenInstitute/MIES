@@ -674,7 +674,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
-	CheckBox check_SweepBrowser_DisplayDAC,value= 0
+	CheckBox check_SweepBrowser_DisplayDAC,value= 0,help={"Display the DA channel data"}
 	CheckBox check_SweepBrowser_AveragTraces,pos={17,265},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
@@ -685,24 +685,33 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
 	CheckBox check_sweepbrowser_OverlayChan,pos={17,50},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
-	CheckBox check_sweepbrowser_OverlayChan,value= 1
+	CheckBox check_sweepbrowser_OverlayChan,value= 1,help={"Overlay the data from multiple channels in one graph"}
 	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},proc=SB_CheckboxChangedSettings,title="Overlay Sweeps"
-	CheckBox check_SweepBrowser_SweepOverlay,value= 0
+	CheckBox check_SweepBrowser_SweepOverlay,value= 0,help={"Add the data from all visited sweeps instead of clearing the graph every time"}
 	GroupBox group_sweep,pos={6,71},size={139,98},title="Sweep"
 	Button button_SweepBrowser_NextSweep,pos={81,117},size={60,20},proc=SB_ButtonProc_ChangeSweep,title="Next"
+	Button button_SweepBrowser_NextSweep,help={"Select the previous sweep"}
 	Button button_SweepBrowser_PrevSweep,pos={11,117},size={60,20},proc=SB_ButtonProc_ChangeSweep,title="Previous"
+	Button button_SweepBrowser_PrevSweep,help={"Select the next sweep"}
 	CheckBox check_SweepBrowser_TimeAlign,pos={17,176},size={90,14},proc=SB_TimeAlignmentProc,title="Time Alignment"
 	CheckBox check_SweepBrowser_TimeAlign,value= 0
+	CheckBox check_SweepBrowser_TimeAlign,help={"Activate time alignment"}
 	PopupMenu popup_sweepBrowser_tAlignMode,pos={13,195},size={129,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	PopupMenu popup_sweepBrowser_tAlignMode,help={"Select the alignment mode"}
 	SetVariable setvar_sweepBrowser_tAlignLevel,pos={61,219},size={80,16},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
+	SetVariable setvar_sweepBrowser_tAlignLevel,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
 	PopupMenu popup_sweepBrowser_tAlignMaster,pos={11,239},size={130,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="",value= #("SB_GetAllTraces(\"" + graph + "\")")
+	PopupMenu popup_sweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
 	Button button_SweepBrowser_DoTimeAlign,pos={113,174},size={30,20},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13,91},size={127,21},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,mode=12,popvalue="",value= #("SB_GetSweepList(\"" + graph + "\")")
+	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
 	Button button_SweepBrowser_OpenChanSel,pos={118,29},size={33,17},proc=SB_OpenChannelSelectionPanel,title="Chan"
+	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels"}
 	GroupBox group_SB_axes_scaling,pos={11,310},size={133,60},title="Axes Scaling"
 	CheckBox check_SB_visibleXRange,pos={19,329},size={42,14},proc=SB_AxisScaling,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
@@ -716,6 +725,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_SB_equalYLevel,help={"Crossing level value for 'Equal Y ign.\""}
 	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0,disable=2
 	Button button_SweepBrowser_DupGraph,pos={32,376},size={88,25},proc=SB_ButtonProc_DupGraph,title="Duplicate Graph"
+	Button button_SweepBrowser_DupGraph,help={"Duplicate the graph and its trace for further processing"}
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
 	ModifyPanel fixedSize=0
