@@ -240,7 +240,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	string expFilePath, datafolderPath, listOfNames
 	variable typeFlags
 
-	variable err
+	variable err, numEntries, i
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
@@ -283,6 +283,12 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		printf "Could not query the waves from %s\r", expFileOrFolder
 		return 0
 	endtry
+
+	// LoadData may have created empty datafolders
+	numEntries = CountObjectsDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER)
+	for(i = 0; i < numEntries; i += 1)
+		RemoveEmptyDataFolder($GetIndexedObjNameDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER, i))
+	endfor
 
 	return V_flag
 End
