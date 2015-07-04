@@ -5222,8 +5222,7 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 	endif
 End
 
-// FUNCTION BELOW CONTROLS TP INSERTION INTO SET SWEEPS BEFORE THE SWEEP BEGINSS
-
+/// @brief Controls TP Insertion into set sweeps before the sweep begins
 Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 	struct WMCheckBoxAction &cba
 
