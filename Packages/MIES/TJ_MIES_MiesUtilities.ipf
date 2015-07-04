@@ -504,7 +504,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	variable headstage, red, green, blue, splitSweepMode, axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numWaves, idx
-	variable numTTLBits
+	variable numTTLBits, colorIndex
 
 	string axis, trace, traceType, channelID
 	string unit, configNote, name, wvName
@@ -725,9 +725,23 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 					high -= slotMult * spacePerSlot + GRAPH_DIV_SPACING
 				endif
 
-				// use a different color if we can't query the headstage
-				headstage = WaveExists(status) ? GetRowIndex(status, val=chan) : NUM_HEADSTAGES
-				GetTraceColor(headstage, red, green, blue)
+				// Color scheme:
+				// 0-7:   Different headstages
+				// 8:     Unknown headstage
+				// 9:     Averaged trace
+				// 10:    TTL bits (sum) rack zero
+				// 11-14: TTL bits (single) rack zero
+				// 15:    TTL bits (sum) rack one
+				// 16-19: TTL bits (single) rack one
+				if(WaveExists(status))
+					colorIndex = GetRowIndex(status, val=chan)
+				elseif(!cmpstr(channelID, "TTL"))
+					colorIndex = 10 + activeChanCount[i] * 5 + j
+				else
+					colorIndex = NUM_HEADSTAGES
+				endif
+				
+				GetTraceColor(colorIndex, red, green, blue)
 				ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 				ModifyGraph/W=$graph userData($trace)={channelType, 0, channelID}
 				ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(chan)}

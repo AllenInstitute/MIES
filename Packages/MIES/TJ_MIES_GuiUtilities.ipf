@@ -466,53 +466,101 @@ Function SetControlUserData(win, control, key, value)
 	ModifyControl $control win=$win, userdata($key)=value
 End
 
-/// @brief Get a nice trace color for a given index
+/// @brief Get distinctive trace colors for a given index
 ///
-/// Holds ten different trace colors, borrowed from KBColorizeTraces.ipf
+/// Holds 21 different trace colors, code originally from
+/// http://www.igorexchange.com/node/6532 but completely rewritten and bug-fixed.
+///
+/// The colors are "Twenty two colors of maximum contrast" by L. Kelly, see http://www.iscc.org/pdf/PC54_1724_001.pdf,
+/// where the color white has been removed.
 Function GetTraceColor(index, red, green, blue)
 	variable index
 	variable &red, &green, &blue
 
-	index = mod(index, 10) // Wrap after 10 traces.
+	index = mod(index, 21)
 	switch(index)
 		case 0:
-			red = 0; green = 0; blue = 0;
+			red = 7967; green=7710; blue=7710
 			break
 
 		case 1:
-			red = 65535; green = 16385; blue = 16385;
+			red = 60395; green=52685; blue=15934
 			break
 
 		case 2:
-			red = 2; green = 39321; blue = 1;
+			red = 28527; green=12336; blue=35723
 			break
 
 		case 3:
-			red = 0; green = 0; blue = 65535;
+			red = 56283; green=27242; blue=10537
 			break
 
 		case 4:
-			red = 39321; green = 1; blue = 31457;
+			red = 38807; green=52942; blue=59110
 			break
 
 		case 5:
-			red = 48059; green = 48059; blue = 48059;
+			red = 47545; green=8224; blue=13878
 			break
 
 		case 6:
-			red = 65535; green = 32768; blue = 32768;
+			red = 49858; green=48316; blue=33410
 			break
 
 		case 7:
-			red = 0; green = 65535; blue = 0;
+			red = 32639; green=32896; blue=33153
 			break
 
 		case 8:
-			red = 16385; green = 65535; blue = 65535;
+			red = 25186; green=42662; blue=18247
 			break
 
 		case 9:
-			red = 65535; green = 32768; blue = 58981;
+			red = 54227; green=34438; blue=45746
+			break
+
+		case 10:
+			red = 17733; green=30840; blue=46003
+			break
+
+		case 11:
+			red = 56540; green=33924; blue=25957
+			break
+
+		case 12:
+			red = 18504; green=14392; blue=38550
+			break
+
+		case 13:
+			red = 57825; green=41377; blue=12593
+			break
+
+		case 14:
+			red = 37265; green=10023; blue=35723
+			break
+
+		case 15:
+			red = 59881; green=59624; blue=22359
+			break
+
+		case 16:
+			red = 32125; green=5911; blue=5654
+			break
+
+		case 17:
+			red = 37779; green=44461; blue=15420
+			break
+
+		case 18:
+			red = 28270; green=13621; blue=5397
+			break
+
+		case 19:
+			red = 53713; green=11565; blue=10023
+			break
+
+		case 20:
+			red = 11308; green=13878; blue=5911
 			break
 	endswitch
 End
