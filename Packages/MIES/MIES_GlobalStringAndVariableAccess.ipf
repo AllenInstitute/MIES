@@ -207,6 +207,16 @@ Function/S GetTestpulseDuration(panelTitle)
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "duration", initialValue=NaN)
 End
 
+/// @brief Return the absolute path to the testpulse baseline fraction variable
+///
+/// The returned value is the fraction which the baseline occupies relative to the total
+/// testpulse length, before and after the pulse itself.
+Function/S GetTestpulseBaselineFraction(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "baselineFrac", initialValue=NaN)
+End
+
 /// @brief Return the absolute path to the user comment string
 Function/S GetUserComment(panelTitle)
 	string panelTitle

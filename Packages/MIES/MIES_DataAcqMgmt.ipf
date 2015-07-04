@@ -436,12 +436,8 @@ static Function DAM_TPSetup(panelTitle)
 	TP_SetDAScaleToOne(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
-	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
+	TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 
-	NVAR duration = $GetTestpulseDuration(panelTitle)
-	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, duration)  // first TP so start point = 0
-
-	// configures data for ITC with testpulse wave selected
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
 	// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)

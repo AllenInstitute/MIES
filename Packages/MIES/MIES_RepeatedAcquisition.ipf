@@ -37,7 +37,7 @@ static Function RA_HandleITI(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
-	TP_UpdateTestPulseWave(TestPulse,panelTitle)
+	TP_UpdateTestPulseWave(panelTitle, TestPulse)
 
 	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
 	TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)

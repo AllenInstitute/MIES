@@ -5239,44 +5239,67 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 	struct WMCheckBoxAction &cba
 
 	string panelTitle
-	variable testPulseDuration, existingOnsetDelay, onsetDelayResetValue
 
 	switch(cba.eventCode)
 		case 2:
-			panelTitle = cba.win
-			testPulseDuration = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-			existingOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay")
-
-			if(cba.checked)
-				if(ExistingOnsetDelay < testPulseDuration) // only increases onset delay if it is not big enough to for the TP
-					Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:testPulseDuration
-				endif
-
-				SetVariable setvar_DataAcq_OnsetDelay win=$panelTitle, limits={testPulseDuration, inf, 1}
-			else
-				onsetDelayResetValue = max(0, (ExistingOnsetDelay - testPulseDuration)) // makes sure onset delay is never less than 0
-				Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:OnsetDelayResetValue, limits = {0, inf, 1}
-			endif
+			DAP_UpdateOnsetDelay(cba.win, reset_after_uncheck=!cba.checked)
 		break
 	endswitch
 
 	return 0
 End
 
+/// @brief Update the onset delay
+///
+/// @param panelTitle          device
+/// @param reset_after_uncheck [optional, defaults to false] handle the special transition between "global TP insertion" on -> off
+Function DAP_UpdateOnsetDelay(panelTitle, [reset_after_uncheck])
+	string panelTitle
+	variable reset_after_uncheck
+
+	variable pulseDuration, baselineFrac, existingOnsetDelay, onsetDelayResetValue
+	variable testPulseDurWithBL, globalTPinsertion
+
+	if(ParamIsDefault(reset_after_uncheck))
+		reset_after_uncheck = 0
+	else
+		reset_after_uncheck = !!reset_after_uncheck
+	endif
+
+	globalTPinsertion = GetCheckBoxState(panelTitle, "Check_Settings_InsertTP")
+
+	if(!globalTPinsertion && !reset_after_uncheck)
+		return NaN
+	endif
+
+	ASSERT(globalTPinsertion + reset_after_uncheck == 1, "Can not handle that situation")
+
+	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+	testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
+
+	existingOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay")
+
+	if(globalTPinsertion)
+		if(existingOnsetDelay < testPulseDurWithBL) // only increases onset delay if it is not big enough to for the TP
+			SetSetVariable(paneltitle, "setvar_DataAcq_OnsetDelay", testPulseDurWithBL)
+		endif
+
+		SetVariable setvar_DataAcq_OnsetDelay win=$panelTitle, limits={testPulseDurWithBL, inf, 1}
+	elseif(reset_after_uncheck)
+		onsetDelayResetValue = max(0, existingOnsetDelay - testPulseDurWithBL) // makes sure onset delay is never less than 0
+		Setvariable setvar_DataAcq_OnsetDelay win=$panelTitle, value=_NUM:onsetDelayResetValue, limits={0, inf, 1}
+	endif
+End
+
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	struct WMSetVariableAction &sva
 
-	string panelTitle
-	variable val
-
 	switch(sva.eventCode)
-		case 2:
-			panelTitle = sva.win
-			val = sva.dval
-
-			if(GetCheckBoxState(panelTitle, "Check_Settings_InsertTP"))
-				Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:(val * 2), limits = {(val * 2), inf, 1}
-			endif
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			DAP_UpdateOnsetDelay(sva.win)
 			break
 	endswitch
 

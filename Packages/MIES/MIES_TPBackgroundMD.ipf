@@ -42,10 +42,7 @@ Function ITC_BkrdTPFuncMD(s)
 	variable i
 	variable NumberOfActiveDevices
 	variable ADChannelToMonitor
-	variable StopCollectionPoint
-	variable startPoint
-	variable PointsInTP
-	variable PointsInTPITCDataWave
+	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -58,52 +55,44 @@ Function ITC_BkrdTPFuncMD(s)
 		// update parameters for a particular active device
 		panelTitle = ActiveDeviceTextList[i]
 		DFREF deviceDFR = GetDevicePath(panelTitle)
-		NVAR GlobalTPDurationVariable = $GetTestpulseDuration(panelTitle) // number of points in a single test pulse
 
 		WAVE ITCDataWave = ActiveDeviceWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDeviceWavePathWave[i][1]
-		WAVE ITCFIFOPositionAllConfigWave = ActiveDeviceWavePathWave[i][2] //  ActiveDeviceWavePathWave contains wave references
+		WAVE ITCFIFOPositionAllConfigWave = ActiveDeviceWavePathWave[i][2]
+
 		ADChannelToMonitor = ActiveDeviceList[i][1]
-		StopCollectionPoint = ActiveDeviceList[i][2]
-		PointsInTP = (GlobalTPDurationVariable * 3)
-		PointsInTPITCDataWave = dimsize(ITCDataWave,0)
-		//print "PointsInTP =",PointsInTP
-		// works with a active device
-		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
+		stopCollectionPoint = ActiveDeviceList[i][2]
+
+		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
 		ExecuteITCOperationAbortOnError(cmd)
 
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
-		variable TPSweepCount = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
-		variable PointsCompletedInITCDataWave = (mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], PointsInTPITCDataWave))
-//		print PointsCompletedInITCDataWave
-		if(PointsCompletedInITCDataWave >= (StopCollectionPoint * .05)) // advances the FIFO is the TP sweep has reached point that gives time for command to be recieved and processed by the DAC - that's why the 0.2 multiplier
-			// the above line of code won't handle acquisition with only AD channels - this is probably more generally true as well - need to work this into the code
-			Duplicate/O/R=[0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, deviceDFR:FIFOAdvance/Wave=FIFOAdvance // creates a wave that will take DA FIFO advance parameter
-			FIFOAdvance[][2] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]) // the abs prevents a neg number
+		pointsCompletedInITCDataWave = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], DimSize(ITCDataWave, ROWS))
+
+		if(pointsCompletedInITCDataWave >= (stopCollectionPoint * 0.05))
+			// advances the FIFO is the TP sweep has reached point that gives time for command to be recieved
+			// and processed by the DAC - that's why the multiplier
+			// @todo the above line of code won't handle acquisition with only AD channels
+			// this is probably more generally true as well - need to work this into the code
+			Duplicate/O/R=[0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, deviceDFR:FIFOAdvance/Wave=FIFOAdvance
+			FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]
 			sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(FIFOAdvance, 2) // goal is to move the DA FIFO pointers back to the start
 			ExecuteITCOperation(cmd)
 			ActiveDeviceList[i][3] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		endif
 
 		// extracts chunk from ITCDataWave for plotting
-		variable ActiveChunk =  (floor(PointsCompletedInITCDataWave /  (PointsInTP)))
- 		if(ActiveChunk >= 1) // This is here because trying to get the last complete chunk somtimes returns a what looks like a incomplete chunk - could be because the xop isn't releasing the itc datawave
-			ActiveChunk -= 1 // Doing: ITCDataWave[0][0] += 0 does not help but looking one chunk behind does help avoid a chunk where TP has not occurred yet
+		activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle))
+		if(activeChunk >= 1) // This is here because trying to get the last complete chunk somtimes returns a what looks like a incomplete chunk - could be because the xop isn't releasing the itc datawave
+			activeChunk -= 1 // Doing: ITCDataWave[0][0] += 0 does not help but looking one chunk behind does help avoid a chunk where TP has not occurred yet
 		endif
-//		startPoint = (ActiveChunk * (PointsInTP*2)) 
-		startPoint = (ActiveChunk * (PointsInTP)) 
-//		print ActiveChunk
-		//startPoint += 0.25 * (PointsInTP)
-		//variable endpoint = 0.75 * PointsInTP
-		if(startPoint < (PointsInTP))
-			startPoint = 0
+
+		// Ensures that the new TP chunk isn't the same as the last one.
+		// This is required to keep the TP buffer in sync.
+		if(activeChunk != ActiveDeviceList[i][4])
+			DM_CreateScaleTPHoldingWave(panelTitle, chunk=activeChunk)
 		endif
-	//	ITCDataWave[0][0] += 0
-		if(ActiveChunk != ActiveDeviceList[i][4]) // Ensures that the new TP chunk isn't the same as the last one. This is required to keep the TP buffer in sych.
-	//		print activechunk
-			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP / 1.5) // 
-		endif																	
 		TP_Delta(panelTitle)
 		ActiveDeviceList[i][4] = activeChunk
 

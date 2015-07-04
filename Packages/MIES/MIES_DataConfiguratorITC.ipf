@@ -399,7 +399,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string setNameList, setName
 	string ctrl, firstSetName, str, list
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
-	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
+	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor
 	variable/C ret
@@ -414,11 +414,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 	if(globalTPInsert)
 		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
-		TPDuration   = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle)
+		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 		TPAmpVClamp  = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 		TPAmpIClamp  = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-		TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
-		TPEndPoint   = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
 	endif
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
@@ -512,13 +511,15 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		// of the onset delay
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
 			channelMode = ChannelClampMode[i][%DAC]
+			testPulseAmplitude = NaN
 			if(channelMode == V_CLAMP_MODE)
-				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpVClamp * DAGain
+				testPulseAmplitude = TPAmpVClamp * DAGain
 			elseif(channelMode == I_CLAMP_MODE)
-				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpIClamp * DAGain
+				testPulseAmplitude = TPAmpIClamp * DAGain
 			else
 				ASSERT(0, "Unknown clamp mode")
 			endif
+			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude
 		endif
 
 		// put the insert test pulse checkbox status into the sweep data wave
