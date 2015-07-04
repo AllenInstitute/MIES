@@ -242,6 +242,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	variable err, numEntries, i
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
+	string str
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
@@ -274,13 +275,13 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
 		elseif(V_isFolder)
 			LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
-		else
-			ASSERT(0, "Unknown return from GetFileFolderInfo")
-			return 0
+		elseif(V_flag != 0)
+			sprintf str, "The experiment file/folder \"%s\" could not be found!\r", ParseFilePath(5, expFileOrFolder, "\\", 0, 0)
+			DoAlert/T="Error in AB_LoadDataWrapper" 0, str
+			Abort
 		endif
 	catch
 		err = GetRTError(1)
-		printf "Could not query the waves from %s\r", expFileOrFolder
 		return 0
 	endtry
 
