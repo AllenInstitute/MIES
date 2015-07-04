@@ -4,6 +4,9 @@
 /// This file holds general utility functions available for all other procedures.
 
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
+///
+/// @hidecallgraph
+/// @hidecallergraph
 Function IsFinite(var)
 	variable var
 
@@ -12,6 +15,9 @@ End
 
 /// @brief Returns 1 if str is null, 0 otherwise
 /// @param str must not be a SVAR
+///
+/// @hidecallgraph
+/// @hidecallergraph
 Function isNull(str)
 	string& str
 
@@ -21,6 +27,9 @@ End
 
 /// @brief Returns one if str is empty or null, zero otherwise.
 /// @param str must not be a SVAR
+///
+/// @hidecallgraph
+/// @hidecallergraph
 Function isEmpty(str)
 	string& str
 
@@ -40,6 +49,9 @@ End
 ///ASSERT(V_flag > 0, "Non-existing control or window")
 ///do something with S_value
 ///@endcode
+///
+/// @hidecallgraph
+/// @hidecallergraph
 Function ASSERT(var, errorMsg)
 	variable var
 	string errorMsg
@@ -73,6 +85,9 @@ Function ASSERT(var, errorMsg)
 End
 
 /// @brief Checks if the given name exists as window
+///
+/// @hidecallgraph
+/// @hidecallergraph
 Function windowExists(win)
 	string win
 
@@ -388,6 +403,9 @@ Function DataFolderExistsDFR(dfr)
 End
 
 /// @brief Create a datafolder and all its parents,
+///
+/// @hidecallgraph
+/// @hidecallergraph
 ///
 /// Includes fast handling of the common case that the datafolder exists.
 /// @returns reference to the datafolder
