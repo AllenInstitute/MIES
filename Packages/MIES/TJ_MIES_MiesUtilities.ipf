@@ -1162,6 +1162,42 @@ Function GetNumberFromChannelType(channelType)
 	endswitch
 End
 
+/// @brief Report ITC/ITCXOP errors in a user friendly manner and abort
+Function ReportAndAbortOnITCErrors()
+
+	NVAR ITCError, ITCXOPError
+	string cmd
+
+	// we only need the lower 32bits of the error
+	ITCError = ITCError & 0x00000000ffffffff
+
+	if(ITCError != 0)
+		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
+
+		Make/I/O/N=1 errorCode   = 0
+		Make/T/O/N=2 errorString = ""
+		Execute "ITCGetLastError/Z=1 ErrorCode"
+		sprintf cmd, "ITCGetErrorString/Z=1/X=3 %d, ErrorString", ErrorCode[0]
+		Execute cmd
+
+		print errorString[0]
+		print errorString[1]
+		print "Some hints you might want to try!"
+		print "- Is the correct ITC device type selected?"
+		print "- Is your ITC Device connected to a power socket?"
+		print "- Is your ITC Device connected to your computer?"
+		print "- Have you tried unlocking/locking the device already?"
+		Abort
+	elseif(ITCXOPError != 0)
+		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
+		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
+		printf "Call stack: %s\r", GetRTStackInfo(3)
+		Abort
+	endif
+
+	return 0
+End
+
 #if defined(DEBUGGING_ENABLED)
 
 /// @brief Execute a given ITC XOP operation
@@ -1187,6 +1223,29 @@ Function ExecuteITCOperation(cmd)
 	return ITCError != 0 || ITCXOPError != 0
 End
 
+/// @brief Execute a given ITC XOP operation and abort on error
+///
+/// Includes debug output.
+Function ExecuteITCOperationAbortOnError(cmd)
+	string &cmd
+
+	string msg
+
+	sprintf msg, "Executing ITC command for %s: \"%s\"", GetRTStackInfo(2), cmd
+	DEBUGPRINT("", str=msg)
+	Execute cmd
+
+	NVAR ITCError, ITCXOPError
+	// we only need the lower 32bits of the error
+	ITCError = ITCError & 0x00000000ffffffff
+	sprintf msg, "ITCError=%#x, ITCXOPError=%#x", ITCError, ITCXOPError
+	DEBUGPRINT("Result:", str=msg)
+
+	ReportAndAbortOnITCErrors()
+
+	return 0
+End
+
 #else
 
 /// @brief Execute a given ITC XOP operation
@@ -1199,6 +1258,17 @@ Function ExecuteITCOperation(cmd)
 
 	NVAR ITCError, ITCXOPError
 	return ITCError != 0 || ITCXOPError != 0
+End
+
+/// @brief Execute a given ITC XOP operation and abort on error
+Function ExecuteITCOperationAbortOnError(cmd)
+	string &cmd
+
+	Execute cmd
+
+	ReportAndAbortOnITCErrors()
+
+	return 0
 End
 
 #endif
