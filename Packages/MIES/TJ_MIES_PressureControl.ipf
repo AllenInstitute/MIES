@@ -756,7 +756,7 @@ Function P_ITCDataAcq(panelTitle, headStage)
 	pressureDataWv[headStage][%OngoingPessurePulse] 	= 1 // record headstage with ongoing pressure pulse
 	// start data acquisition
 	sprintf cmd, "ITCStartAcq"
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	// Start FIFO monitor
 	CtrlNamedBackground P_FIFOMonitor, period = 10, proc = P_FIFOMonitorProc

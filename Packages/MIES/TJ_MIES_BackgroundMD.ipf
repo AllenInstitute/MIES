@@ -27,10 +27,10 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
 		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 	elseif(TriggerMode > 0)
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 	endif
 	//print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 

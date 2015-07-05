@@ -36,7 +36,7 @@ Function ITC_DataAcq(panelTitle)
 		endif
 
 		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 
 		do
 			sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
@@ -110,7 +110,7 @@ Function ITC_BkrdDataAcq(panelTitle)
 	endif
 
 	sprintf cmd, "ITCStartAcq" 
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	ITC_StartBckgrdFIFOMonitor()
 End
@@ -294,7 +294,7 @@ Function ITC_TestPulseFunc(s)
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	ExecuteITCOperation(cmd) // this also seems necessary to update the DA channel data to the board!!
 	sprintf cmd, "ITCStartAcq"
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	do
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
@@ -497,7 +497,7 @@ Function ITC_StartTestPulse(panelTitle)
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
 		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 
 		do
 			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
