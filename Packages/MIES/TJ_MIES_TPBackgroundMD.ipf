@@ -13,7 +13,7 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 	
 	if (IsBackgroundTaskRunning("ITC_BkrdTPFuncMD") == 0)
 		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
@@ -67,7 +67,7 @@ Function ITC_BkrdTPFuncMD(s)
 		//print "PointsInTP =",PointsInTP
 		// works with a active device
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 	
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)

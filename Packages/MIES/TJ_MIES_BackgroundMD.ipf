@@ -17,7 +17,7 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
 	variable RepeatedAcqOnOrOff = v_value
@@ -77,7 +77,7 @@ End
 			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
 			
 			sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
-			ExecuteITCOperation(cmd)
+			ExecuteITCOperationAbortOnError(cmd)
 			sprintf cmd, "ITCFIFOAvailableALL/z=0, %s" PathToITCFIFOAvailAllConfigWave
 			//print cmd
 			ExecuteITCOperation(cmd)
@@ -148,7 +148,7 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 
 	// stop data acq on device passsed in
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 	

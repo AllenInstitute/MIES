@@ -307,8 +307,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	sprintf cmd, "ITCSelectDevice %d", ITCDeviceIDGlobal
-	ret = ExecuteITCOperation(cmd)
-	ASSERT(!ret, "Could not select device")
+	ExecuteITCOperationAbortOnError(cmd)
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse panelTitle")

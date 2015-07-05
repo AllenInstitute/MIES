@@ -505,7 +505,7 @@ Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_Scal
 	// check assumption that device is open
 	string 	ITCCommand
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(ITCCommand)
+	ExecuteITCOperationAbortOnError(ITCCommand)
 	// set pressure
 	sprintf 	ITCCommand, "ITCSetDAC %0d, %g" DAC, psi
 	ExecuteITCOperation(ITCCommand)
@@ -527,7 +527,7 @@ Function P_ReadADC(panelTitle, ITCDeviceIDGlobal, ADC, AD_ScaleFactor)
 	Make/N=1/D/O dfr:ADC/WAVE=ADV
 	string 	ITCCommand
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(ITCCommand)
+	ExecuteITCOperationAbortOnError(ITCCommand)
 
 	sprintf 	ITCCommand, "ITCReadADC/C=1 %d, %s" ADC, GetWavesDataFolder(ADV, 2)
 	ExecuteITCOperation(ITCCommand)
@@ -560,7 +560,7 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 
 	string 	ITCCommand
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(ITCCommand)
+	ExecuteITCOperationAbortOnError(ITCCommand)
 
 	Wave 	DIO = P_DIO(panelTitle)
 	sprintf 	ITCCommand, "ITCReadDigital %d, %s" Rack, GetWavesDataFolder(DIO, 2)
@@ -737,7 +737,7 @@ Function P_ITCDataAcq(panelTitle, headStage)
 
 	// select the ITC device
 	sprintf cmd, "ITCSelectDevice %d" pressureDataWv[headStage][%DAC_DevID]
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	// ensure device has stopped acquisition
 	sprintf cmd, "ITCStopAcq"
@@ -780,7 +780,7 @@ Function P_FIFOMonitorProc(s)
 	string		cmd
 
 	sprintf cmd, "ITCSelectDevice %d" DevID
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(FIFOAvail, 2)
 	ExecuteITCOperation(cmd)
@@ -977,7 +977,7 @@ Function P_TTLforPpulse(panelTitle, Headstage)
 	string 	ITCcom
 
 	sprintf ITCcom, "ITCSelectDevice %d" pressureDataWv[headStage][%DAC_DevID]
-	ExecuteITCOperation(ITCcom)
+	ExecuteITCOperationAbortOnError(ITCcom)
 
 	sprintf ITCcom, "ITCReadDigital %d, %s" RACK_ZERO, GetWavesDataFolder(DIO, 2) // get rack zero TTL state
 	ExecuteITCOperation(ITCcom)
@@ -1239,7 +1239,7 @@ Function IsITCCollectingData(panelTitle, headStage)
 	wave PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" pressureDataWv[headStage][%DAC_DevID]
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	sprintf cmd, "ITCGetState/R=1 %s" GetWavesDataFolder(StateWave, 2)
 	ExecuteITCOperation(cmd)
