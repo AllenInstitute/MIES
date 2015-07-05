@@ -158,6 +158,7 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
 	pps.timeAlignRefTrace = ""
 	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
 
 	if(ParamIsDefault(currentSweep))
 		currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
@@ -685,9 +686,22 @@ Function DB_ScaleAxis(cba) : CheckBoxControl
 	
 	switch(cba.eventCode)
 		case 2: // mouse up
-			AutoscaleVertAxisVisXRange(DB_GetMainGraph(cba.win))
+			DB_PanelUpdate(cba.win)
 			break
 	endswitch
 
 	return 0
+End
+
+static Function DB_PanelUpdate(graphOrPanel)
+	string graphOrPanel
+
+	string panel, graph
+
+	panel = GetMainWindow(graphOrPanel)
+	graph = DB_GetMainGraph(panel)
+
+	if(GetCheckBoxState(panel, "checkbox_DB_AutoScaleVertAxVisX"))
+		AutoscaleVertAxisVisXRange(graph)
+	endif
 End
