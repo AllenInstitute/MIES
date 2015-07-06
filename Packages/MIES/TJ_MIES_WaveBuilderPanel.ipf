@@ -56,13 +56,13 @@ Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(121,262,1138,869)
 	SetDrawLayer UserBack
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,pos={23,61},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(ResizeControlsInfo)= A"!!,Bq!!#?-!!#@\\!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,fSize=14
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,limits={1,100,1},value= _NUM:1
+	SetVariable SetVar_WB_NumEpochs_S100,pos={23,61},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(ResizeControlsInfo)= A"!!,Bq!!#?-!!#@\\!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WB_NumEpochs_S100,fSize=14
+	SetVariable SetVar_WB_NumEpochs_S100,limits={1,100,1},value= _NUM:1
 	SetVariable SetVar_WaveBuilder_P0,pos={194,34},size={100,16},proc=WBP_SetVarProc_UpdateParam,title="Duration"
 	SetVariable SetVar_WaveBuilder_P0,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo)= A"!!,GR!!#=k!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -75,12 +75,12 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P1,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_StepCount,pos={34,85},size={113,20},proc=WBP_SetVarProc_StepCount,title="Total Steps"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo)= A"!!,Cl!!#?c!!#@F!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_StepCount,fSize=14,limits={1,99,1},value= _NUM:1
+	SetVariable SetVar_WB_StepCount_S101,pos={34,85},size={113,20},proc=WBP_SetVarProc_StepCount,title="Total Steps"
+	SetVariable SetVar_WB_StepCount_S101,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo)= A"!!,Cl!!#?c!!#@F!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WB_StepCount_S101,fSize=14,limits={1,99,1},value= _NUM:1
 	SetVariable setvar_WaveBuilder_P10,pos={552,34},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Tau Rise"
 	SetVariable setvar_WaveBuilder_P10,userdata(tabnum)=  "6"
 	SetVariable setvar_WaveBuilder_P10,userdata(tabcontrol)=  "WBP_WaveType"
@@ -1438,12 +1438,12 @@ static Function WBP_LoadSet()
 		SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
 	endif
 
-	SetVariable SetVar_WaveBuilder_NoOfEpochs value = _NUM:SegWvType[100]
-	SetVariable SetVar_WaveBuilder_StepCount value = _NUM:SegWvType[101]
+	SetVariable SetVar_WB_NumEpochs_S100 value = _NUM:SegWvType[100]
+	SetVariable SetVar_WB_StepCount_S101 value = _NUM:SegWvType[101]
 	SetVariable setvar_WaveBuilder_CurrentEpoch value = _NUM:0
 	TabControl WBP_WaveType value = SegWvType[0]
 	WBP_ParameterWaveToPanel(SegWvType[0])
-	WBP_SetVarProc_TotEpoch("SetVar_WaveBuilder_NoOfEpochs", SegWvType[100], num2str(SegWvType[100]), "")
+	WBP_UpdateEpochControls()
 End
 
 static Function WBP_DeleteSet()
@@ -1472,45 +1472,61 @@ static Function WBP_DeleteSet()
 	KillWaves/F/Z dfr:$SetName, paramDFR:$WPName, paramDFR:$WPTName, paramDFR:$SegWvTypeName
 End
 
-Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+static Function WBP_UpdateEpochControls()
 
-	Wave SegWvType = GetSegmentWave()
+	variable currentEpoch, numEpochs
+	WAVE SegWvType = GetSegmentWave()
+	currentEpoch = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch")
+	numEpochs = SegWvType[100]
 
-	variable SegmentNo, SegmentToEdit
-	ControlInfo SetVar_WaveBuilder_NoOfEpochs
-	SegmentNo = v_value
-	ControlInfo setvar_WaveBuilder_CurrentEpoch
-	SegmentToEdit = v_value
+	SetVariable setvar_WaveBuilder_CurrentEpoch limits = {0, numEpochs - 1, 1}
 
-	if(SegmentNo <= SegmentToEdit) // This prevents the segment to edit from being larger than the max number of segements
-		SetVariable setvar_WaveBuilder_CurrentEpoch value = _num:SegmentNo - 1
-
-		WBP_ExecuteAdamsTabcontrol(SegWvType[SegmentNo - 1])
+	if(currentEpoch >= numEpochs)
+		SetVariable setvar_WaveBuilder_CurrentEpoch value = _num: numEpochs - 1
+		WBP_SelectEpoch(numEpochs - 1)
+	else
+		WBP_UpdatePanelIfAllowed()
 	endif
+End
 
-	SetVariable setvar_WaveBuilder_CurrentEpoch limits = {0, SegmentNo - 1, 1}
+static Function WBP_SelectEpoch(epoch)
+	variable epoch
 
-	SegWvType[100] = varNum
+	WAVE SegWvType = GetSegmentWave()
+
+	WBP_ExecuteAdamsTabcontrol(SegWvType[epoch])
+	WBP_ParameterWaveToPanel(SegWvType[epoch])
 	WBP_UpdatePanelIfAllowed()
 End
 
-Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
 
-	variable stimulusType
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WAVE SegWvType = GetSegmentWave()
+			SegWvType[100] = sva.dval
+			WBP_UpdateEpochControls()
+			break
+		case -1: // control being killed
+			break
+	endswitch
 
-	Wave SegWvType = GetSegmentWave()
-	stimulusType = SegWvType[varNum] //selects the appropriate tab based on the data in the SegWvType wave
-	WBP_ExecuteAdamsTabcontrol(stimulusType)
-	WBP_ParameterWaveToPanel(stimulusType)
-	WBP_UpdatePanelIfAllowed()
+	return 0
+End
+
+Function WBP_SetVarProc_EpochToEdit(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WBP_SelectEpoch(sva.dval)
+			break
+	endswitch
 End
 
 Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
