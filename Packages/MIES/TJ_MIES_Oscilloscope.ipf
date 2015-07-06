@@ -92,7 +92,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	string dataName, graph, tagName
 	variable i, adc, numActiveDACs, numADChannels
 	variable showSteadyStateResistance, showPeakResistance
-	string leftAxis, rightAxis, tagAxis, ADChannelList, str
+	string leftAxis, rightAxis, tagAxis, str
 	string tagPeakTrace, tagSteadyStateTrace
 	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
@@ -110,10 +110,11 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	Wave TPStorage = GetTPStorage(panelTitle)
 
 	dataName = NameOfWave(plotData)
-	ADChannelList = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	numADChannels = DimSize(ADCs, ROWS)
+	numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 	unitWaveNote = note(ITCChanConfigWave)
 	graph = SCOPE_GetGraph(panelTitle)
-	numADChannels = ItemsInList(ADChannelList)
 	Yoffset = 40 / numADChannels
 	YaxisSpacing = 1 / numADChannels
 	YaxisHigh = 1
@@ -124,13 +125,12 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-	numActiveDACs = ItemsInList(GetDACListFromConfig(ITCChanConfigWave))
 
 	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 
 	for(i = 0; i < numADChannels; i += 1)
-		adcStr = StringFromList(i, ADChannelList)
-		adc = str2num(adcStr)
+		adc    = ADCs[i]
+		adcStr = num2str(adc)
 		leftAxis = "AD" + adcStr
 		AppendToGraph/W=$graph/L=$leftAxis plotData[][numActiveDACs + i]
 

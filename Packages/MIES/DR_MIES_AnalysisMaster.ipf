@@ -90,8 +90,6 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	
 	variable sweepNo
 	variable x
-	string ADChannelList
-	string DAChannelList
 	variable numDACs
 	variable idx
 	Variable apLevelValue
@@ -108,12 +106,12 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	
 	Wave config = GetConfigWave(sweep)	
 	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
-	
-	ADChannelList = GetADCListFromConfig(config)
-	DAChannelList = GetDACListFromConfig(config)
-	numDACs = ItemsInList(DAChannelList)
-	idx = WhichListItem(num2str(x), ADChannelList)
-	ASSERT(idx != -1, "Missing AD channel")
+
+	WAVE ADCs = GetADCListFromConfig(config)
+	WAVE DACs = GetDACListFromConfig(config)
+	numDACs = DimSize(DACs, ROWS)
+	idx = GetRowIndex(ADCs, val=x)
+	ASSERT(IsFinite(idx), "Missing AD channel")
 		
 	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
 	
@@ -133,8 +131,6 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	
 	variable sweepNo
 	variable x
-	string ADChannelList
-	string DAChannelList
 	variable numDACs
 	variable idx
 	variable tracePeakValue
@@ -150,13 +146,13 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	
 	Wave config = GetConfigWave(sweep)
 	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
-	
-	ADChannelList = GetADCListFromConfig(config)
-	DAChannelList = GetDACListFromConfig(config)
-	numDACs = ItemsInList(DAChannelList)
-	idx = WhichListItem(num2str(x), ADChannelList)
-	ASSERT(idx != -1, "Missing AD channel")
-		
+
+	WAVE ADCs = GetADCListFromConfig(config)
+	WAVE DACs = GetDACListFromConfig(config)
+	numDACs = DimSize(DACs, ROWS)
+	idx = GetRowIndex(ADCs, val=x)
+	ASSERT(IsFinite(idx), "Missing AD channel")
+
 	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
 			
 	tracePeakValue = WaveMax(singleAD)	

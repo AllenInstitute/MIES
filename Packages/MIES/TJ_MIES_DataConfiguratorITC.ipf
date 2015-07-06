@@ -11,6 +11,11 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	variable numADCs
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
+	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
+	sweepDataLNB = NaN
+	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+	sweepDataTxTLNB = ""
+
 	DC_MakeITCConfigAllConfigWave(panelTitle)
 	DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
@@ -23,7 +28,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
-		numADCs = ItemsInList(GetADCListFromConfig(ITCChanConfigWave))
+		numADCs = DimSize(GetADCListFromConfig(ITCChanConfigWave), ROWS)
 
 		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 		DFREF dfr = GetDeviceTestPulse(panelTitle)
@@ -42,21 +47,19 @@ static Function DC_UpdateClampModeString(panelTitle)
 	string panelTitle
 
 	variable i, numChannels, headstage
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-
-	string/G testPulseDFR:ADChannelList
-	SVAR/SDFR=testPulseDFR ADChannelList
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	ADChannelList= GetADCListFromConfig(ITCChanConfigWave)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	string/G testPulseDFR:ADChannelList = Convert1DWaveToList(ADCs)
 
 	SVAR clampModeString = $GetClampModeString(panelTitle)
 	clampModeString = ""
 
-	numChannels = ItemsInList(ADChannelList)
+	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
-		headstage = TP_HeadstageUsingADC(panelTitle, str2num(StringFromList(i, ADChannelList)))
-		clampModeString += num2str(AI_MIESHeadstageMode(panelTitle, headstage)) + ";"
+		headstage = TP_HeadstageUsingADC(panelTitle, ADCs[i])
+		clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
 	endfor
 End
 
@@ -287,7 +290,7 @@ End
 static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	string panelTitle
 
-	variable i, j, numEntries, ret
+	variable i, j, numEntries, ret, channel
 	string ctrl, deviceType, deviceNumber
 	string unitList = ""
 
@@ -329,6 +332,9 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 
 	Note ITCChanConfigWave, unitList
 
+	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+
 	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
@@ -336,16 +342,23 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 		ASSERT(ret, "Could not parse device string")
 
 		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
-			ITCChanConfigWave[j][1] = 1
+			channel = 1
 		else
-			ITCChanConfigWave[j][1] = 0
+			channel = 0
 		endif
+
+		ITCChanConfigWave[j][1] = channel
+		sweepDataLNB[0][10][]   = channel
+
 		j += 1
 	endif
 
 	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-		ITCChanConfigWave[j][1] = 3
+
+		channel = 3
+		ITCChanConfigWave[j][1] = channel
+		sweepDataLNB[0][11][]   = channel
 	endif
 
 	ITCChanConfigWave[][2] = SI_CalculateMinSampInterval(panelTitle)
@@ -353,7 +366,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 End
 
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
-/// Also records certain DA_Ephys GUI settings into sweepData and sweepTxTData
+/// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle  panel title
 static Function DC_PlaceDataInITCDataWave(panelTitle)
 	string panelTitle
@@ -363,7 +376,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
-	string ctrl, firstSetName
+	string ctrl, firstSetName, str, list
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
@@ -387,11 +400,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		TPEndPoint   = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
 	endif
 
-	// waves below are used to document the settings for each sweep
-	Wave sweepData = DC_SweepDataWvRef(panelTitle)
-	Wave/T sweepTxTData = DC_SweepDataTxtWvRef(panelTitle)
-	sweepData = NaN // empty the waves on each new sweep
-	sweepTxTData = ""
+	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
 	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
 	if(NVAR_exists(count))
@@ -416,18 +426,18 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		headstage = TP_HeadstageUsingDAC(panelTitle, i)
 		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
-		sweepData[0][0][HeadStage] = i // document the DA channel
+		sweepDataLNB[0][1][HeadStage] = i // document the DA channel
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
 		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
 
-		sweepData[0][2][HeadStage] = val // document the DA gain
+		sweepDataLNB[0][3][HeadStage] = val // document the DA gain
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
-		sweepData[0][4][HeadStage] = DAScale // document the DA scale
+		sweepDataLNB[0][0][HeadStage] = DAScale // document the DA scale
 
 		setName = StringFromList(i, setNameList)
 		isTestPulse = TP_IsTestPulseSet(setName)
@@ -442,10 +452,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 			endif
 		endif
 
-		sweepTxTData[0][0][HeadStage] = setName
+		sweepDataTxTLNB[0][0][HeadStage] = setName
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		sweepTxTData[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+		sweepDataTxTLNB[0][1][HeadStage] = GetSetVariableString(panelTitle, ctrl)
 
 		if(isTestPulse)
 			setColumn   = 0
@@ -474,7 +484,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 			endif
 		endif
 
-		sweepData[0][5][HeadStage] = setColumn
+		sweepDataLNB[0][5][HeadStage] = setColumn
 
 		Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
 
@@ -492,8 +502,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		endif
 
 		// put the insert test pulse checkbox status into the sweep data wave
-		sweepData[0][6][HeadStage] = GlobalTPInsert
-		sweepData[0][7][HeadStage] = ITI
+		sweepDataLNB[0][6][HeadStage] = GlobalTPInsert
+		sweepDataLNB[0][7][HeadStage] = ITI
 
 		itcDataColumn += 1
 	endfor
@@ -510,14 +520,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		headstage = TP_HeadstageUsingADC(panelTitle, i)
 		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
-		// document AD parameters into SweepData wave
-		sweepData[0][1][headStage] = i // document the AD channel
+		sweepDataLNB[0][2][headStage] = i // document the AD channel
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		sweepData[0][3][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
+		sweepDataLNB[0][4][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		sweepTxTData[0][3][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+		sweepDataTxTLNB[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)
 
 		itcDataColumn += 1
 	endfor
@@ -575,32 +584,41 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	variable rackNo
 	string panelTitle
 
-	variable first, last, i, col, maxRows, lastIdx, bit
+	variable first, last, i, col, maxRows, lastIdx, bit, bits
+	string set
+	string listOfSets = ""
 
 	WAVE statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
 	string TTLWaveList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
 	DFREF setDFR    = GetWBSvdStimSetTTLPath()
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	if(rackNo == RACK_ZERO)
-		first = 0
-		last  = 3
-	elseif(RackNo == RACK_ONE)
-		first = 4
-		last  = 7
-	else
-		ASSERT(0, "Invalid rackNo parameter")
-	endif
+	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+
+	DC_GetRackRange(rackNo, first, last)
 
 	for(i = first; i <= last; i += 1)
 
 		if(!statusTTL[i])
+			listOfSets = AddListItem(";", listOfSets, ";", inf)
 			continue
 		endif
 
-		WAVE/SDFR=setDFR wv = $StringFromList(i, TTLWaveList)
+		set = StringFromList(i, TTLWaveList)
+		WAVE/SDFR=setDFR wv = $set
 		maxRows = max(maxRows, DimSize(wv, ROWS))
+		bits += 2^(i)
+		listOfSets = AddListItem(set, listOfSets, ";", inf)
 	endfor
+
+	if(rackNo == RACK_ZERO)
+		sweepDataLNB[0][8][]    = bits
+		sweepDataTxTLNB[0][3][] = listOfSets
+	else
+		sweepDataLNB[0][9][]    = bits
+		sweepDataTxTLNB[0][4][] = listOfSets
+	endif
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
 	Make/W/O/N=(maxRows) deviceDFR:TTLWave/Wave=TTLWave = 0
@@ -770,4 +788,42 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	endif
 
 	ASSERT(0, "unknown mode")
+End
+
+/// @brief Return the `first` and `last` TTL bits for the given `rack`
+Function DC_GetRackRange(rack, first, last)
+	variable rack
+	variable &first, &last
+
+	if(rack == RACK_ZERO)
+		first = 0
+		last = NUM_TTL_BITS_PER_RACK - 1
+	elseif(rack == RACK_ONE)
+		first = NUM_TTL_BITS_PER_RACK
+		last = 2 * NUM_TTL_BITS_PER_RACK - 1
+	else
+		ASSERT(0, "Invalid rack parameter")
+	endif
+End
+
+/// @brief Get the TTL bit mask from the labnotebook
+/// @param numericValues   Numerical labnotebook values
+/// @param sweep           Sweep number
+/// @param channel         TTL channel
+Function DC_GetTTLBits(numericValues, sweep, channel)
+	WAVE numericValues
+	variable sweep, channel
+
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
+
+	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[0] == channel)
+		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack zero bits")
+	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[0] == channel)
+		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack one bits")
+	else
+		return NaN
+	endif
+
+	return ttlBits[0]
 End

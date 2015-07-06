@@ -1,6 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"
+static StrConstant SWEEP_OVERLAY_DEP_CTRLS = "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan;check_SweepBrowser_DisplayTTL;check_SweepBrowser_DisplayADC;check_SweepBrowser_splitTTL"
 
 static Function/S SB_GetSweepBrowserChanSelPanel(graphOrPanel)
 	string graphOrPanel
@@ -531,13 +532,18 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/SDFR=dfr numericValues
+	WAVE/T/SDFR=dfr textValues
 
-	displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
-	overlaySweep    = GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay")
-	overlayChannels = GetCheckBoxState(panel, "check_sweepbrowser_OverlayChan")
+	STRUCT TiledGraphSettings tgs
+	tgs.displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
+	tgs.overlaySweep    = GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay")
+	tgs.displayADC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayADC")
+	tgs.displayTTL      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayTTL")
+	tgs.overlayChannels = GetCheckBoxState(panel, "check_sweepbrowser_OverlayChan")
+	tgs.splitTTLBits    = GetCheckBoxState(panel, "check_SweepBrowser_SplitTTL")
 	WAVE channelSelWave = SB_GetChannelSelWave(graph)
 
-	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, displayDAC, overlaySweep, overlayChannels, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
+	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, textValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)
@@ -673,8 +679,15 @@ Function/DF SB_CreateNewSweepBrowser()
 
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
-	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={116,14},proc=SB_CheckboxChangedSettings,title="Display DA channels"
+	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={33,14},proc=SB_CheckboxChangedSettings,title="DA"
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0,help={"Display the DA channel data"}
+	CheckBox check_SweepBrowser_DisplayADC,pos={61,7},size={33,14},proc=SB_CheckboxChangedSettings,title="AD"
+	CheckBox check_SweepBrowser_DisplayADC,value= 1, help={"Display the AD channels"}
+	CheckBox check_SweepBrowser_DisplayTTL,pos={102,7},size={38,14},proc=SB_CheckboxChangedSettings,title="TTL"
+	CheckBox check_SweepBrowser_DisplayTTL,value= 0, help={"Display the TTL channels"}
+	CheckBox check_SweepBrowser_splitTTL,pos={142,6},size={16,14},proc=SB_CheckboxChangedSettings,title=""
+	CheckBox check_SweepBrowser_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
+	CheckBox check_SweepBrowser_splitTTL,value= 0
 	CheckBox check_SweepBrowser_AveragTraces,pos={17,265},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
@@ -781,9 +794,9 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
 				if(checked)
-					DisableListOfControls(win, "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan")
+					DisableListOfControls(win, SWEEP_OVERLAY_DEP_CTRLS)
 				else
-					EnableListOfControls(win, "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan")
+					EnableListOfControls(win, SWEEP_OVERLAY_DEP_CTRLS)
 				endif
 			elseif(StringMatch(ctrl, "check_SB_channelSel_*"))
 				WAVE channelSel = SB_GetChannelSelWave(graph)

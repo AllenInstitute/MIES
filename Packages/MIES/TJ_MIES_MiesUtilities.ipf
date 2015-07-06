@@ -6,7 +6,9 @@
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-static Constant GRAPH_DIV_SPACING                = 0.03
+static Constant GRAPH_DIV_SPACING   = 0.03
+static Constant ADC_SLOT_MULTIPLIER = 4
+static Constant NUM_CHANNEL_TYPES   = 3
 
 /// @brief Extracts the date/time column of the settingsHistory wave
 ///
@@ -35,40 +37,57 @@ Function/WAVE GetSettingsHistoryDateTime(settingsHistory)
 	return settingsHistoryDat
 End
 
-/// @brief Returns a list of all active DA channels
-/// @todo change function to return a numeric wave of variable length
-/// and merge with GetADCListFromConfig
-Function/S GetDACListFromConfig(ITCChanConfigWave)
-	Wave ITCChanConfigWave
+/// @brief Return a list of the AD channels from the ITC config
+Function/WAVE GetADCListFromConfig(config)
+	WAVE config
 
-	return RefToPullDatafrom2DWave(1, 0, 1, ITCChanConfigWave)
+	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_ADC)
 End
 
-/// @brief Returns a list of all active AD channels
-Function/S GetADCListFromConfig(ITCChanConfigWave)
-	Wave ITCChanConfigWave
+/// @brief Return a list of the DA channels from the ITC config
+Function/WAVE GetDACListFromConfig(config)
+	WAVE config
 
-	return RefToPullDatafrom2DWave(0, 0, 1, ITCChanConfigWave)
+	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_DAC)
 End
 
-/// @brief Returns the data from the data column based on matched values in the ref column
+/// @brief Return a list of the TTL channels from the ITC config
+Function/WAVE GetTTLListFromConfig(config)
+	WAVE config
+
+	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_TTL)
+End
+
+/// @brief Return a wave with all active channels
 ///
-/// For ITCDataWave 0 (value) in Ref column = AD channel, 1 = DA channel
-static Function/s RefToPullDatafrom2DWave(refValue, refColumn, dataColumn, twoDWave)
-	wave twoDWave
-	variable refValue, refColumn, dataColumn
+/// @todo change to return a 0/1 wave with constant size a la DC_ControlStatusWave
+///
+/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
+static Function/WAVE GetChanneListFromITCConfig(config, channelType)
+	WAVE config
+	variable channelType
 
-	variable i, numRows
-	string list = ""
+	variable numRows, numCols, itcChan, i, j
 
-	numRows = DimSize(twoDWave, ROWS)
+	numRows = DimSize(config, ROWS)
+	numCols = DimSize(config, COLS)
+
+	ASSERT(numRows > 0, "Can not handle wave with zero rows")
+	ASSERT(numCols == 4, "Expected a wave with 4 columns")
+
+	Make/U/B/FREE/N=(numRows) activeChannels
+
 	for(i = 0; i < numRows; i += 1)
-		if(TwoDwave[i][refColumn] == refValue)
-			list = AddListItem(num2str(TwoDwave[i][DataColumn]), list, ";", i)
+		if(channelType == config[i][0])
+			activeChannels[j] = config[i][1]
+			j += 1
 		endif
 	endfor
 
-	return list
+	Redimension/N=(j) activeChannels
+
+	return activeChannels
 End
 
 /// @brief Returns the name of a control from the DA_EPHYS panel
@@ -426,34 +445,33 @@ Function/S BuildDeviceString(deviceType, deviceNumber)
 	return deviceType + "_Dev_" + deviceNumber
 End
 
-static Function RemoveDisabledChannels(channelSelWave, ADChannelList, DAChannelList, configNote)
+static Function RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
 	WAVE/Z channelSelWave
-	string &ADChannelList
-	string &DAChannelList
+	WAVE ADCs, DACs
 	string &configNote
 
-	variable numADCs, numDACs, i, chan
+	variable numADCs, numDACs, i
 
 	if(!WaveExists(channelSelWave))
 		return NaN
 	endif
 
-	numADCs = ItemsInList(ADChannelList)
-	numDACs = ItemsInList(DAChannelList)
+	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
 
+	// start at the end of the config wave
+	// we always have the order DA/AD/TTLs
 	for(i = numADCs - 1; i >= 0; i -= 1)
-		chan = str2num(StringFromList(i, ADChannelList))
-		if(!channelSelWave[chan][%AD])
-			ADChannelList = RemoveListItem(i, ADChannelList)
-			configNote    = RemoveListItem(numDACs + i, configNote)
+		if(!channelSelWave[ADCs[i]][%AD])
+			DeletePoints/M=(ROWS) i, 1, ADCs
+			configNote = RemoveListItem(numDACs + i, configNote)
 		endif
 	endfor
 
 	for(i = numDACs - 1; i >= 0; i -= 1)
-		chan = str2num(StringFromList(i, DAChannelList))
-		if(!channelSelWave[chan][%DA])
-			DAChannelList = RemoveListItem(i, DAChannelList)
-			configNote    = RemoveListItem(i, configNote)
+		if(!channelSelWave[DACs[i]][%DA])
+			DeletePoints/M=(ROWS) i, 1, DACs
+			configNote = RemoveListItem(i, configNote)
 		endif
 	endfor
 End
@@ -467,41 +485,42 @@ End
 /// @param config               ITC config wave
 /// @param sweepNo              number of the sweep
 /// @param settingsHistory      numerical labnotebook wave
-/// @param displayDAC           display the DA channel, yes or no
-/// @param overlaySweep         overlay the sweeps, yes or no
-/// @param overlayChannels      use a separate axis for each DA/AD channel, yes or no
+/// @param settingsHistoryText  textual labnotebook wave
+/// @param tgs                  settings for tuning the display, see @ref TiledGraphSettings
 /// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
 /// @param sweepWave [optional] sweep wave with multiple columns
 /// @param channelSelWave [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displayDAC, overlaySweep, overlayChannels, [sweepDFR, sweepWave, channelSelWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  settingsHistoryText, tgs, [sweepDFR, sweepWave, channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
 	WAVE settingsHistory
-	variable displayDAC, overlaySweep, overlayChannels
+	WAVE/T settingsHistoryText
+	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
 	WAVE/Z sweepWave
 	WAVE/Z channelSelWave
+
+	variable headstage, red, green, blue, splitSweepMode, axisIndex, numChannels
+	variable numDACs, numADCs, numTTLs, i, j, channelOffset, hasPhysUnit, slotMult
+	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numWaves, idx
+	variable numTTLBits, colorIndex
+
+	string axis, trace, traceType, channelID
+	string unit, configNote, name, wvName
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
 	ASSERT(ParamIsDefault(sweepDFR) + ParamIsDefault(sweepWave), "Caller must supply exactly one of sweepDFR and sweepWave")
 
-	string ADChannelList = GetADCListFromConfig(config)
-	string DAChannelList = GetDACListFromConfig(config)
-	string configNote = note(config)
-	RemoveDisabledChannels(channelSelWave, ADChannelList, DAChannelList, configNote)
-	variable NumberOfDAchannels = ItemsInList(DAChannelList)
-	variable NumberOfADchannels = ItemsInList(ADChannelList)
-	// the max allows for uneven number of AD and DA channels
-	variable numChannels = max(NumberOfDAchannels, NumberOfADchannels)
-	variable ADYaxisLow, ADYaxisHigh, ADYaxisSpacing, DAYaxisSpacing, DAYaxisLow, DAYaxisHigh
-	variable headstage, red, green, blue, i, axisIndex, splitSweepMode
-	variable firstDAC = 1
-	variable firstADC = 1
-
-	string axis, trace, adc, dac, traceType
-	string unit
+	WAVE ADCs = GetADCListFromConfig(config)
+	WAVE DACs = GetDACListFromConfig(config)
+	WAVE TTLs = GetTTLListFromConfig(config)
+	configNote = note(config)
+	RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
+	numDACs = DimSize(DACs, ROWS)
+	numADCs = DimSize(ADCs, ROWS)
+	numTTLs = DimSize(TTLs, ROWS)
 
 	if(!ParamIsDefault(sweepDFR))
 		splitSweepMode = 1
@@ -509,143 +528,232 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, displa
 
 	WAVE ranges = GetAxesRanges(graph)
 
-	if(!overlaySweep)
+	if(!tgs.overlaySweep)
 		RemoveTracesFromGraph(graph)
 	endif
 
-	if(displayDAC)
-		ADYaxisSpacing = 0.8
-		DAYaxisSpacing = 0.2
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(settingsHistory, sweepNo, "TTL rack zero bits")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(settingsHistory, sweepNo, "TTL rack one bits")
 
-		if(!overlayChannels)
-			ADYaxisSpacing /= numChannels
-			DAYaxisSpacing /= numChannels
+	if(tgs.splitTTLBits && numTTLs > 0)
+		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
+			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
+			tgs.splitTTLBits = 0
+		elseif(!splitSweepMode)
+			print "Turning off tgs.splitTTLBits as it is currently only supported for split sweep mode"
+			tgs.splitTTLBits = 0
+		elseif(tgs.overlayChannels)
+			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
+			tgs.splitTTLBits = 0
 		endif
-	else
-		ADYaxisSpacing = 1
 
-		if(!overlayChannels)
-			ADYaxisSpacing /= NumberOfADchannels
+		if(tgs.splitTTLBits)
+			if(WaveExists(ttlRackZeroChannel))
+				numTTLBits += PopCount(ttlRackZeroChannel[0])
+			 endif
+			if(WaveExists(ttlRackOneChannel))
+				numTTLBits += PopCount(ttlRackOneChannel[0])
+			 endif
 		endif
 	endif
 
-	if(displayDAC)
-		DAYaxisHigh = 1
-		DAYaxisLow  = DAYaxisHigh - DAYaxisSpacing + GRAPH_DIV_SPACING
-		ADYaxisHigh = DAYaxisLow - GRAPH_DIV_SPACING
-		ADYaxisLow  = ADYaxisHigh - ADYaxisSpacing + GRAPH_DIV_SPACING
-	else
-		ADYaxisHigh = 1
-		ADYaxisLow  = 1 - ADYaxisSpacing + GRAPH_DIV_SPACING
+
+	// The display order from top to bottom is DA/AD/TTL
+	// with increasing channel number
+	//
+	// idea:
+	// - we have 100% space for all axes
+	// - AD axes should occupy four times the space of DA/TTL channels.
+	// - So DA/TTL occupy one slot, AD occupy four slots
+	// - between each axes we want GRAPH_DIV_SPACING clear space
+	// - Count the number of channels and slots to be used
+	// - Derive the space per slot
+	// - For overlay channels we reserve only one slot times slot multiplier
+	//   per channel
+	if(tgs.displayDAC && numDACs > 0)
+		numChannels += numDACs
+
+		if(tgs.overlayChannels)
+			numSlots += 1
+		else
+			numSlots += numDACs
+		endif
 	endif
+	if(tgs.displayADC && numADCs > 0)
+		numChannels += numADCs
+
+		if(tgs.overlayChannels)
+			numSlots += ADC_SLOT_MULTIPLIER
+		else
+			numSlots += ADC_SLOT_MULTIPLIER * numADCs
+		endif
+	endif
+	if(tgs.displayTTL && numTTLs > 0)
+		numChannels += numTTLs
+
+		if(tgs.overlayChannels)
+			numSlots += 1
+		else
+			if(tgs.splitTTLBits)
+				numSlots += numTTLBits
+			else
+				numSlots += numTTLs
+			endif
+		endif
+	endif
+
+	spacePerSlot = (1.0 - (numChannels - 1) * GRAPH_DIV_SPACING) / numSlots
+	DEBUGPRINT("numSlots", var=numSlots)
+	DEBUGPRINT("numChannels", var=numChannels)
+	DEBUGPRINT("spacePerSlot", var=spacePerSlot)
+
+	high = 1.0
 
 	WAVE/Z statusDAC = GetLastSetting(settingsHistory, sweepNo, "DAC")
 	WAVE/Z statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
 
-	for(i = 0; i < numChannels; i += 1)
+	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) channelTypes
+	channelTypes[0] = ITC_XOP_CHANNEL_TYPE_DAC
+	channelTypes[1] = ITC_XOP_CHANNEL_TYPE_ADC
+	channelTypes[2] = ITC_XOP_CHANNEL_TYPE_TTL
 
-		DEBUGPRINT("DAYAxisHigh", var=DAYAxisHigh)
-		DEBUGPRINT("DAYAxisLow", var=DAYAxisLow)
-		DEBUGPRINT("ADYAxisHigh", var=ADYAxisHigh)
-		DEBUGPRINT("ADYAxisLow", var=ADYAxisLow)
+	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) firstCall = 1
+	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) activeChanCount = 0
 
-		if(displayDAC && i < NumberOfDAchannels)
-			dac = StringFromList(i, DAChannelList)
-			traceType = "DA" + dac
-			trace = UniqueTraceName(graph, traceType)
+	do
+		moreData = 0
+		for(i = 0; i < NUM_CHANNEL_TYPES; i += 1)
+			switch(channelTypes[i])
+				case ITC_XOP_CHANNEL_TYPE_DAC:
+					if(!tgs.displayDAC)
+						continue
+					endif
 
-			if(overlayChannels)
-				axis = AXIS_BASE_NAME + "_DA"
-			else
-				axis = AXIS_BASE_NAME + num2str(axisIndex)
-				axisIndex += 1
+					WAVE/Z status    = statusDAC
+					WAVE channelList = DACs
+					channelID        = "DA"
+					channelOffset    = 0
+					hasPhysUnit      = 1
+					slotMult         = 1
+					numWaves         = 1
+					break
+				case ITC_XOP_CHANNEL_TYPE_ADC:
+					if(!tgs.displayADC)
+						continue
+					endif
+
+					WAVE/Z status    = statusADC
+					WAVE channelList = ADCs
+					channelID        = "AD"
+					channelOffset    = numDACs
+					hasPhysUnit      = 1
+					slotMult         = ADC_SLOT_MULTIPLIER
+					numWaves         = 1
+					break
+				case ITC_XOP_CHANNEL_TYPE_TTL:
+					if(!tgs.displayTTL)
+						continue
+					endif
+
+					WAVE/Z status    = $""
+					WAVE channelList = TTLs
+					channelID        = "TTL"
+					channelOffset    = numDACs + numADCs
+					hasPhysUnit      = 0
+					slotMult         = 1
+					numWaves         = tgs.splitTTLBits ? NUM_TTL_BITS_PER_RACK : 1
+					break
+			endswitch
+
+			if(DimSize(channelList, ROWS) == 0)
+				continue
 			endif
 
-			if(splitSweepMode)
-				WAVE/SDFR=sweepDFR wv = $("DA_" + dac)
-				AppendToGraph/W=$graph/L=$axis wv/TN=$trace
-			else
-				AppendToGraph/W=$graph/L=$axis sweepWave[][i]/TN=$trace
-			endif
+			moreData = 1
+			chan = channelList[0]
+			DeletePoints/M=(ROWS) 0, 1, channelList
 
-			if(firstDAC || !overlayChannels)
-				ModifyGraph/W=$graph axisEnab($axis) = {DAYaxisLow, DAYaxisHigh}
-				unit = StringFromList(i, configNote)
-				Label/W=$graph $axis, traceType + "\r(" + unit + ")"
-				ModifyGraph/W=$graph lblPosMode = 1
-				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
-				firstDAC = 0
-			endif
+			idx = activeChanCount[i] + channelOffset
 
-			headstage = WaveExists(statusDAC) ? GetRowIndex(statusDAC, str=dac) : NaN
-			// use a different color if we can't query the headstage
-			GetTraceColor(IsFinite(headstage) ? headstage : NUM_HEADSTAGES, red, green, blue)
-			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
-			ModifyGraph/W=$graph userData($trace)={channelType, 0, "DA"}
-			ModifyGraph/W=$graph userData($trace)={channelNumber, 0, dac}
-			ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
-		endif
+			for(j = 0; j < numWaves; j += 1)
 
-		if(i < NumberOfADchannels)
-			adc = StringFromList(i, ADChannelList)
-			traceType = "AD" + adc
-			trace = UniqueTraceName(graph, traceType)
+				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
+					name   = channelID + num2str(chan) + "_" + num2str(j)
+					wvName = channelID + "_" + num2str(chan) + "_" + num2str(j)
+				else
+					name   = channelID + num2str(chan)
+					wvName = channelID + "_" + num2str(chan)
+				endif
 
-			if(overlayChannels)
-				axis = AXIS_BASE_NAME + "_AD"
-			else
-				axis = AXIS_BASE_NAME + num2str(axisIndex)
-				axisIndex += 1
-			endif
+				trace = UniqueTraceName(graph, name)
 
-			if(splitSweepMode)
-				WAVE/Z/SDFR=sweepDFR wv = $("AD_" + adc)
-				if(WaveExists(wv))
+				if(tgs.overlayChannels)
+					axis      = AXIS_BASE_NAME + "_" + channelID
+					traceType = channelID
+				else
+					axis      = AXIS_BASE_NAME + num2str(axisIndex)
+					traceType = name
+					axisIndex += 1
+				endif
+
+				if(splitSweepMode)
+					WAVE/Z/SDFR=sweepDFR wv = $wvName
+					if(!WaveExists(wv))
+						continue
+					endif
+
 					AppendToGraph/W=$graph/L=$axis wv/TN=$trace
 				else
-					printf "BUG: ADC %s to plot does not exist\r", adc
-					continue
+					AppendToGraph/W=$graph/L=$axis sweepWave[][idx]/TN=$trace
 				endif
-			else
-				AppendToGraph/W=$graph/L=$axis sweepWave[][i + NumberOfDAchannels]/TN=$trace
-			endif
 
-			if(firstADC || !overlayChannels)
-				ModifyGraph/W=$graph axisEnab($axis) = {ADYaxisLow, ADYaxisHigh}
-				unit = StringFromList(i + NumberOfDAchannels, configNote)
-				Label/W=$graph $axis, traceType + "\r(" + unit + ")"
-				ModifyGraph/W=$graph lblPosMode = 1
-				ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
-				firstADC = 0
-			endif
+				if(firstCall[i] || !tgs.overlayChannels)
+					low = max(high - slotMult * spacePerSlot, 0)
+					ModifyGraph/W=$graph axisEnab($axis) = {low, high}
 
-			headstage = WaveExists(statusADC) ? GetRowIndex(statusADC, str=adc) : NaN
-			// use a different color if we can't query the headstage
-			GetTraceColor(IsFinite(headstage) ? headstage : NUM_HEADSTAGES, red, green, blue)
-			ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
-			ModifyGraph/W=$graph userData($trace)={channelType, 0, "AD"}
-			ModifyGraph/W=$graph userData($trace)={channelNumber, 0, adc}
-			ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
-		endif
+					if(hasPhysUnit)
+						unit = StringFromList(idx, configNote)
+					else
+						unit = "a.u."
+					endif
 
-		if(!overlayChannels)
-			if(i >= NumberOfDAchannels)
-				DAYaxisSpacing = 0
-			endif
+					Label/W=$graph $axis, traceType + "\r(" + unit + ")"
+					ModifyGraph/W=$graph lblPosMode = 1
+					ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
+					firstCall[i] = 0
 
-			if(i >= NumberOfADchannels)
-				ADYaxisSpacing = 0
-			endif
+					high -= slotMult * spacePerSlot + GRAPH_DIV_SPACING
+				endif
 
-			if(displayDAC)
-				DAYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
-				DAYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
-			endif
+				// Color scheme:
+				// 0-7:   Different headstages
+				// 8:     Unknown headstage
+				// 9:     Averaged trace
+				// 10:    TTL bits (sum) rack zero
+				// 11-14: TTL bits (single) rack zero
+				// 15:    TTL bits (sum) rack one
+				// 16-19: TTL bits (single) rack one
+				if(WaveExists(status))
+					colorIndex = GetRowIndex(status, val=chan)
+				elseif(!cmpstr(channelID, "TTL"))
+					colorIndex = 10 + activeChanCount[i] * 5 + j
+				else
+					colorIndex = NUM_HEADSTAGES
+				endif
+				
+				GetTraceColor(colorIndex, red, green, blue)
+				ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+				ModifyGraph/W=$graph userData($trace)={channelType, 0, channelID}
+				ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(chan)}
+				ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
 
-			ADYAxisHigh -= ADYaxisSpacing + DAYaxisSpacing
-			ADYaxisLow  -= ADYaxisSpacing + DAYaxisSpacing
-		endif
-	endfor
+				DEBUGPRINT("high", var=high)
+				DEBUGPRINT("low", var=low)
+			endfor
+
+			activeChanCount[i] += 1
+		endfor
+	while(moreData)
 
 	SetAxesRanges(graph, ranges)
 End

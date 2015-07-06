@@ -240,8 +240,9 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	string expFilePath, datafolderPath, listOfNames
 	variable typeFlags
 
-	variable err
+	variable err, numEntries, i
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
+	string str
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
@@ -274,15 +275,21 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
 		elseif(V_isFolder)
 			LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
-		else
-			ASSERT(0, "Unknown return from GetFileFolderInfo")
-			return 0
+		elseif(V_flag != 0)
+			sprintf str, "The experiment file/folder \"%s\" could not be found!\r", ParseFilePath(5, expFileOrFolder, "\\", 0, 0)
+			DoAlert/T="Error in AB_LoadDataWrapper" 0, str
+			Abort
 		endif
 	catch
 		err = GetRTError(1)
-		printf "Could not query the waves from %s\r", expFileOrFolder
 		return 0
 	endtry
+
+	// LoadData may have created empty datafolders
+	numEntries = CountObjectsDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER)
+	for(i = 0; i < numEntries; i += 1)
+		RemoveEmptyDataFolder($GetIndexedObjNameDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER, i))
+	endfor
 
 	return V_flag
 End
@@ -362,6 +369,8 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, labNotebookPath, labNotebookWaves)
 
 	if(numWavesLoaded <= 0)
+		SetDataFolder saveDFR
+		KillOrMoveToTrash(GetDataFolder(1, newDFR))
 		return ""
 	endif
 
@@ -439,7 +448,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	endfor
 
 	SetDataFolder saveDFR
-	KillDataFolder newDFR
+	KillOrMoveToTrash(GetDataFolder(1, newDFR))
 
 	return deviceList
 End
@@ -772,7 +781,7 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	DFREF sweepDataDFR = createDFWithAllParents(sweepFolder)
 	MoveWave sweepWave, sweepDataDFR
 	SetDataFolder saveDFR
-	KillDataFolder newDFR
+	KillOrMoveToTrash(GetDataFolder(1, newDFR))
 
 	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, expFilePath
 	DEBUGPRINT(msg)
@@ -833,14 +842,14 @@ static Function AB_LoadStimSet(expFilePath, expFolder, device, sweep)
 		if(numWavesLoaded <= 0)
 			printf "Could not load stimset %s of sweep %d, device %s and %s\r", stimsetWaveName, sweep, device, expFilePath
 			SetDataFolder saveDFR
-			KillDataFolder newDFR
+			KillOrMoveToTrash(GetDataFolder(1, newDFR))
 			return 1
 		endif
 
 		WAVE stimset = $stimsetWaveName
 		MoveWave stimset, stimsetdfr
 		SetDataFolder saveDFR
-		KillDataFolder newDFR
+		KillOrMoveToTrash(GetDataFolder(1, newDFR))
 
 		sprintf msg, "Loaded stimset %s of sweep %d, device %s and %s\r", stimsetWaveName, sweep, device, expFilePath
 		DEBUGPRINT(msg)
@@ -864,16 +873,23 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		return 1
 	endif
 
+	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
+	WAVE/T/SDFR=dfr numericValues
+
 	numRows = DimSize(config, ROWS)
 	for(i = 0; i < numRows; i += 1)
-		channelType   = StringFromList(config[i][0], ITC_CHANNEL_NAMES)
+		channelType = StringFromList(config[i][0], ITC_CHANNEL_NAMES)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = config[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
+		str = channelType + "_" + num2istr(channelNumber)
 
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, channelType, channelNumber)
 
-		str = channelType + "_" + num2istr(channelNumber)
+		if(!cmpstr(channelType, "TTL"))
+			AB_SplitTTLWaveIntoComponents(data, DC_GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
+		endif
+
 		MoveWave data, sweepFolder:$str
 	endfor
 
@@ -881,6 +897,30 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	KillWaves sweepWave
 
 	return 0
+End
+
+static Function AB_SplitTTLWaveIntoComponents(data, ttlBits, sweepFolder, wvName)
+	WAVE data
+	variable ttlBits
+	DFREF sweepFolder
+	string wvName
+
+	if(!IsFinite(ttlBits))
+		return NaN
+	endif
+
+	variable i, bit
+
+	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
+
+		bit = 2^i
+		if(!(ttlBits & bit))
+			continue
+		endif
+
+		Duplicate data, sweepFolder:$(wvName + "_" + num2str(i))/Wave=dest
+		MultiThread dest[] = dest[p] & bit
+	endfor
 End
 
 Function AB_ScanFolder(win)

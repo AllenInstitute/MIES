@@ -34,3 +34,13 @@ Structure PostPlotSettings
 	/// Hook function which is called at the very end of #PostPlotTransformations
 	FUNCREF FinalUpdateHookProto finalUpdateHook
 EndStructure
+
+/// @brief Parameter to #CreateTiledChannelGraph
+Structure TiledGraphSettings
+	int16 displayDAC
+	int16 displayADC
+	int16 displayTTL
+	int16 splitTTLBits
+	int16 overlaySweep
+	int16 overlayChannels
+EndStructure
