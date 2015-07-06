@@ -158,6 +158,7 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
 	pps.timeAlignRefTrace = ""
 	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
 
 	if(ParamIsDefault(currentSweep))
 		currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
@@ -396,11 +397,12 @@ Window DataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataBrowser_SweepStep,userdata(lastSweep)=  "0",fSize=12
 	SetVariable setvar_DataBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
-	PopupMenu popup_DB_AutoScaleVertAxVisX,pos={180,681},size={110,21},bodyWidth=110,proc=DB_ScaleAxisPopup,title="Autoscale Y Axis"
-	PopupMenu popup_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo)= A"!!,GD!!#D:5QF.+!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	PopupMenu popup_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_AutoScaleVertAxVisX,mode=0,value= #"\"Visible X range\""
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,pos={179,685},size={42,14},proc=DB_ScaleAxis,title="Vis X"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,help={"Scale the y axis to the visible x data range"}
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo)= A"!!,GD!!#D:5QF.+!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
@@ -679,14 +681,27 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_ScaleAxisPopup(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
-
-	switch(pa.eventCode)
+Function DB_ScaleAxis(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+	
+	switch(cba.eventCode)
 		case 2: // mouse up
-			AutoscaleVertAxisVisXRange(DB_GetMainGraph(pa.win))
+			DB_PanelUpdate(cba.win)
 			break
 	endswitch
 
 	return 0
+End
+
+static Function DB_PanelUpdate(graphOrPanel)
+	string graphOrPanel
+
+	string panel, graph
+
+	panel = GetMainWindow(graphOrPanel)
+	graph = DB_GetMainGraph(panel)
+
+	if(GetCheckBoxState(panel, "checkbox_DB_AutoScaleVertAxVisX"))
+		AutoscaleVertAxisVisXRange(graph)
+	endif
 End
