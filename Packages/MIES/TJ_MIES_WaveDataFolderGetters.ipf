@@ -1462,6 +1462,9 @@ Function/Wave GetSegmentWave()
 
 	Make/N=102 dfr:SegWvType/Wave=wv
 
+	wv[100] = 1
+	wv[101] = 1
+
 	return wv
 End
 

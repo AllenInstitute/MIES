@@ -717,10 +717,12 @@ static Function WBP_DisplaySetInPanel()
 
 	WAVE ranges = GetAxesRanges(waveBuilderGraph)
 	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
+
 	WB_MakeStimSet()
+	WAVE SegWvType = GetSegmentWave()
 
 	epoch     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	numEpochs = GetSetVariable(panel, "SetVar_WaveBuilder_NoOfEpochs")
+	numEpochs = SegWvType[100]
 
 	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
 	basename = basename[0,15]
@@ -963,6 +965,8 @@ Function WBP_SetVarProc_StepCount(sva) : SetVariableControl
 		case 3: // Live update
 			WBP_LowPassDeltaLimits()
 			WBP_HighPassDeltaLimits()
+			WAVE SegWvType = GetSegmentWave()
+			SegWvType[101] = sva.dval
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
@@ -1132,8 +1136,8 @@ static Function WBP_LowPassDeltaLimits()
 
 	variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
 
-	ControlInfo SetVar_WaveBuilder_StepCount
-	StepCount = v_value
+	WAVE SegWvType = GetSegmentWave()
+	StepCount = SegWvType[101]
 
 	ControlInfo SetVar_WaveBuilder_P20
 	LowPassCutoff = v_value
@@ -1162,8 +1166,8 @@ static Function WBP_HighPassDeltaLimits()
 
 	variable HighPassCutOff, StepCount, HighPassDelta, DeltaLimit
 
-	ControlInfo SetVar_WaveBuilder_StepCount
-	StepCount = v_value
+	WAVE SegWvType = GetSegmentWave()
+	StepCount = SegWvType[101]
 
 	ControlInfo SetVar_WaveBuilder_P22
 	HighPassCutoff = v_value
@@ -1198,9 +1202,7 @@ End
 static Function WBP_ChangeWaveType(stimulusType)
 	variable stimulusType
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr SegWvType
-
+	WAVE SegWvType = GetSegmentWave()
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	string list
@@ -1388,23 +1390,6 @@ end
 static Function WBP_SaveSetParam()
 
 	string setName, folder
-	Wave SegWvType = GetSegmentWave()
-
-	// we might be called from an old panel without an ITI setvariable control
-	ControlInfo/W=$panel setvar_WaveBuilder_ITI
-	if(V_flag > 0)
-		SegWvType[99] = V_Value
-	else
-		SegWvType[99] = 0
-	endif
-
-	// stores the total number of segments for a set in the penultimate cell
-	// of the wave that stores the segment type for each segment
-	SegWvType[100] = GetSetVariable(panel, "SetVar_WaveBuilder_NoOfEpochs")
-
-	// stores the total number of steps for a set in the last cell
-	// of the wave that stores the segment type for each segment
-	SegWvType[101] = GetSetVariable(panel, "SetVar_WaveBuilder_StepCount")
 
 	folder  = WBP_WPFolderAssignment()
 	setName = "_" + WBP_AssembleSetName()
@@ -1509,6 +1494,7 @@ Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableCo
 
 	SetVariable setvar_WaveBuilder_CurrentEpoch limits = {0, SegmentNo - 1, 1}
 
+	SegWvType[100] = varNum
 	WBP_UpdatePanelIfAllowed()
 End
 

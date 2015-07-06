@@ -12,6 +12,7 @@ Function WB_MakeStimSet()
 	variable start = stopmstimer(-2)
 
 	WAVE WP = GetWaveBuilderWaveParam()
+	WAVE SegWvType = GetSegmentWave()
 
 	// WB_AddDelta modifies WP so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
@@ -20,9 +21,9 @@ Function WB_MakeStimSet()
 	basename = basename[0,15]
 
 	setNumber  = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
-	numSteps   = GetSetVariable("WaveBuilder", "setVar_WaveBuilder_StepCount")
+	numSteps   = SegWvType[101]
 	outputType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
-	numEpochs  = GetSetVariable("WaveBuilder", "SetVar_WaveBuilder_NoOfEpochs")
+	numEpochs  = SegWvType[100]
 
 	for(i=0; i < numSteps; i+=1)
 		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + outputType + "_" + num2str(setNumber)
