@@ -23,6 +23,9 @@ static StrConstant functionReturnMessage = "return value"
 ///@verbatim DEBUG doStuff(...)#L5: return value 3 @endverbatim
 /// to the history.
 ///
+/// @hidecallgraph
+/// @hidecallergraph
+///
 ///@param var     numerical argument for debug output
 ///@param format  optional format string to override the default of "%g"
 Function DEBUGPRINTv(var, [format])
@@ -53,6 +56,9 @@ End
 ///@verbatim DEBUG doStuff(...)#L5: return value ab @endverbatim
 /// to the history.
 ///
+/// @hidecallgraph
+/// @hidecallergraph
+///
 ///@param str     string argument for debug output
 ///@param format  optional format string to override the default of "%s"
 Function/s DEBUGPRINTs(str, [format])
@@ -78,6 +84,9 @@ End
 ///DEBUGPRINT("my string", str=myString)
 ///DEBUGPRINT("Current state", var=state, format="%.5f")
 ///@endcode
+///
+/// @hidecallgraph
+/// @hidecallergraph
 ///
 /// @param msg    descriptive string for the debug message
 /// @param var    variable

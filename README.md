@@ -29,7 +29,7 @@
 ## Building the documentation
 
 ### Required 3rd party tools
-* [Doxygen](http://doxygen.org) 1.8.7 (exactly this version)
+* [Doxygen](http://doxygen.org) 1.8.10
 * [Gawk](http://gnuwin32.sourceforge.net/packages/gawk.htm) 3.1.6 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
 
