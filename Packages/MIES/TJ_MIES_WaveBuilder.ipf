@@ -330,6 +330,9 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 
 		if(stepCount == 0)
 			WAVE epochID = GetEpochID()
+			if(i == 0)
+				epochID = 0
+			endif
 			epochID[i][%timeBegin] = accumulatedDuration
 			epochID[i][%timeEnd]   = accumulatedDuration + params.duration
 
