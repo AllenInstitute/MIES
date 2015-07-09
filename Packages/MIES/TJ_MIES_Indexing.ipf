@@ -497,31 +497,6 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIn
 	return numTrials
 End
 
-Function/DF IDX_GetSetFolderFromString(channelType)
-	string channelType
-
-	if(!CmpStr(channelType, "DA"))
-		return GetWBSvdStimSetDAPath()
-	elseif(!CmpStr(channelType, "TTL"))
-		return GetWBSvdStimSetTTLPath()
-	else
-		ASSERT(0, "unknown channelType")
-	endif
-End
-
-/// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/DF IDX_GetSetFolder(channelType)
-	variable channelType
-
-	if(channelType == CHANNEL_TYPE_DAC)
-		return GetWBSvdStimSetDAPath()
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		return GetWBSvdStimSetTTLPath()
-	else
-		ASSERT(0, "unknown channelType")
-	endif
-End
-
 /// @brief Return the number of trials
 Function IDX_NumberOfTrialsInSet(panelTitle, setName, channelType)
 	string panelTitle, setName

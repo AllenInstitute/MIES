@@ -178,7 +178,7 @@ static Function DC_LongestOutputWave(channelType, panelTitle)
 			continue
 		endif
 
-		Wave/Z/SDFR=IDX_GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
+		Wave/Z/SDFR=GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
 
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
