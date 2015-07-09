@@ -146,6 +146,10 @@ static Structure SegmentParameters
 	variable deltaLowPassFiltCoefCount
 	variable fIncrement
 	variable numberOfPulses
+	// checkboxes
+	variable poisson
+	variable brownNoise, pinkNoise
+	variable sinChirp
 EndStructure
 
 static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
@@ -198,6 +202,10 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 		params.lowPassFiltCoefCount       = WP[28][i][type]
 		params.deltaLowPassFiltCoefCount  = WP[29][i][type]
 		params.fIncrement                 = WP[30][i][type]
+		params.pinkNoise                  = WP[41][i][type]
+		params.brownNoise                 = WP[42][i][type]
+		params.sinChirp                   = WP[43][i][type]
+		params.poisson                    = WP[44][i][type]
 		params.numberOfPulses             = WP[45][i][type]
 
 		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
@@ -387,14 +395,11 @@ End
 static Function WB_NoiseSegment(pa)
 	struct SegmentParameters &pa
 
-	variable brownCheck, pinkCheck, PinkOrBrown
+	variable PinkOrBrown
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
-	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink_P41")
-	brownCheck = GetCheckBoxState("Wavebuilder", "Check_Noise_Brown_P42")
-
-	if(!brownCheck && !pinkCheck)
+	if(!pa.brownNoise && !pa.pinkNoise)
 		SegmentWave = gnoise(pa.amplitude) // MultiThread didn't impact processing time for gnoise
 		if(pa.duration <= 0)
 			print "WB_NoiseSegment: Can not proceed with non-positive duration"
@@ -408,9 +413,9 @@ static Function WB_NoiseSegment(pa)
 		if(pa.highPassCutOff > 0 && pa.highPassCutOff < 100000)
 			FilterFIR /DIM = 0 /Hi = {(pa.highPassCutOff/200000), (pa.highPassCutOff/200000), pa.highPassFiltCoefCount} SegmentWave
 		endif
-	elseif(pinkCheck)
+	elseif(pa.pinkNoise)
 		WB_PinkAndBrownNoise(pa, 0)
-	elseif(brownCheck)
+	elseif(pa.brownNoise)
 		WB_PinkAndBrownNoise(pa, 1)
 	endif
 
@@ -425,7 +430,7 @@ static Function WB_SinSegment(pa)
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
-	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp_P43"))
+	if(!pa.sinChirp)
 		MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 	else
 		 k0 = ln(pa.frequency / 1000)
@@ -477,7 +482,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	segmentWave = 0
 	numRows = DimSize(segmentWave, ROWS)
 
-	if(!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
+	if(!pa.poisson)
 		for(;;)
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / MINIMUM_SAMPLING_INTERVAL)
 
