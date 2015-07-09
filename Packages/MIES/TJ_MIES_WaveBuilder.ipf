@@ -5,33 +5,149 @@ static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 static Constant SQUARE_PULSE_TRAIN_MODE_DUR   = 0x01
 static Constant SQUARE_PULSE_TRAIN_MODE_PULSE = 0x02
 
-Function WB_MakeStimSet()
+/// @brief Return the stim set wave and create it permanently
+/// in the datafolder hierarchy
+/// @return stimset wave ref or an invalid wave ref
+Function/Wave WB_CreateAndGetStimSet(setName)
+	string setName
 
-	variable i, numEpochs, numSteps, setNumber
-	string basename, outputType, outputWaveName
+	variable type, needToCreateStimSet
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetFolder(type)
+	WAVE/Z/SDFR=dfr stimSet = $setName
+
+	if(!WaveExists(stimSet))
+		needToCreateStimSet = 1
+	elseif(WaveExists(stimSet) && WBP_ParameterWvsNewerThanStim(setName))
+		needToCreateStimSet = 1
+	else
+		needToCreateStimSet = 0
+	endif
+
+	if(needToCreateStimSet)
+		WAVE/Z stimSet = WB_GetStimSet(setName=setName)
+		if(!WaveExists(stimSet))
+			return $""
+		endif
+
+		WAVE/Z/SDFR=dfr oldStimSet = $setName
+		if(WaveExists(oldStimSet))
+			KillOrMoveToTrash(GetWavesDataFolder(oldStimSet, 2))
+		endif
+
+		MoveWave stimSet, dfr:$setName
+		WAVE/SDFR=dfr stimSet = $setName
+	endif
+
+	return stimSet
+End
+
+/// @return One if one of the parameter waves is newer than the stim set wave, zero otherwise
+static Function WBP_ParameterWvsNewerThanStim(setName)
+	string setName
+
+	variable type, lastModStimSet
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetParamFolder(type)
+	WAVE/Z/SDFR=dfr   WP        = $("WP"        + "_" + setName)
+	WAVE/Z/T/SDFR=dfr WPT       = $("WPT"       + "_" + setName)
+	WAVE/Z/SDFR=dfr   SegWvType = $("SegWvType" + "_" + setName)
+
+	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
+
+		DFREF dfr = GetSetFolder(type)
+		WAVE/Z/SDFR=dfr stimSet = $setName
+		if(!WaveExists(stimSet))
+			return 0
+		endif
+
+		lastModStimSet = modDate(stimSet)
+
+		if(modDate(WP) > lastModStimSet || modDate(WPT) > lastModStimSet || modDate(SegWvType) > lastModStimSet)
+			return 1
+		endif
+	endif
+
+	return 0
+End
+
+/// @brief Return the stim set wave
+///
+/// As opposed to #WB_CreateAndGetStimSet this function returns a free wave only
+///
+/// @param setName [optional, defaults to WaveBuilderPanel GUI settings] name of the set
+/// @return free wave with the stim set, invalid wave ref if the `WP*` parameter waves could
+/// not be found.
+Function/Wave WB_GetStimSet([setName])
+	string setName
+
+	variable i, numEpochs, numSteps, updateEpochIDWave
+	variable last, lengthOf1DWaves, type, length
+	string wvName
 	variable start = stopmstimer(-2)
 
-	WAVE WP = GetWaveBuilderWaveParam()
-	WAVE SegWvType = GetSegmentWave()
+	if(ParamIsDefault(setName))
+		updateEpochIDWave = 1
+
+		WAVE WP        = GetWaveBuilderWaveParam()
+		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
+		WAVE SegWvType = GetSegmentWave()
+	else
+		type = GetStimSetType(setName)
+		DFREF dfr = GetSetParamFolder(type)
+
+		WAVE/Z/SDFR=dfr   WP        = $("WP"        + "_" + setName)
+		WAVE/Z/T/SDFR=dfr WPT       = $("WPT"       + "_" + setName)
+		WAVE/Z/SDFR=dfr   SegWvType = $("SegWvType" + "_" + setName)
+
+		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
+			return $""
+		endif
+	endif
 
 	// WB_AddDelta modifies WP so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
 
-	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
-	basename = basename[0,15]
-
-	setNumber  = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
 	numSteps   = SegWvType[101]
-	outputType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
 	numEpochs  = SegWvType[100]
 
+	MAKE/WAVE/FREE/N=(numSteps) stepData
+
 	for(i=0; i < numSteps; i+=1)
-		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + outputType + "_" + num2str(setNumber)
-		WB_MakeWaveBuilderWave(WPCopy, i, numEpochs, outputWaveName)
+		stepData[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, updateEpochIDWave)
+		lengthOf1DWaves = max(DimSize(stepData[i], ROWS), lengthOf1DWaves)
 		WB_AddDelta(WPCopy, numEpochs)
 	endfor
 
+	if(lengthOf1DWaves == 0)
+		return $""
+	endif
+
+	Make/FREE/O/N=(lengthOf1DWaves, numSteps) stimSet
+	FastOp stimSet = 0
+
+	for(i = 0; i < numSteps; i += 1)
+		WAVE wv = stepData[i]
+
+		length = DimSize(wv, ROWS)
+		if(length == 0)
+			continue
+		endif
+
+		last = length - 1
+		stimSet[0, last][i] = wv[p]
+
+		if(i == 0)
+			Note stimSet, note(wv)
+			CopyScales/P wv, stimset
+		endif
+	endfor
+
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
+
+	return stimSet
 End
 
 /// @brief Add delta to appropriate parameters
@@ -152,21 +268,19 @@ static Structure SegmentParameters
 	variable sinChirp
 EndStructure
 
-static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
+static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, updateEpochIDWave)
 	Wave WP
-	variable stepCount
-	variable numEpochs
-	string wvName
+	Wave/T WPT
+	Wave SegWvType
+	variable stepCount, numEpochs, updateEpochIDWave
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr SegWvType
-	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
+	DFREF dfr = GetWaveBuilderDataPath()
+
+	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode
-	variable i, type, accumulatedDuration, tabID
+	variable i, type, accumulatedDuration
 	STRUCT SegmentParameters params
-
-	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
@@ -271,16 +385,15 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 5:
-				tabID = GetTabID("WaveBuilder", "WBP_WaveType")
 				if(WP[46][i][type]) // "Number of pulses" checkbox
 					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_PULSE)
-					if(tabID == 5)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == 5)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
 					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_DUR)
-					if(tabID == 5)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == 5)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
@@ -328,15 +441,17 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				ASSERT(0, "Unknown Wave type to create")
 		endswitch
 
-		if(stepCount == 0)
-			WAVE epochID = GetEpochID()
-			if(i == 0)
-				epochID = 0
-			endif
-			epochID[i][%timeBegin] = accumulatedDuration
-			epochID[i][%timeEnd]   = accumulatedDuration + params.duration
+		if(updateEpochIDWave)
+			if(stepCount == 0)
+				WAVE epochID = GetEpochID()
+				if(i == 0)
+					epochID = 0
+				endif
+				epochID[i][%timeBegin] = accumulatedDuration
+				epochID[i][%timeEnd]   = accumulatedDuration + params.duration
 
-			accumulatedDuration += params.duration
+				accumulatedDuration += params.duration
+			endif
 		endif
 
 		WAVE/SDFR=dfr segmentWave
@@ -349,6 +464,8 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
 	KillStrings/Z StringHolder
+
+	return WaveBuilderWave
 End
 
 /// @brief Returns the segment wave which stores the stimulus set of one segment/epoch

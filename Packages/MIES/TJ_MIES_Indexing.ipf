@@ -237,7 +237,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			endif
 			SetList = getuserdata(panelTitle, "Wave_DA_0" + num2str(i), "menuexp")
 			SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
-			SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName, 0)
+			SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 			MaxSteps = max(MaxSteps, SetSteps)
 		endif
 		i += 1
@@ -267,7 +267,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			
 		SetList = getuserdata(panelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
-		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName, 1)
+		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
 		endif
 		i += 1
@@ -399,7 +399,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 			numSets = ItemsInList(setList)
 			for(k = 0; k < numSets; k += 1)
 				setName = StringFromList(k, setList)
-				Wave/Z/SDFR=IDX_GetSetFolder(CHANNEL_TYPE_DAC) wv = $setName
+				WAVE/Z wv = WB_CreateAndGetStimSet(setName)
 
 				if(!WaveExists(wv))
 					continue
@@ -491,24 +491,23 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIn
 	numEntries = ItemsInList(setList)
 	for(i = 0; i < numEntries; i += 1)
 		set = StringFromList(i, setList)
-		numTrials += IDX_NumberOfTrialsInSet(panelTitle, set, channelType)
+		numTrials += IDX_NumberOfTrialsInSet(panelTitle, set)
 	endfor
 
 	return numTrials
 End
 
 /// @brief Return the number of trials
-Function IDX_NumberOfTrialsInSet(panelTitle, setName, channelType)
+Function IDX_NumberOfTrialsInSet(panelTitle, setName)
 	string panelTitle, setName
-	variable channelType
 
-	Wave/Z/SDFR=IDX_GetSetFolder(channelType) wv = $setName
+	WAVE/Z wv = WB_CreateAndGetStimSet(setName)
 
-	if(WaveExists(wv))
-		return DimSize(wv, COLS)
-	else
+	if(!WaveExists(wv))
 		return 0
 	endif
+
+	return DimSize(wv, COLS)
 End
 
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)

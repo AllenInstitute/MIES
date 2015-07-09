@@ -708,64 +708,56 @@ End
 
 static Function WBP_DisplaySetInPanel()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	variable first, last
-	variable i, numWaves, setNumber, epoch, numEpochs
-	string list, basename, outputWaveType, searchPattern, entry
-	variable maxYValue = -Inf
-	variable minYValue = Inf
+	variable i, epoch, numEpochs, numSteps
+	variable red, green, blue
+	string trace
+	variable maxYValue, minYValue
+
+	WAVE/Z stimSet = WB_GetStimSet()
+	if(!WaveExists(stimSet))
+		return NaN
+	endif
 
 	WAVE ranges = GetAxesRanges(waveBuilderGraph)
-	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
+	RemoveTracesFromGraph(waveBuilderGraph)
 
-	WB_MakeStimSet()
 	WAVE SegWvType = GetSegmentWave()
 
 	epoch     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
 	numEpochs = SegWvType[100]
 
-	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
-	basename = basename[0,15]
-
-	setNumber      = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
-	outputWaveType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
-
-	searchPattern = ".*" + basename + ".*" + outputWaveType + "_.*" + num2str(setNumber)
-	list = GetListOfWaves(dfr, searchPattern)
-
-	numWaves = ItemsInList(list)
-	if(!numWaves)
-		return NaN
-	endif
-
+	DFREF dfr = GetWaveBuilderDataPath()
 	WBP_AddEpochHLTraces(dfr, EPOCH_HL_TYPE_LEFT, epoch, numEpochs)
 	WAVE/SDFR=dfr epochHLBeginLeft, epochHLEndLeft
 
 	WBP_AddEpochHLTraces(dfr, EPOCH_HL_TYPE_RIGHT, epoch, numEpochs)
 	WAVE/SDFR=dfr epochHLBeginRight, epochHLEndRight
 
-	for(i=0; i < numWaves; i += 1)
-		entry = StringFromList(i, list)
-		Wave/SDFR=dfr wv = $entry
-		AppendToGraph/W=$waveBuilderGraph wv
-		if(mod(i, 2) == 0) // odd numbered waves get made black
-			// here we assume that we trace name is the same as the wave name
-			ModifyGraph/W=$waveBuilderGraph rgb($entry) = (13056,13056,13056)
-		endif
+	WAVE displayData = GetWaveBuilderDispWave()
+	Duplicate/O stimSet, displayData
+	WaveClear stimSet
 
-		if(DimSize(wv, ROWS) > 0)
-			maxYValue = max(WaveMax(wv), maxYValue)
-			minYValue = min(WaveMin(wv), minYValue)
-		endif
+	numSteps = DimSize(displayData, COLS)
+
+	if(numSteps == 0)
+		return NaN
+	endif
+
+	for(i = 0; i < numSteps; i += 1)
+		trace = NameOfWave(displayData) + "_S" + num2str(i)
+		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
+		GetTraceColor(i, red, green, blue)
+		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (red, green, blue)
 	endfor
 
-	if(IsFinite(maxYValue) && IsFinite(minYValue))
-		epochHLBeginRight = maxYValue
-		epochHLBeginLeft  = maxYValue
+	maxYValue = WaveMax(displayData)
+	minYValue = WaveMin(displayData)
 
-		epochHLEndRight   = min(0, minYValue)
-		epochHLEndLeft    = min(0, minYValue)
-	endif
+	epochHLBeginRight = maxYValue
+	epochHLBeginLeft  = maxYValue
+
+	epochHLEndRight   = min(0, minYValue)
+	epochHLEndLeft    = min(0, minYValue)
 
 	SetAxis/W=$waveBuilderGraph/A/E=3 left
 	SetAxesRanges(waveBuilderGraph, ranges)
@@ -1024,13 +1016,9 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
 
 	variable i, numPanels
-	string panelTitle, listOfTracesOnGraph
-	listOfTracesOnGraph = TraceNameList(WaveBuilderGraph, ";", 0+1 )
-	listOfTracesOnGraph = ListMatch(listOfTracesOnGraph, "!epoch*")
+	string panelTitle
 
-	WBP_Transfer1DsTo2D(listOfTracesOnGraph)
-	RemoveTracesFromGraph(WaveBuilderGraph, kill=1)
-	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleSetName(), 1, "")
+	RemoveTracesFromGraph(WaveBuilderGraph)
 	WBP_SaveSetParam()
 
 	SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
@@ -1306,37 +1294,6 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 	endswitch
 End
 
-static Function WBP_Transfer1DsTo2D(traceList)
-	string traceList
-
-	dfref dfr = GetWaveBuilderDataPath()
-
-	variable lengthOf1DWaves, numWaves, i
-	string setName, name
-
-	numWaves = ItemsInList(traceList)
-
-	// sets the number of rows in the 2D wave to be equal to the number of rows in the longest 1D wave
-	for(i=0; i < numWaves; i+=1)
-		name = PossiblyUnquoteName(StringFromList(i, traceList))
-		Wave/SDFR=dfr wv = $name
-		lengthOf1Dwaves = max(lengthOf1DWaves, DimSize(wv, ROWS))
-	endfor
-
-	setName = WBP_AssembleSetName()
-	DEBUGPRINT("setName=", str=setName)
-	Make/O/N=(lengthOf1DWaves, numWaves) dfr:$SetName/Wave=fullSet
-
-	for(i=0; i < numWaves; i+=1)
-		name = PossiblyUnquoteName(StringFromList(i, traceList))
-		Wave/SDFR=dfr wv = $name
-		fullSet[0, DimSize(wv, ROWS) - 1][i] = wv[p]
-		if(i == 0)
-			Note fullSet, note(wv)
-		endif
-	endfor
-End
-
 /// @brief This function creates a string that is used to name the 2d output wave of the wavebuilder panel.
 ///
 /// The naming is based on userinput to the wavebuilder panel
@@ -1379,12 +1336,24 @@ static Function WBP_MoveWaveTOFolder(FolderPath, NameOfWaveToBeMoved, Kill, Base
 	endif
 End
 
-/// @brief Returns a list of waves from the wave builder folder savedStimulusSets
+/// @brief Return a list of all stim sets for the given type
+/// @param setType One of `DA` or `TTL`
 Function/S WBP_ReturnListSavedSets(setType)
 	string setType
 
-	string path = GetWBSvdStimSetPathAsString() + ":" + setType
-	return GetListOfWaves($path, ".*" + setType + ".*")
+	string path, list, stimSetList
+	variable numWaves, i
+	path= GetWBSvdStimSetParamPathAS() + ":" + setType
+
+	list = GetListOfWaves($path, "WP_.*" + setType + ".*")
+	stimSetList = ""
+
+	numWaves = ItemsInList(list)
+	for(i = 0; i < numWaves; i += 1)
+		stimSetList = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), stimSetList, ";", Inf)
+	endfor
+
+	return SortList(stimSetList, ";", 16)
 end
 
 static Function WBP_SaveSetParam()
@@ -1660,19 +1629,27 @@ Function/S WBP_ITCPanelPopUps(DAorTTL, searchString)
 	variable DAorTTL
 	string searchString
 
-	string stimulusSetList
+	variable i, numWaves
+	string list
+	string stimSetList = ""
+
 	DFREF saveDFR = GetDataFolderDFR()
 
 	if(!DAorTTL)
-		SetDataFolder GetWBSvdStimSetDAPath()
+		SetDataFolder GetWBSvdStimSetParamDAPath()
 	else
-		SetDataFolder GetWBSvdStimSetTTLPath()
+		SetDataFolder GetWBSvdStimSetParamTTLPath()
 	endif
 
-	stimulusSetList = Wavelist(searchstring, ";", "")
+	list = Wavelist("WP_" + searchstring, ";", "")
 	SetDataFolder saveDFR
-	
-	return sortlist(stimulusSetList,";",16)
+
+	numWaves = ItemsInList(list)
+	for(i = 0; i < numWaves; i += 1)
+		stimSetList = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), stimSetList, ";", Inf)
+	endfor
+
+	return SortList(stimSetList,";",16)
 End
 
 /// @brief Returns the names of the items in the popmenu controls in a list

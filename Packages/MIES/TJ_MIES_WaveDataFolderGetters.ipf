@@ -1488,6 +1488,21 @@ Function/Wave GetEpochID()
 	return wv
 End
 
+/// @brief Return the wave for visualization of the stim set
+/// in the wavebuilder panel
+Function/Wave GetWaveBuilderDispWave()
+
+	dfref dfr = GetWaveBuilderDataPath()
+	WAVE/Z/SDFR=dfr wv = dispData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0) dfr:dispData/Wave=wv
+
+	return wv
+End
 /// @}
 
 /// @name Asynchronous Measurements
