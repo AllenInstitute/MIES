@@ -4242,7 +4242,6 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
-	variable headStage
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
@@ -4372,7 +4371,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 				continue
 			endif
 
-			if(DAP_CheckHeadStage(panelTitle, headStage, mode))
+			if(DAP_CheckHeadStage(panelTitle, i, mode))
 				return 1
 			endif
 		endfor
