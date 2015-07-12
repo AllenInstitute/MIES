@@ -1857,3 +1857,32 @@ Function PopCount(value)
 
 	return count
 End
+
+/// @brief Return a random value in the range (0,1]
+/// Return different values for each call *not* depending on the RNG seed.
+///
+/// Note: Calls `SetRandomSeed` and therefore changes the current RNG sequence
+Function GetNonReproducibleRandom()
+
+	// reseed the RNG so that we get a different value even if we
+	// have directly set a new seed value before
+	//
+	// new seed: number of milliseconds since computer start scaled
+	// to a number in the range 0 <-> 1.
+	SetRandomSeed/BETR=1 trunc(stopmstimer(-2)/1000)/2^32
+
+	return GetReproducibleRandom()
+End
+
+/// @brief Return a random value in the range (0,1]
+/// Return a reproducible random number depending on the RNG seed.
+Function GetReproducibleRandom()
+
+	variable randomSeed
+
+	do
+		randomSeed = abs(enoise(1, 2))
+	while(randomSeed == 0)
+
+	return randomSeed
+End

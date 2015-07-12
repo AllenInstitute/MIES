@@ -623,6 +623,21 @@ Window WaveBuilder() : Panel
 	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_NumPulses_P46,userdata(tabnum)=  "5"
 	CheckBox check_SPT_NumPulses_P46,userdata(tabcontrol)=  "WBP_WaveType",value= 0
+	Button button_NewSeed_P48,pos={338,128},size={61,20},disable=1,proc=WBP_ButtonProc_NewSeed,title="New Noise"
+	Button button_NewSeed_P48,help={"Create new noise waveforms"}
+	Button button_NewSeed_P48,userdata(tabnum)=  "2"
+	Button button_NewSeed_P48,userdata(tabcontrol)=  "WBP_WaveType"
+	Button button_NewSeed_P48,userdata(ResizeControlsInfo)= A"!!,Hd!!#@d!!#?-!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_NewSeedForEachStep_P49,pos={413,145},size={45,14},disable=1,proc=WBP_CheckProc,title="Noise"
+	CheckBox check_NewSeedForEachStep_P49,help={"Create different noise waveforms for each step"}
+	CheckBox check_NewSeedForEachStep_P49,userdata(tabnum)=  "2"
+	CheckBox check_NewSeedForEachStep_P49,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_NewSeedForEachStep_P49,value= 0
+	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF1g^]4?7zzzzzzzzzzzzzzzzzzzz"
@@ -1737,6 +1752,19 @@ Function WBP_DeltaPopup(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2:
 			WBP_UpdateControlAndWP(pa.ctrlName, pa.popNum - 1)
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			WBP_UpdateControlAndWP(ba.ctrlName, GetNonReproducibleRandom())
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch

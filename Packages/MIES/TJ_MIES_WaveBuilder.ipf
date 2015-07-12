@@ -121,6 +121,9 @@ Function/Wave WB_GetStimSet([setName])
 		WB_AddDelta(WPCopy, numEpochs)
 	endfor
 
+	// copy the random seed value to WP in order to preserve it
+	WP[48][][] = WPCopy[48][q][r]
+
 	if(lengthOf1DWaves == 0)
 		return $""
 	endif
@@ -266,6 +269,7 @@ static Structure SegmentParameters
 	variable poisson
 	variable brownNoise, pinkNoise
 	variable sinChirp
+	variable randomSeed
 EndStructure
 
 static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, updateEpochIDWave)
@@ -279,7 +283,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode
-	variable i, type, accumulatedDuration
+	variable i, j, type, accumulatedDuration
 	STRUCT SegmentParameters params
 
 	for(i=0; i < numEpochs; i+=1)
@@ -354,6 +358,28 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 2:
+				// initialize the random seed value if not already done
+				if(WP[48][i][type] == 0)
+					WP[48][i][type] = GetNonReproducibleRandom()
+				endif
+				params.randomSeed = WP[48][i][type]
+				SetRandomSeed/BETR=1 params.randomSeed
+
+				if(WP[49][i][type])
+					// the stored seed value is the seed value for the *generation*
+					// of the individual seed values for each step
+					// Procedure:
+					// - Initialize RNG with stored seed
+					// - Query as many random numbers as current step count
+					// - Use the *last* random number as seed value for the new epoch
+					// In this way we get a different seed value for each step, but all are reproducibly
+					// derived from one seed value. And we still have different values for different epochs.
+					for(j = 1; j <= stepCount; j += 1)
+						params.randomSeed = GetReproducibleRandom()
+					endfor
+					SetRandomSeed/BETR=1 params.randomSeed
+				endif
+
 				WB_NoiseSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"                  , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                   , str="G-noise")
@@ -364,6 +390,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off"      , var=params.HighPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off delta", var=params.DeltaHighPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=params.DeltaOffset, appendCR=1)
 				break
 			case 3:
