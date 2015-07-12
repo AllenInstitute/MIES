@@ -102,7 +102,7 @@ static Function DAM_ConfigUploadDAC(panelTitle)
 
 	string cmd
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)

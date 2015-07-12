@@ -13,7 +13,7 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	ExecuteITCOperationAbortOnError(cmd)
 	
 	if (IsBackgroundTaskRunning("ITC_BkrdTPFuncMD") == 0)
 		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
@@ -22,10 +22,10 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 
 	if(TriggerMode == 0) // Start data acquisition triggered on immediate - triggered is used for syncronizing/yoking multiple DACs
 		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 	elseif(TriggerMode > 0)
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode  // Trigger mode 256 = use external trigger
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 	endif
 End
 //======================================================================================
@@ -67,7 +67,7 @@ Function ITC_BkrdTPFuncMD(s)
 		//print "PointsInTP =",PointsInTP
 		// works with a active device
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
-		ExecuteITCOperation(cmd)
+		ExecuteITCOperationAbortOnError(cmd)
 	
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
@@ -126,7 +126,7 @@ Function ITC_BkrdTPFuncMD(s)
 					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 					ExecuteITCOperation(cmd)
 					sprintf cmd, "ITCStartAcq"
-					ExecuteITCOperation(cmd)
+					ExecuteITCOperationAbortOnError(cmd)
 					print "FIFO over/underrun, acq restarted"
 				endif
 			endif
