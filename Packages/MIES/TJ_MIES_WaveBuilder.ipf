@@ -680,36 +680,39 @@ static Function WB_CustomWaveSegment(CustomOffset, wv)
 	SegmentWave += CustomOffSet
 End
 
-/// PinkOrBrown Pink = 0, Brown = 1
+/// @brief Create a pink or brown noise segment
+///
+/// @param pa Segment parameters
+/// @param pinkOrBrown Pink = 0, Brown = 1
 static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 	struct SegmentParameters &pa
 	variable pinkOrBrown
 
-	variable phase = abs(enoise(2)) * Pi
-	variable numberOfBuildWaves = floor((pa.lowPassCutOff - pa.highPassCutOff) / pa.fIncrement)
+	variable i, localAmplitude
+	variable phase, frequency, numberOfBuildWaves
 
-	if(!IsFinite(phase) || !IsFinite(pa.duration) || !IsFinite(numberOfBuildWaves) || pa.highPassCutOff == 0)
+	frequency = pa.highPassCutOff
+	numberOfBuildWaves = floor((pa.lowPassCutOff - pa.highPassCutOff) / pa.fIncrement)
+
+	if(!IsFinite(pa.duration) || !IsFinite(numberOfBuildWaves) || pa.highPassCutOff == 0)
 		print "Could not create a new pink/brown noise Wave as the input values were non-finite or zero."
 		return NaN
 	endif
 
 	Make/FREE/n=(pa.duration / MINIMUM_SAMPLING_INTERVAL, NumberOfBuildWaves) BuildWave
 	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", BuildWave
-	variable frequency = pa.highPassCutOff
-	variable i
-	variable localAmplitude
 
 	for(i = 0; i < numberOfBuildWaves; i += 1)
-		phase = ((abs(enoise(2))) * Pi) // random phase generator
+		phase = abs(enoise(2)) * Pi // random phase generator
 		if(PinkOrBrown == 0)
 			localAmplitude = 1 / frequency
 		else
-			localAmplitude = 1 / (frequency ^ .5)
+			localAmplitude = 1 / (frequency ^ 0.5)
 		endif
 
 		// factoring out Pi * 1e-05 actually makes it a tiny bit slower
 		MultiThread BuildWave[][i] = localAmplitude * sin( Pi * pa.frequency * 1e-05 * p + phase)
-		Frequency += pa.fIncrement
+		frequency += pa.fIncrement
 	endfor
 
 	MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)
