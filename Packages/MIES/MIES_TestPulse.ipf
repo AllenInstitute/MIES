@@ -159,7 +159,7 @@ Function TP_UpdateTestPulseWave(TestPulse, panelTitle)
 	NVAR/SDFR=testPulseDFR amplitudeVC
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	pointsInTPWave = (2 * pulseDuration) * 200
+	pointsInTPWave = (2 * pulseDuration) / MINIMUM_SAMPLING_INTERVAL
 	Redimension/N=(pointsInTPWave) TestPulse
 	FastOp TestPulse = 0
 	TestPulse[round(0.25 * pointsInTPWave), round(0.75 * pointsInTPWave)] = amplitudeVC
