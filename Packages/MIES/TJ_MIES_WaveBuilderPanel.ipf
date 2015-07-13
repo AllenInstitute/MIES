@@ -1425,7 +1425,7 @@ static Function WBP_LoadSet()
 	SetVariable SetVar_WB_NumEpochs_S100 value = _NUM:SegWvType[100]
 	SetVariable SetVar_WB_StepCount_S101 value = _NUM:SegWvType[101]
 	SetVariable setvar_WaveBuilder_CurrentEpoch value = _NUM:0
-	TabControl WBP_WaveType value = SegWvType[0]
+	WBP_ExecuteAdamsTabControl(SegWvType[0])
 	WBP_ParameterWaveToPanel(SegWvType[0])
 	WBP_UpdateEpochControls()
 End
