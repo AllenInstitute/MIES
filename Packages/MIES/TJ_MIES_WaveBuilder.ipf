@@ -621,6 +621,11 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		ASSERT(0, "Invalid mode")
 	endif
 
+	if(!(pa.duration > 0))
+		printf "Resetting invalid duration of %gms to 1ms\r", pa.duration
+		pa.duration = 1.0
+	endif
+
 	// we want always to have the correct interpulse interval
 	// independent of the duration
 	interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
