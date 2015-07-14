@@ -48,7 +48,15 @@ Function WBP_CreateWaveBuilderPanel()
 	GetWBSvdStimSetDAPath()
 	GetWBSvdStimSetTTLPath()
 
-	GetSegmentWave()
+	WAVE segmentWave = GetSegmentWave()
+	KillOrMoveToTrash(GetWavesDataFolder(segmentWave, 2))
+
+	WAVE WP = GetWaveBuilderWaveParam()
+	KillOrMoveToTrash(GetWavesDataFolder(WP, 2))
+
+	WAVE WPT = GetWaveBuilderWaveTextParam()
+	KillOrMoveToTrash(GetWavesDataFolder(WPT, 2))
+
 	Execute "WaveBuilder()"
 End
 
