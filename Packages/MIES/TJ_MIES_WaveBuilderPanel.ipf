@@ -882,12 +882,12 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
 		row = WBP_ExtractRowNumberFromControl(control)
-		SetControl(panel, control, WP[row][segment][stimulusType])
+		WBP_SetControl(panel, control, WP[row][segment][stimulusType])
 	endfor
 End
 
 /// @brief Generic wrapper for setting a control's value
-static Function SetControl(win, control, value)
+static Function WBP_SetControl(win, control, value)
 	string win, control
 	variable value
 
@@ -897,7 +897,9 @@ static Function SetControl(win, control, value)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
 
-	if(controlType == 2)
+	if(controlType == 1)
+		// nothing to do
+	elseif(controlType == 2)
 		CheckBox $control, win=$win, value=(value == CHECKBOX_SELECTED)
 	elseif(controlType == 5)
 		SetVariable $control, win=$win, value=_NUM:value
@@ -1089,7 +1091,7 @@ Function WBP_UpdateControlAndWP(control, value)
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	SetControl(panel, control, value)
+	WBP_SetControl(panel, control, value)
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
