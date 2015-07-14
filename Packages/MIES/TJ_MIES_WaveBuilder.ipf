@@ -451,7 +451,13 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			case 7:
 				customWaveName = WPT[0][i]
 
-				Wave/Z/SDFR=WBP_GetFolderPath() customWave = $customWaveName
+				if(windowExists("Wavebuilder") && strsearch(customWaveName, ":", 0) == -1)
+					// old style entries with only the wave name
+					Wave/Z/SDFR=WBP_GetFolderPath() customWave = $customWaveName
+				else
+					// try new style entries with full path
+					WAVE/Z customWave = $customWaveName
+				endif
 
 				if(WaveExists(customWave))
 					WB_CustomWaveSegment(params.customOffset, customWave)

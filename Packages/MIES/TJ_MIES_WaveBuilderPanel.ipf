@@ -1307,8 +1307,8 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 
 			SegmentNo = GetSetVariable(win, "setvar_WaveBuilder_CurrentEpoch")
 
-			If(WaveExists(customWave))
-				WPT[0][SegmentNo] = NameOfWave(customWave)
+			if(WaveExists(customWave))
+				WPT[0][SegmentNo] = GetWavesDataFolder(customWave, 2)
 			else
 				WPT[0][SegmentNo] = ""
 			endif
