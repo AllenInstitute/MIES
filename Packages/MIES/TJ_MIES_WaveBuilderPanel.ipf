@@ -48,7 +48,7 @@ Function WBP_CreateWaveBuilderPanel()
 	GetWBSvdStimSetDAPath()
 	GetWBSvdStimSetTTLPath()
 
-	WAVE segmentWave = GetSegmentWave()
+	WAVE segmentWave = GetSegmentTypeWave()
 	KillOrMoveToTrash(GetWavesDataFolder(segmentWave, 2))
 
 	WAVE WP = GetWaveBuilderWaveParam()
@@ -743,7 +743,7 @@ static Function WBP_DisplaySetInPanel()
 	WAVE ranges = GetAxesRanges(waveBuilderGraph)
 	RemoveTracesFromGraph(waveBuilderGraph)
 
-	WAVE SegWvType = GetSegmentWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 
 	epoch     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
 	numEpochs = SegWvType[100]
@@ -979,7 +979,7 @@ Function WBP_SetVarProc_StepCount(sva) : SetVariableControl
 		case 3: // Live update
 			WBP_LowPassDeltaLimits()
 			WBP_HighPassDeltaLimits()
-			WAVE SegWvType = GetSegmentWave()
+			WAVE SegWvType = GetSegmentTypeWave()
 			SegWvType[101] = sva.dval
 			WBP_UpdatePanelIfAllowed()
 			break
@@ -1013,7 +1013,7 @@ Function TabTJHook(tca)
 
 	string type
 	variable tabnum, idx
-	Wave SegWvType = GetSegmentWave()
+	Wave SegWvType = GetSegmentTypeWave()
 
 	tabnum = tca.tab
 
@@ -1131,7 +1131,7 @@ Function WBP_SetVarProc_ITI(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			Wave SegWvType = GetSegmentWave()
+			Wave SegWvType = GetSegmentTypeWave()
 			SegWvType[99] = sva.dval
 			WBP_UpdatePanelIfAllowed()
 			break
@@ -1146,7 +1146,7 @@ static Function WBP_LowPassDeltaLimits()
 
 	variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
 
-	WAVE SegWvType = GetSegmentWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 	StepCount = SegWvType[101]
 
 	ControlInfo SetVar_WaveBuilder_P20
@@ -1176,7 +1176,7 @@ static Function WBP_HighPassDeltaLimits()
 
 	variable HighPassCutOff, StepCount, HighPassDelta, DeltaLimit
 
-	WAVE SegWvType = GetSegmentWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 	StepCount = SegWvType[101]
 
 	ControlInfo SetVar_WaveBuilder_P22
@@ -1212,7 +1212,7 @@ End
 static Function WBP_ChangeWaveType(stimulusType)
 	variable stimulusType
 
-	WAVE SegWvType = GetSegmentWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	string list
@@ -1466,7 +1466,7 @@ End
 static Function WBP_UpdateEpochControls()
 
 	variable currentEpoch, numEpochs
-	WAVE SegWvType = GetSegmentWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 	currentEpoch = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch")
 	numEpochs = SegWvType[100]
 
@@ -1483,7 +1483,7 @@ End
 static Function WBP_SelectEpoch(epoch)
 	variable epoch
 
-	WAVE SegWvType = GetSegmentWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 
 	WBP_ExecuteAdamsTabcontrol(SegWvType[epoch])
 	WBP_ParameterWaveToPanel(SegWvType[epoch])
@@ -1497,7 +1497,7 @@ Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WAVE SegWvType = GetSegmentWave()
+			WAVE SegWvType = GetSegmentTypeWave()
 			SegWvType[100] = sva.dval
 			WBP_UpdateEpochControls()
 			break

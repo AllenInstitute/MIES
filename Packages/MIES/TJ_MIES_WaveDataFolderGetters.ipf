@@ -1445,13 +1445,13 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-/// @brief Returns the segment parameter wave used by the wave builder panel
+/// @brief Returns the segment type wave used by the wave builder panel
 /// - Rows
 ///   - 0 - 98: epoch types using the tabcontrol indizes
 ///   - 99: set ITI (s)
 ///   - 100: total number of segments/epochs
 ///   - 101: total number of steps
-Function/Wave GetSegmentWave()
+Function/Wave GetSegmentTypeWave()
 
 	dfref dfr = GetWaveBuilderDataPath()
 	Wave/Z/SDFR=dfr wv = SegWvType

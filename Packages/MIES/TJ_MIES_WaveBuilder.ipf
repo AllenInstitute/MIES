@@ -93,7 +93,7 @@ Function/Wave WB_GetStimSet([setName])
 
 		WAVE WP        = GetWaveBuilderWaveParam()
 		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
-		WAVE SegWvType = GetSegmentWave()
+		WAVE SegWvType = GetSegmentTypeWave()
 	else
 		type = GetStimSetType(setName)
 		DFREF dfr = GetSetParamFolder(type)
