@@ -11,6 +11,7 @@
 // our includes
 #include ":TJ_MIES_Constants"
 #include ":TJ_MIES_Debugging"
+#include ":TJ_MIES_EnhancedWMRoutines"
 #include ":TJ_MIES_GlobalStringAndVariableAccess"
 #include ":TJ_MIES_GuiUtilities"
 #include ":TJ_MIES_MiesUtilities"
