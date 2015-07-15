@@ -1116,8 +1116,10 @@ Function SaveExperimentSpecial(mode)
 		path = GetLabNotebookFolderAsString()
 		killFunc(path)
 
-		list = DAP_ListOfLockedDevs()
-		CallFunctionForEachListItem(DAP_ClearCommentNotebook, list)
+		list = GetListOfLockedDevices()
+		// funcref definition as string
+		// allows to reference the function if it does not exist
+		CallFunctionForEachListItem($"DAP_ClearCommentNotebook", list)
 
 		// remove other waves from active devices
 		activeDevices = GetAllActiveDevices()
@@ -1752,4 +1754,26 @@ Function ExtractSweepNumber(sweepOrConfig)
 	string sweepOrConfig
 
 	return str2num(StringFromList(ItemsInList(sweepOrConfig, "_") - 1, sweepOrConfig, "_"))
+End
+
+/// @brief Return the list of unlocked `DA_Ephys` panels
+Function/S GetListOfUnlockedDevices()
+
+	return WinList("DA_Ephys*", ";", "WIN:64")
+End
+
+/// @brief Return the list of locked devices
+Function/S GetListOfLockedDevices()
+
+	SVAR/Z/SDFR=GetITCDevicesFolder() list = ITCPanelTitleList
+	if(!SVAR_Exists(list))
+		return ""
+	endif
+
+	return list
+End
+
+/// @brief Return the list of locked ITC1600 devices
+Function/S GetListOfLockedITC1600Devices()
+	return ListMatch(GetListOfLockedDevices(), "ITC1600*")
 End

@@ -338,7 +338,7 @@ End
 Function P_CloseITCDevForP_Reg(panelTitle)
 	string 	panelTitle
 	string 	ListOfITCDevToClose = P_ITCDevToOpen()
-	string 	ListOfLockedDA_Ephys = DAP_ListOfLockedDevs()
+	string 	ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string 	DeviceToClose
 
 	string 	ListOfHeadstagesUsingITCDev
@@ -381,7 +381,7 @@ Function P_OpenITCDevice(panelTitle, ITCDeviceToOpen)
 	print 	"ITC Device used for pressure regulation ID #",DevID[0],"is locked."
 
 	variable 	headStage
-	string 	ListOfLockedDA_Ephys 			= DAP_ListOfLockedDevs()
+	string 	ListOfLockedDA_Ephys 			= GetListOfLockedDevices()
 	variable 	i, j
 	string 	ListOfHeadstageUsingITCDevice	= ""
 
@@ -414,7 +414,7 @@ Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
 	variable 	i, j
 	string 	ListOfHeadstageUsingITCDevice = ""
 
-	string 	ListOfLockedDA_Ephys = DAP_ListOfLockedDevs()
+	string 	ListOfLockedDA_Ephys = GetListOfLockedDevices()
 
 	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
 		panelTitle = StringFromList(j, ListOfLockedDA_Ephys)
@@ -450,7 +450,7 @@ End
 /// @brief Returns a list of ITC devices to open
 /// pulls a non repeating list of ITC devices to open from the device specific pressure data wave.
 Function/S P_ITCDevToOpen()
-	string 	ListOfLockedDevices = DAP_ListOfLockedDevs()
+	string 	ListOfLockedDevices = GetListOfLockedDevices()
 
 	string 	deviceList = ""
 	variable 	i, j
@@ -812,7 +812,7 @@ End
 Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
 	string 	&panelTitle
 	variable 	&DevID, &headStage
-	string 	ListOfLockedDevices = DAP_ListOfLockedDevs()
+	string 	ListOfLockedDevices = GetListOfLockedDevices()
 	variable 	i
 	for(i = 0; i < ItemsInList(ListOfLockedDevices); i += 1)
 		panelTitle = StringFromList(i, ListOfLockedDevices)
@@ -1308,7 +1308,7 @@ End
 
 /// @brief Enables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Enable()
-	string ListOfLockedDA_Ephys = DAP_ListOfLockedDevs()
+	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	variable i
 	variable j
 	string LockedDevice
@@ -1332,7 +1332,7 @@ End
 
 /// @brief Disables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Disable()
-	string ListOfLockedDA_Ephys = DAP_ListOfLockedDevs()
+	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	variable i, j = 0
 	string LockedDevice
 	for(i = 0; i < ItemsInList(ListOfLockedDA_Ephys); i += 1)

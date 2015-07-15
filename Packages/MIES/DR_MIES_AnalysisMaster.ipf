@@ -333,7 +333,7 @@ Window analysisMaster() : Panel
 	DrawText 15,220,"HeadStage 6"
 	DrawText 15,245,"HeadStage 7"
 	PopupMenu lockedDeviceMenu,pos={100,5},size={125,20},bodyWidth=125,title="Locked Device", proc=AM_LockedDeviceMenu
-	PopupMenu lockedDeviceMenu,mode=1,popvalue="-None-",value= #"DAP_ListOfLockedDevs()", help={"List of locked ITC panels"}
+	PopupMenu lockedDeviceMenu,mode=1,popvalue="-None-",value= #"GetListOfLockedDevices()", help={"List of locked ITC panels"}
 	CheckBox headStage0_midSweepAnalysisOn,pos={100,57},size={16,14},proc=AM_HeadStageMSCheckBox,title=""
 	CheckBox headStage0_midSweepAnalysisOn,value= 0, help={"Select a mid sweep action routine for headstage 0"}
 	CheckBox headStage2_midSweepAnalysisOn,pos={100,82},size={16,14},proc=AM_HeadStageMSCheckBox,title=""

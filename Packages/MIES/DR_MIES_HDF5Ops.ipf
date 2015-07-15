@@ -570,7 +570,7 @@ Function HD_SaveConfiguration([cmdID])
 	string fileLocationResponseString
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
     
 	// save the present data folder
@@ -737,7 +737,7 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 		dataSet = StringFromList(waveCounter, groupList)
 		if (StringMatch(dataSet,"ITC*/*"))
 			// get the da_ephys panel names
-			lockedDevList = DAP_ListOfLockedDevs()
+			lockedDevList = GetListOfLockedDevices()
 			noLockedDevs = ItemsInList(lockedDevList)
 			for (n = 0; n<noLockedDevs; n+= 1)
 				currentPanel = StringFromList(n, lockedDevList)

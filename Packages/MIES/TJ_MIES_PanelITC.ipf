@@ -3214,9 +3214,9 @@ End
 /// Updates the yoking controls on all locked/unlocked panels
 Function DAP_UpdateAllYokeControls()
 
-	string   ListOfLockedITC1600    = DAP_ListOfLockedITC1600Devs()
+	string   ListOfLockedITC1600    = GetListOfLockedITC1600Devices()
 	variable ListOfLockedITC1600Num = ItemsInList(ListOfLockedITC1600)
-	string   ListOfLockedITC        = DAP_ListOfLockedDevs()
+	string   ListOfLockedITC        = GetListOfLockedDevices()
 	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC1600)
 
 	string panelTitle
@@ -3239,7 +3239,7 @@ Function DAP_UpdateAllYokeControls()
 		endif
 	endfor
 
-	string   ListOfUnlockedITC     = DAP_ListOfUnlockedDevs()
+	string   ListOfUnlockedITC     = GetListOfUnlockedDevices()
 	variable ListOfUnlockedITCNum  = ItemsInList(ListOfUnlockedITC)
 
 	for(i=0; i<ListOfUnLockedITCNum; i+=1)
@@ -4831,34 +4831,12 @@ Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	Button DataAcquireButton title=text, fcolor=(color.red, color.green, color.blue), win = $panelTitle
 End
 
-Function/s DAP_ListOfUnlockedDevs()
-
-	return WinList("DA_Ephys*", ";", "WIN:64" )
-End
-
-//=========================================================================================
-Function/s DAP_ListOfLockedDevs()
-
-	SVAR/Z list = root:MIES:ITCDevices:ITCPanelTitleList
-	if(!SVAR_Exists(list))
-		return ""
-	endif
-
-	return list
-End
-
-//=========================================================================================
-Function/s DAP_ListOfLockedITC1600Devs()
-
-	return ListMatch(DAP_ListOfLockedDevs(), "ITC1600*")
-End
-
 /// Returns the list of potential followers for yoking.
 ///
 /// Used by popup_Hardware_AvailITC1600s from the hardware tab
 Function /s DAP_ListOfITCDevices()
 
-	string listOfPotentialFollowerDevices = RemoveFromList(ITC1600_FIRST_DEVICE,DAP_ListOfLockedITC1600Devs())
+	string listOfPotentialFollowerDevices = RemoveFromList(ITC1600_FIRST_DEVICE,GetListOfLockedITC1600Devices())
 	return SortList(listOfPotentialFollowerDevices, ";", 16)
 End
 
@@ -5315,7 +5293,7 @@ End
 
 Function DAP_UnlockAllDevices()
 
-	string list = DAP_ListOfLockedDevs()
+	string list = GetListOfLockedDevices()
 	string win
 	variable i, numItems
 
@@ -5325,7 +5303,7 @@ Function DAP_UnlockAllDevices()
 	endif
 
 	// refetch the, possibly changed, list of locked devices and unlock them all
-	list = DAP_ListOfLockedDevs()
+	list = GetListOfLockedDevices()
 	numItems = ItemsInList(list)
 	for(i=0; i < numItems; i+=1)
 		win = StringFromList(i, list)
@@ -5558,7 +5536,7 @@ End
 /// @brief Serialize all comment notebooks
 Function DAP_SerializeAllCommentNBs()
 
-	string list = DAP_ListOfLockedDevs()
+	string list = GetListOfLockedDevices()
 	CallFunctionForEachListItem(DAP_SerializeCommentNotebook, list)
 End
 

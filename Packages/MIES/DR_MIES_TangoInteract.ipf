@@ -102,7 +102,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 	variable paaFuncIndex
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
@@ -248,7 +248,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 	//savedDataFolder = GetDataFolder(1)
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
 	
 	variable n
@@ -375,7 +375,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 	string ListOfWavesInFolder
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
 	
 	variable n
@@ -444,7 +444,7 @@ Function/S TI_runAPResult(headstage, [cmdID])
 	string returnResult
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
 	
 	for(n = 0; n < noLockedDevs; n += 1)
@@ -478,7 +478,7 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 	variable returnValue
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
@@ -515,7 +515,7 @@ Function TI_runStopStart([cmdID])
 	string currentPanel
 	
 	// get the da_ephys panel names
-	lockedDevList = DAP_ListOfLockedDevs()
+	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
