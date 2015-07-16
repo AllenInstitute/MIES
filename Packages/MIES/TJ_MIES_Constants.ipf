@@ -291,3 +291,6 @@ Constant RACK_ONE  = 0x01
 /// @}
 
 StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
+
+/// Last valid row index for storing epoch types in #GetSegmentTypeWave
+Constant SEGMENT_TYPE_WAVE_LAST_IDX = 97

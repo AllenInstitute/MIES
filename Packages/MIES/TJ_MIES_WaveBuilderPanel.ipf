@@ -509,11 +509,11 @@ Window WaveBuilder() : Panel
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo)= A"!!,Io!!#=k!!#B@J,hq8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_WaveBuilder_SetParameters,pos={12,7},size={162,146},title="\\Z16\\f01Set Parmeters"
-	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo)= A"!!,AN!!#:B!!#A1!!#A!z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	GroupBox group_WaveBuilder_SetParameters,pos={12,7},size={157,164},title="\\Z16\\f01Set Parmeters"
+	GroupBox group_WaveBuilder_SetParameters,userdata(tabcontrol)=  "WBP_WaveType"
+	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo)= A"!!,AN!!#:B!!#A,!!#A3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_WaveBuilder_SetParameters,userdata(tabcontrol)=  "WBP_WaveType"
 	GroupBox group_WaveBuilder_SaveSet,pos={873,14},size={130,139},title="\\Z16\\f01Save Set"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo)= A"!!,Jk5QF)X!!#@f!!#@oz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -645,6 +645,13 @@ Window WaveBuilder() : Panel
 	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_FlipEpoch_S98,pos={110,154},size={34,14},proc=WBP_CheckProc_FlipStimSet,title="Flip"
+	CheckBox check_FlipEpoch_S98,help={"Flip the whole stim set in the time domain"}
+	CheckBox check_FlipEpoch_S98,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_FlipEpoch_S98,value= 0
+	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo)= A"!!,FA!!#A)!!#=k!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF1g^]4?7zzzzzzzzzzzzzzzzzzzz"
@@ -1028,7 +1035,7 @@ Function TabTJHook(tca)
 	endif
 
 	idx = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	ASSERT(idx < 99, "Only supports up to different 99 epochs")
+	ASSERT(idx <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
 	SegWvType[idx] = tabnum
 
 	WBP_ParameterWaveToPanel(tabnum)
@@ -1419,6 +1426,8 @@ static Function WBP_LoadSet()
 	WAVE WP  = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
+	SetCheckBoxState(panel, "check_FlipEpoch_S98", SegWvType[98])
+
 	// we might be called from an old panel without an ITI setvariable control
 	ControlInfo/W=$panel setvar_WaveBuilder_ITI
 	if(V_flag > 0)
@@ -1769,6 +1778,22 @@ Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
 		case 2: // mouse up
 			WBP_UpdateControlAndWP(ba.ctrlName, GetNonReproducibleRandom())
 			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_CheckProc_FlipStimSet(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			Wave SegWvType = GetSegmentTypeWave()
+			SegWvType[98] = cba.checked
+			WBP_UpdatePanelIfAllowed()
+			break
+		case -1: // control being killed
 			break
 	endswitch
 

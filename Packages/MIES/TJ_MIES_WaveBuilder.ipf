@@ -148,6 +148,10 @@ Function/Wave WB_GetStimSet([setName])
 		endif
 	endfor
 
+	if(SegWvType[98])
+		WaveTransForm/O flip stimset
+	endif
+
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
 
 	return stimSet
@@ -491,7 +495,18 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)
+	// adjust epochID timestamps for stimset flipping
+	if(updateEpochIDWave && SegWvType[98])
+		if(stepCount == 0)
+			for(i = 0; i < numEpochs; i += 1)
+				epochID[i][%timeBegin] = accumulatedDuration - epochID[i][%timeBegin]
+				epochID[i][%timeEnd]   = accumulatedDuration - epochID[i][%timeEnd]
+			endfor
+		endif
+	endif
+
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
 
 	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", WaveBuilderWave
 	// although we are not creating these globals anymore, we still try to kill them
