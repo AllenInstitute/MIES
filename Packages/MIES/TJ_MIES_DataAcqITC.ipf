@@ -359,7 +359,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave BaselineSSAvg, SSResistance
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
-	variable activeHeadStages
+	variable activeHeadStages, DAC, ADC
 	variable resistance, maximumAutoBiasCurrent
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
@@ -383,16 +383,19 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	activeHeadStages = 0
 	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
 
+		DAC = TP_GetDAChannelFromHeadstage(panelTitle, headstage)
+		ADC = TP_GetADChannelFromHeadstage(panelTitle, headstage)
+
 		// From DAP_RemoveClampModeSettings and DAP_ApplyClmpModeSavdSettngs we know that
 		// both wave entries are NaN iff the headstage is unset
-		if(!IsFinite(channelClampMode[headStage][%DAC]) || !IsFinite(channelClampMode[headStage][%ADC]))
+		if(!IsFinite(DAC) || !IsFinite(ADC) || !IsFinite(channelClampMode[DAC][%DAC]) || !IsFinite(channelClampMode[ADC][%ADC]))
 			continue
 		endif
 
 		activeHeadStages += 1
 
 		// headStage channels not in current clamp mode
-		if(channelClampMode[headStage][%DAC] != I_CLAMP_MODE && channelClampMode[headStage][%ADC] != I_CLAMP_MODE)
+		if(channelClampMode[DAC][%DAC] != I_CLAMP_MODE && channelClampMode[ADC][%ADC] != I_CLAMP_MODE)
 			continue
 		endif
 
