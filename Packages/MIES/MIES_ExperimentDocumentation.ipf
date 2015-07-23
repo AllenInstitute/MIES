@@ -588,8 +588,8 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][6]  = "1e-6"
 	TPKeyWave[2][7]  = "1e-6"
 	TPKeyWave[2][8]  = "-"
-	TPKeyWave[1][9]  = "0.0001"
-	TPKeyWave[1][10] = "0.0001"
+	TPKeyWave[2][9]  = "0.0001"
+	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
