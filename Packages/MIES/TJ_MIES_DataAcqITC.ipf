@@ -358,7 +358,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	string panelTitle
 	Wave BaselineSSAvg, SSResistance
 
-	variable headStage, entries, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
+	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable activeHeadStages
 	variable resistance, maximumAutoBiasCurrent
 	Wave TPStorage = GetTPStorage(panelTitle)
@@ -380,9 +380,8 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave channelClampMode = GetChannelClampMode(panelTitle)
 	Wave ampSettings      = GetAmplifierParamStorageWave(panelTitle)
 
-	entries = DimSize(ampSettings, LAYERS)
 	activeHeadStages = 0
-	for(headStage=0; headStage < entries; headStage+=1)
+	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
 
 		// From DAP_RemoveClampModeSettings and DAP_ApplyClmpModeSavdSettngs we know that
 		// both wave entries are NaN iff the headstage is unset
