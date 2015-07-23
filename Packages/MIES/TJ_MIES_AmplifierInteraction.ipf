@@ -262,8 +262,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 	if(headstageMode != mode)
 		printf "Headstage %d is in %s but the required one is %s\r", headstage, AI_ConvertAmplifierModeToString(headstageMode), AI_ConvertAmplifierModeToString(mode)
 		return NaN
-	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
-		printf "Headstage %d has different modes stored and set\r", headstage
+	elseif(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
 		return NaN
 	endif
 
@@ -379,7 +378,8 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It migh
 	return ret
 End
 
-/// @returns 1 if the MIES headstage mode matches the associated MCC mode, zero otherwise
+/// @returns 1 if the MIES headstage mode matches the associated MCC mode, zero if not and NaN
+/// if the headstage has no amplifier connected
 Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	string panelTitle
 	variable headStage
@@ -389,16 +389,24 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 
 	variable serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
 	variable channel = AI_GetAmpChannel(panelTitle, headStage)
+	variable equalModes, storedMode, setMode
 
 	if(!AI_IsValidSerialAndChannel(channel=channel, axonSerial=serial))
-		return 0
+		return NaN
 	endif
 
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
+	storedMode = AI_MIESHeadstageMode(panelTitle, headStage)
+	setMode    = tds.operatingMode
+	equalModes = (setMode == storedMode)
 
-	return (tds.operatingMode == AI_MIESHeadstageMode(panelTitle, headStage))
+	if(!equalModes)
+		printf "(%s) Headstage %d has different modes stored (%s) and set (%s)\r", panelTitle, headstage, AI_ConvertAmplifierModeToString(storedMode), AI_ConvertAmplifierModeToString(setMode)
+	endif
+
+	return equalModes
 End
 
 /// @returns the mode of the headstage defined in the locked DA_ephys panel,
