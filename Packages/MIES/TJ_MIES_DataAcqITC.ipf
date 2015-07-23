@@ -390,7 +390,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 			continue
 		endif
 
-		activeHeadStages +=1
+		activeHeadStages += 1
 
 		// headStage channels not in current clamp mode
 		if(channelClampMode[headStage][%DAC] != I_CLAMP_MODE && channelClampMode[headStage][%ADC] != I_CLAMP_MODE)
@@ -448,19 +448,19 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		current += actualCurrent
-		
+
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
 			continue
 		endif
 
 		DEBUGPRINT("current to send=", var=current)
-		
+
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
 		ampSettings[17][0][headStage] = 1 /// @todo Modify AI_UpdateAmpModel to allow a value to be passed in, in place of the GUI query. 
 		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
 		ampSettings[16][0][headStage] = current * 1e12
-		
+
 		// update the DA_Ephys panel amp controls
 		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_IC")
 		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnable")
