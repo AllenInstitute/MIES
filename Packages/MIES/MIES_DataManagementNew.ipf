@@ -90,8 +90,6 @@ Function DM_CreateScaleTPHoldingWave(panelTitle)
 	NVAR duration = $GetTestpulseDuration(panelTitle)
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
-	ASSERT(Duration > 0, "duration is not strictly positive")
-	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
 
 	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
 	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
