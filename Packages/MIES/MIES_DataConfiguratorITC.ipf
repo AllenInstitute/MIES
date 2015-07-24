@@ -207,18 +207,15 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	variable longestSweep, exponent
 
 	longestSweep = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-
 	exponent = ceil(log(longestSweep)/log(2))
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1
 	endif
 
-	if(exponent < 17)
-		exponent = 17
-	endif
+	exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
 
-	return (2^exponent)
+	return 2^exponent
 end
 
 /// @brief Returns the longest sweep in a stimulus set across all active DA and TTL channels.
