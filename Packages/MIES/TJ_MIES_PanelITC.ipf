@@ -4517,6 +4517,10 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
+	if(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
+		return 1
+	endif
+
 	return 0
 End
 
