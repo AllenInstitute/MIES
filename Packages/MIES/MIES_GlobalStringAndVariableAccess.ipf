@@ -197,7 +197,10 @@ End
 
 /// @brief Return the absolute path to the testpulse duration variable
 ///
-/// The duration is *not* in units of time.
+/// The duration is for a single pulse only without baseline.
+///
+/// The duration is *not* in units of time but in number of points for
+/// the real (compared to #MINIMUM_SAMPLING_INTERVAL) sampling interval
 Function/S GetTestpulseDuration(panelTitle)
 	string panelTitle
 
