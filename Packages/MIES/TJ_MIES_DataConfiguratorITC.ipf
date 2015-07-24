@@ -178,7 +178,7 @@ static Function DC_LongestOutputWave(channelType, panelTitle)
 			continue
 		endif
 
-		Wave/Z/SDFR=IDX_GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
+		Wave/Z/SDFR=GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
 
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
@@ -441,7 +441,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		setName = StringFromList(i, setNameList)
 		isTestPulse = TP_IsTestPulseSet(setName)
-		Wave/SDFR=GetWBSvdStimSetDAPath() stimSet = $setName
+		WAVE stimSet = WB_CreateAndGetStimSet(setName)
 		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
 
 		if(distributedDAQ)
@@ -649,7 +649,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	string panelTitle, SetName
 	variable ChannelNo, channelType
 
-	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName, channelType)
+	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
 	variable localCount

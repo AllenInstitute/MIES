@@ -5,32 +5,156 @@ static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 static Constant SQUARE_PULSE_TRAIN_MODE_DUR   = 0x01
 static Constant SQUARE_PULSE_TRAIN_MODE_PULSE = 0x02
 
-Function WB_MakeStimSet()
+/// @brief Return the stim set wave and create it permanently
+/// in the datafolder hierarchy
+/// @return stimset wave ref or an invalid wave ref
+Function/Wave WB_CreateAndGetStimSet(setName)
+	string setName
 
-	variable i, numEpochs, numSteps, setNumber
-	string basename, outputType, outputWaveName
+	variable type, needToCreateStimSet
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetFolder(type)
+	WAVE/Z/SDFR=dfr stimSet = $setName
+
+	if(!WaveExists(stimSet))
+		needToCreateStimSet = 1
+	elseif(WaveExists(stimSet) && WBP_ParameterWvsNewerThanStim(setName))
+		needToCreateStimSet = 1
+	else
+		needToCreateStimSet = 0
+	endif
+
+	if(needToCreateStimSet)
+		WAVE/Z stimSet = WB_GetStimSet(setName=setName)
+		if(!WaveExists(stimSet))
+			return $""
+		endif
+
+		WAVE/Z/SDFR=dfr oldStimSet = $setName
+		if(WaveExists(oldStimSet))
+			KillOrMoveToTrash(GetWavesDataFolder(oldStimSet, 2))
+		endif
+
+		MoveWave stimSet, dfr:$setName
+		WAVE/SDFR=dfr stimSet = $setName
+	endif
+
+	return stimSet
+End
+
+/// @return One if one of the parameter waves is newer than the stim set wave, zero otherwise
+static Function WBP_ParameterWvsNewerThanStim(setName)
+	string setName
+
+	variable type, lastModStimSet
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetParamFolder(type)
+	WAVE/Z/SDFR=dfr   WP        = $("WP"        + "_" + setName)
+	WAVE/Z/T/SDFR=dfr WPT       = $("WPT"       + "_" + setName)
+	WAVE/Z/SDFR=dfr   SegWvType = $("SegWvType" + "_" + setName)
+
+	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
+
+		DFREF dfr = GetSetFolder(type)
+		WAVE/Z/SDFR=dfr stimSet = $setName
+		if(!WaveExists(stimSet))
+			return 0
+		endif
+
+		lastModStimSet = modDate(stimSet)
+
+		if(modDate(WP) > lastModStimSet || modDate(WPT) > lastModStimSet || modDate(SegWvType) > lastModStimSet)
+			return 1
+		endif
+	endif
+
+	return 0
+End
+
+/// @brief Return the stim set wave
+///
+/// As opposed to #WB_CreateAndGetStimSet this function returns a free wave only
+///
+/// @param setName [optional, defaults to WaveBuilderPanel GUI settings] name of the set
+/// @return free wave with the stim set, invalid wave ref if the `WP*` parameter waves could
+/// not be found.
+Function/Wave WB_GetStimSet([setName])
+	string setName
+
+	variable i, numEpochs, numSteps, updateEpochIDWave
+	variable last, lengthOf1DWaves, type, length
+	string wvName
 	variable start = stopmstimer(-2)
 
-	WAVE WP = GetWaveBuilderWaveParam()
+	if(ParamIsDefault(setName))
+		updateEpochIDWave = 1
+
+		WAVE WP        = GetWaveBuilderWaveParam()
+		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
+		WAVE SegWvType = GetSegmentTypeWave()
+	else
+		type = GetStimSetType(setName)
+		DFREF dfr = GetSetParamFolder(type)
+
+		WAVE/Z/SDFR=dfr   WP        = $("WP"        + "_" + setName)
+		WAVE/Z/T/SDFR=dfr WPT       = $("WPT"       + "_" + setName)
+		WAVE/Z/SDFR=dfr   SegWvType = $("SegWvType" + "_" + setName)
+
+		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
+			return $""
+		endif
+	endif
 
 	// WB_AddDelta modifies WP so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
 
-	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
-	basename = basename[0,15]
+	numSteps   = SegWvType[101]
+	numEpochs  = SegWvType[100]
 
-	setNumber  = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
-	numSteps   = GetSetVariable("WaveBuilder", "setVar_WaveBuilder_StepCount")
-	outputType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
-	numEpochs  = GetSetVariable("WaveBuilder", "SetVar_WaveBuilder_NoOfEpochs")
+	MAKE/WAVE/FREE/N=(numSteps) stepData
 
 	for(i=0; i < numSteps; i+=1)
-		outputWaveName = "X" + num2str(i + 1) + "_" + basename + "_" + outputType + "_" + num2str(setNumber)
-		WB_MakeWaveBuilderWave(WPCopy, i, numEpochs, outputWaveName)
+		stepData[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, updateEpochIDWave)
+		lengthOf1DWaves = max(DimSize(stepData[i], ROWS), lengthOf1DWaves)
 		WB_AddDelta(WPCopy, numEpochs)
 	endfor
 
+	// copy the random seed value to WP in order to preserve it
+	WP[48][][] = WPCopy[48][q][r]
+
+	if(lengthOf1DWaves == 0)
+		return $""
+	endif
+
+	Make/FREE/O/N=(lengthOf1DWaves, numSteps) stimSet
+	FastOp stimSet = 0
+
+	for(i = 0; i < numSteps; i += 1)
+		WAVE wv = stepData[i]
+
+		length = DimSize(wv, ROWS)
+		if(length == 0)
+			continue
+		endif
+
+		last = length - 1
+		stimSet[0, last][i] = wv[p]
+
+		if(i == 0)
+			Note stimSet, note(wv)
+			CopyScales/P wv, stimset
+		endif
+	endfor
+
+	if(SegWvType[98])
+		WaveTransForm/O flip stimset
+	endif
+
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
+
+	return stimSet
 End
 
 /// @brief Add delta to appropriate parameters
@@ -145,23 +269,26 @@ static Structure SegmentParameters
 	variable deltaLowPassFiltCoefCount
 	variable fIncrement
 	variable numberOfPulses
+	// checkboxes
+	variable poisson
+	variable brownNoise, pinkNoise
+	variable sinChirp
+	variable randomSeed
 EndStructure
 
-static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
+static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, updateEpochIDWave)
 	Wave WP
-	variable stepCount
-	variable numEpochs
-	string wvName
+	Wave/T WPT
+	Wave SegWvType
+	variable stepCount, numEpochs, updateEpochIDWave
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr SegWvType
-	Make/O/N=0 dfr:$wvName/Wave=WaveBuilderWave
+	DFREF dfr = GetWaveBuilderDataPath()
+
+	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode
-	variable i, type, accumulatedDuration, tabID
+	variable i, j, type, accumulatedDuration
 	STRUCT SegmentParameters params
-
-	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
@@ -197,6 +324,10 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 		params.lowPassFiltCoefCount       = WP[28][i][type]
 		params.deltaLowPassFiltCoefCount  = WP[29][i][type]
 		params.fIncrement                 = WP[30][i][type]
+		params.pinkNoise                  = WP[41][i][type]
+		params.brownNoise                 = WP[42][i][type]
+		params.sinChirp                   = WP[43][i][type]
+		params.poisson                    = WP[44][i][type]
 		params.numberOfPulses             = WP[45][i][type]
 
 		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
@@ -231,6 +362,28 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 2:
+				// initialize the random seed value if not already done
+				if(WP[48][i][type] == 0)
+					WP[48][i][type] = GetNonReproducibleRandom()
+				endif
+				params.randomSeed = WP[48][i][type]
+				SetRandomSeed/BETR=1 params.randomSeed
+
+				if(WP[49][i][type])
+					// the stored seed value is the seed value for the *generation*
+					// of the individual seed values for each step
+					// Procedure:
+					// - Initialize RNG with stored seed
+					// - Query as many random numbers as current step count
+					// - Use the *last* random number as seed value for the new epoch
+					// In this way we get a different seed value for each step, but all are reproducibly
+					// derived from one seed value. And we still have different values for different epochs.
+					for(j = 1; j <= stepCount; j += 1)
+						params.randomSeed = GetReproducibleRandom()
+					endfor
+					SetRandomSeed/BETR=1 params.randomSeed
+				endif
+
 				WB_NoiseSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"                  , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                   , str="G-noise")
@@ -241,6 +394,7 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off"      , var=params.HighPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off delta", var=params.DeltaHighPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=params.DeltaOffset, appendCR=1)
 				break
 			case 3:
@@ -262,16 +416,15 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case 5:
-				tabID = GetTabID("WaveBuilder", "WBP_WaveType")
 				if(WP[46][i][type]) // "Number of pulses" checkbox
 					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_PULSE)
-					if(tabID == 5)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == 5)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
 					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_DUR)
-					if(tabID == 5)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == 5)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
@@ -302,7 +455,13 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 			case 7:
 				customWaveName = WPT[0][i]
 
-				Wave/Z/SDFR=WBP_GetFolderPath() customWave = $customWaveName
+				if(windowExists("Wavebuilder") && strsearch(customWaveName, ":", 0) == -1)
+					// old style entries with only the wave name
+					Wave/Z/SDFR=WBP_GetFolderPath() customWave = $customWaveName
+				else
+					// try new style entries with full path
+					WAVE/Z customWave = $customWaveName
+				endif
 
 				if(WaveExists(customWave))
 					WB_CustomWaveSegment(params.customOffset, customWave)
@@ -319,24 +478,42 @@ static Function WB_MakeWaveBuilderWave(WP, stepCount, numEpochs, wvName)
 				ASSERT(0, "Unknown Wave type to create")
 		endswitch
 
-		if(stepCount == 0)
-			WAVE epochID = GetEpochID()
-			epochID[i][%timeBegin] = accumulatedDuration
-			epochID[i][%timeEnd]   = accumulatedDuration + params.duration
+		if(updateEpochIDWave)
+			if(stepCount == 0)
+				WAVE epochID = GetEpochID()
+				if(i == 0)
+					epochID = 0
+				endif
+				epochID[i][%timeBegin] = accumulatedDuration
+				epochID[i][%timeEnd]   = accumulatedDuration + params.duration
 
-			accumulatedDuration += params.duration
+				accumulatedDuration += params.duration
+			endif
 		endif
 
 		WAVE/SDFR=dfr segmentWave
 		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)
+	// adjust epochID timestamps for stimset flipping
+	if(updateEpochIDWave && SegWvType[98])
+		if(stepCount == 0)
+			for(i = 0; i < numEpochs; i += 1)
+				epochID[i][%timeBegin] = accumulatedDuration - epochID[i][%timeBegin]
+				epochID[i][%timeEnd]   = accumulatedDuration - epochID[i][%timeEnd]
+			endfor
+		endif
+	endif
+
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
 
 	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", WaveBuilderWave
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
 	KillStrings/Z StringHolder
+
+	return WaveBuilderWave
 End
 
 /// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
@@ -386,14 +563,11 @@ End
 static Function WB_NoiseSegment(pa)
 	struct SegmentParameters &pa
 
-	variable brownCheck, pinkCheck, PinkOrBrown
+	variable PinkOrBrown
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
-	pinkCheck  = GetCheckBoxState("Wavebuilder", "check_Noise_Pink_P41")
-	brownCheck = GetCheckBoxState("Wavebuilder", "Check_Noise_Brown_P42")
-
-	if(!brownCheck && !pinkCheck)
+	if(!pa.brownNoise && !pa.pinkNoise)
 		SegmentWave = gnoise(pa.amplitude) // MultiThread didn't impact processing time for gnoise
 		if(pa.duration <= 0)
 			print "WB_NoiseSegment: Can not proceed with non-positive duration"
@@ -407,9 +581,9 @@ static Function WB_NoiseSegment(pa)
 		if(pa.highPassCutOff > 0 && pa.highPassCutOff < 100000)
 			FilterFIR /DIM = 0 /Hi = {(pa.highPassCutOff/200000), (pa.highPassCutOff/200000), pa.highPassFiltCoefCount} SegmentWave
 		endif
-	elseif(pinkCheck)
+	elseif(pa.pinkNoise)
 		WB_PinkAndBrownNoise(pa, 0)
-	elseif(brownCheck)
+	elseif(pa.brownNoise)
 		WB_PinkAndBrownNoise(pa, 1)
 	endif
 
@@ -424,7 +598,7 @@ static Function WB_SinSegment(pa)
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
-	if(!GetCheckBoxState("Wavebuilder","check_Sin_Chirp_P43"))
+	if(!pa.sinChirp)
 		MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 	else
 		 k0 = ln(pa.frequency / 1000)
@@ -468,6 +642,11 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		ASSERT(0, "Invalid mode")
 	endif
 
+	if(!(pa.duration > 0))
+		printf "Resetting invalid duration of %gms to 1ms\r", pa.duration
+		pa.duration = 1.0
+	endif
+
 	// we want always to have the correct interpulse interval
 	// independent of the duration
 	interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
@@ -476,7 +655,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	segmentWave = 0
 	numRows = DimSize(segmentWave, ROWS)
 
-	if(!GetCheckBoxState("Wavebuilder", "check_SPT_Poisson_P44"))
+	if(!pa.poisson)
 		for(;;)
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / MINIMUM_SAMPLING_INTERVAL)
 
@@ -554,36 +733,39 @@ static Function WB_CustomWaveSegment(CustomOffset, wv)
 	SegmentWave += CustomOffSet
 End
 
-/// PinkOrBrown Pink = 0, Brown = 1
+/// @brief Create a pink or brown noise segment
+///
+/// @param pa Segment parameters
+/// @param pinkOrBrown Pink = 0, Brown = 1
 static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 	struct SegmentParameters &pa
 	variable pinkOrBrown
 
-	variable phase = abs(enoise(2)) * Pi
-	variable numberOfBuildWaves = floor((pa.lowPassCutOff - pa.highPassCutOff) / pa.fIncrement)
+	variable i, localAmplitude
+	variable phase, frequency, numberOfBuildWaves
 
-	if(!IsFinite(phase) || !IsFinite(pa.duration) || !IsFinite(numberOfBuildWaves) || pa.highPassCutOff == 0)
+	frequency = pa.highPassCutOff
+	numberOfBuildWaves = floor((pa.lowPassCutOff - pa.highPassCutOff) / pa.fIncrement)
+
+	if(!IsFinite(pa.duration) || !IsFinite(numberOfBuildWaves) || pa.highPassCutOff == 0)
 		print "Could not create a new pink/brown noise Wave as the input values were non-finite or zero."
 		return NaN
 	endif
 
 	Make/FREE/n=(pa.duration / MINIMUM_SAMPLING_INTERVAL, NumberOfBuildWaves) BuildWave
 	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", BuildWave
-	variable frequency = pa.highPassCutOff
-	variable i
-	variable localAmplitude
 
 	for(i = 0; i < numberOfBuildWaves; i += 1)
-		phase = ((abs(enoise(2))) * Pi) // random phase generator
+		phase = abs(enoise(2)) * Pi // random phase generator
 		if(PinkOrBrown == 0)
 			localAmplitude = 1 / frequency
 		else
-			localAmplitude = 1 / (frequency ^ .5)
+			localAmplitude = 1 / (frequency ^ 0.5)
 		endif
 
 		// factoring out Pi * 1e-05 actually makes it a tiny bit slower
 		MultiThread BuildWave[][i] = localAmplitude * sin( Pi * pa.frequency * 1e-05 * p + phase)
-		Frequency += pa.fIncrement
+		frequency += pa.fIncrement
 	endfor
 
 	MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)

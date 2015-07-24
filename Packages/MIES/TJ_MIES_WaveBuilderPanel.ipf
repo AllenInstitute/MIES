@@ -48,7 +48,15 @@ Function WBP_CreateWaveBuilderPanel()
 	GetWBSvdStimSetDAPath()
 	GetWBSvdStimSetTTLPath()
 
-	GetSegmentWave()
+	WAVE segmentWave = GetSegmentTypeWave()
+	KillOrMoveToTrash(GetWavesDataFolder(segmentWave, 2))
+
+	WAVE WP = GetWaveBuilderWaveParam()
+	KillOrMoveToTrash(GetWavesDataFolder(WP, 2))
+
+	WAVE WPT = GetWaveBuilderWaveTextParam()
+	KillOrMoveToTrash(GetWavesDataFolder(WPT, 2))
+
 	Execute "WaveBuilder()"
 End
 
@@ -56,13 +64,13 @@ Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /W=(121,262,1138,869)
 	SetDrawLayer UserBack
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,pos={23,61},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(ResizeControlsInfo)= A"!!,Bq!!#?-!!#@\\!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,fSize=14
-	SetVariable SetVar_WaveBuilder_NoOfEpochs,limits={1,100,1},value= _NUM:1
+	SetVariable SetVar_WB_NumEpochs_S100,pos={23,61},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(ResizeControlsInfo)= A"!!,Bq!!#?-!!#@\\!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WB_NumEpochs_S100,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WB_NumEpochs_S100,fSize=14
+	SetVariable SetVar_WB_NumEpochs_S100,limits={1,100,1},value= _NUM:1
 	SetVariable SetVar_WaveBuilder_P0,pos={194,34},size={100,16},proc=WBP_SetVarProc_UpdateParam,title="Duration"
 	SetVariable SetVar_WaveBuilder_P0,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo)= A"!!,GR!!#=k!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -75,12 +83,12 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P1,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_StepCount,pos={34,85},size={113,20},proc=WBP_SetVarProc_StepCount,title="Total Steps"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo)= A"!!,Cl!!#?c!!#@F!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_StepCount,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_StepCount,fSize=14,limits={1,99,1},value= _NUM:1
+	SetVariable SetVar_WB_StepCount_S101,pos={34,85},size={113,20},proc=WBP_SetVarProc_StepCount,title="Total Steps"
+	SetVariable SetVar_WB_StepCount_S101,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo)= A"!!,Cl!!#?c!!#@F!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WB_StepCount_S101,fSize=14,limits={1,99,1},value= _NUM:1
 	SetVariable setvar_WaveBuilder_P10,pos={552,34},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Tau Rise"
 	SetVariable setvar_WaveBuilder_P10,userdata(tabnum)=  "6"
 	SetVariable setvar_WaveBuilder_P10,userdata(tabcontrol)=  "WBP_WaveType"
@@ -501,18 +509,18 @@ Window WaveBuilder() : Panel
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo)= A"!!,Io!!#=k!!#B@J,hq8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_WaveBuilder_SetParameters,pos={12,7},size={162,146},title="\\Z16\\f01Set Parmeters"
-	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo)= A"!!,AN!!#:B!!#A1!!#A!z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	GroupBox group_WaveBuilder_SetParameters,pos={12,7},size={157,164},title="\\Z16\\f01Set Parmeters"
+	GroupBox group_WaveBuilder_SetParameters,userdata(tabcontrol)=  "WBP_WaveType"
+	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo)= A"!!,AN!!#:B!!#A,!!#A3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_SetParameters,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_WaveBuilder_SetParameters,userdata(tabcontrol)=  "WBP_WaveType"
 	GroupBox group_WaveBuilder_SaveSet,pos={873,14},size={130,139},title="\\Z16\\f01Save Set"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo)= A"!!,Jk5QF)X!!#@f!!#@oz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_WaveBuilder_SaveSet,userdata(tabcontrol)=  "WBP_WaveType"
 	GroupBox group_WaveBuilder_SaveSet,fStyle=0
-	SetVariable SetVar_WaveBuilder_P30,pos={310,105},size={91,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="- increment"
+	SetVariable SetVar_WaveBuilder_P30,pos={310,105},size={91,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="- increment"
 	SetVariable SetVar_WaveBuilder_P30,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P30,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P30,userdata(ResizeControlsInfo)= A"!!,HV!!#@6!!#?o!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -603,26 +611,47 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P45,pos={194,152},size={100,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="Num Pulses"
 	SetVariable SetVar_WaveBuilder_P45,userdata(tabnum)=  "5"
 	SetVariable SetVar_WaveBuilder_P45,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo)= A"!!,GR!!#@e!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P45,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P45 limits={0,inf,1}
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo)= A"!!,GR!!#A'!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WaveBuilder_P45,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P47,pos={301,152},size={100,16},disable=3,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P47,userdata(tabnum)=  "5"
 	SetVariable SetVar_WaveBuilder_P47,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_P47,userdata(ResizeControlsInfo)= A"!!,HQJ,hq;!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P47,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P47,userdata(ResizeControlsInfo)= A"!!,HQJ,hqR!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P47,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P47,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P47,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P47 limits={0,inf,1}
 	CheckBox check_SPT_NumPulses_P46,pos={413,133},size={71,14},disable=1,proc=WBP_CheckProc,title="Use Pulses"
 	CheckBox check_SPT_NumPulses_P46,help={"Allows to define the number of pulses instead of the duration"}
-	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo)= A"!!,I4J,hp]!!#?A!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_NumPulses_P46,userdata(tabnum)=  "5"
 	CheckBox check_SPT_NumPulses_P46,userdata(tabcontrol)=  "WBP_WaveType",value= 0
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo)= A"!!,I4J,hq?!!#?G!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_NewSeed_P48,pos={338,128},size={61,20},disable=1,proc=WBP_ButtonProc_NewSeed,title="New Noise"
+	Button button_NewSeed_P48,help={"Create new noise waveforms"}
+	Button button_NewSeed_P48,userdata(tabnum)=  "2"
+	Button button_NewSeed_P48,userdata(tabcontrol)=  "WBP_WaveType"
+	Button button_NewSeed_P48,userdata(ResizeControlsInfo)= A"!!,Hd!!#@d!!#?-!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_NewSeedForEachStep_P49,pos={413,145},size={45,14},disable=1,proc=WBP_CheckProc,title="Noise"
+	CheckBox check_NewSeedForEachStep_P49,help={"Create different noise waveforms for each step"}
+	CheckBox check_NewSeedForEachStep_P49,userdata(tabnum)=  "2"
+	CheckBox check_NewSeedForEachStep_P49,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_NewSeedForEachStep_P49,value= 0
+	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_FlipEpoch_S98,pos={110,154},size={34,14},proc=WBP_CheckProc_FlipStimSet,title="Flip"
+	CheckBox check_FlipEpoch_S98,help={"Flip the whole stim set in the time domain"}
+	CheckBox check_FlipEpoch_S98,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_FlipEpoch_S98,value= 0
+	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo)= A"!!,FA!!#A)!!#=k!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGH0={FB,-42}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E95QF1g^]4?7zzzzzzzzzzzzzzzzzzzz"
@@ -708,62 +737,56 @@ End
 
 static Function WBP_DisplaySetInPanel()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	variable first, last
-	variable i, numWaves, setNumber, epoch, numEpochs
-	string list, basename, outputWaveType, searchPattern, entry
-	variable maxYValue = -Inf
-	variable minYValue = Inf
+	variable i, epoch, numEpochs, numSteps
+	variable red, green, blue
+	string trace
+	variable maxYValue, minYValue
 
-	WAVE ranges = GetAxesRanges(waveBuilderGraph)
-	RemoveTracesFromGraph(waveBuilderGraph, kill=1)
-	WB_MakeStimSet()
-
-	epoch     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	numEpochs = GetSetVariable(panel, "SetVar_WaveBuilder_NoOfEpochs")
-
-	basename = GetSetVariableString("WaveBuilder", "setvar_WaveBuilder_baseName")
-	basename = basename[0,15]
-
-	setNumber      = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_SetNumber")
-	outputWaveType = GetPopupMenuString("WaveBuilder", "popup_WaveBuilder_OutputType")
-
-	searchPattern = ".*" + basename + ".*" + outputWaveType + "_.*" + num2str(setNumber)
-	list = GetListOfWaves(dfr, searchPattern)
-
-	numWaves = ItemsInList(list)
-	if(!numWaves)
+	WAVE/Z stimSet = WB_GetStimSet()
+	if(!WaveExists(stimSet))
 		return NaN
 	endif
 
+	WAVE ranges = GetAxesRanges(waveBuilderGraph)
+	RemoveTracesFromGraph(waveBuilderGraph)
+
+	WAVE SegWvType = GetSegmentTypeWave()
+
+	epoch     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	numEpochs = SegWvType[100]
+
+	DFREF dfr = GetWaveBuilderDataPath()
 	WBP_AddEpochHLTraces(dfr, EPOCH_HL_TYPE_LEFT, epoch, numEpochs)
 	WAVE/SDFR=dfr epochHLBeginLeft, epochHLEndLeft
 
 	WBP_AddEpochHLTraces(dfr, EPOCH_HL_TYPE_RIGHT, epoch, numEpochs)
 	WAVE/SDFR=dfr epochHLBeginRight, epochHLEndRight
 
-	for(i=0; i < numWaves; i += 1)
-		entry = StringFromList(i, list)
-		Wave/SDFR=dfr wv = $entry
-		AppendToGraph/W=$waveBuilderGraph wv
-		if(mod(i, 2) == 0) // odd numbered waves get made black
-			// here we assume that we trace name is the same as the wave name
-			ModifyGraph/W=$waveBuilderGraph rgb($entry) = (13056,13056,13056)
-		endif
+	WAVE displayData = GetWaveBuilderDispWave()
+	Duplicate/O stimSet, displayData
+	WaveClear stimSet
 
-		if(DimSize(wv, ROWS) > 0)
-			maxYValue = max(WaveMax(wv), maxYValue)
-			minYValue = min(WaveMin(wv), minYValue)
-		endif
+	numSteps = DimSize(displayData, COLS)
+
+	if(numSteps == 0)
+		return NaN
+	endif
+
+	for(i = 0; i < numSteps; i += 1)
+		trace = NameOfWave(displayData) + "_S" + num2str(i)
+		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
+		GetTraceColor(i, red, green, blue)
+		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (red, green, blue)
 	endfor
 
-	if(IsFinite(maxYValue) && IsFinite(minYValue))
-		epochHLBeginRight = maxYValue
-		epochHLBeginLeft  = maxYValue
+	maxYValue = WaveMax(displayData)
+	minYValue = WaveMin(displayData)
 
-		epochHLEndRight   = min(0, minYValue)
-		epochHLEndLeft    = min(0, minYValue)
-	endif
+	epochHLBeginRight = maxYValue
+	epochHLBeginLeft  = maxYValue
+
+	epochHLEndRight   = min(0, minYValue)
+	epochHLEndLeft    = min(0, minYValue)
 
 	SetAxis/W=$waveBuilderGraph/A/E=3 left
 	SetAxesRanges(waveBuilderGraph, ranges)
@@ -866,12 +889,12 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
 		row = WBP_ExtractRowNumberFromControl(control)
-		SetControl(panel, control, WP[row][segment][stimulusType])
+		WBP_SetControl(panel, control, WP[row][segment][stimulusType])
 	endfor
 End
 
 /// @brief Generic wrapper for setting a control's value
-static Function SetControl(win, control, value)
+static Function WBP_SetControl(win, control, value)
 	string win, control
 	variable value
 
@@ -881,7 +904,9 @@ static Function SetControl(win, control, value)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
 
-	if(controlType == 2)
+	if(controlType == 1)
+		// nothing to do
+	elseif(controlType == 2)
 		CheckBox $control, win=$win, value=(value == CHECKBOX_SELECTED)
 	elseif(controlType == 5)
 		SetVariable $control, win=$win, value=_NUM:value
@@ -963,6 +988,8 @@ Function WBP_SetVarProc_StepCount(sva) : SetVariableControl
 		case 3: // Live update
 			WBP_LowPassDeltaLimits()
 			WBP_HighPassDeltaLimits()
+			WAVE SegWvType = GetSegmentTypeWave()
+			SegWvType[101] = sva.dval
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
@@ -995,7 +1022,7 @@ Function TabTJHook(tca)
 
 	string type
 	variable tabnum, idx
-	Wave SegWvType = GetSegmentWave()
+	Wave SegWvType = GetSegmentTypeWave()
 
 	tabnum = tca.tab
 
@@ -1008,7 +1035,7 @@ Function TabTJHook(tca)
 	endif
 
 	idx = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	ASSERT(idx < 99, "Only supports up to different 99 epochs")
+	ASSERT(idx <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
 	SegWvType[idx] = tabnum
 
 	WBP_ParameterWaveToPanel(tabnum)
@@ -1020,13 +1047,9 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 	String ctrlName
 
 	variable i, numPanels
-	string panelTitle, listOfTracesOnGraph
-	listOfTracesOnGraph = TraceNameList(WaveBuilderGraph, ";", 0+1 )
-	listOfTracesOnGraph = ListMatch(listOfTracesOnGraph, "!epoch*")
+	string panelTitle
 
-	WBP_Transfer1DsTo2D(listOfTracesOnGraph)
-	RemoveTracesFromGraph(WaveBuilderGraph, kill=1)
-	WBP_MoveWaveTOFolder(WBP_FolderAssignment(), WBP_AssembleSetName(), 1, "")
+	RemoveTracesFromGraph(WaveBuilderGraph)
 	WBP_SaveSetParam()
 
 	SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
@@ -1038,7 +1061,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 		endfor
 	endif
 
-	SetVariable setvar_WaveBuilder_baseName win =$panel, value = _STR:"InsertBaseName"
+	SetSetVariableString(panel, "setvar_WaveBuilder_baseName", "InsertBaseName")
 	ControlUpdate/W=$panel popup_WaveBuilder_SetList
 End
 
@@ -1075,7 +1098,7 @@ Function WBP_UpdateControlAndWP(control, value)
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	SetControl(panel, control, value)
+	WBP_SetControl(panel, control, value)
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
@@ -1088,7 +1111,7 @@ Function WBP_UpdateControlAndWP(control, value)
 		WBP_CutOffCrossOver()
 	elseif(stimulusType == 5)
 		maxDuration = WBP_ReturnPulseDurationMax()
-		SetVariable SetVar_WaveBuilder_P8 limits = {0, maxDuration, 0.1}
+		SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDuration, 0.1}
 		if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 		endif
@@ -1117,7 +1140,7 @@ Function WBP_SetVarProc_ITI(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			Wave SegWvType = GetSegmentWave()
+			Wave SegWvType = GetSegmentTypeWave()
 			SegWvType[99] = sva.dval
 			WBP_UpdatePanelIfAllowed()
 			break
@@ -1132,28 +1155,25 @@ static Function WBP_LowPassDeltaLimits()
 
 	variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
 
-	ControlInfo SetVar_WaveBuilder_StepCount
-	StepCount = v_value
+	WAVE SegWvType = GetSegmentTypeWave()
+	StepCount = SegWvType[101]
 
-	ControlInfo SetVar_WaveBuilder_P20
-	LowPassCutoff = v_value
-
-	ControlInfo SetVar_WaveBuilder_P21
-	LowPassDelta = v_value
+	LowPassCutoff = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
+	LowPassDelta = GetSetVariable(panel, "SetVar_WaveBuilder_P21")
 
 	if(LowPassDelta > 0)
 		DeltaLimit = trunc(100000 / StepCount)
-		SetVariable SetVar_WaveBuilder_P21 limits = {-inf, DeltaLimit, 1}
+		SetVariable SetVar_WaveBuilder_P21 win=$panel, limits = {-inf, DeltaLimit, 1}
 		if(LowPassDelta > DeltaLimit)
-			SetVariable SetVar_WaveBuilder_P21 value=_num:DeltaLimit
+			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
 		endif
 	endif
 
 	if(LowPassDelta < 0)
 		DeltaLimit = trunc(-((LowPassCutOff/StepCount) -1))
-		SetVariable SetVar_WaveBuilder_P21 limits = {DeltaLimit, 99999, 1}
+		SetVariable SetVar_WaveBuilder_P21 win=$panel, limits = {DeltaLimit, 99999, 1}
 		if(LowPassDelta < DeltaLimit)
-			SetVariable SetVar_WaveBuilder_P21 value = _num:DeltaLimit
+			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
 		endif
 	endif
 End
@@ -1162,28 +1182,25 @@ static Function WBP_HighPassDeltaLimits()
 
 	variable HighPassCutOff, StepCount, HighPassDelta, DeltaLimit
 
-	ControlInfo SetVar_WaveBuilder_StepCount
-	StepCount = v_value
+	WAVE SegWvType = GetSegmentTypeWave()
+	StepCount = SegWvType[101]
 
-	ControlInfo SetVar_WaveBuilder_P22
-	HighPassCutoff = v_value
-
-	ControlInfo SetVar_WaveBuilder_P23
-	HighPassDelta = v_value
+	HighPassCutoff = GetSetVariable(panel, "SetVar_WaveBuilder_P22")
+	HighPassDelta = GetSetVariable(panel, "SetVar_WaveBuilder_P23")
 
 	if(HighPassDelta > 0)
-	DeltaLimit = trunc((100000 - HighPassCutOff) / StepCount) - 1
-	SetVariable SetVar_WaveBuilder_P23 limits = { -inf, DeltaLimit, 1}
-		If(HighPassDelta > DeltaLimit)
-		SetVariable SetVar_WaveBuilder_P23 value = _num:DeltaLimit
+		DeltaLimit = trunc((100000 - HighPassCutOff) / StepCount) - 1
+		SetVariable SetVar_WaveBuilder_P23 win=$panel, limits = { -inf, DeltaLimit, 1}
+		if(HighPassDelta > DeltaLimit)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
 		endif
 	endif
 
 	if(HighPassDelta < 0)
 		DeltaLimit = trunc(HighPassCutOff / StepCount) + 1
-		SetVariable SetVar_WaveBuilder_P23 limits = {DeltaLimit, 99999, 1}
-		If(HighPassDelta < DeltaLimit)
-			SetVariable SetVar_WaveBuilder_P23 value = _num:DeltaLimit
+		SetVariable SetVar_WaveBuilder_P23 win=$panel, limits = {DeltaLimit, 99999, 1}
+		if(HighPassDelta < DeltaLimit)
+			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
 		endif
 	endif
 End
@@ -1198,9 +1215,7 @@ End
 static Function WBP_ChangeWaveType(stimulusType)
 	variable stimulusType
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/SDFR=dfr SegWvType
-
+	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	string list
@@ -1254,7 +1269,7 @@ static Function WBP_UpdateListOfWaves()
 
 	dfref dfr = WBP_GetFolderPath()
 
-	ControlInfo setvar_WaveBuilder_SearchString
+	ControlInfo/W=$panel setvar_WaveBuilder_SearchString
 	if(!IsEmpty(s_value))
 		searchPattern = S_Value
 	endif
@@ -1264,7 +1279,7 @@ static Function WBP_UpdateListOfWaves()
 	string ListOfWavesInFolder = "\"" + NONE + ";" + Wavelist(searchPattern, ";", "TEXT:0,MAXCOLS:1") + "\""
 	SetDataFolder saveDFR
 
-	PopupMenu popup_WaveBuilder_ListOfWaves value = #ListOfWavesInFolder
+	PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, value = #ListOfWavesInFolder
 End
 
 Function WBP_SetVarProc_SetSearchString(ctrlName,varNum,varStr,varName) : SetVariableControl
@@ -1293,8 +1308,8 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 
 			SegmentNo = GetSetVariable(win, "setvar_WaveBuilder_CurrentEpoch")
 
-			If(WaveExists(customWave))
-				WPT[0][SegmentNo] = NameOfWave(customWave)
+			if(WaveExists(customWave))
+				WPT[0][SegmentNo] = GetWavesDataFolder(customWave, 2)
 			else
 				WPT[0][SegmentNo] = ""
 			endif
@@ -1304,48 +1319,17 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 	endswitch
 End
 
-static Function WBP_Transfer1DsTo2D(traceList)
-	string traceList
-
-	dfref dfr = GetWaveBuilderDataPath()
-
-	variable lengthOf1DWaves, numWaves, i
-	string setName, name
-
-	numWaves = ItemsInList(traceList)
-
-	// sets the number of rows in the 2D wave to be equal to the number of rows in the longest 1D wave
-	for(i=0; i < numWaves; i+=1)
-		name = PossiblyUnquoteName(StringFromList(i, traceList))
-		Wave/SDFR=dfr wv = $name
-		lengthOf1Dwaves = max(lengthOf1DWaves, DimSize(wv, ROWS))
-	endfor
-
-	setName = WBP_AssembleSetName()
-	DEBUGPRINT("setName=", str=setName)
-	Make/O/N=(lengthOf1DWaves, numWaves) dfr:$SetName/Wave=fullSet
-
-	for(i=0; i < numWaves; i+=1)
-		name = PossiblyUnquoteName(StringFromList(i, traceList))
-		Wave/SDFR=dfr wv = $name
-		fullSet[0, DimSize(wv, ROWS) - 1][i] = wv[p]
-		if(i == 0)
-			Note fullSet, note(wv)
-		endif
-	endfor
-End
-
 /// @brief This function creates a string that is used to name the 2d output wave of the wavebuilder panel.
 ///
 /// The naming is based on userinput to the wavebuilder panel
 static Function/S WBP_AssembleSetName()
 	string AssembledBaseName = ""
 
-	ControlInfo setvar_WaveBuilder_baseName
+	ControlInfo/W=$panel setvar_WaveBuilder_baseName
 	AssembledBaseName += s_value[0,15]
-	ControlInfo popup_WaveBuilder_OutputType
+	ControlInfo/W=$panel popup_WaveBuilder_OutputType
 	AssembledBaseName += "_" + s_value + "_"
-	ControlInfo setvar_WaveBuilder_SetNumber
+	ControlInfo/W=$panel setvar_WaveBuilder_SetNumber
 	AssembledBaseName += num2str(v_value)
 
 	return AssembledBaseName
@@ -1353,13 +1337,13 @@ End
 
 /// @brief Returns a folder path based on they wave type ie. TTL or DA - this is used to store the actual sets in the correct folders
 static Function/S WBP_FolderAssignment()
-	ControlInfo popup_WaveBuilder_OutputType
+	ControlInfo/W=$panel popup_WaveBuilder_OutputType
 	return GetWaveBuilderPathAsString() + ":SavedStimulusSets:" + s_value + ":"
 End
 
 /// @brief Returns a folder path based on they wave type ie. TTL or DA - this is used to store the set parameters in the correct folders
 static Function/S WBP_WPFolderAssignment()
-	ControlInfo popup_WaveBuilder_OutputType
+	ControlInfo/W=$panel popup_WaveBuilder_OutputType
 	return GetWaveBuilderPathAsString() + ":SavedStimulusSetParameters:" + s_value + ":"
 End
 
@@ -1377,34 +1361,29 @@ static Function WBP_MoveWaveTOFolder(FolderPath, NameOfWaveToBeMoved, Kill, Base
 	endif
 End
 
-/// @brief Returns a list of waves from the wave builder folder savedStimulusSets
+/// @brief Return a list of all stim sets for the given type
+/// @param setType One of `DA` or `TTL`
 Function/S WBP_ReturnListSavedSets(setType)
 	string setType
 
-	string path = GetWBSvdStimSetPathAsString() + ":" + setType
-	return GetListOfWaves($path, ".*" + setType + ".*")
+	string path, list, stimSetList
+	variable numWaves, i
+	path= GetWBSvdStimSetParamPathAS() + ":" + setType
+
+	list = GetListOfWaves($path, "WP_.*" + setType + ".*")
+	stimSetList = ""
+
+	numWaves = ItemsInList(list)
+	for(i = 0; i < numWaves; i += 1)
+		stimSetList = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), stimSetList, ";", Inf)
+	endfor
+
+	return SortList(stimSetList, ";", 16)
 end
 
 static Function WBP_SaveSetParam()
 
 	string setName, folder
-	Wave SegWvType = GetSegmentWave()
-
-	// we might be called from an old panel without an ITI setvariable control
-	ControlInfo/W=$panel setvar_WaveBuilder_ITI
-	if(V_flag > 0)
-		SegWvType[99] = V_Value
-	else
-		SegWvType[99] = 0
-	endif
-
-	// stores the total number of segments for a set in the penultimate cell
-	// of the wave that stores the segment type for each segment
-	SegWvType[100] = GetSetVariable(panel, "SetVar_WaveBuilder_NoOfEpochs")
-
-	// stores the total number of steps for a set in the last cell
-	// of the wave that stores the segment type for each segment
-	SegWvType[101] = GetSetVariable(panel, "SetVar_WaveBuilder_StepCount")
 
 	folder  = WBP_WPFolderAssignment()
 	setName = "_" + WBP_AssembleSetName()
@@ -1416,7 +1395,7 @@ End
 static Function WBP_LoadSet()
 	string setName
 
-	ControlInfo popup_WaveBuilder_SetList
+	ControlInfo/W=$panel popup_WaveBuilder_SetList
 	setName = s_value
 
 	if(!CmpStr(SetName, NONE))
@@ -1425,11 +1404,11 @@ static Function WBP_LoadSet()
 	endif
 
 	if(StringMatch(SetName, "*TTL*"))
-		PopupMenu popup_WaveBuilder_OutputType win =$panel, mode = 2
+		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 2
 		WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
 		dfref dfr = GetWBSvdStimSetParamTTLPath()
 	else
-		PopupMenu popup_WaveBuilder_OutputType win =$panel, mode = 1
+		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
 		WBP_ChangeWaveType(STIMULUS_TYPE_DA)
 		dfref dfr = GetWBSvdStimSetParamDAPath()
 	endif
@@ -1447,18 +1426,21 @@ static Function WBP_LoadSet()
 	WAVE WP  = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
+	SetCheckBoxState(panel, "check_FlipEpoch_S98", SegWvType[98])
+
 	// we might be called from an old panel without an ITI setvariable control
 	ControlInfo/W=$panel setvar_WaveBuilder_ITI
 	if(V_flag > 0)
 		SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
 	endif
 
-	SetVariable SetVar_WaveBuilder_NoOfEpochs value = _NUM:SegWvType[100]
-	SetVariable SetVar_WaveBuilder_StepCount value = _NUM:SegWvType[101]
-	SetVariable setvar_WaveBuilder_CurrentEpoch value = _NUM:0
-	TabControl WBP_WaveType value = SegWvType[0]
+	SetSetVariable(panel, "SetVar_WB_NumEpochs_S100", SegWvType[100])
+	SetSetVariable(panel, "SetVar_WB_StepCount_S101", SegWvType[101])
+	SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", 0)
+
+	WBP_ExecuteAdamsTabControl(SegWvType[0])
 	WBP_ParameterWaveToPanel(SegWvType[0])
-	WBP_SetVarProc_TotEpoch("SetVar_WaveBuilder_NoOfEpochs", SegWvType[100], num2str(SegWvType[100]), "")
+	WBP_UpdateEpochControls()
 End
 
 static Function WBP_DeleteSet()
@@ -1487,44 +1469,62 @@ static Function WBP_DeleteSet()
 	KillWaves/F/Z dfr:$SetName, paramDFR:$WPName, paramDFR:$WPTName, paramDFR:$SegWvTypeName
 End
 
-Function WBP_SetVarProc_TotEpoch(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+static Function WBP_UpdateEpochControls()
 
-	Wave SegWvType = GetSegmentWave()
+	variable currentEpoch, numEpochs
 
-	variable SegmentNo, SegmentToEdit
-	ControlInfo SetVar_WaveBuilder_NoOfEpochs
-	SegmentNo = v_value
-	ControlInfo setvar_WaveBuilder_CurrentEpoch
-	SegmentToEdit = v_value
+	WAVE SegWvType = GetSegmentTypeWave()
+	currentEpoch = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch")
+	numEpochs = SegWvType[100]
 
-	if(SegmentNo <= SegmentToEdit) // This prevents the segment to edit from being larger than the max number of segements
-		SetVariable setvar_WaveBuilder_CurrentEpoch value = _num:SegmentNo - 1
+	SetVariable setvar_WaveBuilder_CurrentEpoch win=$panel, limits = {0, numEpochs - 1, 1}
 
-		WBP_ExecuteAdamsTabcontrol(SegWvType[SegmentNo - 1])
+	if(currentEpoch >= numEpochs)
+		SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", numEpochs - 1)
+		WBP_SelectEpoch(numEpochs - 1)
+	else
+		WBP_UpdatePanelIfAllowed()
 	endif
+End
 
-	SetVariable setvar_WaveBuilder_CurrentEpoch limits = {0, SegmentNo - 1, 1}
+static Function WBP_SelectEpoch(epoch)
+	variable epoch
 
+	WAVE SegWvType = GetSegmentTypeWave()
+
+	WBP_ExecuteAdamsTabcontrol(SegWvType[epoch])
+	WBP_ParameterWaveToPanel(SegWvType[epoch])
 	WBP_UpdatePanelIfAllowed()
 End
 
-Function WBP_SetVarProc_EpochToEdit(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
 
-	variable stimulusType
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WAVE SegWvType = GetSegmentTypeWave()
+			SegWvType[100] = sva.dval
+			WBP_UpdateEpochControls()
+			break
+		case -1: // control being killed
+			break
+	endswitch
 
-	Wave SegWvType = GetSegmentWave()
-	stimulusType = SegWvType[varNum] //selects the appropriate tab based on the data in the SegWvType wave
-	WBP_ExecuteAdamsTabcontrol(stimulusType)
-	WBP_ParameterWaveToPanel(stimulusType)
-	WBP_UpdatePanelIfAllowed()
+	return 0
+End
+
+Function WBP_SetVarProc_EpochToEdit(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WBP_SelectEpoch(sva.dval)
+			break
+	endswitch
 End
 
 Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
@@ -1542,20 +1542,16 @@ End
 static Function WBP_CutOffCrossOver()
 
 	variable HighPassCutOff, LowPassCutOff
-	DelayUpdate
 
-	ControlInfo SetVar_WaveBuilder_P20 //Low pass cut off frequency
-	LowPassCutOff = v_value
-
-	ControlInfo SetVar_WaveBuilder_P22 //High pass cut off frequency
-	HighPassCutOff = v_value
+	LowPassCutOff = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
+	HighPassCutOff = GetSetVariable(panel, "SetVar_WaveBuilder_P22")
 
 	if(HighPassCutOff >= LowPassCutOff)
-		SetVariable SetVar_WaveBuilder_P20 value = _NUM:HighPassCutOff + 1
+		SetSetVariable(panel, "SetVar_WaveBuilder_P20", HighPassCutOff + 1)
 	endif
 
-	if(LowPassCutOff<=HighPassCutOff)
-		SetVariable SetVar_WaveBuilder_P22 value = _NUM:LowPassCutOff - 1
+	if(LowPassCutOff <= HighPassCutOff)
+		SetSetVariable(panel, "SetVar_WaveBuilder_P22", LowPassCutOff - 1)
 	endif
 End
 
@@ -1619,10 +1615,10 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 		path = s_value + popStr + ":"
 	endif
 
-	GroupBox group_WaveBuilder_FolderPath title = path
+	GroupBox group_WaveBuilder_FolderPath win=$panel, title = path
 	ControlUpdate/A/W=$panel
-	PopupMenu popup_WaveBuilder_FolderList mode = 1
-	PopupMenu popup_WaveBuilder_ListOfWaves mode = 1
+	PopupMenu popup_WaveBuilder_FolderList win=$panel, mode = 1
+	PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, mode = 1
 	WBP_UpdateListOfWaves()
 	ControlUpdate/A/W=$panel
 End
@@ -1658,19 +1654,27 @@ Function/S WBP_ITCPanelPopUps(DAorTTL, searchString)
 	variable DAorTTL
 	string searchString
 
-	string stimulusSetList
+	variable i, numWaves
+	string list
+	string stimSetList = ""
+
 	DFREF saveDFR = GetDataFolderDFR()
 
 	if(!DAorTTL)
-		SetDataFolder GetWBSvdStimSetDAPath()
+		SetDataFolder GetWBSvdStimSetParamDAPath()
 	else
-		SetDataFolder GetWBSvdStimSetTTLPath()
+		SetDataFolder GetWBSvdStimSetParamTTLPath()
 	endif
 
-	stimulusSetList = Wavelist(searchstring, ";", "")
+	list = Wavelist("WP_" + searchstring, ";", "")
 	SetDataFolder saveDFR
-	
-	return sortlist(stimulusSetList,";",16)
+
+	numWaves = ItemsInList(list)
+	for(i = 0; i < numWaves; i += 1)
+		stimSetList = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), stimSetList, ";", Inf)
+	endfor
+
+	return SortList(stimSetList,";",16)
 End
 
 /// @brief Returns the names of the items in the popmenu controls in a list
@@ -1691,7 +1695,7 @@ static Function/S WBP_PopupMenuWaveNameList(DAorTTL, StartOrEnd, panelTitle)
 				popupMenuName = "Popup_" + DAorTTL + "_IndexEnd_0" + num2str(i)
 				break
 		endswitch
-		ControlInfo /w = $panelTitle $popupMenuName
+		ControlInfo/W=$panelTitle $popupMenuName
 		ListOfSelectedWaveNames += s_value + ";"
 		i += 1
 	while(i < NUM_DA_TTL_CHANNELS)
@@ -1716,7 +1720,7 @@ static Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOr
 				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
 				break
 			endswitch
-		ControlInfo /w = $panelTitle $popupMenuName
+		ControlInfo/w=$panelTitle $popupMenuName
 		if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";")) == 1 || cmpstr(s_value,"")==0)
 			PopupMenu  $popupMenuName win = $panelTitle, mode = v_value - 1
 			ControlInfo /w = $panelTitle $popupMenuName
@@ -1735,17 +1739,19 @@ Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
 	String ctrlName
 	Variable checked
 
+	variable tabID, maxDur
+
 	if(!checked)
-		ControlInfo WBP_WaveType
-		if(v_value == 2)
+		tabID = GetTabID(panel, "WBP_WaveType")
+		if(tabID == 2)
 			WBP_LowPassDeltaLimits()
 			WBP_HighPassDeltaLimits()
 			WBP_CutOffCrossOver()
-		elseif(v_value == 5)
-			SetVariable SetVar_WaveBuilder_P8 limits = {0,WBP_ReturnPulseDurationMax(), 0.1}
-			ControlInfo SetVar_WaveBuilder_P8
-			if(v_value > WBP_ReturnPulseDurationMax())
-				SetVariable SetVar_WaveBuilder_P8 value = _NUM:WBP_ReturnPulseDurationMax()
+		elseif(tabID == 5)
+			maxDur = WBP_ReturnPulseDurationMax()
+			SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDur, 0.1}
+			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDur)
+				SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDur)
 			endif
 		endif
 		WBP_UpdatePanelIfAllowed()
@@ -1759,6 +1765,35 @@ Function WBP_DeltaPopup(pa) : PopupMenuControl
 		case 2:
 			WBP_UpdateControlAndWP(pa.ctrlName, pa.popNum - 1)
 			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			WBP_UpdateControlAndWP(ba.ctrlName, GetNonReproducibleRandom())
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_CheckProc_FlipStimSet(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			Wave SegWvType = GetSegmentTypeWave()
+			SegWvType[98] = cba.checked
+			WBP_UpdatePanelIfAllowed()
+			break
+		case -1: // control being killed
 			break
 	endswitch
 

@@ -115,7 +115,7 @@ Constant PROP_MATCHES_VAR_BIT_MASK     = 0x04 ///< Wave entry matches the bitmas
 Constant PROP_NOT_MATCHES_VAR_BIT_MASK = 0x08 ///< Wave entry does not match the bitmask given in var
 ///@}
 
-/// @name Parameters for GetPanelControl and IDX_GetSetsInRange, IDX_GetSetFolder and GetChanneListFromITCConfig
+/// @name Parameters for GetPanelControl and IDX_GetSetsInRange, GetSetFolder, GetSetParamFolder and GetChanneListFromITCConfig
 /// @anchor ChannelTypeAndControlConstants
 /// @{
 Constant CHANNEL_TYPE_DAC          = 0x00
@@ -291,3 +291,6 @@ Constant RACK_ONE  = 0x01
 /// @}
 
 StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
+
+/// Last valid row index for storing epoch types in #GetSegmentTypeWave
+Constant SEGMENT_TYPE_WAVE_LAST_IDX = 97

@@ -28,6 +28,21 @@ static Function IH_KillTemporaries()
 	endfor
 
 	RemoveEmptyDataFolder(dfr)
+	IH_KillStimSets()
+End
+
+/// @brief Delete all stim sets to save memory
+Function IH_KillStimSets()
+
+	string list
+
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	list = GetListOfWaves(dfr, ".*DA.*", fullPath=1)
+	CallFunctionForEachListItem(KillOrMoveToTrash, list)
+
+	DFREF dfr = GetWBSvdStimSetTTLPath()
+	list = GetListOfWaves(dfr, ".*TTL.*", fullPath=1)
+	CallFunctionForEachListItem(KillOrMoveToTrash, list)
 End
 
 /// @brief Prototype function for #IH_UnlockAllDevicesWrapper

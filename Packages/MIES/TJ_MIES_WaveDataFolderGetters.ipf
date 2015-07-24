@@ -1445,13 +1445,15 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-/// @brief Returns the segment parameter wave used by the wave builder panel
+/// @brief Returns the segment type wave used by the wave builder panel
+/// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
 /// - Rows
-///   - 0 - 98: epoch types using the tabcontrol indizes
+///   - 0 - 97: epoch types using the tabcontrol indizes
+///   - 98: Data flipping (1 or 0)
 ///   - 99: set ITI (s)
 ///   - 100: total number of segments/epochs
 ///   - 101: total number of steps
-Function/Wave GetSegmentWave()
+Function/Wave GetSegmentTypeWave()
 
 	dfref dfr = GetWaveBuilderDataPath()
 	Wave/Z/SDFR=dfr wv = SegWvType
@@ -1461,6 +1463,9 @@ Function/Wave GetSegmentWave()
 	endif
 
 	Make/N=102 dfr:SegWvType/Wave=wv
+
+	wv[100] = 1
+	wv[101] = 1
 
 	return wv
 End
@@ -1485,6 +1490,21 @@ Function/Wave GetEpochID()
 	return wv
 End
 
+/// @brief Return the wave for visualization of the stim set
+/// in the wavebuilder panel
+Function/Wave GetWaveBuilderDispWave()
+
+	dfref dfr = GetWaveBuilderDataPath()
+	WAVE/Z/SDFR=dfr wv = dispData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0) dfr:dispData/Wave=wv
+
+	return wv
+End
 /// @}
 
 /// @name Asynchronous Measurements

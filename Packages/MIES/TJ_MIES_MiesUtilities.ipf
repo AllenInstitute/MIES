@@ -1777,3 +1777,63 @@ End
 Function/S GetListOfLockedITC1600Devices()
 	return ListMatch(GetListOfLockedDevices(), "ITC1600*")
 End
+
+/// @brief Return the type, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL, of the stimset
+Function GetStimSetType(setName)
+	string setName
+
+	string type
+
+	if(TP_IsTestPulseSet(setName))
+		return CHANNEL_TYPE_DAC
+	endif
+
+	type = StringFromList(ItemsInList(setName, "_") - 2, setName, "_")
+
+	if(!cmpstr(type, "DA"))
+		return CHANNEL_TYPE_DAC
+	elseif(!cmpstr(type, "TTL"))
+		return CHANNEL_TYPE_TTL
+	else
+		ASSERT(0, "unknown stim set type")
+	endif
+End
+
+/// @brief Return the stimset folder from the channelType, `DA` or `TTL`
+Function/DF GetSetFolderFromString(channelType)
+	string channelType
+
+	if(!CmpStr(channelType, "DA"))
+		return GetWBSvdStimSetDAPath()
+	elseif(!CmpStr(channelType, "TTL"))
+		return GetWBSvdStimSetTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+Function/DF GetSetFolder(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return GetWBSvdStimSetDAPath()
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return GetWBSvdStimSetTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+Function/DF GetSetParamFolder(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return GetWBSvdStimSetParamDAPath()
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return GetWBSvdStimSetParamTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
