@@ -35,11 +35,11 @@ End
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 	String cmd, Keyboard, panelTitle
-	
+
 	WAVE ActiveDeviceList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 2 = StopCollectionPoint
 	WAVE /T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
 	WAVE /WAVE ActiveDeviceWavePathWave = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDevWavePathWave
-	variable i = 0
+	variable i
 	variable NumberOfActiveDevices
 	variable ADChannelToMonitor
 	variable StopCollectionPoint
@@ -71,7 +71,7 @@ Function ITC_BkrdTPFuncMD(s)
 		// works with a active device
 		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0] // ITCDeviceIDGlobal
 		ExecuteITCOperationAbortOnError(cmd)
-	
+
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
 		variable TPSweepCount = floor(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] / PointsInTPITCDataWave)
@@ -83,10 +83,9 @@ Function ITC_BkrdTPFuncMD(s)
 			FIFOAdvance[][2] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]) // the abs prevents a neg number
 			sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(FIFOAdvance, 2) // goal is to move the DA FIFO pointers back to the start
 			ExecuteITCOperation(cmd)
-			ActiveDeviceList[i][3] = (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2])
+			ActiveDeviceList[i][3] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		endif
-		
-//		print pointsintp
+
 		// extracts chunk from ITCDataWave for plotting
 		variable ActiveChunk =  (floor(PointsCompletedInITCDataWave /  (PointsInTP)))
  		if(ActiveChunk >= 1) // This is here because trying to get the last complete chunk somtimes returns a what looks like a incomplete chunk - could be because the xop isn't releasing the itc datawave
@@ -106,59 +105,52 @@ Function ITC_BkrdTPFuncMD(s)
 			DM_CreateScaleTPHoldWaveChunk(panelTitle, startPoint, PointsInTP / 1.5) // 
 		endif																	
 		TP_Delta(panelTitle)
-//		ActiveDeviceList[i][4] += 1
-		ActiveDeviceList[i][4] = ActiveChunk
-		// print ActiveChunk
-		// print stopcollectionpoint
-		// print PointsCompletedInITCDataWave
-		// print pointsintp
-		
+		ActiveDeviceList[i][4] = activeChunk
+
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct FIFO error
-			if(!DAP_DeviceCanLead(panelTitle))
-				WAVE/SDFR=deviceDFR FIFOAdvance
-				if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] <= (ActiveDeviceList[i][5] + 1) && ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (ActiveDeviceList[i][5] - 1)) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
-					sprintf cmd, "ITCStopAcq" // stop and restart acquisition
-					ExecuteITCOperation(cmd)
-					ITCFIFOAvailAllConfigWave[][2] = 0
-					WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-					WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		if(!DAP_DeviceCanLead(panelTitle))
+			WAVE/SDFR=deviceDFR FIFOAdvance
+			if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] <= (ActiveDeviceList[i][5] + 1) && ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (ActiveDeviceList[i][5] - 1)) //(1000000 / (ADChannelToMonitor - 1))) // checks to see if the hardware buffer is at max capacity
+				sprintf cmd, "ITCStopAcq" // stop and restart acquisition
+				ExecuteITCOperation(cmd)
+				ITCFIFOAvailAllConfigWave[][2] = 0
+				WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+				WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
-					sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-					ExecuteITCOperation(cmd)
-					sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-					ExecuteITCOperation(cmd)
-					sprintf cmd, "ITCStartAcq"
-					ExecuteITCOperationAbortOnError(cmd)
-					print "FIFO over/underrun, acq restarted"
-				endif
+				sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
+				ExecuteITCOperation(cmd)
+				sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+				ExecuteITCOperation(cmd)
+				sprintf cmd, "ITCStartAcq"
+				ExecuteITCOperationAbortOnError(cmd)
 			endif
-			
-			ActiveDeviceList[i][5] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		endif
 
-			if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
-				SCOPE_UpdateGraph(panelTitle)
-			endif
+		ActiveDeviceList[i][5] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 
-			ActiveDeviceList[i][3] += 1
-		
+		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
+			SCOPE_UpdateGraph(panelTitle)
+		endif
+
+		ActiveDeviceList[i][3] += 1
+
 		NVAR count = $GetCount(panelTitle)
 		if(!IsFinite(count))
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				panelTitle = GetMainWindow(GetCurrentWindow())
-				//PRINT PANELTITLE
 				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
 					beep 
 					DAM_StopTPMD(panelTitle)
 				endif
 			endif
 		endif
-		
+
 		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 		i += 1
 	while(i < NumberOfActiveDevices)	
-	
+
 	return 0
 End
 
