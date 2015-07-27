@@ -180,8 +180,7 @@ static Function DC_LongestOutputWave(panelTitle, channelType)
 			continue
 		endif
 
-		Wave/Z/SDFR=GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
-
+		WAVE wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
@@ -600,7 +599,6 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 
 	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
-	DFREF setDFR    = GetWBSvdStimSetTTLPath()
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
@@ -616,7 +614,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 		endif
 
 		set = StringFromList(i, TTLWaveList)
-		WAVE/SDFR=setDFR wv = $set
+		WAVE wv = WB_CreateAndGetStimSet(set)
 		maxRows = max(maxRows, DimSize(wv, ROWS))
 		bits += 2^(i)
 		listOfSets = AddListItem(set, listOfSets, ";", inf)
@@ -639,9 +637,9 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 			continue
 		endif
 
-		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(i, TTLWaveList)
-
-		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(i, TTLWaveList), i, CHANNEL_TYPE_TTL)
+		set = StringFromList(i, TTLWaveList)
+		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
+		col = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
 		lastIdx = DimSize(TTLStimSet, ROWS) - 1
 		bit = 2^(i - first)
 		TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
