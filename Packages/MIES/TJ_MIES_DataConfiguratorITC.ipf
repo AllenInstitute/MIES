@@ -226,7 +226,7 @@ static Function DC_CalculateLongestSweep(panelTitle)
 	variable longestSweep
 
 	longestSweep  = max(DC_LongestOutputWave("DA", panelTitle), DC_LongestOutputWave("TTL", panelTitle))
-	longestSweep /= SI_CalculateMinSampInterval(panelTitle) / 5
+	longestSweep /= DC_GetDecimationFactor(panelTitle)
 
 	return ceil(longestSweep)
 End
@@ -365,6 +365,15 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	ITCChanConfigWave[][3] = 0
 End
 
+/// @brief Get the decimation factor for the current channel configuration
+///
+/// @param panelTitle device
+static Function DC_GetDecimationFactor(panelTitle)
+	string panelTitle
+
+	return SI_CalculateMinSampInterval(panelTitle) / (MINIMUM_SAMPLING_INTERVAL * 1000)
+End
+
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle  panel title
@@ -380,7 +389,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage
+	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor
 	variable/C ret
 
 	globalTPInsert  = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -410,8 +419,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		setColumn = 0
 	endif
 
-	//Place DA waves into ITCDataWave
-	variable decimationFactor = SI_CalculateMinSampInterval(panelTitle) / 5
+	decimationFactor = DC_GetDecimationFactor(panelTitle)
 	setNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
