@@ -11,7 +11,7 @@ static Function/S IDX_ControlStatusListString(ChannelType, ControlType, panelTit
 	String ChannelType, panelTitle
 	string ControlType
 
-	variable TotalPossibleChannels = GetNumberFromChannelType(channelType)
+	variable TotalPossibleChannels = GetNumberFromType(str=channelType)
 
 	String ControlStatusList = ""
 	String ControlName
@@ -384,7 +384,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		Wave DAChannelStatus = DC_ControlStatusWave(panelTitle, "DA")
+		Wave DAChannelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 		if(i == 0) // this is either the lead panel or the first and only panel
 			numActiveDAChannels = sum(DAChannelStatus)
 		endif

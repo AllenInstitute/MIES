@@ -435,7 +435,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 	variable i, numHS, value, diff
 	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
-	Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	Wave statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 	numHS = DimSize(statusHS, ROWS)
 
 	// we don't use a wrapper here as we want to be able to query different control types
@@ -709,7 +709,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string mccSerial
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ChannelClampMode
-	WAVE statusHS              = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	WAVE statusHS              = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave(panelTitle)
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave(panelTitle)
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave(panelTitle)

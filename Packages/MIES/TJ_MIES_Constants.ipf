@@ -118,15 +118,17 @@ Constant PROP_NOT_MATCHES_VAR_BIT_MASK = 0x08 ///< Wave entry does not match the
 /// @name Parameters for GetPanelControl and IDX_GetSetsInRange, GetSetFolder, GetSetParamFolder and GetChanneListFromITCConfig
 /// @anchor ChannelTypeAndControlConstants
 /// @{
-Constant CHANNEL_TYPE_DAC          = 0x00
-Constant CHANNEL_TYPE_TTL          = 0x01
-Constant CHANNEL_TYPE_ADC          = 0x02
-Constant CHANNEL_CONTROL_WAVE      = 0x04
-Constant CHANNEL_CONTROL_INDEX_END = 0x08
-Constant CHANNEL_CONTROL_UNIT      = 0x10
-Constant CHANNEL_CONTROL_GAIN      = 0x20
-Constant CHANNEL_CONTROL_SCALE     = 0x30
-Constant CHANNEL_CONTROL_CHECK     = 0x40
+Constant CHANNEL_TYPE_DAC          = 0x000
+Constant CHANNEL_TYPE_TTL          = 0x001
+Constant CHANNEL_TYPE_ADC          = 0x002
+Constant CHANNEL_CONTROL_WAVE      = 0x004
+Constant CHANNEL_CONTROL_INDEX_END = 0x008
+Constant CHANNEL_CONTROL_UNIT      = 0x010
+Constant CHANNEL_CONTROL_GAIN      = 0x020
+Constant CHANNEL_CONTROL_SCALE     = 0x030
+Constant CHANNEL_CONTROL_CHECK     = 0x040
+Constant HEADSTAGE                 = 0x080
+Constant CHANNEL_TYPE_ASYNC        = 0x100
 /// @}
 
 /// @name Constants for the selection wave of a ListBox

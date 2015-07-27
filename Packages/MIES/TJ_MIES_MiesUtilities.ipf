@@ -99,7 +99,9 @@ Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
 
 	string ctrl
 
-	if(channelType == CHANNEL_TYPE_DAC)
+	if(channelType == HEADSTAGE)
+		ctrl = "DataAcq_HS"
+	elseif(channelType == CHANNEL_TYPE_DAC)
 		ctrl = "DA"
 	elseif(channelType == CHANNEL_TYPE_ADC)
 		ctrl = "AD"
@@ -1140,28 +1142,52 @@ Function SaveExperimentSpecial(mode)
 	SaveExperiment
 End
 
-/// @brief Return the maximum count of the given channel type
-Function GetNumberFromChannelType(channelType)
-	string channelType
+/// @brief Return the maximum count of the given type
+Function GetNumberFromType([var, str])
+	variable var
+	string str
 
-	strswitch(channelType)
-		case "AsyncAD":
-			return NUM_ASYNC_CHANNELS
-			break
-		case "DA":
-		case "TTL":
-			return NUM_DA_TTL_CHANNELS
-			break
-		case "DataAcq_HS":
-			return NUM_HEADSTAGES
-			break
-		case "AD":
-			return NUM_AD_CHANNELS
-			break
-		default:
-			ASSERT(0, "invalid type")
-			break
-	endswitch
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Expected exactly one parameter")
+
+	if(!ParamIsDefault(str))
+		strswitch(str)
+			case "AsyncAD":
+				return NUM_ASYNC_CHANNELS
+				break
+			case "DA":
+			case "TTL":
+				return NUM_DA_TTL_CHANNELS
+				break
+			case "DataAcq_HS":
+				return NUM_HEADSTAGES
+				break
+			case "AD":
+				return NUM_AD_CHANNELS
+				break
+			default:
+				ASSERT(0, "invalid type")
+				break
+		endswitch
+	elseif(!ParamIsDefault(var))
+		switch(var)
+			case CHANNEL_TYPE_ASYNC:
+				return NUM_ASYNC_CHANNELS
+				break
+			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_DAC:
+				return NUM_DA_TTL_CHANNELS
+				break
+			case HEADSTAGE:
+				return NUM_HEADSTAGES
+				break
+			case CHANNEL_TYPE_ADC:
+				return NUM_AD_CHANNELS
+				break
+			default:
+				ASSERT(0, "invalid type")
+				break
+		endswitch
+	endif
 End
 
 /// @brief Report ITC/ITCXOP errors in a user friendly manner and abort

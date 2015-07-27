@@ -3467,7 +3467,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	endif
 
 	// disable the clamp mode checkboxes of all active headstages
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
@@ -3493,7 +3493,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	string ctrl
 	variable numHS, i
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
@@ -3728,7 +3728,7 @@ Function DAP_StoreTTLState(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	string/G dfr:StoredTTLState = Convert1DWaveToList(DC_ControlStatusWave(panelTitle, "TTL"))
+	string/G dfr:StoredTTLState = Convert1DWaveToList(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL))
 End
 
 Function DAP_RestoreTTLState(panelTitle)
@@ -4294,20 +4294,20 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		numHS = sum(DC_ControlStatusWave(panelTitle, "DataAcq_HS"))
+		numHS = sum(DC_ControlStatusWave(panelTitle, HEADSTAGE))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
 			return 1
 		endif
 
-		WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+		WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 		numDACs = sum(statusDA)
 		if(!numDACS)
 			printf "(%s) Please activate at least one DA channel\r", panelTitle
 			return 1
 		endif
 
-		numADCs = sum(DC_ControlStatusWave(panelTitle, "AD"))
+		numADCs = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC))
 		if(!numADCs)
 			printf "(%s) Please activate at least one AD channel\r", panelTitle
 			return 1
@@ -4316,7 +4316,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		if(mode == DATA_ACQUISITION_MODE)
 			// check all selected TTLs
 			indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
-			Wave statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
+			Wave statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 			numEntries = DimSize(statusTTL, ROWS)
 			for(i=0; i < numEntries; i+=1)
 				if(!statusTTL[i])
@@ -4364,7 +4364,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		// check all active headstages
-		Wave statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+		Wave statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 		numEntries = DimSize(statusHS, ROWS)
 		for(i=0; i < numEntries; i+=1)
 			if(!statusHS[i])

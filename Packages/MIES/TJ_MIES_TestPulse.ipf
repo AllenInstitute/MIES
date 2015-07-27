@@ -6,7 +6,7 @@ Function TP_SelectTestPulseWave(panelTitle)
 
 	string control
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	do
 		if(statusDA[i])
@@ -23,7 +23,7 @@ Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 
 	string control
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	do
 		if(statusDA[i])
@@ -41,7 +41,7 @@ Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 
 	string control
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	do
 		if(statusDA[i])
@@ -58,7 +58,7 @@ Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 
 	string control
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	do
 		if(statusDA[i])
@@ -76,7 +76,7 @@ Function TP_SetDAScaleToOne(panelTitle)
 	string control
 	variable scalingFactor, i
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	do
 		if(statusDA[i])
@@ -106,7 +106,7 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 
 	string control
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	do
 		if(statusDA[i])
@@ -135,7 +135,7 @@ static Function TP_UpdateGlobals(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	string/G testPulseDFR:ADChannelList  = Convert1DWaveToList(GetADCListFromConfig(ITCChanConfigWave))
-	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected("da", panelTitle)
+	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	duration = pulseDuration / (SI_CalculateMinSampInterval(panelTitle) / 1000)
