@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_WaveBuilderPanel.ipf
+/// @brief __AB__ Panel for creating stimulus sets
+
 // stock igor
 #include <Resize Controls>
 

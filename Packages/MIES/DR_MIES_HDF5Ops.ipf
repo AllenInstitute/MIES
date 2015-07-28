@@ -3,6 +3,9 @@
 #include "HDF Utilities"
 #include "HDF5 Browser"
 
+/// @file DR_MIES_HDF5Ops.ipf
+/// @brief __HD__ Loading and saving into/from HDF5 files
+
 Menu "HDF5 Tools"
 		"-"
 		"Open HDF5 Browser", CreateNewHDF5Browser()

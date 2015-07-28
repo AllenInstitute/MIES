@@ -1,6 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 
+/// @file TJ_MIES_Include.ipf
+/// @brief Main include
+
 // stock igor
 #include <Resize Controls>
 #include <ZoomBrowser>

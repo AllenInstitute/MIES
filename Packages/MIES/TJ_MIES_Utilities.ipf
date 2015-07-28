@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file TJ_MIES_Utilities.ipf
-/// This file holds general utility functions available for all other procedures.
+/// @brief General utility functions
 
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 ///

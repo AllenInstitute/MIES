@@ -1,7 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file TJ_MIES_AnalysisBrowser.ipf
-/// This file holds the main analysis browser code and has no dependencies on any hardware related functions
+/// @brief __AB__ Analysis browser
+///
+/// Has no dependencies on any hardware related functions.
 
 // stock igor
 #include <Resize Controls>

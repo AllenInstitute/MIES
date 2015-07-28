@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_Oscilloscope.ipf
+/// @brief __SCOPE__ Scope window handling for data acquisition and testpulse results
+
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168

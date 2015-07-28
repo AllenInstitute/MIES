@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file TJ_MIES_PressureControl.ipf
-/// @brief Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette.
+/// @brief __P__ Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette.
 /// @todo TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
 
 ///@name Constants Used by pressure control

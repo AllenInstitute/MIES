@@ -2,7 +2,7 @@
 
 /// @file TJ_MIES_SamplingInterval.ipf
 ///
-/// @brief Routines for calculating and handling the minimum sampling interval
+/// @brief __SI__ Routines for calculating and handling the minimum sampling interval
 
 /// @brief Helper struct for storing the number of active channels per rack
 static Structure ActiveChannels

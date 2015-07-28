@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-//==================================================================================================
-// ITC HARDWARE CONFIGURATION FUNCTIONS
-// Hardware Set-up (HSU)
+
+/// @file TJ_MIES_HardwareSetup.ipf
+/// @brief __HSU__ ITC Hardware Configuration Functions
 
 Function HSU_QueryITCDevice(panelTitle)
 	string panelTitle

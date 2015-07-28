@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file TJ_MIES_DataAcqMgmt.ipf
-/// @brief Data Acquisition Management - Handles multiple devices including yoked devices
+/// @brief __DAM__ Handles multiple devices data management including yoked devices
 
 /// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
 ///

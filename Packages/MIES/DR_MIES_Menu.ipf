@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file DR_MIES_Menu.ipf
+/// @brief Definition of the menu items
+
 static StrConstant optionalTangoInclude = "DR_MIES_TangoInteract"
 static StrConstant optionalHDF5Include = "DR_MIES_HDF5Ops"
 

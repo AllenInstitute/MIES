@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_TPBackgroundMD.ipf
+/// @brief __ITC__ Multi device background test pulse functionality
+
 Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
 	variable TriggerMode
 	string panelTitle

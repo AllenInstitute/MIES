@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_DataBrowser.ipf
+/// @brief __DB__ Panel for browsing acquired data during acquisition
+
 // stock igor
 #include <Resize Controls>
 

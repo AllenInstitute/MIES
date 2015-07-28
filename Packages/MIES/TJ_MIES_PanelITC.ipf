@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_PanelITC.ipf
+/// @brief __DAP__ Main data acuqisition panel DA_EPHYS
+
 static Constant DATA_ACQU_TAB_NUM        = 0
 static Constant HARDWARE_TAB_NUM         = 6
 
@@ -2923,9 +2926,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	return 0
 End
-//=========================================================================================
-// DAP = Data Acquisition Panel
-//=========================================================================================
 
 Function DAP_WindowHook(s)
 	STRUCT WMWinHookStruct &s

@@ -1,5 +1,8 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file TJ_MIES_TestPulse.ipf
+/// @brief __TP__ Basic Testpulse related functionality
+
 /// @brief Selects Test Pulse output wave for all checked DA channels
 Function TP_SelectTestPulseWave(panelTitle)
 	string 	panelTitle

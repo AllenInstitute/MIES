@@ -1,6 +1,7 @@
 #pragma rtGlobals=3
 
 /// @file TJ_MIES_Downsample.ipf
+/// @brief Panel for downsampling acquired data
 ///
 /// Folders and waves managed by code in this file
 /// Object type  |  Name                      | Purpose                                                                | Function
