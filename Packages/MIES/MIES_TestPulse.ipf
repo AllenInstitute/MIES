@@ -120,7 +120,7 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 end
 
-static Function TP_UpdateGlobals(panelTitle)
+Function TP_UpdateGlobals(panelTitle)
 	string panelTitle
 
 	variable pulseDuration
@@ -146,6 +146,10 @@ static Function TP_UpdateGlobals(panelTitle)
 	// need to deal with units here to ensure that resistance is calculated correctly
 	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+
+	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
+	// n determines the number of TP cycles to average
+	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
 End
 
 Function TP_UpdateTestPulseWave(TestPulse, panelTitle)
@@ -209,7 +213,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	TP_UpdateGlobals(panelTitle)
 	WAVE TestPulse = GetTestPulse()
 	TP_UpdateTestPulseWave(TestPulse, panelTitle)
 
@@ -262,16 +266,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	// Enable pressure buttons
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)
-End
-
-/// @brief Updates the global variable n in the TP folder
-///
-/// n determines the number of TP cycles to average
-Function TP_UpdateTPBufferSizeGlobal(panelTitle)
-	string panelTitle
-
-	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
-	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
 End
 
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.

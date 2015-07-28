@@ -125,7 +125,7 @@ Function DAM_StartTestPulseMD(panelTitle)
 
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	TP_UpdateGlobals(panelTitle)
 	TP_ResetTPStorage(panelTitle)
 	if(DAP_DeviceIsYokeable(panelTitle))
 		controlinfo /w = $panelTitle setvar_Hardware_Status
@@ -166,7 +166,7 @@ Function DAM_StartTestPulseMD(panelTitle)
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 
-						TP_UpdateTPBufferSizeGlobal(followerPanelTitle)
+						TP_UpdateGlobals(followerPanelTitle)
 						ITC_BkrdTPMD(TriggerMode, followerPanelTitle) // Sets lead board in wait for trigger mode
 						WAVE/SDFR=GetDevicePath(followerPanelTitle) SelectedDACWaveList
 						TP_ResetSelectedDACWaves(SelectedDACWaveList,followerPanelTitle) // restores lead board settings

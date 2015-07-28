@@ -3453,7 +3453,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		KillVariables count
 	endif
 
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
+	TP_UpdateGlobals(panelTitle)
 
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
 		DM_DeleteDataWaves(panelTitle, GetSetVariable(panelTitle, "SetVar_Sweep"))
