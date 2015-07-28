@@ -33,7 +33,7 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by: " + num2str(abs(RunTime)) + "seconds"
 	endif
 End
-//=============================================================================================================================
+
 
 Function ITC_TimerMD(s)
 	STRUCT WMBackgroundStruct &s
@@ -81,7 +81,7 @@ End
 // start time for each device, end time for each device, total elapsed time
 // start and end time are calculated at function call 
 
-//=============================================================================================================================
+
 Function ITC_StopTimerForDeviceMD(panelTitle)
 	string panelTitle
 
@@ -95,7 +95,7 @@ Function ITC_StopTimerForDeviceMD(panelTitle)
 End
 
 
-//=============================================================================================================================
+
 
 Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, AddOrRemoveDevice)
 	string panelTitle, ListOfFunctions
@@ -135,7 +135,7 @@ Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, 
 	
 	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
 End
-//=============================================================================================================================
+
 
 Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
 	string panelTitle, ListOfFunctions
@@ -163,7 +163,7 @@ Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, A
 	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End
  
-//=============================================================================================================================
+
 /// @brief Stores the timer number in a wave where the row number corresponds to the Device ID global.
 ///
 /// This function and ITC_StopITCDeviceTimer are used to correct the ITI for the time it took to collect data, and pre and post processing of data. 

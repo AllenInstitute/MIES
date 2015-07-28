@@ -512,7 +512,7 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 	endif
 End
 
-//=============================================================================================
+
 /// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
 /// over a user defined window (in seconds)
 ///
@@ -569,7 +569,7 @@ Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRa
 		endtry
 	endfor
 End
-//=============================================================================================
+
 /// @brief Resets the TP storage wave
 ///
 /// - Store the TP record if requested by the user
@@ -641,7 +641,7 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 	return NaN
 End
 
-//=============================================================================================
+
 ///@brief Find the AD channel associated with a headstage
 Function TP_GetADChannelFromHeadstage(panelTitle, headstage)
 	string panelTitle
@@ -655,7 +655,7 @@ Function TP_GetADChannelFromHeadstage(panelTitle, headstage)
 	endfor
 	return NaN
 End
-//=============================================================================================
+
 ///@brief Find the DA channel associated with a headstage
 Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
 	string panelTitle
@@ -713,7 +713,7 @@ static Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWav
 		return (numberOfSquarePulses / 2)
 	endif
 End
-//=============================================================================================
+
 /// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
 ///
 Function TP_GetTPResultsColOfHS(panelTitle, headStage)

@@ -1371,9 +1371,9 @@ Function/S P_DecToBinary(dec)
 
 	return binary
 End
-//============================================================================================================
+
 // MANUAL PRESSURE CONTROL
-//============================================================================================================
+
 /// @brief Sets the pressure on the active headstage or all headstages.
 Function P_ManSetPressure(panelTitle, headStage)
 	string panelTitle
@@ -1419,9 +1419,9 @@ Function P_SaveUserSelectedHeadstage(panelTitle, headStage)
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	PressureDataWv[][%UserSelectedHeadStage] =  headStage
 End
-//============================================================================================================
+
 // PRESSURE CONTROLS; DA_ePHYS PANEL; DATA ACQUISTION TAB
-//============================================================================================================
+
 /// @brief Approach button.
 Function ButtonProc_Approach(ba) : ButtonControl
 	STRUCT WMButtonAction &ba

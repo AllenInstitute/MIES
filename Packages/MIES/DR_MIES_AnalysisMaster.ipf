@@ -4,7 +4,7 @@
 /// @brief __AM__ Waveform analysis framework
 
 /// Function used to create a framework for calling post-sweep analysis functions
-//===============================================================================
+
 Function AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo

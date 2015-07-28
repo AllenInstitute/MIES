@@ -187,9 +187,9 @@ Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	DAP_UpdateITIAcrossSets(panelTitle)
 End
 
-//===================================================================================
+
 //NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
-//===================================================================================
+
 //**************NEED TO ADD FUNCTION TO CALCULATE CYCLE STEPS FOR LOCKED INDEXING!! NEED TO TEST WITH 3 OR MORE SETS!!!!*************
 
 Function IDX_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for each indexing step
@@ -696,7 +696,7 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 		column=count-StepsInSummedSets
 		return column
 end
-//====================================================================================================
+
 Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
 	variable count, channelNumber, DAorTTL

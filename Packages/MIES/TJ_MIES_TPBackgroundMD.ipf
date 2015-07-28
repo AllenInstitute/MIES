@@ -31,7 +31,7 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 		ExecuteITCOperationAbortOnError(cmd)
 	endif
 End
-//======================================================================================
+
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 	String cmd, Keyboard, panelTitle
@@ -237,7 +237,7 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 		DeletePoints /m = 0 v_value, 1, ActiveDeviceList // removes the row that contains the device 
 	endif
 End 
-//=============================================================================================================================
+
 
  Function ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
  	string panelTitle
@@ -264,7 +264,7 @@ End
 
  	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
  End
-//=============================================================================================================================
+
 
 static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) // creates wave that contains wave references
 	string panelTitle
