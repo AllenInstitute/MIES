@@ -825,7 +825,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, channelType, channelNumber)
 
 		if(!cmpstr(channelType, "TTL"))
-			AB_SplitTTLWaveIntoComponents(data, DC_GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
+			AB_SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
 		endif
 
 		MoveWave data, sweepFolder:$str

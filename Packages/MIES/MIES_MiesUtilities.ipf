@@ -1862,3 +1862,25 @@ Function/DF GetSetParamFolder(channelType)
 		ASSERT(0, "unknown channelType")
 	endif
 End
+
+/// @brief Get the TTL bit mask from the labnotebook
+/// @param numericValues   Numerical labnotebook values
+/// @param sweep           Sweep number
+/// @param channel         TTL channel
+Function GetTTLBits(numericValues, sweep, channel)
+	WAVE numericValues
+	variable sweep, channel
+
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
+
+	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[0] == channel)
+		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack zero bits")
+	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[0] == channel)
+		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack one bits")
+	else
+		return NaN
+	endif
+
+	return ttlBits[0]
+End
