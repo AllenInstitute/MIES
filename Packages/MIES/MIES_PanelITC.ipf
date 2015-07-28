@@ -5237,8 +5237,10 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 
 			if(cba.checked)
 				if(ExistingOnsetDelay < testPulseDuration) // only increases onset delay if it is not big enough to for the TP
-					Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:testPulseDuration, limits = {testPulseDuration, inf, 1}
+					Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:testPulseDuration
 				endif
+
+				SetVariable setvar_DataAcq_OnsetDelay win=$panelTitle, limits={testPulseDuration, inf, 1}
 			else
 				onsetDelayResetValue = max(0, (ExistingOnsetDelay - testPulseDuration)) // makes sure onset delay is never less than 0
 				Setvariable setvar_DataAcq_OnsetDelay WIN = $panelTitle, value =_NUM:OnsetDelayResetValue, limits = {0, inf, 1}
