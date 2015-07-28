@@ -512,7 +512,6 @@ Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, nu
 	endif
 End
 
-
 /// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
 /// over a user defined window (in seconds)
 ///
@@ -640,7 +639,6 @@ Function TP_HeadstageUsingDAC(panelTitle, DA)
 
 	return NaN
 End
-
 
 ///@brief Find the AD channel associated with a headstage
 Function TP_GetADChannelFromHeadstage(panelTitle, headstage)

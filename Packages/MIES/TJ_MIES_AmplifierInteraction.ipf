@@ -908,9 +908,7 @@ Function AI_createDummySettingsWave(panelTitle, SweepCount)
 	
 End
 
-
 // Below is code to open the MCC and manipulate the MCC windows. It is hard coded from TimJs 700Bs. Needs to be adapted for MIES
-
 
 ///To open Multiclamp commander, use ExecuteScriptText to open from Windows command line.
 ///Each window is appended with a serial number for the amplifier (/S) and a title designating which 

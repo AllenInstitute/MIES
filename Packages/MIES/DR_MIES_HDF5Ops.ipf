@@ -56,7 +56,6 @@ Static Function HD_Convert_To_HDF5(filename)
     
 end
 
-
 /// @brief creates high-level group structure of HDF5 file
 Static Function HD_HDF5_Structure(h5_id)
 	Variable h5_id

@@ -1410,7 +1410,6 @@ Function P_ManPressurePulse(panelTitle, headStage)
 	P_ITCDataAcq(panelTitle, headStage)
 End
 
-
 /// @brief Saves user seleted headstage in pressureData wave
 ///
 Function P_SaveUserSelectedHeadstage(panelTitle, headStage)

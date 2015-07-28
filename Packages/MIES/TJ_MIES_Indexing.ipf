@@ -187,7 +187,6 @@ Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	DAP_UpdateITIAcrossSets(panelTitle)
 End
 
-
 //NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
 
 //**************NEED TO ADD FUNCTION TO CALCULATE CYCLE STEPS FOR LOCKED INDEXING!! NEED TO TEST WITH 3 OR MORE SETS!!!!*************

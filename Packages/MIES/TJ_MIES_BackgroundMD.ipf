@@ -47,7 +47,6 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 	//	print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
 
-
 Function ITC_StartBckrdFIFOMonitorMD()
 	CtrlNamedBackground ITC_FIFOMonitorMD, period = 1, proc = ITC_FIFOMonitorMD
 	CtrlNamedBackground ITC_FIFOMonitorMD, start
@@ -138,7 +137,6 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	endif
 END
 
-
 Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
 	String panelTitle
 
@@ -177,7 +175,6 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	DAP_OneTimeCallAfterDAQ(panelTitle)
 END
 
-
 Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
@@ -207,7 +204,6 @@ Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChanne
 	endif
 End
 
-
 Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, AddorRemoveDevice)
 	string panelTitle
 	Variable AddOrRemoveDevice
@@ -231,7 +227,6 @@ Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, AddorRemoveDevice)
 
 	ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 End
-
 
 Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 	String panelTitle

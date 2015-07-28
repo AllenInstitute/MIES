@@ -238,7 +238,6 @@ Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelTo
 	endif
 End 
 
-
  Function ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
  	string panelTitle
  	Variable AddOrRemoveDevice
@@ -264,7 +263,6 @@ End
 
  	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
  End
-
 
 static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove) // creates wave that contains wave references
 	string panelTitle

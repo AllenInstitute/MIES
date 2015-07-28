@@ -128,7 +128,6 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-
 	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 
 	for(i = 0; i < numADChannels; i += 1)

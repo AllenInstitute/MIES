@@ -34,7 +34,6 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 	endif
 End
 
-
 Function ITC_TimerMD(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -76,11 +75,9 @@ Function ITC_TimerMD(s)
 	return 0
 End
 
-
 // functions to execute should be in a string list - or at least not limited to a set number.
 // start time for each device, end time for each device, total elapsed time
 // start and end time are calculated at function call 
-
 
 Function ITC_StopTimerForDeviceMD(panelTitle)
 	string panelTitle
@@ -93,9 +90,6 @@ Function ITC_StopTimerForDeviceMD(panelTitle)
 		CtrlNamedBackground ITC_TimerMD, Stop
 	endif
 End
-
-
-
 
 Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, AddOrRemoveDevice)
 	string panelTitle, ListOfFunctions
@@ -135,7 +129,6 @@ Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, 
 	
 	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
 End
-
 
 Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
 	string panelTitle, ListOfFunctions

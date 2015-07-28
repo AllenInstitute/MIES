@@ -19,7 +19,6 @@ Function HSU_QueryITCDevice(panelTitle)
 	ExecuteITCOperation(cmd)
 End
 
-
 Function HSU_ButtonProc_Settings_OpenDev(s) : ButtonControl
 	struct WMButtonAction& s
 
@@ -29,7 +28,6 @@ Function HSU_ButtonProc_Settings_OpenDev(s) : ButtonControl
 
 	HSU_QueryITCDevice(s.win)
 End
-
 
 Function HSU_ButtonProc_LockDev(s) : ButtonControl
 	struct WMButtonAction& s
@@ -42,7 +40,6 @@ Function HSU_ButtonProc_LockDev(s) : ButtonControl
 
 	HSU_LockDevice(s.win)
 End
-
 
 /// This function is a relict of the pre-wave-getter times
 /// Once we converted all wave access to getter functions this
@@ -113,7 +110,6 @@ Function HSU_LockDevice(panelTitle)
 	GetMiesVersion()
 End
 
-
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
 	string panelTitle
 	variable locked
@@ -176,7 +172,6 @@ Function HSU_ButProc_Hrdwr_UnlckDev(s) : ButtonControl
 	HSU_UnlockDevice(s.win)
 End
 
-
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
@@ -220,7 +215,6 @@ Function HSU_UnlockDevice(panelTitle)
 	DAP_UpdateAllYokeControls()
 End
 
-
 /// @brief Query the device lock status
 /// @param   panelTitle name of the device panel
 /// @param   silentCheck (optional) Alert the user if it is not locked, 0 (default) means yes, everything else no
@@ -258,7 +252,6 @@ Function HSU_DeviceIsUnlocked(panelTitle, [silentCheck])
 	return 1
 End
 
-
 Function HSU_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
@@ -277,15 +270,12 @@ Function HSU_IsDeviceTypeConnected(panelTitle)
 	killwaves localwave
 End
 
-
 // below functions are used to create a list of the ITC panels. This list is will be used by functions that need to update items that are common to different panels.
 // for example: DAC popup lists, TTL popup lists
-
 
 Function HSU_UpdateListOfITCPanels()
 	string/G root:MIES:ITCDevices:ITCPanelTitleList = winlist("ITC*", ";", "WIN:64")
 End
-
 
 Function HSU_OpenITCDevice(panelTitle)
 	String panelTitle
@@ -306,7 +296,6 @@ Function HSU_OpenITCDevice(panelTitle)
 
 	KillWaves/Z DevID
 End
-
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
@@ -361,7 +350,6 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	endif
 End
 
-
 Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 
@@ -408,7 +396,6 @@ static Function/S HSU_CreateITCFollowerList(panelTitle)
 	return GetFollowerList(doNotCreateSVAR=1)
 End
 
-
 /// This function sets a ITC1600 device as a follower, ie. The internal clock is used to synchronize 2 or more PCI-1600
 Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	string leadDAC, followerDAC
@@ -430,10 +417,7 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	// set the internal clock of the device
 End
 
-
 // MULTICLAMP HARDWARE CONFIGURATION FUNCTION BELOW
-
-
 
 // AUTO IMPORT GAIN SETTINGS FROM AXON AMP FUNCTIONS BELOW
 
@@ -506,7 +490,6 @@ Function HSU_AutoFillGain(panelTitle)
 	endif
 
 End
-
 
 ///@brief Return a list of all ITC devices which can be opened
 ///

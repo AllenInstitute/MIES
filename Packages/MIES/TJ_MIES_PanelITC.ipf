@@ -2561,8 +2561,6 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
 EndMacro
 
-
-
 ///@brief Restores the base state of the DA_Ephys panel.
 
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
@@ -3210,7 +3208,6 @@ Function DAP_DeviceIsLeader(panelTitle)
 	return cmpstr(S_value,LEADER) == 0
 End
 
-
 /// Updates the yoking controls on all locked/unlocked panels
 Function DAP_UpdateAllYokeControls()
 
@@ -3266,8 +3263,6 @@ Function/S DAP_GUIListOfYokedDevices()
 	return "No Yoked Devices"
 End
 
-
-
 Function DAP_UpdateYokeControls(panelTitle)
 	string panelTitle
 
@@ -3290,7 +3285,6 @@ Function DAP_UpdateYokeControls(panelTitle)
 		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:DAP_GUIListOfYokedDevices()
 	endif
 End
-
 
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
@@ -3342,7 +3336,6 @@ Function DAP_TabTJHook1(tca)
 //		endif
 //	endif
 End
-
 
 Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
@@ -3582,7 +3575,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	return 0
 End
 
-
 Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -3622,7 +3614,6 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 	endswitch
 End
 
-
 Function DAP_CheckProc_SaveData(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
@@ -3644,7 +3635,6 @@ Function DAP_CheckProc_SaveData(cba) : CheckBoxControl
 		break
 	endswitch
 End
-
 
 Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
@@ -3675,7 +3665,6 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	return 0
 End
 
-
 Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 	string BaseName, panelTitle// Popup_DA_IndexEnd_0
 	variable state
@@ -3688,7 +3677,6 @@ Function DAP_ChangePopUpState(BaseName, state, panelTitle)
 		i += 1
 	while(i < NUM_DA_TTL_CHANNELS)
 End
-
 
 Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
@@ -3710,7 +3698,6 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 
 	return 0
 End
-
 
 Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
@@ -3983,14 +3970,11 @@ Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endfor
 End
 
-
-
 Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
 	string panelTitle
 
 	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", SI_CalculateMinSampInterval(panelTitle))
 End
-
 
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
@@ -4592,7 +4576,6 @@ static Function DAP_UpdateHeadstage(panelTitle, headStage)
 	DAP_ChangeHeadstageState(panelTitle, ctrl, 1)
 End
 
-
 static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	string panelTitle
 	variable headStage, clampMode
@@ -4623,7 +4606,6 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[ADCchannel][%ADC] = nan
 End
-
 
 /// @brief Return information readout from various gui controls
 ///
@@ -4885,7 +4867,6 @@ Function DAP_ButtonProc_Independent(ba) : ButtonControl
 	return 0
 End
 
-
 Function DAP_ButtonProc_Follow(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -5047,7 +5028,6 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	ExecuteITCOperation(cmd)
 End
 
-
 Function DAP_RemoveAllYokedDACs(panelTitle)
 	string panelTitle
 
@@ -5071,7 +5051,6 @@ Function DAP_RemoveAllYokedDACs(panelTitle)
 		DAP_RemoveYokedDAC(panelToDeYoke)
 	endfor
 End
-
 
 /// Sets the lists and buttons on the follower device actively being yoked
 Function DAP_UpdateFollowerControls(panelTitle, panelToYoke)
@@ -5116,9 +5095,7 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 	return 0
 End
 
-
 // FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
-
 
 Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	struct WMSliderAction &sc
@@ -5203,7 +5180,6 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	return 0
 End
 
-
 // FUNCTION BELOW CONTROL THE GUI STATE FOR CHANGES RELATED TO MULTIPLE DEVICES
 
 //	When multiple device support is not enabled there are two options for DAC operation: foreground and background
@@ -5245,7 +5221,6 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireData
 	endif
 End
-
 
 // FUNCTION BELOW CONTROLS TP INSERTION INTO SET SWEEPS BEFORE THE SWEEP BEGINSS
 

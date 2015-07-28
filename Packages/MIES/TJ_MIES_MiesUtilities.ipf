@@ -559,7 +559,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 		endif
 	endif
 
-
 	// The display order from top to bottom is DA/AD/TTL
 	// with increasing channel number
 	//

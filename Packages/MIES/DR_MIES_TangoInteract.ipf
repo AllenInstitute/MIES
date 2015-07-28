@@ -506,7 +506,6 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 	endif
 End
 
-
 ///@brief Routine to test starting and stopping acquisition by remotely hitting the start/stop button on the DA_Ephys panel
 ///@param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_runStopStart([cmdID])

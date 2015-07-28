@@ -81,7 +81,6 @@ Function ITC_CalculateDevChannelOffset(panelTitle)
 	return 0
 End
 
-
 Function ITC_BkrdDataAcq(panelTitle)
 	string panelTitle
 
@@ -150,7 +149,6 @@ Function ITC_StopDataAcq()
 	endif
 END
 
-
 Function ITC_StartBckgrdFIFOMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, period = 2, proc = ITC_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitor, start
@@ -188,7 +186,6 @@ End
 Function ITC_STOPFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
-
 
 Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
 	Variable RunTimePassed//how long you want the background timer to run in seconds
@@ -239,7 +236,6 @@ Function ITC_StopBackgroundTimerTask()
  	Execute FunctionNameB
 End
 
-
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
@@ -265,7 +261,6 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 End
-
 
 ///@brief Background execution function for the test pulse data acquisition
 Function ITC_TestPulseFunc(s)
@@ -536,7 +531,6 @@ Function ITC_StartTestPulse(panelTitle)
 	P_LoadPressureButtonState(panelTitle, headStage)
 END
 
-
 Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
 	variable Channel
 	string panelTitle
@@ -591,7 +585,6 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 		ITC_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
 	endfor
 End
-
 
 Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
 	variable Channel, Measurement

@@ -206,7 +206,6 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	endif
 End
 
-
 Function RA_StartMD(panelTitle)
 	string panelTitle
 
@@ -279,7 +278,6 @@ Function RA_StartMD(panelTitle)
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count)) // updates trials remaining in panel
 	RA_HandleITI_MD(panelTitle)
 End
-
 
 Function RA_CounterMD(panelTitle)
 	string panelTitle
@@ -410,7 +408,6 @@ Function RA_CounterMD(panelTitle)
 		DAM_FunctionStartDataAcq(panelTitle)
 	endif
 End
-
 
 Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
