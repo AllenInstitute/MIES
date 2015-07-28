@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf
+/// @file MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf
 /// @brief __LBN__ Panels for browsing the labnotebook and the TPStorage waves
 /// in the analysis browser
 

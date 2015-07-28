@@ -1,6 +1,6 @@
 #pragma rtGlobals=1		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_EnhancedWMRoutines.ipf
+/// @file MIES_EnhancedWMRoutines.ipf
 /// @brief Routines packaged with IGOR PRO but enhanced from us
 ///
 /// Everthing in this file is copyrighted by WaveMetrics Inc.

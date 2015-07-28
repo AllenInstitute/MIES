@@ -1,6 +1,6 @@
 #pragma rtGlobals=3
 
-/// @file TJ_MIES_WaveDataFolderGetters.ipf
+/// @file MIES_WaveDataFolderGetters.ipf
 ///
 /// @brief Collection of Wave and Datafolder getter functions
 ///
@@ -1377,7 +1377,7 @@ End
 /// @brief Return the parameter wave for the wave builder panel
 ///
 /// Rows:
-/// - Variables synced to GUI controls, see e.g. WB_MakeWaveBuilderWave in TJ_MIES_WaveBuilder for an up to date list
+/// - Variables synced to GUI controls, see e.g. WB_MakeWaveBuilderWave in MIES_WaveBuilder for an up to date list
 ///
 /// Columns:
 /// - Segment/Epoch

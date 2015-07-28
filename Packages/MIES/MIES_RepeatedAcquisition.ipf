@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_RepeatedAcquisition.ipf
+/// @file MIES_RepeatedAcquisition.ipf
 /// @brief __RA__ Repated acquisition functionality
 
 static Function RA_HandleITI_MD(panelTitle)

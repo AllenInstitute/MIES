@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_BackgroundTimerMD.ipf
+/// @file MIES_BackgroundTimerMD.ipf
 /// @brief __ITC__ Multi device background timer related code
 
 Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed

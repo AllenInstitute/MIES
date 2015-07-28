@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_ExperimentDocumentation.ipf
+/// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
 
 /// @brief Add notation of settings to an experiment DataWave.  This function

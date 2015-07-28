@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_GuiUtilities.ipf
+/// @file MIES_GuiUtilities.ipf
 /// @brief Helper functions related to GUI controls
 
 static constant DISABLE_CONTROL_BIT = 2

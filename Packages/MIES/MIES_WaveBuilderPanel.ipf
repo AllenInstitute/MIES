@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_WaveBuilderPanel.ipf
+/// @file MIES_WaveBuilderPanel.ipf
 /// @brief __AB__ Panel for creating stimulus sets
 
 // stock igor
@@ -12,16 +12,16 @@
 #include ":FixScrolling"
 
 // our includes
-#include ":TJ_MIES_Constants"
-#include ":TJ_MIES_Debugging"
-#include ":TJ_MIES_EnhancedWMRoutines"
-#include ":TJ_MIES_GlobalStringAndVariableAccess"
-#include ":TJ_MIES_GuiUtilities"
-#include ":TJ_MIES_MiesUtilities"
-#include ":TJ_MIES_Utilities"
-#include ":TJ_MIES_Structures"
-#include ":TJ_MIES_WaveDataFolderGetters"
-#include ":TJ_MIES_WaveBuilder"
+#include ":MIES_Constants"
+#include ":MIES_Debugging"
+#include ":MIES_EnhancedWMRoutines"
+#include ":MIES_GlobalStringAndVariableAccess"
+#include ":MIES_GuiUtilities"
+#include ":MIES_MiesUtilities"
+#include ":MIES_Utilities"
+#include ":MIES_Structures"
+#include ":MIES_WaveDataFolderGetters"
+#include ":MIES_WaveBuilder"
 
 Menu "Mies Panels", dynamic
 		"WaveBuilder", /Q,  WBP_CreateWaveBuilderPanel()

@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_DataConfiguratorITC.ipf
+/// @file MIES_DataConfiguratorITC.ipf
 /// @brief __DC__ Handle preparations before data acquisition or
 /// test pulse related to the ITC waves
 

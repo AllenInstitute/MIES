@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_DataManagementNew.ipf
+/// @file MIES_DataManagementNew.ipf
 /// @brief __DM__ Convert and scale acquired data
 
 static Constant FLOAT_32BIT = 0x02

@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_BackgroundMD.ipf
+/// @file MIES_BackgroundMD.ipf
 /// @brief __ITC__ Multi device background data acquisition
 
 //Reinitialize Device 1 with intrabox clock

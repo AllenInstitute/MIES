@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_PanelITC.ipf
+/// @file MIES_PanelITC.ipf
 /// @brief __DAP__ Main data acuqisition panel DA_EPHYS
 
 static Constant DATA_ACQU_TAB_NUM        = 0

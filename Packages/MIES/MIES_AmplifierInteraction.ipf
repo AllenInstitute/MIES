@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_AmplifierInteraction.ipf
+/// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with the Axon/MCC amplifiers
 
 Function/S AI_ConvertAmplifierModeToString(mode)

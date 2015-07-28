@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_DataBrowser.ipf
+/// @file MIES_DataBrowser.ipf
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
 // stock igor
@@ -12,15 +12,15 @@
 #include ":FixScrolling"
 
 // our includes
-#include ":TJ_MIES_Constants"
-#include ":TJ_MIES_Debugging"
-#include ":TJ_MIES_EnhancedWMRoutines"
-#include ":TJ_MIES_GlobalStringAndVariableAccess"
-#include ":TJ_MIES_GuiUtilities"
-#include ":TJ_MIES_MiesUtilities"
-#include ":TJ_MIES_Utilities"
-#include ":TJ_MIES_Structures"
-#include ":TJ_MIES_WaveDataFolderGetters"
+#include ":MIES_Constants"
+#include ":MIES_Debugging"
+#include ":MIES_EnhancedWMRoutines"
+#include ":MIES_GlobalStringAndVariableAccess"
+#include ":MIES_GuiUtilities"
+#include ":MIES_MiesUtilities"
+#include ":MIES_Utilities"
+#include ":MIES_Structures"
+#include ":MIES_WaveDataFolderGetters"
 
 Menu "Mies Panels", dynamic
 		"Data Browser", /Q, Execute "DataBrowser()"

@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_AnalysisBrowser.ipf
+/// @file MIES_AnalysisBrowser.ipf
 /// @brief __AB__ Analysis browser
 ///
 /// Has no dependencies on any hardware related functions.
@@ -15,19 +15,19 @@
 #include ":FixScrolling"
 
 // our includes
-#include ":TJ_MIES_Constants"
-#include ":TJ_MIES_Debugging"
-#include ":TJ_MIES_EnhancedWMRoutines"
-#include ":TJ_MIES_GlobalStringAndVariableAccess"
-#include ":TJ_MIES_GuiUtilities"
-#include ":TJ_MIES_IgorHooks"
-#include ":TJ_MIES_MiesUtilities"
-#include ":TJ_MIES_Structures"
-#include ":TJ_MIES_Utilities"
-#include ":TJ_MIES_WaveDataFolderGetters"
+#include ":MIES_Constants"
+#include ":MIES_Debugging"
+#include ":MIES_EnhancedWMRoutines"
+#include ":MIES_GlobalStringAndVariableAccess"
+#include ":MIES_GuiUtilities"
+#include ":MIES_IgorHooks"
+#include ":MIES_MiesUtilities"
+#include ":MIES_Structures"
+#include ":MIES_Utilities"
+#include ":MIES_WaveDataFolderGetters"
 
-#include ":TJ_MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
-#include ":TJ_MIES_AnalysisBrowser_SweepBrowser"
+#include ":MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
+#include ":MIES_AnalysisBrowser_SweepBrowser"
 
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2

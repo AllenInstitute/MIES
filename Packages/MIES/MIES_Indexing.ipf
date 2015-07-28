@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_Indexing.ipf
+/// @file MIES_Indexing.ipf
 /// @brief __IDX__ Indexing related functionality
 
 /// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType

@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_SamplingInterval.ipf
+/// @file MIES_SamplingInterval.ipf
 ///
 /// @brief __SI__ Routines for calculating and handling the minimum sampling interval
 

@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file DR_MIES_TangoInteract.ipf
+/// @file MIES_TangoInteract.ipf
 /// @brief __TI__ Interface to the [tango](http://www.tango-controls.org/) layer
 
 /// @cond DOXYGEN_IGNORES_THIS

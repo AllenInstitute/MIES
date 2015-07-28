@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_Debugging.ipf
+/// @file MIES_Debugging.ipf
 ///
 /// @brief Holds functions for handling debugging information
 

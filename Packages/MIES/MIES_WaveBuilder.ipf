@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict Wave access.
 
-/// @file TJ_MIES_WaveBuilder.ipf
+/// @file MIES_WaveBuilder.ipf
 /// @brief __WB__ Stimulus set creation
 
 static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes

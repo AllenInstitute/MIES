@@ -1,6 +1,6 @@
 #pragma rtGlobals=3
 
-/// @file TJ_MIES_MiesUtilities.ipf
+/// @file MIES_MiesUtilities.ipf
 /// @brief This file holds utility functions which need to know about MIES internals.
 
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"

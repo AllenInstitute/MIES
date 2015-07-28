@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_AnalysisBrowser_SweepBrowser.ipf
+/// @file MIES_AnalysisBrowser_SweepBrowser.ipf
 /// @brief __SB__  Visualization of sweep data in the analysis browser
 
 static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"

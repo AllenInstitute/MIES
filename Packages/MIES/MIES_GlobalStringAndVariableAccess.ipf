@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_GlobalStringAndVariableAccess.ipf
+/// @file MIES_GlobalStringAndVariableAccess.ipf
 ///
 /// @brief Helper functions for accessing global variables and strings.
 ///

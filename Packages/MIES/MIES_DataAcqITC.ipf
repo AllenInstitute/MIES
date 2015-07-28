@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_DataAcqITC.ipf
+/// @file MIES_DataAcqITC.ipf
 /// @brief __ITC__ Data acquisition handling
 
 Function ITC_DataAcq(panelTitle)

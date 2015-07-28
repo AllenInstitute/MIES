@@ -1,6 +1,6 @@
 #pragma rtGlobals=3
 
-/// @file TJ_MIES_Downsample.ipf
+/// @file MIES_Downsample.ipf
 /// @brief Panel for downsampling acquired data
 ///
 /// Folders and waves managed by code in this file
@@ -17,15 +17,15 @@
 #include ":FixScrolling"
 
 // our includes
-#include ":TJ_MIES_Constants"
-#include ":TJ_MIES_Debugging"
-#include ":TJ_MIES_EnhancedWMRoutines"
-#include ":TJ_MIES_GlobalStringAndVariableAccess"
-#include ":TJ_MIES_GuiUtilities"
-#include ":TJ_MIES_MiesUtilities"
-#include ":TJ_MIES_Utilities"
-#include ":TJ_MIES_Structures"
-#include ":TJ_MIES_WaveDataFolderGetters"
+#include ":MIES_Constants"
+#include ":MIES_Debugging"
+#include ":MIES_EnhancedWMRoutines"
+#include ":MIES_GlobalStringAndVariableAccess"
+#include ":MIES_GuiUtilities"
+#include ":MIES_MiesUtilities"
+#include ":MIES_Utilities"
+#include ":MIES_Structures"
+#include ":MIES_WaveDataFolderGetters"
 
 Menu "Mies Panels", dynamic
 	"Open Downsample Panel", /Q, CreateDownsamplePanel()

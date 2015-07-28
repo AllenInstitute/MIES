@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file TJ_MIES_Constants.ipf
+/// @file MIES_Constants.ipf
 /// @brief Global constants
 
 Constant NUM_DA_TTL_CHANNELS   = 8

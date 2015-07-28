@@ -1,10 +1,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file DR_MIES_Menu.ipf
+/// @file MIES_Menu.ipf
 /// @brief Definition of the menu items
 
-static StrConstant optionalTangoInclude = "DR_MIES_TangoInteract"
-static StrConstant optionalHDF5Include = "DR_MIES_HDF5Ops"
+static StrConstant optionalTangoInclude = "MIES_TangoInteract"
+static StrConstant optionalHDF5Include = "MIES_HDF5Ops"
 
 Menu "Mies Panels", dynamic
 		"DA_Ephys"                   , /Q, Execute "DA_Ephys()"
