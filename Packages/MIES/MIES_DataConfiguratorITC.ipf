@@ -784,9 +784,9 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	variable longestSweep, totalIncrease
 
 	longestSweep  = DC_CalculateLongestSweep(panelTitle)
-	totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
 		if(GetCheckBoxState(panelTitle,"Check_DataAcq1_DistribDaq"))
 			return longestSweep * DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC) + totalIncrease
 		else
