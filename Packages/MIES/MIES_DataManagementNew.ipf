@@ -56,6 +56,9 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	//Add wave notes for the factors on the Asyn tab
 	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
 
+	// TP settings, especially useful if "global TP insertion" is active
+	ED_TPSettingsDocumentation(panelTitle)
+
 	DM_AfterSweepDataSaveHook(panelTitle)
 End
 
