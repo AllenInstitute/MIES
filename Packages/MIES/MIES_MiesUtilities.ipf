@@ -1803,13 +1803,20 @@ Function/S GetListOfLockedITC1600Devices()
 	return ListMatch(GetListOfLockedDevices(), "ITC1600*")
 End
 
+/// @brief Return one if the given set is the special testpulse set, zero otherwise
+Function IsTestPulseSet(setName)
+	string setName
+
+	return !cmpstr(setName, "testpulse")
+End
+
 /// @brief Return the type, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL, of the stimset
 Function GetStimSetType(setName)
 	string setName
 
 	string type
 
-	if(TP_IsTestPulseSet(setName))
+	if(IsTestPulseSet(setName))
 		return CHANNEL_TYPE_DAC
 	endif
 

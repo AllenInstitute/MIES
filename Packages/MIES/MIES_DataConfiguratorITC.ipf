@@ -453,7 +453,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		sweepDataLNB[0][0][HeadStage] = DAScale // document the DA scale
 
 		setName = StringFromList(i, setNameList)
-		isTestPulse = TP_IsTestPulseSet(setName)
+		isTestPulse = IsTestPulseSet(setName)
 		WAVE stimSet = WB_CreateAndGetStimSet(setName)
 		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
 

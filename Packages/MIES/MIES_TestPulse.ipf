@@ -743,13 +743,6 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 	return V_value - FirstADColumn
 End
 
-/// @brief Return one if the given set is the special testpulse set, zero otherwise
-Function TP_IsTestPulseSet(setName)
-	string setName
-
-	return !cmpstr(setName, "testpulse")
-End
-
 /// @brief Stop any running background test pulses
 ///
 /// Assumes that single device and multi device do not run at the same time.
