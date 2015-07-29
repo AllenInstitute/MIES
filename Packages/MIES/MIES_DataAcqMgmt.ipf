@@ -120,7 +120,6 @@ Function DAM_StartTestPulseMD(panelTitle)
 
 	variable i, TriggerMode
 
-	TP_ResetTPStorage(panelTitle)
 	if(DAP_DeviceIsYokeable(panelTitle))
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
@@ -139,7 +138,6 @@ Function DAM_StartTestPulseMD(panelTitle)
 					
 					do // configure follower device for TP acquistion
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						TP_ResetTPStorage(followerPanelTitle)
 						TP_Setup(followerPanelTitle, multiDevice=1)
 						i += 1
 					while(i < numberOfFollowerDevices)

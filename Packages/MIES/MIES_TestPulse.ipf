@@ -587,7 +587,7 @@ End
 ///
 /// - Store the TP record if requested by the user
 /// - Clear the wave to start with a pristine storage wave
-Function TP_ResetTPStorage(panelTitle)
+static Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
 
 	Wave TPStorage = GetTPStorage(panelTitle)
@@ -761,6 +761,8 @@ Function TP_Setup(panelTitle, [multiDevice])
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	TP_UpdateGlobals(panelTitle)
+	TP_ResetTPStorage(panelTitle)
+
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
