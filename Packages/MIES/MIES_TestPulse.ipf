@@ -4,7 +4,7 @@
 /// @brief __TP__ Basic Testpulse related functionality
 
 /// @brief Selects Test Pulse output wave for all checked DA channels
-Function TP_SelectTestPulseWave(panelTitle)
+static Function TP_SelectTestPulseWave(panelTitle)
 	string 	panelTitle
 
 	string control
@@ -20,7 +20,7 @@ Function TP_SelectTestPulseWave(panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+static Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	Wave 	SelectedDACWaveList
 	string 	panelTitle
 
@@ -38,7 +38,7 @@ Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 end
 
-Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+static Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	Wave 	SelectedDACWaveList
 	string 	panelTitle
 
@@ -55,7 +55,7 @@ Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_StoreDAScale(SelectedDACScale, panelTitle)
+static Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	Wave 	SelectedDACScale
 	string 	panelTitle
 
@@ -73,7 +73,7 @@ Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_SetDAScaleToOne(panelTitle)
+static Function TP_SetDAScaleToOne(panelTitle)
 	string 	panelTitle
 
 	string control
@@ -103,7 +103,7 @@ Function TP_SetDAScaleToOne(panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
+static Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	Wave 	SelectedDACScale
 	string 	panelTitle
 
@@ -179,13 +179,11 @@ Function TP_GetTestPulseLengthInPoints(panelTitle)
 	return TP_CalculateTestPulseLength(duration, baselineFrac)
 End
 
-Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
+static Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
 	string panelTitle
 	WAVE TestPulse
 
 	variable length
-	TP_UpdateGlobals(panelTitle)
-
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
 	NVAR/SDFR=testPulseDFR amplitudeVC, baselineFrac, pulseDuration
 
@@ -200,7 +198,7 @@ Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
 End
 
 /// @brief MD-variant of #TP_UpdateTestPulseWave
-Function TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+static Function TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	string panelTitle
 	WAVE TestPulse
 
@@ -250,25 +248,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	KillVariables/Z count
 
 	DAP_UpdateITCMinSampIntDisplay(panelTitle)
-
-	DAP_StoreTTLState(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
-
-	TP_UpdateGlobals(panelTitle)
-	WAVE TestPulse = GetTestPulse()
-	TP_UpdateTestPulseWave(panelTitle, TestPulse)
-
-	Make/FREE/N=8 SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	Make/FREE/N=8 SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale,panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
-
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-	WAVE/SDFR=GetDeviceTestPulse(panelTitle) TestPulseITC
-	SCOPE_CreateGraph(TestPulseITC,panelTitle)
+	TP_Setup(panelTitle)
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 		ITC_StartBackgroundTestPulse(panelTitle)
@@ -277,8 +257,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 		SCOPE_KillScopeWindowIfRequest(panelTitle)
 	endif
 
-	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	TP_RestoreDAScale(SelectedDACScale,panelTitle)
+	TP_Teardown(panelTitle)
 
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)
@@ -486,7 +465,7 @@ static Constant MAX_VALID_RESISTANCE = 3000
 /// When the TP is initiated by any method, the TP storageWave should be empty
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
-Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
+static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	string 	panelTitle
 	wave 	BaselineSSAvg, InstResistance, SSResistance
 	variable numADCs
@@ -555,7 +534,7 @@ End
 /// @param endRow           last valid row index in TPStorage
 /// @param samplingInterval approximate time duration in seconds between data points
 /// @param fittingRange     time duration to use for fitting
-Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
+static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
 	string panelTitle
 	Wave/Z TPStorage
 	variable endRow, samplingInterval, fittingRange
@@ -770,4 +749,57 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			ASSERT(0, "Unhandled case in ITC_RestartTestPulse")
 			break
 	endswitch
+End
+
+/// @brief Prepare device for TestPulse
+/// @param panelTitle  device
+/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+Function TP_Setup(panelTitle, [multiDevice])
+	string panelTitle
+	variable multiDevice
+
+	DFREF deviceDFR = GetDevicePath(panelTitle)
+
+	TP_UpdateGlobals(panelTitle)
+	DAP_StoreTTLState(panelTitle)
+	DAP_TurnOffAllTTLs(panelTitle)
+
+	// stores panel settings
+	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
+	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
+
+	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACScale/Wave=SelectedDACScale
+	TP_StoreDAScale(SelectedDACScale,panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
+
+	WAVE TestPulse = GetTestPulse()
+	if(multiDevice)
+		TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+	else
+		TP_UpdateTestPulseWave(panelTitle, TestPulse)
+	endif
+
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	SCOPE_CreateGraph(TestPulseITC, panelTitle)
+	SCOPE_OpenScopeWindow(panelTitle)
+
+	/// @todo use also for single device
+	if(multiDevice)
+		DAM_ConfigUploadDAC(panelTitle)
+	endif
+End
+
+/// @brief Perform common actions after the testpulse
+Function TP_Teardown(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/SDFR=dfr SelectedDACWaveList
+	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	WAVE/SDFR=dfr SelectedDACScale
+	TP_RestoreDAScale(SelectedDACScale, panelTitle)
 End
