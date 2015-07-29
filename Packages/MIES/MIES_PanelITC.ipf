@@ -4477,7 +4477,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	if(mode == DATA_ACQUISITION_MODE)
 		ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		dacWave = GetPopupMenuString(panelTitle, ctrl)
-		if(!CmpStr(dacWave, NONE) || !CmpStr(dacWave, "TestPulse"))
+		if(!CmpStr(dacWave, NONE) || IsTestPulseSet(dacWave))
 			printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
 			return 1
 		endif

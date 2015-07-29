@@ -1727,7 +1727,7 @@ static Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOr
 		if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";")) == 1 || cmpstr(s_value,"")==0)
 			PopupMenu  $popupMenuName win = $panelTitle, mode = v_value - 1
 			ControlInfo /w = $panelTitle $popupMenuName
-			if(cmpstr(s_value,"testpulse") == 0)
+			if(!IsTestPulseSet(s_value))
 				PopupMenu  $popupMenuName win = $panelTitle, mode=1
 				CheckBoxName = "Check_" + DAorTTL + "_0" + num2str(i)
 				CheckBox Check_DA_00 win = $panelTitle, value = 0
