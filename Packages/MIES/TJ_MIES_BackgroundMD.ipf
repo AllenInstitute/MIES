@@ -9,7 +9,7 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 	string panelTitle
 //	Variable start = stopmstimer(-2)
 	string cmd
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
+	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	variable TimerStart

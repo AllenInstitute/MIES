@@ -63,11 +63,12 @@ static Function DC_UpdateClampModeString(panelTitle)
 	endfor
 End
 
-/// @brief Return the number of channels of the given type
-Function DC_NoOfChannelsSelected(channelType, panelTitle)
-	string channelType, panelTitle
+/// @brief Return the number of selected checkboxes for the given type
+Function DC_NoOfChannelsSelected(panelTitle, type)
+	string panelTitle
+	variable type
 
-	return sum(DC_ControlStatusWave(panelTitle, channelType))
+	return sum(DC_ControlStatusWave(panelTitle, type))
 End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
@@ -75,18 +76,18 @@ End
 /// @param type        one of DA, AD, TTL, DataAcq_HS or AsyncAD
 /// @param panelTitle  panel title
 Function/Wave DC_ControlStatusWave(panelTitle, type)
-	string type
 	string panelTitle
+	variable type
 
 	string ctrl
 	variable i, numEntries
 
-	numEntries = GetNumberFromChannelType(type)
+	numEntries = GetNumberFromType(var=type)
 
 	Make/FREE/U/B/N=(numEntries) wv
 
 	for(i = 0; i < numEntries; i += 1)
-		sprintf ctrl, "CHECK_%s_%.2d", type, i
+		ctrl = GetPanelControl(panelTitle, i, type, CHANNEL_CONTROL_CHECK)
 		wv[i] = GetCheckboxState(panelTitle, ctrl)
 	endfor
 
@@ -99,8 +100,8 @@ End
 static Function DC_ChanCalcForITCChanConfigWave(panelTitle)
 	string panelTitle
 
-	variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected("DA", panelTitle)
-	variable NoOfADChannelsSelected = DC_NoOfChannelsSelected("AD", panelTitle)
+	variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+	variable NoOfADChannelsSelected = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
 	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
 	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
 
@@ -117,7 +118,7 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 
 	variable a
 	variable b
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
+	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 
 	if(RackNo == 0)
 		 a = 0
@@ -141,45 +142,45 @@ End
 
 /// @brief Returns the list of selected waves in pop up menus
 ///
-/// @param ChannelType DA, AD or TTL
-/// @param ControlType Igor control type. Ex. popupmenu
-/// @param panelTitle  panel title
-static Function/s DC_PopMenuStringList(ChannelType, ControlType, panelTitle)
-	string ChannelType, ControlType, panelTitle
+/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
+/// @param panelTitle  device
+static Function/s DC_PopMenuStringList(panelTitle, channelType)
+	string panelTitle
+	variable channelType
 
-	String ControlWaveList = ""
-	String ControlName
+	string ControlWaveList = ""
+	string ctrl
 	variable i, numEntries
 
-	numEntries = GetNumberFromChannelType(channelType)
+	numEntries = GetNumberFromType(var=channelType)
 	for(i = 0; i < numEntries; i += 1)
-		sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
-		ControlInfo/W=$panelTitle $ControlName
+		ctrl = GetPanelControl(panelTitle, i, channelType, CHANNEL_CONTROL_WAVE)
+		ControlInfo/W=$panelTitle $ctrl
 		ControlWaveList = AddlistItem(s_value, ControlWaveList, ";", i)
 	endfor
 
 	return ControlWaveList
 End
 
-/// @brief Returns the output wave with the most points (rows)
+/// @brief Returns the number of points in the longest stimset
 ///
-/// @param channelType channel type Ex. DA, AD, or TTL
-/// @param panelTitle  panel title
-static Function DC_LongestOutputWave(channelType, panelTitle)
-	string channelType, panelTitle
+/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
+/// @param panelTitle  device
+static Function DC_LongestOutputWave(panelTitle, channelType)
+	string panelTitle
+	variable channelType
 
-	variable maxNumRows = 0, i, numEntries
-	string channelTypeWaveList = DC_PopMenuStringList(channelType, "Wave", panelTitle)
+	variable maxNumRows, i, numEntries
+	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
-	Wave status = DC_ControlStatusWave(panelTitle, channelType)
+	WAVE status = DC_ControlStatusWave(panelTitle, channelType)
 	numEntries = DimSize(status, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		if(!status[i])
 			continue
 		endif
 
-		Wave/Z/SDFR=GetSetFolderFromString(channelType) wv = $StringFromList(i, channelTypeWaveList)
-
+		WAVE wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
@@ -225,8 +226,8 @@ static Function DC_CalculateLongestSweep(panelTitle)
 
 	variable longestSweep
 
-	longestSweep  = max(DC_LongestOutputWave("DA", panelTitle), DC_LongestOutputWave("TTL", panelTitle))
-	longestSweep /= SI_CalculateMinSampInterval(panelTitle) / 5
+	longestSweep  = max(DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_DAC), DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_TTL))
+	longestSweep /= DC_GetDecimationFactor(panelTitle)
 
 	return ceil(longestSweep)
 End
@@ -297,7 +298,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
 	// query DA properties
-	WAVE channelStatus = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -314,7 +315,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	endfor
 
 	// query AD properties
-	WAVE channelStatus = DC_ControlStatusWave(panelTitle, "AD")
+	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -365,6 +366,15 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 	ITCChanConfigWave[][3] = 0
 End
 
+/// @brief Get the decimation factor for the current channel configuration
+///
+/// @param panelTitle device
+static Function DC_GetDecimationFactor(panelTitle)
+	string panelTitle
+
+	return SI_CalculateMinSampInterval(panelTitle) / (MINIMUM_SAMPLING_INTERVAL * 1000)
+End
+
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle  panel title
@@ -380,7 +390,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage
+	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor
 	variable/C ret
 
 	globalTPInsert  = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -410,11 +420,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		setColumn = 0
 	endif
 
-	//Place DA waves into ITCDataWave
-	variable decimationFactor = SI_CalculateMinSampInterval(panelTitle) / 5
-	setNameList = DC_PopMenuStringList("DA", "Wave", panelTitle)
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, "DataAcq_HS")
+	decimationFactor = DC_GetDecimationFactor(panelTitle)
+	setNameList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -508,7 +517,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		itcDataColumn += 1
 	endfor
 
-	WAVE statusAD = DC_ControlStatusWave(panelTitle, "AD")
+	WAVE statusAD = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(statusAD, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -588,9 +597,8 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	string set
 	string listOfSets = ""
 
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
-	string TTLWaveList = DC_PopMenuStringList("TTL", "Wave", panelTitle)
-	DFREF setDFR    = GetWBSvdStimSetTTLPath()
+	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
@@ -606,7 +614,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 		endif
 
 		set = StringFromList(i, TTLWaveList)
-		WAVE/SDFR=setDFR wv = $set
+		WAVE wv = WB_CreateAndGetStimSet(set)
 		maxRows = max(maxRows, DimSize(wv, ROWS))
 		bits += 2^(i)
 		listOfSets = AddListItem(set, listOfSets, ";", inf)
@@ -629,9 +637,9 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 			continue
 		endif
 
-		WAVE/SDFR=setDFR TTLStimSet = $StringFromList(i, TTLWaveList)
-
-		col = DC_CalculateChannelColumnNo(panelTitle, StringFromList(i, TTLWaveList), i, CHANNEL_TYPE_TTL)
+		set = StringFromList(i, TTLWaveList)
+		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
+		col = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
 		lastIdx = DimSize(TTLStimSet, ROWS) - 1
 		bit = 2^(i - first)
 		TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
@@ -740,7 +748,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 	variable minSamplingInterval, onsetDelayVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
 	variable distributedDAQ
 
-	numActiveDACs          = DC_NoOfChannelsSelected("DA", panelTitle)
+	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = SI_CalculateMinSampInterval(panelTitle)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	onsetDelayVal          = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
@@ -779,7 +787,7 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		if(GetCheckBoxState(panelTitle,"Check_DataAcq1_DistribDaq"))
-			return longestSweep * DC_NoOfChannelsSelected("DA", panelTitle) + totalIncrease
+			return longestSweep * DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC) + totalIncrease
 		else
 			return longestSweep + totalIncrease
 		endif

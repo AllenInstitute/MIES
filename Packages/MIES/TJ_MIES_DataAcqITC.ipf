@@ -6,7 +6,7 @@ Function ITC_DataAcq(panelTitle)
 	string cmd
 	variable i
 
-	variable ADChannelToMonitor    = DC_NoOfChannelsSelected("DA", panelTitle)
+	variable ADChannelToMonitor    = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	variable stopCollectionPoint   = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	string oscilloscopeSubwindow   = SCOPE_GetGraph(panelTitle)
 
@@ -83,7 +83,7 @@ Function ITC_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	string cmd
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
 
 	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
@@ -247,7 +247,7 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected("DA", panelTitle)
+	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 
 	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
@@ -479,7 +479,7 @@ Function ITC_StartTestPulse(panelTitle)
 	string cmd, keyboard
 	variable i
 	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected("DA", panelTitle)
+	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 
 	TP_ResetTPStorage(panelTitle)
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
@@ -564,7 +564,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
 	asyncMeasurementWave[0][] = NaN
 
-	WAVE asyncChannelState = DC_ControlStatusWave(panelTitle, "AsyncAD")
+	WAVE asyncChannelState = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
 	deviceChannelOffset = ITC_CalculateDevChannelOffset(panelTitle)
 
 	numEntries = DimSize(asyncChannelState, ROWS)
@@ -628,7 +628,7 @@ Function ITC_ZeroITCOnActiveChan(panelTitle)
 
 	string cmd
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, "DA")
+	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(statusDA[i])

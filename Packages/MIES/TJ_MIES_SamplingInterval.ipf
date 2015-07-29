@@ -263,9 +263,9 @@ static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 	ASSERT(mod(NUM_DA_TTL_CHANNELS, 2) == 0, "Expected even number of DA/TTL channels")
 	ASSERT(mod(NUM_AD_CHANNELS, 2) == 0, "Expected even number of AD channels")
 
-	WAVE statusDA  = DC_ControlStatusWave(panelTitle, "DA")
-	WAVE statusAD  = DC_ControlStatusWave(panelTitle, "AD")
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, "TTL")
+	WAVE statusDA  = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusAD  = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 
 	ac.numDARack1 = sum(statusDA, 0, NUM_DA_TTL_CHANNELS/2 - 1)
 	ac.numDARack2 = sum(statusDA, NUM_DA_TTL_CHANNELS/2, inf)
