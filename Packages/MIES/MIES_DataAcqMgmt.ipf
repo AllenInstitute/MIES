@@ -148,6 +148,8 @@ Function DAM_StartTestPulseMD(panelTitle)
 					
 					do // configure follower device for TP acquistion
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
+						TP_ResetTPStorage(followerPanelTitle)
+						TP_UpdateGlobals(followerPanelTitle)
 						DAM_TPSetup(followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
@@ -165,8 +167,6 @@ Function DAM_StartTestPulseMD(panelTitle)
 					//Follower board commands
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-
-						TP_UpdateGlobals(followerPanelTitle)
 						ITC_BkrdTPMD(TriggerMode, followerPanelTitle) // Sets lead board in wait for trigger mode
 						WAVE/SDFR=GetDevicePath(followerPanelTitle) SelectedDACWaveList
 						TP_ResetSelectedDACWaves(SelectedDACWaveList,followerPanelTitle) // restores lead board settings
