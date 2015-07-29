@@ -8,12 +8,19 @@
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
+/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
-	variable dataAcqOrTP
+	variable dataAcqOrTP, multiDevice
 
 	variable numADCs
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
+
+	if(ParamIsDefault(multiDevice))
+		multiDevice = 0
+	else
+		multiDevice = !!multiDevice
+	endif
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	sweepDataLNB = NaN
@@ -26,7 +33,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle)
-	DC_PlaceDataInITCDataWave(panelTitle)
+	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
@@ -379,10 +386,13 @@ End
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle  panel title
-static Function DC_PlaceDataInITCDataWave(panelTitle)
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string panelTitle
+	variable dataAcqOrTP, multiDevice
 
-	variable i, itcDataColumn, headstage, numEntries, isTestPulse
+	variable i, itcDataColumn, headstage, numEntries
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
@@ -450,7 +460,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		sweepDataLNB[0][0][HeadStage] = DAScale // document the DA scale
 
 		setName = StringFromList(i, setNameList)
-		isTestPulse = IsTestPulseSet(setName)
+		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
 		WAVE stimSet = WB_CreateAndGetStimSet(setName)
 		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
 
@@ -467,7 +477,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		sweepDataTxTLNB[0][1][HeadStage] = GetSetVariableString(panelTitle, ctrl)
 
-		if(isTestPulse)
+		if(dataAcqOrTP == TEST_PULSE_MODE)
 			setColumn   = 0
 			insertStart = 0
 		else
@@ -487,7 +497,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		if(scalingZero && (indexingLocked || !indexing))
 			// makes sure test pulse wave scaling is maintained
-			if(!isTestPulse)
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				if(oneFullCycle) // checks if set has completed one full cycle
 					DAScale = 0
 				endif
@@ -500,7 +510,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
 		// of the onset delay
-		if(!isTestPulse && globalTPInsert)
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
 			channelMode = ChannelClampMode[i][%DAC]
 			if(channelMode == V_CLAMP_MODE)
 				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpVClamp * DAGain
