@@ -220,9 +220,15 @@ Function TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	do
 		Concatenate/NP=0 {singlePulse}, TestPulse
 		TPPulseCount += 1
-	while(DimSize(TestPulse, ROWS) < length)
 
-	Redimension/N=(length) TestPulse
+		if(DimSize(TestPulse, ROWS) >= length)
+			if(TPPulseCount < 3) // keep creating more pulses
+				length *= 2
+				continue
+			endif
+			break
+		endif
+	while(1)
 End
 
 /// @brief Start a single device test pulse, either in background

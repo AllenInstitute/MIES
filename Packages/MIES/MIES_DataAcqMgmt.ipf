@@ -437,16 +437,7 @@ static Function DAM_TPSetup(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
 	TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
-
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-	// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / MINIMUM_SAMPLING_INTERVAL))
-
-	if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
-		NewNoOfPoints = 2^15
-	endif
-	redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=1)
 
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
 	SCOPE_CreateGraph(TestPulseITC, panelTitle)

@@ -401,7 +401,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor
+	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -502,7 +502,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		sweepDataLNB[0][5][HeadStage] = setColumn
 
-		Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
+			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
+			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][itcDataColumn] = 0
+		else
+			Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+		endif
 
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
 		// of the onset delay
