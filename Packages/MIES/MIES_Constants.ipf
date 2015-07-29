@@ -300,3 +300,6 @@ Constant SEGMENT_TYPE_WAVE_LAST_IDX = 97
 
 /// Minimum logarithm to base two for the ITCDataWave size
 Constant MINIMUM_ITCDATAWAVE_EXPONENT = 17
+
+/// Minimum value for the baseline fraction of the Testpulse in percent
+Constant MINIMUM_TP_BASELINE_PERCENTAGE = 25
