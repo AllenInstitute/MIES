@@ -4,6 +4,11 @@
 ///
 /// @brief __SI__ Routines for calculating and handling the minimum sampling interval
 
+/// The consecutive check in #SI_TestSampInt enforces not only one sucessfull sampling
+/// interval but also the multiples 2^x where x ranges from 1 to MIN_CONSECUTIVE_SAMPINT
+/// Set to 0 to deactivate
+static Constant MIN_CONSECUTIVE_SAMPINT = 6
+
 /// @brief Helper struct for storing the number of active channels per rack
 static Structure ActiveChannels
 	int32 numDARack1
@@ -108,7 +113,8 @@ static Function SI_TestSampInt(panelTitle)
 	string panelTitle
 
 	string cmd
-	variable i, sampInt, ret, sampIntRead, numChannels
+	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
+	variable numConsecutive = -1
 	variable numTries = 1001
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
@@ -122,7 +128,12 @@ static Function SI_TestSampInt(panelTitle)
 	Make/D/O/N=(20, numChannels) dfr:ResultWave/Wave=ResultWave
 
 	for(i=1; i < numTries; i += 1)
-		sampInt = MINIMUM_SAMPLING_INTERVAL * i * 1000
+		if(numConsecutive == -1)
+			sampInt  = MINIMUM_SAMPLING_INTERVAL * i * 1000
+		else
+			sampInt *= 2
+		endif
+
 		ITCChanConfigWave[][2] = sampInt
 		sprintf cmd, "ITCConfigAllChannels/Z, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 		ret = ExecuteITCOperation(cmd)
@@ -143,7 +154,19 @@ static Function SI_TestSampInt(panelTitle)
 			sampIntRead = 1/V_min * 1e6
 
 			if(sampIntRead == sampInt)
-				return sampIntRead
+				if(numConsecutive == -1)
+					sampIntRef     = sampIntRead
+					numConsecutive = 0
+					iLast          = i
+				endif
+
+				if(numConsecutive == MIN_CONSECUTIVE_SAMPINT)
+					return sampIntRef
+				else
+					ASSERT(numConsecutive == 0 || iLast == i - 1, "Expected consecutive hits")
+					iLast = i
+					numConsecutive += 1
+				endif
 			endif
 		endif
 	endfor
