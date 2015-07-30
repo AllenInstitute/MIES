@@ -261,7 +261,7 @@ Function/WAVE GetLastSettingText(history, sweepNo, setting)
 	return $""
 End
 
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by ´GetDevicePathAsString(device)´
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by `GetDevicePathAsString(device)`
 Function/S GetAllActiveDevices()
 
 	variable i, j, numTypes, numNumbers
