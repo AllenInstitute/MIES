@@ -3591,7 +3591,7 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
-	variable nextSweep
+	variable nextSweep, NumberOfDevicesRunningTP, i
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
@@ -3605,9 +3605,8 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 			if(!DataAcqState)
 				 // stops test pulse if it is running
 				if(IsBackgroundTaskRunning("TestPulseMD"))
-					WAVE/T ActiveDeviceTextList = root:MIES:ITCDevices:ActiveITCDevices:testPulse:ActiveDeviceTextList
-					variable NumberOfDevicesRunningTP = dimsize(ActiveDeviceTextList, 0)
-					variable i = 0
+					WAVE/T/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceTextList
+					NumberOfDevicesRunningTP = DimSize(ActiveDeviceTextList, ROWS)
 					for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
 						if(stringmatch(ActiveDeviceTextList[i], panelTitle) == 1)
 							 ITC_StopTPMD(panelTitle)

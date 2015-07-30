@@ -52,10 +52,10 @@ static Function HSU_MakeWavesAndFolderForLocked(panelTitle)
 	GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 	GetDevSpecLabNBTextDocFolder(panelTitle)
 	GetActiveITCDevicesTimerFolder()
+	GetActITCDevicesTestPulseFolder()
 
 	createDFWithAllParents("root:MIES:Amplifiers:Settings")
 	createDFWithAllParents("root:ImageHardware:Arduino")
-	createDFWithAllParents("root:MIES:ITCDevices:ActiveITCDevices:TestPulse")
 	createDFWithAllParents("root:MIES:Camera")
 	createDFWithAllParents("root:MIES:Manipulators")
 
