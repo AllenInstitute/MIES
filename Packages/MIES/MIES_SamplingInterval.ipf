@@ -188,6 +188,8 @@ static Function SI_CompressWave(wv)
 	for(i = 0; i < DimSize(wv, ROWS); i += 1)
 		if(wv[i][%minSampInt] <= 0)
 			DeletePoints/M=(ROWS) i, 1, wv
+			i -= 1
+			continue
 		endif
 
 		for(j = i + 1; j < DimSize(wv, ROWS); j += 1)
