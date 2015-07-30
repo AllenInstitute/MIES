@@ -1,5 +1,24 @@
 *.bat whitespace=cr-at-eol
 *.bat eol=crlf
+*.vcproj eol=crlf
+*.vcproj whitespace=cr-at-eol
+*.vcxproj eol=crlf
+*.vcxproj whitespace=cr-at-eol
+*.sln eol=crlf
+*.sln whitespace=cr-at-eol
+*.vbs eol=crlf
+*.vbs whitespace=cr-at-eol
+*.rc  eol=crlf
+*.rc  whitespace=cr-at-eol
+
+*.md  eol=lf
+*.ipf eol=lf
+*.c   eol=lf
+*.h   eol=lf
+*.sh  eol=lf
+*.itx eol=lf
+*.tex eol=lf
+*.awk eol=lf
 
 *.sh         export-ignore
 tools        export-ignore
@@ -8,7 +27,7 @@ Packages/doc export-ignore
 
 .git* export-ignore
 
-*.ipf whitespace=cr-at-eol,indent-with-non-tab,tabwidth=4
+*.ipf whitespace=indent-with-non-tab,tabwidth=4
 *.ibw binary
 *.xop binary
 *.pxp binary
