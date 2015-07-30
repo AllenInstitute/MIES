@@ -131,10 +131,10 @@ static Function SI_TestSampInt(panelTitle)
 			// we could set the sampling interval
 			// so we try to read it back and check if it is the same
 			sprintf cmd, "ITCConfigChannelUpload"
-			AbortOnValue ExecuteITCOperation(cmd), 1
+			ExecuteITCOperationAbortOnError(cmd)
 
 			sprintf cmd, "ITCGetAllChannelsConfig, %s, %s", GetWavesDataFolder(ReqWave, 2), GetWavesDataFolder(ResultWave, 2)
-			AbortOnValue ExecuteITCOperation(cmd), 1
+			ExecuteITCOperationAbortOnError(cmd)
 
 			WaveStats/Q/R=[12,12] ResultWave
 			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
