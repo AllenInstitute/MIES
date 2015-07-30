@@ -202,25 +202,21 @@ static Function TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	string panelTitle
 	WAVE TestPulse
 
-	variable length
+	variable length, numPulses
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
 
 	Make/FREE singlePulse
 	TP_UpdateTestPulseWave(panelTitle, singlePulse)
 
-	variable/G testPulseDFR:TPPulseCount
-	NVAR/SDFR=testPulseDFR TPPulseCount
-
 	length = 2^MINIMUM_ITCDATAWAVE_EXPONENT
 	Redimension/N=0 TestPulse
 
-	TPPulseCount = 0
 	do
 		Concatenate/NP=0 {singlePulse}, TestPulse
-		TPPulseCount += 1
+		numPulses += 1
 
 		if(DimSize(TestPulse, ROWS) >= length)
-			if(TPPulseCount < 3) // keep creating more pulses
+			if(numPulses < 3) // keep creating more pulses
 				length *= 2
 				continue
 			endif
