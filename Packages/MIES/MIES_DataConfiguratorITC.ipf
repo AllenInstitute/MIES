@@ -404,21 +404,23 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor
 	variable/C ret
 
-	globalTPInsert  = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
-	ITI             = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
-	scalingZero     = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
-	indexingLocked  = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
-	indexing        = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
-	distributedDAQ  = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
+	ITI                   = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
+	scalingZero           = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
+	indexingLocked        = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
+	indexing              = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
+	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle)
+	decimationFactor      = DC_GetDecimationFactor(panelTitle)
+	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
-	if(globalTPInsert)
-		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
-		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-		TPAmpVClamp  = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-		TPAmpIClamp  = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-	endif
+	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
+	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE statusDA         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS         = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
@@ -429,11 +431,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	else
 		setColumn = 0
 	endif
-
-	decimationFactor = DC_GetDecimationFactor(panelTitle)
-	setNameList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
