@@ -51,8 +51,10 @@ Function ITC_BkrdTPFuncMD(s)
 		s.count += 1
 	endif
 
-	do // works through list of active devices
-		// update parameters for a particular active device
+	// works through list of active devices
+	// update parameters for a particular active device
+	NumberOfActiveDevices = DimSize(ActiveDeviceTextList, ROWS)
+	for(i = 0; i < NumberOfActiveDevices; i += 1)
 		panelTitle = ActiveDeviceTextList[i]
 		DFREF deviceDFR = GetDevicePath(panelTitle)
 
@@ -70,7 +72,7 @@ Function ITC_BkrdTPFuncMD(s)
 		ExecuteITCOperation(cmd)
 		pointsCompletedInITCDataWave = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], DimSize(ITCDataWave, ROWS))
 
-		if(pointsCompletedInITCDataWave >= (stopCollectionPoint * 0.05))
+		if(pointsCompletedInITCDataWave >= stopCollectionPoint * 0.05)
 			// advances the FIFO is the TP sweep has reached point that gives time for command to be recieved
 			// and processed by the DAC - that's why the multiplier
 			// @todo the above line of code won't handle acquisition with only AD channels
@@ -82,19 +84,16 @@ Function ITC_BkrdTPFuncMD(s)
 			ActiveDeviceList[i][3] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		endif
 
-		// extracts chunk from ITCDataWave for plotting
-		activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle))
-		if(activeChunk >= 1) // This is here because trying to get the last complete chunk somtimes returns a what looks like a incomplete chunk - could be because the xop isn't releasing the itc datawave
-			activeChunk -= 1 // Doing: ITCDataWave[0][0] += 0 does not help but looking one chunk behind does help avoid a chunk where TP has not occurred yet
-		endif
+		// don't extract the last chunk for plotting
+		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1)
 
 		// Ensures that the new TP chunk isn't the same as the last one.
 		// This is required to keep the TP buffer in sync.
 		if(activeChunk != ActiveDeviceList[i][4])
 			DM_CreateScaleTPHoldingWave(panelTitle, chunk=activeChunk)
+			TP_Delta(panelTitle)
+			ActiveDeviceList[i][4] = activeChunk
 		endif
-		TP_Delta(panelTitle)
-		ActiveDeviceList[i][4] = activeChunk
 
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct FIFO error
@@ -113,6 +112,7 @@ Function ITC_BkrdTPFuncMD(s)
 				ExecuteITCOperation(cmd)
 				sprintf cmd, "ITCStartAcq"
 				ExecuteITCOperationAbortOnError(cmd)
+				print "Device %s restarted\r", panelTitle
 			endif
 		endif
 
@@ -121,8 +121,6 @@ Function ITC_BkrdTPFuncMD(s)
 		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
-
-		ActiveDeviceList[i][3] += 1
 
 		NVAR count = $GetCount(panelTitle)
 		if(!IsFinite(count))
@@ -135,10 +133,7 @@ Function ITC_BkrdTPFuncMD(s)
 				endif
 			endif
 		endif
-
-		NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
-		i += 1
-	while(i < NumberOfActiveDevices)	
+	endfor
 
 	return 0
 End
@@ -199,7 +194,7 @@ static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADCh
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] = 0 // FIFO advance from last background cycle
-			ActiveDeviceList[0][4] = 1 // Active chunk of the ITCDataWave
+			ActiveDeviceList[0][4] = NaN // Active chunk of the ITCDataWave
 			ActiveDeviceList[0][5] = 0 // FIFO position
 		else
 			variable numberOfRows = DimSize(ActiveDeviceList, 0)
@@ -208,7 +203,7 @@ static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADCh
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
 			ActiveDeviceList[numberOfRows][3] = 0
-			ActiveDeviceList[numberOfRows][4] = 1
+			ActiveDeviceList[numberOfRows][4] = NaN
 			ActiveDeviceList[numberOfRows][5] = 0
 		endif
 	elseif (AddorRemoveDevice == -1) // remove a ITC device
