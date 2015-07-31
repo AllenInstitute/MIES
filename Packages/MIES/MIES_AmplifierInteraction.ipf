@@ -425,9 +425,14 @@ Function AI_MIESHeadstageMode(panelTitle, headStage)
 	return GetCheckBoxState(panelTitle, ctrl) == CHECKBOX_SELECTED ? V_CLAMP_MODE : I_CLAMP_MODE
 End
 
-Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
+/// @brief Update the AmpStorageWave entry and send the value to the amplifier
+///
+/// @param panelTitle device
+/// @param ctrl       name of the amplifier control
+/// @param headstage  headstage of the desired amplifier
+Function AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 	string panelTitle
-	string cntrlName
+	string ctrl
 	variable headStage
 
 	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
@@ -435,33 +440,32 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 		return 0
 	endif
 
-	variable i, numHS, value, diff
-	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
-
-	Wave statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	numHS = DimSize(statusHS, ROWS)
+	variable i, value, diff
+	string str
 
 	// we don't use a wrapper here as we want to be able to query different control types
-	ControlInfo /w = $panelTitle $cntrlName
+	ControlInfo/W=$panelTitle $ctrl
 	ASSERT(V_flag != 0, "non-existing window or control")
 	value = v_value
 
+	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(!GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp"))
 		headStage  = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
 
-	for(i = 0; i < numHS; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
 			continue
 		endif
 
-		string str
-		sprintf str, "headstage %d, cntrl %s, value %g", i, cntrlName, value
+		sprintf str, "headstage %d, ctrl %s, value %g", i, ctrl, value
 		DEBUGPRINT(str)
 
-		strswitch(cntrlName)
+		strswitch(ctrl)
 			//V-clamp controls
 			case "setvar_DataAcq_Hold_VC":
 				AmpStorageWave[0][0][i] = value
@@ -579,13 +583,13 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				AmpStorageWave[30][0][i] = value
 				break
 			default:
-				printf "BUG: unknown control %s\r", cntrlName
+				ASSERT(0, "Unknown control " + ctrl)
 				break
 		endswitch
 	endfor
 End
 
-///@brief Updates the amplifier GUI
+///@brief Synchronizes the AmpStorageWave to the amplifier GUI control
 ///
 ///@param panelTitle locked device to work on
 ///@param MIESHeadStageNo The headstage on which the MIES DA_Ephys amplifer controls will be updated
@@ -689,12 +693,18 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			case "check_DataAcq_AutoBias":
 				setCheckBoxState(panelTitle, "check_DataAcq_AutoBias", AmpStorageWave[%AutoBiasEnable][0][MIESHeadStageNo])
 				break
+			case "button_DataAcq_AutoBridgeBal_IC":
+			case "button_DataAcq_FastComp_VC":
+			case "button_DataAcq_SlowComp_VC":
+			case "button_DataAcq_AutoPipOffset_VC":
+				// do nothing
+				break
 			// I = zero controls
 			case "check_DataAcq_IzeroEnable":
 				setCheckBoxState(panelTitle, "check_DataAcq_IzeroEnable", AmpStorageWave[%IZeroEnable][0][MIESHeadStageNo])
 				break
 			default:
-				printf "BUG: unknown control %s\r", cntrlName
+				ASSERT(0, "Unknown control " + cntrlName)
 				break
 		endSwitch
 	endIf
