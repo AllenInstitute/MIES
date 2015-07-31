@@ -1062,19 +1062,30 @@ End
 Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	variable numTraces, i
+	variable numTraces, i, first, last
 	string list, graph, trace
 	switch(ba.eventCode)
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 			list = GetAllSweepTraces(graph)
 
+			first = NumberByKey("POINT", CsrInfo(A, graph))
+			last  = NumberByKey("POINT", CsrInfo(B, graph))
+			first = min(first, last)
+			last  = max(first, last)
+
 			DFREF workDFR = UniqueDataFolder($SB_GetSweepBrowserFolder(graph), "findminis")
 
 			numTraces = ItemsInList(list)
 			for(i = 0; i < numTraces; i += 1)
 				trace = StringFromList(i, list)
-				WAVE wv = TraceNameToWaveRef(graph, trace)
+				WAVE full = TraceNameToWaveRef(graph, trace)
+				if(IsFinite(first) && isFinite(last))
+					Duplicate/R=[first, last] full, workDFR:$(NameOfWave(full) + "_res")/Wave=wv
+				else
+					WAVE wv = full
+				endif
+
 				EDC_FindMinis(workDFR, wv)
 			endfor
 			break
