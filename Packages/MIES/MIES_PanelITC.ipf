@@ -4567,26 +4567,6 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 
-static Function DAP_UpdateHeadstage(panelTitle, headStage)
-	string panelTitle
-	variable headStage
-
-	string ctrl
-	variable enabled
-
-	ctrl  = "Check_DataAcq_HS_0" + num2str(headstage)
-	enabled = GetCheckBoxState(panelTitle, ctrl)
-
-	if(!enabled)
-		HSU_UpdateChanAmpAssignStorWv(panelTitle)
-		return NaN
-	endif
-
-	DAP_ChangeHeadstageState(panelTitle, ctrl, 0)
-	HSU_UpdateChanAmpAssignStorWv(panelTitle)
-	DAP_ChangeHeadstageState(panelTitle, ctrl, 1)
-End
-
 static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	string panelTitle
 	variable headStage, clampMode
