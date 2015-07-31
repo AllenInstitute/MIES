@@ -7,11 +7,13 @@
 /// @brief Find Minis either with template or derivative method
 /// Removes template minis which overlap
 /// Displays them in a graph
-Function EDC_FindMinis(data)
+Function EDC_FindMinis(workDFR, data)
+	DFREF workDFR
 	WAVE data
 
 	variable duration, numIndices, i, j
 	variable int = 100 /// @todo seems to be some kind of sampling interval in ms
+	string wvName
 
 	variable threshold = 10
 	variable method    = 1
@@ -30,16 +32,18 @@ Function EDC_FindMinis(data)
 
 	duration = 7 * decay
 
-	Duplicate/O data, peaks
+	wvName = NameOfWave(data) + "_peaks"
+	Duplicate/O data, workDFR:$wvName/Wave=peaks
 	FastOp peaks = 0
-	Duplicate/O data, indices
+	wvName = NameOfWave(data) + "_indices"
+	Duplicate/O data, workDFR:$wvName/Wave=indices
 	FastOp indices = 0
 
 	if(method == 1)
 		EDC_MiniDeriv(data, peaks, indices, threshold, duration)
 	else
 		EDC_MiniTemplate(data, peaks, indices, int, rise, decay, duration, threshold)
-		Duplicate/O indices, tempindices
+		Duplicate/FREE indices, tempindices
 
 		numIndices = DimSize(indices, ROWS)
 		for(i = 1; i < numIndices; i += 1)
@@ -53,20 +57,14 @@ Function EDC_FindMinis(data)
 		endfor
 
 		indices = tempindices
-		KillWaves tempindices
 		Sort/R indices, indices
 		Redimension/N=(j) indices
 		Sort indices, indices
 	endif
 
-	Duplicate/O indices, $(NameOfWave(data) + "_indices")
-	KillWaves indices
-	Duplicate/O peaks, $(NameOfWave(data) + "_peaks")
-	KillWaves peaks
-
 	Display data
 	ModifyGraph axisEnab(left)={0, 0.75}
-	AppendToGraph/R $(NameOfWave(data) + "_peaks")
+	AppendToGraph/R peaks
 	ModifyGraph axisEnab(right)={0.80, 1}
 	ModifyGraph nticks(right)=2
 End

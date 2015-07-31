@@ -1069,11 +1069,13 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 			graph = GetMainWindow(ba.win)
 			list = GetAllSweepTraces(graph)
 
+			DFREF workDFR = UniqueDataFolder($SB_GetSweepBrowserFolder(graph), "findminis")
+
 			numTraces = ItemsInList(list)
 			for(i = 0; i < numTraces; i += 1)
 				trace = StringFromList(i, list)
 				WAVE wv = TraceNameToWaveRef(graph, trace)
-				EDC_FindMinis(wv)
+				EDC_FindMinis(workDFR, wv)
 			endfor
 			break
 	endswitch
