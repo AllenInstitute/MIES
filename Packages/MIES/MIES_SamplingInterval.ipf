@@ -279,6 +279,8 @@ End
 
 /// @brief Query the DA_EPhys panel for the active channels and
 /// fill it in the passed structure
+///
+/// @return number of active channels
 static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 	string panelTitle
 	STRUCT ActiveChannels &ac
@@ -298,6 +300,8 @@ static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 
 	ac.numTTLRack1 = sum(statusTTL, 0, NUM_DA_TTL_CHANNELS/2 - 1)
 	ac.numTTLRack2 = sum(statusTTL, NUM_DA_TTL_CHANNELS/2, inf)
+
+	return sum(statusDA) + sum(statusAD) + sum(statusTTL)
 End
 
 /// @brief Creates a sampling interval lookup wave by brute forcing all possible combinations
@@ -475,8 +479,7 @@ End
 Function SI_CalculateMinSampInterval(panelTitle)
 	string panelTitle
 
-	string deviceType, deviceNumber
-	variable ret
+	variable numActiveChannels
 
 	WAVE/Z lut = SI_GetMinSampIntWave(panelTitle)
 	if(!WaveExists(lut))
@@ -486,7 +489,11 @@ Function SI_CalculateMinSampInterval(panelTitle)
 	endif
 
 	STRUCT ActiveChannels ac
-	SI_FillActiveChannelsStruct(panelTitle, ac)
+	numActiveChannels = SI_FillActiveChannelsStruct(panelTitle, ac)
+
+	if(numActiveChannels == 0)
+		return MINIMUM_SAMPLING_INTERVAL * 1000
+	endif
 
 	return SI_FindMatchingTableEntry(lut, ac)
 End
