@@ -4,7 +4,7 @@
 /// @brief __TP__ Basic Testpulse related functionality
 
 /// @brief Selects Test Pulse output wave for all checked DA channels
-Function TP_SelectTestPulseWave(panelTitle)
+static Function TP_SelectTestPulseWave(panelTitle)
 	string 	panelTitle
 
 	string control
@@ -20,7 +20,7 @@ Function TP_SelectTestPulseWave(panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+static Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	Wave 	SelectedDACWaveList
 	string 	panelTitle
 
@@ -38,7 +38,7 @@ Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 end
 
-Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+static Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	Wave 	SelectedDACWaveList
 	string 	panelTitle
 
@@ -55,7 +55,7 @@ Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_StoreDAScale(SelectedDACScale, panelTitle)
+static Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	Wave 	SelectedDACScale
 	string 	panelTitle
 
@@ -73,7 +73,7 @@ Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_SetDAScaleToOne(panelTitle)
+static Function TP_SetDAScaleToOne(panelTitle)
 	string 	panelTitle
 
 	string control
@@ -103,7 +103,7 @@ Function TP_SetDAScaleToOne(panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 End
 
-Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
+static Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	Wave 	SelectedDACScale
 	string 	panelTitle
 
@@ -120,11 +120,13 @@ Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	while(i < NUM_DA_TTL_CHANNELS)
 end
 
-static Function TP_UpdateGlobals(panelTitle)
+Function TP_UpdateGlobals(panelTitle)
 	string panelTitle
 
-	variable pulseDuration
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	variable/G testPulseDFR:pulseDuration
+	NVAR/SDFR=testPulseDFR pulseDuration
 
 	variable/G testPulseDFR:duration
 	NVAR/SDFR=testPulseDFR duration
@@ -135,6 +137,9 @@ static Function TP_UpdateGlobals(panelTitle)
 	variable/G testPulseDFR:AmplitudeIC
 	NVAR/SDFR=testPulseDFR AmplitudeIC
 
+	variable/G testPulseDFR:baselineFrac
+	NVAR/SDFR=testPulseDFR baselineFrac
+
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	string/G testPulseDFR:ADChannelList  = Convert1DWaveToList(GetADCListFromConfig(ITCChanConfigWave))
@@ -142,48 +147,82 @@ static Function TP_UpdateGlobals(panelTitle)
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	duration = pulseDuration / (SI_CalculateMinSampInterval(panelTitle) / 1000)
+	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
 
 	// need to deal with units here to ensure that resistance is calculated correctly
 	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+
+	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
+	// n determines the number of TP cycles to average
+	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
 End
 
-Function TP_UpdateTestPulseWave(TestPulse, panelTitle)
-	Wave TestPulse
+/// @brief Return the total length of a single testpulse with baseline
+///
+/// @param pulseDuration duration of the high portion of the testpulse in points or time
+/// @param baselineFrac  fraction, *not* percentage, of the baseline
+Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
+	variable pulseDuration, baselineFrac
+
+	ASSERT(baselineFrac > 0 && baselineFrac < 0.5, "baselineFrac is out of range")
+	return pulseDuration / (1 - 2 * baselineFrac)
+End
+
+/// @brief Return the total length of a single testpulse with baseline, equal to one chunk for the MD case, in points
+Function TP_GetTestPulseLengthInPoints(panelTitle)
 	string panelTitle
 
-	variable pointsInTPWave, pulseDuration
-	TP_UpdateGlobals(panelTitle)
+	NVAR duration     = $GetTestpulseDuration(panelTitle)
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
+	return TP_CalculateTestPulseLength(duration, baselineFrac)
+End
+
+static Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
+	string panelTitle
+	WAVE TestPulse
+
+	variable length
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR amplitudeVC
+	NVAR/SDFR=testPulseDFR amplitudeVC, baselineFrac, pulseDuration
 
-	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	pointsInTPWave = (2 * pulseDuration) * 200
-	Redimension/N=(pointsInTPWave) TestPulse
+	// this length here is with minimum sampling interval, it will
+	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
+	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
+	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
-	TestPulse[round(0.25 * pointsInTPWave), round(0.75 * pointsInTPWave)] = amplitudeVC
+	// TP_SetDAScaleToOne adapts to the different clamp modes
+	// so setting it here unconditionally for V_CLAMP is correct
+	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = amplitudeVC
 End
 
 /// @brief MD-variant of #TP_UpdateTestPulseWave
-Function TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle)
-	wave TestPulse
+static Function TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	string panelTitle
+	WAVE TestPulse
 
-	variable frequency, pulseDuration
-	TP_UpdateGlobals(panelTitle)
-
+	variable length, numPulses
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR amplitudeVC
 
-	variable/G testPulseDFR:TPPulseCount
-	NVAR/SDFR=testPulseDFR TPPulseCount
+	Make/FREE singlePulse
+	TP_UpdateTestPulseWave(panelTitle, singlePulse)
 
-	NVAR duration = $GetTestpulseDuration(panelTitle)
+	length = 2^MINIMUM_ITCDATAWAVE_EXPONENT
+	Redimension/N=0 TestPulse
 
-	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	frequency = 1000 / (pulseDuration * 2)
-	TPPulseCount = TP_CreateSquarePulseWave(panelTitle, frequency, amplitudeVC, TestPulse)
+	do
+		Concatenate/NP=0 {singlePulse}, TestPulse
+		numPulses += 1
+
+		if(DimSize(TestPulse, ROWS) >= length)
+			if(numPulses < 3) // keep creating more pulses
+				length *= 2
+				continue
+			endif
+			break
+		endif
+	while(1)
 End
 
 /// @brief Start a single device test pulse, either in background
@@ -205,25 +244,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	KillVariables/Z count
 
 	DAP_UpdateITCMinSampIntDisplay(panelTitle)
-
-	DAP_StoreTTLState(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
-
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	WAVE TestPulse = GetTestPulse()
-	TP_UpdateTestPulseWave(TestPulse, panelTitle)
-
-	Make/FREE/N=8 SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	Make/FREE/N=8 SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale,panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
-
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-	WAVE/SDFR=GetDeviceTestPulse(panelTitle) TestPulseITC
-	SCOPE_CreateGraph(TestPulseITC,panelTitle)
+	TP_Setup(panelTitle)
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 		ITC_StartBackgroundTestPulse(panelTitle)
@@ -232,8 +253,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 		SCOPE_KillScopeWindowIfRequest(panelTitle)
 	endif
 
-	TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	TP_RestoreDAScale(SelectedDACScale,panelTitle)
+	TP_Teardown(panelTitle)
 
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)
@@ -264,16 +284,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
-/// @brief Updates the global variable n in the TP folder
-///
-/// n determines the number of TP cycles to average
-Function TP_UpdateTPBufferSizeGlobal(panelTitle)
-	string panelTitle
-
-	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
-	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
-End
-
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
 // The function TPDelta is called by the TP dataaquistion functions
 // It updates a wave in the Test pulse folder for the device
@@ -284,9 +294,9 @@ Function TP_Delta(panelTitle)
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
 	WAVE/SDFR=dfr TestPulseITC
-	NVAR/SDFR=dfr durationG = duration
 	NVAR/SDFR=dfr amplitudeIC
 	NVAR/SDFR=dfr amplitudeVC
+	NVAR/SDFR=dfr baselineFrac
 	NVAR/SDFR=dfr noOfActiveDA
 	SVAR/SDFR=dfr clampModeString
 
@@ -295,13 +305,13 @@ Function TP_Delta(panelTitle)
 	amplitudeIC = abs(amplitudeIC)
 	amplitudeVC = abs(amplitudeVC)
 
-	variable duration = (durationG * 2 * deltaX(TestPulseITC)) // total duration of TP in ms
-	variable BaselineSteadyStateStartTime =(0.1 * duration)
-	variable BaselineSteadyStateEndTime = (0.24 * Duration)
-	variable TPSSEndTime = (0.74 * duration)
-	variable TPInstantaneouseOnsetTime = (0.252 * Duration)
 	variable DimOffsetVar = DimOffset(TestPulseITC, ROWS)
 	variable DimDeltaVar = DimDelta(TestPulseITC, ROWS)
+	variable duration = DimSize(TestPulseITC, ROWS) * DimDeltaVar // total duration of TP in ms
+	variable BaselineSteadyStateStartTime = 0.1 * duration
+	variable BaselineSteadyStateEndTime = (baselineFrac - 0.01) * duration
+	variable TPSSEndTime = (1 - (baselineFrac + 0.01)) * duration
+	variable TPInstantaneouseOnsetTime = (baselineFrac + 0.002) * duration
 	variable PointsInSteadyStatePeriod = (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))
 	variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
 	variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
@@ -451,7 +461,7 @@ static Constant MAX_VALID_RESISTANCE = 3000
 /// When the TP is initiated by any method, the TP storageWave should be empty
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
-Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
+static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	string 	panelTitle
 	wave 	BaselineSSAvg, InstResistance, SSResistance
 	variable numADCs
@@ -520,7 +530,7 @@ End
 /// @param endRow           last valid row index in TPStorage
 /// @param samplingInterval approximate time duration in seconds between data points
 /// @param fittingRange     time duration to use for fitting
-Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
+static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
 	string panelTitle
 	Wave/Z TPStorage
 	variable endRow, samplingInterval, fittingRange
@@ -573,7 +583,7 @@ End
 ///
 /// - Store the TP record if requested by the user
 /// - Clear the wave to start with a pristine storage wave
-Function TP_ResetTPStorage(panelTitle)
+static Function TP_ResetTPStorage(panelTitle)
 	string panelTitle
 
 	Wave TPStorage = GetTPStorage(panelTitle)
@@ -668,50 +678,6 @@ Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
 	return NaN
 End
 
-/// @brief Creates a square pulse wave where the duration of the pulse is equal to what the user inputs. The interpulse interval is twice the pulse duration.
-/// The interpulse is twice as long as the pulse to give the cell membrane sufficient time to recover between pulses
-static Function TP_CreateSquarePulseWave(panelTitle, Frequency, Amplitude, TPWave)
-	string 	panelTitle
-	variable 	frequency
-	variable 	amplitude
-	Wave 	TPWave
-	variable 	numberOfSquarePulses
-	variable  	longestSweepPoints = (((1000 / Frequency) * 2) / MINIMUM_SAMPLING_INTERVAL)  * (1 / (SI_CalculateMinSampInterval(panelTitle) / MINIMUM_SAMPLING_INTERVAL))
-	//print "longest sweep =", longestSweepPoints
-	variable 	exponent = ceil(log(longestSweepPoints)/log(2))
-	if(exponent < 17) // prevents FIFO underrun overrun errors by keepint the wave a minimum size
-		exponent = 17
-	endif 
-
-	make /FREE /n = (2 ^ exponent)  SinBuildWave
-	make /FREE /n = (2 ^ exponent)  CosBuildWave
-	make /FREE /n = (2 ^ exponent)  BuildWave
-
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL,  "ms", SinBuildWave
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL,  "ms", CosBuildWave
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL,  "ms", BuildWave
-	
-	Frequency /= 1.5
-	// the point offset is 1/4 of a cos wave cycle in points. The is used to make the baseline before the first pulse the same length as the interpulse interval
-	variable PointOffset = ((1 / Frequency) / 0.000005) * 0.25
-	Multithread SinBuildWave =  .49 * - sin(2 * Pi * (Frequency * 1000) * (5 / 1000000000) * (p + PointOffset))
-	Multithread CosBuildWave = 0.49 * - cos(2 * Pi * ((Frequency* 2) * 1000) * (5 / 1000000000) * (p + PointOffset))
-	Multithread BuildWave = SinBuildWave + CosBuildWave
-	Multithread BuildWave = Ceil(Buildwave)
-
-	duplicate /o BuildWave TPWave
-
-	TPWave *= Amplitude
-	FindLevels /Q BuildWave, 0.5
-	numberOfSquarePulses = V_LevelsFound
-	if(mod(numberOfSquarePulses, 2) == 0)
-		return (numberOfSquarePulses / 2) 
-	else
-		numberOfSquarePulses -= 1
-		return (numberOfSquarePulses / 2)
-	endif
-End
-
 /// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
 ///
 Function TP_GetTPResultsColOfHS(panelTitle, headStage)
@@ -779,4 +745,59 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			ASSERT(0, "Unhandled case in ITC_RestartTestPulse")
 			break
 	endswitch
+End
+
+/// @brief Prepare device for TestPulse
+/// @param panelTitle  device
+/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+Function TP_Setup(panelTitle, [multiDevice])
+	string panelTitle
+	variable multiDevice
+
+	DFREF deviceDFR = GetDevicePath(panelTitle)
+
+	TP_UpdateGlobals(panelTitle)
+	TP_ResetTPStorage(panelTitle)
+
+	DAP_StoreTTLState(panelTitle)
+	DAP_TurnOffAllTTLs(panelTitle)
+
+	// stores panel settings
+	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
+	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	TP_SelectTestPulseWave(panelTitle)
+
+	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACScale/Wave=SelectedDACScale
+	TP_StoreDAScale(SelectedDACScale,panelTitle)
+	TP_SetDAScaleToOne(panelTitle)
+
+	WAVE TestPulse = GetTestPulse()
+	if(multiDevice)
+		TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+	else
+		TP_UpdateTestPulseWave(panelTitle, TestPulse)
+	endif
+
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+
+	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	SCOPE_CreateGraph(TestPulseITC, panelTitle)
+	SCOPE_OpenScopeWindow(panelTitle)
+
+	/// @todo use also for single device
+	if(multiDevice)
+		DAM_ConfigUploadDAC(panelTitle)
+	endif
+End
+
+/// @brief Perform common actions after the testpulse
+Function TP_Teardown(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/SDFR=dfr SelectedDACWaveList
+	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
+	WAVE/SDFR=dfr SelectedDACScale
+	TP_RestoreDAScale(SelectedDACScale, panelTitle)
 End

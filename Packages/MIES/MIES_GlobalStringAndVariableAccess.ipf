@@ -197,11 +197,24 @@ End
 
 /// @brief Return the absolute path to the testpulse duration variable
 ///
-/// The duration is *not* in units of time.
+/// The duration is for a single pulse only without baseline.
+///
+/// The duration is *not* in units of time but in number of points for
+/// the real (compared to #MINIMUM_SAMPLING_INTERVAL) sampling interval
 Function/S GetTestpulseDuration(panelTitle)
 	string panelTitle
 
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "duration", initialValue=NaN)
+End
+
+/// @brief Return the absolute path to the testpulse baseline fraction variable
+///
+/// The returned value is the fraction which the baseline occupies relative to the total
+/// testpulse length, before and after the pulse itself.
+Function/S GetTestpulseBaselineFraction(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "baselineFrac", initialValue=NaN)
 End
 
 /// @brief Return the absolute path to the user comment string

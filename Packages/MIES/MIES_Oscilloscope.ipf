@@ -99,6 +99,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	string tagPeakTrace, tagSteadyStateTrace
 	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
+	variable testPulseLength, cutOff, sampInt
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
@@ -222,10 +223,14 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 
 	Label/W=$graph bottom "Time (\\U)"
 
+	sampInt = SI_CalculateMinSampInterval(panelTitle) / 1000
 	if(!cmpstr(dataName, "TestPulseITC"))
+		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
 		NVAR duration = $GetTestpulseDuration(panelTitle)
-		SetAxis/W=$graph bottom 0, duration * (SI_CalculateMinSampInterval(panelTitle) / 1000) * 2 // use for MD TP plotting
+		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
+		SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
 	else
-		SetAxis/W=$graph bottom 0, (DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)) * (SI_CalculateMinSampInterval(panelTitle) / 1000)
+		SetAxis/W=$graph bottom 0, DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) * sampInt
 	endif
 End

@@ -92,7 +92,7 @@ End
 /// selects the ITC device based on the panelTitle passed into the function.
 /// configures all the DAC channels at once using the ITCconfigAllChannels command
 /// resets the DAC FIFOs using the ITCUpdateFIFOPositionAll command
-static Function DAM_ConfigUploadDAC(panelTitle)
+Function DAM_ConfigUploadDAC(panelTitle)
 	string panelTitle
 
 	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
@@ -117,27 +117,17 @@ End
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
 Function DAM_StartTestPulseMD(panelTitle)
 	string panelTitle
-	string TestPulsePath
-	variable i = 0
-	variable DataAcqOrTP = 1
-	variable TriggerMode
-	variable NewNoOfPoints
 
-	DFREF deviceDFR = GetDevicePath(panelTitle)
+	variable i, TriggerMode
 
-	TP_UpdateTPBufferSizeGlobal(panelTitle)
-	TP_ResetTPStorage(panelTitle)
 	if(DAP_DeviceIsYokeable(panelTitle))
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
 			print "TP Started on independent ITC1600"
-			DAM_TPSetup(panelTitle)
+			TP_Setup(panelTitle, multiDevice=1)
 			ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-			WAVE/SDFR=deviceDFR SelectedDACWaveList
-			TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-			WAVE/SDFR=deviceDFR SelectedDACScale
-			TP_RestoreDAScale(SelectedDACScale,panelTitle)	
+			TP_Teardown(panelTitle)
 		elseif(DAP_DeviceCanLead(panelTitle))
 			SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			if(SVAR_exists(ListOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
@@ -148,60 +138,44 @@ Function DAM_StartTestPulseMD(panelTitle)
 					
 					do // configure follower device for TP acquistion
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						DAM_TPSetup(followerPanelTitle)
+						TP_Setup(followerPanelTitle, multiDevice=1)
 						i += 1
 					while(i < numberOfFollowerDevices)
 					i = 0
 					TriggerMode = 256
 
 					//Lead board commands
-					DAM_TPSetup(panelTitle)
+					TP_Setup(panelTitle, multiDevice=1)
 					ITC_BkrdTPMD(TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
-					WAVE/SDFR=deviceDFR SelectedDACWaveList
-					TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle) // restores lead board settings
-					WAVE/SDFR=deviceDFR SelectedDACScale
-					TP_RestoreDAScale(SelectedDACScale,panelTitle)
+					// restores lead board settings
+					TP_Teardown(panelTitle)
 					
 					//Follower board commands
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-
-						TP_UpdateTPBufferSizeGlobal(followerPanelTitle)
 						ITC_BkrdTPMD(TriggerMode, followerPanelTitle) // Sets lead board in wait for trigger mode
-						WAVE/SDFR=GetDevicePath(followerPanelTitle) SelectedDACWaveList
-						TP_ResetSelectedDACWaves(SelectedDACWaveList,followerPanelTitle) // restores lead board settings
-						WAVE/SDFR=GetDevicePath(followerPanelTitle) SelectedDACScale
-						TP_RestoreDAScale(SelectedDACScale,followerPanelTitle)					
+						TP_Teardown(followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
-					
+
 					// Arduino gives trigger
 					ARDStartSequence()
 					
 				elseif(numberOfFollowerDevices == 0)
-					DAM_TPSetup(panelTitle)
+					TP_Setup(panelTitle, multiDevice=1)
 					ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-					WAVE/SDFR=deviceDFR SelectedDACWaveList
-					TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-					WAVE/SDFR=deviceDFR SelectedDACScale
-					TP_RestoreDAScale(SelectedDACScale,panelTitle)
+					TP_Teardown(panelTitle)
 				endif
 			else
-				DAM_TPSetup(panelTitle)
+				TP_Setup(panelTitle, multiDevice=1)
 				ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-				WAVE/SDFR=deviceDFR SelectedDACWaveList
-				TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-				WAVE/SDFR=deviceDFR SelectedDACScale
-				TP_RestoreDAScale(SelectedDACScale,panelTitle)		
+				TP_Teardown(panelTitle)
 			endif
 		endif
 	else
-		DAM_TPSetup(panelTitle)
+		TP_Setup(panelTitle, multiDevice=1)
 		ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-		WAVE/SDFR=deviceDFR SelectedDACWaveList
-		TP_ResetSelectedDACWaves(SelectedDACWaveList,panelTitle)
-		WAVE/SDFR=deviceDFR SelectedDACScale
-		TP_RestoreDAScale(SelectedDACScale,panelTitle)
+		TP_Teardown(panelTitle)
 	endif
 End
 
@@ -413,47 +387,4 @@ Function DAM_YokedRABckgTPCallRACounter(panelTitle)
 	else
 		 RA_BckgTPwithCallToRACounterMD(panelTitle)
 	endif	
-End
-
-/// @brief Prepares device for TP - use this procedure just prior to calling TP start - don't forget to reset the panel config for data acq following TP
-static Function DAM_TPSetup(panelTitle)
-	string panelTitle
-
-	string TestPulsePath
-	DFREF deviceDFR = GetDevicePath(panelTitle)
-
-	DAP_StoreTTLState(panelTitle)
-	print "TTL state of:", panelTitle, "stored"
-	DAP_TurnOffAllTTLs(panelTitle)
-
-	// stores panel settings
-	Make/O/N=8 deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	Make/O/N=8 deviceDFR:SelectedDACScale/Wave=SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale,panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
-
-	WAVE TestPulse = GetTestPulse()
-	TP_UpdateTestPulseWaveChunks(TestPulse, panelTitle) // makes the test pulse wave that contains enought test pulses to fill the min ITC DAC wave size 2^17
-
-	NVAR duration = $GetTestpulseDuration(panelTitle)
-	DM_CreateScaleTPHoldWaveChunk(panelTitle,0, duration)  // first TP so start point = 0
-
-	// configures data for ITC with testpulse wave selected
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-	// special mod for test pulse to ITC data wave that makes sure the entire TP is filled with test pulses because of how data is placed into the ITCDataWave based on sampling frequency
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	variable NewNoOfPoints = floor(dimsize(ITCDataWave, 0) / (deltaX(ITCDataWave) / MINIMUM_SAMPLING_INTERVAL))
-
-	if(NewNoOfPoints ==   43690) // extra special exceptions for 3 channels - super BS coding right here.
-		NewNoOfPoints = 2^15
-	endif
-	redimension /N =(NewNoOfPoints, -1, -1, -1) ITCDataWave
-
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	SCOPE_CreateGraph(TestPulseITC, panelTitle)
-	DAM_ConfigUploadDAC(panelTitle)
-	SCOPE_OpenScopeWindow(panelTitle)
 End

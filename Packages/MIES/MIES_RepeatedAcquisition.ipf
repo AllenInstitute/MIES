@@ -32,32 +32,14 @@ static Function RA_HandleITI(panelTitle)
 		return NaN
 	endif
 
-	/// @todo create one function which does the TP initialization
-	DAP_StoreTTLState(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
-
-	WAVE TestPulse = GetTestPulse()
-	TP_UpdateTestPulseWave(TestPulse,panelTitle)
-
-	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList,panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	MAKE/FREE/N=(NUM_DA_TTL_CHANNELS) SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale, panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE)
-
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	SCOPE_CreateGraph(TestPulseITC, panelTitle)
+	TP_Setup(panelTitle)
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
 	ITC_StartBackgroundTestPulse(panelTitle)
 	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 
-	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_RestoreDAScale(SelectedDACScale,panelTitle)
+	TP_Teardown(panelTitle)
 End
 
 /// @brief Function gets called after the first trial is already

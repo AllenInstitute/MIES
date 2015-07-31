@@ -588,8 +588,8 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][6]  = "1e-6"
 	TPKeyWave[2][7]  = "1e-6"
 	TPKeyWave[2][8]  = "-"
-	TPKeyWave[1][9]  = "0.0001"
-	TPKeyWave[1][10] = "0.0001"
+	TPKeyWave[2][9]  = "0.0001"
+	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
@@ -621,6 +621,46 @@ Function ED_TPDocumentation(panelTitle)
 		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active
 			   // headstage (no place holder columns), j only increments for active headstages.
 	endfor
+
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
+
+	ED_TPSettingsDocumentation(panelTitle)
+End
+
+/// @brief Document the settings of the Testpulse
+Function ED_TPSettingsDocumentation(panelTitle)
+	string panelTitle
+
+	variable sweepNo
+	NVAR/SDFR=GetDeviceTestPulse(panelTitle) baselineFrac, AmplitudeVC, AmplitudeIC, pulseDuration
+
+	Make/FREE/T/N=(3, 4, 1) TPKeyWave
+	Make/FREE/N=(1, 4, NUM_HEADSTAGES) TPSettingsWave = NaN
+
+	// name
+	TPKeyWave[0][0] = "TP Baseline Fraction" // fraction of total TP duration
+	TPKeyWave[0][1] = "TP Amplitude VC"
+	TPKeyWave[0][2] = "TP Amplitude IC"
+	TPKeyWave[0][3] = "TP Pulse Duration"
+
+	// unit
+	TPKeyWave[1][0] = ""
+	TPKeyWave[1][1] = ""
+	TPKeyWave[1][2] = ""
+	TPKeyWave[1][3] = "ms"
+
+	// tolerance
+	TPKeyWave[2][0] = ""
+	TPKeyWave[2][1] = ""
+	TPKeyWave[2][2] = ""
+	TPKeyWave[2][3] = ""
+
+	// the settings are valid for all headstages
+	TPSettingsWave[0][0][] = baselineFrac
+	TPSettingsWave[0][1][] = AmplitudeVC
+	TPSettingsWave[0][2][] = AmplitudeIC
+	TPSettingsWave[0][3][] = pulseDuration
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)

@@ -3050,3 +3050,14 @@ Function/S GetStaticDataFolderAS()
 
 	return GetMiesPathAsString() + ":StaticData"
 End
+
+/// @brief Return the datafolder reference to the active ITC devices folder,
+/// e.g. root:MIES:ITCDevices:ActiveITCDevices:TestPulse
+Function/DF GetActITCDevicesTestPulseFolder()
+	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
+End
+
+/// @brief Return the full path to the active ITC devices location
+Function/S GetActITCDevicesTestPulFolderA()
+	return GetITCDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
+End

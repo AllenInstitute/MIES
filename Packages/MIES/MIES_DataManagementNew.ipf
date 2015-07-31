@@ -56,6 +56,9 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	//Add wave notes for the factors on the Asyn tab
 	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
 
+	// TP settings, especially useful if "global TP insertion" is active
+	ED_TPSettingsDocumentation(panelTitle)
+
 	DM_AfterSweepDataSaveHook(panelTitle)
 End
 
@@ -82,35 +85,27 @@ Function DM_AfterSweepDataSaveHook(panelTitle)
 	endfor
 End
 
-Function DM_CreateScaleTPHoldingWave(panelTitle)
+Function DM_CreateScaleTPHoldingWave(panelTitle, [chunk])
 	string panelTitle
+	variable chunk
 
-	dfref testPulseDFR = GetDeviceTestPulse(panelTitle)
+	variable length, first, last
 
-	NVAR duration = $GetTestpulseDuration(panelTitle)
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-
-	ASSERT(Duration > 0, "duration is not strictly positive")
-	ASSERT(DimSize(ITCDataWave, COLS) > 0, "Expected at least one headStage")
-
-	Duplicate/O/R=[0, (duration * 2)][] ITCDataWave, testPulseDFR:TestPulseITC/Wave=TestPulseITC
-	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
-	DM_ADScaling(TestPulseITC, panelTitle)
-End
-
-Function DM_CreateScaleTPHoldWaveChunk(panelTitle,startPoint, NoOfPointsInTP)
-	string panelTitle
-	variable startPoint, NoOfPointsInTP
-
-	variable RowsToCopy = NoOfPointsInTP
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	length = TP_GetTestPulseLengthInPoints(panelTitle)
 
-	ITCDataWave[0][0] += 0
-	startPoint += RowsToCopy / 4
-	Duplicate/O/R=[startPoint,(startPoint + RowsToCopy)][] ITCDataWave, TestPulseITC
+	if(ParamIsDefault(chunk))
+		chunk = 0
+	endif
+
+	first = chunk * length
+	last  = first + length
+	ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS), "Invalid wave subrange")
+
+	Duplicate/O/R=[first, last][] ITCDataWave, TestPulseITC
 	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
-	SetScale/P x 0,deltax(TestPulseITC),"ms", TestPulseITC
+	SetScale/P x, 0, DimDelta(TestPulseITC, ROWS), "ms", TestPulseITC
 	DM_ADScaling(TestPulseITC, panelTitle)
 End
 

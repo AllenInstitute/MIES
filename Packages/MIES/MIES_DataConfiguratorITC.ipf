@@ -8,12 +8,19 @@
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
+/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
-	variable dataAcqOrTP
+	variable dataAcqOrTP, multiDevice
 
 	variable numADCs
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
+
+	if(ParamIsDefault(multiDevice))
+		multiDevice = 0
+	else
+		multiDevice = !!multiDevice
+	endif
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	sweepDataLNB = NaN
@@ -26,7 +33,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle)
-	DC_PlaceDataInITCDataWave(panelTitle)
+	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
@@ -207,18 +214,15 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	variable longestSweep, exponent
 
 	longestSweep = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-
 	exponent = ceil(log(longestSweep)/log(2))
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1
 	endif
 
-	if(exponent < 17)
-		exponent = 17
-	endif
+	exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
 
-	return (2^exponent)
+	return 2^exponent
 end
 
 /// @brief Returns the longest sweep in a stimulus set across all active DA and TTL channels.
@@ -382,37 +386,41 @@ End
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle  panel title
-static Function DC_PlaceDataInITCDataWave(panelTitle)
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string panelTitle
+	variable dataAcqOrTP, multiDevice
 
-	variable i, itcDataColumn, headstage, numEntries, isTestPulse
+	variable i, itcDataColumn, headstage, numEntries
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
 	string ctrl, firstSetName, str, list
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
-	variable channelMode, TPDuration, TPAmpVClamp, TPAmpIClamp, TPStartPoint, TPEndPoint
+	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor
+	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
 	variable/C ret
 
-	globalTPInsert  = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
-	ITI             = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
-	scalingZero     = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
-	indexingLocked  = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
-	indexing        = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
-	distributedDAQ  = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
+	ITI                   = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
+	scalingZero           = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
+	indexingLocked        = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
+	indexing              = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
+	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle)
+	decimationFactor      = DC_GetDecimationFactor(panelTitle)
+	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
-	if(globalTPInsert)
-		Wave ChannelClampMode = GetChannelClampMode(panelTitle)
-		TPDuration   = 2 * GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-		TPAmpVClamp  = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-		TPAmpIClamp  = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-		TPStartPoint = x2pnt(ITCDataWave, TPDuration / 4)
-		TPEndPoint   = x2pnt(ITCDataWave, TPDuration / 2) + TPStartPoint
-	endif
+	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
+	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE statusDA         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS         = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
@@ -423,11 +431,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 	else
 		setColumn = 0
 	endif
-
-	decimationFactor = DC_GetDecimationFactor(panelTitle)
-	setNameList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
 
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -453,7 +456,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		sweepDataLNB[0][0][HeadStage] = DAScale // document the DA scale
 
 		setName = StringFromList(i, setNameList)
-		isTestPulse = IsTestPulseSet(setName)
+		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
 		WAVE stimSet = WB_CreateAndGetStimSet(setName)
 		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
 
@@ -470,7 +473,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		sweepDataTxTLNB[0][1][HeadStage] = GetSetVariableString(panelTitle, ctrl)
 
-		if(isTestPulse)
+		if(dataAcqOrTP == TEST_PULSE_MODE)
 			setColumn   = 0
 			insertStart = 0
 		else
@@ -490,7 +493,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		if(scalingZero && (indexingLocked || !indexing))
 			// makes sure test pulse wave scaling is maintained
-			if(!isTestPulse)
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				if(oneFullCycle) // checks if set has completed one full cycle
 					DAScale = 0
 				endif
@@ -499,19 +502,27 @@ static Function DC_PlaceDataInITCDataWave(panelTitle)
 
 		sweepDataLNB[0][5][HeadStage] = setColumn
 
-		Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
+			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
+			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][itcDataColumn] = 0
+		else
+			Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+		endif
 
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
 		// of the onset delay
-		if(!isTestPulse && globalTPInsert)
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
 			channelMode = ChannelClampMode[i][%DAC]
+			testPulseAmplitude = NaN
 			if(channelMode == V_CLAMP_MODE)
-				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpVClamp * DAGain
+				testPulseAmplitude = TPAmpVClamp * DAGain
 			elseif(channelMode == I_CLAMP_MODE)
-				ITCDataWave[TPStartPoint, TPEndPoint][itcDataColumn] = TPAmpIClamp * DAGain
+				testPulseAmplitude = TPAmpIClamp * DAGain
 			else
 				ASSERT(0, "Unknown clamp mode")
 			endif
+			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude
 		endif
 
 		// put the insert test pulse checkbox status into the sweep data wave
@@ -787,9 +798,9 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	variable longestSweep, totalIncrease
 
 	longestSweep  = DC_CalculateLongestSweep(panelTitle)
-	totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
 		if(GetCheckBoxState(panelTitle,"Check_DataAcq1_DistribDaq"))
 			return longestSweep * DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC) + totalIncrease
 		else

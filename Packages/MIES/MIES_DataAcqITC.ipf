@@ -244,7 +244,6 @@ Function ITC_StartBackgroundTestPulse(panelTitle)
 	panelTitleG = panelTitle
 	string cmd
 
-	TP_ResetTPStorage(panelTitle)
 	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 
@@ -479,7 +478,6 @@ Function ITC_StartTestPulse(panelTitle)
 	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
 	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 
-	TP_ResetTPStorage(panelTitle)
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
