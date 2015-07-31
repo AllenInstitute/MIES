@@ -745,6 +745,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
 	ModifyPanel fixedSize=0
+	Button button_SB_FindMinis,pos={18,3},size={60,23},proc=SB_ButtonProc_FindMinis,title="Find Minis"
 	NewNotebook /F=0 /N=NB0 /W=(16,29,196,362) /HOST=#
 	Notebook kwTopWin, defaultTab=20, statusWidth=0, autoSave=1
 	Notebook kwTopWin font="Arial", fSize=10, fStyle=0, textRGB=(0,0,0)
@@ -1052,6 +1053,28 @@ Function SB_ButtonProc_DupGraph(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			SB_DuplicateSweepBrowser(GetMainWindow(ba.win))
+			break
+	endswitch
+
+	return 0
+End
+
+Function SB_ButtonProc_FindMinis(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	variable numTraces, i
+	string list, graph, trace
+	switch(ba.eventCode)
+		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
+			list = GetAllSweepTraces(graph)
+
+			numTraces = ItemsInList(list)
+			for(i = 0; i < numTraces; i += 1)
+				trace = StringFromList(i, list)
+				WAVE wv = TraceNameToWaveRef(graph, trace)
+				EDC_FindMinis(wv)
+			endfor
 			break
 	endswitch
 
