@@ -435,32 +435,46 @@ End
 /// @param panelTitle device
 /// @param ctrl       name of the amplifier control
 /// @param headstage  headstage of the desired amplifier
-/// @param value [optional: defaults to the controls value] value to set
-Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value])
+/// @param value      [optional: defaults to the controls value] value to set
+/// @param sendToAll  [optional: defaults to the state of the checkbox] should the value be send
+///                   to all active headstages (true) or just to the given one (false)
+Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	string panelTitle
 	string ctrl
-	variable headStage, value
+	variable headStage, value, sendToAll
 
 	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
 
-	variable i, diff
+	variable i, diff, selectedHeadstage
 	string str
 
+	selectedHeadstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+
 	if(ParamIsDefault(value))
-		ASSERT(headstage == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"), "Supply the optional argument value if setting values of other headstages than the current one")
+		ASSERT(headstage == selectedHeadstage, "Supply the optional argument value if setting values of other headstages than the current one")
 		// we don't use a wrapper here as we want to be able to query different control types
 		ControlInfo/W=$panelTitle $ctrl
 		ASSERT(V_flag != 0, "non-existing window or control")
 		value = v_value
 	endif
 
+	if(ParamIsDefault(sendToAll))
+		if(headstage == selectedHeadstage)
+			sendToAll = GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp")
+		else
+			sendToAll = 0
+		endif
+	else
+		sendToAll = !!sendToAll
+	endif
+
 	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	if(!GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp"))
+	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
 
