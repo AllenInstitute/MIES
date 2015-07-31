@@ -502,7 +502,7 @@ End
 ///
 /// This functions tries to load the wave from disk on the first
 /// call so this function might take a while to execute.
-Function/WAVE SI_GetMinSampIntWave(panelTitle)
+static Function/WAVE SI_GetMinSampIntWave(panelTitle)
 	string panelTitle
 
 	variable ret
