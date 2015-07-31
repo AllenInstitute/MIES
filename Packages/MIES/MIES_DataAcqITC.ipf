@@ -454,15 +454,8 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		DEBUGPRINT("current to send=", var=current)
-
-		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
-		ampSettings[17][0][headStage] = 1 /// @todo Modify AI_UpdateAmpModel to allow a value to be passed in, in place of the GUI query. 
-		AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current)
-		ampSettings[16][0][headStage] = current * 1e12
-
-		// update the DA_Ephys panel amp controls
-		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_IC")
-		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnable")
+		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnable", headStage, value=1)
+		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12)
 	endfor
 End
 

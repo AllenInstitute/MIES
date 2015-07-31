@@ -250,7 +250,9 @@ End
 /// @param value      Numerical value to send, ignored by getter functions (MCC_GETHOLDING_FUNC and MCC_GETPIPETTEOFFSET_FUNC)
 ///
 /// @returns return value or error condition. An error is indicated by a return value of NaN.
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It might make sense to have this function update the AmpStorageWave 
+///
+/// @todo split funciton into a getter and setter, make the setter static as outside callers should use AI_UpdateAmpModel
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string panelTitle
 	variable headStage, mode, func, value
 
@@ -427,32 +429,38 @@ End
 
 /// @brief Update the AmpStorageWave entry and send the value to the amplifier
 ///
+/// Additionally setting the GUI value if the given headstage is the selected one
+/// and a value has been passed.
+///
 /// @param panelTitle device
 /// @param ctrl       name of the amplifier control
 /// @param headstage  headstage of the desired amplifier
-Function AI_UpdateAmpModel(panelTitle, ctrl, headStage)
+/// @param value [optional: defaults to the controls value] value to set
+Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value])
 	string panelTitle
 	string ctrl
-	variable headStage
+	variable headStage, value
 
 	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
 
-	variable i, value, diff
+	variable i, diff
 	string str
 
-	// we don't use a wrapper here as we want to be able to query different control types
-	ControlInfo/W=$panelTitle $ctrl
-	ASSERT(V_flag != 0, "non-existing window or control")
-	value = v_value
+	if(ParamIsDefault(value))
+		ASSERT(headstage == GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"), "Supply the optional argument value if setting values of other headstages than the current one")
+		// we don't use a wrapper here as we want to be able to query different control types
+		ControlInfo/W=$panelTitle $ctrl
+		ASSERT(V_flag != 0, "non-existing window or control")
+		value = v_value
+	endif
 
 	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(!GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp"))
-		headStage  = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
 
@@ -491,22 +499,16 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 				diff = value - AmpStorageWave[5][0][i]
 				AmpStorageWave[5][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
-				if(GetCheckBoxState(panelTitle, "check_DataAcq_Amp_Chain"))
-					value = AmpStorageWave[6][0][i] + diff
-					AmpStorageWave[6][0][i] = value
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
-					AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_RsPred")
+				if(AmpStorageWave[%RSCompChaining][0][i])
+					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsPred", i, value=AmpStorageWave[6][0][i] + diff)
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
 				diff = value - AmpStorageWave[6][0][i]
 				AmpStorageWave[6][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
-				if(GetCheckBoxState(panelTitle, "check_DataAcq_Amp_Chain"))
-					value = AmpStorageWave[5][0][i] + diff
-					AmpStorageWave[5][0][i] = value
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
-					AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_RsCorr")
+				if(AmpStorageWave[%RSCompChaining][0][i])
+					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i] + diff)
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
@@ -532,7 +534,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 				break
 			case "check_DataAcq_Amp_Chain":
 				AmpStorageWave[%RSCompChaining][0][i] = value
-				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", headStage)
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=value)
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -573,10 +575,8 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 				break
 			case "button_DataAcq_AutoBridgeBal_IC":
 				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
-				AmpStorageWave[%BridgeBalance][0][i] = value
-				AmpStorageWave[%BridgeBalanceEnable][0][i] = 1
-				AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_BB")
-				AI_UpdateAmpView(panelTitle, i, cntrlName ="check_DatAcq_BBEnable")
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_BB", i, value=value)
+				AI_UpdateAmpModel(panelTitle, "check_DatAcq_BBEnable", i, value=1)
 				break
 			// I Zero controls
 			case "check_DataAcq_IzeroEnable":
@@ -586,6 +586,10 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 				ASSERT(0, "Unknown control " + ctrl)
 				break
 		endswitch
+
+		if(!ParamIsDefault(value))
+			AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
+		endif
 	endfor
 End
 
