@@ -491,7 +491,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 					value = AmpStorageWave[6][0][i] + diff
 					AmpStorageWave[6][0][i] = value
 					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
-					AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_RsPred")
+					AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_RsPred")
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
@@ -502,7 +502,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 					value = AmpStorageWave[5][0][i] + diff
 					AmpStorageWave[5][0][i] = value
 					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
-					AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_RsCorr")
+					AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_RsCorr")
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
@@ -516,7 +516,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 			case "button_DataAcq_AutoPipOffset_VC":
 				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
 				AmpStorageWave[%PipetteOffset][0][i] = value
-				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
+				AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
 				break
 			case "button_DataAcq_FastComp_VC":
 				AmpStorageWave[%FastCapacitanceComp][0][i] = value
@@ -571,8 +571,8 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
 				AmpStorageWave[%BridgeBalance][0][i] = value
 				AmpStorageWave[%BridgeBalanceEnable][0][i] = 1
-				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_BB")
-				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="check_DatAcq_BBEnable")
+				AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_BB")
+				AI_UpdateAmpView(panelTitle, i, cntrlName ="check_DatAcq_BBEnable")
 				break
 			// I Zero controls
 			case "check_DataAcq_IzeroEnable":
