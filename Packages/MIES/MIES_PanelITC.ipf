@@ -4689,7 +4689,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 				AI_SetClampMode(panelTitle, headStage, mode)
 			endif
 
-			AI_UpdateAmpView(panelTitle, headStage)
+			AI_SyncAmpStorageToGUI(panelTitle, headStage)
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
@@ -5118,7 +5118,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		panelTitle = sc.win
 		headStage  = sc.curVal
 		mode = AI_MIESHeadstageMode(panelTitle, headStage)
-		AI_UpdateAmpView(panelTitle, headStage)
+		AI_SyncAmpStorageToGUI(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		// chooses the amp tab according to the MIES headstage clamp mode

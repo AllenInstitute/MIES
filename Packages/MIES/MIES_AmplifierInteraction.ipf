@@ -607,12 +607,22 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	endfor
 End
 
-///@brief Synchronizes the AmpStorageWave to the amplifier GUI control
+/// @brief Convenience wrapper for #AI_UpdateAmpView
 ///
-///@param panelTitle locked device to work on
-///@param MIESHeadStageNo The headstage on which the MIES DA_Ephys amplifer controls will be updated
-///@param cntrlName Name of the control being updated. cntrlName is an optional parameter (see displayHelpTopic "Using Optional Parameters").
-Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
+/// Disallows setting single controls for outside callers as #AI_UpdateAmpModel should be used for that.
+Function AI_SyncAmpStorageToGUI(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	return AI_UpdateAmpView(panelTitle, headstage)
+End
+
+/// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
+///
+/// @param panelTitle      locked device to work on
+/// @param MIESHeadStageNo headstage on which the MIES DA_Ephys amplifer controls will be updated
+/// @param cntrlName       Name of the control being updated. cntrlName is an optional parameter (see displayHelpTopic "Using Optional Parameters").
+static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 	string panelTitle
 	variable MIESHeadStageNo
 	string cntrlName
