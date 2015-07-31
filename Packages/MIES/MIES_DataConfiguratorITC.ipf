@@ -420,7 +420,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE statusDA         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS         = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+	WAVE statusHS         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
