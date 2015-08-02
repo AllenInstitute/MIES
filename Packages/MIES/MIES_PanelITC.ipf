@@ -3472,7 +3472,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	endif
 
 	// disable the clamp mode checkboxes of all active headstages
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
@@ -3498,7 +3498,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	string ctrl
 	variable numHS, i
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
@@ -4289,7 +4289,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		numHS = sum(DC_ControlStatusWave(panelTitle, HEADSTAGE))
+		numHS = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
 			return 1
@@ -4359,7 +4359,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		// check all active headstages
-		Wave statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+		Wave statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 		numEntries = DimSize(statusHS, ROWS)
 		for(i=0; i < numEntries; i+=1)
 			if(!statusHS[i])
@@ -4689,7 +4689,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 				AI_SetClampMode(panelTitle, headStage, mode)
 			endif
 
-			AI_UpdateAmpView(panelTitle, headStage)
+			AI_SyncAmpStorageToGUI(panelTitle, headStage)
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCMinSampIntDisplay(panelTitle)
@@ -5118,7 +5118,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		panelTitle = sc.win
 		headStage  = sc.curVal
 		mode = AI_MIESHeadstageMode(panelTitle, headStage)
-		AI_UpdateAmpView(panelTitle, headStage)
+		AI_SyncAmpStorageToGUI(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		// chooses the amp tab according to the MIES headstage clamp mode

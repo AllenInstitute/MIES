@@ -112,7 +112,7 @@ Function ITC_BkrdTPFuncMD(s)
 				ExecuteITCOperation(cmd)
 				sprintf cmd, "ITCStartAcq"
 				ExecuteITCOperationAbortOnError(cmd)
-				print "Device %s restarted\r", panelTitle
+				printf "Device %s restarted\r", panelTitle
 			endif
 		endif
 

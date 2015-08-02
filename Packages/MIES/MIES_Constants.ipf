@@ -128,7 +128,7 @@ Constant CHANNEL_CONTROL_UNIT      = 0x010
 Constant CHANNEL_CONTROL_GAIN      = 0x020
 Constant CHANNEL_CONTROL_SCALE     = 0x030
 Constant CHANNEL_CONTROL_CHECK     = 0x040
-Constant HEADSTAGE                 = 0x080
+Constant CHANNEL_TYPE_HEADSTAGE    = 0x080
 Constant CHANNEL_TYPE_ASYNC        = 0x100
 /// @}
 

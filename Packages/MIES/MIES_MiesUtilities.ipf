@@ -99,7 +99,7 @@ Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
 
 	string ctrl
 
-	if(channelType == HEADSTAGE)
+	if(channelType == CHANNEL_TYPE_HEADSTAGE)
 		ctrl = "DataAcq_HS"
 	elseif(channelType == CHANNEL_TYPE_DAC)
 		ctrl = "DA"
@@ -1176,7 +1176,7 @@ Function GetNumberFromType([var, str])
 			case CHANNEL_TYPE_DAC:
 				return NUM_DA_TTL_CHANNELS
 				break
-			case HEADSTAGE:
+			case CHANNEL_TYPE_HEADSTAGE:
 				return NUM_HEADSTAGES
 				break
 			case CHANNEL_TYPE_ADC:

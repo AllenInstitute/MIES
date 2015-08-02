@@ -116,9 +116,7 @@ Function P_MethodApproach(panelTitle, headStage)
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 		// Turn off holding
-		AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
-		AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 0
-		AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnableVC")
+		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=0)
 	endif	
 End
 
@@ -314,14 +312,10 @@ Function P_UpdateVcom(panelTitle, vCom, headStage)
 	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
 	// apply holding
-	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, vCom * 1e-3)
-	AmpStorageWave[%HoldingPotential][0][headStage] = vCom
-	AI_UpdateAmpView(panelTitle, headStage, cntrlName = "setvar_DataAcq_Hold_VC")
+	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage, value=vCom)
 	
 	// make sure holding is enabled
-	AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1)
-	AmpStorageWave[%HoldingPotentialEnable][0][headStage] = 1
-	AI_UpdateAmpView(panelTitle, headStage, cntrlName = "check_DatAcq_HoldEnableVC")
+	AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=1)
 End
 
 /// @brief Opens ITC devices used for pressure regulation

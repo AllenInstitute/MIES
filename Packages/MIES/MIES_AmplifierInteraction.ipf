@@ -250,7 +250,9 @@ End
 /// @param value      Numerical value to send, ignored by getter functions (MCC_GETHOLDING_FUNC and MCC_GETPIPETTEOFFSET_FUNC)
 ///
 /// @returns return value or error condition. An error is indicated by a return value of NaN.
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value) ///@todo It might make sense to have this function update the AmpStorageWave 
+///
+/// @todo split funciton into a getter and setter, make the setter static as outside callers should use AI_UpdateAmpModel
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string panelTitle
 	variable headStage, mode, func, value
 
@@ -425,43 +427,67 @@ Function AI_MIESHeadstageMode(panelTitle, headStage)
 	return GetCheckBoxState(panelTitle, ctrl) == CHECKBOX_SELECTED ? V_CLAMP_MODE : I_CLAMP_MODE
 End
 
-Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
+/// @brief Update the AmpStorageWave entry and send the value to the amplifier
+///
+/// Additionally setting the GUI value if the given headstage is the selected one
+/// and a value has been passed.
+///
+/// @param panelTitle device
+/// @param ctrl       name of the amplifier control
+/// @param headstage  headstage of the desired amplifier
+/// @param value      [optional: defaults to the controls value] value to set
+/// @param sendToAll  [optional: defaults to the state of the checkbox] should the value be send
+///                   to all active headstages (true) or just to the given one (false)
+Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	string panelTitle
-	string cntrlName
-	variable headStage
+	string ctrl
+	variable headStage, value, sendToAll
 
 	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
 
-	variable i, numHS, value, diff
-	wave AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+	variable i, diff, selectedHeadstage
+	string str
 
-	Wave statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
-	numHS = DimSize(statusHS, ROWS)
+	selectedHeadstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
-	// we don't use a wrapper here as we want to be able to query different control types
-	ControlInfo /w = $panelTitle $cntrlName
-	ASSERT(V_flag != 0, "non-existing window or control")
-	value = v_value
+	if(ParamIsDefault(value))
+		ASSERT(headstage == selectedHeadstage, "Supply the optional argument value if setting values of other headstages than the current one")
+		// we don't use a wrapper here as we want to be able to query different control types
+		ControlInfo/W=$panelTitle $ctrl
+		ASSERT(V_flag != 0, "non-existing window or control")
+		value = v_value
+	endif
 
-	if(!GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp"))
-		headStage  = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	if(ParamIsDefault(sendToAll))
+		if(headstage == selectedHeadstage)
+			sendToAll = GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp")
+		else
+			sendToAll = 0
+		endif
+	else
+		sendToAll = !!sendToAll
+	endif
+
+	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
 
-	for(i = 0; i < numHS; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
 			continue
 		endif
 
-		string str
-		sprintf str, "headstage %d, cntrl %s, value %g", i, cntrlName, value
+		sprintf str, "headstage %d, ctrl %s, value %g", i, ctrl, value
 		DEBUGPRINT(str)
 
-		strswitch(cntrlName)
+		strswitch(ctrl)
 			//V-clamp controls
 			case "setvar_DataAcq_Hold_VC":
 				AmpStorageWave[0][0][i] = value
@@ -487,22 +513,16 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				diff = value - AmpStorageWave[5][0][i]
 				AmpStorageWave[5][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
-				if(GetCheckBoxState(panelTitle, "check_DataAcq_Amp_Chain"))
-					value = AmpStorageWave[6][0][i] + diff
-					AmpStorageWave[6][0][i] = value
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
-					AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_RsPred")
+				if(AmpStorageWave[%RSCompChaining][0][i])
+					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsPred", i, value=AmpStorageWave[6][0][i] + diff)
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
 				diff = value - AmpStorageWave[6][0][i]
 				AmpStorageWave[6][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
-				if(GetCheckBoxState(panelTitle, "check_DataAcq_Amp_Chain"))
-					value = AmpStorageWave[5][0][i] + diff
-					AmpStorageWave[5][0][i] = value
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
-					AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_RsCorr")
+				if(AmpStorageWave[%RSCompChaining][0][i])
+					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i] + diff)
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
@@ -516,7 +536,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 			case "button_DataAcq_AutoPipOffset_VC":
 				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
 				AmpStorageWave[%PipetteOffset][0][i] = value
-				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
+				AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
 				break
 			case "button_DataAcq_FastComp_VC":
 				AmpStorageWave[%FastCapacitanceComp][0][i] = value
@@ -528,7 +548,7 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				break
 			case "check_DataAcq_Amp_Chain":
 				AmpStorageWave[%RSCompChaining][0][i] = value
-				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", headStage)
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=value)
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -569,28 +589,40 @@ Function AI_UpdateAmpModel(panelTitle, cntrlName, headStage)
 				break
 			case "button_DataAcq_AutoBridgeBal_IC":
 				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN)
-				AmpStorageWave[%BridgeBalance][0][i] = value
-				AmpStorageWave[%BridgeBalanceEnable][0][i] = 1
-				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="setvar_DataAcq_BB")
-				AI_UpdateAmpView(panelTitle, headStage, cntrlName ="check_DatAcq_BBEnable")
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_BB", i, value=value)
+				AI_UpdateAmpModel(panelTitle, "check_DatAcq_BBEnable", i, value=1)
 				break
 			// I Zero controls
 			case "check_DataAcq_IzeroEnable":
 				AmpStorageWave[30][0][i] = value
 				break
 			default:
-				printf "BUG: unknown control %s\r", cntrlName
+				ASSERT(0, "Unknown control " + ctrl)
 				break
 		endswitch
+
+		if(!ParamIsDefault(value))
+			AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
+		endif
 	endfor
 End
 
-///@brief Updates the amplifier GUI
+/// @brief Convenience wrapper for #AI_UpdateAmpView
 ///
-///@param panelTitle locked device to work on
-///@param MIESHeadStageNo The headstage on which the MIES DA_Ephys amplifer controls will be updated
-///@param cntrlName Name of the control being updated. cntrlName is an optional parameter (see displayHelpTopic "Using Optional Parameters").
-Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
+/// Disallows setting single controls for outside callers as #AI_UpdateAmpModel should be used for that.
+Function AI_SyncAmpStorageToGUI(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	return AI_UpdateAmpView(panelTitle, headstage)
+End
+
+/// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
+///
+/// @param panelTitle      locked device to work on
+/// @param MIESHeadStageNo headstage on which the MIES DA_Ephys amplifer controls will be updated
+/// @param cntrlName       Name of the control being updated. cntrlName is an optional parameter (see displayHelpTopic "Using Optional Parameters").
+static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 	string panelTitle
 	variable MIESHeadStageNo
 	string cntrlName
@@ -689,12 +721,18 @@ Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			case "check_DataAcq_AutoBias":
 				setCheckBoxState(panelTitle, "check_DataAcq_AutoBias", AmpStorageWave[%AutoBiasEnable][0][MIESHeadStageNo])
 				break
+			case "button_DataAcq_AutoBridgeBal_IC":
+			case "button_DataAcq_FastComp_VC":
+			case "button_DataAcq_SlowComp_VC":
+			case "button_DataAcq_AutoPipOffset_VC":
+				// do nothing
+				break
 			// I = zero controls
 			case "check_DataAcq_IzeroEnable":
 				setCheckBoxState(panelTitle, "check_DataAcq_IzeroEnable", AmpStorageWave[%IZeroEnable][0][MIESHeadStageNo])
 				break
 			default:
-				printf "BUG: unknown control %s\r", cntrlName
+				ASSERT(0, "Unknown control " + cntrlName)
 				break
 		endSwitch
 	endIf
@@ -712,7 +750,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string mccSerial
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ChannelClampMode
-	WAVE statusHS              = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+	WAVE statusHS              = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave(panelTitle)
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave(panelTitle)
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave(panelTitle)

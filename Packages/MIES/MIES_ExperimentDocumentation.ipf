@@ -381,7 +381,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys[1][1] =  ""
 	numKeys[2][1] =  "-"
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/N=(1, 2, NUM_HEADSTAGES) numSettings = NaN
 	numSettings[0][0][] = statusHS[r]
@@ -592,7 +592,7 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
 
