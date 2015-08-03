@@ -476,8 +476,7 @@ End
 
 /// @brief Calculate the minimum sampling interval using the lookup waves on disk
 ///
-/// @returns sampling interval in microseconds (1e-3) or #SAMPLING_INTERVAL_FALLBACK if it could not be
-/// found in the lookup waves.
+/// @returns sampling interval in milliseconds (1e-3)
 Function SI_CalculateMinSampInterval(panelTitle)
 	string panelTitle
 
