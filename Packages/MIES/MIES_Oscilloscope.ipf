@@ -223,14 +223,15 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 
 	Label/W=$graph bottom "Time (\\U)"
 
-	sampInt = SI_CalculateMinSampInterval(panelTitle) / 1000
 	if(!cmpstr(dataName, "TestPulseITC"))
+		sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
 		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
 		NVAR duration = $GetTestpulseDuration(panelTitle)
 		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
 		SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
 	else
+		sampInt = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
 		SetAxis/W=$graph bottom 0, DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) * sampInt
 	endif
 End

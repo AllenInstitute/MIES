@@ -3343,7 +3343,7 @@ Function DAP_TabTJHook1(tca)
 		numItems = ItemsInList(ITCPanelTitleList)
 		for(i=0; i < numItems; i+=1)
 			panelTitle = StringFromList(i, ITCPanelTitleList,";")
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			DAP_UpdateITCSampIntDisplay(panelTitle)
 			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
 		endfor
 	endif
@@ -3991,10 +3991,29 @@ Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endfor
 End
 
-Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
+Function DAP_UpdateITCSampIntDisplay(panelTitle)
 	string panelTitle
 
-	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", SI_CalculateMinSampInterval(panelTitle))
+	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
+End
+
+/// @brief Return the ITC sampling interval with taking the mode and
+/// the multiplier into account
+Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+	string panelTitle
+	variable dataAcqOrTP
+
+	variable multiplier
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		multiplier = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		multiplier = 1
+	else
+		ASSERT(0, "unknown mode")
+	endif
+
+	return SI_CalculateMinSampInterval(panelTitle) * multiplier
 End
 
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
@@ -4682,7 +4701,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			AI_SyncAmpStorageToGUI(panelTitle, headStage)
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			DAP_UpdateITCSampIntDisplay(panelTitle)
 			TP_RestartTestPulse(panelTitle, testPulseMode)
 		break
 	endswitch
@@ -4716,7 +4735,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
 	endif
 
-	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
 End
 

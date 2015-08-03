@@ -146,7 +146,7 @@ Function TP_UpdateGlobals(panelTitle)
 	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	duration = pulseDuration / (SI_CalculateMinSampInterval(panelTitle) / 1000)
+	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
 	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
 
 	// need to deal with units here to ensure that resistance is calculated correctly
@@ -243,7 +243,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	KillVariables/Z count
 
-	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
 	TP_Setup(panelTitle)
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
@@ -275,7 +275,7 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	KillVariables/Z count
 
-	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	DAM_StartTestPulseMD(panelTitle)
 
