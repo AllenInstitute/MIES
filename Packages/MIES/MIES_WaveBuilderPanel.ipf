@@ -1228,8 +1228,10 @@ static Function WBP_ChangeWaveType(stimulusType)
 	list += "SetVar_WaveBuilder_P5_DD02;SetVar_WaveBuilder_P5_DD03;SetVar_WaveBuilder_P5_DD04;SetVar_WaveBuilder_P5_DD05;SetVar_WaveBuilder_P5_DD06;"
 
 	if(stimulusType == STIMULUS_TYPE_TLL)
+		// recreate SegWvType with its defaults
+		WAVE SegWvType = GetSegmentTypeWave()
+		KillOrMoveToTrash(GetWavesDataFolder(SegWvType, 2))
 
-		SegWvType = 0
 		WP[1,6][][] = 0
 
 		SetVariable SetVar_WaveBuilder_P2 win = $panel, limits = {0,1,1}

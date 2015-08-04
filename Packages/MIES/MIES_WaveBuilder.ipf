@@ -116,6 +116,8 @@ Function/Wave WB_GetStimSet([setName])
 	numSteps   = SegWvType[101]
 	numEpochs  = SegWvType[100]
 
+	ASSERT(numSteps > 0, "Invalid number of steps")
+
 	MAKE/WAVE/FREE/N=(numSteps) stepData
 
 	for(i=0; i < numSteps; i+=1)

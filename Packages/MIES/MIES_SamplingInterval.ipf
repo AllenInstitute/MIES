@@ -4,6 +4,11 @@
 ///
 /// @brief __SI__ Routines for calculating and handling the minimum sampling interval
 
+/// The consecutive check in #SI_TestSampInt enforces not only one sucessfull sampling
+/// interval but also the multiples 2^x where x ranges from 1 to MIN_CONSECUTIVE_SAMPINT
+/// Set to 0 to deactivate
+static Constant MIN_CONSECUTIVE_SAMPINT = 6
+
 /// @brief Helper struct for storing the number of active channels per rack
 static Structure ActiveChannels
 	int32 numDARack1
@@ -108,7 +113,8 @@ static Function SI_TestSampInt(panelTitle)
 	string panelTitle
 
 	string cmd
-	variable i, sampInt, ret, sampIntRead, numChannels
+	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
+	variable numConsecutive = -1
 	variable numTries = 1001
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
@@ -122,7 +128,12 @@ static Function SI_TestSampInt(panelTitle)
 	Make/D/O/N=(20, numChannels) dfr:ResultWave/Wave=ResultWave
 
 	for(i=1; i < numTries; i += 1)
-		sampInt = MINIMUM_SAMPLING_INTERVAL * i * 1000
+		if(numConsecutive == -1)
+			sampInt  = MINIMUM_SAMPLING_INTERVAL * i * 1000
+		else
+			sampInt *= 2
+		endif
+
 		ITCChanConfigWave[][2] = sampInt
 		sprintf cmd, "ITCConfigAllChannels/Z, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 		ret = ExecuteITCOperation(cmd)
@@ -131,10 +142,10 @@ static Function SI_TestSampInt(panelTitle)
 			// we could set the sampling interval
 			// so we try to read it back and check if it is the same
 			sprintf cmd, "ITCConfigChannelUpload"
-			AbortOnValue ExecuteITCOperation(cmd), 1
+			ExecuteITCOperationAbortOnError(cmd)
 
 			sprintf cmd, "ITCGetAllChannelsConfig, %s, %s", GetWavesDataFolder(ReqWave, 2), GetWavesDataFolder(ResultWave, 2)
-			AbortOnValue ExecuteITCOperation(cmd), 1
+			ExecuteITCOperationAbortOnError(cmd)
 
 			WaveStats/Q/R=[12,12] ResultWave
 			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
@@ -143,7 +154,19 @@ static Function SI_TestSampInt(panelTitle)
 			sampIntRead = 1/V_min * 1e6
 
 			if(sampIntRead == sampInt)
-				return sampIntRead
+				if(numConsecutive == -1)
+					sampIntRef     = sampIntRead
+					numConsecutive = 0
+					iLast          = i
+				endif
+
+				if(numConsecutive == MIN_CONSECUTIVE_SAMPINT)
+					return sampIntRef
+				else
+					ASSERT(numConsecutive == 0 || iLast == i - 1, "Expected consecutive hits")
+					iLast = i
+					numConsecutive += 1
+				endif
 			endif
 		endif
 	endfor
@@ -165,6 +188,8 @@ static Function SI_CompressWave(wv)
 	for(i = 0; i < DimSize(wv, ROWS); i += 1)
 		if(wv[i][%minSampInt] <= 0)
 			DeletePoints/M=(ROWS) i, 1, wv
+			i -= 1
+			continue
 		endif
 
 		for(j = i + 1; j < DimSize(wv, ROWS); j += 1)
@@ -256,6 +281,8 @@ End
 
 /// @brief Query the DA_EPhys panel for the active channels and
 /// fill it in the passed structure
+///
+/// @return number of active channels
 static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 	string panelTitle
 	STRUCT ActiveChannels &ac
@@ -275,6 +302,8 @@ static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 
 	ac.numTTLRack1 = sum(statusTTL, 0, NUM_DA_TTL_CHANNELS/2 - 1)
 	ac.numTTLRack2 = sum(statusTTL, NUM_DA_TTL_CHANNELS/2, inf)
+
+	return sum(statusDA) + sum(statusAD) + sum(statusTTL)
 End
 
 /// @brief Creates a sampling interval lookup wave by brute forcing all possible combinations
@@ -447,13 +476,11 @@ End
 
 /// @brief Calculate the minimum sampling interval using the lookup waves on disk
 ///
-/// @returns sampling interval in microseconds (1e-3) or #SAMPLING_INTERVAL_FALLBACK if it could not be
-/// found in the lookup waves.
+/// @returns sampling interval in milliseconds (1e-3)
 Function SI_CalculateMinSampInterval(panelTitle)
 	string panelTitle
 
-	string deviceType, deviceNumber
-	variable ret
+	variable numActiveChannels
 
 	WAVE/Z lut = SI_GetMinSampIntWave(panelTitle)
 	if(!WaveExists(lut))
@@ -463,7 +490,11 @@ Function SI_CalculateMinSampInterval(panelTitle)
 	endif
 
 	STRUCT ActiveChannels ac
-	SI_FillActiveChannelsStruct(panelTitle, ac)
+	numActiveChannels = SI_FillActiveChannelsStruct(panelTitle, ac)
+
+	if(numActiveChannels == 0)
+		return MINIMUM_SAMPLING_INTERVAL * 1000
+	endif
 
 	return SI_FindMatchingTableEntry(lut, ac)
 End
@@ -472,7 +503,7 @@ End
 ///
 /// This functions tries to load the wave from disk on the first
 /// call so this function might take a while to execute.
-Function/WAVE SI_GetMinSampIntWave(panelTitle)
+static Function/WAVE SI_GetMinSampIntWave(panelTitle)
 	string panelTitle
 
 	variable ret

@@ -13,9 +13,9 @@ static StrConstant LEADER                = "Leader"
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-Window DA_ephys() : Panel
+Window da_ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(250,129,732,911)
+	NewPanel /W=(416,82,898,865)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -453,7 +453,7 @@ Window DA_ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 0
-	SetVariable SetVar_DataAcq_ITI,pos={87,659},size={77,16},bodyWidth=35,disable=1,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={87,659},size={77,16},bodyWidth=35,disable=3,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,GT!!#B\\!!#@6!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -592,7 +592,7 @@ Window DA_ephys() : Panel
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
-	CheckBox Check_Settings_TrigOut,pos={34,258},size={56,14},disable=1,title="\\JCTrig Out"
+	CheckBox Check_Settings_TrigOut,pos={34,268},size={56,14},disable=1,title="\\JCTrig Out"
 	CheckBox Check_Settings_TrigOut,help={"Turns on TTL pulse at onset of sweep"}
 	CheckBox Check_Settings_TrigOut,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_TrigOut,userdata(tabcontrol)=  "ADC"
@@ -600,7 +600,7 @@ Window DA_ephys() : Panel
 	CheckBox Check_Settings_TrigOut,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_TrigOut,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_TrigOut,fColor=(65280,43520,0),value= 0
-	CheckBox Check_Settings_TrigIn,pos={34,277},size={48,14},disable=1,title="\\JCTrig In"
+	CheckBox Check_Settings_TrigIn,pos={34,287},size={48,14},disable=1,title="\\JCTrig In"
 	CheckBox Check_Settings_TrigIn,help={"Starts Data Aquisition with TTL signal to trig in port on rack"}
 	CheckBox Check_Settings_TrigIn,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_TrigIn,userdata(tabcontrol)=  "ADC"
@@ -634,7 +634,7 @@ Window DA_ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
 	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,0,1},value= _NUM:0
-	CheckBox Check_Settings_SaveData,pos={34,237},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
+	CheckBox Check_Settings_SaveData,pos={34,242},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
 	CheckBox Check_Settings_SaveData,help={"Use cautiously - intended primarily for software development"}
 	CheckBox Check_Settings_SaveData,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_SaveData,userdata(tabcontrol)=  "ADC"
@@ -642,7 +642,7 @@ Window DA_ephys() : Panel
 	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_SaveData,value= 0
-	CheckBox Check_Settings_UseDoublePrec,pos={243,236},size={151,14},disable=1,title="Use Double Precision Floats"
+	CheckBox Check_Settings_UseDoublePrec,pos={243,218},size={151,14},disable=1,title="Use Double Precision Floats"
 	CheckBox Check_Settings_UseDoublePrec,help={"Enable the saving of the raw data in double precision. If unchecked the raw data will be saved in single precision, which should be good enough for most use cases"}
 	CheckBox Check_Settings_UseDoublePrec,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_UseDoublePrec,userdata(tabcontrol)=  "ADC"
@@ -867,7 +867,7 @@ Window DA_ephys() : Panel
 	SetVariable SetVar_Async_Unit_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_Async_Unit_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Async_Unit_07,value= _STR:""
-	CheckBox Check_Settings_Append,pos={34,421},size={222,14},disable=1,title="\\JCAppend Asynchronus reading to wave note"
+	CheckBox Check_Settings_Append,pos={34,451},size={222,14},disable=1,title="\\JCAppend Asynchronus reading to wave note"
 	CheckBox Check_Settings_Append,help={"Turns on TTL pulse at onset of sweep"}
 	CheckBox Check_Settings_Append,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_Append,userdata(tabcontrol)=  "ADC"
@@ -1401,7 +1401,7 @@ Window DA_ephys() : Panel
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_TTL_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
-	CheckBox check_Settings_ShowScopeWindow,pos={34,517},size={121,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Show Scope Window"
+	CheckBox check_Settings_ShowScopeWindow,pos={34,547},size={121,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Show Scope Window"
 	CheckBox check_Settings_ShowScopeWindow,help={"Enable the scope window to view ongoing acquistion"}
 	CheckBox check_Settings_ShowScopeWindow,userdata(tabnum)=  "5"
 	CheckBox check_Settings_ShowScopeWindow,userdata(tabcontrol)=  "ADC"
@@ -1462,7 +1462,7 @@ Window DA_ephys() : Panel
 	ValDisplay valdisp_DataAcq_TrialsCountdown,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_TrialsCountdown,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_TrialsCountdown,value= _NUM:1
-	CheckBox check_Settings_Overwrite,pos={34,215},size={294,14},disable=1,title="Overwrite history and data waves on Next Sweep roll back"
+	CheckBox check_Settings_Overwrite,pos={34,211},size={136,26},disable=1,title="Overwrite data waves on\rNext Sweep roll back"
 	CheckBox check_Settings_Overwrite,help={"Overwrite occurs on next data acquisition cycle"}
 	CheckBox check_Settings_Overwrite,userdata(tabnum)=  "5"
 	CheckBox check_Settings_Overwrite,userdata(tabcontrol)=  "ADC"
@@ -1666,14 +1666,14 @@ Window DA_ephys() : Panel
 	CheckBox check_DataAcq_RepAcqRandom,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataAcq_RepAcqRandom,value= 0
-	TitleBox title_Settings_SetCondition,pos={61,314},size={64,13},disable=1,title="Set A > Set B"
+	TitleBox title_Settings_SetCondition,pos={51,344},size={64,13},disable=1,title="Set A > Set B"
 	TitleBox title_Settings_SetCondition,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition,userdata(ResizeControlsInfo)= A"!!,C$!!#B,!!#?u!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition,frame=0
-	CheckBox check_Settings_Option_3,pos={280,330},size={120,26},disable=1,title="Repeat set B\runtil set A is complete"
+	CheckBox check_Settings_Option_3,pos={269,360},size={120,26},disable=1,title="Repeat set B\runtil set A is complete"
 	CheckBox check_Settings_Option_3,help={"This mode is useful when Set B contains a single wave."}
 	CheckBox check_Settings_Option_3,userdata(tabnum)=  "5"
 	CheckBox check_Settings_Option_3,userdata(tabcontrol)=  "ADC"
@@ -1681,7 +1681,7 @@ Window DA_ephys() : Panel
 	CheckBox check_Settings_Option_3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_Option_3,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_Option_3,fColor=(65280,43520,0),value= 0
-	CheckBox check_Settings_ScalingZero,pos={280,273},size={132,14},disable=1,title="Set channel scaling to 0"
+	CheckBox check_Settings_ScalingZero,pos={269,303},size={132,14},disable=1,title="Set channel scaling to 0"
 	CheckBox check_Settings_ScalingZero,help={"Applies to DA channel outputting Set B"}
 	CheckBox check_Settings_ScalingZero,userdata(tabnum)=  "5"
 	CheckBox check_Settings_ScalingZero,userdata(tabcontrol)=  "ADC"
@@ -1689,7 +1689,7 @@ Window DA_ephys() : Panel
 	CheckBox check_Settings_ScalingZero,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ScalingZero,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_ScalingZero,value= 0
-	CheckBox check_Settings_SetOption_04,pos={280,303},size={108,14},disable=3,title="Turn off headstage"
+	CheckBox check_Settings_SetOption_04,pos={269,333},size={108,14},disable=3,title="Turn off headstage"
 	CheckBox check_Settings_SetOption_04,help={"Turns off AD associated with DA via Channel and Amplifier Assignments"}
 	CheckBox check_Settings_SetOption_04,userdata(tabnum)=  "5"
 	CheckBox check_Settings_SetOption_04,userdata(tabcontrol)=  "ADC"
@@ -1697,35 +1697,35 @@ Window DA_ephys() : Panel
 	CheckBox check_Settings_SetOption_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_SetOption_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_SetOption_04,fColor=(65280,43520,0),value= 0
-	TitleBox title_Settings_SetCondition_00,pos={124,298},size={6,13},disable=1,title="\\f01/"
+	TitleBox title_Settings_SetCondition_00,pos={114,328},size={6,13},disable=1,title="\\f01/"
 	TitleBox title_Settings_SetCondition_00,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_00,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_00,userdata(ResizeControlsInfo)= A"!!,FM!!#As!!#:\"!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_00,frame=0
-	TitleBox title_Settings_SetCondition_01,pos={124,335},size={6,13},disable=1,title="\\f01\\"
+	TitleBox title_Settings_SetCondition_01,pos={114,365},size={6,13},disable=1,title="\\f01\\"
 	TitleBox title_Settings_SetCondition_01,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_01,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_01,userdata(ResizeControlsInfo)= A"!!,FM!!#B>J,hjM!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_01,frame=0
-	TitleBox title_Settings_SetCondition_04,pos={272,298},size={6,13},disable=1,title="\\f01\\"
+	TitleBox title_Settings_SetCondition_04,pos={262,328},size={6,13},disable=1,title="\\f01\\"
 	TitleBox title_Settings_SetCondition_04,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_04,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_04,userdata(ResizeControlsInfo)= A"!!,H?!!#As!!#:\"!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_04,frame=0
-	TitleBox title_Settings_SetCondition_02,pos={272,277},size={6,13},disable=1,title="\\f01/"
+	TitleBox title_Settings_SetCondition_02,pos={261,307},size={6,13},disable=1,title="\\f01/"
 	TitleBox title_Settings_SetCondition_02,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_02,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_02,userdata(ResizeControlsInfo)= A"!!,H?!!#A^!!#:\"!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_02,frame=0
-	TitleBox title_Settings_SetCondition_03,pos={240,287},size={28,13},disable=1,title="\\f01-------"
+	TitleBox title_Settings_SetCondition_03,pos={229,317},size={28,13},disable=1,title="\\f01-------"
 	TitleBox title_Settings_SetCondition_03,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_03,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo)= A"!!,H#!!#Ah!!#=C!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1791,28 +1791,28 @@ Window DA_ephys() : Panel
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo)= A"!!,H$!!#@j!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TitleBox title_Settings_SetCondition_1,pos={240,350},size={28,13},disable=1,title="\\f01-------"
+	TitleBox title_Settings_SetCondition_1,pos={230,380},size={28,13},disable=1,title="\\f01-------"
 	TitleBox title_Settings_SetCondition_1,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_1,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_1,userdata(ResizeControlsInfo)= A"!!,H#!!#BF!!#=C!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_1,frame=0
-	TitleBox title_Settings_SetCondition_2,pos={272,361},size={6,13},disable=1,title="\\f01\\"
+	TitleBox title_Settings_SetCondition_2,pos={262,391},size={6,13},disable=1,title="\\f01\\"
 	TitleBox title_Settings_SetCondition_2,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_2,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_2,userdata(ResizeControlsInfo)= A"!!,H?!!#BKJ,hjM!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_2,frame=0
-	TitleBox title_Settings_SetCondition_3,pos={272,340},size={6,13},disable=1,title="\\f01/"
+	TitleBox title_Settings_SetCondition_3,pos={262,370},size={6,13},disable=1,title="\\f01/"
 	TitleBox title_Settings_SetCondition_3,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition_3,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition_3,userdata(ResizeControlsInfo)= A"!!,H?!!#BA!!#:\"!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition_3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_3,frame=0
-	CheckBox check_Settings_SetOption_5,pos={280,360},size={97,26},disable=1,title="Index to next set\ron DA with set B"
+	CheckBox check_Settings_SetOption_5,pos={269,390},size={97,26},disable=1,title="Index to next set\ron DA with set B"
 	CheckBox check_Settings_SetOption_5,help={"This mode is useful when Set B contains a single wave."}
 	CheckBox check_Settings_SetOption_5,userdata(tabnum)=  "5"
 	CheckBox check_Settings_SetOption_5,userdata(tabcontrol)=  "ADC"
@@ -1820,14 +1820,14 @@ Window DA_ephys() : Panel
 	CheckBox check_Settings_SetOption_5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_SetOption_5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_SetOption_5,fColor=(65280,43520,0),value= 0
-	TitleBox title_Settings_SetCondition1,pos={134,338},size={95,26},disable=1,title="Continue acquisition\ron DA with set B"
+	TitleBox title_Settings_SetCondition1,pos={124,368},size={95,26},disable=1,title="Continue acquisition\ron DA with set B"
 	TitleBox title_Settings_SetCondition1,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition1,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition1,userdata(ResizeControlsInfo)= A"!!,Fa!!#B@!!#@2!!#=kz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_Settings_SetCondition1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition1,frame=0
-	TitleBox title_Settings_SetCondition2,pos={136,278},size={91,26},disable=1,title="\\Z08Stop Acquisition on\rDA with Set B"
+	TitleBox title_Settings_SetCondition2,pos={126,308},size={91,26},disable=1,title="\\Z08Stop Acquisition on\rDA with Set B"
 	TitleBox title_Settings_SetCondition2,userdata(tabnum)=  "5"
 	TitleBox title_Settings_SetCondition2,userdata(tabcontrol)=  "ADC"
 	TitleBox title_Settings_SetCondition2,userdata(ResizeControlsInfo)= A"!!,Fe!!#A_!!#@*!!#=kz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2026,15 +2026,15 @@ Window DA_ephys() : Panel
 	GroupBox GroupBox_Hardware_Associations,pos={23,305},size={400,300},title="DAC Channel and Device Associations"
 	GroupBox GroupBox_Hardware_Associations,userdata(tabnum)=  "6"
 	GroupBox GroupBox_Hardware_Associations,userdata(tabcontrol)=  "ADC"
-	GroupBox group_Settings_DatAcq,pos={20,169},size={425,223},disable=1,title="Data Acquisition"
+	GroupBox group_Settings_DatAcq,pos={20,169},size={424,258},disable=1,title="Data Acquisition"
 	GroupBox group_Settings_DatAcq,userdata(tabnum)=  "5"
 	GroupBox group_Settings_DatAcq,userdata(tabcontrol)=  "ADC"
-	GroupBox group_Settings_Asynch,pos={21,401},size={425,90},disable=1,title="Asynchronous"
+	GroupBox group_Settings_Asynch,pos={21,431},size={425,90},disable=1,title="Asynchronous"
 	GroupBox group_Settings_Asynch,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Asynch,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_TP,pos={21,68},size={425,90},disable=1,title="Test Pulse"
 	GroupBox group_Settings_TP,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
-	GroupBox group_Settings_Asynch1,pos={21,498},size={425,40},disable=1,title="Oscilloscope"
+	GroupBox group_Settings_Asynch1,pos={21,528},size={425,40},disable=1,title="Oscilloscope"
 	GroupBox group_Settings_Asynch1,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Asynch1,userdata(tabcontrol)=  "ADC"
 	GroupBox group_DataAcq_ClampMode,pos={30,39},size={422,320},disable=1,title="Headstage"
@@ -2240,25 +2240,25 @@ Window DA_ephys() : Panel
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
 	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DataAcq_IzeroEnable,fColor=(65280,43520,0),value= 0
-	CheckBox Check_Settings_AlarmPauseAcq,pos={34,443},size={166,14},disable=1,title="\\JCPause acquisition in alarm state"
+	CheckBox Check_Settings_AlarmPauseAcq,pos={34,473},size={166,14},disable=1,title="\\JCPause acquisition in alarm state"
 	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_AlarmPauseAcq,fColor=(65280,43520,0),value= 0
-	CheckBox Check_Settings_AlarmAutoRepeat,pos={34,464},size={250,14},disable=1,title="\\JCAuto repeat last sweep until alarm state is cleared"
+	CheckBox Check_Settings_AlarmAutoRepeat,pos={35,494},size={250,14},disable=1,title="\\JCAuto repeat last sweep until alarm state is cleared"
 	CheckBox Check_Settings_AlarmAutoRepeat,help={"Turns on TTL pulse at onset of sweep"}
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_AlarmAutoRepeat,fColor=(65280,43520,0),value= 0
-	GroupBox group_Settings_Amplifier,pos={21,543},size={425,80},disable=1,title="Amplifier"
+	GroupBox group_Settings_Amplifier,pos={21,574},size={425,80},disable=1,title="Amplifier"
 	GroupBox group_Settings_Amplifier,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_AmpMCCdefault,pos={34,566},size={174,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default to MCC parameter values"
+	CheckBox check_Settings_AmpMCCdefault,pos={34,597},size={174,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default to MCC parameter values"
 	CheckBox check_Settings_AmpMCCdefault,help={"Enable the scope window to view ongoing acquistion"}
 	CheckBox check_Settings_AmpMCCdefault,userdata(tabnum)=  "5"
 	CheckBox check_Settings_AmpMCCdefault,userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_AmpMCCdefault,fColor=(65280,43520,0),value= 0
-	CheckBox check_Settings_AmpMIESdefault,pos={34,586},size={249,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default amplifier parameter values stored in MIES"
+	CheckBox check_Settings_AmpMIESdefault,pos={34,617},size={249,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default amplifier parameter values stored in MIES"
 	CheckBox check_Settings_AmpMIESdefault,help={"Enable the scope window to view ongoing acquistion"}
 	CheckBox check_Settings_AmpMIESdefault,userdata(tabnum)=  "5"
 	CheckBox check_Settings_AmpMIESdefault,userdata(tabcontrol)=  "ADC"
@@ -2274,7 +2274,7 @@ Window DA_ephys() : Panel
 	CheckBox check_Settings_MD,pos={34,44},size={51,14},disable=1,proc=DAP_CheckProc_MDEnable,title="Enable"
 	CheckBox check_Settings_MD,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_MD,value= 0
-	CheckBox Check_Settings_InsertTP,pos={172,86},size={61,14},disable=1,proc=DAP_CheckProc_InsertTP,title="Insert TP"
+	CheckBox Check_Settings_InsertTP,pos={172,85},size={61,14},disable=1,proc=DAP_CheckProc_InsertTP,title="Insert TP"
 	CheckBox Check_Settings_InsertTP,help={"Inserts a test pulse at the front of each sweep in a set."}
 	CheckBox Check_Settings_InsertTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_InsertTP,userdata(tabcontrol)=  "ADC",value= 0
@@ -2290,7 +2290,7 @@ Window DA_ephys() : Panel
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:1
-	CheckBox check_Settings_SaveAmpSettings,pos={306,566},size={108,14},disable=1,title="Save Amp Settings"
+	CheckBox check_Settings_SaveAmpSettings,pos={306,597},size={108,14},disable=1,title="Save Amp Settings"
 	CheckBox check_Settings_SaveAmpSettings,help={"Adds amplifier settings to lab note book for Multiclamp 700Bs ONLY!"}
 	CheckBox check_Settings_SaveAmpSettings,userdata(tabnum)=  "5"
 	CheckBox check_Settings_SaveAmpSettings,userdata(tabcontrol)=  "ADC",value= 1
@@ -2360,23 +2360,23 @@ Window DA_ephys() : Panel
 	PopupMenu Popup_Settings_Pressure_AD,pos={37,555},size={53,21},proc=DAP_PopMenuProc_CAA,title="AD"
 	PopupMenu Popup_Settings_Pressure_AD,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_AD,userdata(tabcontrol)=  "ADC"
-	PopupMenu Popup_Settings_Pressure_AD,mode=5,popvalue="4",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	PopupMenu Popup_Settings_Pressure_AD,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
 	SetVariable setvar_Settings_Pressure_DAgain,pos={98,532},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:2
+	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:nan
 	SetVariable setvar_Settings_Pressure_ADgain,pos={98,557},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:0.5
+	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:nan
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,pos={156,532},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Hardware_Pressur_DA_Unit,value= _STR:"psi"
+	SetVariable SetVar_Hardware_Pressur_DA_Unit,value= _STR:""
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,pos={177,557},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Hardware_Pressur_AD_Unit,value= _STR:"psi"
+	SetVariable SetVar_Hardware_Pressur_AD_Unit,value= _STR:""
 	TitleBox Title_Hardware_Pressure_DA_Div,pos={190,534},size={15,13},title="/ V"
 	TitleBox Title_Hardware_Pressure_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_Pressure_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
@@ -2388,45 +2388,45 @@ Window DA_ephys() : Panel
 	PopupMenu Popup_Settings_Pressure_TTL,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_TTL,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_Pressure_TTL,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	GroupBox group_Settings_Pressure,pos={23,628},size={425,100},disable=1,title="Pressure"
+	GroupBox group_Settings_Pressure,pos={23,658},size={425,100},disable=1,title="Pressure"
 	GroupBox group_Settings_Pressure,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Pressure,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_InAirP,pos={59,650},size={92,16},disable=1,proc=DAP_SetVarProc_CAA,title="In air P (psi)"
+	SetVariable setvar_Settings_InAirP,pos={59,680},size={92,16},disable=1,proc=DAP_SetVarProc_CAA,title="In air P (psi)"
 	SetVariable setvar_Settings_InAirP,help={"Set the (positive) pressure applied to the pipette when the pipette is out of the bath."}
 	SetVariable setvar_Settings_InAirP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InAirP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_InAirP,limits={-10,10,0.1},value= _NUM:3.79999995231628
-	SetVariable setvar_Settings_InBathP,pos={162,651},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In bath P (psi)"
+	SetVariable setvar_Settings_InBathP,pos={162,681},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In bath P (psi)"
 	SetVariable setvar_Settings_InBathP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the bath."}
 	SetVariable setvar_Settings_InBathP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InBathP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_InBathP,limits={-10,10,0.1},value= _NUM:0.549999952316284
-	SetVariable setvar_Settings_InSliceP,pos={287,649},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In slice P (psi)"
+	SetVariable setvar_Settings_InSliceP,pos={287,679},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In slice P (psi)"
 	SetVariable setvar_Settings_InSliceP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the tissue specimen."}
 	SetVariable setvar_Settings_InSliceP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InSliceP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_InSliceP,limits={-10,10,0.1},value= _NUM:0.200000002980232
-	SetVariable setvar_Settings_NearCellP,pos={40,670},size={111,16},disable=1,proc=DAP_SetVarProc_CAA,title="Near cell P (psi)"
+	SetVariable setvar_Settings_NearCellP,pos={39,700},size={111,16},disable=1,proc=DAP_SetVarProc_CAA,title="Near cell P (psi)"
 	SetVariable setvar_Settings_NearCellP,help={"Set the (positive) pressure applied to the pipette when the pipette is close to the target neuron."}
 	SetVariable setvar_Settings_NearCellP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_NearCellP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_NearCellP,limits={-1,1,0.1},value= _NUM:0.600000023841858
-	SetVariable setvar_Settings_SealStartP,pos={157,670},size={110,16},disable=1,proc=DAP_SetVarProc_CAA,title="Seal Init P (psi)"
+	SetVariable setvar_Settings_SealStartP,pos={157,700},size={110,16},disable=1,proc=DAP_SetVarProc_CAA,title="Seal Init P (psi)"
 	SetVariable setvar_Settings_SealStartP,help={"Set the starting negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealStartP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealStartP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_SealStartP,limits={-10,0,0.1},value= _NUM:-0.600000023841858
-	SetVariable setvar_Settings_SealMaxP,pos={277,669},size={115,16},disable=1,proc=DAP_SetVarProc_CAA,title="Seal max P (psi)"
+	SetVariable setvar_Settings_SealMaxP,pos={277,699},size={115,16},disable=1,proc=DAP_SetVarProc_CAA,title="Seal max P (psi)"
 	SetVariable setvar_Settings_SealMaxP,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealMaxP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealMaxP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_SealMaxP,limits={-10,0,0.1},value= _NUM:-1.39999997615814
-	SetVariable setvar_Settings_SurfaceHeight,pos={36,691},size={165,16},disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SurfaceHeight,pos={35,721},size={165,16},disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SurfaceHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_SurfaceHeight,limits={0,inf,100},value= _NUM:3500
-	SetVariable setvar_Settings_SliceSurfHeight,pos={226,691},size={166,16},disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SliceSurfHeight,pos={225,721},size={166,16},disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SliceSurfHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabcontrol)=  "ADC"
@@ -2562,6 +2562,14 @@ Window DA_ephys() : Panel
 	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_TPAfterDAQ,value= 0
+	PopupMenu Popup_Settings_SampIntMult,pos={246,239},size={166,21},bodyWidth=40,disable=1,title="Sampling interval multiplier"
+	PopupMenu Popup_Settings_SampIntMult,help={"Multiplier for the dataacquisition sampling interval (higher values mean lower resolution). The testpulse will always be sampled at the lowest possible interval."}
+	PopupMenu Popup_Settings_SampIntMult,userdata(tabnum)=  "5"
+	PopupMenu Popup_Settings_SampIntMult,userdata(tabcontrol)=  "ADC"
+	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo)= A"!!,HT!!#?-!!#?C!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu Popup_Settings_SampIntMult,mode=1,popvalue="1",value= #"\"1;2;4;8;16;32;64\""
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2676,6 +2684,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
 	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
+	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode = 1
+
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
 	CheckBox Check_AsyncAD_01 WIN = $panelTitle,value= 0
 	CheckBox Check_AsyncAD_02 WIN = $panelTitle,value= 0
@@ -3333,7 +3343,7 @@ Function DAP_TabTJHook1(tca)
 		numItems = ItemsInList(ITCPanelTitleList)
 		for(i=0; i < numItems; i+=1)
 			panelTitle = StringFromList(i, ITCPanelTitleList,";")
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			DAP_UpdateITCSampIntDisplay(panelTitle)
 			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
 		endfor
 	endif
@@ -3981,10 +3991,29 @@ Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endfor
 End
 
-Function DAP_UpdateITCMinSampIntDisplay(panelTitle)
+Function DAP_UpdateITCSampIntDisplay(panelTitle)
 	string panelTitle
 
-	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", SI_CalculateMinSampInterval(panelTitle))
+	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
+End
+
+/// @brief Return the ITC sampling interval with taking the mode and
+/// the multiplier into account
+Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+	string panelTitle
+	variable dataAcqOrTP
+
+	variable multiplier
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		multiplier = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		multiplier = 1
+	else
+		ASSERT(0, "unknown mode")
+	endif
+
+	return SI_CalculateMinSampInterval(panelTitle) * multiplier
 End
 
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
@@ -4567,26 +4596,6 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 
-static Function DAP_UpdateHeadstage(panelTitle, headStage)
-	string panelTitle
-	variable headStage
-
-	string ctrl
-	variable enabled
-
-	ctrl  = "Check_DataAcq_HS_0" + num2str(headstage)
-	enabled = GetCheckBoxState(panelTitle, ctrl)
-
-	if(!enabled)
-		HSU_UpdateChanAmpAssignStorWv(panelTitle)
-		return NaN
-	endif
-
-	DAP_ChangeHeadstageState(panelTitle, ctrl, 0)
-	HSU_UpdateChanAmpAssignStorWv(panelTitle)
-	DAP_ChangeHeadstageState(panelTitle, ctrl, 1)
-End
-
 static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	string panelTitle
 	variable headStage, clampMode
@@ -4692,7 +4701,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			AI_SyncAmpStorageToGUI(panelTitle, headStage)
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
-			DAP_UpdateITCMinSampIntDisplay(panelTitle)
+			DAP_UpdateITCSampIntDisplay(panelTitle)
 			TP_RestartTestPulse(panelTitle, testPulseMode)
 		break
 	endswitch
@@ -4726,7 +4735,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
 	endif
 
-	DAP_UpdateITCMinSampIntDisplay(panelTitle)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
 End
 

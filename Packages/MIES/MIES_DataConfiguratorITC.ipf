@@ -32,7 +32,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
 
-	DC_PlaceDataInITCChanConfigWave(panelTitle)
+	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
@@ -229,13 +229,14 @@ end
 ///
 /// @param panelTitle  panel title
 /// @return number of data points, *not* time
-static Function DC_CalculateLongestSweep(panelTitle)
+static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
 	variable longestSweep
 
 	longestSweep  = max(DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_DAC), DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_TTL))
-	longestSweep /= DC_GetDecimationFactor(panelTitle)
+	longestSweep /= DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 
 	return ceil(longestSweep)
 End
@@ -270,7 +271,7 @@ static Function DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
 	Make/W/O/N=(numRows, numCols) dfr:ITCDataWave/Wave=ITCDataWave
 
 	FastOp ITCDataWave = 0
-	SetScale/P x 0, SI_CalculateMinSampInterval(panelTitle) / 1000, "ms", ITCDataWave
+	SetScale/P x 0, DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / 1000, "ms", ITCDataWave
 End
 
 /// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
@@ -296,8 +297,9 @@ End
 /// @brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave
 ///
 /// @param panelTitle  panel title
-static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
+static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
 	variable i, j, numEntries, ret, channel
 	string ctrl, deviceType, deviceNumber
@@ -370,17 +372,18 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle)
 		sweepDataLNB[0][11][]   = channel
 	endif
 
-	ITCChanConfigWave[][2] = SI_CalculateMinSampInterval(panelTitle)
+	ITCChanConfigWave[][2] = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][3] = 0
 End
 
 /// @brief Get the decimation factor for the current channel configuration
 ///
 /// @param panelTitle device
-static Function DC_GetDecimationFactor(panelTitle)
+static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
-	return SI_CalculateMinSampInterval(panelTitle) / (MINIMUM_SAMPLING_INTERVAL * 1000)
+	return DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / (MINIMUM_SAMPLING_INTERVAL * 1000)
 End
 
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
@@ -413,7 +416,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle)
-	decimationFactor      = DC_GetDecimationFactor(panelTitle)
+	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
@@ -764,7 +767,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 	variable distributedDAQ
 
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	minSamplingInterval    = SI_CalculateMinSampInterval(panelTitle)
+	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	onsetDelayVal          = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
 	terminationDelayVal    = GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000)
@@ -797,7 +800,7 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 
 	variable longestSweep, totalIncrease
 
-	longestSweep  = DC_CalculateLongestSweep(panelTitle)
+	longestSweep  = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
