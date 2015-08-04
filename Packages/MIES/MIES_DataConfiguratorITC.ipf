@@ -563,6 +563,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		itcDataColumn += 1
 	endfor
 
+	// reset to the default value without distributedDAQ
+	insertStart = onSetDelay
+
 	// Place TTL waves into ITCDataWave
 	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 		DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
