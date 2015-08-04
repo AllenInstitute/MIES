@@ -169,7 +169,9 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	return pulseDuration / (1 - 2 * baselineFrac)
 End
 
-/// @brief Return the total length of a single testpulse with baseline, equal to one chunk for the MD case, in points
+/// @brief Return the total length in points of a single testpulse with baseline, equal to one chunk for the MD case, in points
+///
+/// The used sampling interval is the real sampling interval without multiplier.
 Function TP_GetTestPulseLengthInPoints(panelTitle)
 	string panelTitle
 

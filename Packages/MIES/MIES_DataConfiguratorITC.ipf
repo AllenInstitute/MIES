@@ -378,6 +378,9 @@ End
 
 /// @brief Get the decimation factor for the current channel configuration
 ///
+/// This is the factor between the minimum sampling interval and the real.
+/// If the multiplier is taken into account depends on `dataAcqOrTP`.
+///
 /// @param panelTitle device
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
@@ -405,6 +408,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
+	variable multiplier
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -415,8 +419,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle)
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
+	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
