@@ -466,7 +466,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		setName = StringFromList(i, setNameList)
 		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
 		WAVE stimSet = WB_CreateAndGetStimSet(setName)
-		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
+		setLength = round(DimSize(stimSet, ROWS) / decimationFactor) - 1
 
 		if(distributedDAQ)
 			if(itcDataColumn == 0)
@@ -774,9 +774,9 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
-	onsetDelayVal          = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
-	terminationDelayVal    = GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000)
-	distributedDAQDelayVal = GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000)
+	onsetDelayVal          = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000))
+	terminationDelayVal    = round(GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
+	distributedDAQDelayVal = round(GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
 
 	if(!ParamIsDefault(onsetDelay))
 		onsetDelay = onsetDelayVal
