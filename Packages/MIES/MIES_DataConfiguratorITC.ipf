@@ -225,20 +225,19 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	return 2^exponent
 end
 
-/// @brief Returns the longest sweep in a stimulus set across all active DA and TTL channels.
+/// @brief Returns the longest sweep in a stimulus set across the given channel type
 ///
-/// @param panelTitle  panel title
+/// @param panelTitle  device
+/// @param dataAcqOrTP mode, either #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType One of @ref #ChannelTypeAndControlConstants
+///
 /// @return number of data points, *not* time
-static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP)
+static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
 	string panelTitle
 	variable dataAcqOrTP
+	variable channelType
 
-	variable longestSweep
-
-	longestSweep  = max(DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_DAC), DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_TTL))
-	longestSweep /= DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
-
-	return ceil(longestSweep)
+	return ceil(DC_LongestOutputWave(panelTitle, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
 End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
@@ -378,6 +377,9 @@ End
 
 /// @brief Get the decimation factor for the current channel configuration
 ///
+/// This is the factor between the minimum sampling interval and the real.
+/// If the multiplier is taken into account depends on `dataAcqOrTP`.
+///
 /// @param panelTitle device
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
@@ -405,6 +407,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
+	variable multiplier
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -415,8 +418,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle)
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
+	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
 
@@ -461,7 +465,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		setName = StringFromList(i, setNameList)
 		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
 		WAVE stimSet = WB_CreateAndGetStimSet(setName)
-		setLength = DimSize(stimSet, ROWS) / decimationFactor - 1
+		setLength = round(DimSize(stimSet, ROWS) / decimationFactor) - 1
 
 		if(distributedDAQ)
 			if(itcDataColumn == 0)
@@ -557,6 +561,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		itcDataColumn += 1
 	endfor
+
+	// reset to the default value without distributedDAQ
+	insertStart = onSetDelay
 
 	// Place TTL waves into ITCDataWave
 	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
@@ -769,9 +776,9 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
-	onsetDelayVal          = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000)
-	terminationDelayVal    = GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000)
-	distributedDAQDelayVal = GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000)
+	onsetDelayVal          = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000))
+	terminationDelayVal    = round(GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
+	distributedDAQDelayVal = round(GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
 
 	if(!ParamIsDefault(onsetDelay))
 		onsetDelay = onsetDelayVal
@@ -798,19 +805,22 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable longestSweep, totalIncrease
-
-	longestSweep  = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP)
+	variable DAClength, TTLlength, totalIncrease, multiplier
+	DAClength = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
-		if(GetCheckBoxState(panelTitle,"Check_DataAcq1_DistribDaq"))
-			return longestSweep * DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC) + totalIncrease
+		TTLlength     = DC_CalculateLongestSweep(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+			multiplier = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 		else
-			return longestSweep + totalIncrease
+			multiplier = 1
 		endif
+
+		return max(DAClength * multiplier, TTLlength) + totalIncrease
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		return longestSweep
+		return DAClength
 	endif
 
 	ASSERT(0, "unknown mode")
