@@ -262,6 +262,10 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
 	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
 
+	if(AI_SelectMultiClamp(panelTitle, headstage))
+		return NaN
+	endif
+
 	headstageMode = AI_MIESHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
@@ -273,10 +277,6 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 
 	sprintf str, "headStage=%d, mode=%d, func=%d, value=%g", headStage, mode, func, value
 	DEBUGPRINT(str)
-
-	if(AI_SelectMultiClamp(panelTitle, headstage))
-		return NaN
-	endif
 
 	switch(func)
 		case MCC_SETHOLDING_FUNC:
