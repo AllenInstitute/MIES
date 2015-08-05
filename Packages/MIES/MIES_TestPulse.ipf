@@ -758,11 +758,11 @@ Function TP_Setup(panelTitle, [multiDevice])
 
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	TP_UpdateGlobals(panelTitle)
-	TP_ResetTPStorage(panelTitle)
-
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
+
+	TP_UpdateGlobals(panelTitle)
+	TP_ResetTPStorage(panelTitle)
 
 	// stores panel settings
 	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
