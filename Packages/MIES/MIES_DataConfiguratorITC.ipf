@@ -225,20 +225,19 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	return 2^exponent
 end
 
-/// @brief Returns the longest sweep in a stimulus set across all active DA and TTL channels.
+/// @brief Returns the longest sweep in a stimulus set across the given channel type
 ///
-/// @param panelTitle  panel title
+/// @param panelTitle  device
+/// @param dataAcqOrTP mode, either #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType One of @ref #ChannelTypeAndControlConstants
+///
 /// @return number of data points, *not* time
-static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP)
+static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
 	string panelTitle
 	variable dataAcqOrTP
+	variable channelType
 
-	variable longestSweep
-
-	longestSweep  = max(DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_DAC), DC_LongestOutputWave(panelTitle, CHANNEL_TYPE_TTL))
-	longestSweep /= DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
-
-	return ceil(longestSweep)
+	return ceil(DC_LongestOutputWave(panelTitle, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
 End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
@@ -806,19 +805,22 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable longestSweep, totalIncrease
-
-	longestSweep  = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP)
+	variable DAClength, TTLlength, totalIncrease, multiplier
+	DAClength = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
-		if(GetCheckBoxState(panelTitle,"Check_DataAcq1_DistribDaq"))
-			return longestSweep * DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC) + totalIncrease
+		TTLlength     = DC_CalculateLongestSweep(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+			multiplier = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 		else
-			return longestSweep + totalIncrease
+			multiplier = 1
 		endif
+
+		return max(DAClength * multiplier, TTLlength) + totalIncrease
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		return longestSweep
+		return DAClength
 	endif
 
 	ASSERT(0, "unknown mode")
