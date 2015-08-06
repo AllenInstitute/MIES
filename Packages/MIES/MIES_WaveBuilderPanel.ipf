@@ -1640,46 +1640,16 @@ Function WBP_UpdateITCPanelPopUps(panelTitle)
 	for(i=0; i < NUM_DA_TTL_CHANNELS; i+=1)
 		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
+		list = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
 		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
 		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
 
 		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		list = WBP_ITCPanelPopUps(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+		list = ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
 		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
 	endfor
-End
-
-/// @brief Used to populate DA and TTL popup menus with appropriate stimulus sets.
-// This is not ported to GetListOfWaves as the "*" are already part of the GUI and rewritting from simple matches to regexps is
-// too cumbersome
-Function/S WBP_ITCPanelPopUps(DAorTTL, searchString)
-	variable DAorTTL
-	string searchString
-
-	variable i, numWaves
-	string list
-	string stimSetList = ""
-
-	DFREF saveDFR = GetDataFolderDFR()
-
-	if(!DAorTTL)
-		SetDataFolder GetWBSvdStimSetParamDAPath()
-	else
-		SetDataFolder GetWBSvdStimSetParamTTLPath()
-	endif
-
-	list = Wavelist("WP_" + searchstring, ";", "")
-	SetDataFolder saveDFR
-
-	numWaves = ItemsInList(list)
-	for(i = 0; i < numWaves; i += 1)
-		stimSetList = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), stimSetList, ";", Inf)
-	endfor
-
-	return SortList(stimSetList,";",16)
 End
 
 /// @brief Returns the names of the items in the popmenu controls in a list
