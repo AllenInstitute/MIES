@@ -1891,3 +1891,65 @@ Function GetTTLBits(numericValues, sweep, channel)
 
 	return ttlBits[0]
 End
+
+/// @brief Return a sorted list of all DA/TTL stim set waves
+///
+/// @param DAorTTL                  #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+/// @param searchString             search string in wildcard syntax
+/// @param WBstimSetList            [optional] returns the list of stim sets built with the wavebuilder
+/// @param thirdPartyStimSetList    [optional] returns the list of third party stim sets not built with the wavebuilder
+Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdPartyStimSetList])
+	variable DAorTTL
+	string searchString
+	string &WBstimSetList
+	string &thirdPartyStimSetList
+
+	variable i, numWaves
+	string list, item
+	string listInternal   = ""
+	string listThirdParty = ""
+
+	DFREF saveDFR = GetDataFolderDFR()
+
+	// fetch stim sets created with the WaveBuilder
+	if(!DAorTTL)
+		SetDataFolder GetWBSvdStimSetParamDAPath()
+	else
+		SetDataFolder GetWBSvdStimSetParamTTLPath()
+	endif
+
+	list = Wavelist("WP_" + searchstring, ";", "")
+
+	numWaves = ItemsInList(list)
+	for(i = 0; i < numWaves; i += 1)
+		listInternal = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), listInternal, ";", Inf)
+	endfor
+
+	// fetch third party stim sets
+	if(!DAorTTL)
+		SetDataFolder GetWBSvdStimSetDAPath()
+	else
+		SetDataFolder GetWBSvdStimSetTTLPath()
+	endif
+
+	list = Wavelist(searchstring, ";", "")
+	numWaves = ItemsInList(list)
+	for(i = 0; i < numWaves; i += 1)
+		item = StringFromList(i, list)
+		if(FindListItem(item, listInternal) == -1)
+			listThirdParty = AddListItem(item, listThirdParty, ";", Inf)
+		endif
+	endfor
+
+	SetDataFolder saveDFR
+
+	if(!ParamIsDefault(WBstimSetList))
+		WBstimSetList = SortList(listInternal,";",16)
+	endif
+
+	if(!ParamIsDefault(thirdPartyStimSetList))
+		thirdPartyStimSetList = SortList(listThirdParty,";",16)
+	endif
+
+	return SortList(listInternal + listThirdParty, ";", 16)
+End
