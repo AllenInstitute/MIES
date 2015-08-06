@@ -80,6 +80,9 @@ End
 ///
 /// As opposed to #WB_CreateAndGetStimSet this function returns a free wave only
 ///
+/// All external callers, outside the Wavebuilder, must call #WB_CreateAndGetStimSet
+/// instead of this function.
+///
 /// @param setName [optional, defaults to WaveBuilderPanel GUI settings] name of the set
 /// @return free wave with the stim set, invalid wave ref if the `WP*` parameter waves could
 /// not be found.
