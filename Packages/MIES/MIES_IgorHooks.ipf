@@ -31,17 +31,19 @@ static Function IH_KillTemporaries()
 	IH_KillStimSets()
 End
 
-/// @brief Delete all stim sets to save memory
+/// @brief Delete all wavebuilder stim sets to save memory
 Function IH_KillStimSets()
 
-	string list
+	string list, path
 
-	DFREF dfr = GetWBSvdStimSetDAPath()
-	list = GetListOfWaves(dfr, ".*DA.*", fullPath=1)
+	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*", WBstimSetList=list)
+	path = GetDataFolder(1, GetWBSvdStimSetDAPath())
+	list = AddPrefixToEachListItem(path, list)
 	CallFunctionForEachListItem(KillOrMoveToTrash, list)
 
-	DFREF dfr = GetWBSvdStimSetTTLPath()
-	list = GetListOfWaves(dfr, ".*TTL.*", fullPath=1)
+	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*", WBstimSetList=list)
+	path = GetDataFolder(1, GetWBSvdStimSetTTLPath())
+	list = AddPrefixToEachListItem(path, list)
 	CallFunctionForEachListItem(KillOrMoveToTrash, list)
 End
 

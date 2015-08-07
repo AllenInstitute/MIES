@@ -22,7 +22,7 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 
 	if(!WaveExists(stimSet))
 		needToCreateStimSet = 1
-	elseif(WaveExists(stimSet) && WBP_ParameterWvsNewerThanStim(setName))
+	elseif(WaveExists(stimSet) && WB_ParameterWvsNewerThanStim(setName))
 		needToCreateStimSet = 1
 	else
 		needToCreateStimSet = 0
@@ -47,7 +47,7 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 End
 
 /// @return One if one of the parameter waves is newer than the stim set wave, zero otherwise
-static Function WBP_ParameterWvsNewerThanStim(setName)
+static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
 	variable type, lastModStimSet
@@ -79,6 +79,9 @@ End
 /// @brief Return the stim set wave
 ///
 /// As opposed to #WB_CreateAndGetStimSet this function returns a free wave only
+///
+/// All external callers, outside the Wavebuilder, must call #WB_CreateAndGetStimSet
+/// instead of this function.
 ///
 /// @param setName [optional, defaults to WaveBuilderPanel GUI settings] name of the set
 /// @return free wave with the stim set, invalid wave ref if the `WP*` parameter waves could

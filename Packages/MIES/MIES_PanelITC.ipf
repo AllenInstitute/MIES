@@ -333,56 +333,56 @@ Window da_ephys() : Panel
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_00,fSize=7
-	PopupMenu Wave_DA_00,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*DA*\")"
+	PopupMenu Wave_DA_00,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_01,pos={123,118},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo)= A"!!,FI!!#@P!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_01,fSize=7
-	PopupMenu Wave_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Wave_DA_02,pos={123,165},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo)= A"!!,FI!!#A4!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_02,fSize=7
-	PopupMenu Wave_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Wave_DA_03,pos={123,211},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo)= A"!!,FI!!#Ac!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_03,fSize=7
-	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Wave_DA_04,pos={123,256},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo)= A"!!,FI!!#B;!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_04,fSize=7
-	PopupMenu Wave_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Wave_DA_05,pos={123,303},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo)= A"!!,FI!!#BRJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_05,fSize=7
-	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Wave_DA_06,pos={123,350},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo)= A"!!,FI!!#Bj!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_06,fSize=7
-	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Wave_DA_07,pos={123,397},size={143,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V "
 	PopupMenu Wave_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo)= A"!!,FI!!#C,J,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_07,fSize=7
-	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	SetVariable Scale_DA_00,pos={272,75},size={40,16},disable=1
 	SetVariable Scale_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo)= A"!!,H0!!#?M!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -549,49 +549,49 @@ Window da_ephys() : Panel
 	PopupMenu Wave_TTL_00,userdata(ResizeControlsInfo)= A"!!,F3!!#?C!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_01,pos={103,115},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_01,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_01,userdata(ResizeControlsInfo)= A"!!,F3!!#@J!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_02,pos={103,161},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_02,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_02,userdata(ResizeControlsInfo)= A"!!,F3!!#A0!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_03,pos={103,207},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_03,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_03,userdata(ResizeControlsInfo)= A"!!,F3!!#A^!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_04,pos={103,253},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_04,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_04,userdata(ResizeControlsInfo)= A"!!,F3!!#B7!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_05,pos={103,299},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_05,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_05,userdata(ResizeControlsInfo)= A"!!,F3!!#BOJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_06,pos={103,345},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_06,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_06,userdata(ResizeControlsInfo)= A"!!,F3!!#BfJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Wave_TTL_07,pos={103,392},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_TTL_07,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo)= A"!!,F3!!#C)!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Wave_TTL_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Wave_TTL_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	CheckBox Check_Settings_TrigOut,pos={34,268},size={56,14},disable=1,title="\\JCTrig Out"
 	CheckBox Check_Settings_TrigOut,help={"Turns on TTL pulse at onset of sweep"}
 	CheckBox Check_Settings_TrigOut,userdata(tabnum)=  "5"
@@ -1295,112 +1295,112 @@ Window da_ephys() : Panel
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo)= A"!!,HKJ,hot!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*DA*\")"
+	PopupMenu Popup_DA_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Popup_DA_IndexEnd_01,pos={316,118},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_01,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo)= A"!!,HKJ,hq&!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_DA_IndexEnd_02,pos={316,165},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_02,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo)= A"!!,HKJ,hq_!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_DA_IndexEnd_03,pos={316,211},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_03,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo)= A"!!,HKJ,hr9!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_DA_IndexEnd_04,pos={316,256},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_04,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo)= A"!!,HKJ,hrf!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_DA_IndexEnd_05,pos={316,303},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo)= A"!!,HKJ,hs(J,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_DA_IndexEnd_06,pos={316,350},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo)= A"!!,HKJ,hs@!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_DA_IndexEnd_07,pos={316,397},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabnum)=  "1"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo)= A"!!,HKJ,hsWJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_DA_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_DA_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(0,\"*da*\")"
+	PopupMenu Popup_DA_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*da*\")"
 	PopupMenu Popup_TTL_IndexEnd_00,pos={242,69},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(ResizeControlsInfo)= A"!!,H-!!#?C!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_01,pos={242,115},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(ResizeControlsInfo)= A"!!,H-!!#@J!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_02,pos={242,161},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(ResizeControlsInfo)= A"!!,H-!!#A0!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_03,pos={242,207},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(ResizeControlsInfo)= A"!!,H-!!#A^!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_04,pos={242,253},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(ResizeControlsInfo)= A"!!,H-!!#B7!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_05,pos={242,299},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(ResizeControlsInfo)= A"!!,H-!!#BOJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_06,pos={242,345},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(ResizeControlsInfo)= A"!!,H-!!#BfJ,hq4!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	PopupMenu Popup_TTL_IndexEnd_07,pos={242,392},size={125,21},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(tabnum)=  "3"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo)= A"!!,H-!!#C)!!#@^!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_TTL_IndexEnd_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_TTL_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+WBP_ITCPanelPopUps(1,\"*TTL*\")"
+	PopupMenu Popup_TTL_IndexEnd_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
 	CheckBox check_Settings_ShowScopeWindow,pos={34,547},size={121,14},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Show Scope Window"
 	CheckBox check_Settings_ShowScopeWindow,help={"Enable the scope window to view ongoing acquistion"}
 	CheckBox check_Settings_ShowScopeWindow,userdata(tabnum)=  "5"
@@ -2986,7 +2986,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 
 			if(!cba.checked)
 				SearchString = "*da*"
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				ListOfWaves = wavelist(searchstring,";","")
 
 				do
@@ -3001,7 +3001,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				do
 					sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3016,7 +3016,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 					SearchString = s_value
 				endif
 
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				ListOfWaves = wavelist(searchstring,";","")
 				do
 					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
@@ -3030,7 +3030,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				do
 					sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3081,12 +3081,12 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 
 				do
 					sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
-					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
 					sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 					i += 1
@@ -3094,18 +3094,18 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 			else
 				if(strlen(varstr) == 0)
 					sprintf SearchString, "*TTL*"
-					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				else
-					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "WBP_ITCPanelPopUps(1,\"", varstr,"\")"
+					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", varstr,"\")"
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(1,\"", varStr,"\")"
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", varStr,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				endif
@@ -3137,7 +3137,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 
 			if(!cba.checked)
 				SearchString = "*TTL*"
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				ListOfWaves = wavelist(searchstring,";","")
 
 				do
@@ -3152,7 +3152,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				do
 					sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3167,7 +3167,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 					SearchString = s_value
 				endif
 
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				ListOfWaves = wavelist(searchstring,";","")
 				do
 					sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
@@ -3180,7 +3180,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "WBP_ITCPanelPopUps(1,\"", SearchString,"\")"
+				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				do
 					sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3398,12 +3398,12 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 
 				do
 					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
-					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
 					sprintf IndexEndPopUpMenuName,  "Popup_DA_IndexEnd_%.2d" i
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 					i += 1
@@ -3412,20 +3412,20 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 			else // apply search string to associated channel
 				if(strlen(varstr) == 0)
 					sprintf SearchString, "*DA*"
-					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", SearchString,"\")"
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				else
-					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "WBP_ITCPanelPopUps(0,\"", varstr,"\")"
+					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", varstr,"\")"
 					searchString = varStr
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = listOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "WBP_ITCPanelPopUps(0,\"", varStr,"\")"
+					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", varStr,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				endif

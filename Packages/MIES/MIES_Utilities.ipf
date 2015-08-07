@@ -1886,3 +1886,19 @@ Function GetReproducibleRandom()
 
 	return randomSeed
 End
+
+/// @brief Add a string prefix to each list item and
+/// return the new list
+Function/S AddPrefixToEachListItem(prefix, list)
+	string prefix, list
+
+	string result = ""
+	variable numEntries, i
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		result = AddListItem(prefix + StringFromList(i, list), result, ";", inf)
+	endfor
+
+	return result
+End
