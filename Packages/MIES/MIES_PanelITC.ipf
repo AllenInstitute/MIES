@@ -4158,6 +4158,7 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 			if(!stringmatch(pa.win, "DA_*")) // only update parameter data storage waves if the panel is locked.
 				HSU_UpdateChanAmpAssignPanel(pa.win)
 				P_UpdatePressureControls(pa.win, (pa.popNum - 1))
+				M_SetManipulatorAssocControls(pa.win, (pa.popNum - 1))
 			endif
 			break
 		case -1: // control being killed
@@ -4175,6 +4176,7 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 			if(!stringmatch(pa.win, "DA_*")) // only update parameter data storage waves if the panel is locked.
 				HSU_UpdateChanAmpAssignStorWv(pa.win)
 				P_UpdatePressureDataStorageWv(pa.win)
+				M_SetManipulatorAssociation(pa.win)
 			endif
 			break
 		case -1: // control being killed
