@@ -70,9 +70,61 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 
 	Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
 	wv = ""
-
+	
 	return wv
 End
+
+/// @brief Return a wave reference to the headstage <-> manipulator link (numeric part)
+///
+/// Rows:
+/// -0: Manipulator number
+///
+/// Columns:
+/// - Head stage number
+///
+Function/Wave GetHSManipulatorAssignments(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetManipulatorPath()
+	
+	Wave/Z/SDFR=dfr wv = $panelTitle
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(NUM_HEADSTAGES, 1) dfr:$panelTitle/Wave=wv
+	wv = NaN
+	SetDimLabel COLS, 0, ManipulatorNumber, wv
+	return wv
+End
+
+/// @brief Return a wave reference to the headstage <-> manipulator link (textual part)
+///
+/// Rows:
+/// -0: Manipulator name
+///
+/// Columns:
+/// - Head stage number
+///
+Function/Wave GetHSManipulatorName(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetManipulatorPath()
+
+	Wave/T/Z/SDFR=dfr wv = $panelTitle + "_S"
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(NUM_HEADSTAGES, 1) dfr:$panelTitle+"_S"/Wave=wv
+	wv = ""
+	SetDimLabel COLS, 0, ManipulatorName, wv
+	return wv
+End
+
+
 
 /// @name Wave versioning support
 /// @anchor WaveVersioningSupport
@@ -276,6 +328,16 @@ End
 /// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
 Function/S GetMiesPathAsString()
 	return "root:MIES"
+End
+
+/// @brief Retuns data folder path to the manipulator folder, e.g. root:mies:manipulators
+Function/S GetManipulatorPathAsString()
+	return GetMiesPathAsString() + ":Manipulators"
+End
+
+/// @brief Return a data folder reference for the Manipulator folder
+Function/DF GetManipulatorPath()
+	return createDFWithAllParents(GetManipulatorPathAsString())
 End
 
 /// @brief Return the ITC data wave
