@@ -82,7 +82,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	variable n
 	string currentPanel
 	string waveSelect 
-	string StimWaveName = "daveTest_DA_0"
+	string StimWaveName = " EXTPINBATH"
 	variable baselineValue
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
