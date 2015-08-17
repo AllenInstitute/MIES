@@ -82,12 +82,12 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	variable n
 	string currentPanel
 	string waveSelect 
-	string StimWaveName = " EXTPINBATH"
+	string StimWaveName = "EXTPINBATH"
 	variable baselineValue
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
 	variable baselineAverage
-	variable qcResult
+	variable qcResult = 0
 	
 	// structure needed for communicating with the start acquisition button on the DA_Ephys panel
 	STRUCT WMButtonAction ba
@@ -113,6 +113,10 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		// make sure that the incoming EXTPINBATH is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
 			print "EXTINBATH wave not loaded...please load and try again..."
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, qcResult)
+			endif
+			return 0
 		endif
 		
 		// now find the index of the selected incoming wave in that list
@@ -122,26 +126,20 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		// have to add 2 since the pulldown always has -none- and TestPulse as options
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
 		
-		// Check to see if Test Pulse is already running...if so, turn it off...
-		if (IsBackgroundTaskRunning("TestPulse"))
-			ITC_StopTestPulseSingleDevice(currentPanel)
+		// Check to see if Test Pulse is already running...if not running, turn it on...
+		if (!(IsBackgroundTaskRunning("TestPulse")))
+			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 		
 		// and now hit the Auto pipette offset
 		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", 0)
 		
-		// and now start the test pulse
-		TP_StartTestPulseSingleDevice(currentPanel)
-		
 		// and grab the baseline avg value
 		WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
 		
-		baselineAverage = BaselineSSAvg[0][headStage]
+		baselineAverage = BaselineSSAvg[0][0]
 		
 		print "baseline Average: ", baselineAverage
-		
-		// and stop the test pulse
-		ITC_StopTestPulseSingleDevice(currentPanel)
 		
 		// See if we pass the baseline QC
 		if (abs(baselineAverage) < 100.0)
@@ -156,8 +154,6 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 			
 			DAP_ButtonProc_AcquireData(ba)
 			qcResult = baselineAverage
-		else // didn't pass the qc baseline check
-			qcResult = 0
 		endif
 	endfor
 	
