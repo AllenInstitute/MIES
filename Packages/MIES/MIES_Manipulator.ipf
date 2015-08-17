@@ -18,8 +18,8 @@ Static StrConstant MANIP_BASE_NAME = "mg"
 
 /// @brief Executes MSS server calls
 ///
-/// parses the return string to remove brackets
-/// replaces the string list separator returned by MSS to the Igor default string list separartor
+/// parses the return string to convert MSS string to Igor friendly string
+///
 /// @param cmd The MSS server call
 Function/S M_ExecuteMSSServerCall(cmd)
 	string cmd
