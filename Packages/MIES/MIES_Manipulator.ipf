@@ -1,19 +1,26 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+/// @file MIES_Manipulator.ipf
+/// @brief Functions related to manipulator control and position documentation
+
 // relevant wave and DF getters:
 // GetManipulatorPathAsString()
 // GetManipulatorPath()
 // GetHSManipulatorName(panelTitle)
 // GetHSManipulatorAssignments(panelTitle)
 
+// server commands (without manipulator name, where required)
 Static StrConstant DEVICE_LIST = "http://localhost:8889/geom_config?fn=list_geom_iids"
 Static StrConstant XYZ_IN_STAGE_FRAME = "http://localhost:8889/mssgeom?fn=get_position_stage_frame&iid="
+
+// manipulator name prefix defined by the MSS server
 Static StrConstant MANIP_BASE_NAME = "mg"
 
 /// @brief Executes MSS server calls
 ///
 /// parses the return string to remove brackets
 /// replaces the string list separator returned by MSS to the Igor default string list separartor
+/// @param cmd The MSS server call
 Function/S M_ExecuteMSSServerCall(cmd)
 	string cmd
 	string response = FetchURL(cmd)
@@ -64,6 +71,8 @@ Function M_SetManipulatorAssocControls(panelTitle, headStage)
 End
 
 /// @brief Gets the manipulator number from the string name
+///
+/// @param ManipulatorName e.g. "mg1"
 Function M_GetManipulatorNumberFromName(ManipulatorName)
 	string ManipulatorName
 	return str2num(ReplaceString(MANIP_BASE_NAME, ManipulatorName,""))	
@@ -78,6 +87,8 @@ Function/S GetXYZinStageFrame(manipulatorName)
 End
 
 /// @brief Checks format of manipulator name
+///
+/// @param ManipulatorName e.g. "mg1"
 Function CheckManipulatorNameFormat(manipulatorName)
 	string manipulatorName
 	// check if base name matches
@@ -88,6 +99,8 @@ Function CheckManipulatorNameFormat(manipulatorName)
 End
 
 /// @brief Checks if manipulator is available
+///
+/// @param ManipulatorName e.g. "mg1"
 Function CheckIfManipulatorIsAttached(manipulatorName)
 	string manipulatorName
 	CheckManipulatorNameFormat(manipulatorName)
@@ -102,13 +115,16 @@ Function/S GetManipFromHS(panelTitle, headStage)
 	return ManipulatorTextWave[headStage][%manipulatorName]
 End
 
-/// @brief Returns positions of manipulators for all active headstages
-
 /// @brief Documents X,Y,Z position of manipulators of active headstages in lab notebook	
+// This funciton should be run once whole cell config is aquired on all cells in experiment. Not sure how to do this.
 Function DocumentManipulatorXYZ(panelTitle)
 	string panelTitle
 	string manipulatorName, manipulatorXYZ
 	variable i
+
+	// Ensure each manipulator is assigned to only one headstage
+	assert(SearchForDuplicates(GetHSManipulatorAssignments(panelTitle)) == -1, "The same manipulator is assinged to more than one headstage")
+	
 	Make/FREE/T/N=(3, 3, 1) TPKeyWave
 	// add data to TPKeyWave
 	// key
@@ -144,18 +160,42 @@ Function DocumentManipulatorXYZ(panelTitle)
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
 End
 	
-/// @brief Creates gizmo plot of last documented manipulator position in lab notebook
+/// @brief Creates gizmo plot manipulator positions in lab notebook
+///
+/// find columns where data is stored in lab notebook
+/// find last row with data
+Function ManipulatorGizmoPlot(panelTitle, [sweep])
+	string panelTitle
+	variable sweep
+	string setting
+	DFREF ManipulatorDF = GetManipulatorPath()
+	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
+	WAVE/D/Z/SDFR=settingsHistoryDFR Settingshistory
+	WAVE WaveForGizmo = GetManipulatorPos(panelTitle)
+	if(paramIsDefault(sweep))
+		sweep = DM_ReturnLastSweepAcquired(panelTitle)
+		// Need to check if there is actually manipulator data stored for the sweep
+	endif
+	
+	WaveForGizmo[][0] = GetLastSetting(Settingshistory, sweep, "ManipX")[p]
+	WaveForGizmo[][1] = GetLastSetting(Settingshistory, sweep, "ManipY")[p]
+	WaveForGizmo[][2] = GetLastSetting(Settingshistory, sweep, "ManipZ")[p]
+	
+End		
 
-			panelTitle = pa.win
-			graph      = DB_GetLabNoteBookGraph(panelTitle)
-			popStr     = pa.popStr
+/// @brief Detects duplicate values in a 1d wave.
+///
+/// Returns -1 if duplicate is NOT found. Will not report NaNs as duplicates
+/// Igor 7 will have a findDuplicates command
+Function SearchForDuplicates(Wv)
+	WAVE Wv
+	ASSERT(dimsize(Wv,1) <= 1, (nameofwave(Wv) + " is not a 1D wave")) // make sure wave passed in is 1d
+	Duplicate/FREE Wv WvCopyOne WvCopyTwo // make two copies. One to store duplicate search results, the other to sort and search for duplicates.
+	variable Rows = (dimSize(Wv,0) // create a variable so dimSize is only called once instead of twice.
+	WvCopyOne[Rows- 1] = 0 // Set last point to 0 because if it by chance was 1 it would come up as a duplicate, even when the penultimate value in Wv was not 1
+	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
+ 	WvCopyOne[0, Rows - 2] = WvCopyTwo[p] != WvCopyTwo[p + 1] ? 0 : 1 // could multithread but, MIES use case will be with short 1d waves.
+	FindValue/V=1 WvCopyOne
+	return V_value
+End
 
-			if(!CmpStr(popStr, NONE))
-				break
-			endif
-
-			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
-			device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-			Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
-
-			AddTraceToLBGraph(graph, keyWave, settingsHistory, popStr)

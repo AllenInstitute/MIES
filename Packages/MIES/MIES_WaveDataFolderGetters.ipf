@@ -124,7 +124,36 @@ Function/Wave GetHSManipulatorName(panelTitle)
 	return wv
 End
 
+/// @brief Return a wave reference to the wave used for gizmo plotting manipulator positions in 3D
+///
+/// Rows:
+/// - Manipulator
+///
+/// Columns:
+/// - 0: Xpos
+/// - 1: Ypos
+/// - 2: Zpos
+///
+Function/Wave GetManipulatorPos(panelTitle)
+	string panelTitle
+	string Name = "Gizmo_" + panelTitle
+	DFREF dfr = GetManipulatorPath()
 
+	Wave/Z/SDFR=dfr wv =$Name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(NUM_HEADSTAGES, 3) dfr:$Name/Wave=wv
+	wv = NaN
+
+	SetDimLabel COLS, 0, Xpos, wv
+	SetDimLabel COLS, 1, Ypos, wv
+	SetDimLabel COLS, 2, Zpos, wv
+
+	return wv
+End
 
 /// @name Wave versioning support
 /// @anchor WaveVersioningSupport
