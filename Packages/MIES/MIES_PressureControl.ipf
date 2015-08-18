@@ -112,12 +112,17 @@ Function P_MethodApproach(panelTitle, headStage)
 		targetP = PressureDataWv[headStage][%PSI_slice]
 	endif
 	
+	// if Near checkbox is checked then zero amplifiers on approach that require zeroing
+	if(PressureDataWv[headStage][%ApproachNear])
+		AI_ZeroAmps(panelTitle, headstage = headStage)
+	endif
+	
 	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 		// Turn off holding
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=0)
-	endif	
+	endif	 
 End
 
 /// @brief Applies seal methods

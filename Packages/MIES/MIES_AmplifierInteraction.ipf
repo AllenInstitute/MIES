@@ -3,6 +3,8 @@
 /// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with the Axon/MCC amplifiers
 
+static Constant ZERO_TOLERANCE = 50 // pA
+
 Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
 
@@ -1149,3 +1151,35 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif
 End
+
+/// @brief Executes MCC auto zero command if the baseline current exceeds the constant: ZERO_TOLERANCE
+///
+/// @param panelTitle device
+/// @param headStage     [optional: defaults to all active headstages]
+Function AI_ZeroAmps(panelTitle, [headStage])
+	string panelTitle
+	variable headstage
+	variable i
+	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
+	ASSERT(IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"), "Test pulse needs to be active to zero amplifiers from this function")
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/SDFR=dfr baselineSSAvg
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	if(!paramisdefault(headstage))
+		if(abs(baselineSSAvg[0][TP_GetTPResultsColOfHS(panelTitle, headstage)]) >= ZERO_TOLERANCE)
+			AI_UpdateAmpModel(panelTitle, "button_DataAcq_AutoPipOffset_VC", headstage, value=0, sendToAll=0 )
+		endif
+	else
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+	
+			if(!statusHS[i])
+				continue
+			endif
+	
+			if(abs(baselineSSAvg[0][TP_GetTPResultsColOfHS(panelTitle, i)]) >= ZERO_TOLERANCE)
+				AI_UpdateAmpModel(panelTitle, "button_DataAcq_AutoPipOffset_VC", i, value=0, sendToAll=0 )
+			endif
+		endfor
+	endif
+End
+
