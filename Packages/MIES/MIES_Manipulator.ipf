@@ -12,9 +12,31 @@
 // server commands (without manipulator name, where required)
 Static StrConstant DEVICE_LIST = "http://localhost:8889/geom_config?fn=list_geom_iids"
 Static StrConstant XYZ_IN_STAGE_FRAME = "http://localhost:8889/mssgeom?fn=get_position_stage_frame&iid="
+Static StrConstant APPROACH_STEP = "Server call does not exist yet"
 
 // manipulator name prefix defined by the MSS server
 Static StrConstant MANIP_BASE_NAME = "mg"
+
+/// @brief MSS command wrapper
+///
+/// Parses device specific and general MSS calls
+Function/S M_ExecuteMSSCommand(cmd, [deviceName])
+	string cmd, deviceName
+	if(paramIsDefault(deviceName)) // handle calls that don't require a device to be specified
+		return M_ExecuteMSSServerCall(cmd)
+	else // handle device specific calls
+		cmd+=deviceName
+		if(stringmatch(deviceName, (MANIP_BASE_NAME+"*"))) // handle manipulator calls
+			M_CheckIfManipulatorIsAttached(deviceName)
+		elseif(stringmatch(deviceName, ("STAGE"))) // handle stage calls
+			// @todo place holder to handle stage commands
+			ASSERT(0, "Stage commands have not been implemented")
+		endif
+		return M_ExecuteMSSServerCall(cmd)
+	endif
+	
+	ASSERT(0, "Server command failed")
+End
 
 /// @brief Executes MSS server calls
 ///
@@ -37,10 +59,30 @@ Function/S M_ExecuteMSSServerCall(cmd)
 	endif	
 End
 
+/// @brief Checks if manipulator is available
+///
+/// @param ManipulatorName e.g. "mg1"
+Function M_CheckIfManipulatorIsAttached(manipulatorName)
+	string manipulatorName
+	M_CheckManipulatorNameFormat(manipulatorName)
+	ASSERT(WhichListItem(manipulatorName, M_GetListOfAttachedManipulators(),";",0,0) != -1, "Manipulator: " + manipulatorName + " is not available.")
+End
+	
+/// @brief Checks format of manipulator name
+///
+/// @param ManipulatorName e.g. "mg1"
+Function M_CheckManipulatorNameFormat(manipulatorName)
+	string manipulatorName
+	// check if base name matches
+	ASSERT(stringmatch(ManipulatorName, (MANIP_BASE_NAME + "*")), "Name of manipulator does not conform to standard format")
+	// check if base name is followed by an integer
+	variable val = M_GetManipulatorNumberFromName(ManipulatorName)
+	ASSERT(val >= 0 && IsInteger(val), "Manipulator number must be a positive integer")
+End
+
 /// @brief Gets the list of attached manipulators
 Function/S M_GetListOfAttachedManipulators()
-	string ManipulatorList = M_ExecuteMSSServerCall(DEVICE_LIST)
-	
+	string ManipulatorList = M_ExecuteMSSCommand(DEVICE_LIST)
 	if(numtype(strlen(ManipulatorList)))
 		ManipulatorList = "No dev. avail."
 	else
@@ -57,8 +99,13 @@ Function M_SetManipulatorAssociation(panelTitle)
 	WAVE ManipulatorDataWave = GetHSManipulatorAssignments(panelTitle)
 	WAVE/T ManipulatorTextWave = GetHSManipulatorName(panelTitle)
 	string ManipulatorName = GetPopupMenuString(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-	ManipulatorDataWave[headStage][%ManipulatorNumber] = M_GetManipulatorNumberFromName(ManipulatorName)
-	ManipulatorTextWave[headStage][%ManipulatorName] = ManipulatorName
+	if(cmpstr("- none -", ManipulatorName) == 0)
+		ManipulatorDataWave[headStage][%ManipulatorNumber] = NaN
+		ManipulatorTextWave[headStage][%ManipulatorName] = ""
+	else
+		ManipulatorDataWave[headStage][%ManipulatorNumber] = M_GetManipulatorNumberFromName(ManipulatorName)
+		ManipulatorTextWave[headStage][%ManipulatorName] = ManipulatorName
+	endif
 End
 
 /// @brief Updates the manipulator hardware association controls in the Hardware tab of the DA_ephys panel
@@ -79,36 +126,14 @@ Function M_GetManipulatorNumberFromName(ManipulatorName)
 End
 
 /// @brief Wrapper for stage frame position query server command
-Function/S GetXYZinStageFrame(manipulatorName)
+Function/S M_GetXYZinStageFrame(manipulatorName)
 	string ManipulatorName
-	CheckIfManipulatorIsAttached(manipulatorName)
-	string cmd = XYZ_IN_STAGE_FRAME + ManipulatorName
-	return M_ExecuteMSSServerCall(cmd)
+	string cmd = XYZ_IN_STAGE_FRAME
+	return M_ExecuteMSSCommand(cmd, deviceName = manipulatorName)
 End
 
-/// @brief Checks format of manipulator name
-///
-/// @param ManipulatorName e.g. "mg1"
-Function CheckManipulatorNameFormat(manipulatorName)
-	string manipulatorName
-	// check if base name matches
-	ASSERT(stringmatch(ManipulatorName, (MANIP_BASE_NAME + "*")), "Name of manipulator does not conform to standard format")
-	// check if base name is followed by an integer
-	variable val = M_GetManipulatorNumberFromName(ManipulatorName)
-	ASSERT(val >= 0 && IsInteger(val), "Manipulator number must be a positive integer")
-End
-
-/// @brief Checks if manipulator is available
-///
-/// @param ManipulatorName e.g. "mg1"
-Function CheckIfManipulatorIsAttached(manipulatorName)
-	string manipulatorName
-	CheckManipulatorNameFormat(manipulatorName)
-	ASSERT(WhichListItem(manipulatorName, M_GetListOfAttachedManipulators(),";",0,0) != -1, "Manipulator: " + manipulatorName + " is not available.")
-End
-
-/// @brief Returns manipulator associated with headstage
-Function/S GetManipFromHS(panelTitle, headStage)
+/// @brief Returns string name of manipulator associated with headstage
+Function/S M_GetManipFromHS(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	WAVE/T ManipulatorTextWave = GetHSManipulatorName(panelTitle)
@@ -117,7 +142,7 @@ End
 
 /// @brief Documents X,Y,Z position of manipulators of active headstages in lab notebook	
 // This funciton should be run once whole cell config is aquired on all cells in experiment. Not sure how to do this.
-Function DocumentManipulatorXYZ(panelTitle)
+Function M_DocumentManipulatorXYZ(panelTitle)
 	string panelTitle
 	string manipulatorName, manipulatorXYZ
 	variable i
@@ -149,7 +174,7 @@ Function DocumentManipulatorXYZ(panelTitle)
 			continue
 		endif
 	
-		ManipulatorXYZ = GetXYZinStageFrame(GetManipFromHS(panelTitle, i))
+		ManipulatorXYZ = M_GetXYZinStageFrame(M_GetManipFromHS(panelTitle, i))
 		
 		TPSettingsWave[0][0][i] = str2num(stringfromlist(0, ManipulatorXYZ))
 		TPSettingsWave[0][1][i] = str2num(stringfromlist(1, ManipulatorXYZ))
@@ -164,7 +189,7 @@ End
 ///
 /// find columns where data is stored in lab notebook
 /// find last row with data
-Function ManipulatorGizmoPlot(panelTitle, [sweep])
+Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	string panelTitle
 	variable sweep
 	string setting
@@ -181,6 +206,11 @@ Function ManipulatorGizmoPlot(panelTitle, [sweep])
 	WaveForGizmo[][1] = GetLastSetting(Settingshistory, sweep, "ManipY")[p]
 	WaveForGizmo[][2] = GetLastSetting(Settingshistory, sweep, "ManipZ")[p]
 	
+	string cmd = "NewGizmo/k=1/N=CellPosPlot/T=\"CellPosPlot\""
+	Execute cmd
+	sprintf cmd "AppendToGizmo/N=CellPosPlot defaultScatter= %s" GetWavesDataFolder(WaveForGizmo,2)
+	Execute cmd
+
 End		
 
 /// @brief Detects duplicate values in a 1d wave.
@@ -199,3 +229,11 @@ Function SearchForDuplicates(Wv)
 	return V_value
 End
 
+/// @brief Steps manipulators on approach axis for headstages that are active and in approach pressure mode
+///
+Function M_ApproachStep(panelTitle, stepSize, [headstage])
+	string panelTitle
+	variable stepSize
+	variable headstage
+	
+End
