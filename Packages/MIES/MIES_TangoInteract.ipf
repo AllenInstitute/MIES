@@ -88,6 +88,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	variable incomingWaveIndex
 	variable baselineAverage
 	variable qcResult = 0
+	variable adChannel
 	
 	// structure needed for communicating with the start acquisition button on the DA_Ephys panel
 	STRUCT WMButtonAction ba
@@ -137,7 +138,8 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		// and grab the baseline avg value
 		WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
 		
-		baselineAverage = BaselineSSAvg[0][0]
+		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		baselineAverage = BaselineSSAvg[0][adChannel]
 		
 		print "baseline Average: ", baselineAverage
 		
