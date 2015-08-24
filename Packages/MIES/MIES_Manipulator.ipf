@@ -210,7 +210,6 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	Execute cmd
 	sprintf cmd "AppendToGizmo/N=CellPosPlot defaultScatter= %s" GetWavesDataFolder(WaveForGizmo,2)
 	Execute cmd
-
 End		
 
 /// @brief Detects duplicate values in a 1d wave.
