@@ -494,6 +494,110 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 	endif
 End
 
+/// @brief run the initial access resistance check from the WSE.  This will check must be < 20MOhm or 15% of the R input.
+/// The EXTPBREAKN wave will also be run as a way of making sure the reading is recorded into the data set for post-experiment analysis
+Function TI_runInitAccessResisQC(headstage, [cmdID])
+	variable headstage
+
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+	string waveSelect
+	string StimWaveName = "EXTPBREAKN141203_DA_0"
+	variable baselineValue
+	string ListOfWavesInFolder
+	variable incomingWaveIndex
+	variable instResistanceVal
+	variable ssResistanceVal
+	variable qcResult
+	variable adChannel
+	variable tpBufferSetting
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	for(n = 0; n<noLockedDevs; n+= 1)
+		currentPanel = StringFromList(n, lockedDevList)
+		DFREF dfr = GetDeviceTestPulse(currentPanel)
+
+		// pop the itc panel window to the front
+		DoWindow /F $currentPanel
+
+		// push the waveSet to the ephys panel
+		// first, build up the control name by using the headstage value
+		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+		// build up the list of available wave sets
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA")
+
+		// make sure that the incoming EXTPBREAKN is a valid wave name
+		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
+			print "EXTPBREAKN wave not loaded...please load and try again..."
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, qcResult)
+			endif
+			return 0
+		endif
+
+		// now find the index of the selected incoming wave in that list
+		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
+
+		// and now set the wave popup menu to that index
+		// have to add 2 since the pulldown always has -none- and TestPulse as options
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+
+		// save the current test pulse buffer setting
+		tpBufferSetting = GetSetVariable(currentPanel,"setvar_Settings_TPBuffer")
+
+		// set the test pulse buffer up to a higher value to account for noise...using 5 for now
+		SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", 5)
+
+		// Check to see if Test Pulse is already running...if not running, turn it on...
+		if (!(IsBackgroundTaskRunning("TestPulse")))
+			TP_StartTestPulseSingleDevice(currentPanel)
+		endif
+
+		// and grab the initial resistance avg value
+		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+
+		// and get the steady state resistance
+		WAVE/SDFR=dfr SSResistance
+
+		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		ASSERT(adChannel >= 0, "Could not query AD channel")
+		instResistanceVal = InstResistance[0][adChannel]
+		ssResistanceVal = SSResistance[0][adChannel]
+
+		print "Initial Access Resistance: ", instResistanceVal
+		print "SS Resistance: ", ssResistanceVal
+		
+		print "currentPanel: ", currentPanel
+
+		// See if we pass the baseline QC
+		if ((instResistanceVal<20.0) || (instResistanceVal < (.15*ssResistanceVal)))
+			// and now run the EXTPBREAKN wave so that things are saved into the data record
+			print "pushing the start button..."
+			PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
+			qcResult = instResistanceVal
+		else // since the check failed, have to turn off the test pulse
+			ITC_StopTestPulseSingleDevice(currentPanel)
+		endif
+	endfor
+
+	print "qcResult: ", qcResult
+
+	// set the test pulse buffer back to 1
+	//SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", tpBufferSetting)
+
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, qcResult)
+	endif
+End
+
 ///@brief routine to be called from the WSE to use a one step scale adjustment to find the scale factor that causes and AP firing
 ///@param stimWaveName		stimWaveName to be used
 ///@param initScaleFactor			initial scale factor to start with
