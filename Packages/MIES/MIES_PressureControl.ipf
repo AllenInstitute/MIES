@@ -43,7 +43,7 @@ Function P_PressureControl(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	variable 	headStage, Column
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
-		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive
+		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing).
 			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
 			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries. This will fail when a new headstage is turned on.
 				Column = TP_GetTPResultsColOfHS(panelTitle, headStage)
@@ -112,17 +112,19 @@ Function P_MethodApproach(panelTitle, headStage)
 		targetP = PressureDataWv[headStage][%PSI_slice]
 	endif
 	
-	// if Near checkbox is checked then zero amplifiers on approach that require zeroing
-	if(PressureDataWv[headStage][%ApproachNear])
-		AI_ZeroAmps(panelTitle, headstage = headStage)
-	endif
-	
 	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 		// Turn off holding
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=0)
-	endif	 
+	else // only try to zero amps after pressures have been set
+		// if Near checkbox is checked then zero amplifiers on approach that require zeroing
+		if(PressureDataWv[headStage][%ApproachNear])
+			AI_ZeroAmps(panelTitle, headstage = headStage)
+		endif
+	endif
+	
+
 End
 
 /// @brief Applies seal methods
