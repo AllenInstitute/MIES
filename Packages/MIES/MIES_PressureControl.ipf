@@ -103,9 +103,8 @@ Function P_MethodApproach(panelTitle, headStage)
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 	variable 	targetP = PressureDataWv[headStage][%PSI_solution] // Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
-	variable	ONorOFF = 1
 	
-	P_UpdateTTLstate(panelTitle, headStage, ONorOFF) // Open the TTL - outside of if statement below because TTL will only update if the state is incorrect.
+	P_UpdateTTLstate(panelTitle, headStage, 1) // Open the TTL - outside of if statement below because TTL will only update if the state is does not match.
 
 	// if Near cell checkbox is checked then all headstages, except the active headstage, go to in slice pressure. The active headstage goes to nearCell pressure
 	if(PressureDataWv[headStage][%ApproachNear] && headStage != PressureDataWv[headStage][%UserSelectedHeadStage])
@@ -117,14 +116,12 @@ Function P_MethodApproach(panelTitle, headStage)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
 		// Turn off holding
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=0)
-	else // only try to zero amps after pressures have been set
+	else // Zero amps after pressure on headstage has been set
 		// if Near checkbox is checked then zero amplifiers on approach that require zeroing
 		if(PressureDataWv[headStage][%ApproachNear])
 			AI_ZeroAmps(panelTitle, headstage = headStage)
 		endif
 	endif
-	
-
 End
 
 /// @brief Applies seal methods
