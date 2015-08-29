@@ -1167,7 +1167,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 		WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 		if(!paramisdefault(headstage))
 			if(abs(baselineSSAvg[0][TP_GetTPResultsColOfHS(panelTitle, headstage)]) >= ZERO_TOLERANCE)
-				AI_UpdateAmpModel(panelTitle, "button_DataAcq_AutoPipOffset_VC", headstage, value=0, sendToAll=0 )
+				AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 			endif
 		else
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1177,10 +1177,31 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 				endif
 		
 				if(abs(baselineSSAvg[0][TP_GetTPResultsColOfHS(panelTitle, i)]) >= ZERO_TOLERANCE)
-					AI_UpdateAmpModel(panelTitle, "button_DataAcq_AutoPipOffset_VC", i, value=0, sendToAll=0 )
+					AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 				endif
 			endfor
 		endif
 	endif
+End
+
+/// @brief Sets pipette offset to zero in Voltage clamp
+/// Quicker than MCC auto pipette offset
+
+Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/SDFR=dfr baselineSSAvg
+	WAVE/SDFR =dfr SSResistance
+	variable column =TP_GetTPResultsColOfHS(panelTitle, headstage)
+	
+	//calculate delta current to reach zero
+	variable Vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) /1000 // set to mV
+	// get current DC V offset
+	variable Offset = AI_SendToAmp(panelTitle, headStage, 0, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
+	// add delta to current DC V offset
+	variable value = Offset - Vdelta
+	// send new V offset to amp
+	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
 End
 
