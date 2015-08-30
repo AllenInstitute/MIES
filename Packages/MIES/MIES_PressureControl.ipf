@@ -355,7 +355,9 @@ Function P_CloseITCDevForP_Reg(panelTitle)
 			headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
 
 			WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-			P_CloseITCDevice(panelTitle, DeviceToClose , PressureDataWv[headStage][%DAC_DevID])
+			if(isInteger(PressureDataWv[headStage][%DAC_DevID]))
+				P_CloseITCDevice(panelTitle, DeviceToClose , PressureDataWv[headStage][%DAC_DevID])
+			endif
 	endfor
 End
 
@@ -400,6 +402,7 @@ Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
 	string 	panelTitle, ITCDevToClose
 	variable 	DevID
 	string 	cmd
+	ASSERT(isInteger(DevID), "ITC Device ID is not a valid integer")
 	sprintf 	cmd, "ITCSelectDevice %d" DevID
 	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCCloseDevice"
@@ -1306,6 +1309,7 @@ Function P_Enable()
 	variable i
 	variable j
 	string LockedDevice
+	P_Disable() // disable any devices that may already be assigned to pressure regulation - handles mistmatch between GUI controls and hardware state
 	for(i = 0; i < ItemsInList(ListOfLockedDA_Ephys); i += 1)
 		LockedDevice = StringFromList(i, ListOfLockedDA_Ephys)
 		if(ItemsInList(P_ITCDevToOpen())) // check to ensure there are ITC devices assigned by the user for pressure regulation
