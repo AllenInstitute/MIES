@@ -439,7 +439,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
-	Button DataAcquireButton,pos={44,711},size={395,42},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
+	Button DataAcquireButton,pos={44,711},size={395,42},disable=1,proc=DAP_ButtonProc_AcquireDataMD,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,Ch!!#C6J,hsRJ,ho(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -875,7 +875,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_Append,value= 0
-	CheckBox Check_Settings_BkgTP,pos={34,86},size={93,14},disable=1,title="Background TP"
+	CheckBox Check_Settings_BkgTP,pos={34,86},size={93,14},disable=3,title="Background TP"
 	CheckBox Check_Settings_BkgTP,help={"Use cautiously - intended primarily for software development"}
 	CheckBox Check_Settings_BkgTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BkgTP,userdata(tabcontrol)=  "ADC"
@@ -883,7 +883,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_BkgTP,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq,pos={34,193},size={156,14},disable=1,title="Background Data Acquisition"
+	CheckBox Check_Settings_BackgrndDataAcq,pos={34,193},size={156,14},disable=3,title="Background Data Acquisition"
 	CheckBox Check_Settings_BackgrndDataAcq,help={"You may notice that onscreen update isn't as smooth with background data acquisition. This is normal and unavoidable."}
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabcontrol)=  "ADC"
@@ -2023,7 +2023,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_Hardware_IC_AD_Div1,pos={153,440},size={15,13},title="V /"
 	TitleBox Title_Hardware_IC_AD_Div1,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_AD_Div1,userdata(tabcontrol)=  "ADC",frame=0
-	GroupBox GroupBox_Hardware_Associations,pos={23,305},size={400,300},title="DAC Channel and Device Associations"
+	GroupBox GroupBox_Hardware_Associations,pos={23,305},size={400,350},title="DAC Channel and Device Associations"
 	GroupBox GroupBox_Hardware_Associations,userdata(tabnum)=  "6"
 	GroupBox GroupBox_Hardware_Associations,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_DatAcq,pos={20,169},size={424,258},disable=1,title="Data Acquisition"
@@ -2101,7 +2101,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Hardware_YokeList,userdata(tabnum)=  "6"
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
-	SetVariable setvar_Hardware_YokeList,value= _STR:"No Yoked Devices",noedit= 1
+	SetVariable setvar_Hardware_YokeList,value= _STR:"Device is not yokeable",noedit= 1
 	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=2,proc=DAP_ButtonProc_YokeRelease,title="Release"
 	Button button_Hardware_RemoveYoke,userdata(tabnum)=  "6"
 	Button button_Hardware_RemoveYoke,userdata(tabcontrol)=  "ADC"
@@ -2349,7 +2349,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Pressure_ITCdev,help={"List of available ITC devices for pressure control"}
 	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Pressure_ITCdev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
+	PopupMenu popup_Settings_Pressure_ITCdev,mode=3,popvalue="ITC1600_Dev_2",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
 	TitleBox Title_settings_Hardware_Pressur,pos={31,481},size={41,13},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC",frame=0
@@ -2364,19 +2364,19 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_Pressure_DAgain,pos={98,532},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:nan
+	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:0.5
 	SetVariable setvar_Settings_Pressure_ADgain,pos={98,557},size={50,16},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:nan
+	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:2
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,pos={156,532},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Hardware_Pressur_DA_Unit,value= _STR:""
+	SetVariable SetVar_Hardware_Pressur_DA_Unit,value= _STR:"psi"
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,pos={177,557},size={30,16},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_AD_Unit,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Hardware_Pressur_AD_Unit,value= _STR:""
+	SetVariable SetVar_Hardware_Pressur_AD_Unit,value= _STR:"psi"
 	TitleBox Title_Hardware_Pressure_DA_Div,pos={190,534},size={15,13},title="/ V"
 	TitleBox Title_Hardware_Pressure_DA_Div,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_Pressure_DA_Div,userdata(tabcontrol)=  "ADC",frame=0
@@ -2400,7 +2400,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_InBathP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the bath."}
 	SetVariable setvar_Settings_InBathP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InBathP,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_InBathP,limits={-10,10,0.1},value= _NUM:0.549999952316284
+	SetVariable setvar_Settings_InBathP,limits={-10,10,0.1},value= _NUM:0.550000011920929
 	SetVariable setvar_Settings_InSliceP,pos={287,679},size={105,16},disable=1,proc=DAP_SetVarProc_CAA,title="In slice P (psi)"
 	SetVariable setvar_Settings_InSliceP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the tissue specimen."}
 	SetVariable setvar_Settings_InSliceP,userdata(tabnum)=  "5"
@@ -2435,7 +2435,7 @@ Window DA_Ephys() : Panel
 	Button button_Settings_UpdateDACList,help={"Updates the popup menu contents to show the available ITC devices"}
 	Button button_Settings_UpdateDACList,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateDACList,userdata(tabcontrol)=  "ADC"
-	Button button_Hardware_P_Enable,pos={285,527},size={60,46},proc=P_ButtonProc_Enable,title="Enable"
+	Button button_Hardware_P_Enable,pos={285,527},size={60,46},disable=2,proc=P_ButtonProc_Enable,title="Enable"
 	Button button_Hardware_P_Enable,help={"Enable ITC devices used for pressure regulation."}
 	Button button_Hardware_P_Enable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Enable,userdata(tabcontrol)=  "ADC",fSize=14
@@ -2445,13 +2445,13 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_P_Disable,userdata(tabcontrol)=  "ADC",fSize=14
 	ValDisplay valdisp_DataAcq_P_0,pos={53,331},size={102,17},bodyWidth=35,disable=1,title="\\Z10Pressure (psi)"
 	ValDisplay valdisp_DataAcq_P_0,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	ValDisplay valdisp_DataAcq_P_0,fSize=14,fStyle=0,valueColor=(65535,65535,65535)
-	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(0,0,0)
+	ValDisplay valdisp_DataAcq_P_0,fSize=14,fStyle=0
+	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={158,331},size={35,17},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_1,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
-	ValDisplay valdisp_DataAcq_P_1,fSize=14,fStyle=0
-	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535)
+	ValDisplay valdisp_DataAcq_P_1,fSize=14,fStyle=0,valueColor=(65535,65535,65535)
+	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_2,pos={198,331},size={35,17},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_2,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2570,6 +2570,14 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_SampIntMult,mode=1,popvalue="1",value= #"\"1;2;4;8;16;32;64\""
+	TitleBox Title_settings_Hardware_Manipul,pos={31,588},size={60,13},title="Manipulators"
+	TitleBox Title_settings_Hardware_Manipul,userdata(tabnum)=  "6"
+	TitleBox Title_settings_Hardware_Manipul,userdata(tabcontrol)=  "ADC",frame=0
+	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={75,605},size={176,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="MSS"
+	PopupMenu popup_Settings_Manip_MSSMnipLst,help={"List of available Scientifica micromanipulators"}
+	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabnum)=  "6"
+	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=2,popvalue="mg1",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"

@@ -6,8 +6,8 @@
 // relevant wave and DF getters:
 // GetManipulatorPathAsString()
 // GetManipulatorPath()
-// GetHSManipulatorName(panelTitle)
-// GetHSManipulatorAssignments(panelTitle)
+// GetHSManipulatorName(panelTitle) - returns manipulator name strings assigned to headstage
+// GetHSManipulatorAssignments(panelTitle) - returns manipulator number assigned to headstage
 
 // server commands (without manipulator name, where required)
 Static StrConstant DEVICE_LIST = "http://localhost:8889/geom_config?fn=list_geom_iids"
@@ -34,7 +34,6 @@ Function/S M_ExecuteMSSCommand(cmd, [deviceName])
 		endif
 		return M_ExecuteMSSServerCall(cmd)
 	endif
-	
 	ASSERT(0, "Server command failed")
 End
 
@@ -195,7 +194,7 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	string setting
 	DFREF ManipulatorDF = GetManipulatorPath()
 	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
-	WAVE/D/Z/SDFR=settingsHistoryDFR Settingshistory
+	WAVE/D/Z/SDFR=settingsHistoryDFR SettingsHistory
 	WAVE WaveForGizmo = GetManipulatorPos(panelTitle)
 	if(paramIsDefault(sweep))
 		sweep = DM_ReturnLastSweepAcquired(panelTitle)
@@ -212,27 +211,10 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	Execute cmd
 End		
 
-/// @brief Detects duplicate values in a 1d wave.
-///
-/// Returns -1 if duplicate is NOT found. Will not report NaNs as duplicates
-/// Igor 7 will have a findDuplicates command
-Function SearchForDuplicates(Wv)
-	WAVE Wv
-	ASSERT(dimsize(Wv,1) <= 1, (nameofwave(Wv) + " is not a 1D wave")) // make sure wave passed in is 1d
-	Duplicate/FREE Wv WvCopyOne WvCopyTwo // make two copies. One to store duplicate search results, the other to sort and search for duplicates.
-	variable Rows = (dimSize(Wv,0) // create a variable so dimSize is only called once instead of twice.
-	WvCopyOne[Rows- 1] = 0 // Set last point to 0 because if it by chance was 1 it would come up as a duplicate, even when the penultimate value in Wv was not 1
-	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
- 	WvCopyOne[0, Rows - 2] = WvCopyTwo[p] != WvCopyTwo[p + 1] ? 0 : 1 // could multithread but, MIES use case will be with short 1d waves.
-	FindValue/V=1 WvCopyOne
-	return V_value
-End
-
 /// @brief Steps manipulators on approach axis for headstages that are active and in approach pressure mode
-///
+/// Waiting for Approach to be implemented in MSS server
 Function M_ApproachStep(panelTitle, stepSize, [headstage])
 	string panelTitle
 	variable stepSize
 	variable headstage
-	
 End

@@ -86,16 +86,24 @@ Function/Wave GetHSManipulatorAssignments(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetManipulatorPath()
+	variable versionOfNewWave = 1
 	
 	Wave/Z/SDFR=dfr wv = $panelTitle
-
-	if(WaveExists(wv))
+	
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+	    // change the required dimensions and leave all others untouched with -1
+ 	    // the extended dimensions are initialized with zero
+ 		Redimension/N=(NUM_HEADSTAGES,1, -1, -1) wv
+	else
+		Make/N=(NUM_HEADSTAGES, 1) dfr:$panelTitle/Wave=wv
+		wv = NaN
+		SetDimLabel COLS, 0, ManipulatorNumber, wv
 	endif
-
-	Make/N=(NUM_HEADSTAGES, 1) dfr:$panelTitle/Wave=wv
-	wv = NaN
-	SetDimLabel COLS, 0, ManipulatorNumber, wv
+	
+	SetWaveVersion(wv, versionOfNewWave)
+	
 	return wv
 End
 
@@ -111,16 +119,22 @@ Function/Wave GetHSManipulatorName(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetManipulatorPath()
-
+	variable versionOfNewWave = 1
+	
 	Wave/T/Z/SDFR=dfr wv = $panelTitle + "_S"
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+ 		Redimension/N=(NUM_HEADSTAGES,1, -1, -1) wv
+ 	else 
+ 		Make/T/N=(NUM_HEADSTAGES, 1) dfr:$panelTitle+"_S"/Wave=wv
+		wv = ""
+		SetDimLabel COLS, 0, ManipulatorName, wv
 	endif
 
-	Make/T/N=(NUM_HEADSTAGES, 1) dfr:$panelTitle+"_S"/Wave=wv
-	wv = ""
-	SetDimLabel COLS, 0, ManipulatorName, wv
+	SetWaveVersion(wv, versionOfNewWave)
+	
 	return wv
 End
 
@@ -138,20 +152,23 @@ Function/Wave GetManipulatorPos(panelTitle)
 	string panelTitle
 	string Name = "Gizmo_" + panelTitle
 	DFREF dfr = GetManipulatorPath()
+	variable versionOfNewWave = 1
 
 	Wave/Z/SDFR=dfr wv =$Name
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+ 		Redimension/N=(NUM_HEADSTAGES,3, -1, -1) wv
+ 		wv = NaN
+	else
+		Make/N=(NUM_HEADSTAGES, 3) dfr:$Name/Wave=wv
+		SetDimLabel COLS, 0, Xpos, wv
+		SetDimLabel COLS, 1, Ypos, wv
+		SetDimLabel COLS, 2, Zpos, wv
 	endif
 
-	Make/N=(NUM_HEADSTAGES, 3) dfr:$Name/Wave=wv
-	wv = NaN
-
-	SetDimLabel COLS, 0, Xpos, wv
-	SetDimLabel COLS, 1, Ypos, wv
-	SetDimLabel COLS, 2, Zpos, wv
-
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
 
