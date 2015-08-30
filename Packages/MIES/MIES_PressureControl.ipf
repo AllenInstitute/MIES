@@ -117,7 +117,7 @@ Function P_MethodApproach(panelTitle, headStage)
 		// Turn off holding
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=0)
 	else // Zero amps after pressure on headstage has been set
-		// if Near checkbox is checked then zero amplifiers on approach that require zeroing
+		// If Near checkbox is checked, then zero amplifiers on approach that require zeroing
 		if(PressureDataWv[headStage][%ApproachNear])
 			AI_ZeroAmps(panelTitle, headstage = headStage)
 		endif
