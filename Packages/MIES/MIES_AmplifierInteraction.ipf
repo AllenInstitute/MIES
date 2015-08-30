@@ -1184,19 +1184,21 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 	endif
 End
 
-/// @brief Sets pipette offset to zero in Voltage clamp
+/// @brief Auto pipette zeroing in Voltage clamp
 /// Quicker than MCC auto pipette offset
-
+///
+/// @param panelTitle device
+/// @param headStage
 Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/SDFR=dfr baselineSSAvg
-	WAVE/SDFR =dfr SSResistance
+	WAVE/SDFR =dfr SSResistance 
+	ASSERT(AI_MIESHeadstageMode(panelTitle, headStage) ==0, "Headstage must be in VC mode to use this function") // headstage must be in VC
 	variable column =TP_GetTPResultsColOfHS(panelTitle, headstage)
-	
 	//calculate delta current to reach zero
-	variable Vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) /1000 // set to mV
+	variable Vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
 	// get current DC V offset
 	variable Offset = AI_SendToAmp(panelTitle, headStage, 0, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
 	// add delta to current DC V offset
