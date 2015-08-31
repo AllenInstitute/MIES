@@ -4725,8 +4725,9 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	string panelTitle, headStageCtrl
 	variable enabled
 
-	variable mode, headStage, ctrlNo
+	variable mode, headStage, ctrlNo, TPState
 
+	TPState = TP_StopTestPulse(panelTitle)
 	DAP_GetInfoFromControl(panelTitle, headStageCtrl, ctrlNo, mode, headStage)
 
 	If(!enabled)
@@ -4737,6 +4738,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
+	TP_RestartTestPulse(panelTitle, TPState)
 End
 
 /// @brief Stop the testpulse and data acquisition
@@ -5302,12 +5304,14 @@ End
 
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	struct WMSetVariableAction &sva
-
+	
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
+			variable TPState = TP_StopTestPulse(sva.win)
 			DAP_UpdateOnsetDelay(sva.win)
+			TP_RestartTestPulse(sva.win, TPState)
 			break
 	endswitch
 
@@ -5607,4 +5611,21 @@ Function DAP_CommentPanelHook(s)
 	endswitch
 
 	return hookResult		// 0 if nothing done, else 1
+End
+
+Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			Variable TPState = TP_StopTestPulse(sva.win)
+			TP_RestartTestPulse(sva.win, TPState)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
 End

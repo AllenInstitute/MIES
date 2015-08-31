@@ -3061,3 +3061,114 @@ End
 Function/S GetActITCDevicesTestPulFolderA()
 	return GetITCDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
 End
+
+/// @brief Returns wave that stores the DA_Ephys GUI state
+Function/Wave GetDA_EphysGuiState(panelTitle)
+	string panelTitle
+	DFREF dfr= GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
+	variable Rows = max(max(max(max(NUM_DA_TTL_CHANNELS, NUM_HEADSTAGES),NUM_AD_CHANNELS),NUM_ASYNC_CHANNELS),NUM_TTL_BITS_PER_RACK)
+	Wave/Z/SDFR=dfr wv = DA_EphysGuiState
+
+ 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+ 		return wv
+ 	elseif(WaveExists(wv)) // handle upgrade
+ 	    // change the required dimensions and leave all others untouched with -1
+ 	    // the extended dimensions are initialized with zero
+ 		Redimension/N=(Rows, 17, -1, -1) wv
+ 	else
+ 		Make/N=(Rows, 17) dfr:DA_EphysGuiState/Wave=wv
+ 		wv = Nan
+ 		SetDimLabel COLS, 0, HSState, wv
+ 		SetDimLabel COLS, 1, HSMode, wv
+ 		SetDimLabel COLS, 2, DAState, wv
+ 		SetDimLabel COLS, 3, DAGain, wv
+ 		SetDimLabel COLS, 4, DAScale, wv
+ 		SetDimLabel COLS, 5, DAStartIndex, wv
+ 		SetDimLabel COLS, 6, DAEndIndex, wv
+ 		SetDimLabel COLS, 7, ADState, wv
+ 		SetDimLabel COLS, 8, ADGain, wv
+ 		SetDimLabel COLS, 9, TTLState, wv
+ 		SetDimLabel COLS, 10, TTLStartIndex, wv
+ 		SetDimLabel COLS, 11, TTLEndIndex, wv
+ 		SetDimLabel COLS, 12, AsychState, wv
+ 		SetDimLabel COLS, 13, AsychGain, wv
+ 		SetDimLabel COLS, 14, AlarmState, wv
+ 		SetDimLabel COLS, 15, AlarmMin, wv
+ 		SetDimLabel COLS, 16, AlarmMax, wv
+ 	endif
+
+ 	SetWaveVersion(wv, versionOfNewWave)
+
+ 	return wv
+End
+
+Function SetDA_EphysGuiState(panelTitle)
+	string panelTitle
+	Wave GUIState = GetDA_EphysGuiState(panelTitle)
+
+	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
+	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = GetAllHSMode(panelTitle)[p]
+	
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN, NUM_DA_TTL_CHANNELS)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAScale] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE, NUM_DA_TTL_CHANNELS)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE, NUM_DA_TTL_CHANNELS)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END, NUM_DA_TTL_CHANNELS)[p]
+	
+	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)[p]
+	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN, NUM_AD_CHANNELS)[p]
+	
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE, NUM_DA_TTL_CHANNELS)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END, NUM_DA_TTL_CHANNELS)[p]
+//
+//	GUIState[][%AsychState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)[p]
+//	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsychGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN, NUM_ASYNC_CHANNELS)[p]
+//
+//	GUIState[][%AlarmState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
+//	GUIState[][%AlarmMin] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
+//	GUIState[][%AlarmMax] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
+End
+
+Function/Wave GetAllHSMode(panelTitle)
+	string panelTitle
+	make/FREE/n=(NUM_HEADSTAGES) Mode
+	variable i
+	for(i = 0; i < NUM_HEADSTAGES; i+=1)
+		Mode[i] =  AI_MIESHeadstageMode(panelTitle, i)
+	endfor
+	return Mode
+End
+
+Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType, CtrlNum)
+	string panelTitle
+	variable channelType, controlType, CtrlNum
+	string ctrl
+	make/FREE/n=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		wv[i] = GetSetVariable(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType, CtrlNum)
+	string panelTitle
+	variable channelType, controlType, CtrlNum
+	string ctrl
+	make/FREE/n=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+
+CHANNEL_CONTROL_WAVE
+CHANNEL_CONTROL_INDEX_END
+
+GetPopupMenuIndex
