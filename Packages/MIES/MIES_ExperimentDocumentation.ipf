@@ -539,7 +539,7 @@ Function ED_TPDocumentation(panelTitle)
 	string panelTitle
 
 	variable sweepNo, RTolerance
-	variable i, j, clampMode, numHS
+	variable i, j, clampMode
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	SVAR clampModeString = $GetClampModeString(panelTitle)
 
@@ -594,8 +594,7 @@ Function ED_TPDocumentation(panelTitle)
 
 //	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE) /// @toDo Use state when TP was initiated, not current state
 	WAVE statusHS =  GetDA_EphysGuiState(panelTitle)
-	numHS = NUM_HEADSTAGES
-	for(i = 0; i < numHS; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		TPSettingsWave[0][8][i] = statusHS[i][%HSState]
 
