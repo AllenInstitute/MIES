@@ -5651,8 +5651,8 @@ Function DAP_RecordDA_EphysGuiState(panelTitle)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE, NUM_DA_TTL_CHANNELS)[p]
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END, NUM_DA_TTL_CHANNELS)[p]
 
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsychState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)[p]
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsychGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ASYNC_GAIN, NUM_ASYNC_CHANNELS)[p]
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)[p]
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ASYNC_GAIN, NUM_ASYNC_CHANNELS)[p]
 
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)[p]
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN, NUM_ASYNC_CHANNELS)[p]

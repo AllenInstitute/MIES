@@ -1174,7 +1174,7 @@ Function GetNumberFromType([var, str])
 			case "AD":
 				return NUM_AD_CHANNELS
 				break
-			case "Asych_Alarm":
+			case "Async_Alarm":
 				return NUM_ASYNC_CHANNELS
 				break
 			default:

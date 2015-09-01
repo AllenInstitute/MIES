@@ -3062,7 +3062,32 @@ Function/S GetActITCDevicesTestPulFolderA()
 	return GetITCDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
 End
 
-/// @brief Returns wave that stores the DA_Ephys GUI state
+/// @brief Returns wave (DA_EphysGuiState) that stores the DA_Ephys GUI state
+/// DA_EphysGuiState is stored in the device specific folder
+/// e.g. root:MIES:ITCDevices:ITC18USB:Device0
+///
+/// Rows:
+/// - Column specific GUI control settings usually associated with control name number
+///
+/// Columns:
+/// - DACs
+/// 0: HSState State of control Check_DataAcq_HS_RowNum. 0 = UnChecked, 1 = Checked
+/// 1: HSMode Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC. 
+/// 2: DAState State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
+/// 3: DAGain Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
+/// 4: DAScale Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
+/// 5: DAStartIndex PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index of active DA stimulus set during data acquisition. Stores index of next DA stimulus set when data acquistion is not active.
+/// 6: DAEndIndex PopupMenu Index of popupMenu:Popup_DA_IndexEnd_RowNum. Stores the index of the last DA stimulus set used in indexed aquisition mode.
+/// 7: ADState State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
+/// 8: ADGain Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
+/// 9: TTLState State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
+/// 10: TTLStartIndex PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores index of active TTL stimulus set during data acquisition. Stores index of next TTL stimulus set when data acquistion is not active.
+/// 11: TTLEndIndex PopupMenu Index of popupMenu:Popup_TTL_IndexEnd_RowNum. Stores the index of the last TTL stimulus set used in indexed aquisition mode.
+/// 12: AsyncState State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked 
+/// 13: AsyncGain Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
+/// 14: AlarmState State of control check_Async_Alarm_RowNum. 0 = UnChecked, 1 = Checked
+/// 15: AlarmMin Internal number stored in control setvar_AsyncAD_min_RowNum. The minium value alarm trigger.
+/// 16: AlarmMax Internal number stored in control setvar_AsyncAD_max_RowNum. The max value alarm trigger.
 Function/Wave GetDA_EphysGuiState(panelTitle)
 	string panelTitle
 	DFREF dfr= GetDevicePath(panelTitle)
@@ -3091,8 +3116,8 @@ Function/Wave GetDA_EphysGuiState(panelTitle)
  		SetDimLabel COLS, 9, TTLState, wv
  		SetDimLabel COLS, 10, TTLStartIndex, wv
  		SetDimLabel COLS, 11, TTLEndIndex, wv
- 		SetDimLabel COLS, 12, AsychState, wv
- 		SetDimLabel COLS, 13, AsychGain, wv
+ 		SetDimLabel COLS, 12, AsyncState, wv
+ 		SetDimLabel COLS, 13, AsyncGain, wv
  		SetDimLabel COLS, 14, AlarmState, wv
  		SetDimLabel COLS, 15, AlarmMin, wv
  		SetDimLabel COLS, 16, AlarmMax, wv
@@ -3102,4 +3127,3 @@ Function/Wave GetDA_EphysGuiState(panelTitle)
 
  	return wv
 End
-
