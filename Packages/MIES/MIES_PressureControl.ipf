@@ -104,7 +104,7 @@ Function P_MethodApproach(panelTitle, headStage)
 	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 	variable 	targetP = PressureDataWv[headStage][%PSI_solution] // Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
 	
-	P_UpdateTTLstate(panelTitle, headStage, 1) // Open the TTL - outside of if statement below because TTL will only update if the state is does not match.
+	P_UpdateTTLstate(panelTitle, headStage, 1) // Open the TTL - outside of if statement below because TTL will only update if the state does not match.
 
 	// if Near cell checkbox is checked then all headstages, except the active headstage, go to in slice pressure. The active headstage goes to nearCell pressure
 	if(PressureDataWv[headStage][%ApproachNear] && headStage != PressureDataWv[headStage][%UserSelectedHeadStage])
