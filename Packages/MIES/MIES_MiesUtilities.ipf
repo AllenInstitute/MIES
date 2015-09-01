@@ -1968,3 +1968,42 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 
 	return SortList(listInternal + listThirdParty, ";", 16)
 End
+
+/// @brief Returns the mode of all DA_Ephys panel headstages
+Function/Wave GetAllHSMode(panelTitle)
+	string panelTitle
+	make/FREE/n=(NUM_HEADSTAGES) Mode
+	variable i
+	for(i = 0; i < NUM_HEADSTAGES; i+=1)
+		Mode[i] =  AI_MIESHeadstageMode(panelTitle, i)
+	endfor
+	return Mode
+End
+
+/// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType, CtrlNum)
+	string panelTitle
+	variable channelType, controlType, CtrlNum
+	string ctrl
+	make/FREE/n=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		wv[i] = GetSetVariable(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType, CtrlNum)
+	string panelTitle
+	variable channelType, controlType, CtrlNum
+	string ctrl
+	make/FREE/n=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
+	endfor
+	return wv
+End
