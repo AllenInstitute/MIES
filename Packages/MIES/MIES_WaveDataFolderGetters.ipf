@@ -3103,7 +3103,7 @@ Function/Wave GetDA_EphysGuiState(panelTitle)
  	return wv
 End
 
-Function SetDA_EphysGuiState(panelTitle)
+Function DAP_RecordDA_EphysGuiState(panelTitle)
 	string panelTitle
 	Wave GUIState = GetDA_EphysGuiState(panelTitle)
 

@@ -594,7 +594,7 @@ Function ED_TPDocumentation(panelTitle)
 
 //	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE) /// @toDo Use state when TP was initiated, not current state
 	WAVE statusHS =  GetDA_EphysGuiState(panelTitle)
-	numHS = DimSize(statusHS, ROWS)
+	numHS = NUM_HEADSTAGES
 	for(i = 0; i < numHS; i += 1)
 
 		TPSettingsWave[0][8][i] = statusHS[i][%HSState]

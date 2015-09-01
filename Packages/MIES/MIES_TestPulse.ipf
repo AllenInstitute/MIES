@@ -247,7 +247,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	TP_Setup(panelTitle)
-
+	
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 		ITC_StartBackgroundTestPulse(panelTitle)
 	else
@@ -762,6 +762,7 @@ Function TP_Setup(panelTitle, [multiDevice])
 	DAP_TurnOffAllTTLs(panelTitle)
 
 	TP_UpdateGlobals(panelTitle)
+	DAP_RecordDA_EphysGuiState(panelTitle)
 	TP_ResetTPStorage(panelTitle)
 
 	// stores panel settings
