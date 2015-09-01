@@ -489,12 +489,12 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			asyncSettingsWave[0][asyncVariablesCounter + 16] = GetCheckBoxState(panelTitle, ctrl)
 			
 			// Async Alarm Min
-			sprintf ctrl, "SetVar_Async_Min_0%d" asyncVariablesCounter
+			sprintf ctrl, "SetVar_AsyncAD_Min_0%d" asyncVariablesCounter
 			variable maxSettingValue = GetSetVariable(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 24] = maxSettingValue
 			
 			// Async Alarm Max
-			sprintf ctrl, "SetVar_Async_Max_0%d" asyncVariablesCounter
+			sprintf ctrl, "SetVar_AsyncAD_Max_0%d" asyncVariablesCounter
 			variable minSettingValue = GetSetVariable(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 32] = minSettingValue
 	
@@ -504,7 +504,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	
 			//Now do the text stuff...
 			// Async Title
-			sprintf ctrl, "SetVar_Async_Title_0%d" asyncVariablesCounter
+			sprintf ctrl, "SetVar_AsyncAD_Title_0%d" asyncVariablesCounter
 			string titleStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adTitleStringValue 
 			sprintf adTitleStringValue, "Async AD %d: %s" asyncVariablesCounter, titleStringValue
@@ -513,7 +513,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			asyncMeasurementKey[%Parameter][asyncVariablesCounter] = adTitleStringValue
 			
 			// Async Unit
-			sprintf ctrl, "SetVar_Async_Unit_0%d" asyncVariablesCounter
+			sprintf ctrl, "SetVar_AsyncAD_Unit_0%d" asyncVariablesCounter
 			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adUnitStringValue
 			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue
@@ -592,13 +592,14 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+//	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE) /// @toDo Use state when TP was initiated, not current state
+	WAVE statusHS =  GetDA_EphysGuiState(panelTitle)
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
 
-		TPSettingsWave[0][8][i] = statusHS[i]
+		TPSettingsWave[0][8][i] = statusHS[i][%HSState]
 
-		if(!statusHS[i])
+		if(!statusHS[i][%HSState])
 			continue
 		endif
 

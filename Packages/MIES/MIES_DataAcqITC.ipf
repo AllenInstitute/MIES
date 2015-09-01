@@ -565,7 +565,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
 		rawChannelValue = ITC_SingleADReading(i + deviceChannelOffset, panelTitle)
 
-		sprintf setvarTitle, "SetVar_Async_Title_%02d", i
+		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
 		sprintf setvarGain,  "SetVar_AsyncAD_Gain_%02d", i
 
 		title = GetSetVariableString(panelTitle, setvarTitle)
@@ -586,12 +586,12 @@ Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 
 	if(channel < 10)
 		CheckAlarm = "check_Async_Alarm_0" + num2str(channel)
-		SetVarMin = "setvar_Async_min_0" + num2str(channel)
-		SetVarMax = "setvar_Async_max_0" + num2str(channel)
+		SetVarMin = "SetVar_AsyncAD_min_0" + num2str(channel)
+		SetVarMax = "SetVar_AsyncAD_max_0" + num2str(channel)
 	else
 		CheckAlarm = "check_Async_Alarm_" + num2str(channel)
-		SetVarMin = "setvar_Async_min_" + num2str(channel)
-		SetVarMax = "setvar_Async_max_" + num2str(channel)
+		SetVarMin = "SetVar_AsyncAD_min_" + num2str(channel)
+		SetVarMax = "SetVar_AsyncAD_max_" + num2str(channel)
 	endif
 
 	ControlInfo /W = $panelTitle $CheckAlarm

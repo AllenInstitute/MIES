@@ -130,6 +130,10 @@ Constant CHANNEL_CONTROL_SCALE     = 0x030
 Constant CHANNEL_CONTROL_CHECK     = 0x040
 Constant CHANNEL_TYPE_HEADSTAGE    = 0x080
 Constant CHANNEL_TYPE_ASYNC        = 0x100
+Constant CHANNEL_TYPE_ALARM = 0x110
+Constant CHANNEL_CONTROL_ASYNC_GAIN = 0x120
+Constant CHANNEL_CONTROL_ALARM_MIN = 0x130
+Constant CHANNEL_CONTROL_ALARM_MAX = 0x140
 /// @}
 
 /// @name Constants for the selection wave of a ListBox
