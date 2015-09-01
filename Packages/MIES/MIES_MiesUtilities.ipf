@@ -142,7 +142,6 @@ Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
 
 	return ctrl
 End
-SetVar_AsyncAD_min_07
 
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history wave

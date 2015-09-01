@@ -762,6 +762,7 @@ Function TP_Setup(panelTitle, [multiDevice])
 	DAP_TurnOffAllTTLs(panelTitle)
 
 	TP_UpdateGlobals(panelTitle)
+	// Stores panelTitle GUI control state
 	DAP_RecordDA_EphysGuiState(panelTitle)
 	TP_ResetTPStorage(panelTitle)
 
