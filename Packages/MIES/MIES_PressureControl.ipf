@@ -355,7 +355,7 @@ Function P_CloseITCDevForP_Reg(panelTitle)
 			headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
 
 			WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-			if(isInteger(PressureDataWv[headStage][%DAC_DevID]))
+			if(isInteger(PressureDataWv[headStage][%DAC_DevID]) && PressureDataWv[headStage][%DAC_DevID] >= 0) // Don't attempt to close a invalid device ID
 				P_CloseITCDevice(panelTitle, DeviceToClose , PressureDataWv[headStage][%DAC_DevID])
 			endif
 	endfor
