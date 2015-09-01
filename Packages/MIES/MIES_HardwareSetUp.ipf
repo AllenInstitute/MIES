@@ -183,7 +183,6 @@ Function HSU_UnlockDevice(panelTitle)
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
 	P_Disable() // Closes DACs used for pressure regulation
-	/// @todo Need to handle yoked devices for P_Disable()
 	if(DAP_DeviceIsLeader(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)
 	else
