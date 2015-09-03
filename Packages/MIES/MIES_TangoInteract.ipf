@@ -121,24 +121,25 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		endif
 		
 		// now find the index of the selected incoming wave in that list
-		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
+		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder)
 		
 		// and now set the wave popup menu to that index
 		// have to add 2 since the pulldown always has -none- and TestPulse as options
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsBackgroundTaskRunning("TestPulse")))
+		if(!IsBackgroundTaskRunning("TestPulse"))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 		
 		// and now hit the Auto pipette offset
-		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", 0)
+		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", headStage)
 		
 		// and grab the baseline avg value
 		WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
 		
 		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		ASSERT(adChannel == -1, "Invalid TP results...")
 		baselineAverage = BaselineSSAvg[0][adChannel]
 		
 		print "baseline Average: ", baselineAverage
