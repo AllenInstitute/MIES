@@ -4747,15 +4747,20 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 
 	string cmd
 	variable needsOTCAfterDAQ = 0
+	variable discardData      = 0
 
 	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
 		ITC_StopTestPulseSingleDevice(panelTitle)
+
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		discardData      = discardData      | 1
 	endif
 
 	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
 		ITC_StopBackgroundTimerTask()
+
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		discardData      = discardData      | 1
 	endif
 
 	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing background data aquistion
@@ -4765,7 +4770,10 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ExecuteITCOperation(cmd)
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
-		DM_SaveAndScaleITCData(panelTitle)
+
+		if(!discardData)
+			DM_SaveAndScaleITCData(panelTitle)
+		endif
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
