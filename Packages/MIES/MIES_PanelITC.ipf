@@ -5305,11 +5305,13 @@ End
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	struct WMSetVariableAction &sva
 	
+	variable TPState
+	
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			variable TPState = TP_StopTestPulse(sva.win)
+			TPState = TP_StopTestPulse(sva.win)
 			DAP_UpdateOnsetDelay(sva.win)
 			TP_RestartTestPulse(sva.win, TPState)
 			break
