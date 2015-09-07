@@ -1177,8 +1177,9 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 				if(!statusHS[i])
 					continue
 				endif
-		
-				if(abs(baselineSSAvg[0][TP_GetTPResultsColOfHS(panelTitle, i)]) >= ZERO_TOLERANCE)
+				col = TP_GetTPResultsColOfHS(panelTitle, i)
+				ASSERT(col >= 0, "Invalid column")				
+				if(abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
 					AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 				endif
 			endfor
