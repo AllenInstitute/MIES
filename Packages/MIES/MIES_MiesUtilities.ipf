@@ -1980,9 +1980,11 @@ Function/Wave GetAllHSMode(panelTitle)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType, CtrlNum)
+Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
 	string panelTitle
-	variable channelType, controlType, CtrlNum
+	variable channelType, controlType
+	
+	variable CtrlNum = GetNumberFromType(var=channelType)
 	string ctrl
 	make/FREE/n=(CtrlNum) Wv
 	variable i
@@ -1994,9 +1996,11 @@ Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType, CtrlNum)
 End
 
 /// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType, CtrlNum)
+Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	string panelTitle
-	variable channelType, controlType, CtrlNum
+	variable channelType, controlType
+	
+	variable CtrlNum = GetNumberFromType(var=channelType)
 	string ctrl
 	make/FREE/n=(CtrlNum) Wv
 	variable i
