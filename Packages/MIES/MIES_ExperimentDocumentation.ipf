@@ -593,12 +593,12 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][11] = "-"
 
 //	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE) /// @toDo Use state when TP was initiated, not current state
-	WAVE statusHS =  GetDA_EphysGuiStateNum(panelTitle)
+	WAVE guiState =  GetDA_EphysGuiStateNum(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		TPSettingsWave[0][8][i] = statusHS[i][%HSState]
+		TPSettingsWave[0][8][i] = guiState[i][%HSState]
 
-		if(!statusHS[i][%HSState])
+		if(!guiState[i][%HSState])
 			continue
 		endif
 
