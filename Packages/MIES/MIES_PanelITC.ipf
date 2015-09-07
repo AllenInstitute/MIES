@@ -5633,7 +5633,7 @@ End
 /// @brief Records the state of the DA_ephys panel into the GUI state wave
 Function DAP_RecordDA_EphysGuiState(panelTitle)
 	string panelTitle
-	Wave GUIState = GetDA_EphysGuiState(panelTitle)
+	Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
 
 	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
 	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = GetAllHSMode(panelTitle)[p]

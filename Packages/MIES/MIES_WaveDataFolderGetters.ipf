@@ -3088,7 +3088,7 @@ End
 /// 14: AlarmState State of control check_Async_Alarm_RowNum. 0 = UnChecked, 1 = Checked
 /// 15: AlarmMin Internal number stored in control setvar_AsyncAD_min_RowNum. The minium value alarm trigger.
 /// 16: AlarmMax Internal number stored in control setvar_AsyncAD_max_RowNum. The max value alarm trigger.
-Function/Wave GetDA_EphysGuiState(panelTitle)
+Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
 	DFREF dfr= GetDevicePath(panelTitle)
 	variable versionOfNewWave = 1
