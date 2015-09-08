@@ -87,7 +87,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
 	variable baselineAverage
-	variable qcResult = 0
+	variable qcResult
 	variable adChannel
 	
 	// structure needed for communicating with the start acquisition button on the DA_Ephys panel
@@ -106,7 +106,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// push the waveSet to the ephys panel
 		// first, build up the control name by using the headstage value		
-		sprintf waveSelect, "Wave_DA_%02d", headstage
+		waveSelect = GetPanelControl(currentPanel, headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
@@ -139,7 +139,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
 		
 		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-		ASSERT(adChannel == -1, "Invalid TP results...")
+		ASSERT(adChannel >= 0, "Could not query AD channel")
 		baselineAverage = BaselineSSAvg[0][adChannel]
 		
 		print "baseline Average: ", baselineAverage
