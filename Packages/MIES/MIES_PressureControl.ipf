@@ -413,16 +413,19 @@ Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
 	variable 	DevID
 
 	string 	cmd
-	ASSERT(isInteger(DevID), "ITC Device ID is not a valid integer")
-	sprintf 	cmd, "ITCSelectDevice %d" DevID
-	ExecuteITCOperationAbortOnError(cmd)
-	sprintf cmd, "ITCCloseDevice"
-	ExecuteITCOperation(cmd)
 	variable 	headStage
 	variable 	i, j
 	string 	ListOfHeadstageUsingITCDevice = ""
-
 	string 	ListOfLockedDA_Ephys = GetListOfLockedDevices()
+		
+	if(!isInteger(devID) || devID < 0)
+   		 DEBUGPRINT("Trying to close invalid deviceID", var=devID)
+    	else	
+		sprintf 	cmd, "ITCSelectDevice %d" DevID
+		ExecuteITCOperationAbortOnError(cmd)
+		sprintf cmd, "ITCCloseDevice"
+		ExecuteITCOperation(cmd)
+	endif
 
 	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
 		panelTitle = StringFromList(j, ListOfLockedDA_Ephys)
@@ -1368,13 +1371,13 @@ Function P_Disable()
 		LockedDevice = StringFromList(i, ListOfLockedDA_Ephys)
 		if(ItemsInList(P_ITCDevToOpen())) // check to ensure there are ITC devices assigned by the user for pressure regulation
 			DisableControl(LockedDevice, "button_Hardware_P_Disable") // disable this button
-			if(j == 0)
-				P_CloseITCDevForP_Reg(LockedDevice) // 	close ITC devices used for pressure regulation
-			endif
 			EnableControl(LockedDevice, "button_Hardware_P_Enable") // enable the ITC device pressure regulation disable button
 			EnableListOfControls(LockedDevice,PRESSURE_CONTROL_CHECKBOX_LIST)		// enable the pressure regulation check box controls
 			DisableListOfControls(LockedDevice, PRESSURE_CONTROLS_BUTTON_LIST) 		// disable the buttons used for pressure regulation
 			DisableListOfControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)	// disable the checkboxes used for pressure regulation
+			if(j == 0)
+				P_CloseITCDevForP_Reg(LockedDevice) // 	close ITC devices used for pressure regulation
+			endif
 			j += 1
 		endif
 	endfor
