@@ -29,6 +29,7 @@
 #include "MIES_Debugging"
 #include "MIES_Downsample" menus=0
 #include "MIES_EnhancedWMRoutines"
+#include "MIES_EventDetectionCode"
 #include "MIES_ExperimentDocumentation"
 #include "MIES_GlobalStringAndVariableAccess"
 #include "MIES_GuiUtilities"

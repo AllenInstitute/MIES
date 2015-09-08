@@ -18,6 +18,7 @@
 #include ":MIES_Constants"
 #include ":MIES_Debugging"
 #include ":MIES_EnhancedWMRoutines"
+#include ":MIES_EventDetectionCode"
 #include ":MIES_GlobalStringAndVariableAccess"
 #include ":MIES_GuiUtilities"
 #include ":MIES_IgorHooks"
