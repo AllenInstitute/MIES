@@ -3,6 +3,8 @@
 /// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with the Axon/MCC amplifiers
 
+static Constant ZERO_TOLERANCE = 100 // pA
+
 Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
 
@@ -635,7 +637,7 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 	
 	Wave AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
 	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == MIESHeadStageNo) // only update view if headstage is selected. 
-		if(paramIsDefault(cntrlName)) // update all amplifier controls
+		if(ParamIsDefault(cntrlName)) // update all amplifier controls
 			cntrlName = ""
 			setSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", AmpStorageWave[%holdingPotential][0][MIESHeadStageNo])
 			setCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", AmpStorageWave[%HoldingPotentialEnable][0][MIESHeadStageNo])
@@ -966,7 +968,6 @@ End
 Function AI_OpenAllMCC (isHidden)
 	// If ishidden = 1, only one window will be visiable at a time. You can switch between windows 
 	//by using ShowWindowMCC If ishidden = 0, all windows will be stacked ontop of each other.
-	
 	Variable isHidden
 	
 	//This opens the MCC window for the designated amplifier based on its serial number (/S)
@@ -1131,11 +1132,11 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	string panelTitle
 	variable headstage, increment
 	
-	if(paramIsDefault(headstage) && paramIsDefault(increment))
+	if(ParamIsDefault(headstage) && ParamIsDefault(increment))
 		return Nan
 	endif
 	
-	if(!paramIsDefault(increment))
+	if(!ParamIsDefault(increment))
 		headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
 	
@@ -1149,3 +1150,65 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 	endif
 End
+
+/// @brief Executes MCC auto zero command if the baseline current exceeds #ZERO_TOLERANCE
+///
+/// @param panelTitle device
+/// @param headStage     [optional: defaults to all active headstages]
+Function AI_ZeroAmps(panelTitle, [headStage])
+	string panelTitle
+	variable headstage
+	
+	variable i, col
+	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
+	If(IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"))
+		DFREF dfr = GetDeviceTestPulse(panelTitle)
+		WAVE/SDFR=dfr baselineSSAvg
+		if(!ParamIsDefault(headstage))
+			col = TP_GetTPResultsColOfHS(panelTitle, headstage)
+			ASSERT(col >= 0, "Invalid column")
+			if(abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
+				AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+			endif
+		else
+			WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		
+				if(!statusHS[i])
+					continue
+				endif
+				col = TP_GetTPResultsColOfHS(panelTitle, i)
+				ASSERT(col >= 0, "Invalid column")				
+				if(abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
+					AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+				endif
+			endfor
+		endif
+	endif
+End
+
+/// @brief Auto pipette zeroing in Voltage clamp
+/// Quicker than MCC auto pipette offset
+///
+/// @param panelTitle device
+/// @param headStage
+Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/SDFR=dfr baselineSSAvg
+	WAVE/SDFR=dfr SSResistance 
+	ASSERT(AI_MIESHeadstageMode(panelTitle, headStage) == V_CLAMP_MODE, "Headstage must be in VC mode to use this function") // headstage must be in VC
+	variable column =TP_GetTPResultsColOfHS(panelTitle, headstage)
+	ASSERT(column >= 0, "Invalid column number")
+	//calculate delta current to reach zero
+	variable Vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
+	// get current DC V offset
+	variable Offset = AI_SendToAmp(panelTitle, headStage, 0, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
+	// add delta to current DC V offset
+	variable value = Offset - Vdelta
+	// send new V offset to amp
+	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
+End
+
