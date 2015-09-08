@@ -3,8 +3,7 @@
 /// @file MIES_AnalysisMaster.ipf
 /// @brief __AM__ Waveform analysis framework
 
-/// Function used to create a framework for calling post-sweep analysis functions
-
+///@brief Function used to create a framework for calling post-sweep analysis functions
 Function AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
@@ -47,6 +46,7 @@ Function AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	return postAnalysisResult
 End
 
+///@brief function for invoking analysis functions in midSweep
 Function AM_analysisMasterMidSweep(panelTitle)
 	string panelTitle
 	
@@ -116,6 +116,165 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 		DAP_StopOngoingDataAcquisition(panelTitle)
 	endif
 End	
+
+///@brief function to run QC functions after a sweep completes.  Will check bridge balance, bias current injection, high frequency noise/patch instability RMS noise
+/// and voltage stability
+Function AM_PSA_sweepLevelQC(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	variable sweepNo
+	variable adc, col
+	variable numDACs
+	variable idx
+	variable tracePeakValue
+	variable bridgeBalance
+	variable biasCurrent
+	variable sampIntMult
+	variable hertzRate
+	variable idx0, idx1
+	variable segMean
+	variable segRMS
+	variable upValsSize
+	variable downValsSize
+	variable i
+	variable first
+	variable preStimMean
+	variable postStimMean
+	string currentClampControl
+	variable currentClampState
+	variable upIdx
+	variable downIdx
+
+	Make/D/FREE upVals, downVals
+
+	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave
+	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
+	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
+
+	Wave/Z sweepWave = AFH_GetLastSweepWaveAcquired(panelTitle)
+	if(!WaveExists(sweepWave))
+		Abort "Error getting most recent sweepWave wave..."
+	endif
+
+	Wave config = GetConfigWave(sweepWave)
+	adc = AFH_GetADCFromHeadstage(panelTitle, headStage)
+	col = AFH_GetITCDataColumn(config, adc, ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE singleAD = ExtractOneDimDataFromSweep(config, sweepWave, col)
+
+	// check that the bridge balance is less than 20MOhms....will also need to check that its 15% of Rinput...
+	bridgeBalance = str2num(GetGuiControlValue(panelTitle, "setVar_DataAcq_BB"))
+	if(bridgeBalance>20)
+		print "Bridge Balance Check failed..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+		return 0
+	endif
+
+	// check that the bias current injection is less than +/100 pA
+	biasCurrent = str2num(GetGuiControlValue(panelTitle, "setVar_DataAcq_IbiasMax"))
+	if(abs(biasCurrent)>100)
+		print "Bias Current Check failed..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+		return 0
+	endif
+
+	// check the high frequency noise/patch instability RMS in a short (1.5 ms) window
+	// get the sampling interval multiplier
+	sampIntMult = str2num(GetGuiControlValue(panelTitle, "Popup_Settings_SampIntMult"))
+	hertzRate = 200200/sampIntMult
+
+	// get the last vm epoch
+	idx1 = dimSize(singleAD, COLS)
+	idx0 = idx1 - (0.500*hertzRate)
+
+	// measure vm of the segment
+	Duplicate/FREE/O/R=[idx0,(idx1-1)] singleAD, sweepSegment
+	segMean = mean(sweepSegment)
+	sweepSegment -= segMean
+	sweepSegment = sweepSegment^2
+	segRMS = sqrt(mean(sweepSegment))
+
+	// check the RMS against the QC criteria
+	if(segRMS>0.05)
+		print "Post Noise Long RMS check failed..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+		return 0
+	endif
+
+	// now do that same check with a shorter window
+	idx1 = dimSize(singleAD, ROWS)
+	idx0 = idx1 - (0.0015*hertzRate)
+
+	// measure vm of the shorter segment
+	Duplicate/FREE/O/R=[idx0,(idx1-1)] singleAD, sweepSegment
+	segMean = mean(sweepSegment)
+	sweepSegment -= segMean
+	sweepSegment = sweepSegment^2
+	segRMS = sqrt(mean(sweepSegment))
+
+	// check the RMS against the QC criteria
+	if(segRMS>0.07)
+		print "Post Noise Short RMS check failed..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+		return 0
+	endif
+
+	// Check the voltage stability
+	Duplicate/FREE singleAD, sweepDiff
+	Differentiate/METH=1 sweepDiff
+
+	idx1 = dimSize(sweepDiff, ROWS)
+	for(i=0;i<idx1;i+=1)
+		if(sweepDiff[i]>0.0)
+			EnsureLargeEnoughWave(upVals, minimumsize=upIdx, dimension=ROWS)
+			upVals[upIdx] = i
+			upIdx += 1
+		elseif(sweepDiff[i]<0.0)
+			EnsureLargeEnoughWave(downVals, minimumsize=downIdx, dimension=ROWS)
+			downVals[downIdx] = i
+			downIdx += 1
+		endif
+   endfor
+
+
+	upValsSize=dimSize(upVals, ROWS)
+	downValsSize = dimSize(downVals, ROWS)
+
+	FindLevel/EDGE=1/P/Q upVals, first
+
+	 for(i=0;i<downValsSize;i+=1)
+		if((downVals[i]>=0) && (downVals[i] < first))
+			first=downVals[i]
+			break
+		endif
+	endfor
+
+	// find the voltage immediately before the stimulus
+	idx0 = first-(0.5*hertzRate)
+	Duplicate/O/R=[idx0,first] singleAD, sweepSegment
+	preStimMean = mean(sweepSegment)
+
+	idx1=dimSize(singleAD, ROWS)
+	idx0=idx1-(0.5*hertzRate)
+	Duplicate/O/R=[idx0,idx1] singleAD, sweepSegment
+	postStimMean=mean(sweepSegment)
+
+	// check the Voltage Stability -- things have to have been run in current clamp mode to get the voltage value
+	currentClampState=DAP_MIESHeadstageMode(panelTitle, headStage)
+	if(currentClampState == V_CLAMP_MODE)
+		print "Must be in current clamp mode...please set and try again..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+		return 0
+	elseif((abs(postStimMean-preStimMean))>1.0)
+		print "Failed voltage stability QC check..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+		return 0
+	else // success!
+		print "Sweep Level QC passed..."
+		analysisSettingsWave[headStage][%PSAResult] = "1"
+		return 1
+	endif
+End
 
 ///@brief function will return a variable to indicate if the value at the start of the stimulus wave is more than 1mv different from the end of the stimulus wave, and then checks the average versus
 /// the elapsed time..  To be used during the electrode drift QC check
