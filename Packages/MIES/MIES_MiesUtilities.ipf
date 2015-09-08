@@ -107,6 +107,10 @@ Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
 		ctrl = "AD"
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		ctrl = "TTL"
+	elseif(channelType == CHANNEL_TYPE_ALARM)
+		ctrl = "Async_Alarm"
+	elseif(channelType == CHANNEL_TYPE_ASYNC)
+		ctrl = "AsyncAD"
 	else
 		ASSERT(0, "Invalid channelType")
 	endif
@@ -123,6 +127,12 @@ Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
 		ctrl = "Scale_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_CHECK)
 		ctrl = "Check_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_ASYNC_GAIN) /// @todo Change name of async gain setvars to match "convention" of gain naming.
+		ctrl = "SetVar_" + ctrl + "_Gain"
+	elseif(controlType == CHANNEL_CONTROL_ALARM_MIN)
+		ctrl = "SetVar_" + ctrl + "_Min"
+	elseif(controlType == CHANNEL_CONTROL_ALARM_MAX)
+		ctrl = "SetVar_" + ctrl + "_Max"	
 	else
 		ASSERT(0, "Invalid controlType")
 	endif
@@ -209,7 +219,7 @@ Function/WAVE GetLastSetting(history, sweepNo, setting)
 			return status
 		endif
 	endfor
-
+	
 	return $""
 End
 
@@ -1163,6 +1173,9 @@ Function GetNumberFromType([var, str])
 			case "AD":
 				return NUM_AD_CHANNELS
 				break
+			case "Async_Alarm":
+				return NUM_ASYNC_CHANNELS
+				break
 			default:
 				ASSERT(0, "invalid type")
 				break
@@ -1170,6 +1183,7 @@ Function GetNumberFromType([var, str])
 	elseif(!ParamIsDefault(var))
 		switch(var)
 			case CHANNEL_TYPE_ASYNC:
+			case CHANNEL_TYPE_ALARM:
 				return NUM_ASYNC_CHANNELS
 				break
 			case CHANNEL_TYPE_TTL:
@@ -1952,4 +1966,47 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	endif
 
 	return SortList(listInternal + listThirdParty, ";", 16)
+End
+
+/// @brief Returns the mode of all DA_Ephys panel headstages
+Function/Wave GetAllHSMode(panelTitle)
+	string panelTitle
+	make/FREE/n=(NUM_HEADSTAGES) Mode
+	variable i
+	for(i = 0; i < NUM_HEADSTAGES; i+=1)
+		Mode[i] =  AI_MIESHeadstageMode(panelTitle, i)
+	endfor
+	return Mode
+End
+
+/// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+	
+	variable CtrlNum = GetNumberFromType(var=channelType)
+	string ctrl
+	make/FREE/n=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		wv[i] = GetSetVariable(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+	
+	variable CtrlNum = GetNumberFromType(var=channelType)
+	string ctrl
+	make/FREE/n=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
+	endfor
+	return wv
 End

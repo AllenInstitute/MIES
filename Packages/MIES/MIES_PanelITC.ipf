@@ -13,9 +13,9 @@ static StrConstant LEADER                = "Leader"
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-Window da_ephys() : Panel
+Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(416,82,898,865)
+	NewPanel /W=(526,130,1008,913)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -488,7 +488,7 @@ Window da_ephys() : Panel
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,limits={25,49,1},value= _NUM:25
-	SetVariable SetVar_DataAcq_TPAmplitude,pos={315,384},size={50,16},disable=1,title="VC"
+	SetVariable SetVar_DataAcq_TPAmplitude,pos={315,384},size={50,16},disable=1,proc=DAP_SetVarProc_TPAmp,title="VC"
 	SetVariable SetVar_DataAcq_TPAmplitude,help={"Amplitude of the testpulse in voltage clamp mode"}
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabcontrol)=  "ADC"
@@ -755,118 +755,118 @@ Window da_ephys() : Panel
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_AsyncAD_Gain_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_AsyncAD_Gain_07,limits={0,inf,1},value= _NUM:1
-	SetVariable SetVar_Async_Title_00,pos={14,44},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_00,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_00,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_00,userdata(ResizeControlsInfo)= A"!!,An!!#>>!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_00,value= _STR:""
-	SetVariable SetVar_Async_Title_01,pos={14,95},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_01,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_01,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_01,userdata(ResizeControlsInfo)= A"!!,An!!#@\"!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_01,value= _STR:""
-	SetVariable SetVar_Async_Title_02,pos={14,146},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_02,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_02,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_02,userdata(ResizeControlsInfo)= A"!!,An!!#A!!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_02,value= _STR:""
-	SetVariable SetVar_Async_Title_03,pos={14,197},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_03,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_03,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_03,userdata(ResizeControlsInfo)= A"!!,An!!#AT!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_03,value= _STR:""
-	SetVariable SetVar_Async_Title_04,pos={14,248},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_04,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_04,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_04,userdata(ResizeControlsInfo)= A"!!,An!!#B2!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_04,value= _STR:""
-	SetVariable SetVar_Async_Title_05,pos={14,299},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_05,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_05,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_05,userdata(ResizeControlsInfo)= A"!!,An!!#BOJ,hqP!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_05,value= _STR:""
-	SetVariable SetVar_Async_Title_06,pos={14,350},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_06,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_06,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_06,userdata(ResizeControlsInfo)= A"!!,An!!#Bi!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_06,value= _STR:""
-	SetVariable SetVar_Async_Title_07,pos={14,402},size={150,16},disable=1,title="Title"
-	SetVariable SetVar_Async_Title_07,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Title_07,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Title_07,userdata(ResizeControlsInfo)= A"!!,An!!#C.!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Title_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Title_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Title_07,value= _STR:""
-	SetVariable SetVar_Async_Unit_00,pos={315,44},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_00,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_00,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_00,userdata(ResizeControlsInfo)= A"!!,HXJ,hni!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_00,value= _STR:""
-	SetVariable SetVar_Async_Unit_01,pos={315,95},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_01,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_01,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_01,userdata(ResizeControlsInfo)= A"!!,HXJ,hpM!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_01,value= _STR:""
-	SetVariable SetVar_Async_Unit_02,pos={315,146},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_02,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_02,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_02,userdata(ResizeControlsInfo)= A"!!,HXJ,hqL!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_02,value= _STR:""
-	SetVariable SetVar_Async_Unit_03,pos={315,197},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_03,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_03,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_03,userdata(ResizeControlsInfo)= A"!!,HXJ,hr*!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_03,value= _STR:""
-	SetVariable SetVar_Async_Unit_04,pos={315,248},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_04,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_04,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_04,userdata(ResizeControlsInfo)= A"!!,HXJ,hr]!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_04,value= _STR:""
-	SetVariable SetVar_Async_Unit_05,pos={315,299},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_05,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_05,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_05,userdata(ResizeControlsInfo)= A"!!,HXJ,hs%J,hp%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_05,value= _STR:""
-	SetVariable SetVar_Async_Unit_06,pos={315,350},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_06,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_06,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_06,userdata(ResizeControlsInfo)= A"!!,HXJ,hs?!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_06,value= _STR:""
-	SetVariable SetVar_Async_Unit_07,pos={315,402},size={75,16},disable=1,title="Unit"
-	SetVariable SetVar_Async_Unit_07,userdata(tabnum)=  "4"
-	SetVariable SetVar_Async_Unit_07,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_Async_Unit_07,userdata(ResizeControlsInfo)= A"!!,HXJ,hsY!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_Async_Unit_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_Async_Unit_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_Async_Unit_07,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_00,pos={14,44},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_00,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_00,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_00,userdata(ResizeControlsInfo)= A"!!,An!!#>>!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_00,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_01,pos={14,95},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_01,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_01,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_01,userdata(ResizeControlsInfo)= A"!!,An!!#@\"!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_01,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_02,pos={14,146},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_02,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_02,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_02,userdata(ResizeControlsInfo)= A"!!,An!!#A!!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_02,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_03,pos={14,197},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_03,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_03,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_03,userdata(ResizeControlsInfo)= A"!!,An!!#AT!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_03,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_04,pos={11,248},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_04,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_04,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_04,userdata(ResizeControlsInfo)= A"!!,An!!#B2!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_04,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_05,pos={14,299},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_05,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_05,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_05,userdata(ResizeControlsInfo)= A"!!,An!!#BOJ,hqP!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_05,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_06,pos={14,350},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_06,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_06,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_06,userdata(ResizeControlsInfo)= A"!!,An!!#Bi!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_06,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_07,pos={14,402},size={150,16},disable=1,title="Title"
+	SetVariable SetVar_AsyncAD_Title_07,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Title_07,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Title_07,userdata(ResizeControlsInfo)= A"!!,An!!#C.!!#A%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Title_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Title_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Title_07,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_00,pos={315,44},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_00,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_00,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_00,userdata(ResizeControlsInfo)= A"!!,HXJ,hni!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_00,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_01,pos={315,95},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_01,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_01,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_01,userdata(ResizeControlsInfo)= A"!!,HXJ,hpM!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_01,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_02,pos={315,146},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_02,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_02,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_02,userdata(ResizeControlsInfo)= A"!!,HXJ,hqL!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_02,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_03,pos={315,197},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_03,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_03,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_03,userdata(ResizeControlsInfo)= A"!!,HXJ,hr*!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_03,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_04,pos={315,248},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_04,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_04,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_04,userdata(ResizeControlsInfo)= A"!!,HXJ,hr]!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_04,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_05,pos={315,298},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_05,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_05,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_05,userdata(ResizeControlsInfo)= A"!!,HXJ,hs%J,hp%!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_05,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_06,pos={315,350},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_06,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_06,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_06,userdata(ResizeControlsInfo)= A"!!,HXJ,hs?!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_06,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_07,pos={315,402},size={75,16},disable=1,title="Unit"
+	SetVariable SetVar_AsyncAD_Unit_07,userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Unit_07,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_AsyncAD_Unit_07,userdata(ResizeControlsInfo)= A"!!,HXJ,hsY!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_AsyncAD_Unit_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_AsyncAD_Unit_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_AsyncAD_Unit_07,value= _STR:""
 	CheckBox Check_Settings_Append,pos={34,451},size={222,14},disable=1,title="\\JCAppend Asynchronus reading to wave note"
 	CheckBox Check_Settings_Append,help={"Turns on TTL pulse at onset of sweep"}
 	CheckBox Check_Settings_Append,userdata(tabnum)=  "5"
@@ -1470,20 +1470,20 @@ Window da_ephys() : Panel
 	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_Overwrite,value= 1
-	SetVariable setvar_Async_min_00,pos={113,66},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_00,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_00,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_00,userdata(ResizeControlsInfo)= A"!!,FG!!#?=!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_00,value= _NUM:0
-	SetVariable setvar_Async_max_00,pos={197,66},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_00,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_00,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_00,userdata(ResizeControlsInfo)= A"!!,GU!!#?=!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_00,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_00,pos={113,66},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_00,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_00,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_00,userdata(ResizeControlsInfo)= A"!!,FG!!#?=!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_00,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_00,pos={197,66},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_00,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_00,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_00,userdata(ResizeControlsInfo)= A"!!,GU!!#?=!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_00,value= _NUM:0
 	CheckBox check_Async_Alarm_00,pos={61,68},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_00,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_00,userdata(tabcontrol)=  "ADC"
@@ -1491,20 +1491,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_00,value= 0
-	SetVariable setvar_Async_min_01,pos={113,117},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_01,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_01,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_01,userdata(ResizeControlsInfo)= A"!!,FG!!#@N!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_01,value= _NUM:0
-	SetVariable setvar_Async_max_01,pos={197,117},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_01,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_01,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_01,userdata(ResizeControlsInfo)= A"!!,GU!!#@N!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_01,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_01,pos={113,117},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_01,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_01,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_01,userdata(ResizeControlsInfo)= A"!!,FG!!#@N!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_01,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_01,pos={197,117},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_01,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_01,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_01,userdata(ResizeControlsInfo)= A"!!,GU!!#@N!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_01,value= _NUM:0
 	CheckBox check_Async_Alarm_01,pos={61,119},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_01,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_01,userdata(tabcontrol)=  "ADC"
@@ -1512,20 +1512,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_01,value= 0
-	SetVariable setvar_Async_min_02,pos={113,169},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_02,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_02,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_02,userdata(ResizeControlsInfo)= A"!!,FG!!#A8!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_02,value= _NUM:0
-	SetVariable setvar_Async_max_02,pos={197,169},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_02,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_02,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_02,userdata(ResizeControlsInfo)= A"!!,GU!!#A8!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_02,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_02,pos={113,169},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_02,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_02,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_02,userdata(ResizeControlsInfo)= A"!!,FG!!#A8!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_02,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_02,pos={197,169},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_02,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_02,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_02,userdata(ResizeControlsInfo)= A"!!,GU!!#A8!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_02,value= _NUM:0
 	CheckBox check_Async_Alarm_02,pos={61,171},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_02,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_02,userdata(tabcontrol)=  "ADC"
@@ -1533,20 +1533,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_02,value= 0
-	SetVariable setvar_Async_min_03,pos={113,220},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_03,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_03,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_03,userdata(ResizeControlsInfo)= A"!!,FG!!#Ak!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_03,value= _NUM:0
-	SetVariable setvar_Async_max_03,pos={197,220},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_03,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_03,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_03,userdata(ResizeControlsInfo)= A"!!,GU!!#Ak!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_03,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_03,pos={113,220},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_03,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_03,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_03,userdata(ResizeControlsInfo)= A"!!,FG!!#Ak!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_03,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_03,pos={197,220},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_03,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_03,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_03,userdata(ResizeControlsInfo)= A"!!,GU!!#Ak!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_03,value= _NUM:0
 	CheckBox check_Async_Alarm_03,pos={61,222},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_03,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_03,userdata(tabcontrol)=  "ADC"
@@ -1554,20 +1554,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_03,value= 0
-	SetVariable setvar_Async_min_04,pos={113,272},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_04,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_04,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_04,userdata(ResizeControlsInfo)= A"!!,FG!!#BB!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_04,value= _NUM:0
-	SetVariable setvar_Async_max_04,pos={197,272},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_04,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_04,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_04,userdata(ResizeControlsInfo)= A"!!,GU!!#BB!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_04,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_04,pos={113,272},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_04,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_04,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_04,userdata(ResizeControlsInfo)= A"!!,FG!!#BB!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_04,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_04,pos={197,272},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_04,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_04,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_04,userdata(ResizeControlsInfo)= A"!!,GU!!#BB!!#?Q!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_04,value= _NUM:0
 	CheckBox check_Async_Alarm_04,pos={61,274},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_04,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_04,userdata(tabcontrol)=  "ADC"
@@ -1575,20 +1575,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_04,value= 0
-	SetVariable setvar_Async_min_05,pos={113,323},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_05,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_05,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_05,userdata(ResizeControlsInfo)= A"!!,FG!!#B[J,hor!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_05,value= _NUM:0
-	SetVariable setvar_Async_max_05,pos={197,323},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_05,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_05,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_05,userdata(ResizeControlsInfo)= A"!!,GU!!#B[J,hp'!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_05,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_05,pos={113,323},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_05,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_05,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_05,userdata(ResizeControlsInfo)= A"!!,FG!!#B[J,hor!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_05,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_05,pos={197,323},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_05,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_05,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_05,userdata(ResizeControlsInfo)= A"!!,GU!!#B[J,hp'!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_05,value= _NUM:0
 	CheckBox check_Async_Alarm_05,pos={61,325},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_05,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_05,userdata(tabcontrol)=  "ADC"
@@ -1596,20 +1596,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_05,value= 0
-	SetVariable setvar_Async_min_06,pos={113,375},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_06,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_06,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_06,userdata(ResizeControlsInfo)= A"!!,FG!!#BuJ,hor!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_06,value= _NUM:0
-	SetVariable setvar_Async_max_06,pos={197,375},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_06,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_06,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_06,userdata(ResizeControlsInfo)= A"!!,GU!!#BuJ,hp'!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_06,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_06,pos={113,375},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_06,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_06,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_06,userdata(ResizeControlsInfo)= A"!!,FG!!#BuJ,hor!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_06,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_06,pos={197,375},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_06,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_06,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_06,userdata(ResizeControlsInfo)= A"!!,GU!!#BuJ,hp'!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_06,value= _NUM:0
 	CheckBox check_Async_Alarm_06,pos={61,378},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_06,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_06,userdata(tabcontrol)=  "ADC"
@@ -1617,20 +1617,20 @@ Window da_ephys() : Panel
 	CheckBox check_Async_Alarm_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Async_Alarm_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Async_Alarm_06,value= 0
-	SetVariable setvar_Async_min_07,pos={113,427},size={71,16},disable=1,title="min"
-	SetVariable setvar_Async_min_07,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_min_07,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_min_07,userdata(ResizeControlsInfo)= A"!!,FG!!#C:J,hor!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_min_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_min_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_min_07,value= _NUM:0
-	SetVariable setvar_Async_max_07,pos={197,427},size={76,16},disable=1,title="max"
-	SetVariable setvar_Async_max_07,userdata(tabnum)=  "4"
-	SetVariable setvar_Async_max_07,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Async_max_07,userdata(ResizeControlsInfo)= A"!!,GU!!#C:J,hp'!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_Async_max_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_Async_max_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Async_max_07,value= _NUM:0
+	SetVariable setvar_AsyncAD_min_07,pos={113,427},size={71,16},disable=1,title="min"
+	SetVariable setvar_AsyncAD_min_07,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_min_07,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_min_07,userdata(ResizeControlsInfo)= A"!!,FG!!#C:J,hor!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_min_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_min_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_min_07,value= _NUM:0
+	SetVariable setvar_AsyncAD_max_07,pos={197,427},size={76,16},disable=1,title="max"
+	SetVariable setvar_AsyncAD_max_07,userdata(tabnum)=  "4"
+	SetVariable setvar_AsyncAD_max_07,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_AsyncAD_max_07,userdata(ResizeControlsInfo)= A"!!,GU!!#C:J,hp'!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_AsyncAD_max_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_AsyncAD_max_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_AsyncAD_max_07,value= _NUM:0
 	CheckBox check_Async_Alarm_07,pos={61,429},size={44,14},disable=1,title="Alarm"
 	CheckBox check_Async_Alarm_07,userdata(tabnum)=  "4"
 	CheckBox check_Async_Alarm_07,userdata(tabcontrol)=  "ADC"
@@ -1869,7 +1869,7 @@ Window da_ephys() : Panel
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,value= _NUM:1
-	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={380,384},size={50,16},disable=1,title="IC"
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={380,384},size={50,16},disable=1,proc=DAP_SetVarProc_TPAmp,title="IC"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,help={"Amplitude of the testpulse in current clamp mode"}
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabcontrol)=  "ADC"
@@ -2069,23 +2069,23 @@ Window da_ephys() : Panel
 	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600, however, It is not a requirement for the use of multiple ITC1600s asyncronously."}
 	GroupBox group_Hardware_Yoke,userdata(tabnum)=  "6",userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_Yoke,fSize=12
-	Button button_Hardware_Lead1600,pos={29,195},size={80,21},disable=3,proc=DAP_ButtonProc_Lead,title="Lead"
+	Button button_Hardware_Lead1600,pos={29,195},size={80,21},disable=2,proc=DAP_ButtonProc_Lead,title="Lead"
 	Button button_Hardware_Lead1600,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Lead1600,userdata(tabnum)=  "6"
 	Button button_Hardware_Lead1600,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={29,240},size={110,21},bodyWidth=110,disable=3,title="Locked ITC1600s"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={29,240},size={110,21},bodyWidth=110,disable=2,title="Locked ITC1600s"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_AvailITC1600s,mode=0,value= #"DAP_ListOfITCDevices()"
-	Button button_Hardware_AddFollower,pos={141,240},size={80,21},disable=3,proc=DAP_ButtonProc_Follow,title="Follow"
+	Button button_Hardware_AddFollower,pos={141,240},size={80,21},disable=2,proc=DAP_ButtonProc_Follow,title="Follow"
 	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
 	Button button_Hardware_AddFollower,userdata(tabnum)=  "6"
 	Button button_Hardware_AddFollower,userdata(tabcontrol)=  "ADC"
-	TitleBox title_hardware_1600inst,pos={29,176},size={220,13},disable=3,title="To yoke devices go to panel: ITC1600_Dev_0"
+	TitleBox title_hardware_1600inst,pos={29,176},size={220,13},disable=2,title="To yoke devices go to panel: ITC1600_Dev_0"
 	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
 	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC",frame=0
-	Button button_Hardware_Independent,pos={111,195},size={80,21},disable=3,proc=DAP_ButtonProc_Independent,title="Independent"
+	Button button_Hardware_Independent,pos={111,195},size={80,21},disable=2,proc=DAP_ButtonProc_Independent,title="Independent"
 	Button button_Hardware_Independent,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Independent,userdata(tabnum)=  "6"
 	Button button_Hardware_Independent,userdata(tabcontrol)=  "ADC"
@@ -2093,7 +2093,7 @@ Window da_ephys() : Panel
 	SetVariable setvar_Hardware_Status,frame=0,fStyle=1,fColor=(65280,0,0)
 	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
 	SetVariable setvar_Hardware_Status,value= _STR:"Independent",noedit= 1
-	TitleBox title_hardware_Follow,pos={29,222},size={163,13},disable=3,title="Assign ITC1600 DACs as followers"
+	TitleBox title_hardware_Follow,pos={29,222},size={163,13},disable=2,title="Assign ITC1600 DACs as followers"
 	TitleBox title_hardware_Follow,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Follow,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Follow,userdata(tabcontrol)=  "ADC",frame=0
@@ -2102,14 +2102,14 @@ Window da_ephys() : Panel
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
 	SetVariable setvar_Hardware_YokeList,value= _STR:"No Yoked Devices",noedit= 1
-	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=3,proc=DAP_ButtonProc_YokeRelease,title="Release"
+	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=2,proc=DAP_ButtonProc_YokeRelease,title="Release"
 	Button button_Hardware_RemoveYoke,userdata(tabnum)=  "6"
 	Button button_Hardware_RemoveYoke,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_YokedDACs,pos={223,240},size={110,21},bodyWidth=110,disable=3,title="Yoked ITC1600s"
+	PopupMenu popup_Hardware_YokedDACs,pos={223,240},size={110,21},bodyWidth=110,disable=2,title="Yoked ITC1600s"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_YokedDACs,mode=0,value= #"DAP_GUIListOfYokedDevices()"
-	TitleBox title_hardware_Release,pos={225,222},size={152,13},disable=3,title="Release follower ITC1600 DACs"
+	TitleBox title_hardware_Release,pos={225,222},size={152,13},disable=2,title="Release follower ITC1600 DACs"
 	TitleBox title_hardware_Release,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Release,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Release,userdata(tabcontrol)=  "ADC",frame=0
@@ -2137,7 +2137,7 @@ Window da_ephys() : Panel
 	CheckBox check_DatAcq_HoldEnable,value= 0
 	CheckBox check_DatAcq_BBEnable,pos={195,193},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_BBEnable,userdata(tabnum)=  "1"
-	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 1
+	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
 	CheckBox check_DatAcq_CNEnable,pos={195,212},size={51,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp",value= 0
@@ -2704,23 +2704,23 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_AsyncAD_Gain_06 WIN = $panelTitle,value= _NUM:1
 	SetVariable SetVar_AsyncAD_Gain_07 WIN = $panelTitle,value= _NUM:1
 	
-	SetVariable SetVar_Async_Title_00 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_01 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_02 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_03 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_04 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_05 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_06 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Title_07 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_00 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_01 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_02 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_03 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_04 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_05 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_06 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Title_07 WIN = $panelTitle,value= _STR:""
 	
-	SetVariable SetVar_Async_Unit_00 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_01 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_02 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_03 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_04 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_05 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_06 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_Async_Unit_07 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_00 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_01 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_02 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_03 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_04 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_05 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_06 WIN = $panelTitle,value= _STR:""
+	SetVariable SetVar_AsyncAD_Unit_07 WIN = $panelTitle,value= _STR:""
 	
 	CheckBox Check_Settings_Append WIN = $panelTitle,value= 0
 	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
@@ -2808,36 +2808,36 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
 
-	SetVariable SetVar_Async_min_00 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_00 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_00 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_00 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_00  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_01 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_01 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_01 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_01 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_01  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_02 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_02 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_02 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_02 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_02  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_03 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_03 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_03 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_03 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_03  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_04 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_04 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_04 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_04 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_04  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_05 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_05 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_05 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_05 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_05  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_06 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_06 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_06 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_06 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_06  WIN = $panelTitle,value= 0
 
-	SetVariable SetVar_Async_min_07 WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_Async_max_07 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_min_07 WIN = $panelTitle,value= _NUM:0
+	SetVariable SetVar_AsyncAD_max_07 WIN = $panelTitle,value= _NUM:0
 	CheckBox check_Async_Alarm_07  WIN = $panelTitle,value= 0
 
 	CheckBox check_DataAcq_RepAcqRandom WIN = $panelTitle,value= 0
@@ -4725,8 +4725,9 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	string panelTitle, headStageCtrl
 	variable enabled
 
-	variable mode, headStage, ctrlNo
+	variable mode, headStage, ctrlNo, TPState
 
+	TPState = TP_StopTestPulse(panelTitle)
 	DAP_GetInfoFromControl(panelTitle, headStageCtrl, ctrlNo, mode, headStage)
 
 	If(!enabled)
@@ -4737,6 +4738,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
+	TP_RestartTestPulse(panelTitle, TPState)
 End
 
 /// @brief Stop the testpulse and data acquisition
@@ -5302,12 +5304,16 @@ End
 
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	struct WMSetVariableAction &sva
-
+	
+	variable TPState
+	
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
+			TPState = TP_StopTestPulse(sva.win)
 			DAP_UpdateOnsetDelay(sva.win)
+			TP_RestartTestPulse(sva.win, TPState)
 			break
 	endswitch
 
@@ -5607,4 +5613,50 @@ Function DAP_CommentPanelHook(s)
 	endswitch
 
 	return hookResult		// 0 if nothing done, else 1
+End
+
+Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			Variable TPState = TP_StopTestPulse(sva.win)
+			TP_RestartTestPulse(sva.win, TPState)
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Records the state of the DA_ephys panel into the GUI state wave
+Function DAP_RecordDA_EphysGuiState(panelTitle)
+	string panelTitle
+	Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
+	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = GetAllHSMode(panelTitle)[p]
+	
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAScale] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)[p]
+	
+	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)[p]
+	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)[p]
+	
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)[p]
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)[p]
+
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)[p]
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ASYNC_GAIN)[p]
+
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)[p]
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)[p]
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)[p]
 End

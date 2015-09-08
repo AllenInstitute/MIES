@@ -144,7 +144,10 @@ Function TP_UpdateGlobals(panelTitle)
 
 	string/G testPulseDFR:ADChannelList  = Convert1DWaveToList(GetADCListFromConfig(ITCChanConfigWave))
 	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-
+	
+	// Stores panelTitle GUI control state
+	DAP_RecordDA_EphysGuiState(panelTitle)
+	
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
 	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
@@ -247,7 +250,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	TP_Setup(panelTitle)
-
+	
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 		ITC_StartBackgroundTestPulse(panelTitle)
 	else
@@ -762,6 +765,7 @@ Function TP_Setup(panelTitle, [multiDevice])
 	DAP_TurnOffAllTTLs(panelTitle)
 
 	TP_UpdateGlobals(panelTitle)
+
 	TP_ResetTPStorage(panelTitle)
 
 	// stores panel settings
