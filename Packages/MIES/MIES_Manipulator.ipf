@@ -148,8 +148,10 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 
 	// Ensure each manipulator is assigned to only one headstage
 	assert(SearchForDuplicates(GetHSManipulatorAssignments(panelTitle)) == -1, "The same manipulator is assinged to more than one headstage")
+	AbortOnValue M_CheckSettings(panelTitle),1	
 	
 	Make/FREE/T/N=(3, 3, 1) TPKeyWave
+	
 	// add data to TPKeyWave
 	// key
 	TPKeyWave[0][0]  = "ManipX"  
@@ -182,6 +184,55 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 	
 	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
+End
+
+/// @brief Check if settings are valid to send a manipulator server call
+///
+/// For invalid settings a message is printed into the history area
+/// @param panelTitle device
+/// @return 0 for valid settings, 1 for invalid settings
+Function M_CheckSettings(panelTitle)
+	string panelTitle
+	
+	variable i, numEntries, numHS
+	string list
+
+	if(isEmpty(panelTitle))
+		print "Invalid empty string for panelTitle, can not proceed"
+		return 1
+	endif	
+
+	list = panelTitle
+
+	if(DAP_DeviceCanLead(panelTitle))
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices))
+			list = AddListItem(list, listOfFollowerDevices, ";", inf)
+		endif
+	endif
+
+	DEBUGPRINT("Checking the panelTitle list: ", str=list)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+
+		panelTitle = StringFromList(i, list)
+
+		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+
+		if(HSU_CanSelectDevice(panelTitle))
+			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
+			return 1
+		endif
+
+		numHS = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE))
+		if(!numHS)
+			printf "(%s) Please activate at least one headstage\r", panelTitle
+			return 1
+		endif
+	endfor
+	
+	return 0
 End
 	
 /// @brief Creates gizmo plot manipulator positions in lab notebook
