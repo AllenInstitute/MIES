@@ -36,6 +36,7 @@
 #include "MIES_HardwareSetUp"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
+#include "MIES_Manipulator"
 #include "MIES_MiesUtilities"
 #include "MIES_Oscilloscope"
 #include "MIES_PanelITC"
@@ -50,4 +51,3 @@
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel" menus=0
 #include "MIES_WaveDataFolderGetters"
-#include "MIES_Manipulator"
