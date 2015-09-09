@@ -98,7 +98,7 @@ End
 /// @brief Gets the list of attached manipulators
 Function/S M_GetListOfAttachedManipulators()
 	string ManipulatorList = M_ExecuteMSSCommand(DEVICE_LIST)
-	if(numtype(strlen(ManipulatorList)))
+	if(isEmpty(ManipulatorList))
 		ManipulatorList = "No dev. avail."
 	else
 		ManipulatorList = ReplaceString ("stage;", ManipulatorList, "")
