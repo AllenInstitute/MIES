@@ -20,7 +20,7 @@ Static StrConstant MANIP_BASE_NAME = "mg"
 /// @brief MSS command wrapper
 ///
 /// Parses device specific and general MSS calls
-Function/S M_ExecuteMSSCommand(cmd, [deviceName])
+static Function/S M_ExecuteMSSCommand(cmd, [deviceName])
 	string cmd, deviceName
 	if(paramIsDefault(deviceName)) // handle calls that don't require a device to be specified
 		return M_ExecuteMSSServerCall(cmd)
@@ -42,20 +42,25 @@ End
 /// parses the return string to convert MSS string to Igor friendly string
 ///
 /// @param cmd The MSS server call
-Function/S M_ExecuteMSSServerCall(cmd)
+static Function/S M_ExecuteMSSServerCall(cmd)
 	string cmd
-	string response = FetchURL(cmd)
-	Variable error = GetRTError(1)
-	if(error != 0)
-		print "Communcation with MSS server failed"
-		abort
-	else
-		response = ReplaceString ("[", response, "")
-		response = ReplaceString ("]", response, "")
-		response = ReplaceString (",", response, ";")
-		response = ReplaceString (" ", response, "")
-		return response
-	endif	
+
+	string response
+	Variable error
+
+	try
+		response = FetchURL(cmd)
+	catch
+		error = GetRTError(1)
+		Abort "Communcation with MSS server failed"
+	endtry
+	
+	
+	response = ReplaceString ("[", response, "")
+	response = ReplaceString ("]", response, "")
+	response = ReplaceString (",", response, ";")
+	response = ReplaceString (" ", response, "")
+	return response
 End
 
 /// @brief Checks if manipulator is available
@@ -63,20 +68,31 @@ End
 /// @param ManipulatorName e.g. "mg1"
 Function M_CheckIfManipulatorIsAttached(manipulatorName)
 	string manipulatorName
-	M_CheckManipulatorNameFormat(manipulatorName)
+	ASSERT(M_ManipulatorNameFormatIsValid(manipulatorName), "Manipulator name format is not valid")
 	ASSERT(WhichListItem(manipulatorName, M_GetListOfAttachedManipulators(),";",0,0) != -1, "Manipulator: " + manipulatorName + " is not available.")
 End
 	
 /// @brief Checks format of manipulator name
 ///
 /// @param ManipulatorName e.g. "mg1"
-Function M_CheckManipulatorNameFormat(manipulatorName)
+Function M_ManipulatorNameFormatIsValid(manipulatorName)
 	string manipulatorName
-	// check if base name matches
-	ASSERT(stringmatch(ManipulatorName, (MANIP_BASE_NAME + "*")), "Name of manipulator does not conform to standard format")
+	
+	variable val
+	val = stringmatch(ManipulatorName, (MANIP_BASE_NAME + "*"))
+	// check if prefix matches
+	if(val == 0)
+		print "Manipulator prefix is not valid"
+		return 0
+	endif
 	// check if base name is followed by an integer
-	variable val = M_GetManipulatorNumberFromName(ManipulatorName)
-	ASSERT(val >= 0 && IsInteger(val), "Manipulator number must be a positive integer")
+	val = M_GetManipulatorNumberFromName(ManipulatorName)
+	if(val < 0 || !IsInteger(val))
+		print "Manipulator number must be a positive integer"
+		return 0
+	endif
+	
+	return 1
 End
 
 /// @brief Gets the list of attached manipulators
