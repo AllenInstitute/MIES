@@ -97,22 +97,28 @@ End
 /// @returns the mies version (e.g. Release_0.3.0.0_20141007-3-gdf4bb1e-dirty) or "unknown version"
 static Function/S CreateMiesVersion()
 
-	string path, cmd, topDir, gitPath, version
-	variable refNum
+	string path, cmd, topDir, gitPaths, version
+	variable refNum, numEntries, i
 
 	// set path to the toplevel directory in the mies folder structure
 	path = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
-	gitPath = "c:\\Program Files (x86)\\Git\\bin\\git.exe"
-	GetFileFolderInfo/Z/Q gitPath
-	if(!V_flag) // git is installed, try to regenerate version.txt
-		topDir = ParseFilePath(5, path, "*", 0, 0)
-		GetFileFolderInfo/Z/Q topDir + ".git"
-		if(!V_flag) // topDir is a git repository
-			sprintf cmd "\"%stools\\gitVersion.bat\"", topDir
-			ExecuteScriptText/Z/B/W=5 cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+	gitPaths = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe"
+
+	numEntries = ItemsInList(gitPaths)
+	for(i = 0; i < numEntries; i += 1)
+		GetFileFolderInfo/Z/Q StringFromList(i, gitPaths)
+		if(!V_flag) // git is installed, try to regenerate version.txt
+			topDir = ParseFilePath(5, path, "*", 0, 0)
+			GetFileFolderInfo/Z/Q topDir + ".git"
+			if(!V_flag) // topDir is a git repository
+				sprintf cmd "\"%stools\\gitVersion.bat\"", topDir
+				ExecuteScriptText/Z/B/W=5 cmd
+				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+			endif
+
+			break
 		endif
-	endif
+	endfor
 
 	open/R/Z refNum as path + "version.txt"
 	if(V_flag != 0)
