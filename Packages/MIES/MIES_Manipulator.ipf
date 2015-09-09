@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_Manipulator.ipf
-/// @brief Functions related to manipulator control and position documentation
+/// @brief __M__ Functions related to manipulator control and position documentation
 
 // relevant wave and DF getters:
 // GetManipulatorPathAsString()
