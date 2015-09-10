@@ -2159,7 +2159,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_AutoBiasV,pos={309,188},size={80,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Vm (mV)"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_AutoBiasV,value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasV,value= _NUM:-70
 	CheckBox check_DataAcq_AutoBias,pos={304,171},size={63,14},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Auto Bias"
 	CheckBox check_DataAcq_AutoBias,help={"Just prior to a sweep the Vm is checked and the bias current is adjusted to maintain desired Vm."}
 	CheckBox check_DataAcq_AutoBias,userdata(tabnum)=  "1"
@@ -2167,11 +2167,11 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
 	SetVariable setvar_DataAcq_IbiasMax,pos={310,209},size={120,20},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",value= _NUM:0
+	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1",value= _NUM:200
 	SetVariable setvar_DataAcq_AutoBiasVrange,pos={391,188},size={46,16},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
-	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1},value= _NUM:0
+	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1},value= _NUM:0.5
 	TitleBox Title_DataAcq_Hold_VC,pos={1,209},size={50,20},disable=1
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp",frame=0
@@ -2918,10 +2918,13 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_DatAcq_CNEnable WIN = $panelTitle,value= 0
 
 	Slider slider_DataAcq_ActiveHeadstage  WIN = $panelTitle,value= 0
-	SetVariable SetVar_DataAcq_AutoBiasV WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DataAcq_AutoBias WIN = $panelTitle,value= 0
-	SetVariable setvar_DataAcq_IbiasMax WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $panelTitle,value= _NUM:0
+
+	// auto bias default: -70 plus/minus 0.5 mV @ 200 pA
+	SetVariable SetVar_DataAcq_AutoBiasV      WIN = $panelTitle, value = _NUM:-70
+	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $panelTitle, value = _NUM:0.5
+	SetVariable setvar_DataAcq_IbiasMax       WIN = $panelTitle, value = _NUM:200
+
 	SetVariable SetVar_DataAcq_Hold_VC WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC WIN = $panelTitle,value= 0
 	SetVariable SetVar_DataAcq_WCR WIN = $panelTitle,value= _NUM:0
