@@ -1905,7 +1905,7 @@ End
 
 /// @brief Detects duplicate values in a 1d wave.
 ///
-/// Returns -1 if duplicate is NOT found. Will not report NaNs as duplicates
+/// @return one if duplicates could be found, zero otherwise
 /// Igor 7 will have a findDuplicates command
 Function SearchForDuplicates(Wv)
 	WAVE Wv
@@ -1919,5 +1919,5 @@ Function SearchForDuplicates(Wv)
 	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
  	WvCopyOne[0, Rows - 2] = WvCopyTwo[p] != WvCopyTwo[p + 1] ? 0 : 1 // could multithread but, MIES use case will be with short 1d waves.
 	FindValue/V=1 WvCopyOne
-	return V_value
+	return V_value != -1
 End
