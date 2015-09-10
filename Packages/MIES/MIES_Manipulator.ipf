@@ -161,9 +161,7 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 	string panelTitle
 	string manipulatorName, manipulatorXYZ
 	variable i
-
-	// Ensure each manipulator is assigned to only one headstage
-	assert(SearchForDuplicates(GetHSManipulatorAssignments(panelTitle)) == -1, "The same manipulator is assinged to more than one headstage")
+	
 	AbortOnValue M_CheckSettings(panelTitle),1	
 	
 	Make/FREE/T/N=(3, 3, 1) TPKeyWave
@@ -190,8 +188,14 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 		if(!statusHS[i])
 			continue
 		endif
-	
-		ManipulatorXYZ = M_GetXYZinStageFrame(M_GetManipFromHS(panelTitle, i))
+		
+		manipulatorName = M_GetManipFromHS(panelTitle, i)
+		if(isNull(manipulatorName) || isEmpty(manipulatorName))
+			print "Headstage", i, "does not have a manipulator assigned"
+			continue
+		endif
+		
+		ManipulatorXYZ = M_GetXYZinStageFrame(manipulatorName)
 		
 		TPSettingsWave[0][0][i] = str2num(stringfromlist(0, ManipulatorXYZ))
 		TPSettingsWave[0][1][i] = str2num(stringfromlist(1, ManipulatorXYZ))
@@ -247,6 +251,11 @@ Function M_CheckSettings(panelTitle)
 			return 1
 		endif
 	endfor
+	
+	if(SearchForDuplicates(GetHSManipulatorAssignments(panelTitle)) == 1)
+		print "The same manipulator is assinged to more than one headstage"
+		return 1
+	endif
 	
 	return 0
 End
