@@ -49,7 +49,7 @@ static Function/S M_ExecuteMSSServerCall(cmd)
 	Variable error
 
 	try
-		response = FetchURL(cmd)
+		response = FetchURL(cmd); AbortOnRTE
 	catch
 		error = GetRTError(1)
 		Abort "Communcation with MSS server failed"
