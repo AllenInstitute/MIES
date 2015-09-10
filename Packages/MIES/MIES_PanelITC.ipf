@@ -3504,8 +3504,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 End
 
-/// @brief One time cleaning up after data acquisition
-Function DAP_OneTimeCallAfterDAQ(panelTitle)
+/// @brief Enable all controls which were disabled before DAQ by #DAP_OneTimeCallBeforeDAQ
+Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
 	string ctrl
@@ -3522,9 +3522,17 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
 	endfor
 
+	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
+End
+
+/// @brief One time cleaning up after data acquisition
+Function DAP_OneTimeCallAfterDAQ(panelTitle)
+	string panelTitle
+
+	DAP_ResetGUIAfterDAQ(panelTitle)
+
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 0
-	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 
 	NVAR count = $GetCount(panelTitle)
 	KillVariables count

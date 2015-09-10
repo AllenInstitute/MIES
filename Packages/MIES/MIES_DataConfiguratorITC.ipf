@@ -229,7 +229,7 @@ end
 ///
 /// @param panelTitle  device
 /// @param dataAcqOrTP mode, either #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param channelType One of @ref #ChannelTypeAndControlConstants
+/// @param channelType One of @ref ChannelTypeAndControlConstants
 ///
 /// @return number of data points, *not* time
 static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
@@ -296,6 +296,7 @@ End
 /// @brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave
 ///
 /// @param panelTitle  panel title
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
@@ -380,7 +381,8 @@ End
 /// This is the factor between the minimum sampling interval and the real.
 /// If the multiplier is taken into account depends on `dataAcqOrTP`.
 ///
-/// @param panelTitle device
+/// @param panelTitle  device
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP

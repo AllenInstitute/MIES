@@ -436,7 +436,7 @@ End
 ///
 /// @param panelTitle device
 /// @param ctrl       name of the amplifier control
-/// @param headstage  headstage of the desired amplifier
+/// @param headStage  headstage of the desired amplifier
 /// @param value      [optional: defaults to the controls value] value to set
 /// @param sendToAll  [optional: defaults to the state of the checkbox] should the value be send
 ///                   to all active headstages (true) or just to the given one (false)
