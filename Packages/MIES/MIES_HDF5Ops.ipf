@@ -633,22 +633,23 @@ Function HD_SaveConfiguration([cmdID])
 			panelControlsList = ControlNameList(currentPanel)
 			numControls = ItemsInList(panelControlsList)
 			for (controlCounter = 0; controlCounter<numControls;controlCounter+=1)
-				currentControl = StringFromList(controlCounter, panelControlsList)
-				value = GetGuiControlValue(currentPanel, currentControl)
-				controlState = GetGuiControlState(currentPanel, currentControl)					
-				
-				if (!IsEmpty(value))
-					// get the current configWaveSize
-					configWaveSize = DimSize(configWave, 1)
-					
-					// now extend the wave by 1 to accomodate
-					Redimension/N = (-1, configWaveSize + 1) configWave
-					
-					// and now stuff the info in the right place
-					configWave[%settingName][configWaveSize] = currentControl
-					configWave[%settingValue][configWaveSize] = value
-					configWave[%controlState][configWaveSize] = controlState
-				endif				
+				currentControl = StringFromList(controlCounter, panelControlsList)			
+				controlState = GetGuiControlState(currentPanel, currentControl)
+				if(str2num(controlState) != 3)
+					value = GetGuiControlValue(currentPanel, currentControl)
+					if (!IsEmpty(value))
+						// get the current configWaveSize
+						configWaveSize = DimSize(configWave, 1)
+						
+						// now extend the wave by 1 to accomodate
+						Redimension/N = (-1, configWaveSize + 1) configWave
+						
+						// and now stuff the info in the right place
+						configWave[%settingName][configWaveSize] = currentControl
+						configWave[%settingValue][configWaveSize] = value
+						configWave[%controlState][configWaveSize] = controlState
+					endif					
+				endif								
 			endfor
 			
 			// Set the data folder for saving the config settings stuff
@@ -769,6 +770,7 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 					// Now remove that control name from the panelsControlList
 					panelControlsList = RemoveFromList(configWave[%settingName][controlCounter], panelControlsList)
 				endfor
+				
 				// Go through the remaining controls not restored, and see if they are a valid control...or one that we shouldn't worry about, like the tab or somethign similar
 				numRemainingControls = ItemsInList(panelControlsList)
 				print "The following controls were not restored"
@@ -787,6 +789,9 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 	
 	HDF5CloseFile fileID
 	print "Configuration Settings Loaded..."
+	
+	// Now kill the configWave....since its only used for saving the configuration settings to hdf5, don't need it floating around anymore
+	KillWaves ConfigWave
 	
 	// restore the data folder
 	SetDataFolder savedDataFolder
