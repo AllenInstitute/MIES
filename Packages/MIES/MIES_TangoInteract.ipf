@@ -71,6 +71,103 @@ Function TI_TangoSave(saveFileName, [cmdID])
 	endif
 End
 
+/// @brief run the baseline QC check from the WSE.  This will zero the amp using the pipette offset function call, and look at the baselineSSAvg, already calculated during the TestPulse.  
+/// The EXTPINBATH wave will also be run as a way of making sure the baseline is recorded into the data set for post-experiment analysis
+Function TI_runBaselineCheckQC(headstage, [cmdID])
+	variable headstage
+	
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+	string waveSelect 
+	string StimWaveName = "EXTPINBATH"
+	variable baselineValue
+	string ListOfWavesInFolder
+	variable incomingWaveIndex
+	variable baselineAverage
+	variable qcResult
+	variable adChannel
+	
+	// structure needed for communicating with the start acquisition button on the DA_Ephys panel
+	STRUCT WMButtonAction ba
+	
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+	
+	for(n = 0; n<noLockedDevs; n+= 1)
+		currentPanel = StringFromList(n, lockedDevList)
+		DFREF dfr = GetDeviceTestPulse(currentPanel)
+		
+		// pop the itc panel window to the front
+		DoWindow /F $currentPanel
+		
+		// push the waveSet to the ephys panel
+		// first, build up the control name by using the headstage value		
+		waveSelect = GetPanelControl(currentPanel, headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		
+		// build up the list of available wave sets
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		
+		// make sure that the incoming EXTPINBATH is a valid wave name
+		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
+			print "EXTINBATH wave not loaded...please load and try again..."
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, qcResult)
+			endif
+			return 0
+		endif
+		
+		// now find the index of the selected incoming wave in that list
+		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder)
+		
+		// and now set the wave popup menu to that index
+		// have to add 2 since the pulldown always has -none- and TestPulse as options
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+		
+		// Check to see if Test Pulse is already running...if not running, turn it on...
+		if(!IsBackgroundTaskRunning("TestPulse"))
+			TP_StartTestPulseSingleDevice(currentPanel)
+		endif
+		
+		// and now hit the Auto pipette offset
+		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", headStage)
+		
+		// and grab the baseline avg value
+		WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
+		
+		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		ASSERT(adChannel >= 0, "Could not query AD channel")
+		baselineAverage = BaselineSSAvg[0][adChannel]
+		
+		print "baseline Average: ", baselineAverage
+		
+		// See if we pass the baseline QC
+		if (abs(baselineAverage) < 100.0)
+			// and now run the EXTPINBATH wave so that things are saved into the data record
+			// now start the sweep process
+			print "pushing the start button..."
+			// now start the sweep process
+			// setting the ba structure
+			ba.eventCode = 2
+			ba.ctrlName = "DataAcquireButton"
+			ba.win = currentPanel
+			
+			DAP_ButtonProc_AcquireData(ba)
+			qcResult = baselineAverage
+		endif
+	endfor
+	
+	print "qcResult: ", qcResult
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, qcResult)
+	endif
+End
+		
 ///@brief routine to be called from the WSE to use a one step scale adjustment to find the scale factor that causes and AP firing
 ///@param stimWaveName		stimWaveName to be used
 ///@param initScaleFactor			initial scale factor to start with
