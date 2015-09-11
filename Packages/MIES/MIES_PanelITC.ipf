@@ -3323,14 +3323,14 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	DAP_UpdateYokeControls(tca.win)
+	string panelTitle = tca.win
 
-	// Maybe the user changed the stimulus ITI behind our back
-	// here we try to catch that case
+	DAP_UpdateYokeControls(panelTitle)
+
 	if(tca.tab == DATA_ACQU_TAB_NUM)
-		DAP_UpdateITIAcrossSets(tca.win)
+		DAP_UpdateITIAcrossSets(panelTitle)
+		DAP_UpdateSweepSetVariables(panelTitle)
 	endif
-
 End
 
 /// @brief Gets run by ACLight's tab control function every time a tab is selected,
@@ -3538,6 +3538,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	string panelTitle
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
+	DAP_UpdateSweepSetVariables(panelTitle)
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 0
@@ -3610,24 +3611,14 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	string panelTitle
-	variable setRepeats
+
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
 
 		panelTitle = cba.win
 		// makes sure user data for controls is up to date
 		WBP_UpdateITCPanelPopUps(panelTitle)
-
-		setRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
-		// updates sweeps in cycle value - when indexing is off, only the start set is counted,
-		// when indexing is on, all sets between start and end set are counted
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
-			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * setRepeats)
-		else
-			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle, 0) * setRepeats)
-		endif
-		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle, 1)
-
+		DAP_UpdateSweepSetVariables(panelTitle)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		break
 	endswitch
@@ -3860,17 +3851,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			endif
 
 			DAP_UpdateITIAcrossSets(panelTitle)
-
-			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 0)
-				ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-				ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-				ValDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-			else
-				ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-				ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-				ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-			endif
+			DAP_UpdateSweepSetVariables(panelTitle)
 			break
 		endswitch
 	return 0
@@ -3960,29 +3941,40 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	return SI_CalculateMinSampInterval(panelTitle) * multiplier
 End
 
+Function DAP_UpdateSweepSetVariables(panelTitle)
+	string panelTitle
+
+	variable numSetRepeats
+
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
+		else
+			numSetRepeats *= IDX_MaxNoOfSweeps(panelTitle, 0)
+		endif
+	else
+		numSetRepeats = 1
+	endif
+
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", numSetRepeats)
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsInSet", numSetRepeats)
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", IDX_MaxNoOfSweeps(panelTitle, 1))
+End
+
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	string panelTitle
-	variable numSetRepeats
 
 	switch(sva.eventCode)
 		case 1:
 		case 2:
 		case 3:
 			panelTitle = sva.win
-			numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
-
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
-				numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
-			else
-				numSetRepeats *= IDX_MaxNoOfSweeps(panelTitle, 0)
-			endif
-
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsInSet", numSetRepeats)
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", IDX_MaxNoOfSweeps(panelTitle, 1))
+			DAP_UpdateSweepSetVariables(panelTitle)
 			DAP_SyncGuiFromLeaderToFollower(panelTitle)
-
 			break
 	endswitch
 
@@ -4684,6 +4676,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
+	DAP_UpdateSweepSetVariables(panelTitle)
 	TP_RestartTestPulse(panelTitle, TPState)
 End
 
@@ -5287,6 +5280,7 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			DAP_UpdateSweepSetVariables(cba.win)
 			DAP_SyncGuiFromLeaderToFollower(cba.win)
 			break
 	endswitch
