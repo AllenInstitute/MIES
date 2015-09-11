@@ -359,8 +359,6 @@ Function P_CloseITCDevForP_Reg(panelTitle)
 		while(cmpstr("", ListOfHeadstagesUsingITCDev) == 0)
 			j = 0
 
-			print "panel title:", panelTitle
-			print "Device to close:", DeviceToClose
 			headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
 
 			WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
@@ -417,14 +415,15 @@ Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
 	variable 	i, j
 	string 	ListOfHeadstageUsingITCDevice = ""
 	string 	ListOfLockedDA_Ephys = GetListOfLockedDevices()
-		
-	if(!isInteger(devID) || devID < 0)
+			
+	if(!isInteger(devID) || devID < 0 || devID > 10)
    		 DEBUGPRINT("Trying to close invalid deviceID", var=devID)
     	else	
-		sprintf 	cmd, "ITCSelectDevice %d" DevID
-		ExecuteITCOperationAbortOnError(cmd)
-		sprintf cmd, "ITCCloseDevice"
-		ExecuteITCOperation(cmd)
+		sprintf cmd, "ITCSelectDevice %d" DevID
+		if(!ExecuteITCOperation(cmd))
+			sprintf cmd, "ITCCloseDevice"
+			ExecuteITCOperation(cmd)
+		endif
 	endif
 
 	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
