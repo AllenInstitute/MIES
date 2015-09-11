@@ -46,6 +46,12 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
+
+		WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+		SCOPE_CreateGraph(TestPulseITC, panelTitle)
+	else
+		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		SCOPE_CreateGraph(ITCDataWave, panelTitle)
 	endif
 
 	DC_UpdateClampModeString(panelTitle)

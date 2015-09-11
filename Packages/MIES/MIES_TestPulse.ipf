@@ -781,10 +781,6 @@ Function TP_Setup(panelTitle, [multiDevice])
 
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	SCOPE_CreateGraph(TestPulseITC, panelTitle)
-	SCOPE_OpenScopeWindow(panelTitle)
-
 	/// @todo use also for single device
 	if(multiDevice)
 		DAM_ConfigUploadDAC(panelTitle)

@@ -140,7 +140,6 @@ Function RA_Counter(panelTitle)
 	
 	if(Count < TotTrials)
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-		SCOPE_CreateGraph(ITCDataWave, panelTitle)
 	
 		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
 		If(v_value == 0)//No background aquisition

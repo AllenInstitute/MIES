@@ -642,10 +642,8 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 		endif
 
 		DAP_OneTimeCallBeforeDAQ(panelTitle)
-
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-		Wave/SDFR=GetDevicePath(panelTitle) ITCDataWave
-		SCOPE_CreateGraph(ITCDataWave, panelTitle)
+
 		if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 			ITC_DataAcq(panelTitle)
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
