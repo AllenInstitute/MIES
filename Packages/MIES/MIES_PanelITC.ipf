@@ -2069,23 +2069,23 @@ Window DA_Ephys() : Panel
 	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600, however, It is not a requirement for the use of multiple ITC1600s asyncronously."}
 	GroupBox group_Hardware_Yoke,userdata(tabnum)=  "6",userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_Yoke,fSize=12
-	Button button_Hardware_Lead1600,pos={29,195},size={80,21},disable=2,proc=DAP_ButtonProc_Lead,title="Lead"
+	Button button_Hardware_Lead1600,pos={29,195},size={80,21},disable=3,proc=DAP_ButtonProc_Lead,title="Lead"
 	Button button_Hardware_Lead1600,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Lead1600,userdata(tabnum)=  "6"
 	Button button_Hardware_Lead1600,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={29,240},size={110,21},bodyWidth=110,disable=2,title="Locked ITC1600s"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={29,240},size={110,21},bodyWidth=110,disable=3,title="Locked ITC1600s"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_AvailITC1600s,mode=0,value= #"DAP_ListOfITCDevices()"
-	Button button_Hardware_AddFollower,pos={141,240},size={80,21},disable=2,proc=DAP_ButtonProc_Follow,title="Follow"
+	Button button_Hardware_AddFollower,pos={141,240},size={80,21},disable=3,proc=DAP_ButtonProc_Follow,title="Follow"
 	Button button_Hardware_AddFollower,help={"For ITC1600 devices only. Sets locked ITC device as a follower. Select leader from other locked ITC1600s panel. This will disable data aquistion directly from this panel."}
 	Button button_Hardware_AddFollower,userdata(tabnum)=  "6"
 	Button button_Hardware_AddFollower,userdata(tabcontrol)=  "ADC"
-	TitleBox title_hardware_1600inst,pos={29,176},size={220,13},disable=2,title="To yoke devices go to panel: ITC1600_Dev_0"
+	TitleBox title_hardware_1600inst,pos={29,176},size={220,13},disable=3,title="To yoke devices go to panel: ITC1600_Dev_0"
 	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
 	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC",frame=0
-	Button button_Hardware_Independent,pos={111,195},size={80,21},disable=2,proc=DAP_ButtonProc_Independent,title="Independent"
+	Button button_Hardware_Independent,pos={111,195},size={80,21},disable=3,proc=DAP_ButtonProc_Independent,title="Independent"
 	Button button_Hardware_Independent,help={"For ITC1600 devices only. Sets locked ITC device as the lead. User must now assign follower devices."}
 	Button button_Hardware_Independent,userdata(tabnum)=  "6"
 	Button button_Hardware_Independent,userdata(tabcontrol)=  "ADC"
@@ -2093,7 +2093,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Hardware_Status,frame=0,fStyle=1,fColor=(65280,0,0)
 	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
 	SetVariable setvar_Hardware_Status,value= _STR:"Independent",noedit= 1
-	TitleBox title_hardware_Follow,pos={29,222},size={163,13},disable=2,title="Assign ITC1600 DACs as followers"
+	TitleBox title_hardware_Follow,pos={29,222},size={163,13},disable=3,title="Assign ITC1600 DACs as followers"
 	TitleBox title_hardware_Follow,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Follow,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Follow,userdata(tabcontrol)=  "ADC",frame=0
@@ -2102,14 +2102,14 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
 	SetVariable setvar_Hardware_YokeList,value= _STR:"Device is not yokeable",noedit= 1
-	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=2,proc=DAP_ButtonProc_YokeRelease,title="Release"
+	Button button_Hardware_RemoveYoke,pos={335,240},size={80,21},disable=3,proc=DAP_ButtonProc_YokeRelease,title="Release"
 	Button button_Hardware_RemoveYoke,userdata(tabnum)=  "6"
 	Button button_Hardware_RemoveYoke,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Hardware_YokedDACs,pos={223,240},size={110,21},bodyWidth=110,disable=2,title="Yoked ITC1600s"
+	PopupMenu popup_Hardware_YokedDACs,pos={223,240},size={110,21},bodyWidth=110,disable=3,title="Yoked ITC1600s"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_YokedDACs,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_YokedDACs,mode=0,value= #"DAP_GUIListOfYokedDevices()"
-	TitleBox title_hardware_Release,pos={225,222},size={152,13},disable=2,title="Release follower ITC1600 DACs"
+	TitleBox title_hardware_Release,pos={225,222},size={152,13},disable=3,title="Release follower ITC1600 DACs"
 	TitleBox title_hardware_Release,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Release,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Release,userdata(tabcontrol)=  "ADC",frame=0
@@ -2577,7 +2577,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Manip_MSSMnipLst,help={"List of available Scientifica micromanipulators"}
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=2,popvalue="mg1",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
+	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=1,popvalue="- none -",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
