@@ -37,6 +37,8 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
+	DC_UpdateClampModeString(panelTitle)
+
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 		numADCs = DimSize(GetADCListFromConfig(ITCChanConfigWave), ROWS)
@@ -54,7 +56,6 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		SCOPE_CreateGraph(ITCDataWave, panelTitle)
 	endif
 
-	DC_UpdateClampModeString(panelTitle)
 End
 
 /// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
