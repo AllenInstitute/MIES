@@ -3570,7 +3570,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
-			SetDataFolder root:
 			panelTitle = ba.win
 
 			AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
@@ -3622,7 +3621,6 @@ Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
-			SetDataFolder root:
 			panelTitle = ba.win
 
 			AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
@@ -3912,8 +3910,6 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			panelTitle = pa.win
 			popnum     = pa.popNum
 
-			DFREF saveDFR = GetDataFolderDFR()
-
 			if(StringMatch(ctrlName, "*indexEnd*") != 1)
 				if(popnum == 1) //if the user selects "none" the channel is automatically turned off
 					CheckBoxName = ctrlName
@@ -3930,9 +3926,6 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			endif
 
 			DAP_UpdateITIAcrossSets(panelTitle)
-
-			// makes sure data acq starts in the correct folder!!
-			SetDataFolder saveDFR
 
 			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
 			if(v_value == 0)
