@@ -57,7 +57,6 @@ static Function HSU_MakeWavesAndFolderForLocked(panelTitle)
 	createDFWithAllParents("root:MIES:Amplifiers:Settings")
 	createDFWithAllParents("root:ImageHardware:Arduino")
 	createDFWithAllParents("root:MIES:Camera")
-	createDFWithAllParents("root:MIES:Manipulators")
 
 	GetITCDataWave(panelTitle)
 	GetITCChanConfigWave(panelTitle)
