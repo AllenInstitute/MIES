@@ -439,7 +439,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
-	Button DataAcquireButton,pos={44,711},size={395,42},disable=1,proc=DAP_ButtonProc_AcquireDataMD,title="\\Z14\\f01Acquire\rData"
+	Button DataAcquireButton,pos={44,711},size={395,42},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,Ch!!#C6J,hsRJ,ho(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3571,83 +3571,15 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
 			panelTitle = ba.win
-
-			AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
-
-			NVAR DataAcqState = $GetDataAcqState(panelTitle)
-
-			if(!DataAcqState) // data aquisition is stopped
-
-				// stops test pulse if it is running
-				if(IsBackgroundTaskRunning("testpulse"))
-					ITC_StopTestPulseSingleDevice(panelTitle)
-				endif
-
-				DAP_OneTimeCallBeforeDAQ(panelTitle)
-
-				// Data collection
-				// Function that assess how many 1d waves in set??
-				// Function that passes column to configdataForITCfunction?
-				// If a set with multiple 1d waves is chosen, repeated aquisition should be activated automatically. globals should be used to keep track of columns
-				DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-				Wave/SDFR=GetDevicePath(panelTitle) ITCDataWave
-				SCOPE_CreateGraph(ITCDataWave, panelTitle)
-				if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
-					ITC_DataAcq(panelTitle)
-					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-						RA_Start(panelTitle)
-					else
-						DAP_OneTimeCallAfterDAQ(panelTitle)
-					endif
-				else
-					ITC_BkrdDataAcq(panelTitle)
-				endif
-			else // data aquistion is ongoing
-				DataAcqState = 0
-				DAP_StopOngoingDataAcquisition(panelTitle)
-				ITC_StopITCDeviceTimer(panelTitle)
+			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+				ITC_StartDAQMultiDevice(panelTitle)
+			else
+				ITC_StartDAQSingleDevice(panelTitle)
 			endif
 		break
 	endswitch
 
 	return 0
-End
-
-Function DAP_ButtonProc_AcquireDataMD(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string panelTitle
-	variable nextSweep, NumberOfDevicesRunningTP, i
-
-	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
-			panelTitle = ba.win
-
-			AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
-
-			NVAR DataAcqState = $GetDataAcqState(panelTitle)
-
-			if(!DataAcqState)
-				 // stops test pulse if it is running
-				if(IsBackgroundTaskRunning("TestPulseMD"))
-					WAVE/T/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceTextList
-					NumberOfDevicesRunningTP = DimSize(ActiveDeviceTextList, ROWS)
-					for(i = 0; i < NumberOfDevicesRunningTP; i += 1)
-						if(stringmatch(ActiveDeviceTextList[i], panelTitle) == 1)
-							 ITC_StopTPMD(panelTitle)
-						endif
-					endfor
-				endif
-
-				DAP_OneTimeCallBeforeDAQ(panelTitle)
-				DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
-			else // data aquistion is ongoing, stop data acq
-				DAM_StopDataAcq(panelTitle)
-				ITC_StopITCDeviceTimer(panelTitle)
-				DAP_OneTimeCallAfterDAQ(panelTitle)
-			endif
-		break
-	endswitch
 End
 
 Function DAP_CheckProc_SaveData(cba) : CheckBoxControl
@@ -5249,10 +5181,8 @@ Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
 
 	if(disableOrEnable)
 		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireDataMD
 	else
 		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		Button DataAcquireButton WIN=$panelTitle, proc=DAP_ButtonProc_AcquireData
 	endif
 End
 
