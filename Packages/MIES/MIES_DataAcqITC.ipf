@@ -173,6 +173,8 @@ Function ITC_FIFOMonitor(s)
 	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
 	ITCDataWave[0][0] += 0 //forces on screen update
 
+	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()

@@ -650,6 +650,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_UseDoublePrec,value= 0
+	CheckBox Check_Settings_SkipAnalysFuncs,pos={243,268},size={144,14},title="Skip analysis function calls"
+	CheckBox Check_Settings_SkipAnalysFuncs,help={"Should the analysis functions defined in the stim sets not be called? Mostly useful for testing/debugging."}
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo)= A"!!,HT!!#?-!!#?C!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_SkipAnalysFuncs,value= 0
 	CheckBox Check_AsyncAD_00,pos={172,46},size={42,14},disable=1,title="AD 0"
 	CheckBox Check_AsyncAD_00,help={"hello!"},userdata(tabnum)=  "4"
 	CheckBox Check_AsyncAD_00,userdata(tabcontrol)=  "ADC"
@@ -2691,6 +2699,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
 	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
+	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 0
 	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode = 1
 
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
@@ -3540,6 +3549,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	DAP_ResetGUIAfterDAQ(panelTitle)
 	DAP_UpdateSweepSetVariables(panelTitle)
 
+	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
+
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 0
 
@@ -4341,6 +4353,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 			print "The testpulse duration must be greater than 0 ms"
 			return 1
 		endif
+
+		// unlock ITCDataWave, this happens if user functions error out and we don't catch it
+		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		if(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)))
+			printf "(%s) Removing leftover lock on ITCDataWave\r", panelTitle
+			SetWaveLock 0, ITCDataWave
+		endif
 	endfor
 
 	return 0
@@ -4351,9 +4370,9 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
 
-	string ctrl, dacWave, endWave, unit
+	string ctrl, dacWave, endWave, unit, func, info
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale, ctrlNo, clampMode
+	variable gain, scale, ctrlNo, clampMode, i
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -4457,6 +4476,36 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		if(!CmpStr(dacWave, NONE) || IsTestPulseSet(dacWave))
 			printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
 			return 1
+		endif
+
+		if(!GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+			WAVE stimSet = WB_CreateAndGetStimSet(dacWave)
+			for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
+				func = ExtractAnalysisFuncFromStimSet(stimSet, i)
+
+				if(isEmpty(func)) // none set
+					continue
+				endif
+
+				info = FunctionInfo(func)
+
+				if(isEmpty(info))
+					printf "(%s) Warning: The analysis function %s for stim set %s and event type \"%s\" could not be found\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+					continue
+				endif
+
+				FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f = $func
+				info = FuncRefInfo(f)
+
+				if(!FuncRefIsAssigned(info)) // not a valid analysis function
+					printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+					return 1
+				endif
+
+				if(i == MID_SWEEP_EVENT && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+					printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), dacWave
+				endif
+			endfor
 		endif
 
 		if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))

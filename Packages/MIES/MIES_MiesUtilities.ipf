@@ -1999,3 +1999,20 @@ Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	endfor
 	return wv
 End
+
+/// @brief Extract the analysis function name from the wave note of the stim set
+/// @return Analysis function for the given event type, empty string if none is set
+Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
+	WAVE stimSet
+	variable eventType
+
+	string eventName, wvNote
+
+	wvnote = note(stimSet)
+	wvnote = ReplaceString(" = ", wvnote, "=")
+
+	eventName = StringFromList(eventType, EVENT_NAME_LIST)
+	ASSERT(!IsEmpty(eventName), "Unknown event type")
+
+	return StringByKey(eventName, wvnote, "=", ";")
+End

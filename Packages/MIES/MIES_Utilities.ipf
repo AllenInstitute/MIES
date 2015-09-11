@@ -1928,3 +1928,18 @@ Function SearchForDuplicates(Wv)
 	FindValue/V=1 WvCopyOne
 	return V_value != -1
 End
+
+/// @brief Check wether the function reference points to
+/// the prototype function or to an assigned function
+///
+/// Due to Igor Pro limitations you need to pass the function
+/// info from `FuncRefInfo` and not the function reference itself.
+///
+/// @return 1 if pointing to prototype function, 0 otherwise
+Function FuncRefIsAssigned(funcInfo)
+	string funcInfo
+
+	ASSERT(!isEmpty(funcInfo), "Empty function info")
+
+	return NumberByKey("ISPROTO", funcInfo) == 0
+End

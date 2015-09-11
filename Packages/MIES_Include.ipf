@@ -16,6 +16,7 @@
 
 // our includes
 #include "MIES_AmplifierInteraction"
+#include "MIES_AnalysisFunctions"
 #include "MIES_AnalysisMaster"
 #include "MIES_BackgroundMD"
 #include "MIES_BackgroundTimerMD"

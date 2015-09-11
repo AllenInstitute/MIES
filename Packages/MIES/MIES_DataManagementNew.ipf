@@ -60,9 +60,86 @@ Function DM_SaveAndScaleITCData(panelTitle)
 		AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	endif
 
+	DM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
+
 	if(saveSweepData)
 		DM_AfterSweepDataSaveHook(panelTitle)
 	endif
+End
+
+/// @brief Call the analysis function associated with the stimset from the wavebuilder
+Function DM_CallAnalysisFunctions(panelTitle, eventType)
+	string panelTitle
+	variable eventType
+
+	variable error, i
+	string func, setName
+
+	if(GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+		return NaN
+	endif
+
+	NVAR count = $GetCount(panelTitle)
+	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+	WAVE guiState = GetDA_EphysGuiStateNum(panelTitle)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!guiState[i][%HSState])
+			continue
+		endif
+
+		switch(eventType)
+			case PRE_DAQ_EVENT:
+				func = sweepDataTxTLNB[0][5][i]
+				break
+			case MID_SWEEP_EVENT:
+				func = sweepDataTxTLNB[0][6][i]
+				break
+			case POST_SWEEP_EVENT:
+				func = sweepDataTxTLNB[0][7][i]
+				break
+			case POST_SET_EVENT:
+				func = sweepDataTxTLNB[0][8][i]
+				// we have to check if we acquired a full set for the headstage
+				setName = sweepDataTxTLNB[0][0][i]
+
+				if(mod(count + 1, IDX_NumberOfTrialsInSet(panelTitle, setName)) != 0)
+					continue
+				endif
+				break
+			case POST_DAQ_EVENT:
+				func = sweepDataTxTLNB[0][9][i]
+				break
+			default:
+				ASSERT(0, "Invalid eventType")
+				break
+		endswitch
+
+		DEBUGPRINT("function", str=func)
+
+		if(isEmpty(func))
+			continue
+		endif
+
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f = $func
+
+		if(!FuncRefIsAssigned(FuncRefInfo(f))) // not a valid analysis function
+			continue
+		endif
+
+		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		SetWaveLock 1, ITCDataWave
+
+		try
+			f(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
+		catch
+			error = GetRTError(1)
+			printf "The analysis function %s aborted, this is dangerous and must *not* happen!\r", func
+		endtry
+
+		SetWaveLock 0, ITCDataWave
+	endfor
 End
 
 /// @brief General hook function which gets always executed after sweep data saving

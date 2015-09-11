@@ -76,6 +76,11 @@ Function ITC_FIFOMonitorMD(s)
 		ExecuteITCOperationAbortOnError(cmd)
 		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
 		ExecuteITCOperation(cmd)
+
+		ITCDataWave[0][0] += 0
+
+		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+
 		if(ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2] >= ActiveDeviceList[i][2])
 			print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
 			DeviceIDGlobal = ActiveDeviceList[i][0]
@@ -89,7 +94,6 @@ Function ITC_FIFOMonitorMD(s)
 			NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
 		endif
 		i += 1
-		ITCDataWave[0][0] += 0
 	while(i < NumberOfActiveDevices)
 
 	return 0

@@ -7,6 +7,9 @@ static Function RA_HandleITI_MD(panelTitle)
 	string panelTitle
 
 	variable ITI
+
+	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+
 	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
 		ITI -= ITC_StopITCDeviceTimer(panelTitle)
@@ -24,6 +27,8 @@ static Function RA_HandleITI(panelTitle)
 	string panelTitle
 
 	variable ITI
+
+	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 
 	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
