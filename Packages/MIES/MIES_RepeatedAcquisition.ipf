@@ -83,6 +83,8 @@ Function RA_Counter(panelTitle)
 	string panelTitle
 
 	variable TotTrials
+	string str
+
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
@@ -102,13 +104,12 @@ Function RA_Counter(panelTitle)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
 	endif
-	//print "TotTrials = " + num2str(tottrials)
-	print "count = " + num2str(count), "in RA_Counter"
-	//controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-	//TotTrials = (TotTrials * v_value) + 1
-	
+
+	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
+	DEBUGPRINT(str)
+
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
-	
+
 	controlinfo /w = $panelTitle Check_DataAcq_Indexing
 	If(v_value == 1)// if indexing is activated, indexing is applied.
 		if(count == 1)
@@ -270,6 +271,8 @@ Function RA_CounterMD(panelTitle)
 	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
 	NVAR ActiveSetCount = $ActiveSetCountPath
 	variable i = 0
+	string str
+
 	Count += 1
 	ActiveSetCount -= 1
 	
@@ -283,7 +286,9 @@ Function RA_CounterMD(panelTitle)
 		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
 		TotTrials = v_value
 	endif
-	print "count = " + num2str(count), "in RA_CounterMD"
+
+	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
+	DEBUGPRINT(str)
 	
 	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
 	
