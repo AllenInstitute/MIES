@@ -845,7 +845,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][1] =  "DA unit"
 	wv[0][2] =  "AD unit"
 	wv[0][3] =  "TTL rack zero stim sets"
-	wv[0][4] =  "TTL rack zero stim sets"
+	wv[0][4] =  "TTL rack one stim sets"
 
 	SetWaveVersion(wv, versionOfNewWave)
 
