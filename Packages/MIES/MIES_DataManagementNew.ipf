@@ -63,7 +63,7 @@ Function DM_SaveAndScaleITCData(panelTitle)
 End
 
 /// @brief General hook function which gets always executed after sweep data saving
-Function DM_AfterSweepDataSaveHook(panelTitle)
+static Function DM_AfterSweepDataSaveHook(panelTitle)
 	string panelTitle
 
 	string panelList, dataPath, panel, panelType
