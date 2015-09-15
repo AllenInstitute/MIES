@@ -1693,6 +1693,7 @@ Function SaveExperimentWithDialog(path, filename)
 		return 1
 	endif
 
+	Close refNum
 	SaveExperiment as S_fileName
 	return 0
 End
