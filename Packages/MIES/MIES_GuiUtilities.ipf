@@ -872,7 +872,7 @@ Function GetInternalSetVariableType(recMacro)
 	ASSERT(strsearch(recMacro, "SetVariable", 0) != -1, "recreation macro is not from a SetVariable")
 
 	variable builtinString = (strsearch(recMacro, "_STR:\"", 0) != -1)
-	variable builtinNumber = (strsearch(recMacro, "_NUM:\"", 0) != -1)
+	variable builtinNumber = (strsearch(recMacro, "_NUM:", 0) != -1)
 
 	ASSERT(builtinString + builtinNumber != 2, "SetVariable can not hold both numeric and string contents")
 
