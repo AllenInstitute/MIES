@@ -1391,20 +1391,8 @@ Function PostPlotTransformations(graph, pps)
 			trace = StringFromList(i, traceList)
 			WAVE wv = TraceNameToWaveRef(graph, trace)
 			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-			Note/K wv
 		endfor
 	endif
-
-	SVAR miesVersion = $GetMiesVersion()
-
-	numTraces = ItemsInList(traceList)
-	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
-
-		WAVE wv = TraceNameToWaveRef(graph, trace)
-		Note/K wv
-		AddEntryIntoWaveNoteAsList(wv, "MiesVersion", str=miesVersion)
-	endfor
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	if(pps.timeAlignment)
@@ -1562,9 +1550,10 @@ static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
 		trace = StringFromList(i, traceList)
 
 		WAVE wv = TraceNameToWaveRef(graph, trace)
-		CreateBackupWave(wv)
+		WAVE backup = CreateBackupWave(wv)
 		ZeroWave(wv)
-		AddEntryIntoWaveNoteAsList(wv, "Zeroed", str="true")
+		Note wv, note(backup) + "\r"
+		AddEntryIntoWaveNoteAsList(wv, "Zeroed", str="true", replaceEntry=1)
 	endfor
 End
 
@@ -1644,7 +1633,7 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 		DEBUGPRINT("new DimOffset", var=offset)
 		SetScale/P x, offset, DimDelta(wv, ROWS), wv
 		offset = DimOffset(backup, ROWS) - DimOffset(wv, ROWS)
-		AddEntryIntoWaveNoteAsList(wv, "TimeAlignmentTotalOffset", var=offset)
+		AddEntryIntoWaveNoteAsList(wv, "TimeAlignmentTotalOffset", var=offset, replaceEntry=1)
 	endfor
 End
 
