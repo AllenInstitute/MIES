@@ -36,6 +36,7 @@
 #include "MIES_HardwareSetUp"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
+#include "MIES_Manipulator"
 #include "MIES_MiesUtilities"
 #include "MIES_Oscilloscope"
 #include "MIES_PanelITC"
