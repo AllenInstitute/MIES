@@ -9,57 +9,61 @@ static Constant FLOAT_64BIT = 0x04
 Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
 
+	variable sweepNo, rowsToCopy, saveSweepData
+	string savedDataWaveName, savedSetUpWaveName
+
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	// the checkbox text reads "Do not save data"
+	saveSweepData = !GetCheckBoxState(panelTitle, "Check_Settings_SaveData")
+
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 	DM_ADScaling(ITCDataWave, panelTitle)
 
-	// the checkbox text reads "Do not save data" so we have to check for true
-	if(GetCheckBoxState(panelTitle, "Check_Settings_SaveData"))
-		return NaN
+	if(saveSweepData)
+		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+
+		savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
+		savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
+
+		rowsToCopy = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) - 1
+
+		Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
+		Duplicate/O ITCChanConfigWave $savedSetUpWaveName
+		note dataWave, Time()
+		note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
+		AppendMiesVersionToWaveNote(dataWave)
+
+		SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
+
+		DM_DAScaling(dataWave, panelTitle)
+
+		if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
+			AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
+			// function for debugging
+			// AI_createDummySettingsWave(panelTitle, SweepNo)
+		endif
+
+		// if option is checked, wave note containing single readings from (async) ADs is made
+		if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
+			ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
+		endif
+
+		//Add wave notes for the stim wave name and scale factor
+		ED_createWaveNoteTags(panelTitle, sweepNo)
+
+		//Add wave notes for the factors on the Asyn tab
+		ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
+
+		// TP settings, especially useful if "global TP insertion" is active
+		ED_TPSettingsDocumentation(panelTitle)
+
+		AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	endif
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-
-	string savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
-	string savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
-
-	variable rowsToCopy = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) - 1
-
-	Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
-	Duplicate/O ITCChanConfigWave $savedSetUpWaveName
-	note dataWave, Time()
-	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
-	AppendMiesVersionToWaveNote(dataWave)
-
-	if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
-		AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
-		// function for debugging
-		// AI_createDummySettingsWave(panelTitle, SweepNo)
+	if(saveSweepData)
+		DM_AfterSweepDataSaveHook(panelTitle)
 	endif
-	
-	// Adding in the post sweep analysis function here
-	AM_analysisMasterPostSweep(panelTitle, sweepNo)
-
-	if(GetCheckboxState(panelTitle, "Check_Settings_Append")) // if option is checked, wave note containing single readings from (async) ADs is made
-		ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
-	endif
-
-	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
-
-	DM_DAScaling(dataWave, panelTitle)
-
-	//Add wave notes for the stim wave name and scale factor
-	ED_createWaveNoteTags(panelTitle, sweepNo)
-
-	//Add wave notes for the factors on the Asyn tab
-	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
-
-	// TP settings, especially useful if "global TP insertion" is active
-	ED_TPSettingsDocumentation(panelTitle)
-
-	DM_AfterSweepDataSaveHook(panelTitle)
 End
 
 /// @brief General hook function which gets always executed after sweep data saving
