@@ -19,6 +19,7 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 	DM_ADScaling(ITCDataWave, panelTitle)
+	DM_DAScaling(ITCDataWave, panelTitle)
 
 	if(saveSweepData)
 		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -35,8 +36,6 @@ Function DM_SaveAndScaleITCData(panelTitle)
 		AppendMiesVersionToWaveNote(dataWave)
 
 		SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
-
-		DM_DAScaling(dataWave, panelTitle)
 
 		if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
 			AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
