@@ -2588,8 +2588,7 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1cR6P7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s^2`h"
 EndMacro
 
-///@brief Restores the base state of the DA_Ephys panel.
-
+/// @brief Restores the base state of the DA_Ephys panel.
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
 Function DAP_EphysPanelStartUpSettings(panelTitle)
@@ -3241,7 +3240,7 @@ Function DAP_DeviceIsLeader(panelTitle)
 	return cmpstr(S_value,LEADER) == 0
 End
 
-/// Updates the yoking controls on all locked/unlocked panels
+/// @brief Updates the yoking controls on all locked/unlocked panels
 Function DAP_UpdateAllYokeControls()
 
 	string   ListOfLockedITC1600    = GetListOfLockedITC1600Devices()
@@ -3332,9 +3331,8 @@ Function DAP_TabControlFinalHook(tca)
 
 End
 
-/// This is a function that gets run by ACLight's tab control function every time a tab is selected,
+/// @brief Gets run by ACLight's tab control function every time a tab is selected,
 /// but before the internal tabs hook is called
-
 Function DAP_TabTJHook1(tca)
 	STRUCT WMTabControlAction &tca
 
@@ -5146,8 +5144,6 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 	return 0
 End
 
-// FUNCTION BELOW CONTROL THE GUI INTERACTIONS OF THE AMPLIFIER CONTROLS ON THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
-
 Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	struct WMSliderAction &sc
 
@@ -5231,13 +5227,7 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	return 0
 End
 
-// FUNCTION BELOW CONTROL THE GUI STATE FOR CHANGES RELATED TO MULTIPLE DEVICES
-
-//	When multiple device support is not enabled there are two options for DAC operation: foreground and background
-//	When multiple device support is enabled there are no options for DAC operation: it is always in the background
-//	When multiple device support is enabled, and there are more than two ITC1600s, yoking controls are enabled.
-
-/// Check box procedure for multiple device (MD) support
+/// @brief Check box procedure for multiple device (MD) support
 Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
