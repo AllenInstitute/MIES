@@ -5,14 +5,6 @@
 
 static StrConstant PROCEDURE_START = "proc="
 
-/// @name Return types of @ref PGC_GetInternalSetVariableType
-/// @anchor PGC_GetInternalSetVariableTypeReturnTypes
-/// @{
-static Constant SET_VARIABLE_BUILTIN_NUM = 0x01
-static Constant SET_VARIABLE_BUILTIN_STR = 0x02
-static Constant SET_VARIABLE_GLOBAL      = 0x04
-/// @}
-
 /// @brief Return the parameter type a function parameter
 ///
 /// @param func       name of the function
@@ -86,28 +78,6 @@ static Function/S PGC_GetProcAndCheckParamType(win, control)
 	ASSERT(paramType & STRUCT_PARAMETER_TYPE, "No support for old style control procedures")
 
 	return procedure
-End
-
-/// @brief Return one the type of the variable of the SetVariable control
-///
-/// @return one of @ref PGC_GetInternalSetVariableTypeReturnTypes
-static Function PGC_GetInternalSetVariableType(recMacro)
-	string recMacro
-
-	ASSERT(strsearch(recMacro, "SetVariable", 0) != -1, "recreation macro is not from a SetVariable")
-
-	variable builtinString = (strsearch(recMacro, "_STR:\"", 0) != -1)
-	variable builtinNumber = (strsearch(recMacro, "_NUM:\"", 0) != -1)
-
-	ASSERT(builtinString + builtinNumber != 2, "SetVariable can not hold both numeric and string contents")
-
-	if(builtinString)
-		return SET_VARIABLE_BUILTIN_STR
-	elseif(builtinNumber)
-		return SET_VARIABLE_BUILTIN_NUM
-	endif
-
-	return SET_VARIABLE_GLOBAL
 End
 
 /// @name Prototype functions for #PGC_SetAndActivateControl
@@ -246,7 +216,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 		case CONTROL_TYPE_SETVARIABLE:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
 
-			variableType = PGC_GetInternalSetVariableType(S_recreation)
+			variableType = GetInternalSetVariableType(S_recreation)
 
 			if(variableType == SET_VARIABLE_BUILTIN_NUM)
 				SetSetVariable(win, control, val)
