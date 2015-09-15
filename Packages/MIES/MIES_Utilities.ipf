@@ -1682,15 +1682,31 @@ End
 ///
 /// It is currently not possible to check if SaveExperiment was successfull
 /// (E-Mail from Howard Rodstein WaveMetrics, 30 Jan 2015)
-Function SaveExperimentWithDialog(path, filename)
+Function SaveExperimentWrapper(path, filename)
 	string path, filename
 
 	variable refNum
+	NVAR interactiveMode = $GetInteractiveMode()
 
-	Open/D/M="Save experiment"/F="All Files:.*;"/P=$path refNum as filename
+	if(interactiveMode)
+		Open/D/M="Save experiment"/F="All Files:.*;"/P=$path refNum as filename
 
-	if(isEmpty(S_fileName))
-		return 1
+		if(isEmpty(S_fileName))
+			return 1
+		endif
+	else
+		if(isEmpty(path))
+			PathInfo Desktop
+			if(!V_flag)
+				NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
+			endif
+			path = "Desktop"
+		endif
+		Open/Z/P=$path refNum as filename
+
+		if(V_flag != 0)
+			return 1
+		endif
 	endif
 
 	Close refNum

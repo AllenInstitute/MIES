@@ -1147,7 +1147,7 @@ Function SaveExperimentSpecial(mode)
 	expName = GetExperimentName()
 
 	if(!cmpstr(expName, UNTITLED_EXPERIMENT))
-		ret = SaveExperimentWithDialog("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX)
+		ret = SaveExperimentWrapper("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX)
 
 		if(ret)
 			return NaN
@@ -1176,7 +1176,7 @@ Function SaveExperimentSpecial(mode)
 	expLoc  = "home"
 	expName = UniqueFile(expLoc, expName, PACKED_FILE_EXPERIMENT_SUFFIX)
 
-	ret = SaveExperimentWithDialog(expLoc, expName)
+	ret = SaveExperimentWrapper(expLoc, expName)
 
 	if(ret)
 		return NaN
