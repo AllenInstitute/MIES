@@ -214,16 +214,23 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			TabProc(tca)
 			break
 		case CONTROL_TYPE_SETVARIABLE:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-
+			ASSERT(ParamIsDefault(val) + ParamIsDefault(str) == 1, "Needs a variable or string argument")
 			variableType = GetInternalSetVariableType(S_recreation)
+
+			if(ParamIsDefault(val))
+				val = str2num(str)
+			endif
+
+			if(ParamIsDefault(str))
+				str = num2str(val)
+			endif
 
 			if(variableType == SET_VARIABLE_BUILTIN_NUM)
 				SetSetVariable(win, control, val)
 			elseif(variableType == SET_VARIABLE_BUILTIN_STR)
 				SetSetVariableString(win, control, str)
 			else
-				// nothing to do for globals
+				// @todo handle globals as well
 			endif
 
 			if(isEmpty(procedure))
@@ -234,12 +241,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			sva.ctrlName  = control
 			sva.win       = win
 			sva.eventCode = 2
+			sva.sval      = str
 			sva.dval      = val
-
-			if(!ParamIsDefault(str) && variableType == SET_VARIABLE_BUILTIN_STR)
-				sva.sval  = str
-				sva.isStr = 1
-			endif
+			sva.isStr     = (variableType == SET_VARIABLE_BUILTIN_STR)
 
 			FUNCREF PGC_SetVariableControlProcedure SetVariableProc = $procedure
 			SetVariableProc(sva)
