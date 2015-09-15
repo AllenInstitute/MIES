@@ -65,7 +65,7 @@ End
 
 /// @brief Checks if manipulator is available
 ///
-/// @param ManipulatorName e.g. "mg1"
+/// @param manipulatorName e.g. "mg1"
 Function M_CheckIfManipulatorIsAttached(manipulatorName)
 	string manipulatorName
 	ASSERT(M_ManipulatorNameFormatIsValid(manipulatorName), "Manipulator name format is not valid")
@@ -74,7 +74,7 @@ End
 	
 /// @brief Checks format of manipulator name
 ///
-/// @param ManipulatorName e.g. "mg1"
+/// @param manipulatorName e.g. "mg1"
 Function M_ManipulatorNameFormatIsValid(manipulatorName)
 	string manipulatorName
 	
