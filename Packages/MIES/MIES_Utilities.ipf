@@ -714,17 +714,19 @@ End
 ///
 /// The general layout is `key1 = var;key2 = str;` and the note is never
 /// prefixed with a carriage return ("\r").
-/// @param wv       wave to add the wave note to
-/// @param key      string identifier
-/// @param var      variable to output
-/// @param str      string to output
-/// @param appendCR 0 (default) or 1, should a carriage return ("\r") be appended to the note
-Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
+/// @param wv            wave to add the wave note to
+/// @param key           string identifier
+/// @param var           variable to output
+/// @param str           string to output
+/// @param appendCR      0 (default) or 1, should a carriage return ("\r") be appended to the note
+/// @param replaceEntry  0 (default) or 1, should existing keys named `key` be replaced (does only work reliable
+///                      in wave note lists without carriage returns).
+Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR, replaceEntry])
 	Wave wv
 	string key
 	variable var
 	string str
-	variable appendCR
+	variable appendCR, replaceEntry
 
 	variable numOptParams
 	string formattedString
@@ -741,7 +743,12 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR])
 		sprintf formattedString, "%s = %s;", key, str
 	endif
 
-	appendCR = ParamIsDefault(appendCR) ? 0 : appendCR
+	appendCR     = ParamIsDefault(appendCR)     ? 0 : appendCR
+	replaceEntry = ParamIsDefault(replaceEntry) ? 0 : replaceEntry
+
+	if(replaceEntry)
+		Note/K wv, RemoveByKey(key + " ", note(wv), "=")
+	endif
 
 	if(appendCR)
 		Note/NOCR wv, formattedString + "\r"
