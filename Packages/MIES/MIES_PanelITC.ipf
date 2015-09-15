@@ -4865,8 +4865,8 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 
 			HSU_SetITCDACasFollower(leadPanel, panelToYoke)
 			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
-			DAP_BackgroundDA_EnableDisable(leadpanel, 1)
-			DAP_BackgroundDA_EnableDisable(panelToYoke, 1)
+			DAP_SwitchSingleMultiMode(leadpanel, 1)
+			DAP_SwitchSingleMultiMode(panelToYoke, 1)
 
 			DAP_UpdateITIAcrossSets(leadPanel)
 			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
@@ -5158,28 +5158,26 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
-			DAP_BackgroundDA_EnableDisable(cba.win, cba.checked)
+			DAP_SwitchSingleMultiMode(cba.win, cba.checked)
 			break
 	endswitch
 
 	return 0
 End
 
-/// @brief This function assigns the appropriate procedure to the TP and DataAcq
-/// buttons in the Data Acquisition tab of the DA_Ephys panel
+/// @brief Enable/Disable the related controls for single and multi device DAQ
 ///
-/// @param panelTitle device
-/// @param disableOrEnable disable(0) or enable(1) the multi device support
-Function DAP_BackgroundDA_EnableDisable(panelTitle, disableOrEnable)
+/// @param panelTitle     device
+/// @param useMultiDevice disable(0) or enable(1) the multi device support
+static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 	string panelTitle
-	variable disableOrEnable
+	variable useMultiDevice
 
-	SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", disableOrEnable)
-	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", disableOrEnable)
-	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", disableOrEnable)
-	SetCheckBoxState(panelTitle, "check_Settings_MD", disableOrEnable)
+	SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", useMultiDevice)
+	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", useMultiDevice)
+	SetCheckBoxState(panelTitle, "check_Settings_MD", useMultiDevice)
 
-	if(disableOrEnable)
+	if(useMultiDevice)
 		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 	else
 		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
