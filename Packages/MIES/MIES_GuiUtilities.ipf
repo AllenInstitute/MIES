@@ -738,6 +738,8 @@ Function SetGuiControlValue(win, control, value)
 		SetCheckBoxState(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
 		SetSetVariableString(win, control, value)
+	elseif(controlType == CONTROL_TYPE_POPUPMENU)
+		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SLIDER)
 		Slider $control, value = str2num(value)		
 	else
@@ -765,6 +767,8 @@ Function/S GetGuiControlValue(win, control)
 		if (cmpstr(value, "NaN") == 0)
 			value = GetSetVariableString(win, control)
 		endif
+	elseif(controlType == CONTROL_TYPE_POPUPMENU)
+		value = num2str(GetPopupMenuIndex(win, control))
 	else
 		value = ""
 	endif
