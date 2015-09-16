@@ -2946,6 +2946,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
+	DAP_SwitchSingleMultiMode(panelTitle, 0)
+
 	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 0
 	CheckBox check_Settings_Override_Set_ITI WIN = $panelTitle, value = 0
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
