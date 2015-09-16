@@ -15,9 +15,8 @@
 #include "FixScrolling"
 
 // our includes
-#include "MIES_AnalysisMaster"
-#include "MIES_Menu"
 #include "MIES_AmplifierInteraction"
+#include "MIES_AnalysisMaster"
 #include "MIES_BackgroundMD"
 #include "MIES_BackgroundTimerMD"
 #include "MIES_Constants"
@@ -37,6 +36,7 @@
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
 #include "MIES_Manipulator"
+#include "MIES_Menu"
 #include "MIES_MiesUtilities"
 #include "MIES_Oscilloscope"
 #include "MIES_PanelITC"
@@ -45,8 +45,8 @@
 #include "MIES_RepeatedAcquisition"
 #include "MIES_SamplingInterval"
 #include "MIES_Structures"
-#include "MIES_TestPulse"
 #include "MIES_TPBackgroundMD"
+#include "MIES_TestPulse"
 #include "MIES_Utilities"
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel" menus=0
