@@ -90,9 +90,6 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	variable qcResult
 	variable adChannel
 	
-	// structure needed for communicating with the start acquisition button on the DA_Ephys panel
-	STRUCT WMButtonAction ba
-	
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
@@ -146,16 +143,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// See if we pass the baseline QC
 		if (abs(baselineAverage) < 100.0)
-			// and now run the EXTPINBATH wave so that things are saved into the data record
-			// now start the sweep process
-			print "pushing the start button..."
-			// now start the sweep process
-			// setting the ba structure
-			ba.eventCode = 2
-			ba.ctrlName = "DataAcquireButton"
-			ba.win = currentPanel
-			
-			DAP_ButtonProc_AcquireData(ba)
+			ITC_StartDAQSingleDevice(currentPanel)
 			qcResult = baselineAverage
 		endif
 	endfor
@@ -208,9 +196,6 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
 	
-		// structure needed for communicating with the start acquisition button on the DA_Ephys panel
-		STRUCT WMButtonAction ba
-		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
 		
@@ -289,24 +274,16 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		
 		// put the threshold value in the right place
 		actionScaleSettingsWave[headstage][%apThreshold] = threshold
-		
+
 		// make sure the analysisResult is set to 0
 		analysisSettingsWave[headstage][%PSAResult] = "0"
-		
+
 		// put the init Scale factor where it needs to go
 		SetSetVariable(currentPanel, scaleWidgetName, initScaleFactor)
-		
-		// now start the sweep process
-		print "pushing the start button..."
-		// now start the sweep process
-		// setting the ba structure
-		ba.eventCode = 2
-		ba.ctrlName = "DataAcquireButton"
-		ba.win = currentPanel
-		
-		DAP_ButtonProc_AcquireData(ba)
+
+		ITC_StartDAQSingleDevice(currentPanel)
 	endfor
-	
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 1)
@@ -355,9 +332,6 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 	for(n = 0; n<noLockedDevs; n+= 1)
 		string currentPanel = StringFromList(n, lockedDevList)
 	
-		// structure needed for communicating with the start acquisition button on the DA_Ephys panel
-		STRUCT WMButtonAction ba
-		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
 		
@@ -436,16 +410,8 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		
 		// make sure the analysisResult is set to 0
 		analysisSettingsWave[headstage][%PSAResult] = "0"
-		
-		// now start the sweep process
-		print "pushing the start button..."
-		// now start the sweep process
-		// setting the ba structure
-		ba.eventCode = 2
-		ba.ctrlName = "DataAcquireButton"
-		ba.win = currentPanel
-		
-		DAP_ButtonProc_AcquireData(ba)
+
+		ITC_StartDAQSingleDevice(currentPanel)
 	endfor
 	
 	// determine if the cmdID was provided
@@ -482,9 +448,6 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
 	
-		// structure needed for communicating with the start acquisition button on the DA_Ephys panel
-		STRUCT WMButtonAction ba
-		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
 		
@@ -513,14 +476,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		
 		// put the scale in the right place 
 		SetSetVariable(currentPanel, scaleWidgetName, scaleFactor)
-		
-		// now start the sweep process
-		// setting the ba structure
-		ba.eventCode = 2
-		ba.ctrlName = "DataAcquireButton"
-		ba.win = currentPanel
-		
-		DAP_ButtonProc_AcquireData(ba)
+		ITC_StartDAQSingleDevice(currentPanel)
 	endfor
 	
 	// determine if the cmdID was provided
@@ -620,20 +576,11 @@ Function TI_runStopStart([cmdID])
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
 
-		// structure needed for communicating with the start acquisition button on the DA_Ephys panel
-		STRUCT WMButtonAction ba
-		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
-		
-		// setting the ba structure
-		ba.eventCode = 2
-		ba.ctrlName = "DataAcquireButton"
-		ba.win = currentPanel
-		
-		DAP_ButtonProc_AcquireData(ba)
+		ITC_StartDAQSingleDevice(currentPanel)
 	endfor
-	
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 1)

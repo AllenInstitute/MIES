@@ -239,9 +239,6 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	PauseUpdate
-	SetDataFolder root:
-
 	DisableControl(panelTitle, "StartTestPulseButton")
 	DAP_StopOngoingDataAcquisition(panelTitle)
 
@@ -270,8 +267,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	variable headstage
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
-
-	SetDataFolder root:
 
 	DAP_StopOngoingDataAcqMD(panelTitle)
 	DisableControl(panelTitle, "StartTestPulseButton")

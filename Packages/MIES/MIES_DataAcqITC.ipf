@@ -624,3 +624,74 @@ Function ITC_ZeroITCOnActiveChan(panelTitle)
 		endif
 	endfor
 End
+
+/// @brief Start data acquisition using single device mode
+///
+/// This is the high level function usable for all external users.
+Function ITC_StartDAQSingleDevice(panelTitle)
+	string panelTitle
+
+	AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
+	if(!DataAcqState) // data aquisition is stopped
+
+		if(IsBackgroundTaskRunning("testpulse"))
+			ITC_StopTestPulseSingleDevice(panelTitle)
+		endif
+
+		DAP_OneTimeCallBeforeDAQ(panelTitle)
+
+		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		Wave/SDFR=GetDevicePath(panelTitle) ITCDataWave
+		SCOPE_CreateGraph(ITCDataWave, panelTitle)
+		if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+			ITC_DataAcq(panelTitle)
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+				RA_Start(panelTitle)
+			else
+				DAP_OneTimeCallAfterDAQ(panelTitle)
+			endif
+		else
+			ITC_BkrdDataAcq(panelTitle)
+		endif
+	else // data aquistion is ongoing
+		DataAcqState = 0
+		DAP_StopOngoingDataAcquisition(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
+	endif
+End
+
+/// @brief Start data acquisition using multi device mode
+///
+/// This is the high level function usable for all external users.
+Function ITC_StartDAQMultiDevice(panelTitle)
+	string panelTitle
+
+	variable numEntries, i
+
+	AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
+
+	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
+	if(!DataAcqState)
+		 // stops test pulse if it is running
+		if(IsBackgroundTaskRunning("TestPulseMD"))
+			WAVE/T/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceTextList
+			numEntries = DimSize(ActiveDeviceTextList, ROWS)
+			for(i = 0; i < numEntries; i += 1)
+				if(!cmpstr(ActiveDeviceTextList[i], panelTitle))
+					 ITC_StopTPMD(panelTitle)
+				endif
+			endfor
+		endif
+
+		DAP_OneTimeCallBeforeDAQ(panelTitle)
+		DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
+	else // data aquistion is ongoing, stop data acq
+		DAM_StopDataAcq(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
+		DAP_OneTimeCallAfterDAQ(panelTitle)
+	endif
+End
