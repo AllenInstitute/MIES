@@ -862,3 +862,25 @@ Function AutoscaleVertAxisVisXRange(graph)
 		endif
 	endfor
 End
+
+/// @brief Return the type of the variable of the SetVariable control
+///
+/// @return one of @ref GetInternalSetVariableTypeReturnTypes
+Function GetInternalSetVariableType(recMacro)
+	string recMacro
+
+	ASSERT(strsearch(recMacro, "SetVariable", 0) != -1, "recreation macro is not from a SetVariable")
+
+	variable builtinString = (strsearch(recMacro, "_STR:\"", 0) != -1)
+	variable builtinNumber = (strsearch(recMacro, "_NUM:", 0) != -1)
+
+	ASSERT(builtinString + builtinNumber != 2, "SetVariable can not hold both numeric and string contents")
+
+	if(builtinString)
+		return SET_VARIABLE_BUILTIN_STR
+	elseif(builtinNumber)
+		return SET_VARIABLE_BUILTIN_NUM
+	endif
+
+	return SET_VARIABLE_GLOBAL
+End

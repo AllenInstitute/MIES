@@ -307,3 +307,11 @@ Constant MINIMUM_ITCDATAWAVE_EXPONENT = 17
 
 /// Minimum value for the baseline fraction of the Testpulse in percent
 Constant MINIMUM_TP_BASELINE_PERCENTAGE = 25
+
+/// @name Return types of @ref GetInternalSetVariableType
+/// @anchor GetInternalSetVariableTypeReturnTypes
+/// @{
+Constant SET_VARIABLE_BUILTIN_NUM = 0x01
+Constant SET_VARIABLE_BUILTIN_STR = 0x02
+Constant SET_VARIABLE_GLOBAL      = 0x04
+/// @}
