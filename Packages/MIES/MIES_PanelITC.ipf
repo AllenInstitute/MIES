@@ -3617,7 +3617,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 
 		panelTitle = cba.win
 		// makes sure user data for controls is up to date
-		WBP_UpdateITCPanelPopUps(panelTitle)
+		WBP_UpdateITCPanelPopUps(panelTitle=panelTitle)
 		DAP_UpdateSweepSetVariables(panelTitle)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		break

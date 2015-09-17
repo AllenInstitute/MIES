@@ -965,14 +965,14 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL, 0, panelTitle)
 					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL, 1, panelTitle)
 					WBP_DeleteSet()
-					WBP_UpdateITCPanelPopUps(panelTitle)
 					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL, 0, panelTitle)
 					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL, 1, panelTitle)
-					WBP_UpdateITCPanelPopUps(panelTitle)
 				endfor
 			else
 				WBP_DeleteSet()
 			endif
+
+			WBP_UpdateITCPanelPopUps()
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
@@ -1054,15 +1054,7 @@ Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
 
 	RemoveTracesFromGraph(WaveBuilderGraph)
 	WBP_SaveSetParam()
-
-	SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-	if(SVAR_Exists(ITCPanelTitleList))
-		numPanels = ItemsInList(ITCPanelTitleList)
-		for(i = 0; i < numPanels; i += 1)
-			panelTitle = StringFromList(i, ITCPanelTitleList)
-			WBP_UpdateITCPanelPopUps(panelTitle)
-		endfor
-	endif
+	WBP_UpdateITCPanelPopUps()
 
 	SetSetVariableString(panel, "setvar_WaveBuilder_baseName", "InsertBaseName")
 	ControlUpdate/W=$panel popup_WaveBuilder_SetList
@@ -1628,27 +1620,45 @@ Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
 	ControlUpdate/A/W=$panel
 End
 
-/// @brief Used after a new set has been saved to the DA or TTL folder.
+/// @brief Update the popup menus and its `MenuExp` user data after stim set changes
 ///
-/// It repopulates the popup menus in the ITC control Panel to reflect the new waves
-Function WBP_UpdateITCPanelPopUps(panelTitle)
+/// @param panelTitle [optional, defaults to all locked devices] device
+Function WBP_UpdateITCPanelPopUps([panelTitle])
 	string panelTitle
 
-	variable i
-	string ctrlWave, ctrlIndexEnd, list
+	variable i, numPanels
+	string ctrlWave, ctrlIndexEnd, DAlist, TTLlist, listOfPanels
 
-	for(i=0; i < NUM_DA_TTL_CHANNELS; i+=1)
-		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		list = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
-		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
-		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
+	if(ParamIsDefault(panelTitle))
+		SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
+		if(!SVAR_Exists(ITCPanelTitleList))
+			return NaN
+		endif
+		listOfPanels = ITCPanelTitleList
+	else
+		listOfPanels = panelTitle
+	endif
 
-		ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		list = ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
-		SetControlUserData(panelTitle, ctrlWave, "MenuExp", list)
-		SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", list)
+	DEBUGPRINT("Updating", str=listOfPanels)
+
+	DAlist  = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
+	TTLlist = ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+
+	numPanels = ItemsInList(listOfPanels)
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, listOfPanels)
+
+		for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+			ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
+			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
+
+			ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
+			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
+		endfor
 	endfor
 End
 
