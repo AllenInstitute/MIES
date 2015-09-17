@@ -3822,7 +3822,7 @@ End
 Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
-	string ctrl, stimSetCtrl
+	string ctrl, stimSetCtrl, list
 	string panelTitle, stimSet
 
 	switch(pa.eventCode)
@@ -3840,6 +3840,13 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			// prevent the user from selecting the testpulse
 			if(StringMatch(stimSetCtrl, "Wave_DA_*") && IsTestPulseSet(stimSet))
 				SetPopupMenuIndex(panelTitle, stimSetCtrl, 2)
+			endif
+
+			// check if this is a third party stim set which
+			// is not yet reflected in the "MenuExp" user data
+			list = GetUserData(panelTitle, stimSetCtrl, "MenuExp")
+			if(FindListItem(stimSet, list) == -1)
+				WBP_UpdateITCPanelPopUps()
 			endif
 
 			DAP_UpdateITIAcrossSets(panelTitle)
