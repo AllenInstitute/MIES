@@ -3822,32 +3822,24 @@ End
 Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
-	variable popNum
-	string ctrlName
-	string ListOfWavesInFolder
-	string folderPath
-	string folder, checkBoxName
-	string panelTitle
+	string ctrl, stimSetCtrl
+	string panelTitle, stimSet
 
 	switch(pa.eventCode)
 		case 2:
-			ctrlName = pa.ctrlName
-			panelTitle = pa.win
-			popnum     = pa.popNum
+			stimSetCtrl = pa.ctrlName
+			panelTitle  = pa.win
+			stimSet     = pa.popStr
 
-			if(StringMatch(ctrlName, "*indexEnd*") != 1)
-				if(popnum == 1) //if the user selects "none" the channel is automatically turned off
-					CheckBoxName = ctrlName
-					CheckBoxName[0,3] = "check"
-					Checkbox $Checkboxname win = $panelTitle, value = 0
-				endif
+			if(!StringMatch(stimSetCtrl, "*indexEnd*") && !cmpstr(stimSet, NONE))
+				ctrl = stimSetCtrl
+				ctrl[0,3] = "check"
+				SetCheckBoxState(paneLTitle, ctrl, CHECKBOX_UNSELECTED)
 			endif
 
-			if(StringMatch(ctrlname, "Wave_DA_*"))
-				if(popnum == 2)
-					// prevents the user from selecting the testpulse
-					PopupMenu $ctrlname win = $panelTitle, mode = 3
-				endif
+			// prevent the user from selecting the testpulse
+			if(StringMatch(stimSetCtrl, "Wave_DA_*") && IsTestPulseSet(stimSet))
+				SetPopupMenuIndex(panelTitle, stimSetCtrl, 2)
 			endif
 
 			DAP_UpdateITIAcrossSets(panelTitle)
