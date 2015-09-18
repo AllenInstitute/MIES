@@ -1945,3 +1945,8 @@ Function FuncRefIsAssigned(funcInfo)
 
 	return NumberByKey("ISPROTO", funcInfo) == 0
 End
+
+/// @brief Return the seconds since Igor Pro epoch (1/1/1904) in UTC time zone
+Function DateTimeInUTC()
+	return DateTime - date2secs(-1, -1, -1)
+End
