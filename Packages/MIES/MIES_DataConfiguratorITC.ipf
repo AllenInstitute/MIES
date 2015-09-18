@@ -37,6 +37,8 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
+	DC_UpdateClampModeString(panelTitle)
+
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 		numADCs = DimSize(GetADCListFromConfig(ITCChanConfigWave), ROWS)
@@ -46,9 +48,20 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
-	endif
 
-	DC_UpdateClampModeString(panelTitle)
+		WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+		SCOPE_CreateGraph(TestPulseITC, panelTitle)
+	else
+		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		SCOPE_CreateGraph(ITCDataWave, panelTitle)
+
+		NVAR count = $GetCount(panelTitle)
+		// only call before the very first acquisition and
+		// not each time during repeated acquisition
+		if(!IsFinite(count))
+			DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
+		endif
+	endif
 End
 
 /// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
@@ -409,7 +422,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
-	variable multiplier
+	variable multiplier, j
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -478,6 +491,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		endif
 
 		sweepDataTxTLNB[0][0][HeadStage] = setName
+
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			sweepDataTxTLNB[0][5 + j][headStage] = ExtractAnalysisFuncFromStimSet(stimSet, j)
+		endfor
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		sweepDataTxTLNB[0][1][HeadStage] = GetSetVariableString(panelTitle, ctrl)

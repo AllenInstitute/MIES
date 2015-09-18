@@ -173,6 +173,8 @@ Function ITC_FIFOMonitor(s)
 	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
 	ITCDataWave[0][0] += 0 //forces on screen update
 
+	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+
 	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
 		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()
@@ -642,10 +644,8 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 		endif
 
 		DAP_OneTimeCallBeforeDAQ(panelTitle)
-
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-		Wave/SDFR=GetDevicePath(panelTitle) ITCDataWave
-		SCOPE_CreateGraph(ITCDataWave, panelTitle)
+
 		if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 			ITC_DataAcq(panelTitle)
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))

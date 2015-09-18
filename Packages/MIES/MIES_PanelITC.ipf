@@ -650,6 +650,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_UseDoublePrec,value= 0
+	CheckBox Check_Settings_SkipAnalysFuncs,pos={243,268},size={144,14},title="Skip analysis function calls"
+	CheckBox Check_Settings_SkipAnalysFuncs,help={"Should the analysis functions defined in the stim sets not be called? Mostly useful for testing/debugging."}
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo)= A"!!,HT!!#?-!!#?C!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_SkipAnalysFuncs,value= 0
 	CheckBox Check_AsyncAD_00,pos={172,46},size={42,14},disable=1,title="AD 0"
 	CheckBox Check_AsyncAD_00,help={"hello!"},userdata(tabnum)=  "4"
 	CheckBox Check_AsyncAD_00,userdata(tabcontrol)=  "ADC"
@@ -2691,6 +2699,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
 	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
+	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 0
 	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode = 1
 
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
@@ -3323,14 +3332,14 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	DAP_UpdateYokeControls(tca.win)
+	string panelTitle = tca.win
 
-	// Maybe the user changed the stimulus ITI behind our back
-	// here we try to catch that case
+	DAP_UpdateYokeControls(panelTitle)
+
 	if(tca.tab == DATA_ACQU_TAB_NUM)
-		DAP_UpdateITIAcrossSets(tca.win)
+		DAP_UpdateITIAcrossSets(panelTitle)
+		DAP_UpdateSweepSetVariables(panelTitle)
 	endif
-
 End
 
 /// @brief Gets run by ACLight's tab control function every time a tab is selected,
@@ -3538,6 +3547,10 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	string panelTitle
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
+	DAP_UpdateSweepSetVariables(panelTitle)
+
+	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 0
@@ -3610,24 +3623,14 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	string panelTitle
-	variable setRepeats
+
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
 
 		panelTitle = cba.win
 		// makes sure user data for controls is up to date
-		WBP_UpdateITCPanelPopUps(panelTitle)
-
-		setRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
-		// updates sweeps in cycle value - when indexing is off, only the start set is counted,
-		// when indexing is on, all sets between start and end set are counted
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
-			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * setRepeats)
-		else
-			ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle, 0) * setRepeats)
-		endif
-		ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle, 1)
-
+		WBP_UpdateITCPanelPopUps(panelTitle=panelTitle)
+		DAP_UpdateSweepSetVariables(panelTitle)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		break
 	endswitch
@@ -3831,46 +3834,35 @@ End
 Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
-	variable popNum
-	string ctrlName
-	string ListOfWavesInFolder
-	string folderPath
-	string folder, checkBoxName
-	string panelTitle
+	string ctrl, stimSetCtrl, list
+	string panelTitle, stimSet
 
 	switch(pa.eventCode)
 		case 2:
-			ctrlName = pa.ctrlName
-			panelTitle = pa.win
-			popnum     = pa.popNum
+			stimSetCtrl = pa.ctrlName
+			panelTitle  = pa.win
+			stimSet     = pa.popStr
 
-			if(StringMatch(ctrlName, "*indexEnd*") != 1)
-				if(popnum == 1) //if the user selects "none" the channel is automatically turned off
-					CheckBoxName = ctrlName
-					CheckBoxName[0,3] = "check"
-					Checkbox $Checkboxname win = $panelTitle, value = 0
-				endif
+			if(!StringMatch(stimSetCtrl, "*indexEnd*") && !cmpstr(stimSet, NONE))
+				ctrl = stimSetCtrl
+				ctrl[0,3] = "check"
+				SetCheckBoxState(paneLTitle, ctrl, CHECKBOX_UNSELECTED)
 			endif
 
-			if(StringMatch(ctrlname, "Wave_DA_*"))
-				if(popnum == 2)
-					// prevents the user from selecting the testpulse
-					PopupMenu $ctrlname win = $panelTitle, mode = 3
-				endif
+			// prevent the user from selecting the testpulse
+			if(StringMatch(stimSetCtrl, "Wave_DA_*") && IsTestPulseSet(stimSet))
+				SetPopupMenuIndex(panelTitle, stimSetCtrl, 2)
+			endif
+
+			// check if this is a third party stim set which
+			// is not yet reflected in the "MenuExp" user data
+			list = GetUserData(panelTitle, stimSetCtrl, "MenuExp")
+			if(FindListItem(stimSet, list) == -1)
+				WBP_UpdateITCPanelPopUps()
 			endif
 
 			DAP_UpdateITIAcrossSets(panelTitle)
-
-			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 0)
-				ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-				ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-				ValDisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-			else
-				ControlInfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-				ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxSweepsLockedIndexing(panelTitle) * v_value)
-				ValDisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-			endif
+			DAP_UpdateSweepSetVariables(panelTitle)
 			break
 		endswitch
 	return 0
@@ -3960,29 +3952,40 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	return SI_CalculateMinSampInterval(panelTitle) * multiplier
 End
 
+Function DAP_UpdateSweepSetVariables(panelTitle)
+	string panelTitle
+
+	variable numSetRepeats
+
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
+		else
+			numSetRepeats *= IDX_MaxNoOfSweeps(panelTitle, 0)
+		endif
+	else
+		numSetRepeats = 1
+	endif
+
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", numSetRepeats)
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsInSet", numSetRepeats)
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", IDX_MaxNoOfSweeps(panelTitle, 1))
+End
+
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	string panelTitle
-	variable numSetRepeats
 
 	switch(sva.eventCode)
 		case 1:
 		case 2:
 		case 3:
 			panelTitle = sva.win
-			numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
-
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
-				numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
-			else
-				numSetRepeats *= IDX_MaxNoOfSweeps(panelTitle, 0)
-			endif
-
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsInSet", numSetRepeats)
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", IDX_MaxNoOfSweeps(panelTitle, 1))
+			DAP_UpdateSweepSetVariables(panelTitle)
 			DAP_SyncGuiFromLeaderToFollower(panelTitle)
-
 			break
 	endswitch
 
@@ -4350,6 +4353,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 			print "The testpulse duration must be greater than 0 ms"
 			return 1
 		endif
+
+		// unlock ITCDataWave, this happens if user functions error out and we don't catch it
+		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		if(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)))
+			printf "(%s) Removing leftover lock on ITCDataWave\r", panelTitle
+			SetWaveLock 0, ITCDataWave
+		endif
 	endfor
 
 	return 0
@@ -4360,9 +4370,9 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
 
-	string ctrl, dacWave, endWave, unit
+	string ctrl, dacWave, endWave, unit, func, info
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale, ctrlNo, clampMode
+	variable gain, scale, ctrlNo, clampMode, i
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -4466,6 +4476,36 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		if(!CmpStr(dacWave, NONE) || IsTestPulseSet(dacWave))
 			printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
 			return 1
+		endif
+
+		if(!GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+			WAVE stimSet = WB_CreateAndGetStimSet(dacWave)
+			for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
+				func = ExtractAnalysisFuncFromStimSet(stimSet, i)
+
+				if(isEmpty(func)) // none set
+					continue
+				endif
+
+				info = FunctionInfo(func)
+
+				if(isEmpty(info))
+					printf "(%s) Warning: The analysis function %s for stim set %s and event type \"%s\" could not be found\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+					continue
+				endif
+
+				FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f = $func
+				info = FuncRefInfo(f)
+
+				if(!FuncRefIsAssigned(info)) // not a valid analysis function
+					printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+					return 1
+				endif
+
+				if(i == MID_SWEEP_EVENT && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+					printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), dacWave
+				endif
+			endfor
 		endif
 
 		if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
@@ -4684,6 +4724,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
+	DAP_UpdateSweepSetVariables(panelTitle)
 	TP_RestartTestPulse(panelTitle, TPState)
 End
 
@@ -5287,6 +5328,7 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			DAP_UpdateSweepSetVariables(cba.win)
 			DAP_SyncGuiFromLeaderToFollower(cba.win)
 			break
 	endswitch

@@ -51,57 +51,51 @@ Function ITC_StartBckrdFIFOMonitorMD()
 	CtrlNamedBackground ITC_FIFOMonitorMD, period = 1, proc = ITC_FIFOMonitorMD
 	CtrlNamedBackground ITC_FIFOMonitorMD, start
 End
-
  
- Function ITC_FIFOMonitorMD(s) // MD = Multiple Devices 
+Function ITC_FIFOMonitorMD(s)
 	STRUCT WMBackgroundStruct &s
 
 	DFREF activeDevices = GetActiveITCDevicesFolder()
-	WAVE/SDFR=activeDevices ActiveDeviceList // column 0 = ITCDeviceIDGlobal; column 1 = ADChannelToMonitor; column 3 = StopCollectionPoint
+	WAVE/SDFR=activeDevices ActiveDeviceList
 	WAVE/SDFR=activeDevices/T ActiveDeviceTextList
 	WAVE/WAVE/SDFR=activeDevices ActiveDevWavePathWave
-	String cmd = ""
-	Variable NumberOfActiveDevices // = numpnts(ActiveDeviceTextList)
-	Variable DeviceIDGlobal
-	Variable i = 0
-	String panelTitle = ""
-	String WavePath = ""
-	String PathToITCFIFOAvailAllConfigWave
+	string cmd
+	variable NumberOfActiveDevices
+	variable DeviceIDGlobal
+	variable i
+	string panelTitle
+
 	do
-		Variable start = stopmstimer(-2)
-		NumberOfActiveDevices = dimsize(ActiveDeviceTextList, 0)
-		//print "Number of Active Devices = ",NumberOfActiveDevices
+		NumberOfActiveDevices = DimSize(ActiveDeviceTextList, ROWS)
 		panelTitle = ActiveDeviceTextList[i]
-		//print "panel Title = ", panelTitle
-		WAVE /Z ITCDataWave = ActiveDevWavePathWave[i][0]
-		WAVE /Z ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
-			//print "AD channel to monitor = ", ActiveDeviceList[i][1]
-			PathToITCFIFOAvailAllConfigWave = getwavesdatafolder(ITCFIFOAvailAllConfigWave,2) // because the ITC commands cannot be run directly from functions, wave references cannot be directly passed into ITC commands. 
-			
-			sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
-			ExecuteITCOperationAbortOnError(cmd)
-			sprintf cmd, "ITCFIFOAvailableALL/z=0, %s" PathToITCFIFOAvailAllConfigWave
-			//print cmd
-			ExecuteITCOperation(cmd)
-			//print "FIFO available = ", ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2]
-			if(ITCFIFOAvailAllConfigWave[(ActiveDeviceList[i][1])][2] >= (ActiveDeviceList[i][2]))	// ActiveDeviceList[i][1] = ADChannelToMonitor ; ActiveDeviceList[i][2] = StopCollectionPoint
-				print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
-				DeviceIDGlobal = ActiveDeviceList[i][0]
-				ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
-				ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-				if (dimsize(ActiveDeviceTextList, 0) == 0) 
-					print "no more active devices, stopping named background"
-					CtrlNamedBackground ITC_FIFOMonitorMD, stop
-				endif
-				ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
-				NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
+
+		WAVE ITCDataWave = ActiveDevWavePathWave[i][0]
+		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
+
+		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
+		ExecuteITCOperationAbortOnError(cmd)
+		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
+		ExecuteITCOperation(cmd)
+
+		ITCDataWave[0][0] += 0
+
+		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+
+		if(ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2] >= ActiveDeviceList[i][2])
+			print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
+			DeviceIDGlobal = ActiveDeviceList[i][0]
+			ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1)
+			ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
+			if (DimSize(ActiveDeviceTextList, ROWS) == 0)
+				print "no more active devices, stopping named background"
+				CtrlNamedBackground ITC_FIFOMonitorMD, stop
 			endif
+			ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
+			NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
+		endif
 		i += 1
-		itcdatawave[0][0] += 0
-		//print "background loop took (ms):", (stopmstimer(-2) - start) / 1000
-		// single loop with one device takes between 26 and 98 micro seconds (micro is the correct prefix)
 	while(i < NumberOfActiveDevices)
-	
+
 	return 0
 End
 

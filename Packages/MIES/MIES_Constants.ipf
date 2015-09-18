@@ -315,3 +315,19 @@ Constant SET_VARIABLE_BUILTIN_NUM = 0x01
 Constant SET_VARIABLE_BUILTIN_STR = 0x02
 Constant SET_VARIABLE_GLOBAL      = 0x04
 /// @}
+
+/// Event types for analysis functions
+/// @anchor EVENT_TYPE_ANALYSIS_FUNCTIONS
+/// @{
+Constant PRE_DAQ_EVENT    = 0
+Constant MID_SWEEP_EVENT  = 1
+Constant POST_SWEEP_EVENT = 2
+Constant POST_SET_EVENT   = 3
+Constant POST_DAQ_EVENT   = 4
+/// @}
+
+/// Number of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
+Constant TOTAL_NUM_EVENTS   = 5
+
+/// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
+StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ"

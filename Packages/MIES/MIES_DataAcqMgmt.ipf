@@ -19,11 +19,10 @@ Function DAM_FunctionStartDataAcq(panelTitle)
 	variable i
 	variable TriggerMode = 0
 	variable numberOfFollowerDevices = 0
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	string followerPanelTitle = ""
+
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-	SCOPE_CreateGraph(ITCDataWave, panelTitle)
-	
+
 	if(DAP_DeviceIsYokeable(panelTitle)) // starts data acquisition for ITC1600 devices
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
@@ -40,8 +39,6 @@ Function DAM_FunctionStartDataAcq(panelTitle)
 					do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
-						WAVE ITCDataWave = GetITCDataWave(followerPanelTitle)
-						SCOPE_CreateGraph(ITCDataWave, followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
 					i = 0

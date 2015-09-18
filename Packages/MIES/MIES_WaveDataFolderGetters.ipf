@@ -788,16 +788,16 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 5, -1) wv
+		Redimension/N=(-1, 10, -1) wv
 	else
-		Make/T/N=(1, 5, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
+		Make/T/N=(1, 10, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
 	endif
 
 	wv = ""
@@ -820,6 +820,11 @@ End
 /// - 2: AD unit
 /// - 3: TTL rack zero stim sets
 /// - 4: TTL rack one stim sets
+/// - 5: Analysis function pre daq
+/// - 6: Analysis function mid sweep
+/// - 7: Analysis function post sweep
+/// - 8: Analysis function post set
+/// - 9: Analysis function post daq
 ///
 /// Layers:
 /// - Headstage
@@ -827,25 +832,30 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 5, -1) wv
+		Redimension/N=(-1, 10, -1) wv
 	else
-		Make/T/N=(1, 5, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
+		Make/T/N=(1, 10, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
 	endif
 
 	wv = ""
 
-	wv[0][0] =  STIM_WAVE_NAME_KEY
-	wv[0][1] =  "DA unit"
-	wv[0][2] =  "AD unit"
-	wv[0][3] =  "TTL rack zero stim sets"
-	wv[0][4] =  "TTL rack zero stim sets"
+	wv[0][0] = STIM_WAVE_NAME_KEY
+	wv[0][1] = "DA unit"
+	wv[0][2] = "AD unit"
+	wv[0][3] = "TTL rack zero stim sets"
+	wv[0][4] = "TTL rack one stim sets"
+	wv[0][5] = "Pre DAQ analysis function"
+	wv[0][6] = "Mid sweep analysis function"
+	wv[0][7] = "Post sweep analysis function"
+	wv[0][8] = "Post set analysis function"
+	wv[0][9] = "Post DAQ analysis function"
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1529,13 +1539,20 @@ End
 ///
 /// Rows:
 /// - 0: name of the custom wave loaded
-/// - 1-50: unused
+/// - 1: Analysis function, pre daq
+/// - 2: Analysis function, mid sweep
+/// - 3: Analysis function, post sweep
+/// - 4: Analysis function, post set
+/// - 5: Analysis function, post daq
+/// - 6-50: unused
+///
 ///
 /// Columns:
-/// - Segment/Epoch
+/// - Segment/Epoch, the very last index is reserved for
+///   textual settings for the complete set
 Function/WAVE GetWaveBuilderWaveTextParam()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	dfref dfr = GetWaveBuilderDataPath()
 
 	WAVE/T/Z/SDFR=dfr wv = WPT
