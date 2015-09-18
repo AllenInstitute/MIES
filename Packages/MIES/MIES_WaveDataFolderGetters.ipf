@@ -564,10 +564,10 @@ End
 
 /// @brief Returns a wave reference to the txtDocWave
 ///
-/// txtDocWave is used to save settings for each data sweep
+/// Labnotebook with text settings
 ///
 /// Rows:
-/// - Only one
+/// - Filled at runtime
 ///
 /// Columns:
 /// - Filled at runtime
@@ -591,19 +591,20 @@ Function/Wave GetTextDocWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the textDocKeyWave
+/// @brief Return a wave reference to the textDocKeyWave
 ///
 /// textDocKeyWave is used to index save settings for each data sweep
 /// and create waveNotes for tagging data sweeps
 ///
 /// Rows:
 /// - 0: Parameter Name
-/// - 0: Parameter Unit
-/// - 0: Parameter Tolerance
+/// - 1: Parameter Unit
+/// - 2: Parameter Tolerance
 ///
 /// Columns:
 /// - 0: Sweep Number
-/// - 1: Time Stamp
+/// - 1: Time Stamp in local time zone
+/// - 2: Time Stamp in UTC
 /// - other columns are filled at runtime
 Function/Wave GetTextDocKeyWave(panelTitle)
 	string panelTitle

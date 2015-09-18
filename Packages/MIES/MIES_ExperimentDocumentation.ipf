@@ -3,24 +3,14 @@
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
 
-/// @brief Add notation of settings to an experiment DataWave.  This function
-/// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
-///
-/// For the KeyWave, the wave dimensions are:
-/// - row 0 - Parameter name
-/// - row 1 - Unit
-/// - row 2 - Text note
-///
-/// For the settings history, the wave dimensions are:
-/// - Col 0 - Sweep Number
-/// - Col 1 - Time Stamp
+/// @brief Add numerical entries to the labnotebook
 ///
 /// The history wave will use layers to report the different headstages.
 ///
-/// @param incomingSettingsWave -- the settingsWave sent by the each reporting subsystem
-/// @param incomingKeyWave -- the key wave that is used to reference the incoming settings wave
-/// @param sweepNo -- the sweep number
-/// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
+/// @param incomingSettingsWave settingsWave sent by the each reporting subsystem
+/// @param incomingKeyWave      key wave that is used to reference the incoming settings wave
+/// @param sweepNo              sweep number
+/// @param panelTitle           device
 Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, panelTitle)
 	wave incomingSettingsWave
 	wave/T incomingKeyWave
@@ -233,7 +223,8 @@ End
 
 /// @brief Returns the column indizes of each parameter in incomingKey into the `key` wave
 ///
-/// Redimensions `key` and prefills with incomingKey data if necessary.
+/// Redimensions `key` and `values` waves.
+/// Prefills `key` with `incomingKey` data if necessary.
 ///
 /// Ensures that data and key have a matching column size at return.
 /// @param[in]  incomingKey text wave with the keys to add
@@ -303,24 +294,14 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 	return indizes
 End
 
-/// @brief Function used to add text notation to an experiment DataWave.  This function creates a keyWave to reference
-/// the text wave, which spells out each parameter being saved, and a textWave, which stores text notation.
-///
-/// For the KeyWave, the wave dimensions are:
-/// - row 0 - Parameter name
-/// - row 1 - Units
-/// - row 2 - Text note Placeholder
-///
-/// For the text documentation wave, the wave dimensions are:
-/// - Col 0 - Sweep Number
-/// - Col 1 - Time Stamp
+/// @brief Add textual entries to the labnotebook
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
-/// @param incomingTextDocWave -- the incoming Text Documentation Wave sent by the each reporting subsystem
-/// @param incomingTextDocKeyWave -- the incoming Text Documentation key wave that is used to reference the incoming settings wave
-/// @param sweepNo -- the sweep number
-/// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
+/// @param incomingTextDocWave    incoming Text Documentation Wave sent by the each reporting subsystem
+/// @param incomingTextDocKeyWave incoming Text Documentation key wave that is used to reference the incoming settings wave
+/// @param sweepNo                sweep number
+/// @param panelTitle             device
 Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo, panelTitle)
 	wave/T incomingTextDocWave
 	wave/T incomingTextDocKeyWave
