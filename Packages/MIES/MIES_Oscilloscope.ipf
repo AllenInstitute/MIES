@@ -106,11 +106,9 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	SCOPE_OpenScopeWindow(panelTitle)
 	graph = SCOPE_GetGraph(panelTitle)
 
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	DFREF dataDFR      = GetDevicePath(panelTitle)
-	WAVE/SDFR=dataDFR ITCChanConfigWave
-	WAVE/SDFR=testPulseDFR SSResistance
-	WAVE/SDFR=testPulseDFR InstResistance
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE SSResistance   = GetSSResistanceWave(panelTitle)
+	WAVE InstResistance = GetInstResistanceWave(panelTitle)
 	Wave TPStorage = GetTPStorage(panelTitle)
 
 	dataName = NameOfWave(plotData)

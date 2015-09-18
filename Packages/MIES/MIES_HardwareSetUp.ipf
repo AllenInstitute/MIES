@@ -41,34 +41,6 @@ Function HSU_ButtonProc_LockDev(s) : ButtonControl
 	HSU_LockDevice(s.win)
 End
 
-/// This function is a relict of the pre-wave-getter times
-/// Once we converted all wave access to getter functions this
-/// function can be removed.
-static Function HSU_MakeWavesAndFolderForLocked(panelTitle)
-	string panelTitle
-
-	GetDevSpecLabNBSettKeyFolder(panelTitle)
-	GetDevSpecLabNBSettHistFolder(panelTitle)
-	GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	GetDevSpecLabNBTextDocFolder(panelTitle)
-	GetActiveITCDevicesTimerFolder()
-	GetActITCDevicesTestPulseFolder()
-
-	createDFWithAllParents("root:MIES:Amplifiers:Settings")
-	createDFWithAllParents("root:ImageHardware:Arduino")
-	createDFWithAllParents("root:MIES:Camera")
-
-	GetITCDataWave(panelTitle)
-	GetITCChanConfigWave(panelTitle)
-	GetITCFIFOAvailAllConfigWave(panelTitle)
-	GetITCFIFOPositionAllConfigWave(panelTitle)
-	GetITCResultsWave(panelTitle)
-
-	GetTestPulseITCWave(panelTitle)
-	GetInstResistanceWave(panelTitle)
-	GetSSResistanceWave(panelTitle)
-End
-
 Function HSU_LockDevice(panelTitle)
 	string panelTitle
 
@@ -91,7 +63,6 @@ Function HSU_LockDevice(panelTitle)
 	locked = 1
 	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
-	HSU_MakeWavesAndFolderForLocked(panelTitleLocked)
 	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
 	DAP_FindConnectedAmps(panelTitleLocked)
 	HSU_UpdateListOfITCPanels()
@@ -270,11 +241,10 @@ Function HSU_IsDeviceTypeConnected(panelTitle)
 	killwaves localwave
 End
 
-// below functions are used to create a list of the ITC panels. This list is will be used by functions that need to update items that are common to different panels.
-// for example: DAC popup lists, TTL popup lists
-
+/// @brief Update the list of locked devices
 Function HSU_UpdateListOfITCPanels()
-	string/G root:MIES:ITCDevices:ITCPanelTitleList = winlist("ITC*", ";", "WIN:64")
+	DFREF dfr = GetITCDevicesFolder()
+	string/G dfr:ITCPanelTitleList = WinList("ITC*", ";", "WIN:64")
 End
 
 Function HSU_OpenITCDevice(panelTitle)
