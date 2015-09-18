@@ -618,15 +618,15 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
 	if(DAorTTL == 0)
-	ChannelTypeName = "DA"
-	ListOffset = 3
-	DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
+		ChannelTypeName = "DA"
+		ListOffset = 3
+		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL == 1)
-	ChannelTypeName = "TTL"
-	ListOffset = 2
-	DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
+		ChannelTypeName = "TTL"
+		ListOffset = 2
+		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)// Total List steps is all the columns in all the waves defined by the start index and end index waves
