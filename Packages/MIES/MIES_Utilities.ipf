@@ -1405,9 +1405,11 @@ Function/S GetExperimentName()
 	return IgorInfo(1)
 End
 
-/// @brief Return a formatted timestamp of the form "YY_MM_DD_HHMMSS"
+/// @brief Return a formatted timestamp of the form `YY_MM_DD_HHMMSS`
 ///
-/// @param humanReadable [optional, default to false]                                Returns a format viable for display in a GUI
+/// Uses the local time zone and *not* UTC.
+///
+/// @param humanReadable [optional, default to false]                                Return a format viable for display in a GUI
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
 Function/S GetTimeStamp([secondsSinceIgorEpoch, humanReadable])
 	variable secondsSinceIgorEpoch, humanReadable
