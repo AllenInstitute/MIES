@@ -1046,18 +1046,20 @@ Function TabTJHook(tca)
 	return 0
 End
 
-Function WBP_ButtonProc_SaveSet(ctrlName) : ButtonControl
-	String ctrlName
+Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	variable i, numPanels
-	string panelTitle
+	switch(ba.eventCode)
+		case 2: // mouse up
 
-	RemoveTracesFromGraph(WaveBuilderGraph)
-	WBP_SaveSetParam()
-	WBP_UpdateITCPanelPopUps()
+			RemoveTracesFromGraph(WaveBuilderGraph)
+			WBP_SaveSetParam()
+			WBP_UpdateITCPanelPopUps()
 
-	SetSetVariableString(panel, "setvar_WaveBuilder_baseName", "InsertBaseName")
-	ControlUpdate/W=$panel popup_WaveBuilder_SetList
+			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", "InsertBaseName")
+			ControlUpdate/W=$panel popup_WaveBuilder_SetList
+			break
+	endswitch
 End
 
 /// @brief Returns the row index into the parameter wave of the parameter represented by the named control
