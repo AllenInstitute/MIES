@@ -260,23 +260,13 @@ End
 static Function/WAVE DB_GetSettingsHistory(panelTitle)
 	string panelTitle
 
-	string device
-
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-	WAVE/SDFR=GetDevSpecLabNBSettHistFolder(device) settingsHistory
-
-	return settingsHistory
+	return GetNumDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 static Function/WAVE DB_GetSettingsHistoryText(panelTitle)
 	string panelTitle
 
-	string device
-
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-	WAVE/SDFR=GetDevSpecLabNBTextDocFolder(device) txtDocWave
-
-	return txtDocWave
+	return GetTextDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 Function DB_UpdateToLastSweep(panel)

@@ -143,7 +143,7 @@ Constant LISTBOX_TREEVIEW_EXPANDED = 0x10
 Constant LISTBOX_TREEVIEW          = 0x40
 /// @}
 
-Constant INITIAL_KEY_WAVE_COL_COUNT = 2
+Constant INITIAL_KEY_WAVE_COL_COUNT = 3
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
