@@ -875,32 +875,33 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/SDFR=dfr wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 10) wv
+		Redimension/N=(-1, -1, 11) wv
 	else
-		Make/N=(128, NUM_AD_CHANNELS, 10) dfr:TPStorage/Wave=wv
+		Make/N=(128, NUM_AD_CHANNELS, 11) dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS,  -1, ADChannel            , wv
+	SetDimLabel COLS,  -1,  ADChannel                 , wv
 
-	SetDimLabel LAYERS, 0, Vm                   , wv
-	SetDimLabel LAYERS, 1, PeakResistance       , wv
-	SetDimLabel LAYERS, 2, SteadyStateResistance, wv
-	SetDimLabel LAYERS, 3, TimeInSeconds        , wv
-	SetDimLabel LAYERS, 4, DeltaTimeInSeconds   , wv
-	SetDimLabel LAYERS, 5, Vm_Slope             , wv
-	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
-	SetDimLabel LAYERS, 7, Rss_Slope            , wv
-	SetDimLabel LAYERS, 8, Pressure             , wv
-	SetDimLabel LAYERS, 9, TimeStamp            , wv
+	SetDimLabel LAYERS, 0,  Vm                        , wv
+	SetDimLabel LAYERS, 1,  PeakResistance            , wv
+	SetDimLabel LAYERS, 2,  SteadyStateResistance     , wv
+	SetDimLabel LAYERS, 3,  TimeInSeconds             , wv
+	SetDimLabel LAYERS, 4,  DeltaTimeInSeconds        , wv
+	SetDimLabel LAYERS, 5,  Vm_Slope                  , wv
+	SetDimLabel LAYERS, 6,  Rpeak_Slope               , wv
+	SetDimLabel LAYERS, 7,  Rss_Slope                 , wv
+	SetDimLabel LAYERS, 8,  Pressure                  , wv
+	SetDimLabel LAYERS, 9,  TimeStamp                 , wv
+	SetDimLabel LAYERS, 10, TimeStampSinceIgorEpochUTC, wv
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"

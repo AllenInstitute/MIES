@@ -490,13 +490,15 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	if(needsUpdate)
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
-		TPStorage[count][][%Vm]                    = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]        = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%SteadyStateResistance] = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%TimeInSeconds]         = now
-		TPStorage[count][][%TimeStamp]             = DateTime
+		TPStorage[count][][%Vm]                         = BaselineSSAvg[0][q][0]
+		TPStorage[count][][%PeakResistance]             = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance]      = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%TimeInSeconds]              = now
+		TPStorage[count][][%TimeStamp]                  = DateTime
+		TPStorage[count][][%TimeStampSinceIgorEpochUTC] = DateTimeInUTC()
+
 		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
-		TPStorage[count][][%DeltaTimeInSeconds]    = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+		TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 		P_PressureControl(panelTitle) // Call pressure functions
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
 		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
