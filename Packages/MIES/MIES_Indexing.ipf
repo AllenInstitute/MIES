@@ -559,6 +559,9 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 
+	// ensure that the folder exists
+	DFREF dfr = GetSetFolderFromString(ChannelTypeName)
+
 	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
 	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 	
@@ -628,6 +631,9 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 		ListOffset = 2
 		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
+
+	// ensure that the folder exists
+	DFREF dfr = GetSetFolderFromString(ChannelTypeName)
 	
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)// Total List steps is all the columns in all the waves defined by the start index and end index waves
 	do // do loop resets count if the the count has cycled through the total list steps
