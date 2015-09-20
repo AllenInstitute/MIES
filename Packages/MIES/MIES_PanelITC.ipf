@@ -4370,7 +4370,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
 
-	string ctrl, dacWave, endWave, unit, func, info
+	string ctrl, dacWave, endWave, unit, func, info, str
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
 	variable gain, scale, ctrlNo, clampMode, i
 
@@ -4478,8 +4478,26 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			return 1
 		endif
 
+		// third party stim sets might not match our expectations
+		WAVE/Z stimSet = WB_CreateAndGetStimSet(dacWave)
+
+		if(!WaveExists(stimSet))
+			printf "(%s) The stim set %s of headstage %d does not exist or could not be created..\r", panelTitle, dacWave, headstage
+			return 1
+		elseif(DimSize(stimSet, ROWS) == 0)
+			printf "(%s) The stim set %s of headstage %d is empty, but must have at least one row.\r", panelTitle, dacWave, headstage
+			return 1
+		endif
+
+		// non fatal errors which we fix ourselves
+		if(DimDelta(stimSet, ROWS) != MINIMUM_SAMPLING_INTERVAL || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
+			sprintf str, "(%s) The stim set %s of headstage %d must have a row dimension delta of %g, row dimension offset of zero and row unit \"ms\".\r", panelTitle, dacWave, headstage, MINIMUM_SAMPLING_INTERVAL
+			DEBUGPRINT(str)
+			DEBUGPRINT("The stim set is now automatically fixed")
+			SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", stimSet
+		endif
+
 		if(!GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
-			WAVE stimSet = WB_CreateAndGetStimSet(dacWave)
 			for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
 				func = ExtractAnalysisFuncFromStimSet(stimSet, i)
 
