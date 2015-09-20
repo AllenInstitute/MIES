@@ -510,7 +510,7 @@ Function IDX_NumberOfTrialsInSet(panelTitle, setName)
 		return 0
 	endif
 
-	return DimSize(wv, COLS)
+	return max(1, DimSize(wv, COLS))
 End
 
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
