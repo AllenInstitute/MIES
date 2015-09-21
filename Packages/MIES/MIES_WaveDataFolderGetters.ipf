@@ -2783,7 +2783,7 @@ Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
 		return wv
 	endif
 
-	Make/N=(NUM_HEADSTAGES,6) dfr:actionScaleSettingsWave/Wave=wv
+	Make/N=(NUM_HEADSTAGES,7) dfr:actionScaleSettingsWave/Wave=wv
 	
 	SetDimLabel 0, -1, HeadStage, wv	
 	SetDimLabel 1, 0, coarseScaleValue, wv
@@ -2792,6 +2792,7 @@ Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
 	SetDimLabel 1, 3, coarseTuneUse, wv
 	SetDimLabel 1, 4, fineTuneUse, wv
 	SetDimLabel 1, 5, result, wv
+	SetDimLabel 1, 6, elapsedTime, wv
 	
 	// put the coarse scale value to a default
 	wv[][%coarseScaleValue] = 0.10 
@@ -3181,6 +3182,7 @@ End
 Function/DF GetActITCDevicesTestPulseFolder()
 	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
 End
+
 
 /// @brief Return the full path to the active ITC devices location
 Function/S GetActITCDevicesTestPulFolderA()

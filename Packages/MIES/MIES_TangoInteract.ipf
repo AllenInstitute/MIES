@@ -155,7 +155,162 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		TI_WriteAck(cmdID, qcResult)
 	endif
 End
+
+/// @brief run the Electrode Drift QC check.
+/// @param expTime		in minutes, from the WSE, from the start of the experiment
+Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
+	variable headstage
+	variable expTime
+	
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+	string waveSelect 
+	string StimWaveName = "EXTPBLWOUT141203"
+	variable baselineValue
+	string psaMenu
+	string paaMenu
+	string psaCheck
+	string paaCheck
+	string ListOfWavesInFolder
+	string psaFuncList
+	variable psaFuncIndex
+	variable incomingWaveIndex
+	variable startInstResistanceVal
+	variable currentInstResistanceVal
+	variable qcResult = 0
+	variable adChannel
+	variable meanValue
+	
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+	
+	for(n = 0; n<noLockedDevs; n+= 1)
+		currentPanel = StringFromList(n, lockedDevList)
 		
+		Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(currentPanel)
+		
+		// put the elapsed time value into the ActionScaleSettingsWave for use with the analysis framework
+		Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(currentPanel)
+		actionScaleSettingsWave[headStage][%elapsedTime] = expTime
+		
+		DFREF dfr = GetDeviceTestPulse(currentPanel)
+		
+		// get the reference to the asyn response wave ref 
+		Wave/T asynRespWave = GetAsynRspWaveRef(currentPanel)
+		// and put the cmdID there, if passed one
+		if(ParamIsDefault(cmdID) == 0)
+			asynRespWave[headstage][%cmdID] = cmdID
+		endif
+		
+		// pop the itc panel window to the front
+		DoWindow /F $currentPanel
+		
+		// push the waveSet to the ephys panel
+		// first, build up the control name by using the headstage value		
+		sprintf waveSelect, "Wave_DA_%02d", headstage
+		
+		// and build up the analysis master connections
+		sprintf psaMenu, "PSA_headStage%d", headstage
+		sprintf paaMenu, "PAA_headStage%d", headstage
+		sprintf psaCheck, "headStage%d_postSweepAnalysisOn", headstage
+		sprintf paaCheck, "headStage%d_postAnalysisActionOn", headstage
+		
+		// build up the list of available wave sets
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		
+		// make sure that the incoming EXTPBREAKN is a valid wave name
+		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
+			print "EXTPBLWOUT141203 wave not loaded...please load and try again..."
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, qcResult)
+			endif
+			return 0
+		endif
+		
+		// now find the index of the selected incoming wave in that list
+		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
+		
+		// and now set the wave popup menu to that index
+		// have to add 2 since the pulldown always has -none- and TestPulse as options
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+				
+		// look at the instResistance already saved in the lab notebook.  This should be the InstResistance from the start of the experiment.
+		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+		
+		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		startInstResistanceVal = InstResistance[0][adChannel]
+		
+		// Check to see if Test Pulse is already running...if not running, turn it on...
+		if (!(IsBackgroundTaskRunning("TestPulse")))
+			TP_StartTestPulseSingleDevice(currentPanel)
+		endif
+
+		// and grab the initial resistance avg value again
+		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+		
+		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		currentInstResistanceVal = InstResistance[0][adChannel]		
+		
+		print "Current Access Resistance: ", currentInstResistanceVal
+		
+		//check that the current inst resistance value is within 5% of the startInstResistanceValue
+		if ((abs(currentInstResistanceVal) >= (1.10*(abs(startInstResistanceVal)))) || (abs(currentInstResistanceVal) >= (1.10*(abs(startInstResistanceVal)))))
+			print "InstResistance Value does not match from beginning of the experiment...please clear the pipette and try again..."
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, qcResult)
+			endif
+			return 0
+		endif
+		
+		// switch to IC
+		// turn off the VC mode first
+		SetCheckBoxState(currentPanel, "Radio_ClampMode_0", 0)
+		
+		// and now turn on the IC
+		SetCheckBoxState(currentPanel, "Radio_ClampMode_1", 1)
+		
+		// and now disable the holding current
+		SetCheckBoxState(currentPanel, "check_DatAcq_HoldEnable", 0)
+		
+		//  disable the bridge balance
+		SetCheckBoxState(currentPanel, "check_DatAcq_BBEnable", 0)
+		
+		// disable the cap comp
+		SetCheckBoxState(currentPanel, "check_DatAcq_CNEnable", 0) // need to make sure this is the right value to disable
+		
+		// push the PSA_waveName into the right place
+		// find the index for for the psa routine
+		psaFuncList = AM_PS_sortFunctions()
+		psaFuncIndex = WhichListItem("electrodeBaselineQC", psaFuncList, ";")
+		SetPopupMenuIndex("analysisMaster", psaMenu, psaFuncIndex)
+	
+		// do the on/off check boxes for consistency
+		SetCheckBoxState("analysisMaster", psaCheck, 1)
+		SetCheckBoxState("analysisMaster", paaCheck, 0)
+		
+		// insure that the on/off parts of analysisSettingsWave are on...
+		analysisSettingsWave[headstage][%PSAOnOff] = "1"
+		analysisSettingsWave[headstage][%PAAOnOff] = "0"
+		
+		// and put the full psa function into the analysisSettingsWave...putting it as the correct item into the popmenu widget doesn't push it into wave
+		analysisSettingsWave[headstage][%PSAType] = "electrodeBaselineQC"
+		
+		// now start the sweep process
+		print "pushing the start button..."
+		// now start the sweep process
+		ITC_StartDAQSingleDevice(currentPanel)
+	endfor
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, qcResult)
+	endif
+End
+
 ///@brief routine to be called from the WSE to use a one step scale adjustment to find the scale factor that causes and AP firing
 ///@param stimWaveName		stimWaveName to be used
 ///@param initScaleFactor			initial scale factor to start with
