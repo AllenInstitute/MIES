@@ -91,7 +91,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P1,value= _NUM:0
-	SetVariable SetVar_WB_SweepCount_S101,pos={34,105},size={125,20},proc=WBP_SetVarProc_SweepCount,title="Total Sweeps"
+	SetVariable SetVar_WB_SweepCount_S101,pos={32,105},size={127,20},proc=WBP_SetVarProc_SweepCount,title="Total Sweeps"
 	SetVariable SetVar_WB_SweepCount_S101,help={"Number of sweeps in a stimulus set."}
 	SetVariable SetVar_WB_SweepCount_S101,userdata(tabcontrol)=  "WBP_Set_Parameters"
 	SetVariable SetVar_WB_SweepCount_S101,userdata(tabnum)=  "0"
