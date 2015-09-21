@@ -85,20 +85,20 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P0,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P1,pos={300,34},size={100,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
-	SetVariable SetVar_WaveBuilder_P1,help={"Step to Step duration delta."}
+	SetVariable SetVar_WaveBuilder_P1,help={"Sweep to sweep duration delta."}
 	SetVariable SetVar_WaveBuilder_P1,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo)= A"!!,HQ!!#=k!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P1,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P1,value= _NUM:0
-	SetVariable SetVar_WB_StepCount_S101,pos={46,105},size={113,20},proc=WBP_SetVarProc_StepCount,title="Total Steps"
-	SetVariable SetVar_WB_StepCount_S101,help={"Number of sweeps in a stimulus set."}
-	SetVariable SetVar_WB_StepCount_S101,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	SetVariable SetVar_WB_StepCount_S101,userdata(tabnum)=  "0"
-	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo)= A"!!,DG!!#@6!!#@F!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WB_StepCount_S101,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WB_StepCount_S101,fSize=14,limits={1,99,1},value= _NUM:1
+	SetVariable SetVar_WB_SweepCount_S101,pos={34,105},size={125,20},proc=WBP_SetVarProc_SweepCount,title="Total Sweeps"
+	SetVariable SetVar_WB_SweepCount_S101,help={"Number of sweeps in a stimulus set."}
+	SetVariable SetVar_WB_SweepCount_S101,userdata(tabcontrol)=  "WBP_Set_Parameters"
+	SetVariable SetVar_WB_SweepCount_S101,userdata(tabnum)=  "0"
+	SetVariable SetVar_WB_SweepCount_S101,userdata(ResizeControlsInfo)= A"!!,DG!!#@6!!#@F!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WB_SweepCount_S101,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WB_SweepCount_S101,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WB_SweepCount_S101,fSize=14,limits={1,99,1},value= _NUM:1
 	SetVariable setvar_WaveBuilder_P10,pos={552,34},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Tau Rise"
 	SetVariable setvar_WaveBuilder_P10,help={"PSC exponential rise time constant (ms)"}
 	SetVariable setvar_WaveBuilder_P10,userdata(tabnum)=  "6"
@@ -132,7 +132,7 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_WaveBuilder_P16,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_WaveBuilder_P16,limits={0,1,0.1},value= _NUM:0
 	SetVariable setvar_WaveBuilder_P17,pos={662,103},size={90,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
-	SetVariable setvar_WaveBuilder_P17,help={"PSC ratio of decay time constants delta"}
+	SetVariable setvar_WaveBuilder_P17,help={"PSC ratio of decay time constants sweep to sweep delta"}
 	SetVariable setvar_WaveBuilder_P17,userdata(ResizeControlsInfo)= A"!!,J6J,hp]!!#?m!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_WaveBuilder_P17,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_P17,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -164,14 +164,14 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_WaveBuilder_P11,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable setvar_WaveBuilder_P11,limits={-inf,inf,0.1},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P2,pos={194,57},size={100,16},proc=WBP_SetVarProc_UpdateParam,title="Amplitude"
-	SetVariable SetVar_WaveBuilder_P2,help={"Amplitude of the epoch being edited. The unit depends on the DA channel configuration. For G-Noise epochs, amplitude = Standard deviation"}
+	SetVariable SetVar_WaveBuilder_P2,help={"Amplitude of the epoch being edited. The unit depends on the DA channel configuration. For GPB-Noise epochs, amplitude = Standard deviation"}
 	SetVariable SetVar_WaveBuilder_P2,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo)= A"!!,GR!!#>r!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P2,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P3,pos={300,57},size={100,16},proc=WBP_SetVarProc_UpdateParam,title="Delta"
-	SetVariable SetVar_WaveBuilder_P3,help={"Step to step amplitude delta."}
+	SetVariable SetVar_WaveBuilder_P3,help={"Sweep to sweep amplitude delta."}
 	SetVariable SetVar_WaveBuilder_P3,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo)= A"!!,HQ!!#>r!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -221,7 +221,7 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_WaveBuilder_CurrentEpoch,fSize=14
 	SetVariable setvar_WaveBuilder_CurrentEpoch,limits={0,0,1},value= _NUM:0
 	SetVariable setvar_WaveBuilder_ITI,pos={87,153},size={71,16},proc=WBP_SetVarProc_ITI,title="ITI (s)"
-	SetVariable setvar_WaveBuilder_ITI,help={"Inter-trial interval for the stimulus set e.g. time between steps/sweeps. The ITI can be manually over ridden at run time."}
+	SetVariable setvar_WaveBuilder_ITI,help={"Inter-trial interval for the stimulus set e.g. time between sweeps. The ITI can be manually over ridden at run time."}
 	SetVariable setvar_WaveBuilder_ITI,userdata(tabcontrol)=  "WBP_Set_Parameters"
 	SetVariable setvar_WaveBuilder_ITI,userdata(tabnum)=  "0"
 	SetVariable setvar_WaveBuilder_ITI,userdata(ResizeControlsInfo)= A"!!,Eh!!#A(!!#?G!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -229,7 +229,7 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_WaveBuilder_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_WaveBuilder_ITI,limits={0,inf,0},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P5,pos={300,80},size={100,16},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
-	SetVariable SetVar_WaveBuilder_P5,help={"Epoch step to step offset delta."}
+	SetVariable SetVar_WaveBuilder_P5,help={"Epoch sweep to sweep offset delta."}
 	SetVariable SetVar_WaveBuilder_P5,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo)= A"!!,HQ!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -695,7 +695,7 @@ Window WaveBuilder() : Panel
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_NewSeedForEachStep_P49,pos={413,145},size={76,14},disable=1,proc=WBP_CheckProc,title="Seed / Step"
-	CheckBox check_NewSeedForEachStep_P49,help={"When checked the random number generator (RNG) seed is updated with each step. Seeds are saved with the stimulus."}
+	CheckBox check_NewSeedForEachStep_P49,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
 	CheckBox check_NewSeedForEachStep_P49,userdata(tabnum)=  "2"
 	CheckBox check_NewSeedForEachStep_P49,userdata(tabcontrol)=  "WBP_WaveType"
 	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -726,7 +726,7 @@ Window WaveBuilder() : Panel
 	TabControl WBP_Set_Parameters,labelBack=(60928,60928,60928),tabLabel(0)="Basic"
 	TabControl WBP_Set_Parameters,tabLabel(1)="Analysis Functions",value= 0
 	PopupMenu popup_af_postSet_S4,pos={24,128},size={153,21},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Set"
-	PopupMenu popup_af_postSet_S4,help={"After a *full* set has been acquired (This event is not always reached as the user might not acquire all steps of a set)"}
+	PopupMenu popup_af_postSet_S4,help={"After a *full* set has been acquired (This event is not always reached as the user might not acquire all sweeps of a set)"}
 	PopupMenu popup_af_postSet_S4,userdata(tabnum)=  "1"
 	PopupMenu popup_af_postSet_S4,userdata(tabcontrol)=  "WBP_Set_Parameters"
 	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo)= A"!!,C$!!#@f!!#A(!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1088,7 +1088,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_SetVarProc_StepCount(sva) : SetVariableControl
+Function WBP_SetVarProc_SweepCount(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
 	switch(sva.eventCode)
@@ -1547,7 +1547,7 @@ static Function WBP_LoadSet()
 	endif
 
 	SetSetVariable(panel, "SetVar_WB_NumEpochs_S100", SegWvType[100])
-	SetSetVariable(panel, "SetVar_WB_StepCount_S101", SegWvType[101])
+	SetSetVariable(panel, "SetVar_WB_SweepCount_S101", SegWvType[101])
 	SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", 0)
 
 	funcList = WBP_GetAnalysisFunctions()
