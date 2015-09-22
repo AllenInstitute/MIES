@@ -111,6 +111,9 @@ Function/Wave WB_GetStimSet([setName])
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
 		endif
+
+		UpgradeWaveParam(WP)
+		UpgradeWaveTextParam(WPT)
 	endif
 
 	// WB_AddDelta modifies WP so we pass a copy instead
