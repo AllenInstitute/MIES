@@ -1425,11 +1425,12 @@ static Function WBP_LoadSet()
 	DFREF dfr = GetWaveBuilderDataPath()
 	Duplicate/O WP, dfr:WP
 	Duplicate/O WPT, dfr:WPT
-	Duplicate/O SegWvType, dfr:SegWvType/Wave=SegWvType
+	Duplicate/O SegWvType, dfr:SegWvType
 
 	// fetch wave references, possibly updating the wave layout if required
-	WAVE WP  = GetWaveBuilderWaveParam()
-	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+	WAVE WP        = GetWaveBuilderWaveParam()
+	WAVE/T WPT     = GetWaveBuilderWaveTextParam()
+	WAVE SegWvType = GetSegmentTypeWave()
 
 	SetCheckBoxState(panel, "check_FlipEpoch_S98", SegWvType[98])
 
