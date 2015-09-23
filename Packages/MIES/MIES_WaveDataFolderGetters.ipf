@@ -564,10 +564,10 @@ End
 
 /// @brief Returns a wave reference to the txtDocWave
 ///
-/// txtDocWave is used to save settings for each data sweep
+/// Labnotebook with text settings
 ///
 /// Rows:
-/// - Only one
+/// - Filled at runtime
 ///
 /// Columns:
 /// - Filled at runtime
@@ -591,47 +591,130 @@ Function/Wave GetTextDocWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the textDocKeyWave
+/// @brief Return a wave reference to the textDocKeyWave
 ///
 /// textDocKeyWave is used to index save settings for each data sweep
 /// and create waveNotes for tagging data sweeps
 ///
 /// Rows:
 /// - 0: Parameter Name
-/// - 0: Parameter Unit
-/// - 0: Parameter Tolerance
+/// - 1: Parameter Unit
+/// - 2: Parameter Tolerance
 ///
 /// Columns:
 /// - 0: Sweep Number
-/// - 1: Time Stamp
+/// - 1: Time Stamp in local time zone
+/// - 2: Time Stamp in UTC
 /// - other columns are filled at runtime
 Function/Wave GetTextDocKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, INITIAL_KEY_WAVE_COL_COUNT) wv
+		ED_UpgradeLabnotebook(panelTitle)
+		SetWaveVersion(wv, versionOfNewWave)
+		return wv
 	else
 		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
 	endif
 
 	wv = ""
 
-	wv[0][0] = "Sweep #"
-	wv[0][1] = "Time Stamp"
+	wv[0][0] = "SweepNum"
+	wv[0][1] = "TimeStamp"
+	wv[0][2] = "TimeStampSinceIgorEpochUTC"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to keyWave
+///
+/// keyWave is used to index save settings for each data sweep
+/// and create waveNotes for tagging data sweeps
+///
+/// Rows:
+/// - 0: Parameter Name
+/// - 1: Parameter Unit
+/// - 2: Parameter Tolerance
+///
+/// Columns:
+/// - 0: Sweep Number
+/// - 1: Time Stamp in local time zone
+/// - 2: Time Stamp in UTC
+/// - other columns are filled at runtime
+Function/Wave GetNumDocKeyWave(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+
+	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
+	Wave/T/Z/SDFR=dfr wv = keyWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		ED_UpgradeLabnotebook(panelTitle)
+		SetWaveVersion(wv, versionOfNewWave)
+		return wv
+	else
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:keyWave/Wave=wv
+	endif
+
+	wv = ""
+
+	wv[0][0] = "SweepNum"
+	wv[0][1] = "TimeStamp"
+	wv[0][2] = "TimeStampSinceIgorEpochUTC"
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to settingsHistory
+///
+/// Labnotebook with numerical settings
+///
+/// Rows:
+/// - Filled at runtime
+///
+/// Columns:
+/// - Filled at runtime
+///
+/// Layers:
+/// - Headstage
+Function/Wave GetNumDocWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = settingsHistory
+
+	if(!WaveExists(wv))
+		Make/D/N=(MINIMUM_WAVE_SIZE, 3, NUM_HEADSTAGES) dfr:settingsHistory/Wave=wv = NaN
+
+		SetDimLabel COLS, 0, SweepNum                  , wv
+		SetDimLabel COLS, 1, TimeStamp                 , wv
+		SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
+
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
 
 	return wv
 End
@@ -874,32 +957,33 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/SDFR=dfr wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 10) wv
+		Redimension/N=(-1, -1, 11) wv
 	else
-		Make/N=(128, NUM_AD_CHANNELS, 10) dfr:TPStorage/Wave=wv
+		Make/N=(128, NUM_AD_CHANNELS, 11) dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS,  -1, ADChannel            , wv
+	SetDimLabel COLS,  -1,  ADChannel                 , wv
 
-	SetDimLabel LAYERS, 0, Vm                   , wv
-	SetDimLabel LAYERS, 1, PeakResistance       , wv
-	SetDimLabel LAYERS, 2, SteadyStateResistance, wv
-	SetDimLabel LAYERS, 3, TimeInSeconds        , wv
-	SetDimLabel LAYERS, 4, DeltaTimeInSeconds   , wv
-	SetDimLabel LAYERS, 5, Vm_Slope             , wv
-	SetDimLabel LAYERS, 6, Rpeak_Slope          , wv
-	SetDimLabel LAYERS, 7, Rss_Slope            , wv
-	SetDimLabel LAYERS, 8, Pressure             , wv
-	SetDimLabel LAYERS, 9, TimeStamp            , wv
+	SetDimLabel LAYERS, 0,  Vm                        , wv
+	SetDimLabel LAYERS, 1,  PeakResistance            , wv
+	SetDimLabel LAYERS, 2,  SteadyStateResistance     , wv
+	SetDimLabel LAYERS, 3,  TimeInSeconds             , wv
+	SetDimLabel LAYERS, 4,  DeltaTimeInSeconds        , wv
+	SetDimLabel LAYERS, 5,  Vm_Slope                  , wv
+	SetDimLabel LAYERS, 6,  Rpeak_Slope               , wv
+	SetDimLabel LAYERS, 7,  Rss_Slope                 , wv
+	SetDimLabel LAYERS, 8,  Pressure                  , wv
+	SetDimLabel LAYERS, 9,  TimeStamp                 , wv
+	SetDimLabel LAYERS, 10, TimeStampSinceIgorEpochUTC, wv
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"

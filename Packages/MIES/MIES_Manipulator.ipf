@@ -267,10 +267,9 @@ End
 Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	string panelTitle
 	variable sweep
-	string setting
+
 	DFREF ManipulatorDF = GetManipulatorPath()
-	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
-	WAVE/D/Z/SDFR=settingsHistoryDFR SettingsHistory
+	WAVE settingsHistory = GetNumDocWave(panelTitle)
 	WAVE WaveForGizmo = GetManipulatorPos(panelTitle)
 	if(paramIsDefault(sweep))
 		sweep = DM_ReturnLastSweepAcquired(panelTitle)

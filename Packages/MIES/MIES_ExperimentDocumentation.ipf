@@ -3,24 +3,14 @@
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
 
-/// @brief Add notation of settings to an experiment DataWave.  This function
-/// creates a keyWave, which spells out each parameter being saved, and a historyWave, which stores the settings for each headstage.
-///
-/// For the KeyWave, the wave dimensions are:
-/// - row 0 - Parameter name
-/// - row 1 - Unit
-/// - row 2 - Text note
-///
-/// For the settings history, the wave dimensions are:
-/// - Col 0 - Sweep Number
-/// - Col 1 - Time Stamp
+/// @brief Add numerical entries to the labnotebook
 ///
 /// The history wave will use layers to report the different headstages.
 ///
-/// @param incomingSettingsWave -- the settingsWave sent by the each reporting subsystem
-/// @param incomingKeyWave -- the key wave that is used to reference the incoming settings wave
-/// @param sweepNo -- the sweep number
-/// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
+/// @param incomingSettingsWave settingsWave sent by the each reporting subsystem
+/// @param incomingKeyWave      key wave that is used to reference the incoming settings wave
+/// @param sweepNo              sweep number
+/// @param panelTitle           device
 Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, panelTitle)
 	wave incomingSettingsWave
 	wave/T incomingKeyWave
@@ -29,50 +19,20 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 
 	variable rowIndex, numCols, lastValidIncomingLayer, i
 
-	DFREF settingsHistoryDFR = GetDevSpecLabNBSettHistFolder(panelTitle)
-	WAVE/D/Z/SDFR=settingsHistoryDFR settingsHistory
+	WAVE/T keyWave       = GetNumDocKeyWave(panelTitle)
+	WAVE settingsHistory = GetNumDocWave(panelTitle)
 
-	if(!WaveExists(settingsHistory))
-		Make/D/N=(MINIMUM_WAVE_SIZE, 2, NUM_HEADSTAGES) settingsHistoryDFR:settingsHistory/Wave=settingsHistory = NaN
-
-		SetDimLabel COLS, 0, SweepNum, settingsHistory
-		SetDimLabel COLS, 1, TimeStamp, settingsHistory
-
-		SetNumberInWaveNote(settingsHistory, NOTE_INDEX, 0)
-	endif
-
+	ASSERT(!cmpstr(keyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
 	ASSERT(DimSize(incomingSettingsWave, LAYERS) <= DimSize(settingsHistory, LAYERS), "Unexpected large layer count in the incoming settings wave")
-
-	WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
-
-	DFREF keyWaveDFR = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	Wave/T/Z/SDFR=keyWaveDFR keyWave
-
-	if(!WaveExists(keyWave))
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) keyWaveDFR:keyWave/Wave=keyWave
-		// row 0 - Parameter name
-		// row 1 - Unit
-		// row 2 - Tolerance
-
-		SetDimLabel 0, 0, Parameter, keyWave
-		SetDimLabel 0, 1, Units    , keyWave
-		SetDimLabel 0, 2, Tolerance, keyWave
-
-		// These will be permanent....will make it easier for everything to line up correctly
-		// Col 0 - Sweep #
-		// Col 1 - Time
-
-		keyWave[0][0] = "SweepNum"
-		keyWave[0][1] = "TimeStamp"
-	endif
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingKeyWave, keyWave, settingsHistory, rowIndex)
 
 	settingsHistory[rowIndex][0] = sweepNo
 	settingsHistory[rowIndex][1] = DateTime
+	settingsHistory[rowIndex][2] = DateTimeInUTC()
 
+	WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
 	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
-
 	settingsHistoryDat[rowIndex] = settingsHistory[rowIndex][1]
 
 	numCols = DimSize(incomingSettingsWave, COLS)
@@ -233,7 +193,8 @@ End
 
 /// @brief Returns the column indizes of each parameter in incomingKey into the `key` wave
 ///
-/// Redimensions `key` and prefills with incomingKey data if necessary.
+/// Redimensions `key` and `values` waves.
+/// Prefills `key` with `incomingKey` data if necessary.
 ///
 /// Ensures that data and key have a matching column size at return.
 /// @param[in]  incomingKey text wave with the keys to add
@@ -303,24 +264,14 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 	return indizes
 End
 
-/// @brief Function used to add text notation to an experiment DataWave.  This function creates a keyWave to reference
-/// the text wave, which spells out each parameter being saved, and a textWave, which stores text notation.
-///
-/// For the KeyWave, the wave dimensions are:
-/// - row 0 - Parameter name
-/// - row 1 - Units
-/// - row 2 - Text note Placeholder
-///
-/// For the text documentation wave, the wave dimensions are:
-/// - Col 0 - Sweep Number
-/// - Col 1 - Time Stamp
+/// @brief Add textual entries to the labnotebook
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
-/// @param incomingTextDocWave -- the incoming Text Documentation Wave sent by the each reporting subsystem
-/// @param incomingTextDocKeyWave -- the incoming Text Documentation key wave that is used to reference the incoming settings wave
-/// @param sweepNo -- the sweep number
-/// @param panelTitle -- the calling panel name, used for saving the datawave information in the proper data folder
+/// @param incomingTextDocWave    incoming Text Documentation Wave sent by the each reporting subsystem
+/// @param incomingTextDocKeyWave incoming Text Documentation key wave that is used to reference the incoming settings wave
+/// @param sweepNo                sweep number
+/// @param panelTitle             device
 Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo, panelTitle)
 	wave/T incomingTextDocWave
 	wave/T incomingTextDocKeyWave
@@ -332,6 +283,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 	WAVE/T textDocWave = GetTextDocWave(panelTitle)
 	WAVE/T textDocKeyWave = GetTextDocKeyWave(panelTitle)
 
+	ASSERT(!cmpstr(textDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
 	ASSERT(DimSize(incomingTextDocWave, ROWS)   == 1, "Mismatched row counts")
 	ASSERT(DimSize(incomingTextDocWave, LAYERS) == NUM_HEADSTAGES, "Mismatched layer counts")
 	ASSERT(DimSize(incomingTextDocWave, COLS)   == DimSize(incomingTextDocKeyWave, COLS), "Mismatched column counts")
@@ -340,6 +292,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 
 	textDocWave[rowIndex][0] = num2istr(sweepNo)
 	textDocWave[rowIndex][1] = num2istr(DateTime)
+	textDocWave[rowIndex][2] = num2istr(DateTimeInUTC())
 
 	numCols = DimSize(incomingTextDocWave, COLS)
 	for(i = 0; i < numCols; i += 1)
@@ -664,4 +617,65 @@ Function ED_TPSettingsDocumentation(panelTitle)
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
+End
+
+/// @brief Handle upgrades of the numerical/text labnotebooks in one step
+///
+/// Supported upgrades:
+/// - Addition of the third column "TimeStampSinceIgorEpochUTC"
+Function ED_UpgradeLabnotebook(panelTitle)
+	string panelTitle
+
+	variable numCols, i
+
+	WAVE  settingsHistory = GetNumDocWave(panelTitle)
+	WAVE/T txtDocWave     = GetTextDocWave(panelTitle)
+
+	Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(panelTitle)   keyWave
+	Wave/Z/T/SDFR=GetDevSpecLabNBTxtDocKeyFolder(panelTitle) txtDocKeyWave
+
+	if(!WaveExists(keyWave))
+		WAVE/T keyWave = GetNumDocKeyWave(panelTitle)
+	endif
+
+	if(!WaveExists(txtDocKeyWave))
+		WAVE/T txtDocKeyWave = GetTextDocKeyWave(panelTitle)
+	endif
+
+	ASSERT(DimSize(keyWave, COLS) == DimSize(settingsHistory, COLS), "Non matching number of rows for numeric labnotebook")
+	ASSERT(DimSize(txtDocKeyWave, COLS) == DimSize(txtDocWave, COLS), "Non matching number of rows for textual labnotebook")
+
+	if(cmpstr(keyWave[0][2], "TimeStampSinceIgorEpochUTC"))
+
+		numCols = DimSize(keyWave, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) keyWave, settingsHistory
+
+		keyWave[][numCols]           = keyWave[p][2]
+		settingsHistory[][numCols][] = settingsHistory[p][2][r]
+
+		settingsHistory[][2][] = NaN
+		keyWave[][2]           = ""
+		keyWave[0][2]          = "TimeStampSinceIgorEpochUTC"
+		SetDimensionLabels(keyWave, settingsHistory)
+
+		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
+	endif
+
+	if(cmpstr(txtDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"))
+
+		numCols = DimSize(txtDocKeyWave, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) txtDocKeyWave, txtDocWave
+
+		txtDocKeyWave[][numCols] = txtDocKeyWave[p][2]
+		txtDocWave[][numCols][]  = txtDocWave[p][2][r]
+
+		txtDocWave[][2][]   = ""
+		txtDocKeyWave[][2]  = ""
+		txtDocKeyWave[0][2] = "TimeStampSinceIgorEpochUTC"
+		SetDimensionLabels(txtDocKeyWave, txtDocWave)
+
+		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
+	endif
 End
