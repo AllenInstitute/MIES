@@ -740,7 +740,7 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR, replaceEntry])
 	if(!ParamIsDefault(var))
 		sprintf formattedString, "%s = %g;", key, var
 	elseif(!ParamIsDefault(str))
-		sprintf formattedString, "%s = %s;", key, str
+		formattedString = key + " = " + str + ";"
 	endif
 
 	appendCR     = ParamIsDefault(appendCR)     ? 0 : appendCR
