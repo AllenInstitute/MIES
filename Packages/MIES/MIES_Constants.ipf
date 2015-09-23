@@ -36,12 +36,13 @@ Constant SAMPLE_INT_MICRO        = 5
 
 StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"
 
-///@name Constants shared with the ITC XOP
-///@{
+/// @name Channel constants shared with the ITC XOP
+/// @anchor ITC_XOP_CHANNEL_CONSTANTS
+/// @{
 Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
 Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
 Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
-///@}
+/// @}
 
 StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 
