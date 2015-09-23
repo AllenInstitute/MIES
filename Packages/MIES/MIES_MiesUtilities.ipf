@@ -1384,46 +1384,25 @@ Function AppendMiesVersionToWaveNote(wv)
 	Note wv, "MiesVersion: " + miesVersion
 End
 
-/// @brief Extract an one dimensional wave with channel data from the ITC sweep wave
+/// @brief Extract an one dimensional wave from the given ITC wave and column
 ///
-/// @param config        ITC configuration wave
-/// @param sweep         ITC sweep wave
-/// @param channelType   channel type, one item of #ITC_CHANNEL_NAMES
-/// @param channelNumber 0-based index of the channel
+/// @param config ITC config wave
+/// @param sweep  ITC sweep wave
+/// @param column column index into `sweep`, can be queried with #AFH_GetITCDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
-Function/Wave ExtractOneDimDataFromSweep(config, sweep, channelType, channelNumber)
-	Wave config, sweep
-	string channelType
-	variable channelNumber
+Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
+	WAVE config
+	WAVE sweep
+	variable column
 
-	variable numRows, i
-	string channelUnit
+	ASSERT(column < DimSize(sweep, COLS), "The column is out of range")
 
-	ASSERT(IsFinite(channelNumber), "Non-finite channel number")
-	ASSERT(WhichListItem(channelType, ITC_CHANNEL_NAMES) != -1, "Unknown channel type")
+	MatrixOP/FREE data = col(sweep, column)
+	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
+	SetScale d, 0, 0, StringFromList(column, note(config)), data
 
-	numRows = DimSize(config, ROWS)
-	for(i = 0; i < numRows; i += 1)
-
-		if(cmpstr(channelType, StringFromList(config[i][0], ITC_CHANNEL_NAMES)))
-			continue
-		endif
-
-		if(channelNumber != config[i][1])
-			continue
-		endif
-
-		MatrixOP/FREE data = col(sweep, i)
-
-		SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
-		channelUnit = StringFromList(i, note(config))
-		SetScale d, 0, 0, channelUnit, data
-
-		return data
-	endfor
-
-	ASSERT(0, "Could not find the given channelType and/or channelNumber")
+	return data
 End
 
 /// @brief Perform common transformations on the graphs traces
@@ -1493,7 +1472,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
-	variable red, green, blue
+	variable red, green, blue, column
 	string info, axis, trace, axList, baseName
 	string channelType, channelNumber, fullPath, panel
 
@@ -1568,7 +1547,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 				channelType   = StringFromList(l, listOfChannelTypes)
 				channelNumber = StringFromList(l, listOfChannelNumbers)
 
-				WAVE singleChannel = ExtractOneDimDataFromSweep(config, sweep, channelType, str2num(channelNumber))
+				column = AFH_GetITCDataColumn(config, str2num(channelNumber), WhichListItem(channelType, ITC_CHANNEL_NAMES))
+				WAVE singleChannel = ExtractOneDimDataFromSweep(config, sweep, column)
 				MoveWave singleChannel, tmpDFR:$("data" + num2str(l))
 				listOfWaves1D = AddListItem(GetWavesDataFolder(singleChannel, 2), listOfWaves1D, ";", Inf)
 			else
