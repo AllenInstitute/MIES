@@ -185,7 +185,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 	variable analysisResult
 	
 	// get the DA channel associated with the desired headstage
-	daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
+	daChannel = AFH_GetDACFromHeadstage(panelTitle, headStage)
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
 	scaleFactor = GetSetVariable(panelTitle, scaleControlName)
 	
@@ -249,7 +249,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 	variable analysisResult
 	
 	// get the DA channel associated with the desired headstage
-	daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
+	daChannel = AFH_GetDACFromHeadstage(panelTitle, headStage)
 	
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
 	scaleFactor = GetSetVariable(panelTitle, scaleControlName)

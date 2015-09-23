@@ -82,7 +82,7 @@ static Function DC_UpdateClampModeString(panelTitle)
 
 	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
-		headstage = TP_HeadstageUsingADC(panelTitle, ADCs[i])
+		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
 		clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
 	endfor
 End
@@ -461,7 +461,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			continue
 		endif
 
-		headstage = TP_HeadstageUsingDAC(panelTitle, i)
+		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
 		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
 		sweepDataLNB[0][1][HeadStage] = i // document the DA channel
@@ -567,7 +567,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			continue
 		endif
 
-		headstage = TP_HeadstageUsingADC(panelTitle, i)
+		headstage = AFH_GetHeadstageFromADC(panelTitle, i)
 		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
 		sweepDataLNB[0][2][headStage] = i // document the AD channel

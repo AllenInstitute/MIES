@@ -271,6 +271,68 @@ Function/WAVE GetLastSettingText(history, sweepNo, setting)
 	return $""
 End
 
+/// @brief Return the last numerical value of a setting from the labnotebook
+///        and the sweep it was set.
+///
+/// @param[in]  history  numerical labnotebook
+/// @param[in]  setting  name of the value to search
+/// @param[out] sweepNo  sweep number the value was last set
+///
+/// @return Free wave with an entry for each headstage, or an invalid wave reference
+/// if the value could not be found.
+Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
+	WAVE history
+	string setting
+	variable &sweepNo
+
+	variable idx
+
+	sweepNo = NaN
+	ASSERT(WaveType(history), "Can only work with numeric waves")
+
+	WAVE/Z indizes = FindIndizes(wv=history, colLabel=setting, prop=PROP_NON_EMPTY)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	idx = indizes[DimSize(indizes, ROWS) - 1]
+	Make/FREE/N=(NUM_HEADSTAGES) data = history[idx][%$setting][p]
+	sweepNo = history[idx][GetSweepColumn(history)][0]
+
+	return data
+End
+
+/// @brief Return the last textual value of a setting from the labnotebook
+///        and the sweep it was set.
+///
+/// @param[in]  history  numerical labnotebook
+/// @param[in]  setting  name of the value to search
+/// @param[out] sweepNo  sweep number the value was last set
+///
+/// @return Free wave with an entry for each headstage, or an invalid wave reference
+/// if the value could not be found.
+Function/WAVE GetLastSweepWithSettingText(history, setting, sweepNo)
+	WAVE/T history
+	string setting
+	variable &sweepNo
+
+	variable idx
+
+	sweepNo = NaN
+	ASSERT(!WaveType(history), "Can only work with text waves")
+
+	WAVE/Z indizes = FindIndizes(wvText=history, colLabel=setting, prop=PROP_NON_EMPTY)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	idx = indizes[DimSize(indizes, ROWS) - 1]
+	Make/FREE/T/N=(NUM_HEADSTAGES) data = history[idx][%$setting][p]
+	sweepNo = str2num(history[idx][GetSweepColumn(history)][0])
+
+	return data
+End
+
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by `GetDevicePathAsString(device)`
 Function/S GetAllActiveDevices()
 

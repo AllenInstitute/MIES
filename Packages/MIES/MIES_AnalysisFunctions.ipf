@@ -8,6 +8,8 @@
 /// Users can implement functions which are called at certain events for each
 /// data acquisition cycle. These functions should *never* abort, error out with a runtime error, or open dialogs!
 ///
+/// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
+///
 /// Event      | Description                          | Specialities
 /// -----------|--------------------------------------|---------------------------------------------------------------------------------
 /// Pre DAQ    | Immediately before any DAQ occurs    | None

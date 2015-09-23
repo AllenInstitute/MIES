@@ -608,78 +608,6 @@ static Function TP_ResetTPStorage(panelTitle)
 	endif
 End
 
-/// @brief Find the headstage using a particular AD channel
-Function TP_HeadstageUsingADC(panelTitle, AD)
-	string panelTitle
-	variable AD
-
-	Wave chanAmpAssign = GetChanAmpAssign(panelTitle)
-	Wave channelClampMode = GetChannelClampMode(panelTitle)
-	variable i, row, entries
-
-	entries = DimSize(chanAmpAssign, COLS)
-	row = channelClampMode[AD][%ADC] == V_CLAMP_MODE ? 2 : 2 + 4
-	for(i=0; i < entries; i+=1)
-		if(chanAmpAssign[row][i] == AD)
-			return i
-		endif
-	endfor
-
-	DEBUGPRINT("Could not find headstage for AD channel", var = AD)
-
-	return NaN
-End
-
-/// @brief Find the headstage using a particular DA channel
-Function TP_HeadstageUsingDAC(panelTitle, DA)
-	string 	panelTitle
-	variable DA
-
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	Wave channelClampMode = GetChannelClampMode(panelTitle)
-	variable i, row, entries
-
-	entries = DimSize(chanAmpAssign, COLS)
-	row = channelClampMode[DA][%DAC] == V_CLAMP_MODE ? 0 : 0 + 4
-	for(i=0; i < entries; i+=1)
-		if(chanAmpAssign[row][i] == DA)
-			return i
-		endif
-	endfor
-
-	DEBUGPRINT("Could not find headstage for DA channel", var = DA)
-
-	return NaN
-End
-
-///@brief Find the AD channel associated with a headstage
-Function TP_GetADChannelFromHeadstage(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-	variable i, retHeadstage
-	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
-		retHeadstage = TP_HeadstageUsingADC(panelTitle, i)
-		if(isFinite(retHeadstage) && retHeadstage == headstage)
-			return i
-		endif
-	endfor
-	return NaN
-End
-
-///@brief Find the DA channel associated with a headstage
-Function TP_GetDAChannelFromHeadstage(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-	variable i, retHeadstage
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		retHeadstage = TP_HeadstageUsingDAC(panelTitle, i)
-		if(isFinite(retHeadstage) && retHeadstage == headstage)
-			return i
-		endif
-	endfor
-	return NaN
-End
-
 /// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
 ///
 Function TP_GetTPResultsColOfHS(panelTitle, headStage)
@@ -692,7 +620,7 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 		return -1
 	endif	
 	// Get the AD channel associated with the headstage
-	ADC = TP_GetADChannelFromHeadstage(panelTitle, headstage)
+	ADC = AFH_GetADCFromHeadstage(panelTitle, headstage)
 	// Get the first AD rows of the ITCChanConfig wave
 	matrixOp/FREE OneDwave = col(Wv, 0) // extract the channel type column
 	FindValue/V = 0 OneDwave // ITC_XOP_CHANNEL_TYPE_ADC // find the AD channels

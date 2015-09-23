@@ -568,8 +568,8 @@ Function ED_TPDocumentation(panelTitle)
 
 		TPSettingsWave[0][2][i]  = InstResistance[0][j]
 		TPSettingsWave[0][3][i]  = SSResistance[0][j]
-		TPSettingsWave[0][9][i]  = TP_GetDAChannelFromHeadstage(panelTitle, i)
-		TPSettingsWave[0][10][i] = TP_GetADChannelFromHeadstage(panelTitle, i)
+		TPSettingsWave[0][9][i]  = AFH_GetDACFromHeadstage(panelTitle, i)
+		TPSettingsWave[0][10][i] = AFH_GetADCFromHeadstage(panelTitle, i)
 		TPSettingsWave[0][11][i] = clampMode
 		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active
 			   // headstage (no place holder columns), j only increments for active headstages.
