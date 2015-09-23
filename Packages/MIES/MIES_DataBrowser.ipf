@@ -289,7 +289,7 @@ End
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(132,158,1345,878) as "DataBrowser"
+	NewPanel /W=(132,158,1345,878) /K=1 as "DataBrowser"
 	Button button_DataBrowser_NextSweep,pos={628,628},size={395,36},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-!!#C*J,hnIz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"

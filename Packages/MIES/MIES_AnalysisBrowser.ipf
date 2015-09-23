@@ -97,6 +97,20 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	return index - 1
 End
 
+static Function AB_RemoveExperimentMapEntry(index)
+	variable index
+
+	WAVE/T experimentMap = GetExperimentMap()
+
+	ASSERT(index < DimSize(experimentMap, ROWS), "row index out-of-bounds")
+
+	experimentMap[index][] = ""
+
+	if(index + 1 == GetNumberFromWaveNote(experimentMap, NOTE_INDEX))
+		SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
+	endif
+End
+
 static Function AB_AddExperimentFile(expFilePath)
 	string expFilePath
 
@@ -113,6 +127,8 @@ static Function AB_AddExperimentFile(expFilePath)
 
 	if(lastMapped > firstMapped)
 		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
+	else // experiment could not be loaded
+		AB_RemoveExperimentMapEntry(mapIndex)
 	endif
 End
 
