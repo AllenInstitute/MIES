@@ -268,19 +268,19 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		// switch to IC
 		// turn off the VC mode first
-		SetCheckBoxState(currentPanel, "Radio_ClampMode_0", 0)
+		PGC_SetAndActivateControl(currentPanel, "Radio_ClampMode_0", val=CHECKBOX_UNSELECTED)
 		
 		// and now turn on the IC
-		SetCheckBoxState(currentPanel, "Radio_ClampMode_1", 1)
+		PGC_SetAndActivateControl(currentPanel, "Radio_ClampMode_1", val=CHECKBOX_SELECTED)
 		
 		// and now disable the holding current
-		SetCheckBoxState(currentPanel, "check_DatAcq_HoldEnable", 0)
+		PGC_SetAndActivateControl(currentPanel, "check_DatAcq_HoldEnable", val=CHECKBOX_UNSELECTED)
 		
 		//  disable the bridge balance
-		SetCheckBoxState(currentPanel, "check_DatAcq_BBEnable", 0)
+		PGC_SetAndActivateControl(currentPanel, "check_DatAcq_BBEnable", val=CHECKBOX_UNSELECTED)
 		
 		// disable the cap comp
-		SetCheckBoxState(currentPanel, "check_DatAcq_CNEnable", 0) // need to make sure this is the right value to disable
+		PGC_SetAndActivateControl(currentPanel, "check_DatAcq_CNEnable", val=CHECKBOX_UNSELECTED)
 		
 		// push the PSA_waveName into the right place
 		// find the index for for the psa routine
