@@ -345,7 +345,8 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	
 		i += 1
 	while(i < itemsinlist(TTLChannelStatusList, ";"))
-	return MaxNoOfSweeps
+
+	return DEBUGPRINTv(MaxNoOfSweeps)
 End
 
 static Function IDX_GetITIFromWaveNote(wv)
@@ -496,7 +497,7 @@ Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIn
 		numTrials += IDX_NumberOfTrialsInSet(panelTitle, set)
 	endfor
 
-	return numTrials
+	return DEBUGPRINTv(numTrials)
 End
 
 /// @brief Return the number of trials
@@ -509,7 +510,7 @@ Function IDX_NumberOfTrialsInSet(panelTitle, setName)
 		return 0
 	endif
 
-	return DimSize(wv, COLS)
+	return max(1, DimSize(wv, COLS))
 End
 
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
