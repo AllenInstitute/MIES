@@ -257,7 +257,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		print "Current Access Resistance: ", currentInstResistanceVal
 		
-		//check that the current inst resistance value is within 5% of the startInstResistanceValue
+		//check that the current inst resistance value is within a specificed % of the startInstResistanceValue, currently defined as 10%
 		if ((abs(currentInstResistanceVal) >= (1.10*(abs(startInstResistanceVal)))) || (abs(currentInstResistanceVal) >= (1.10*(abs(startInstResistanceVal)))))
 			print "InstResistance Value does not match from beginning of the experiment...please clear the pipette and try again..."
 			if(!ParamIsDefault(cmdID))
