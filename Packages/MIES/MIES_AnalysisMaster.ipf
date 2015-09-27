@@ -79,6 +79,7 @@ Function protoAnalysisFunc(a,b)
 	variable b
 	
 	print "in protoAnalysisFunc for", a
+	print "in protoAnalysisFunc for", b
 	variable result = 0
 	return result
 End
@@ -123,6 +124,99 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 		DAP_StopOngoingDataAcquisition(panelTitle)
 	endif
 End	
+
+///@brief function will return a variable to indicate if the value at the start of the stimulus wave is more than 1mv different from the end of the stimulus wave, and then checks the average versus
+/// the elapsed time..  To be used during the electrode drift QC check
+Function AM_PSA_electrodeBaselineQC(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	
+	variable sweepNo
+	variable x
+	variable numDACs
+	variable idx
+	variable tracePeakValue
+	variable preVm
+	variable postVm
+	variable sampIntMult
+	variable numRows
+	variable meanValue
+	variable elapsedTime
+	variable returnValue
+	variable len
+	string responseString
+	
+	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
+	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
+	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
+	elapsedTime = actionScaleSettingsWave[headStage][%elapsedTime]	
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
+	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
+	if(!WaveExists(sweep))
+     		Abort "Error getting current sweep wave..."
+	endif
+	
+	Wave config = GetConfigWave(sweep)
+	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
+	ASSERT(x >= 0, "Could not query AD channel")
+
+	WAVE ADCs = GetADCListFromConfig(config)
+	WAVE DACs = GetDACListFromConfig(config)
+	numDACs = DimSize(DACs, ROWS)
+	idx = GetRowIndex(ADCs, val=x)
+	ASSERT(IsFinite(idx), "Missing AD channel")
+
+	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
+	
+	// get the sampling interval multipler from the gui
+	sampIntMult = str2num(GetPopupMenuString(panelTitle, "popup_Settings_SampIntMult"))	
+	
+	preVm = mean(SingleAD, (100100/sampIntMult), (200200/sampIntMult)) // gives the average of the pre-stimulus trace from 0.5 seconds to 1 seconds
+	print "preVm: ", preVm
+	numRows = DimSize(SingleAD, ROWS)
+	postVm = mean(SingleAD, (numRows - (100100/sampIntMult)), (numRows - 1))
+	print "postVm: ", postVm
+		
+	// see if the diff between the endValue is more than 1mv different than initValue
+	if((abs(preVm - postVm)) < 1) 	
+		print "baseline Diff check passed" + num2str(headStage)
+		// get the mean value of the wave
+		meanValue = mean(SingleAD)
+	
+		if (meanValue > (elapsedTime/10))
+			print "Electrode Drift QC check failed..."
+			analysisSettingsWave[headStage][%PSAResult] = "0"
+		else
+			print "Electrode Drift QC check passed..."
+			analysisSettingsWave[headStage][%PSAResult] = "1"
+			returnValue = 1
+		endif
+	else
+		print "baseline Diff QC check failed..."
+		analysisSettingsWave[headStage][%PSAResult] = "0"
+	endif
+	
+	//  See if we need to send a response string to the WSE
+	// get the reference to the asyn response wave ref 
+	Wave/T asynRespWave = GetAsynRspWaveRef(panelTitle)
+	
+	//  See if there is anything in the cmdID space
+	len = strlen(asynRespWave[headstage][%cmdID])
+	
+	if(len >= 1)
+		// build up the response string
+		sprintf responseString, "ElectrodeDriftQC:%f", returnValue
+		writeAsyncResponseWrapper(asynRespWave[headstage][%cmdID], responseString)
+	else
+		print "No asyn response required..."
+	endif 
+	
+	// kill the asynRespWave
+	KillWaves asynRespWave
+	
+	return 1
+End	
+
 				
 ///@brief function will return a variable to indicate if the most recent wave fired an action potential.
 Function AM_PSA_returnActionPotential(panelTitle, headStage)
