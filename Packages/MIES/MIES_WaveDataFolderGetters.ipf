@@ -1576,6 +1576,21 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
+static Constant WP_WAVE_LAYOUT_VERSION = 2
+
+/// @brief Upgrade the wave layout of `WP` to the most recent one
+///        as defined in `WP_WAVE_LAYOUT_VERSION`
+Function UpgradeWaveParam(wv)
+	WAVE wv
+
+	if(ExistsWithCorrectLayoutVersion(wv, WP_WAVE_LAYOUT_VERSION))
+		return NaN
+	endif
+
+	Redimension/N=(61, -1, -1) wv
+	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
+End
+
 /// @brief Return the parameter wave for the wave builder panel
 ///
 /// Rows:
@@ -1594,15 +1609,11 @@ End
 /// - Load custom wave
 Function/WAVE GetWaveBuilderWaveParam()
 
-	variable versionOfNewWave = 2
 	dfref dfr = GetWaveBuilderDataPath()
-
 	WAVE/Z/SDFR=dfr wv = WP
 
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(61, -1, -1) wv
+	if(WaveExists(wv))
+		UpgradeWaveParam(wv)
 	else
 		Make/N=(61, 100, 8) dfr:WP/Wave=wv
 
@@ -1612,11 +1623,26 @@ Function/WAVE GetWaveBuilderWaveParam()
 		wv[26][][2] = 500
 		// sets coefficent count for high pass filter to a reasonable and legal Number
 		wv[28][][2] = 500
+
+		SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 	endif
 
-	SetWaveVersion(wv, versionOfNewWave)
-
 	return wv
+End
+
+static Constant WPT_WAVE_LAYOUT_VERSION = 2
+
+/// @brief Upgrade the wave layout of `WPT` to the most recent one
+///        as defined in `WPT_WAVE_LAYOUT_VERSION`
+Function UpgradeWaveTextParam(wv)
+	WAVE wv
+
+	if(ExistsWithCorrectLayoutVersion(wv, WPT_WAVE_LAYOUT_VERSION))
+		return NaN
+	endif
+
+	Redimension/N=(51, -1) wv
+	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 End
 
 /// @brief Return the parameter text wave for the wave builder panel
@@ -1630,26 +1656,21 @@ End
 /// - 5: Analysis function, post daq
 /// - 6-50: unused
 ///
-///
 /// Columns:
 /// - Segment/Epoch, the very last index is reserved for
 ///   textual settings for the complete set
 Function/WAVE GetWaveBuilderWaveTextParam()
 
-	variable versionOfNewWave = 2
 	dfref dfr = GetWaveBuilderDataPath()
-
 	WAVE/T/Z/SDFR=dfr wv = WPT
 
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(51, -1) wv
+	if(WaveExists(wv))
+		UpgradeWaveTextParam(wv)
 	else
 		Make/N=(51, 100)/T dfr:WPT/Wave=wv
-	endif
 
-	SetWaveVersion(wv, versionOfNewWave)
+		SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
+	endif
 
 	return wv
 End
