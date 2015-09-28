@@ -156,8 +156,11 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	endif
 End
 
-/// @brief run the Electrode Drift QC check.
-/// @param expTime		in minutes, from the WSE, from the start of the experiment
+/// @brief Run the Electrode Drift QC check
+///
+/// @param headstage    device
+/// @param expTime      in minutes, from the WSE, from the start of the experiment
+/// @param cmdID        optional parameter...if being called from WSE, this will be present.
 Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 	variable headstage
 	variable expTime
