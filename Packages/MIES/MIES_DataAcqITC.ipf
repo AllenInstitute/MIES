@@ -382,8 +382,8 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	activeHeadStages = 0
 	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
 
-		DAC = TP_GetDAChannelFromHeadstage(panelTitle, headstage)
-		ADC = TP_GetADChannelFromHeadstage(panelTitle, headstage)
+		DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+		ADC = AFH_GetADCFromHeadstage(panelTitle, headstage)
 
 		// From DAP_RemoveClampModeSettings and DAP_ApplyClmpModeSavdSettngs we know that
 		// both wave entries are NaN iff the headstage is unset

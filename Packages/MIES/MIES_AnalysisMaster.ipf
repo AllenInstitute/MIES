@@ -90,9 +90,7 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	variable headStage
 	
 	variable sweepNo
-	variable x
-	variable numDACs
-	variable idx
+	variable adc, col
 	Variable apLevelValue
 	variable xPoint
 	
@@ -105,17 +103,11 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
      		Abort "***Error getting current sweep wave..."
 	endif
 	
-	Wave config = GetConfigWave(sweep)	
-	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
+	Wave config = GetConfigWave(sweep)
+	adc = AFH_GetADCFromHeadstage(panelTitle, headStage)
+	col = AFH_GetITCDataColumn(config, adc, ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE singleAD = ExtractOneDimDataFromSweep(config, sweep, col)
 
-	WAVE ADCs = GetADCListFromConfig(config)
-	WAVE DACs = GetDACListFromConfig(config)
-	numDACs = DimSize(DACs, ROWS)
-	idx = GetRowIndex(ADCs, val=x)
-	ASSERT(IsFinite(idx), "Missing AD channel")
-		
-	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
-	
 	apLevelValue = actionScaleSettingsWave[headStage][%apThreshold]
 	FindLevel/P/Q/EDGE=1 SingleAD, apLevelValue
 	xPoint=V_LevelX
@@ -222,11 +214,9 @@ End
 Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
+
 	variable sweepNo
-	variable x
-	variable numDACs
-	variable idx
+	variable adc, col
 	variable tracePeakValue
 	
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
@@ -237,20 +227,14 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
 	endif
-	
+
 	Wave config = GetConfigWave(sweep)
-	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
+	adc = AFH_GetADCFromHeadstage(panelTitle, headStage)
+	col = AFH_GetITCDataColumn(config, adc, ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE singleAD = ExtractOneDimDataFromSweep(config, sweep, col)
 
-	WAVE ADCs = GetADCListFromConfig(config)
-	WAVE DACs = GetDACListFromConfig(config)
-	numDACs = DimSize(DACs, ROWS)
-	idx = GetRowIndex(ADCs, val=x)
-	ASSERT(IsFinite(idx), "Missing AD channel")
-
-	matrixOp/FREE SingleAD = col(currentCompleteDataWave, numDACs + idx)
-			
 	tracePeakValue = WaveMax(singleAD)	
-		
+
 	// see if the tracePeakValue is greater then the apThreshold value...if so, indicate that the action potential fired
 	if(tracePeakValue > actionScaleSettingsWave[headStage][%apThreshold])	
 		print "AP Fired: HS#" + num2str(headStage)
@@ -279,7 +263,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 	variable analysisResult
 	
 	// get the DA channel associated with the desired headstage
-	daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
+	daChannel = AFH_GetDACFromHeadstage(panelTitle, headStage)
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
 	scaleFactor = GetSetVariable(panelTitle, scaleControlName)
 	
@@ -343,7 +327,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 	variable analysisResult
 	
 	// get the DA channel associated with the desired headstage
-	daChannel = TP_GetDAChannelFromHeadstage(panelTitle, headStage)
+	daChannel = AFH_GetDACFromHeadstage(panelTitle, headStage)
 	
 	sprintf scaleControlName, "Scale_DA_0%d", daChannel
 	scaleFactor = GetSetVariable(panelTitle, scaleControlName)

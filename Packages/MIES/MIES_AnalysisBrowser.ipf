@@ -839,7 +839,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
 		str = channelType + "_" + num2istr(channelNumber)
 
-		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, channelType, channelNumber)
+		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
 			AB_SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)

@@ -4417,13 +4417,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ADheadstage = TP_HeadstageUsingADC(panelTitle, ADCchannel)
+	ADheadstage = AFH_GetHeadstageFromADC(panelTitle, ADCchannel)
 	if(!IsFinite(ADheadstage))
 		printf "(%s) Could not determine the headstage for the ADChannel %d.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
-	DAheadstage = TP_HeadstageUsingDAC(panelTitle, DACchannel)
+	DAheadstage = AFH_GetHeadstageFromDAC(panelTitle, DACchannel)
 	if(!IsFinite(DAheadstage))
 		printf "(%s) Could not determine the headstage for the DACchannel %d.\r", panelTitle, DACchannel
 		return 1
