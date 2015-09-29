@@ -1359,6 +1359,7 @@ Function SetDimensionLabels(keys, values)
 
 	for(i = 0; i < numCols; i += 1)
 		text = keys[0][i]
+		text = text[0,30]
 		ASSERT(!isEmpty(text), "Empty key")
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
