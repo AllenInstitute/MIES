@@ -344,3 +344,6 @@ Constant LABNOTEBOOK_LAYER_COUNT = 9
 Constant INDEP_HEADSTAGE = 8
 
 StrConstant UNKNOWN_MIES_VERSION = "unknown version"
+
+/// Equals 2^5 from `GetKeyState`
+Constant ESCAPE_KEY = 32

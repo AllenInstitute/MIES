@@ -284,7 +284,7 @@ Function ITC_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	String cmd, Keyboard
+	String cmd
 	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
 	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
 	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
@@ -318,8 +318,7 @@ Function ITC_TestPulseFunc(s)
 
 	NVAR count = $GetCount(panelTitle)
 	if(!IsFinite(count))
-		Keyboard = KeyboardState("")
-		if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
+		if(GetKeyState(0) & ESCAPE_KEY)
 			beep
 			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
@@ -468,7 +467,7 @@ End
 Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 
-	string cmd, keyboard
+	string cmd
 	variable i
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
@@ -513,8 +512,7 @@ Function ITC_StartTestPulse(panelTitle)
 		endif
 
 		i += 1	
-		Keyboard = KeyboardState("")
-	while (cmpstr(Keyboard[9], " ") != 0)
+	while(!(GetKeyState(0) & ESCAPE_KEY))
 	
 	DAP_RestoreTTLState(panelTitle)
 	ED_TPDocumentation(panelTitle)

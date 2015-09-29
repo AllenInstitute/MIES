@@ -38,7 +38,7 @@ Function ITC_BkrdTPFuncMD(s)
 
 	variable NumberOfActiveDevices, ADChannelToMonitor, i
 	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
-	String cmd, Keyboard, panelTitle
+	String cmd, panelTitle
 
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
 	WAVE/SDFR=dfr ActiveDeviceList
@@ -125,8 +125,7 @@ Function ITC_BkrdTPFuncMD(s)
 
 		NVAR count = $GetCount(panelTitle)
 		if(!IsFinite(count))
-			Keyboard = KeyboardState("")
-			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
+			if(GetKeyState(0) & ESCAPE_KEY)
 				panelTitle = GetMainWindow(GetCurrentWindow())
 				// only stop the currently active device
 				if(!cmpstr(panelTitle,ActiveDeviceTextList[i]))
