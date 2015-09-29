@@ -149,7 +149,7 @@ Function AM_PSA_electrodeBaselineQC(panelTitle, headStage)
 	endif
 	
 	Wave config = GetConfigWave(sweep)
-	x = TP_GetADChannelFromHeadstage(panelTitle, headStage)
+	x = AFH_GetADCFromHeadstage(panelTitle, headStage)
 	ASSERT(x >= 0, "Could not query AD channel")
 
 	WAVE ADCs = GetADCListFromConfig(config)
