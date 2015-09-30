@@ -5662,3 +5662,14 @@ Function DAP_RecordDA_EphysGuiState(panelTitle)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)[p]
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)[p]
 End
+
+/// @brief Return the mode of all DA_Ephys panel headstages
+Function/Wave GetAllHSMode(panelTitle)
+	string panelTitle
+	make/FREE/n=(NUM_HEADSTAGES) Mode
+	variable i
+	for(i = 0; i < NUM_HEADSTAGES; i+=1)
+		Mode[i] = AI_MIESHeadstageMode(panelTitle, i)
+	endfor
+	return Mode
+End

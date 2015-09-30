@@ -1999,17 +1999,6 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	return SortList(listInternal + listThirdParty, ";", 16)
 End
 
-/// @brief Returns the mode of all DA_Ephys panel headstages
-Function/Wave GetAllHSMode(panelTitle)
-	string panelTitle
-	make/FREE/n=(NUM_HEADSTAGES) Mode
-	variable i
-	for(i = 0; i < NUM_HEADSTAGES; i+=1)
-		Mode[i] =  AI_MIESHeadstageMode(panelTitle, i)
-	endfor
-	return Mode
-End
-
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
 Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
 	string panelTitle
