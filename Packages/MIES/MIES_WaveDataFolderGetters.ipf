@@ -591,6 +591,67 @@ Function/Wave GetTextDocWave(panelTitle)
 	return wv
 End
 
+/// @brief Handle upgrades of the numerical/text labnotebooks in one step
+///
+/// Supported upgrades:
+/// - Addition of the third column "TimeStampSinceIgorEpochUTC"
+Function UpgradeLabNotebook(panelTitle)
+	string panelTitle
+
+	variable numCols, i
+
+	WAVE  settingsHistory = GetNumDocWave(panelTitle)
+	WAVE/T txtDocWave     = GetTextDocWave(panelTitle)
+
+	Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(panelTitle)   keyWave
+	Wave/Z/T/SDFR=GetDevSpecLabNBTxtDocKeyFolder(panelTitle) txtDocKeyWave
+
+	if(!WaveExists(keyWave))
+		WAVE/T keyWave = GetNumDocKeyWave(panelTitle)
+	endif
+
+	if(!WaveExists(txtDocKeyWave))
+		WAVE/T txtDocKeyWave = GetTextDocKeyWave(panelTitle)
+	endif
+
+	ASSERT(DimSize(keyWave, COLS) == DimSize(settingsHistory, COLS), "Non matching number of rows for numeric labnotebook")
+	ASSERT(DimSize(txtDocKeyWave, COLS) == DimSize(txtDocWave, COLS), "Non matching number of rows for textual labnotebook")
+
+	if(cmpstr(keyWave[0][2], "TimeStampSinceIgorEpochUTC"))
+
+		numCols = DimSize(keyWave, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) keyWave, settingsHistory
+
+		keyWave[][numCols]           = keyWave[p][2]
+		settingsHistory[][numCols][] = settingsHistory[p][2][r]
+
+		settingsHistory[][2][] = NaN
+		keyWave[][2]           = ""
+		keyWave[0][2]          = "TimeStampSinceIgorEpochUTC"
+		SetDimensionLabels(keyWave, settingsHistory)
+
+		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
+	endif
+
+	if(cmpstr(txtDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"))
+
+		numCols = DimSize(txtDocKeyWave, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) txtDocKeyWave, txtDocWave
+
+		txtDocKeyWave[][numCols] = txtDocKeyWave[p][2]
+		txtDocWave[][numCols][]  = txtDocWave[p][2][r]
+
+		txtDocWave[][2][]   = ""
+		txtDocKeyWave[][2]  = ""
+		txtDocKeyWave[0][2] = "TimeStampSinceIgorEpochUTC"
+		SetDimensionLabels(txtDocKeyWave, txtDocWave)
+
+		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
+	endif
+End
+
 /// @brief Return a wave reference to the textDocKeyWave
 ///
 /// textDocKeyWave is used to index save settings for each data sweep
@@ -618,7 +679,7 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		ED_UpgradeLabnotebook(panelTitle)
+		UpgradeLabNotebook(panelTitle)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
@@ -666,7 +727,7 @@ Function/Wave GetNumDocKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		ED_UpgradeLabnotebook(panelTitle)
+		UpgradeLabNotebook(panelTitle)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
