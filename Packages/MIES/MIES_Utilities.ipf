@@ -1359,6 +1359,7 @@ Function SetDimensionLabels(keys, values)
 
 	for(i = 0; i < numCols; i += 1)
 		text = keys[0][i]
+		text = text[0,30]
 		ASSERT(!isEmpty(text), "Empty key")
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
@@ -1923,7 +1924,7 @@ Function SearchForDuplicates(Wv)
 	ASSERT(dimSize(Wv,0) >= 2, (nameofwave(Wv) + " has less than two rows")) // make sure wave has at least two rows.
 	
 	Duplicate/FREE Wv WvCopyOne WvCopyTwo // make two copies. One to store duplicate search results, the other to sort and search for duplicates.
-	variable Rows = (dimSize(Wv,0) // create a variable so dimSize is only called once instead of twice.
+	variable Rows = dimSize(Wv,0) // create a variable so dimSize is only called once instead of twice.
 	WvCopyOne[Rows- 1] = 0 // Set last point to 0 because if it by chance was 1, it would come up as a duplicate, even when the penultimate value in Wv was not 1
 	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
  	WvCopyOne[0, Rows - 2] = WvCopyTwo[p] != WvCopyTwo[p + 1] ? 0 : 1 // could multithread but, MIES use case will be with short 1d waves.
