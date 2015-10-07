@@ -340,7 +340,7 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
 
 	if(numWavesLoaded)
-		wanted   = GetListOfWaves(targetDFR, "^TPStorage(_[[:digit:]]+)?$", fullPath=1)
+		wanted   = GetListOfWaves(targetDFR, TP_STORAGE_REGEXP, fullPath=1)
 		all      = GetListOfWaves(targetDFR, ".*", fullPath=1)
 		unwanted = RemoveFromList(wanted, all)
 

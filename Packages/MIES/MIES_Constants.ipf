@@ -17,10 +17,12 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 
 StrConstant amPanel = "analysisMaster"
 
-/// @name RegExps matching all sweep and config waves
+/// @name Various mies specific regular expressions
+/// @anchor MIES_REGEXPS
 /// @{
 StrConstant DATA_SWEEP_REGEXP  = "(?i)^Sweep_[[:digit:]]+$"
 StrConstant DATA_CONFIG_REGEXP = "(?i)^Config_Sweep_[[:digit:]]+$"
+StrConstant TP_STORAGE_REGEXP  = "(?i)^TPStorage(_[[:digit:]]+)?$"
 /// @}
 
 StrConstant UNTITLED_EXPERIMENT           = "Untitled"
