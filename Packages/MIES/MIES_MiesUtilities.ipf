@@ -1949,6 +1949,32 @@ Function GetTTLBits(numericValues, sweep, channel)
 	return ttlBits[0]
 End
 
+/// @brief Get the TTL stim sets from the labnotebook
+/// @param numericValues   Numerical labnotebook values
+/// @param textValues      Text labnotebook values
+/// @param sweep           Sweep number
+/// @param channel         TTL channel
+///
+/// @return list of stim sets, empty entries for non active TTL bits
+Function/S GetTTLStimSets(numericValues, textValues, sweep, channel)
+	WAVE numericValues
+	WAVE/T textValues
+	variable sweep, channel
+
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
+
+	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[0] == channel)
+		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack zero stim sets")
+	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[0] == channel)
+		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack one stim sets")
+	else
+		return ""
+	endif
+
+	return ttlStimSets[0]
+End
+
 /// @brief Return a sorted list of all DA/TTL stim set waves
 ///
 /// @param DAorTTL                  #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
