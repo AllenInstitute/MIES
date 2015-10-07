@@ -838,12 +838,12 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = config[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
-		str = channelType + "_" + num2istr(channelNumber)
+		str = channelType + "_" + num2istr(channelNumber) + "_"
 
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
-			AB_SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
+			SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
 		endif
 
 		MoveWave data, sweepFolder:$str
@@ -853,30 +853,6 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	KillOrMoveToTrash(wv=sweepWave)
 
 	return 0
-End
-
-static Function AB_SplitTTLWaveIntoComponents(data, ttlBits, sweepFolder, wvName)
-	WAVE data
-	variable ttlBits
-	DFREF sweepFolder
-	string wvName
-
-	if(!IsFinite(ttlBits))
-		return NaN
-	endif
-
-	variable i, bit
-
-	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
-
-		bit = 2^i
-		if(!(ttlBits & bit))
-			continue
-		endif
-
-		Duplicate data, sweepFolder:$(wvName + "_" + num2str(i))/Wave=dest
-		MultiThread dest[] = dest[p] & bit
-	endfor
 End
 
 Function AB_ScanFolder(win)

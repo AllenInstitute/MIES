@@ -2059,3 +2059,32 @@ Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
 
 	return StringByKey(eventName, wvnote, "=", ";")
 End
+
+/// @brief Split TTL data into a single wave for each channel
+/// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
+/// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
+/// @param targetDFR  datafolder where to put the waves, can be a free datafolder
+/// @param wavePrefix prefix of the created wave names
+Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
+	WAVE data
+	variable ttlBits
+	DFREF targetDFR
+	string wavePrefix
+
+	variable i, bit
+
+	if(!IsFinite(ttlBits))
+		return NaN
+	endif
+
+	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
+
+		bit = 2^i
+		if(!(ttlBits & bit))
+			continue
+		endif
+
+		Duplicate data, targetDFR:$(wavePrefix + num2str(i))/Wave=dest
+		MultiThread dest[] = dest[p] & bit
+	endfor
+End
