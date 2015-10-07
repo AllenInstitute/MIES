@@ -474,10 +474,8 @@ End
 
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
-Function GetSamplingInterval(sweepWave)
-	Wave sweepWave
-
-	Wave config = GetConfigWave(sweepWave)
+Function GetSamplingInterval(config)
+	Wave config
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)

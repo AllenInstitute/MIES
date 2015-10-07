@@ -213,7 +213,8 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 	for(i=0; i<numWaves; i+=1, idx+=1)
 		name = StringFromList(i, listOfDataWaves)
 		Wave/SDFR=deviceDFR wv = $name
-		samplingInterval = GetSamplingInterval(wv)
+		WAVE config = GetConfigWave(wv)
+		samplingInterval = GetSamplingInterval(config)
 
 		EnsureLargeEnoughWave(list, minimumSize=idx)
 		EnsureLargeEnoughWave(dataRef, minimumSize=idx)
