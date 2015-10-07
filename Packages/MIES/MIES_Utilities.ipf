@@ -382,24 +382,25 @@ End
 /// @brief Checks if the datafolder referenced by dfr exists.
 ///
 /// Unlike DataFolderExists() a dfref pointing to an empty ("") dataFolder is considered non-existing here.
-/// @returns one if dfr is valid and references an existing datafolder, zero otherwise
+/// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
 /// Taken from http://www.igorexchange.com/node/2055
 Function DataFolderExistsDFR(dfr)
 	dfref dfr
 
 	string dataFolder
 
-	// invalid dfrefs don't exist
-	if(DataFolderRefStatus(dfr) == 0)
-		return 0
-	else
-		dataFolder = GetDataFolder(1,dfr)
-		if( cmpstr(dataFolder,"") != 0 && DataFolderExists(dataFolder))
+	switch(DataFolderRefStatus(dfr))
+		case 0: // invalid ref, does not exist
+			return 0
+		case 1: // might be valid
+			dataFolder = GetDataFolder(1,dfr)
+			return cmpstr(dataFolder,"") != 0 && DataFolderExists(dataFolder)
+		case 3: // free data folders always exist
 			return 1
-		endif
-	endif
-
-	return 0
+		default:
+			Abort "unknown status"
+			return 0
+	endswitch
 End
 
 /// @brief Create a datafolder and all its parents,
