@@ -164,6 +164,29 @@ Function DEBUGPRINT_OR_ABORT(msg)
 	DEBUGPRINT(msg)
 End
 
+/// @brief Start a timer for performance measurements
+///
+/// Usage:
+/// @code
+/// variable referenceTime = DEBUG_TIMER_START()
+/// // part one to benchmark
+/// DEBUGPRINT_ELAPSED(referenceTime)
+/// // part two to benchmark
+/// DEBUGPRINT_ELAPSED(referenceTime)
+/// @endcode
+Function DEBUG_TIMER_START()
+
+	return stopmstimer(-2)
+End
+
+/// @brief Print the elapsed time for performance measurements
+/// @see DEBUG_TIMER_START()
+Function DEBUGPRINT_ELAPSED(referenceTime)
+	variable referenceTime
+
+	DEBUGPRINT("timestamp: ", var=(stopmstimer(-2) - referenceTime) / 1e6)
+End
+
 #else
 
 Function DEBUGPRINTv(var, [format])
@@ -195,6 +218,14 @@ Function DEBUGPRINT_OR_ABORT(msg)
 	string msg
 
 	Abort msg
+End
+
+Function DEBUG_TIMER_START()
+
+End
+
+Function DEBUGPRINT_ELAPSED(referenceTime)
+	variable referenceTime
 End
 
 #endif
