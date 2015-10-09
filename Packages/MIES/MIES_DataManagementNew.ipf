@@ -9,63 +9,56 @@ static Constant FLOAT_64BIT = 0x04
 Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
 
-	variable sweepNo, rowsToCopy, saveSweepData
+	variable sweepNo, rowsToCopy
 	string savedDataWaveName, savedSetUpWaveName
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-	// the checkbox text reads "Do not save data"
-	saveSweepData = !GetCheckBoxState(panelTitle, "Check_Settings_SaveData")
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 	DM_ADScaling(ITCDataWave, panelTitle)
 	DM_DAScaling(ITCDataWave, panelTitle)
 
-	if(saveSweepData)
-		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
-		savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
-		savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
+	savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
+	savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
 
-		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-		rowsToCopy = stopCollectionPoint - 1
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	rowsToCopy = stopCollectionPoint - 1
 
-		Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
-		Duplicate/O ITCChanConfigWave $savedSetUpWaveName
-		note dataWave, Time()
-		note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
-		AppendMiesVersionToWaveNote(dataWave)
+	Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
+	Duplicate/O ITCChanConfigWave $savedSetUpWaveName/Wave=configWave
+	note dataWave, Time()
+	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
+	AppendMiesVersionToWaveNote(dataWave)
 
-		SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
+	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
-		if (GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
-			AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
-			// function for debugging
-			// AI_createDummySettingsWave(panelTitle, SweepNo)
-		endif
-
-		// if option is checked, wave note containing single readings from (async) ADs is made
-		if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
-			ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
-		endif
-
-		//Add wave notes for the stim wave name and scale factor
-		ED_createWaveNoteTags(panelTitle, sweepNo)
-
-		//Add wave notes for the factors on the Asyn tab
-		ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
-
-		// TP settings, especially useful if "global TP insertion" is active
-		ED_TPSettingsDocumentation(panelTitle)
-
-		AM_analysisMasterPostSweep(panelTitle, sweepNo)
+	if(GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
+		AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
+		// function for debugging
+		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 
+	// if option is checked, wave note containing single readings from (async) ADs is made
+	if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
+		ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
+	endif
+
+	// Add wave notes for the stim wave name and scale factor
+	ED_createWaveNoteTags(panelTitle, sweepNo)
+
+	// Add wave notes for the factors on the Asyn tab
+	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
+
+	// TP settings, especially useful if "global TP insertion" is active
+	ED_TPSettingsDocumentation(panelTitle)
+
+	AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	DM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
 
-	if(saveSweepData)
-		DM_AfterSweepDataSaveHook(panelTitle)
-	endif
+	DM_AfterSweepDataSaveHook(panelTitle)
 End
 
 /// @brief Call the analysis function associated with the stimset from the wavebuilder
