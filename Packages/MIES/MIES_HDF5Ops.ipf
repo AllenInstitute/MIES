@@ -1,6 +1,5 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-#include "HDF Utilities"
 #include "HDF5 Browser"
 
 /// @file MIES_HDF5Ops.ipf
