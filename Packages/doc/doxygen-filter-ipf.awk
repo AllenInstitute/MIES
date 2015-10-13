@@ -1,9 +1,9 @@
 # Proof of concept implementation for using doxygen to document Igor Pro procedures
-# This awk script serves as input filter for Igor procedures and produces a C-ish version of the declarations
-# Tested with Igor Pro 6.36 and doxygen 1.8.9.1
+# This awk script serves as input filter for Igor procedures and produces a C++-ish version of the declarations
+# Tested with Igor Pro 6.37 and doxygen 1.8.10
 #
-# Thomas Braun: 6/2015
-# Version: 0.25
+# Thomas Braun: 10/2015
+# Version: 0.26
 
 # Supported Features:
 # -Functions
@@ -22,6 +22,8 @@ BEGIN{
   warning=""
 
   menuEndCount=0
+  insideNamespace=0
+  namespace=""
 }
 
 # Remove whitespace at beginning and end of string
@@ -93,6 +95,13 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   }
   # remove whitespace from front and back
   code=trim(code)
+
+  if(match(code, /^#pragma independentModule\s*=\s*(.+)/, arr))
+  {
+	  namespace = arr[1]
+	  code = "namespace " namespace " {"
+	  insideNamespace = 1
+  }
 
   # begin of macro definition
   if(!insideFunction && !insideMacro && ( match(code,/^Window/)|| match(code,/^Proc/) || match(code,/^Macro/) ) )
@@ -260,6 +269,9 @@ function handleParameter(params, a,  i, iOpt, str, entry)
 
 END{
   print output
+
+  if(insideNamespace)
+	  print "} // closing namespace " namespace
 
   if(DO_WARN)
     print warning
