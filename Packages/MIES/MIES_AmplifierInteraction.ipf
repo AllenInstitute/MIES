@@ -690,7 +690,7 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 				setSetVariable(panelTitle, "setvar_DataAcq_WCC", AmpStorageWave[%WholeCellCap][0][MIESHeadStageNo])
 				break
 			case "setvar_DataAcq_WCR":
-				setSetVariable(panelTitle, "setvar_DataAcq_WCC", AmpStorageWave[%WholeCellRes][0][MIESHeadStageNo])
+				setSetVariable(panelTitle, "setvar_DataAcq_WCR", AmpStorageWave[%WholeCellRes][0][MIESHeadStageNo])
 				break
 			case "check_DatAcq_WholeCellEnable":
 				setCheckBoxState(panelTitle, "check_DatAcq_WholeCellEnable", AmpStorageWave[%WholeCellEnable][0][MIESHeadStageNo])
