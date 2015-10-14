@@ -373,6 +373,21 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 		case MCC_GETSLOWCOMPTAU_FUNC:
 			ret = MCC_GetSlowCompTau()
 			break
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			MCC_AutoWholeCellComp()
+			// as we would have to return two values (restitance and capacitance)
+			// we return just zero
+			ret = 0
+			break
+		case MCC_GETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_GetWholeCellCompEnable()
+			break
+		case MCC_GETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_GetWholeCellCompCap()
+			break
+		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_GetWholeCellCompResist()
+			break
 		default:
 			ASSERT(0, "Unknown function")
 			break
@@ -506,6 +521,18 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 			case "setvar_DataAcq_WCR":
 				AmpStorageWave[3][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value * 1e6)
+				break
+			case "button_DataAcq_WCAuto":
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, NaN)
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN) * 1e12
+				AmpStorageWave[%WholeCellCap][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_WCC")
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN) * 1e-6
+				AmpStorageWave[%WholeCellRes][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_WCR")
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN)
+				AmpStorageWave[%WholeCellEnable][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName = "check_DatAcq_WholeCellEnable")
 				break
 			case "check_DatAcq_WholeCellEnable":
 				AmpStorageWave[4][0][i] = value
@@ -675,7 +702,7 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 				setSetVariable(panelTitle, "setvar_DataAcq_WCC", AmpStorageWave[%WholeCellCap][0][MIESHeadStageNo])
 				break
 			case "setvar_DataAcq_WCR":
-				setSetVariable(panelTitle, "setvar_DataAcq_WCC", AmpStorageWave[%WholeCellRes][0][MIESHeadStageNo])
+				setSetVariable(panelTitle, "setvar_DataAcq_WCR", AmpStorageWave[%WholeCellRes][0][MIESHeadStageNo])
 				break
 			case "check_DatAcq_WholeCellEnable":
 				setCheckBoxState(panelTitle, "check_DatAcq_WholeCellEnable", AmpStorageWave[%WholeCellEnable][0][MIESHeadStageNo])
