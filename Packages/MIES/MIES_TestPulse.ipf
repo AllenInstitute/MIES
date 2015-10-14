@@ -10,9 +10,10 @@ static Function TP_SelectTestPulseWave(panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Wave_DA_0" + num2str(i)
 			PopUpMenu $control mode = 2, win = $panelTitle
 		endif
@@ -27,9 +28,10 @@ static Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Wave_DA_0" + num2str(i)
 			ControlInfo /w = $panelTitle $control
 			SelectedDACWaveList[i] = v_value
@@ -45,9 +47,10 @@ static Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Wave_DA_0" + num2str(i)
 			PopupMenu $control mode = SelectedDACWaveList[i], win = $panelTitle
 		endif
@@ -62,9 +65,10 @@ static Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Scale_DA_0" + num2str(i)
 			ControlInfo /w = $panelTitle $control
 			SelectedDACScale[i] = v_value
@@ -80,9 +84,10 @@ static Function TP_SetDAScaleToOne(panelTitle)
 	variable scalingFactor, i
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Scale_DA_0" + num2str(i)
 			if(ChannelClampMode[i][0] == V_CLAMP_MODE)
 				scalingFactor = 1
@@ -110,9 +115,10 @@ static Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Scale_DA_0" + num2str(i)
 			SetSetVariable(panelTitle, control, SelectedDACScale[i])
 		endif

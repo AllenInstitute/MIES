@@ -13,7 +13,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
 
-	variable numADCs
+	variable numADCs, numActiveChannels
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
 	if(ParamIsDefault(multiDevice))
@@ -30,13 +30,15 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 
-	DC_MakeITCConfigAllConfigWave(panelTitle)
-	DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
-	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
-	DC_MakeFIFOAvailAllConfigWave(panelTitle)
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
+
+	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
+	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
+	DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
+	DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
+	DC_MakeFIFOAvailAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
@@ -129,15 +131,29 @@ End
 /// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
 ///
 /// @param panelTitle  panel title
-static Function DC_ChanCalcForITCChanConfigWave(panelTitle)
+/// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
-	variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	variable NoOfADChannelsSelected = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
-	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
-	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
+	variable numDACs, numADCs, numTTLsRackZero, numTTLsRackOne, numActiveHeadstages
 
-	return NoOfDAChannelsSelected + NoOfADChannelsSelected + AreRack0FrontTTLsUsed + AreRack1FrontTTLsUsed
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		numDACs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+		numADCs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
+		numTTLsRackZero = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
+		numTTLsRackOne  = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		numActiveHeadstages = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		numDACs         = numActiveHeadstages
+		numADCs         = numActiveHeadstages
+		numTTLsRackZero = 0
+		numTTLsRackOne  = 0
+	else
+		ASSERT(0, "Unknown value of dataAcqOrTP")
+	endif
+
+	return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
 END
 
 /// @brief Returns the ON/OFF status of the front TTLs on a specified rack.
@@ -196,19 +212,23 @@ End
 
 /// @brief Returns the number of points in the longest stimset
 ///
-/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
 /// @param panelTitle  device
-static Function DC_LongestOutputWave(panelTitle, channelType)
+/// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
+static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	string panelTitle
-	variable channelType
+	variable dataAcqOrTP, channelType
 
 	variable maxNumRows, i, numEntries
 	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
-	WAVE status = DC_ControlStatusWave(panelTitle, channelType)
-	numEntries = DimSize(status, ROWS)
+	WAVE statusChannel = DC_ControlStatusWave(panelTitle, channelType)
+	WAVE statusHS      = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	numEntries = DimSize(statusChannel, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		if(!status[i])
+
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, channelType, i, statusChannel, statusHS))
 			continue
 		endif
 
@@ -216,6 +236,8 @@ static Function DC_LongestOutputWave(panelTitle, channelType)
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
+
+		maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 	endfor
 
 	return maxNumRows
@@ -258,17 +280,19 @@ static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
 	variable dataAcqOrTP
 	variable channelType
 
-	return ceil(DC_LongestOutputWave(panelTitle, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
+	return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
 End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
 /// @param panelTitle  panel title
-static Function DC_MakeITCConfigAllConfigWave(panelTitle)
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
+	variable numActiveChannels
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCChanConfigWave/Wave=wv
+	Make/I/O/N=(numActiveChannels, 4) dfr:ITCChanConfigWave/Wave=wv
 	wv = 0
 End
 
@@ -276,19 +300,19 @@ End
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @param panelTitle  panel title
-/// @param DataAcqOrTP one for data acquisition, zero for test pulse
-static Function DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
 	string panelTitle
-	variable DataAcqOrTP
+	variable numActiveChannels, dataAcqOrTP
 
-	variable numRows, numCols
+	variable numRows
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	numRows   = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)
-	numCols   = DC_ChanCalcForITCChanConfigWave(panelTitle)
+	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 
-	Make/W/O/N=(numRows, numCols) dfr:ITCDataWave/Wave=ITCDataWave
+	Make/W/O/N=(numRows, numActiveChannels) dfr:ITCDataWave/Wave=ITCDataWave
 
 	FastOp ITCDataWave = 0
 	SetScale/P x 0, DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / 1000, "ms", ITCDataWave
@@ -296,22 +320,75 @@ End
 
 /// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
 ///
-/// @param panelTitle  panel title
-static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
+	variable numActiveChannels
+
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
+	Make/I/O/N=(numActiveChannels, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
 	wv = 0
 End
 
 /// @brief Creates the ITCFIFOAvailAllConfigWave used to recieve FIFO position data
 ///
-/// @param panelTitle  panel title
-static Function DC_MakeFIFOAvailAllConfigWave(panelTitle)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+static Function DC_MakeFIFOAvailAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
+	variable numActiveChannels
+
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
+	Make/I/O/N=(numActiveChannels, 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
 	wv = 0
+End
+
+/// @brief Check if the given channel is active
+///
+/// For DAQ a channel is active if it is selected. For the testpulse it is active if it is connected with
+/// an active headstage.
+///
+/// `statusChannel` and `statusHS` are passed in for performance reasons.
+///
+/// @param panelTitle        panel title
+/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType       one of the channel type constants from @ref ChannelTypeAndControlConstants
+/// @param channelNumber     number of the channel
+/// @param statusChannel     status wave of the given channelType
+/// @param statusHS     	 status wave of the headstages
+Function DC_ChannelIsActive(panelTitle, dataAcqOrTP, channelType, channelNumber, statusChannel, statusHS)
+	string panelTitle
+	variable dataAcqOrTP, channelType, channelNumber
+	WAVE statusChannel, statusHS
+
+	variable headstage
+
+	if(!statusChannel[channelNumber])
+		return 0
+	endif
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		return 1
+	endif
+
+	switch(channelType)
+		case CHANNEL_TYPE_TTL:
+			// TTL channels are always considered inactive for the testpulse
+			return 0
+			break
+		case CHANNEL_TYPE_ADC:
+			headstage = AFH_GetHeadstageFromADC(panelTitle, channelNumber)
+			break
+		case CHANNEL_TYPE_DAC:
+			headstage = AFH_GetHeadstageFromDAC(panelTitle, channelNumber)
+			break
+		default:
+			ASSERT(0, "unhandled case")
+			break
+	endswitch
+
+	return IsFinite(headstage) && statusHS[headstage]
 End
 
 /// @brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave
@@ -328,13 +405,15 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 	// query DA properties
 	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!channelStatus[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, channelStatus, statusHS))
 			continue
 		endif
 
@@ -351,7 +430,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!channelStatus[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_ADC, i, channelStatus, statusHS))
 			continue
 		endif
 
@@ -467,7 +546,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!statusDA[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			continue
 		endif
 
@@ -572,7 +651,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	numEntries = DimSize(statusAD, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!statusAD[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_ADC, i, statusAD, statusHS))
 			continue
 		endif
 
@@ -653,6 +732,8 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	string listOfSets = ""
 
 	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
@@ -663,7 +744,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 
 	for(i = first; i <= last; i += 1)
 
-		if(!statusTTL[i])
+		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
 			listOfSets = AddListItem(";", listOfSets, ";", inf)
 			continue
 		endif
@@ -688,7 +769,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 
 	for(i = first; i <= last; i += 1)
 
-		if(!statusTTL[i])
+		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
 			continue
 		endif
 
