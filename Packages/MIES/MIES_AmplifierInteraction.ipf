@@ -522,6 +522,18 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AmpStorageWave[3][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value * 1e6)
 				break
+			case "button_DataAcq_WCAuto":
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, NaN)
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN) * 1e12
+				AmpStorageWave[%WholeCellCap][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_WCC")
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN) * 1e-6
+				AmpStorageWave[%WholeCellRes][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_WCR")
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN)
+				AmpStorageWave[%WholeCellEnable][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName = "check_DatAcq_WholeCellEnable")
+				break
 			case "check_DatAcq_WholeCellEnable":
 				AmpStorageWave[4][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value)

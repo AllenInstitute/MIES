@@ -15,7 +15,7 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /W=(210,494,692,1277)/K=1
+	NewPanel /K=1 /W=(210,494,692,1277)
 	GroupBox group_DataAcq_WholeCell,pos={60,192},size={143,59},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2218,7 +2218,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_WCC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCC,limits={1,inf,1},value= _NUM:0
-	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},disable=1,title="Auto"
+	Button button_DataAcq_WCAuto,pos={116,231},size={40,15},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
 	Button button_DataAcq_WCAuto,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	GroupBox group_DataAcq_RsCompensation,pos={210,192},size={168,61},disable=1,title="       Rs Compensation"
