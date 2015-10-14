@@ -74,8 +74,6 @@ static Function DC_UpdateClampModeString(panelTitle)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	string/G testPulseDFR:ADChannelList = Convert1DWaveToList(ADCs)
 
 	SVAR clampModeString = $GetClampModeString(panelTitle)
 	clampModeString = ""

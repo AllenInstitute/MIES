@@ -140,9 +140,6 @@ Function TP_UpdateGlobals(panelTitle)
 	variable/G testPulseDFR:baselineFrac
 	NVAR/SDFR=testPulseDFR baselineFrac
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	string/G testPulseDFR:ADChannelList  = Convert1DWaveToList(GetADCListFromConfig(ITCChanConfigWave))
 	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	
 	// Stores panelTitle GUI control state
