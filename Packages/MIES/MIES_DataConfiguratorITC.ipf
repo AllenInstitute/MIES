@@ -364,37 +364,39 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	Note ITCChanConfigWave, unitList
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
-
-	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-
-		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-		ASSERT(ret, "Could not parse device string")
-
-		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
-			channel = 1
-		else
-			channel = 0
-		endif
-
-		ITCChanConfigWave[j][1] = channel
-		sweepDataLNB[0][10][]   = channel
-
-		j += 1
-	endif
-
-	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-
-		channel = 3
-		ITCChanConfigWave[j][1] = channel
-		sweepDataLNB[0][11][]   = channel
-	endif
-
 	ITCChanConfigWave[][2] = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][3] = 0
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
+		WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+
+		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+
+			ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+			ASSERT(ret, "Could not parse device string")
+
+			if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
+				channel = 1
+			else
+				channel = 0
+			endif
+
+			ITCChanConfigWave[j][1] = channel
+			sweepDataLNB[0][10][]   = channel
+
+			j += 1
+		endif
+
+		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+
+			channel = 3
+			ITCChanConfigWave[j][1] = channel
+			sweepDataLNB[0][11][]   = channel
+		endif
+	endif
 End
 
 /// @brief Get the decimation factor for the current channel configuration
@@ -588,23 +590,25 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		itcDataColumn += 1
 	endfor
 
-	// reset to the default value without distributedDAQ
-	insertStart = onSetDelay
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		// reset to the default value without distributedDAQ
+		insertStart = onSetDelay
 
-	// Place TTL waves into ITCDataWave
-	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-		DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
-		WAVE/SDFR=deviceDFR TTLwave
-		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
-		itcDataColumn += 1
-	endif
+		// Place TTL waves into ITCDataWave
+		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+			DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
+			WAVE/SDFR=deviceDFR TTLwave
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
+			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			itcDataColumn += 1
+		endif
 
-	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-		DC_MakeITCTTLWave(RACK_ONE, panelTitle)
-		WAVE/SDFR=deviceDFR TTLwave
-		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+			DC_MakeITCTTLWave(RACK_ONE, panelTitle)
+			WAVE/SDFR=deviceDFR TTLwave
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
+			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+		endif
 	endif
 End
 
