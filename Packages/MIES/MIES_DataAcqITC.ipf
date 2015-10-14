@@ -210,22 +210,25 @@ End
 
 Function ITC_Timer(s)
 	STRUCT WMBackgroundStruct &s
-	SVAR panelTitleG =  root:MIES:ITCDevices:panelTitleG
-	NVAR Start = root:MIES:ITCDevices:Start, RunTime = root:MIES:ITCDevices:RunTime
-	variable TimeLeft
-	
-	variable ElapsedTime = (ticks - Start)
-	
-	TimeLeft = abs(((RunTime - (ElapsedTime)) / 60))
-	if(TimeLeft < 0)
+
+	variable timeLeft, elapsedTime
+
+	NVAR start = root:MIES:ITCDevices:Start
+	NVAR runTime = root:MIES:ITCDevices:RunTime
+	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
+
+	elapsedTime = (ticks - Start)
+
+	timeLeft = abs(((runTime - (elapsedTime)) / 60))
+	if(timeLeft < 0)
 		timeleft = 0
 	endif
-	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:TimeLeft
-	
-	if(ElapsedTime >= RunTime)
+	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:timeLeft
+
+	if(elapsedTime >= runTime)
 		ITC_StopBackgroundTimerTask()
 	endif
-	//printf "NextRunTicks %d", s.nextRunTicks
+
 	return 0
 End
 

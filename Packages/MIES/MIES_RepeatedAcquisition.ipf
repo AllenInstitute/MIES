@@ -395,7 +395,6 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(Count < TotTrials)
-		variable DataAcqOrTP = 0
 		DAM_FunctionStartDataAcq(panelTitle)
 	endif
 End
