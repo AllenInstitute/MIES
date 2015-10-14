@@ -650,7 +650,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_UseDoublePrec,value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs,pos={243,268},size={144,14},title="Skip analysis function calls"
+	CheckBox Check_Settings_SkipAnalysFuncs,pos={243,268},size={144,14},disable=1,title="Skip analysis function calls"
 	CheckBox Check_Settings_SkipAnalysFuncs,help={"Should the analysis functions defined in the stim sets not be called? Mostly useful for testing/debugging."}
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabcontrol)=  "ADC"
