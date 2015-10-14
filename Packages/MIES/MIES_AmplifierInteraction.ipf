@@ -373,6 +373,21 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 		case MCC_GETSLOWCOMPTAU_FUNC:
 			ret = MCC_GetSlowCompTau()
 			break
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			MCC_AutoWholeCellComp()
+			// as we would have to return two values (restitance and capacitance)
+			// we return just zero
+			ret = 0
+			break
+		case MCC_GETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_GetWholeCellCompEnable()
+			break
+		case MCC_GETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_GetWholeCellCompCap()
+			break
+		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_GetWholeCellCompResist()
+			break
 		default:
 			ASSERT(0, "Unknown function")
 			break
