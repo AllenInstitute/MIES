@@ -9,11 +9,12 @@ Function ITC_DataAcq(panelTitle)
 	string cmd
 	variable i
 
-	variable ADChannelToMonitor    = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	variable stopCollectionPoint   = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
-	string oscilloscopeSubwindow   = SCOPE_GetGraph(panelTitle)
+	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
-	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+
 	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
 	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
@@ -85,15 +86,12 @@ Function ITC_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	string cmd
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	string /G root:MIES:ITCDevices:panelTitleG = panelTitle
 
 	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
 	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
 	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
 
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
@@ -119,9 +117,10 @@ End
 
 Function ITC_StopDataAcq()
 	string cmd
-	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
 
+	SVAR panelTitleG = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
 
@@ -159,18 +158,20 @@ Function ITC_FIFOMonitor(s)
 
 	string cmd
 
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
-	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
-	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	SVAR panelTitleG         = $GetPanelTitleGlobal()
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitleG)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitleG)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitleG)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitleG)
+
 	WAVE ITCFIFOAvailAllConfigWave = GetITCFIFOAvailAllConfigWave(panelTitleG)
+	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 	ExecuteITCOperation(cmd)
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
 	ITCDataWave[0][0] += 0 //forces on screen update
 
 	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
@@ -192,10 +193,11 @@ End
 Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
 	Variable RunTimePassed//how long you want the background timer to run in seconds
 	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
+
 	String /G root:MIES:ITCDevices:FunctionNameA = FunctionNameAPassedIn
 	String /G root:MIES:ITCDevices:FunctionNameB = FunctionNameBPassedIn
 	String /G root:MIES:ITCDevices:FunctionNameC = FunctionNameCPassedIn
-	String /G root:MIES:ITCDevices:PanelTitleG = panelTitle
+
 	Variable numTicks = 15		// Run every quarter second (15 ticks)
 	Variable /G root:MIES:ITCDevices:Start = ticks
 	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
@@ -215,7 +217,7 @@ Function ITC_Timer(s)
 
 	NVAR start = root:MIES:ITCDevices:Start
 	NVAR runTime = root:MIES:ITCDevices:RunTime
-	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
+	SVAR panelTitleG = $GetPanelTitleGlobal()
 
 	elapsedTime = (ticks - Start)
 
@@ -244,18 +246,14 @@ End
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	string /G root:MIES:ITCDevices:panelTitleG
-	SVAR panelTitleG = root:MIES:ITCDevices:panelTitleG
-	panelTitleG = panelTitle
 	string cmd
 
-	variable /G root:MIES:ITCDevices:StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
-	variable /G root:MIES:ITCDevices:ADChannelToMonitor  = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
-
+	SVAR panelTitleG       = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+	WAVE ITCDataWave       = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
 
@@ -270,12 +268,14 @@ End
 Function ITC_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 
-	NVAR StopCollectionPoint = root:MIES:ITCDevices:StopCollectionPoint
-	NVAR ADChannelToMonitor  = root:MIES:ITCDevices:ADChannelToMonitor
-	SVAR panelTitleG         = root:MIES:ITCDevices:PanelTitleG
+	SVAR panelTitleG         = $GetPanelTitleGlobal()
 	// create a copy as panelTitleG is killed in ITC_StopTestPulseSingleDevice
 	// but we still need it afterwards
-	string panelTitle        = panelTitleG
+	string panelTitle = panelTitleG
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -338,9 +338,6 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 
 	DAP_RestoreTTLState(panelTitle)
 	EnableControl(panelTitle, "StartTestPulseButton")
-
-	DFREF dfr = GetITCDevicesFolder()
-	KillStrings/Z dfr:PanelTitleG
 
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)
@@ -473,8 +470,9 @@ Function ITC_StartTestPulse(panelTitle)
 
 	string cmd, keyboard
 	variable i
-	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 

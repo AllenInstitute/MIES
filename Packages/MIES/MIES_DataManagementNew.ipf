@@ -27,7 +27,8 @@ Function DM_SaveAndScaleITCData(panelTitle)
 		savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
 		savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
 
-		rowsToCopy = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) - 1
+		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+		rowsToCopy = stopCollectionPoint - 1
 
 		Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
 		Duplicate/O ITCChanConfigWave $savedSetUpWaveName

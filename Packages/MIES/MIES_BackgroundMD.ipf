@@ -12,11 +12,12 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 	string panelTitle
 
 	string cmd
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)

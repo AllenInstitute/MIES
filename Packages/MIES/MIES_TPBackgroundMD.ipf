@@ -8,8 +8,9 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	string panelTitle
 
 	string cmd
-	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, TEST_PULSE_MODE)
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC) // channel that is monitored to determine when a sweep should terminate
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)

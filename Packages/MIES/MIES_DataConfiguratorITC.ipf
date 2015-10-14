@@ -27,10 +27,16 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 	sweepDataTxTLNB = ""
 
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+
 	DC_MakeITCConfigAllConfigWave(panelTitle)
 	DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle)
+
+	SVAR panelTitleG = $GetPanelTitleGlobal()
+	panelTitleG = panelTitle
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
@@ -38,6 +44,10 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
 	DC_UpdateClampModeString(panelTitle)
+
+	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	ADChannelToMonitor = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
@@ -222,10 +232,10 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable longestSweep, exponent
+	variable exponent
 
-	longestSweep = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-	exponent = ceil(log(longestSweep)/log(2))
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	exponent = ceil(log(stopCollectionPoint)/log(2))
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1
