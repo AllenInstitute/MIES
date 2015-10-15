@@ -4088,54 +4088,62 @@ End
 
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
-	
-	switch( pa.eventCode )
+
+	string panelTitle
+
+	switch(pa.eventCode)
 		case 2: // mouse up
-			if(!stringmatch(pa.win, "DA_*")) // only update parameter data storage waves if the panel is locked.
-				HSU_UpdateChanAmpAssignPanel(pa.win)
-				P_UpdatePressureControls(pa.win, (pa.popNum - 1))
-				M_SetManipulatorAssocControls(pa.win, (pa.popNum - 1))
+			panelTitle = pa.win
+			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+				break
 			endif
-			break
-		case -1: // control being killed
+
+			HSU_UpdateChanAmpAssignPanel(panelTitle)
+			P_UpdatePressureControls(panelTitle, pa.popNum - 1)
+			M_SetManipulatorAssocControls(panelTitle, pa.popNum - 1)
+
 			break
 	endswitch
-	
+
 	return 0
 End
 
 Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	switch( pa.eventCode )
+	string panelTitle
+
+	switch(pa.eventCode)
 		case 2: // mouse up
-			if(!stringmatch(pa.win, "DA_*")) // only update parameter data storage waves if the panel is locked.
-				HSU_UpdateChanAmpAssignStorWv(pa.win)
-				P_UpdatePressureDataStorageWv(pa.win)
-				M_SetManipulatorAssociation(pa.win)
+			panelTitle = pa.win
+			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+				break
 			endif
-			break
-		case -1: // control being killed
+
+			HSU_UpdateChanAmpAssignStorWv(panelTitle)
+			P_UpdatePressureDataStorageWv(panelTitle)
+			M_SetManipulatorAssociation(panelTitle)
 			break
 	endswitch
-	
+
 	return 0
 End
 
 Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	switch( sva.eventCode )
+	string panelTitle
+
+	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
-			if(!stringmatch(sva.win, "DA_*")) // only update parameter data storage waves if the panel is locked.
-				HSU_UpdateChanAmpAssignStorWv(sva.win)
-				P_UpdatePressureDataStorageWv(sva.win)
+			panelTitle = sva.win
+			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+				break
 			endif
-			break
-		case 3: // Live update
-			break
-		case -1: // control being killed
+
+			HSU_UpdateChanAmpAssignStorWv(panelTitle)
+			P_UpdatePressureDataStorageWv(panelTitle)
 			break
 	endswitch
 
