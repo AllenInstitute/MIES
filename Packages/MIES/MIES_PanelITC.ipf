@@ -2581,11 +2581,19 @@ Window DA_Ephys() : Panel
 	TitleBox Title_settings_Hardware_Manipul,pos={31,588},size={60,13},title="Manipulators"
 	TitleBox Title_settings_Hardware_Manipul,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Manipul,userdata(tabcontrol)=  "ADC",frame=0
-	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={75,605},size={176,21},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="MSS"
+	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={98,604},size={150,21},bodyWidth=150,disable=2,proc=DAP_PopMenuProc_CAA
 	PopupMenu popup_Settings_Manip_MSSMnipLst,help={"List of available Scientifica micromanipulators"}
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=1,popvalue="- none -",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
+	CheckBox Check_Hardware_UseManip,pos={34,607},size={57,14},proc=DAP_Activate_Manips,title="Activate"
+	CheckBox Check_Hardware_UseManip,help={"Try to establish communication with the manipulators."}
+	CheckBox Check_Hardware_UseManip,userdata(tabnum)=  "6"
+	CheckBox Check_Hardware_UseManip,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo)= A"!!,Gn!!#?o!!#@e!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Hardware_UseManip,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2923,6 +2931,9 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Independent",noedit= 1
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
 	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=DAP_GUIListOfYokedDevices()
+
+	DisableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
+	SetCheckBoxState(panelTitle, "Check_Hardware_UseManip", 0)
 
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
@@ -4100,8 +4111,10 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 
 			HSU_UpdateChanAmpAssignPanel(panelTitle)
 			P_UpdatePressureControls(panelTitle, pa.popNum - 1)
-			M_SetManipulatorAssocControls(panelTitle, pa.popNum - 1)
 
+			if(GetCheckBoxState(panelTitle, "Check_Hardware_UseManip"))
+				M_SetManipulatorAssocControls(panelTitle, pa.popNum - 1)
+			endif
 			break
 	endswitch
 
@@ -4122,7 +4135,10 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 
 			HSU_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
-			M_SetManipulatorAssociation(panelTitle)
+
+			if(GetCheckBoxState(panelTitle, "Check_Hardware_UseManip"))
+				M_SetManipulatorAssociation(panelTitle)
+			endif
 			break
 	endswitch
 
@@ -5680,4 +5696,23 @@ Function/Wave GetAllHSMode(panelTitle)
 		Mode[i] = AI_MIESHeadstageMode(panelTitle, i)
 	endfor
 	return Mode
+End
+
+Function DAP_Activate_Manips(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			panelTitle = cba.win
+			if(cba.checked)
+				EnableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
+			else
+				DisableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
+			endif
+			break
+	endswitch
+
+	return 0
 End
