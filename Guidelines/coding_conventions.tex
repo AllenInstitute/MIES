@@ -1,9 +1,8 @@
 \documentclass{scrartcl}
 
 % Compilation instructions and required third party tools:
-% - lualatex from texlive 2014 or newer
+% - lualatex from texlive 2015 or newer
 % - pygments from http://pygments.org (2.0.x or newer)
-% - (already included) minted package from https://github.com/gpoore/minted (v2.0-alpha3 or newer)
 % - (already included) AnonymousPro font in OTF format from http://www.fontsquirrel.com/fonts/Anonymous-Pro
 
 \usepackage{fontspec}
@@ -14,8 +13,8 @@
 \setminted{autogobble, tabsize=4, fontfamily=tt}
 \setminted[igor]{style=igor}
 
-\date{12.04.2015}
-\newcommand{\version}{0.11}
+\date{20.10.2015}
+\newcommand{\version}{0.12}
 
 \usepackage[%
 pdfa=true,
@@ -45,7 +44,7 @@ pdfauthor={Thomas Braun, byte physics, thomas.braun@byte-physics.de}
 %	
 	\item The first line consists of \mintinline{igor}{#pragma rtGlobals=3} with optional comment
 %	
-	\item Always use Windows (CRLF) end-of-line style
+	\item Always use UNIX (LF) end-of-line style
 \end{itemize}
 %
 \section{Whitespace and Comments}
