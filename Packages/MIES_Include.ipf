@@ -14,6 +14,9 @@
 #include "Arduino_Sequencer_Vs1"
 #include "FixScrolling"
 
+// NWB for Igor Pro
+#include "IPNWB_Include"
+
 // our includes
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisFunctionHelpers"
