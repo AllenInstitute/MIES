@@ -43,6 +43,7 @@
 #include "MIES_Manipulator"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
+#include "MIES_NeuroDataWithoutBorders"
 #include "MIES_Oscilloscope"
 #include "MIES_PanelITC"
 #include "MIES_PressureControl"

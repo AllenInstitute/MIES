@@ -55,6 +55,10 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	// TP settings, especially useful if "global TP insertion" is active
 	ED_TPSettingsDocumentation(panelTitle)
 
+	if(GetCheckBoxState(panelTitle, "Check_Settings_NwbExport"))
+		NWB_AppendSweep(panelTitle, dataWave, configWave, sweepNo)
+	endif
+
 	AM_analysisMasterPostSweep(panelTitle, sweepNo)
 	DM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
 

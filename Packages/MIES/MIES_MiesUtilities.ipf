@@ -1223,6 +1223,8 @@ Function SaveExperimentSpecial(mode)
 	endif
 
 	SaveExperiment
+
+	CloseNWBFile()
 End
 
 /// @brief Return the maximum count of the given type
@@ -2115,4 +2117,19 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 		Duplicate data, targetDFR:$(wavePrefix + num2str(i))/Wave=dest
 		MultiThread dest[] = dest[p] & bit
 	endfor
+End
+
+/// @brief Close a possibly open export-into-NWB file
+Function CloseNWBFile()
+	NVAR fileID = $GetNWBFileIDExport()
+
+	if(IsFinite(fileID))
+		HDF5CloseFile/Z fileID
+		DEBUGPRINT("Trying to close the NWB file using HDF5CloseFile returned: ", var=V_flag)
+		if(!V_flag) // success
+			fileID = NaN
+			SVAR filePath = $GetNWBFilePathExport()
+			filepath = ""
+		endif
+	endif
 End

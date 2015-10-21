@@ -2586,6 +2586,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Hardware_UseManip,value= 0
+	CheckBox Check_Settings_NwbExport,pos={34,243},size={97,14},disable=1,title="Export into NWB"
+	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
+	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_NwbExport,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo)= A"!!,Ch!!#?k!!#A+!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_NwbExport,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2822,6 +2830,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
 
 	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
+	CheckBox Check_Settings_NwbExport WIN = $panelTitle,value= 0
 
 	SetVariable SetVar_AsyncAD_min_00 WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_AsyncAD_max_00 WIN = $panelTitle,value= _NUM:0

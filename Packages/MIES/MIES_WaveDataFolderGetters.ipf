@@ -3474,3 +3474,14 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 
  	return wv
 End
+
+/// @brief Return the datafolder reference to the NeuroDataWithoutBorders folder,
+///        e.g. root:MIES:NWB
+Function/DF GetNWBFolder()
+	return createDFWithAllParents(GetNWBFolderAS())
+End
+
+/// @brief Return the full path to the NeuroDataWithoutBorders folder
+Function/S GetNWBFolderAS()
+	return GetMiesPathAsString() + ":NWB"
+End
