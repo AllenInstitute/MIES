@@ -208,7 +208,7 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 
 	variable numCols, col, row, numKeyRows, numKeyCols, i, numAdditions, idx
 	variable lastValidIncomingKeyRow
-	string msg
+	string msg, searchStr
 
 	numKeyRows = DimSize(key, ROWS)
 	numKeyCols = DimSize(key, COLS)
@@ -218,7 +218,10 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
-		FindValue/TXOP=4/TEXT=(incomingKey[0][i]) key
+		searchStr = incomingKey[0][i]
+		ASSERT(!isEmpty(searchStr), "Incoming key can not be empty")
+
+		FindValue/TXOP=4/TEXT=(searchStr) key
 		col = floor(V_value / numKeyRows)
 
 		if(col >= 0)
