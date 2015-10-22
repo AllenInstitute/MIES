@@ -128,7 +128,8 @@ Function ITC_BkrdTPFuncMD(s)
 			Keyboard = KeyboardState("")
 			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
 				panelTitle = GetMainWindow(GetCurrentWindow())
-				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
+				// only stop the currently active device
+				if(!cmpstr(panelTitle,ActiveDeviceTextList[i]))
 					beep 
 					DAM_StopTPMD(panelTitle)
 				endif
