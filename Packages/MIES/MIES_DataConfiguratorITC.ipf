@@ -483,8 +483,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
-		sweepDataLNB[0][0][HeadStage] = DAScale // document the DA scale
-
 		setName = StringFromList(i, setNameList)
 		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
 		WAVE stimSet = WB_CreateAndGetStimSet(setName)
@@ -534,6 +532,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
+		sweepDataLNB[0][0][HeadStage] = DAScale
 		sweepDataLNB[0][5][HeadStage] = setColumn
 
 		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
