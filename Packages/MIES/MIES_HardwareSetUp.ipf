@@ -238,7 +238,7 @@ Function HSU_IsDeviceTypeConnected(panelTitle)
 		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 0
 	endif
 	print "Available number of specified ITC devices =", LocalWave[0]
-	killwaves localwave
+	KillOrMoveToTrash(wv=localwave)
 End
 
 /// @brief Update the list of locked devices
@@ -264,7 +264,7 @@ Function HSU_OpenITCDevice(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	ITCDeviceIDGlobal = DevID[0]
 
-	KillWaves/Z DevID
+	KillOrMoveToTrash(wv=DevID)
 End
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
@@ -503,8 +503,8 @@ Function/S HSU_ListDevices()
 	endfor
 
 	KillVariables/Z itcerror, itcxoperror
-	KillWaves dev
-	
+	KillOrMoveToTrash(wv=dev)
+
 	return result
 End
 

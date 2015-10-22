@@ -1465,7 +1465,7 @@ static Function WBP_MoveWaveTOFolder(FolderPath, NameOfWaveToBeMoved, Kill, Base
 
 	Duplicate/O srcWave $NameOfWaveWithFolderPath
 	if(kill)
-		KillWaves srcWave
+		KillOrMoveToTrash(wv=srcWave)
 	endif
 End
 

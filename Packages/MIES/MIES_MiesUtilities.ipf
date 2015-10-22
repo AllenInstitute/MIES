@@ -1584,7 +1584,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
 
 		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
-		KillDataFolder tmpDFR
+		KillOrMoveToTrash(dfr=tmpDFR)
 	endfor
 End
 

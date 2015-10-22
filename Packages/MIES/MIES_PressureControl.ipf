@@ -406,7 +406,7 @@ Function P_OpenITCDevice(panelTitle, ITCDeviceToOpen)
 		endif
 	endfor
 
-	KillWaves/Z DevID
+	KillOrMoveToTrash(wv=DevID)
 End
 
 /// @brief Used to close ITC device used for pressure regulation

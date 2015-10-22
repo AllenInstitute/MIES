@@ -538,7 +538,7 @@ Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch cha
 	ExecuteITCOperation(cmd)
 
 	channelValue = AsyncChannelData[0]
-	KillWaves/F AsyncChannelData
+	KillOrMoveToTrash(wv=AsyncChannelData)
 	return channelValue
 End 
 

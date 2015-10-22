@@ -467,6 +467,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 		endfor
 	endif
 
+	// does not use KillOrMoveToTrash as it is not part of the end user MIES package
 	KillWaves/Z ReqWave, ResultWave
 	sprintf cmd, "ITCConfigChannelReset"
 	ExecuteITCOperation(cmd)

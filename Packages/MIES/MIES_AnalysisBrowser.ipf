@@ -788,7 +788,7 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	if(numWavesLoaded <= 0)
 		printf "Could not load sweep %d of device %s and %s\r", sweep, device, expFilePath
 		SetDataFolder saveDFR
-		KillDataFolder newDFR
+		KillOrMoveToTrash(dfr=newDFR)
 		return 1
 	endif
 
@@ -807,7 +807,7 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	DEBUGPRINT(msg)
 
 	if(AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave))
-		KillDataFolder sweepDataDFR
+		KillOrMoveToTrash(dfr=sweepDataDFR)
 		return 1
 	endif
 
@@ -850,7 +850,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	endfor
 
 	string/G sweepFolder:note = note(sweepWave)
-	KillWaves sweepWave
+	KillOrMoveToTrash(wv=sweepWave)
 
 	return 0
 End
