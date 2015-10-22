@@ -797,7 +797,7 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	Wave/Z/SDFR=dfr wv = sweepSettingsWave
 
@@ -810,6 +810,20 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	endif
 
 	wv = NaN
+
+	SetDimLabel COLS, 0 , $"Stim Scale Factor"    , wv
+	SetDimLabel COLS, 1 , $"DAC"                  , wv
+	SetDimLabel COLS, 2 , $"ADC"                  , wv
+	SetDimLabel COLS, 3 , $"DA Gain"              , wv
+	SetDimLabel COLS, 4 , $"AD Gain"              , wv
+	SetDimLabel COLS, 5 , $"Set Sweep Count"      , wv
+	SetDimLabel COLS, 6 , $"TP Insert Checkbox"   , wv
+	SetDimLabel COLS, 7 , $"Inter-trial interval" , wv
+	SetDimLabel COLS, 8 , $"TTL rack zero bits"   , wv
+	SetDimLabel COLS, 9 , $"TTL rack one bits"    , wv
+	SetDimLabel COLS, 10, $"TTL rack zero channel", wv
+	SetDimLabel COLS, 11, $"TTL rack one channel" , wv
+
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -845,7 +859,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
@@ -911,6 +925,19 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][11]     = ""
 	wv[%Tolerance][11] = "-"
 
+	SetDimLabel COLS, 0 , $"Stim Scale Factor"    , wv
+	SetDimLabel COLS, 1 , $"DAC"                  , wv
+	SetDimLabel COLS, 2 , $"ADC"                  , wv
+	SetDimLabel COLS, 3 , $"DA Gain"              , wv
+	SetDimLabel COLS, 4 , $"AD Gain"              , wv
+	SetDimLabel COLS, 5 , $"Set Sweep Count"      , wv
+	SetDimLabel COLS, 6 , $"TP Insert Checkbox"   , wv
+	SetDimLabel COLS, 7 , $"Inter-trial interval" , wv
+	SetDimLabel COLS, 8 , $"TTL rack zero bits"   , wv
+	SetDimLabel COLS, 9 , $"TTL rack one bits"    , wv
+	SetDimLabel COLS, 10, $"TTL rack zero channel", wv
+	SetDimLabel COLS, 11, $"TTL rack one channel" , wv
+
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -932,7 +959,7 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
@@ -945,6 +972,17 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	endif
 
 	wv = ""
+
+	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY            , wv
+	SetDimLabel COLS, 1, $"DA unit"                     , wv
+	SetDimLabel COLS, 2, $"AD unit"                     , wv
+	SetDimLabel COLS, 3, $"TTL rack zero stim sets"     , wv
+	SetDimLabel COLS, 4, $"TTL rack one stim sets"      , wv
+	SetDimLabel COLS, 5, $"Pre DAQ analysis function"   , wv
+	SetDimLabel COLS, 6, $"Mid sweep analysis function" , wv
+	SetDimLabel COLS, 7, $"Post sweep analysis function", wv
+	SetDimLabel COLS, 8, $"Post set analysis function"  , wv
+	SetDimLabel COLS, 9, $"Post DAQ analysis function"  , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -976,7 +1014,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
@@ -1000,6 +1038,17 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][7] = "Post sweep analysis function"
 	wv[0][8] = "Post set analysis function"
 	wv[0][9] = "Post DAQ analysis function"
+
+	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY            , wv
+	SetDimLabel COLS, 1, $"DA unit"                     , wv
+	SetDimLabel COLS, 2, $"AD unit"                     , wv
+	SetDimLabel COLS, 3, $"TTL rack zero stim sets"     , wv
+	SetDimLabel COLS, 4, $"TTL rack one stim sets"      , wv
+	SetDimLabel COLS, 5, $"Pre DAQ analysis function"   , wv
+	SetDimLabel COLS, 6, $"Mid sweep analysis function" , wv
+	SetDimLabel COLS, 7, $"Post sweep analysis function", wv
+	SetDimLabel COLS, 8, $"Post set analysis function"  , wv
+	SetDimLabel COLS, 9, $"Post DAQ analysis function"  , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
