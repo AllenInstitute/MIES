@@ -22,14 +22,13 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		multiDevice = !!multiDevice
 	endif
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-	sweepDataLNB = NaN
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
-	sweepDataTxTLNB = ""
+	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
+	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
+	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
+	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
@@ -76,7 +75,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	endif
 End
 
-/// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
+/// @brief Updates the global string of clamp modes based on the AD channel associated with the headstage
 ///
 /// In the order of the ADchannels in ITCDataWave - i.e. numerical order
 static Function DC_UpdateClampModeString(panelTitle)
@@ -93,7 +92,9 @@ static Function DC_UpdateClampModeString(panelTitle)
 	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
-		clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
+		if(IsFinite(headstage))
+			clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
+		endif
 	endfor
 End
 
@@ -506,7 +507,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
-	string ctrl, firstSetName, str, list
+	string ctrl, firstSetName, str, list, func, colLabel
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
@@ -551,18 +552,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		endif
 
 		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
-		ASSERT(IsFinite(headstage), "Non-finite headstage")
-
-		sweepDataLNB[0][1][HeadStage] = i // document the DA channel
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		val = GetSetVariable(panelTitle, ctrl)
-		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
-
-		sweepDataLNB[0][3][HeadStage] = val // document the DA gain
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DAScale = GetSetVariable(panelTitle, ctrl)
 
 		setName = StringFromList(i, setNameList)
 		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
@@ -577,15 +566,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
-		sweepDataTxTLNB[0][0][HeadStage] = setName
-
-		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			sweepDataTxTLNB[0][5 + j][headStage] = ExtractAnalysisFuncFromStimSet(stimSet, j)
-		endfor
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		sweepDataTxTLNB[0][1][HeadStage] = GetSetVariableString(panelTitle, ctrl)
-
 		if(dataAcqOrTP == TEST_PULSE_MODE)
 			setColumn   = 0
 			insertStart = 0
@@ -595,6 +575,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			oneFullCycle = imag(ret)
 			setColumn    = real(ret)
 			if(distributedDAQ)
+				ASSERT(IsFinite(headstage), "Distributed DAQ is not possible with unassociated DACs")
 				indexActiveHeadStage = sum(statusHS, 0, headstage)
 				ASSERT(indexActiveHeadStage > 0, "Invalid index")
 				insertStart = onsetDelay + (indexActiveHeadStage - 1) * (distributedDAQDelay + setLength)
@@ -613,8 +594,33 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
-		sweepDataLNB[0][0][HeadStage] = DAScale
-		sweepDataLNB[0][5][HeadStage] = setColumn
+		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, i, var=i)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		val = GetSetVariable(panelTitle, ctrl)
+		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
+
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		DAScale = GetSetVariable(panelTitle, ctrl)
+
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName)
+
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			func     = ExtractAnalysisFuncFromStimSet(stimSet, j)
+			colLabel = GetDimLabel(sweepDataTxTLNB, COLS, 5 + j)
+			DC_DocumentChannelProperty(panelTitle, colLabel, headstage, i, str=func)
+		endfor
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
+
+		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale)
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn)
+
+		DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, i, var=GlobalTPInsert)
+		DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, i, var=ITI)
 
 		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
 			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
@@ -639,10 +645,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude
 		endif
 
-		// put the insert test pulse checkbox status into the sweep data wave
-		sweepDataLNB[0][6][HeadStage] = GlobalTPInsert
-		sweepDataLNB[0][7][HeadStage] = ITI
-
 		itcDataColumn += 1
 	endfor
 
@@ -656,15 +658,14 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		endif
 
 		headstage = AFH_GetHeadstageFromADC(panelTitle, i)
-		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
-		sweepDataLNB[0][2][headStage] = i // document the AD channel
+		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, i, var=i)
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		sweepDataLNB[0][4][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
+		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=GetSetVariable(panelTitle, ctrl))
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		sweepDataTxTLNB[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
 		itcDataColumn += 1
 	endfor
@@ -688,6 +689,87 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
 			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		endif
+	endif
+End
+
+/// @brief Document channel properties of DA and AD channels
+///
+/// Knows about unassociated channels and creates the key `$entry UNASSOC_$channelNumber` for them
+///
+/// @param panelTitle device
+/// @param entry      name of the property
+/// @param headstage  number of headstage, must be `NaN` for unassociated channels
+/// @param channelNumber number of the channel
+/// @param var [optional] numeric value
+/// @param str [optional] string value
+static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channelNumber, [var, str])
+	string panelTitle, entry
+	variable headstage, channelNumber
+	variable var
+	string str
+
+	variable colData, colKey, numCols
+	string ua_entry
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var or str has to be supplied")
+
+	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
+	WAVE/T sweepDataLNBKey    = GetSweepSettingsKeyWave(panelTitle)
+	WAVE/T sweepDataTxTLNBKey = GetSweepSettingsTextKeyWave(panelTitle)
+
+	if(!ParamIsDefault(var))
+		colData = FindDimLabel(sweepDataLNB, COLS, entry)
+		colKey  = FindDimLabel(sweepDataLNBKey, COLS, entry)
+	elseif(!ParamIsDefault(str))
+		colData = FindDimLabel(sweepDataTxTLNB, COLS, entry)
+		colKey  = FindDimLabel(sweepDataTxTLNBKey, COLS, entry)
+	endif
+
+	ASSERT(colData >= 0, "Could not find entry in the labnotebook input waves")
+	ASSERT(colKey >= 0, "Could not find entry in the labnotebook input key waves")
+
+	if(IsFinite(headstage))
+		if(!ParamIsDefault(var))
+			sweepDataLNB[0][%$entry][headstage] = var
+		elseif(!ParamIsDefault(str))
+			sweepDataTxTLNB[0][%$entry][headstage] = str
+		endif
+		return NaN
+	endif
+
+	// headstage is not finite, so the channel is unassociated
+	sprintf ua_entry, "%s UNASSOC_%d", entry, channelNumber
+
+	if(!ParamIsDefault(var))
+		colData = FindDimLabel(sweepDataLNB, COLS, ua_entry)
+		colKey  = FindDimLabel(sweepDataLNBKey, COLS, ua_entry)
+	elseif(!ParamIsDefault(str))
+		colData = FindDimLabel(sweepDataTxTLNB, COLS, ua_entry)
+		colKey  = FindDimLabel(sweepDataTxTLNBKey, COLS, ua_entry)
+	endif
+
+	ASSERT((colData >= 0 && colKey >= 0) || (colData < 0 && colKey < 0), "input and key wave got out of sync")
+
+	if(colData < 0)
+		if(!ParamIsDefault(var))
+			numCols = DimSize(sweepDataLNB, COLS)
+			Redimension/N=(-1, numCols + 1, -1) sweepDataLNB, sweepDataLNBKey
+			SetDimLabel COLS, numCols, $ua_entry, sweepDataLNB, sweepDataLNBKey
+			sweepDataLNBKey[0][%$ua_entry]   = ua_entry
+			sweepDataLNBKey[1,2][%$ua_entry] = sweepDataLNBKey[p][%$entry]
+		elseif(!ParamIsDefault(str))
+			numCols = DimSize(sweepDataTxTLNB, COLS)
+			Redimension/N=(-1, numCols + 1, -1) sweepDataTxTLNB, sweepDataTxTLNBKey
+			SetDimLabel COLS, numCols, $ua_entry, sweepDataTxTLNB, sweepDataTxTLNBKey
+			sweepDataTxtLNBKey[0][%$ua_entry] = ua_entry
+		endif
+	endif
+
+	if(!ParamIsDefault(var))
+		sweepDataLNB[0][%$ua_entry][INDEP_HEADSTAGE] = var
+	elseif(!ParamIsDefault(str))
+		sweepDataTxTLNB[0][%$ua_entry][INDEP_HEADSTAGE] = str
 	endif
 End
 

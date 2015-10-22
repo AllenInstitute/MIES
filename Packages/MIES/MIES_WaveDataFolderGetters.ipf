@@ -796,6 +796,8 @@ End
 /// sweepSettingsWave is used to save stimulus settings for each
 /// data sweep and create waveNotes for tagging data sweeps
 ///
+/// Additional columns, necessary for unassociated channels, are created on runtime.
+///
 /// Rows:
 ///  - One row
 ///
