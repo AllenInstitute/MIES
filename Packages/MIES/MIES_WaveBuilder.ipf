@@ -36,7 +36,7 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 
 		WAVE/Z/SDFR=dfr oldStimSet = $setName
 		if(WaveExists(oldStimSet))
-			KillOrMoveToTrash(GetWavesDataFolder(oldStimSet, 2))
+			KillOrMoveToTrash(wv=oldStimSet)
 		endif
 
 		MoveWave stimSet, dfr:$setName

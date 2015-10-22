@@ -273,7 +273,7 @@ Function DM_DeleteDataWaves(panelTitle, sweepNo)
 		if(waveSweepNo < sweepNo)
 			continue
 		endif
-		KillOrMoveToTrash(path + ":" + name)
+		KillOrMoveToTrashPath(path + ":" + name)
 	endfor
 End
 

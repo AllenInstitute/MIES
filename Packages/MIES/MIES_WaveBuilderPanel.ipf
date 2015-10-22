@@ -53,14 +53,9 @@ Function WBP_CreateWaveBuilderPanel()
 	GetWBSvdStimSetDAPath()
 	GetWBSvdStimSetTTLPath()
 
-	WAVE segmentWave = GetSegmentTypeWave()
-	KillOrMoveToTrash(GetWavesDataFolder(segmentWave, 2))
-
-	WAVE WP = GetWaveBuilderWaveParam()
-	KillOrMoveToTrash(GetWavesDataFolder(WP, 2))
-
-	WAVE WPT = GetWaveBuilderWaveTextParam()
-	KillOrMoveToTrash(GetWavesDataFolder(WPT, 2))
+	KillOrMoveToTrash(wv=GetSegmentTypeWave())
+	KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
+	KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
 
 	Execute "WaveBuilder()"
 End
@@ -1338,8 +1333,7 @@ static Function WBP_ChangeWaveType(stimulusType)
 
 	if(stimulusType == STIMULUS_TYPE_TLL)
 		// recreate SegWvType with its defaults
-		WAVE SegWvType = GetSegmentTypeWave()
-		KillOrMoveToTrash(GetWavesDataFolder(SegWvType, 2))
+		KillOrMoveToTrash(wv=GetSegmentTypeWave())
 
 		WP[1,6][][] = 0
 
@@ -1602,7 +1596,10 @@ static Function WBP_DeleteSet()
 		dfref dfr      = GetWBSvdStimSetDAPath()
 	endif
 
-	KillWaves/F/Z dfr:$SetName, paramDFR:$WPName, paramDFR:$WPTName, paramDFR:$SegWvTypeName
+	KillOrMoveToTrash(wv=dfr:$SetName)
+	KillOrMoveToTrash(wv=paramDFR:$WPName)
+	KillOrMoveToTrash(wv=paramDFR:$WPTName)
+	KillOrMoveToTrash(wv=paramDFR:$SegWvTypeName)
 End
 
 static Function WBP_UpdateEpochControls()

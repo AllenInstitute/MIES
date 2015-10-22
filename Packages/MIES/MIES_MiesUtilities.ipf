@@ -401,6 +401,20 @@ Function/S GetAllDevicesWithData()
 	return list
 End
 
+/// @brief Convenience wrapper for KillOrMoveToTrashPath()
+Function KillOrMoveToTrash([wv, dfr])
+	WAVE/Z wv
+	DFREF dfr
+
+	if(!ParamIsDefault(wv) && WaveExists(wv))
+		KillOrMoveToTrashPath(GetWavesDataFolder(wv, 2))
+	endif
+
+	if(!ParamIsDefault(dfr) && DataFolderExistsDFR(dfr))
+		KillOrMoveToTrashPath(GetDataFolder(1, dfr))
+	endif
+End
+
 /// @brief Delete a datafolder or wave. If this is not possible, because Igor
 /// has locked the file, the wave or datafolder is moved into a trash folder
 /// named `root:mies:trash_$digit`.
@@ -408,7 +422,7 @@ End
 /// The trash folders will be removed, if possible, from KillTemporaries().
 ///
 /// @param path absolute path to a datafolder or wave
-Function KillOrMoveToTrash(path)
+Function KillOrMoveToTrashPath(path)
 	string path
 
 	string dest
@@ -1168,7 +1182,7 @@ Function SaveExperimentSpecial(mode)
 		return NaN
 	endif
 
-	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrash
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrashPath
 
 	// remove sweep data from all devices with data
 	devicesWithData = GetAllDevicesWithData()
@@ -1483,7 +1497,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			WAVE wv = $StringFromList(i, listOfWaves)
 			RemoveTracesFromGraph(graph, wv=wv)
 		endfor
-		CallFunctionForEachListItem(KillOrMoveToTrash, listOfWaves)
+		CallFunctionForEachListItem(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
 	endif

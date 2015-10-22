@@ -89,7 +89,7 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	experimentMap[index][%ExperimentName] = fileName
 
 	expFolderName = CleanupName(GetBaseName(expFilePath), 0)
-	KillOrMoveToTrash(GetAnalysisExpFolderAS(expFolderName))
+	KillOrMoveToTrashPath(GetAnalysisExpFolderAS(expFolderName))
 	experimentMap[index][%ExperimentFolder] = expFolderName
 
 	index += 1
@@ -344,7 +344,7 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 		all      = GetListOfWaves(targetDFR, ".*", fullPath=1)
 		unwanted = RemoveFromList(wanted, all)
 
-		CallFunctionForEachListItem(KillOrMoveToTrash, unwanted)
+		CallFunctionForEachListItem(KillOrMoveToTrashPath, unwanted)
 	endif
 
 	SetDataFolder saveDFR
@@ -390,7 +390,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 	if(numWavesLoaded <= 0)
 		SetDataFolder saveDFR
-		KillOrMoveToTrash(GetDataFolder(1, newDFR))
+		KillOrMoveToTrash(dfr=newDFR)
 		return ""
 	endif
 
@@ -468,7 +468,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	endfor
 
 	SetDataFolder saveDFR
-	KillOrMoveToTrash(GetDataFolder(1, newDFR))
+	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
 End
@@ -801,7 +801,7 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 	DFREF sweepDataDFR = createDFWithAllParents(sweepFolder)
 	MoveWave sweepWave, sweepDataDFR
 	SetDataFolder saveDFR
-	KillOrMoveToTrash(GetDataFolder(1, newDFR))
+	KillOrMoveToTrash(dfr=newDFR)
 
 	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, expFilePath
 	DEBUGPRINT(msg)

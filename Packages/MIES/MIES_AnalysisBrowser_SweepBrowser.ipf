@@ -639,7 +639,7 @@ Function SB_SweepBrowserWindowHook(s)
 			folder = SB_GetSweepBrowserFolder(graph)
 
 			KillWindow $graph
-			KillOrMoveToTrash(folder)
+			KillOrMoveToTrashPath(folder)
 
 			hookResult = 1
 			break
