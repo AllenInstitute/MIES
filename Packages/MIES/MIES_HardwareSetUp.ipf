@@ -166,6 +166,7 @@ Function HSU_UnlockDevice(panelTitle)
 	EnableListOfControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 	DAP_ResetGUIAfterDAQ(panelTitle)
+	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
 
 	string panelTitleUnlocked = BASE_WINDOW_TITLE
 	if(CheckName(panelTitleUnlocked,CONTROL_PANEL_TYPE))

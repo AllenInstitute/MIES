@@ -240,7 +240,6 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DisableControl(panelTitle, "StartTestPulseButton")
 	DAP_StopOngoingDataAcquisition(panelTitle)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
@@ -263,8 +262,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DAP_StopOngoingDataAcqMD(panelTitle)
-	DisableControl(panelTitle, "StartTestPulseButton")
-
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	DAM_StartTestPulseMD(panelTitle)
@@ -701,6 +698,10 @@ Function TP_Setup(panelTitle, runMode)
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
+	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
+		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
+	endif
+
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
@@ -750,7 +751,7 @@ Function TP_Teardown(panelTitle)
 
 	DAP_RestoreTTLState(panelTitle)
 
-	EnableControl(panelTitle, "StartTestPulseButton")
+	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
 
 	ED_TPDocumentation(panelTitle)
 

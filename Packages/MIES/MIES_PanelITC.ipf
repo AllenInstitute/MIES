@@ -4877,6 +4877,27 @@ Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	Button DataAcquireButton title=text, fcolor=(color.red, color.green, color.blue), win = $panelTitle
 End
 
+/// @brief Set the testpulse button text
+///
+/// @param panelTitle device
+/// @param mode       One of @ref ToggleTestpulseButtonConstants
+Function DAP_ToggleTestpulseButton(panelTitle, mode)
+	string panelTitle
+	variable mode
+
+	ASSERT(mode == TESTPULSE_BUTTON_TO_STOP || mode == TESTPULSE_BUTTON_TO_START, "Invalid mode")
+
+	string text
+
+	if(mode == TESTPULSE_BUTTON_TO_STOP)
+		text = "\\Z14\\f01Stop Test \rPulse"
+	elseif(mode == TESTPULSE_BUTTON_TO_START)
+		text = "\\Z14\\f01Start Test \rPulse"
+	endif
+
+	Button StartTestPulseButton title=text, win = $panelTitle
+End
+
 /// Returns the list of potential followers for yoking.
 ///
 /// Used by popup_Hardware_AvailITC1600s from the hardware tab
@@ -5415,7 +5436,14 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			panelTitle = ba.win
-			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
+			// if data acquisition is currently running we just
+			// want just call TP_StartTestPulse* which automatically
+			// ends DAQ
+			if(!DataAcqState && TP_CheckIfTestpulseIsRunning(panelTitle))
+				TP_StopTestPulse(panelTitle)
+			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				TP_StartTestPulseMultiDevice(panelTitle)
 			else
 				TP_StartTestPulseSingleDevice(panelTitle)

@@ -296,6 +296,13 @@ Constant DATA_ACQ_BUTTON_TO_STOP = 0x01
 Constant DATA_ACQ_BUTTON_TO_DAQ  = 0x02
 /// @}
 
+/// @name Constants for DAP_ToggleTestpulseButton
+/// @anchor ToggleTestpulseButtonConstants
+/// @{
+Constant TESTPULSE_BUTTON_TO_STOP  = 0x01
+Constant TESTPULSE_BUTTON_TO_START = 0x02
+/// @}
+
 /// @name Constants for functions using rack number parameters
 /// @anchor RackConstants
 /// @{
