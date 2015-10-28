@@ -272,10 +272,11 @@ Constant TI_WRITEACK_FAILURE = -1
 /// @name Test pulse modes
 /// @anchor TestPulseRunModes
 /// @{
-Constant TEST_PULSE_NOT_RUNNING      = 0x00
-Constant TEST_PULSE_BG_SINGLE_DEVICE = 0x01
-Constant TEST_PULSE_BG_MULTI_DEVICE  = 0x02
-Constant TEST_PULSE_FG_SINGLE_DEVICE = 0x04
+Constant TEST_PULSE_NOT_RUNNING      = 0x000
+Constant TEST_PULSE_BG_SINGLE_DEVICE = 0x001
+Constant TEST_PULSE_BG_MULTI_DEVICE  = 0x002
+Constant TEST_PULSE_FG_SINGLE_DEVICE = 0x004
+Constant TEST_PULSE_DURING_RA_MOD    = 0x100 ///< Or'ed with the testpulse mode. Special casing for testpulse during DAQ/RA/ITI
 // foreground multi device does not exist
 /// @}
 

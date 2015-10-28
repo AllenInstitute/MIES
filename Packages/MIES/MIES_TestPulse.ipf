@@ -243,11 +243,12 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	DisableControl(panelTitle, "StartTestPulseButton")
 	DAP_StopOngoingDataAcquisition(panelTitle)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
-	TP_Setup(panelTitle)
-	
+
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
+		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StartBackgroundTestPulse(panelTitle)
 	else
+		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
 		ITC_StartTestPulse(panelTitle)
 		TP_Teardown(panelTitle)
 	endif
@@ -256,6 +257,8 @@ End
 /// @brief Start a multi device test pulse, always done in background mode
 Function TP_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
+
+	variable headstage
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
@@ -641,12 +644,25 @@ End
 Function TP_StopTestPulse(panelTitle)
 	string panelTitle
 
-	if(IsBackgroundTaskRunning("TestPulse"))
+	variable runMode
+
+	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+
+	// create copy as TP_TearDown() will change runModeGlobal
+	runMode = runModeGlobal
+
+	// clear all modifiers from runMode
+	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
+
+	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StopTestPulseSingleDevice(panelTitle)
-		return TEST_PULSE_BG_SINGLE_DEVICE
-	elseif(IsBackgroundTaskRunning("TestPulseMD"))
+		return runMode
+	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
 		ITC_StopTPMD(panelTitle)
-		return TEST_PULSE_BG_MULTI_DEVICE
+		return runMode
+	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
+		// can not be stopped
+		return TEST_PULSE_FG_SINGLE_DEVICE
 	endif
 
 	return TEST_PULSE_NOT_RUNNING
@@ -674,12 +690,16 @@ End
 
 /// @brief Prepare device for TestPulse
 /// @param panelTitle  device
-/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
-Function TP_Setup(panelTitle, [multiDevice])
+/// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
+Function TP_Setup(panelTitle, runMode)
 	string panelTitle
+	variable runMode
+
 	variable multiDevice
 
 	DFREF deviceDFR = GetDevicePath(panelTitle)
+
+	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
 	DAP_StoreTTLState(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
@@ -703,6 +723,9 @@ Function TP_Setup(panelTitle, [multiDevice])
 	else
 		TP_UpdateTestPulseWave(panelTitle, TestPulse)
 	endif
+
+	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+	runModeGlobal = runMode
 
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
@@ -733,6 +756,18 @@ Function TP_Teardown(panelTitle)
 
 	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
+	NVAR runMode= $GetTestpulseRunMode(panelTitle)
+	runMode = TEST_PULSE_NOT_RUNNING
+
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	P_LoadPressureButtonState(panelTitle, headStage)
+End
+
+/// @brief Check if the testpulse is running
+Function TP_CheckIfTestpulseIsRunning(panelTitle)
+	string panelTitle
+
+	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING
 End

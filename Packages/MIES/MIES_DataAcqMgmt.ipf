@@ -112,17 +112,25 @@ End
 ///
 /// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
-Function DAM_StartTestPulseMD(panelTitle)
+Function DAM_StartTestPulseMD(panelTitle, [runModifier])
 	string panelTitle
+	variable runModifier
 
 	variable i, TriggerMode
+	variable runMode
+
+	runMode = TEST_PULSE_BG_MULTI_DEVICE
+
+	if(!ParamIsDefault(runModifier))
+		runMode = runMode | runModifier
+	endif
 
 	if(DAP_DeviceIsYokeable(panelTitle))
 		controlinfo /w = $panelTitle setvar_Hardware_Status
 		string ITCDACStatus = s_value	
 		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
 			print "TP Started on independent ITC1600"
-			TP_Setup(panelTitle, multiDevice=1)
+			TP_Setup(panelTitle, runMode)
 			ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 		elseif(DAP_DeviceCanLead(panelTitle))
 			SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
@@ -134,14 +142,14 @@ Function DAM_StartTestPulseMD(panelTitle)
 					
 					do // configure follower device for TP acquistion
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						TP_Setup(followerPanelTitle, multiDevice=1)
+						TP_Setup(followerPanelTitle, runMode)
 						i += 1
 					while(i < numberOfFollowerDevices)
 					i = 0
 					TriggerMode = 256
 
 					//Lead board commands
-					TP_Setup(panelTitle, multiDevice=1)
+					TP_Setup(panelTitle, runMode)
 					ITC_BkrdTPMD(TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
 					
 					//Follower board commands
@@ -155,16 +163,16 @@ Function DAM_StartTestPulseMD(panelTitle)
 					ARDStartSequence()
 					
 				elseif(numberOfFollowerDevices == 0)
-					TP_Setup(panelTitle, multiDevice=1)
+					TP_Setup(panelTitle, runMode)
 					ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 				endif
 			else
-				TP_Setup(panelTitle, multiDevice=1)
+				TP_Setup(panelTitle, runMode)
 				ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 			endif
 		endif
 	else
-		TP_Setup(panelTitle, multiDevice=1)
+		TP_Setup(panelTitle, runMode)
 		ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
 	endif
 End
