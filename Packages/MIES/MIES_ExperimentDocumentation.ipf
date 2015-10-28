@@ -548,7 +548,6 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
-//	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE) /// @toDo Use state when TP was initiated, not current state
 	WAVE guiState =  GetDA_EphysGuiStateNum(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
