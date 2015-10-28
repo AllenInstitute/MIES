@@ -242,10 +242,6 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	DisableControl(panelTitle, "StartTestPulseButton")
 	DAP_StopOngoingDataAcquisition(panelTitle)
-
-	NVAR count = $GetCount(panelTitle)
-	KillVariables/Z count
-
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	TP_Setup(panelTitle)
 	
@@ -265,10 +261,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	DAP_StopOngoingDataAcqMD(panelTitle)
 	DisableControl(panelTitle, "StartTestPulseButton")
-
-	// @todo Need to modify (killing count global) for yoked devices
-	NVAR count = $GetCount(panelTitle)
-	KillVariables/Z count
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
