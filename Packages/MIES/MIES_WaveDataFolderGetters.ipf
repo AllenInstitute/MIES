@@ -573,7 +573,8 @@ End
 /// - Filled at runtime
 ///
 /// Layers:
-/// - Headstage
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
 Function/Wave GetTextDocWave(panelTitle)
 	string panelTitle
 
@@ -585,7 +586,7 @@ Function/Wave GetTextDocWave(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(1,2,NUM_HEADSTAGES) dfr:txtDocWave/Wave=wv
+	Make/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) dfr:txtDocWave/Wave=wv
 	wv = ""
 
 	return wv
@@ -595,6 +596,7 @@ End
 ///
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
+/// - Addition of nineth layer for headstage independent data
 Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
@@ -650,6 +652,14 @@ Function UpgradeLabNotebook(panelTitle)
 
 		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
 	endif
+
+	if(DimSize(txtDocWave, LAYERS) == NUM_HEADSTAGES && DimSize(settingsHistory, LAYERS) == NUM_HEADSTAGES)
+		Redimension/N=(-1, -1, LABNOTEBOOK_LAYER_COUNT, -1) txtDocWave, settingsHistory
+		txtDocWave[][][8]      = ""
+		settingsHistory[][][8] = NaN
+
+		DEBUGPRINT("Upgraded labnotebooks to handle headstage independent data")
+	endif
 End
 
 /// @brief Return a wave reference to the textDocKeyWave
@@ -672,7 +682,7 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
 
@@ -719,7 +729,7 @@ End
 Function/Wave GetNumDocKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
 	Wave/T/Z/SDFR=dfr wv = keyWave
@@ -760,7 +770,8 @@ End
 /// - Filled at runtime
 ///
 /// Layers:
-/// - Headstage
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
 Function/Wave GetNumDocWave(panelTitle)
 	string panelTitle
 
@@ -768,7 +779,7 @@ Function/Wave GetNumDocWave(panelTitle)
 	WAVE/D/Z/SDFR=dfr wv = settingsHistory
 
 	if(!WaveExists(wv))
-		Make/D/N=(MINIMUM_WAVE_SIZE, 3, NUM_HEADSTAGES) dfr:settingsHistory/Wave=wv = NaN
+		Make/D/N=(MINIMUM_WAVE_SIZE, 3, LABNOTEBOOK_LAYER_COUNT) dfr:settingsHistory/Wave=wv = NaN
 
 		SetDimLabel COLS, 0, SweepNum                  , wv
 		SetDimLabel COLS, 1, TimeStamp                 , wv
@@ -792,21 +803,22 @@ End
 /// - Same as #GetSweepSettingsKeyWave
 ///
 /// Layers:
-/// - Headstage
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	Wave/Z/SDFR=dfr wv = sweepSettingsWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12, -1) wv
+		Redimension/N=(-1, 12, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 12, NUM_HEADSTAGES) dfr:sweepSettingsWave/Wave=wv
+		Make/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) dfr:sweepSettingsWave/Wave=wv
 	endif
 
 	wv = NaN
@@ -951,21 +963,22 @@ End
 /// - Same as #GetSweepSettingsTextKeyWave
 ///
 /// Layers:
-/// - Headstage
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-	variable versionOfNewWave = 5
+	variable versionOfNewWave = 6
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 10, -1) wv
+		Redimension/N=(-1, 10, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 10, NUM_HEADSTAGES) dfr:SweepSettingsTxtData/Wave=wv
+		Make/T/N=(1, 10, LABNOTEBOOK_LAYER_COUNT) dfr:SweepSettingsTxtData/Wave=wv
 	endif
 
 	wv = ""
@@ -1263,10 +1276,14 @@ End
 ///
 /// Columns:
 /// - Amplifier parameters as described in the amplifier settings key wave
+///
+/// Layers:
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
 Function/WAVE GetAmplifierSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 	dfref dfr = GetAmpSettingsFolder()
 
 	Wave/Z/SDFR=dfr wv = ampSettings
@@ -1274,9 +1291,9 @@ Function/WAVE GetAmplifierSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 43, -1) wv
+		Redimension/N=(-1, 43, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 43, NUM_HEADSTAGES) dfr:ampsettings/Wave=wv
+		Make/N=(1, 43, LABNOTEBOOK_LAYER_COUNT) dfr:ampsettings/Wave=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -1499,20 +1516,24 @@ End
 ///
 /// Columns:
 /// - Amplifier parameters as described in the amplifier settings text key wave
+///
+/// Layers:
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
 Function/WAVE GetAmplifierSettingsTextWave(panelTitle)
 	string panelTitle
 
 	dfref dfr = GetAmpSettingsFolder()
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/T/Z/SDFR=dfr wv = ampSettingsText
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 6 -1) wv
+		Redimension/N=(-1, 6, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 6, NUM_HEADSTAGES) dfr:ampSettingsText/Wave=wv
+		Make/T/N=(1, 6, LABNOTEBOOK_LAYER_COUNT) dfr:ampSettingsText/Wave=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)

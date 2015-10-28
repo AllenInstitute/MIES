@@ -278,8 +278,8 @@ End
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
-/// @return Free wave with an entry for each headstage, or an invalid wave reference
-/// if the value could not be found.
+/// @return Free wave with as many layers as the history wave, or an invalid
+///         wave reference if the value could not be found.
 Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
 	WAVE history
 	string setting
@@ -296,7 +296,7 @@ Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/N=(NUM_HEADSTAGES) data = history[idx][%$setting][p]
+	Make/FREE/N=(DimSize(history, LAYERS)) data = history[idx][%$setting][p]
 	sweepNo = history[idx][GetSweepColumn(history)][0]
 
 	return data
@@ -327,7 +327,7 @@ Function/WAVE GetLastSweepWithSettingText(history, setting, sweepNo)
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/T/N=(NUM_HEADSTAGES) data = history[idx][%$setting][p]
+	Make/FREE/T/N=(DimSize(history, LAYERS)) data = history[idx][%$setting][p]
 	sweepNo = str2num(history[idx][GetSweepColumn(history)][0])
 
 	return data

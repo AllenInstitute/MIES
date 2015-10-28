@@ -180,7 +180,7 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 	TPKeyWave[2][1]  = "1"  
 	TPKeyWave[2][2]  = "1"	
 	
-	Make/FREE/N=(1, 3, NUM_HEADSTAGES) TPSettingsWave = NaN
+	Make/FREE/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)

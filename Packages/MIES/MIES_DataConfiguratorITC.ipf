@@ -676,11 +676,11 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	endfor
 
 	if(rackNo == RACK_ZERO)
-		sweepDataLNB[0][8][]    = bits
-		sweepDataTxTLNB[0][3][] = listOfSets
+		sweepDataLNB[0][8][INDEP_HEADSTAGE]    = bits
+		sweepDataTxTLNB[0][3][INDEP_HEADSTAGE] = listOfSets
 	else
-		sweepDataLNB[0][9][]    = bits
-		sweepDataTxTLNB[0][4][] = listOfSets
+		sweepDataLNB[0][9][INDEP_HEADSTAGE]    = bits
+		sweepDataTxTLNB[0][4][INDEP_HEADSTAGE] = listOfSets
 	endif
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
