@@ -677,7 +677,7 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			TP_StartTestPulseMultiDevice(panelTitle)
 			break
 		default:
-			ASSERT(0, "Unhandled case in ITC_RestartTestPulse")
+			ASSERT(0, "Unhandled case")
 			break
 	endswitch
 End
