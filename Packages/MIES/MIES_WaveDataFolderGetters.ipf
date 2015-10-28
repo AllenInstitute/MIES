@@ -852,9 +852,6 @@ End
 /// - 9:  TTL rack one bits
 /// - 10: TTL rack zero channel
 /// - 11: TTL rack one channel
-///
-/// Layers:
-/// - Headstage
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1007,23 +1004,20 @@ End
 /// - 7: Analysis function post sweep
 /// - 8: Analysis function post set
 /// - 9: Analysis function post daq
-///
-/// Layers:
-/// - Headstage
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	variable versionOfNewWave = 5
+	variable versionOfNewWave = 6
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 10, -1) wv
+		Redimension/N=(-1, 10, 0) wv
 	else
-		Make/T/N=(1, 10, NUM_HEADSTAGES) dfr:SweepSettingsKeyTxtData/Wave=wv
+		Make/T/N=(1, 10) dfr:SweepSettingsKeyTxtData/Wave=wv
 	endif
 
 	wv = ""
@@ -2020,9 +2014,6 @@ End
 /// - 37: Async Alarm 5 Max
 /// - 38: Async Alarm 6 Max
 /// - 39: Async Alarm 7 Max
-///
-/// Layers:
-/// - Just one layer...all async settings apply to every headstage, so no need to copy across multiple layers
 Function/Wave GetAsyncSettingsWave(panelTitle)
 	string panelTitle
 
@@ -2132,9 +2123,6 @@ End
 /// - 37: Async Alarm 5 Max
 /// - 38: Async Alarm 6 Max
 /// - 39: Async Alarm 7 Max
-///
-/// Layers:
-/// - Just one
 Function/Wave GetAsyncSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -2341,9 +2329,6 @@ End
 /// - 13: Async 5 Units
 /// - 14: Async 6 Units
 /// - 15: Async 7 Units
-///
-/// Layers:
-/// - only do one...all of the aysnc measurement values apply to all headstages, so not necessary to save in 8 layers
 Function/Wave GetAsyncSettingsTextWave(panelTitle)
 	string panelTitle
 
@@ -2385,9 +2370,6 @@ End
 /// - 13: Async 5 Unit
 /// - 14: Async 6 Unit
 /// - 15: Async 7 Unit
-///
-/// Layers:
-/// - Just one
 Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
