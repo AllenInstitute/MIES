@@ -288,19 +288,21 @@ End
 Function TP_Delta(panelTitle)
 	string 	panelTitle
 
+	variable amplitudeIC, amplitudeVC
+
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
 	WAVE/SDFR=dfr TestPulseITC
-	NVAR/SDFR=dfr amplitudeIC
-	NVAR/SDFR=dfr amplitudeVC
+	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
+	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
 	NVAR/SDFR=dfr baselineFrac
 	SVAR/SDFR=dfr clampModeString
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
-	amplitudeIC = abs(amplitudeIC)
-	amplitudeVC = abs(amplitudeVC)
+	amplitudeIC = abs(amplitudeICGlobal)
+	amplitudeVC = abs(amplitudeVCGlobal)
 
 	variable DimOffsetVar = DimOffset(TestPulseITC, ROWS)
 	variable DimDeltaVar = DimDelta(TestPulseITC, ROWS)
