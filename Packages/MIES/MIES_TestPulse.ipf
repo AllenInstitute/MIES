@@ -644,6 +644,12 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 	return V_value - FirstADColumn
 End
 
+/// @brief Stop running background testpulse on all locked devices
+Function TP_StopTestPulseOnAllDevices()
+
+	CallFunctionForEachListItem(TP_StopTestPulse, GetListOfLockedDevices())
+End
+
 /// @brief Stop any running background test pulses
 ///
 /// Assumes that single device and multi device do not run at the same time.
