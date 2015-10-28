@@ -43,8 +43,6 @@ static Function RA_HandleITI(panelTitle)
 
 	ITC_StartBackgroundTestPulse(panelTitle)
 	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
-
-	TP_Teardown(panelTitle)
 End
 
 /// @brief Function gets called after the first trial is already

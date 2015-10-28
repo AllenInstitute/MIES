@@ -172,13 +172,7 @@ Function ITC_StopTPMD(panelTitle)
 		endif
 	endif
 
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
-	ED_TPDocumentation(panelTitle)
-	EnableControl(panelTitle, "StartTestPulseButton")
-	DAP_RestoreTTLState(panelTitle)
-
-	headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
+	TP_Teardown(panelTitle)
 End
 
 static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)

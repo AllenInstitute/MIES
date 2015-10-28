@@ -333,15 +333,8 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 	variable headstage
 
 	CtrlNamedBackground TestPulse, stop
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
-	DAP_RestoreTTLState(panelTitle)
-	EnableControl(panelTitle, "StartTestPulseButton")
-
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
-
-	ED_TPDocumentation(panelTitle)
+	TP_Teardown(panelTitle)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
@@ -513,14 +506,8 @@ Function ITC_StartTestPulse(panelTitle)
 
 		i += 1	
 	while(!(GetKeyState(0) & ESCAPE_KEY))
-	
-	DAP_RestoreTTLState(panelTitle)
-	ED_TPDocumentation(panelTitle)
-	EnableControl(panelTitle,"StartTestPulseButton")
-	
-	// Update pressure buttons
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-	P_LoadPressureButtonState(panelTitle, headStage)
+
+	TP_Teardown(panelTitle)
 END
 
 Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600

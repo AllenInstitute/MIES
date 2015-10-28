@@ -124,7 +124,6 @@ Function DAM_StartTestPulseMD(panelTitle)
 			print "TP Started on independent ITC1600"
 			TP_Setup(panelTitle, multiDevice=1)
 			ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-			TP_Teardown(panelTitle)
 		elseif(DAP_DeviceCanLead(panelTitle))
 			SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			if(SVAR_exists(ListOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
@@ -144,14 +143,11 @@ Function DAM_StartTestPulseMD(panelTitle)
 					//Lead board commands
 					TP_Setup(panelTitle, multiDevice=1)
 					ITC_BkrdTPMD(TriggerMode, panelTitle) // Sets lead board in wait for trigger mode
-					// restores lead board settings
-					TP_Teardown(panelTitle)
 					
 					//Follower board commands
 					do
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 						ITC_BkrdTPMD(TriggerMode, followerPanelTitle) // Sets lead board in wait for trigger mode
-						TP_Teardown(followerPanelTitle)
 						i += 1
 					while(i < numberOfFollowerDevices)
 
@@ -161,18 +157,15 @@ Function DAM_StartTestPulseMD(panelTitle)
 				elseif(numberOfFollowerDevices == 0)
 					TP_Setup(panelTitle, multiDevice=1)
 					ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-					TP_Teardown(panelTitle)
 				endif
 			else
 				TP_Setup(panelTitle, multiDevice=1)
 				ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-				TP_Teardown(panelTitle)
 			endif
 		endif
 	else
 		TP_Setup(panelTitle, multiDevice=1)
 		ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
-		TP_Teardown(panelTitle)
 	endif
 End
 

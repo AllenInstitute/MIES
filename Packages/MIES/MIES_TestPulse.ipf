@@ -238,8 +238,6 @@ End
 Function TP_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
-	variable headstage
-
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DisableControl(panelTitle, "StartTestPulseButton")
@@ -255,20 +253,14 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 		ITC_StartBackgroundTestPulse(panelTitle)
 	else
 		ITC_StartTestPulse(panelTitle)
-		SCOPE_KillScopeWindowIfRequest(panelTitle)
+		TP_Teardown(panelTitle)
 	endif
-
-	TP_Teardown(panelTitle)
-
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
 Function TP_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
-	variable headstage
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DAP_StopOngoingDataAcqMD(panelTitle)
@@ -732,10 +724,23 @@ End
 Function TP_Teardown(panelTitle)
 	string panelTitle
 
+	variable headstage
+
 	DFREF dfr = GetDevicePath(panelTitle)
 
 	WAVE/SDFR=dfr SelectedDACWaveList
 	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	WAVE/SDFR=dfr SelectedDACScale
 	TP_RestoreDAScale(SelectedDACScale, panelTitle)
+
+	DAP_RestoreTTLState(panelTitle)
+
+	EnableControl(panelTitle, "StartTestPulseButton")
+
+	ED_TPDocumentation(panelTitle)
+
+	SCOPE_KillScopeWindowIfRequest(panelTitle)
+
+	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	P_LoadPressureButtonState(panelTitle, headStage)
 End
