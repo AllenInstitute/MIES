@@ -237,8 +237,6 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
-
-		maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 	endfor
 
 	return maxNumRows
