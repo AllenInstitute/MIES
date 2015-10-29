@@ -582,6 +582,15 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
+		channelMode = ChannelClampMode[i][%DAC]
+		if(channelMode == V_CLAMP_MODE)
+			testPulseAmplitude = TPAmpVClamp
+		elseif(channelMode == I_CLAMP_MODE)
+			testPulseAmplitude = TPAmpIClamp
+		else
+			ASSERT(0, "Unknown clamp mode")
+		endif
+
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
@@ -631,16 +640,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
 		// of the onset delay
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
-			channelMode = ChannelClampMode[i][%DAC]
-			testPulseAmplitude = NaN
-			if(channelMode == V_CLAMP_MODE)
-				testPulseAmplitude = TPAmpVClamp * DAGain
-			elseif(channelMode == I_CLAMP_MODE)
-				testPulseAmplitude = TPAmpIClamp * DAGain
-			else
-				ASSERT(0, "Unknown clamp mode")
-			endif
-			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude
+			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude * DAGain
 		endif
 
 		itcDataColumn += 1
