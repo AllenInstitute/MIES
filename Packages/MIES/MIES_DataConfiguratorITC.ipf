@@ -233,7 +233,7 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 			continue
 		endif
 
-		WAVE wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
+		WAVE/Z wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
