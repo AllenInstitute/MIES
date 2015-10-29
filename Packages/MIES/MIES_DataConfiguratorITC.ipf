@@ -584,6 +584,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		DAScale = GetSetVariable(panelTitle, ctrl)
+
 		// checks if user wants to set scaling to 0 on sets that have already cycled once
 		if(scalingZero && (indexingLocked || !indexing))
 			// makes sure test pulse wave scaling is maintained
@@ -601,9 +604,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
 
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DAScale = GetSetVariable(panelTitle, ctrl)
 
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName)
 
