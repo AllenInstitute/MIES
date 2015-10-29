@@ -3,129 +3,6 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
-/// @brief Selects Test Pulse output wave for all checked DA channels
-static Function TP_SelectTestPulseWave(panelTitle)
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Wave_DA_0" + num2str(i)
-			PopUpMenu $control mode = 2, win = $panelTitle
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	Wave 	SelectedDACWaveList
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Wave_DA_0" + num2str(i)
-			ControlInfo /w = $panelTitle $control
-			SelectedDACWaveList[i] = v_value
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-end
-
-static Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	Wave 	SelectedDACWaveList
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Wave_DA_0" + num2str(i)
-			PopupMenu $control mode = SelectedDACWaveList[i], win = $panelTitle
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_StoreDAScale(SelectedDACScale, panelTitle)
-	Wave 	SelectedDACScale
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Scale_DA_0" + num2str(i)
-			ControlInfo /w = $panelTitle $control
-			SelectedDACScale[i] = v_value
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_SetDAScaleToOne(panelTitle)
-	string 	panelTitle
-
-	string control
-	variable scalingFactor, i
-	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Scale_DA_0" + num2str(i)
-			if(ChannelClampMode[i][0] == V_CLAMP_MODE)
-				scalingFactor = 1
-			elseif(ChannelClampMode[i][0] == I_CLAMP_MODE)
-				// this adjust the scaling in current clamp so that the TP wave
-				// (constructed based on v-clamp param) is converted into the I clamp amp
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-				scalingFactor = v_value
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-				scalingFactor /= v_value
-			else
-				ASSERT(0, "no other modes are supported")
-			endif
-
-			SetSetVariable(panelTitle, control, scalingFactor)
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
-	Wave 	SelectedDACScale
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Scale_DA_0" + num2str(i)
-			SetSetVariable(panelTitle, control, SelectedDACScale[i])
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-end
-
 Function TP_UpdateGlobals(panelTitle)
 	string panelTitle
 
@@ -193,16 +70,14 @@ static Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
 
 	variable length
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR amplitudeVC, baselineFrac, pulseDuration
+	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
 
 	// this length here is with minimum sampling interval, it will
 	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
 	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
-	// TP_SetDAScaleToOne adapts to the different clamp modes
-	// so setting it here unconditionally for V_CLAMP is correct
-	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = amplitudeVC
+	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
 /// @brief MD-variant of #TP_UpdateTestPulseWave
@@ -702,21 +577,10 @@ Function TP_Setup(panelTitle, runMode)
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 	endif
 
-	DAP_StoreTTLState(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
 
 	TP_UpdateGlobals(panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
-
-	// stores panel settings
-	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACScale/Wave=SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale,panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
 	if(multiDevice)
@@ -743,13 +607,6 @@ Function TP_Teardown(panelTitle)
 	variable headstage
 
 	DFREF dfr = GetDevicePath(panelTitle)
-
-	WAVE/SDFR=dfr SelectedDACWaveList
-	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	WAVE/SDFR=dfr SelectedDACScale
-	TP_RestoreDAScale(SelectedDACScale, panelTitle)
-
-	DAP_RestoreTTLState(panelTitle)
 
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
 

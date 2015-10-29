@@ -79,7 +79,7 @@ Function HSU_LockDevice(panelTitle)
 	WBP_UpdateITCPanelPopUps(panelTitle=panelTitleLocked)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
-	SI_CalculateMinSampInterval(panelTitleLocked)
+	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
 End
 
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)

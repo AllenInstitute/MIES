@@ -233,7 +233,14 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 			continue
 		endif
 
-		WAVE/Z wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			WAVE/Z wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			WAVE/Z wv = GetTestPulse()
+		else
+			ASSERT(0, "unhandled case")
+		endif
+
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
@@ -551,9 +558,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
 
-		setName = StringFromList(i, setNameList)
-		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
-		WAVE stimSet = WB_CreateAndGetStimSet(setName)
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			setName = StringFromList(i, setNameList)
+			WAVE stimSet = WB_CreateAndGetStimSet(setName)
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			setName = "testpulse"
+			WAVE stimSet = GetTestPulse()
+		else
+			ASSERT(0, "unknown mode")
+		endif
+
 		setLength = round(DimSize(stimSet, ROWS) / decimationFactor) - 1
 
 		if(distributedDAQ)
@@ -594,14 +608,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
-		// checks if user wants to set scaling to 0 on sets that have already cycled once
-		if(scalingZero && (indexingLocked || !indexing))
-			// makes sure test pulse wave scaling is maintained
-			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				if(oneFullCycle) // checks if set has completed one full cycle
-					DAScale = 0
-				endif
+		// DAScale tuning for special cases
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			// checks if user wants to set scaling to 0 on sets that have already cycled once
+			if(scalingZero && (indexingLocked || !indexing) && oneFullCycle)
+				DAScale = 0
 			endif
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			DAScale = testPulseAmplitude
+		else
+			ASSERT(0, "unknown mode")
 		endif
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, i, var=i)

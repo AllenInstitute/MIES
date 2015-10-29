@@ -3695,28 +3695,6 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 	endfor
 End
 
-Function DAP_StoreTTLState(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevicePath(panelTitle)
-	string/G dfr:StoredTTLState = Convert1DWaveToList(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL))
-End
-
-Function DAP_RestoreTTLState(panelTitle)
-	string panelTitle
-
-	variable i, state
-	string control
-
-	SVAR/SDFR=GetDevicePath(panelTitle) StoredTTLState
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		control = "Check_TTL_0" + num2str(i)
-		state = str2num(StringFromList(i , StoredTTLState))
-		SetCheckBoxState(panelTitle, control, state)
-	endfor
-End
-
 Function DAP_ButtonProc_TTLOff(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -3960,7 +3938,7 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 		ASSERT(0, "unknown mode")
 	endif
 
-	return SI_CalculateMinSampInterval(panelTitle) * multiplier
+	return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
 End
 
 Function DAP_UpdateSweepSetVariables(panelTitle)

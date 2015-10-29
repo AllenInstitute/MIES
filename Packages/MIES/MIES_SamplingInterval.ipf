@@ -477,9 +477,13 @@ End
 
 /// @brief Calculate the minimum sampling interval using the lookup waves on disk
 ///
+/// @param panelTitle  device
+/// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
+///
 /// @returns sampling interval in milliseconds (1e-3)
-Function SI_CalculateMinSampInterval(panelTitle)
+Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
 	variable numActiveChannels
 
@@ -487,11 +491,18 @@ Function SI_CalculateMinSampInterval(panelTitle)
 	if(!WaveExists(lut))
 		printf "Warning: Could not load the minimum sampling interval table from disk\r"
 		printf "Falling back to %g microseconds as sampling interval\r", SAMPLING_INTERVAL_FALLBACK * 1000
-		return SAMPLING_INTERVAL_FALLBACK* 1000
+		return SAMPLING_INTERVAL_FALLBACK * 1000
 	endif
 
 	STRUCT ActiveChannels ac
 	numActiveChannels = SI_FillActiveChannelsStruct(panelTitle, ac)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE) // disregard TTL channels for testpulse
+		numActiveChannels -= ac.numTTLRack1
+		numActiveChannels -= ac.numTTLRack2
+		ac.numTTLRack1     = 0
+		ac.numTTLRack2     = 0
+	endif
 
 	if(numActiveChannels == 0)
 		return MINIMUM_SAMPLING_INTERVAL * 1000
