@@ -10,9 +10,10 @@ static Function TP_SelectTestPulseWave(panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Wave_DA_0" + num2str(i)
 			PopUpMenu $control mode = 2, win = $panelTitle
 		endif
@@ -27,9 +28,10 @@ static Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Wave_DA_0" + num2str(i)
 			ControlInfo /w = $panelTitle $control
 			SelectedDACWaveList[i] = v_value
@@ -45,9 +47,10 @@ static Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Wave_DA_0" + num2str(i)
 			PopupMenu $control mode = SelectedDACWaveList[i], win = $panelTitle
 		endif
@@ -62,9 +65,10 @@ static Function TP_StoreDAScale(SelectedDACScale, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Scale_DA_0" + num2str(i)
 			ControlInfo /w = $panelTitle $control
 			SelectedDACScale[i] = v_value
@@ -80,9 +84,10 @@ static Function TP_SetDAScaleToOne(panelTitle)
 	variable scalingFactor, i
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Scale_DA_0" + num2str(i)
 			if(ChannelClampMode[i][0] == V_CLAMP_MODE)
 				scalingFactor = 1
@@ -110,9 +115,10 @@ static Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
 	string control
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	do
-		if(statusDA[i])
+		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			control = "Scale_DA_0" + num2str(i)
 			SetSetVariable(panelTitle, control, SelectedDACScale[i])
 		endif
@@ -140,14 +146,11 @@ Function TP_UpdateGlobals(panelTitle)
 	variable/G testPulseDFR:baselineFrac
 	NVAR/SDFR=testPulseDFR baselineFrac
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	// other globals in testPulseDFR are written in DC_ConfigureDataForITC()
 
-	string/G testPulseDFR:ADChannelList  = Convert1DWaveToList(GetADCListFromConfig(ITCChanConfigWave))
-	variable/G testPulseDFR:NoOfActiveDA = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	
 	// Stores panelTitle GUI control state
 	DAP_RecordDA_EphysGuiState(panelTitle)
-	
+
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
 	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
@@ -291,19 +294,21 @@ End
 Function TP_Delta(panelTitle)
 	string 	panelTitle
 
+	variable amplitudeIC, amplitudeVC
+
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
 	WAVE/SDFR=dfr TestPulseITC
-	NVAR/SDFR=dfr amplitudeIC
-	NVAR/SDFR=dfr amplitudeVC
+	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
+	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
 	NVAR/SDFR=dfr baselineFrac
-	NVAR/SDFR=dfr noOfActiveDA
 	SVAR/SDFR=dfr clampModeString
+	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
-	amplitudeIC = abs(amplitudeIC)
-	amplitudeVC = abs(amplitudeVC)
+	amplitudeIC = abs(amplitudeICGlobal)
+	amplitudeVC = abs(amplitudeVCGlobal)
 
 	variable DimOffsetVar = DimOffset(TestPulseITC, ROWS)
 	variable DimDeltaVar = DimDelta(TestPulseITC, ROWS)
@@ -334,7 +339,7 @@ Function TP_Delta(panelTitle)
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 	AvgBaselineSS /= dimsize(BaselineSS, ROWS)
 	// duplicate only the AD columns - this would error if a TTL was ever active with the TP, at present, however, they should never be coactive
-	Duplicate/O/R=[][NoOfActiveDA, dimsize(BaselineSS,1) - 1] AvgBaselineSS dfr:BaselineSSAvg/Wave=BaselineSSAvg
+	Duplicate/O/R=[][ADChannelToMonitor, dimsize(BaselineSS,1) - 1] AvgBaselineSS dfr:BaselineSSAvg/Wave=BaselineSSAvg
 
 	//	calculate the difference between the steady state and the baseline
 	Duplicate/FREE AvgTPSS, AvgDeltaSS
@@ -353,43 +358,43 @@ Function TP_Delta(panelTitle)
 	variable 	OndDBaseline
 
 	do
-		matrixOp /Free Instantaneous1d = col(Instantaneous, i + NoOfActiveDA)
+		matrixOp /Free Instantaneous1d = col(Instantaneous, i + ADChannelToMonitor)
 		WaveStats/Q/M=1 Instantaneous1d
 		OneDInstMax = v_max
-		OndDBaseline = AvgBaselineSS[0][i + NoOfActiveDA]
+		OndDBaseline = AvgBaselineSS[0][i + ADChannelToMonitor]
 
 		if(OneDInstMax > OndDBaseline) // handles positive or negative TPs
-			Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
+			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
 		else
-			Multithread InstAvg[0][i + NoOfActiveDA] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
+			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
 		endif
 		i += 1
-	while(i < (columnsInWave - NoOfActiveDA))
+	while(i < (columnsInWave - ADChannelToMonitor))
 
 	Multithread InstAvg -= AvgBaselineSS
 	Multithread InstAvg = abs(InstAvg)
 
-	Duplicate/O/R=[][NoOfActiveDA, dimsize(TPSS,1) - 1] AvgDeltaSS dfr:SSResistance/Wave=SSResistance
+	Duplicate/O/R=[][ADChannelToMonitor, dimsize(TPSS,1) - 1] AvgDeltaSS dfr:SSResistance/Wave=SSResistance
 	SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
 
-	Duplicate/O/R=[][(NoOfActiveDA), (dimsize(TPSS,1) - 1)] InstAvg dfr:InstResistance/Wave=InstResistance
+	Duplicate/O/R=[][(ADChannelToMonitor), (dimsize(TPSS,1) - 1)] InstAvg dfr:InstResistance/Wave=InstResistance
 	SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
 
 	i = 0
 	do
 		if((str2num(stringfromlist(i, ClampModeString, ";"))) == I_CLAMP_MODE)
 			// R = V / I
-			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + NoOfActiveDA] / (amplitudeIC)) * 1000
-			Multithread InstResistance[0][i] =  (InstAvg[0][i + NoOfActiveDA] / (amplitudeIC)) * 1000
+			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
+			Multithread InstResistance[0][i] =  (InstAvg[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
 		else
-			Multithread SSResistance[0][i] = ((amplitudeVC) / AvgDeltaSS[0][i + NoOfActiveDA]) * 1000
-			Multithread InstResistance[0][i] = ((amplitudeVC) / InstAvg[0][i + NoOfActiveDA]) * 1000
+			Multithread SSResistance[0][i] = ((amplitudeVC) / AvgDeltaSS[0][i + ADChannelToMonitor]) * 1000
+			Multithread InstResistance[0][i] = ((amplitudeVC) / InstAvg[0][i + ADChannelToMonitor]) * 1000
 		endif
 		i += 1
-	while(i < (dimsize(AvgDeltaSS, 1) - NoOfActiveDA))
+	while(i < (dimsize(AvgDeltaSS, 1) - ADChannelToMonitor))
 
 	/// @todo very crude hack which needs to go
-	columns = DimSize(TPSS, 1) - NoOfActiveDA
+	columns = DimSize(TPSS, 1) - ADChannelToMonitor
 	if(!columns)
 		columns = 1
 	endif

@@ -7,17 +7,17 @@
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
  
-Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 	variable TriggerMode
 	string panelTitle
-//	Variable start = stopmstimer(-2)
-	string cmd
-	variable ADChannelToMonitor = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	variable StopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE)
-	variable TimerStart
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	string cmd
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
@@ -26,7 +26,7 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 	variable RepeatedAcqOnOrOff = v_value
 	
 	if(TriggerMode == 0)
-		if(RepeatedAcqOnOrOff == 1)
+		if(RepeatedAcqOnOrOff)
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
 		sprintf cmd, "ITCStartAcq"
@@ -35,16 +35,13 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle) // if start time = 0 the var
 		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
 		ExecuteITCOperationAbortOnError(cmd)
 	endif
-	//print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
 	
-	if (IsBackgroundTaskRunning("ITC_BckgrdFIFOMonitorMD") == 0)
-		// print "background data acq is not running"
+	if(!IsBackgroundTaskRunning("ITC_BckgrdFIFOMonitorMD"))
 		ITC_StartBckrdFIFOMonitorMD()
 	endif
-	//	print "background data acquisition initialization took: ", (stopmstimer(-2) - start) / 1000, " ms"
 End
 
 Function ITC_StartBckrdFIFOMonitorMD()

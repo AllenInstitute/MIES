@@ -13,7 +13,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
 
-	variable numADCs
+	variable numADCs, numActiveChannels
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
 	if(ParamIsDefault(multiDevice))
@@ -22,15 +22,22 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		multiDevice = !!multiDevice
 	endif
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-	sweepDataLNB = NaN
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
-	sweepDataTxTLNB = ""
+	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
+	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
+	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
+	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
 
-	DC_MakeITCConfigAllConfigWave(panelTitle)
-	DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
-	DC_MakeITCFIFOPosAllConfigWave(panelTitle)
-	DC_MakeFIFOAvailAllConfigWave(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+
+	SVAR panelTitleG = $GetPanelTitleGlobal()
+	panelTitleG = panelTitle
+
+	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
+	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
+	DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
+	DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
+	DC_MakeFIFOAvailAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
@@ -38,6 +45,10 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
 	DC_UpdateClampModeString(panelTitle)
+
+	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	ADChannelToMonitor = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
@@ -64,7 +75,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	endif
 End
 
-/// @brief Updates the global string of clamp modes based on the ad channel associated with the headstage
+/// @brief Updates the global string of clamp modes based on the AD channel associated with the headstage
 ///
 /// In the order of the ADchannels in ITCDataWave - i.e. numerical order
 static Function DC_UpdateClampModeString(panelTitle)
@@ -74,8 +85,6 @@ static Function DC_UpdateClampModeString(panelTitle)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	string/G testPulseDFR:ADChannelList = Convert1DWaveToList(ADCs)
 
 	SVAR clampModeString = $GetClampModeString(panelTitle)
 	clampModeString = ""
@@ -83,7 +92,9 @@ static Function DC_UpdateClampModeString(panelTitle)
 	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
-		clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
+		if(IsFinite(headstage))
+			clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
+		endif
 	endfor
 End
 
@@ -97,7 +108,7 @@ End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
 ///
-/// @param type        one of DA, AD, TTL, DataAcq_HS or AsyncAD
+/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
 /// @param panelTitle  panel title
 Function/Wave DC_ControlStatusWave(panelTitle, type)
 	string panelTitle
@@ -121,15 +132,29 @@ End
 /// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
 ///
 /// @param panelTitle  panel title
-static Function DC_ChanCalcForITCChanConfigWave(panelTitle)
+/// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
-	variable NoOfDAChannelsSelected = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	variable NoOfADChannelsSelected = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
-	variable AreRack0FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
-	variable AreRack1FrontTTLsUsed = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
+	variable numDACs, numADCs, numTTLsRackZero, numTTLsRackOne, numActiveHeadstages
 
-	return NoOfDAChannelsSelected + NoOfADChannelsSelected + AreRack0FrontTTLsUsed + AreRack1FrontTTLsUsed
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		numDACs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+		numADCs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
+		numTTLsRackZero = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
+		numTTLsRackOne  = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		numActiveHeadstages = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		numDACs         = numActiveHeadstages
+		numADCs         = numActiveHeadstages
+		numTTLsRackZero = 0
+		numTTLsRackOne  = 0
+	else
+		ASSERT(0, "Unknown value of dataAcqOrTP")
+	endif
+
+	return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
 END
 
 /// @brief Returns the ON/OFF status of the front TTLs on a specified rack.
@@ -188,19 +213,23 @@ End
 
 /// @brief Returns the number of points in the longest stimset
 ///
-/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
 /// @param panelTitle  device
-static Function DC_LongestOutputWave(panelTitle, channelType)
+/// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
+static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	string panelTitle
-	variable channelType
+	variable dataAcqOrTP, channelType
 
 	variable maxNumRows, i, numEntries
 	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
-	WAVE status = DC_ControlStatusWave(panelTitle, channelType)
-	numEntries = DimSize(status, ROWS)
+	WAVE statusChannel = DC_ControlStatusWave(panelTitle, channelType)
+	WAVE statusHS      = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	numEntries = DimSize(statusChannel, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		if(!status[i])
+
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, channelType, i, statusChannel, statusHS))
 			continue
 		endif
 
@@ -208,6 +237,8 @@ static Function DC_LongestOutputWave(panelTitle, channelType)
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
+
+		maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 	endfor
 
 	return maxNumRows
@@ -224,10 +255,10 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable longestSweep, exponent
+	variable exponent
 
-	longestSweep = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-	exponent = ceil(log(longestSweep)/log(2))
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	exponent = ceil(log(stopCollectionPoint)/log(2))
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1
@@ -250,17 +281,19 @@ static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
 	variable dataAcqOrTP
 	variable channelType
 
-	return ceil(DC_LongestOutputWave(panelTitle, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
+	return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
 End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
 /// @param panelTitle  panel title
-static Function DC_MakeITCConfigAllConfigWave(panelTitle)
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
+	variable numActiveChannels
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCChanConfigWave/Wave=wv
+	Make/I/O/N=(numActiveChannels, 4) dfr:ITCChanConfigWave/Wave=wv
 	wv = 0
 End
 
@@ -268,19 +301,19 @@ End
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @param panelTitle  panel title
-/// @param DataAcqOrTP one for data acquisition, zero for test pulse
-static Function DC_MakeITCDataWave(panelTitle, DataAcqOrTP)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
 	string panelTitle
-	variable DataAcqOrTP
+	variable numActiveChannels, dataAcqOrTP
 
-	variable numRows, numCols
+	variable numRows
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	numRows   = DC_CalculateITCDataWaveLength(panelTitle, DataAcqOrTP)
-	numCols   = DC_ChanCalcForITCChanConfigWave(panelTitle)
+	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 
-	Make/W/O/N=(numRows, numCols) dfr:ITCDataWave/Wave=ITCDataWave
+	Make/W/O/N=(numRows, numActiveChannels) dfr:ITCDataWave/Wave=ITCDataWave
 
 	FastOp ITCDataWave = 0
 	SetScale/P x 0, DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / 1000, "ms", ITCDataWave
@@ -288,22 +321,75 @@ End
 
 /// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
 ///
-/// @param panelTitle  panel title
-static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
+	variable numActiveChannels
+
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
+	Make/I/O/N=(numActiveChannels, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
 	wv = 0
 End
 
 /// @brief Creates the ITCFIFOAvailAllConfigWave used to recieve FIFO position data
 ///
-/// @param panelTitle  panel title
-static Function DC_MakeFIFOAvailAllConfigWave(panelTitle)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+static Function DC_MakeFIFOAvailAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
+	variable numActiveChannels
+
 	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(DC_ChanCalcForITCChanConfigWave(panelTitle), 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
+	Make/I/O/N=(numActiveChannels, 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
 	wv = 0
+End
+
+/// @brief Check if the given channel is active
+///
+/// For DAQ a channel is active if it is selected. For the testpulse it is active if it is connected with
+/// an active headstage.
+///
+/// `statusChannel` and `statusHS` are passed in for performance reasons.
+///
+/// @param panelTitle        panel title
+/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType       one of the channel type constants from @ref ChannelTypeAndControlConstants
+/// @param channelNumber     number of the channel
+/// @param statusChannel     status wave of the given channelType
+/// @param statusHS     	 status wave of the headstages
+Function DC_ChannelIsActive(panelTitle, dataAcqOrTP, channelType, channelNumber, statusChannel, statusHS)
+	string panelTitle
+	variable dataAcqOrTP, channelType, channelNumber
+	WAVE statusChannel, statusHS
+
+	variable headstage
+
+	if(!statusChannel[channelNumber])
+		return 0
+	endif
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		return 1
+	endif
+
+	switch(channelType)
+		case CHANNEL_TYPE_TTL:
+			// TTL channels are always considered inactive for the testpulse
+			return 0
+			break
+		case CHANNEL_TYPE_ADC:
+			headstage = AFH_GetHeadstageFromADC(panelTitle, channelNumber)
+			break
+		case CHANNEL_TYPE_DAC:
+			headstage = AFH_GetHeadstageFromDAC(panelTitle, channelNumber)
+			break
+		default:
+			ASSERT(0, "unhandled case")
+			break
+	endswitch
+
+	return IsFinite(headstage) && statusHS[headstage]
 End
 
 /// @brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave
@@ -320,13 +406,15 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 	// query DA properties
 	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!channelStatus[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, channelStatus, statusHS))
 			continue
 		endif
 
@@ -343,7 +431,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!channelStatus[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_ADC, i, channelStatus, statusHS))
 			continue
 		endif
 
@@ -356,37 +444,39 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	Note ITCChanConfigWave, unitList
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
-
-	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-
-		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-		ASSERT(ret, "Could not parse device string")
-
-		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
-			channel = 1
-		else
-			channel = 0
-		endif
-
-		ITCChanConfigWave[j][1] = channel
-		sweepDataLNB[0][10][]   = channel
-
-		j += 1
-	endif
-
-	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
-
-		channel = 3
-		ITCChanConfigWave[j][1] = channel
-		sweepDataLNB[0][11][]   = channel
-	endif
-
 	ITCChanConfigWave[][2] = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][3] = 0
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
+		WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+
+		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+
+			ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+			ASSERT(ret, "Could not parse device string")
+
+			if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
+				channel = 1
+			else
+				channel = 0
+			endif
+
+			ITCChanConfigWave[j][1] = channel
+			sweepDataLNB[0][10][]   = channel
+
+			j += 1
+		endif
+
+		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+
+			channel = 3
+			ITCChanConfigWave[j][1] = channel
+			sweepDataLNB[0][11][]   = channel
+		endif
+	endif
 End
 
 /// @brief Get the decimation factor for the current channel configuration
@@ -417,7 +507,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
 	string setNameList, setName
-	string ctrl, firstSetName, str, list
+	string ctrl, firstSetName, str, list, func, colLabel
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
@@ -457,25 +547,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!statusDA[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 			continue
 		endif
 
 		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
-		ASSERT(IsFinite(headstage), "Non-finite headstage")
-
-		sweepDataLNB[0][1][HeadStage] = i // document the DA channel
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		val = GetSetVariable(panelTitle, ctrl)
-		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
-
-		sweepDataLNB[0][3][HeadStage] = val // document the DA gain
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DAScale = GetSetVariable(panelTitle, ctrl)
-
-		sweepDataLNB[0][0][HeadStage] = DAScale // document the DA scale
 
 		setName = StringFromList(i, setNameList)
 		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
@@ -490,15 +566,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
-		sweepDataTxTLNB[0][0][HeadStage] = setName
-
-		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			sweepDataTxTLNB[0][5 + j][headStage] = ExtractAnalysisFuncFromStimSet(stimSet, j)
-		endfor
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		sweepDataTxTLNB[0][1][HeadStage] = GetSetVariableString(panelTitle, ctrl)
-
 		if(dataAcqOrTP == TEST_PULSE_MODE)
 			setColumn   = 0
 			insertStart = 0
@@ -508,6 +575,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			oneFullCycle = imag(ret)
 			setColumn    = real(ret)
 			if(distributedDAQ)
+				ASSERT(IsFinite(headstage), "Distributed DAQ is not possible with unassociated DACs")
 				indexActiveHeadStage = sum(statusHS, 0, headstage)
 				ASSERT(indexActiveHeadStage > 0, "Invalid index")
 				insertStart = onsetDelay + (indexActiveHeadStage - 1) * (distributedDAQDelay + setLength)
@@ -526,7 +594,33 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
-		sweepDataLNB[0][5][HeadStage] = setColumn
+		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, i, var=i)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		val = GetSetVariable(panelTitle, ctrl)
+		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
+
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		DAScale = GetSetVariable(panelTitle, ctrl)
+
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName)
+
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			func     = ExtractAnalysisFuncFromStimSet(stimSet, j)
+			colLabel = GetDimLabel(sweepDataTxTLNB, COLS, 5 + j)
+			DC_DocumentChannelProperty(panelTitle, colLabel, headstage, i, str=func)
+		endfor
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
+
+		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale)
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn)
+
+		DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, i, var=GlobalTPInsert)
+		DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, i, var=ITI)
 
 		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
 			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
@@ -551,10 +645,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude
 		endif
 
-		// put the insert test pulse checkbox status into the sweep data wave
-		sweepDataLNB[0][6][HeadStage] = GlobalTPInsert
-		sweepDataLNB[0][7][HeadStage] = ITI
-
 		itcDataColumn += 1
 	endfor
 
@@ -563,41 +653,123 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	numEntries = DimSize(statusAD, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!statusAD[i])
+		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_ADC, i, statusAD, statusHS))
 			continue
 		endif
 
 		headstage = AFH_GetHeadstageFromADC(panelTitle, i)
-		ASSERT(IsFinite(headstage), "Non-finite headstage")
 
-		sweepDataLNB[0][2][headStage] = i // document the AD channel
+		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, i, var=i)
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		sweepDataLNB[0][4][headStage] = GetSetVariable(panelTitle, ctrl) // document the AD gain
+		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=GetSetVariable(panelTitle, ctrl))
 
 		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		sweepDataTxTLNB[0][2][HeadStage] = GetSetVariableString(panelTitle, ctrl)
+		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
 		itcDataColumn += 1
 	endfor
 
-	// reset to the default value without distributedDAQ
-	insertStart = onSetDelay
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		// reset to the default value without distributedDAQ
+		insertStart = onSetDelay
 
-	// Place TTL waves into ITCDataWave
-	if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-		DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
-		WAVE/SDFR=deviceDFR TTLwave
-		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
-		itcDataColumn += 1
+		// Place TTL waves into ITCDataWave
+		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+			DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
+			WAVE/SDFR=deviceDFR TTLwave
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
+			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			itcDataColumn += 1
+		endif
+
+		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+			DC_MakeITCTTLWave(RACK_ONE, panelTitle)
+			WAVE/SDFR=deviceDFR TTLwave
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
+			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+		endif
+	endif
+End
+
+/// @brief Document channel properties of DA and AD channels
+///
+/// Knows about unassociated channels and creates the key `$entry UNASSOC_$channelNumber` for them
+///
+/// @param panelTitle device
+/// @param entry      name of the property
+/// @param headstage  number of headstage, must be `NaN` for unassociated channels
+/// @param channelNumber number of the channel
+/// @param var [optional] numeric value
+/// @param str [optional] string value
+static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channelNumber, [var, str])
+	string panelTitle, entry
+	variable headstage, channelNumber
+	variable var
+	string str
+
+	variable colData, colKey, numCols
+	string ua_entry
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var or str has to be supplied")
+
+	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
+	WAVE/T sweepDataLNBKey    = GetSweepSettingsKeyWave(panelTitle)
+	WAVE/T sweepDataTxTLNBKey = GetSweepSettingsTextKeyWave(panelTitle)
+
+	if(!ParamIsDefault(var))
+		colData = FindDimLabel(sweepDataLNB, COLS, entry)
+		colKey  = FindDimLabel(sweepDataLNBKey, COLS, entry)
+	elseif(!ParamIsDefault(str))
+		colData = FindDimLabel(sweepDataTxTLNB, COLS, entry)
+		colKey  = FindDimLabel(sweepDataTxTLNBKey, COLS, entry)
 	endif
 
-	if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-		DC_MakeITCTTLWave(RACK_ONE, panelTitle)
-		WAVE/SDFR=deviceDFR TTLwave
-		setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-		ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+	ASSERT(colData >= 0, "Could not find entry in the labnotebook input waves")
+	ASSERT(colKey >= 0, "Could not find entry in the labnotebook input key waves")
+
+	if(IsFinite(headstage))
+		if(!ParamIsDefault(var))
+			sweepDataLNB[0][%$entry][headstage] = var
+		elseif(!ParamIsDefault(str))
+			sweepDataTxTLNB[0][%$entry][headstage] = str
+		endif
+		return NaN
+	endif
+
+	// headstage is not finite, so the channel is unassociated
+	sprintf ua_entry, "%s UNASSOC_%d", entry, channelNumber
+
+	if(!ParamIsDefault(var))
+		colData = FindDimLabel(sweepDataLNB, COLS, ua_entry)
+		colKey  = FindDimLabel(sweepDataLNBKey, COLS, ua_entry)
+	elseif(!ParamIsDefault(str))
+		colData = FindDimLabel(sweepDataTxTLNB, COLS, ua_entry)
+		colKey  = FindDimLabel(sweepDataTxTLNBKey, COLS, ua_entry)
+	endif
+
+	ASSERT((colData >= 0 && colKey >= 0) || (colData < 0 && colKey < 0), "input and key wave got out of sync")
+
+	if(colData < 0)
+		if(!ParamIsDefault(var))
+			numCols = DimSize(sweepDataLNB, COLS)
+			Redimension/N=(-1, numCols + 1, -1) sweepDataLNB, sweepDataLNBKey
+			SetDimLabel COLS, numCols, $ua_entry, sweepDataLNB, sweepDataLNBKey
+			sweepDataLNBKey[0][%$ua_entry]   = ua_entry
+			sweepDataLNBKey[1,2][%$ua_entry] = sweepDataLNBKey[p][%$entry]
+		elseif(!ParamIsDefault(str))
+			numCols = DimSize(sweepDataTxTLNB, COLS)
+			Redimension/N=(-1, numCols + 1, -1) sweepDataTxTLNB, sweepDataTxTLNBKey
+			SetDimLabel COLS, numCols, $ua_entry, sweepDataTxTLNB, sweepDataTxTLNBKey
+			sweepDataTxtLNBKey[0][%$ua_entry] = ua_entry
+		endif
+	endif
+
+	if(!ParamIsDefault(var))
+		sweepDataLNB[0][%$ua_entry][INDEP_HEADSTAGE] = var
+	elseif(!ParamIsDefault(str))
+		sweepDataTxTLNB[0][%$ua_entry][INDEP_HEADSTAGE] = str
 	endif
 End
 
@@ -642,6 +814,8 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	string listOfSets = ""
 
 	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
@@ -652,7 +826,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 
 	for(i = first; i <= last; i += 1)
 
-		if(!statusTTL[i])
+		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
 			listOfSets = AddListItem(";", listOfSets, ";", inf)
 			continue
 		endif
@@ -665,11 +839,11 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	endfor
 
 	if(rackNo == RACK_ZERO)
-		sweepDataLNB[0][8][]    = bits
-		sweepDataTxTLNB[0][3][] = listOfSets
+		sweepDataLNB[0][8][INDEP_HEADSTAGE]    = bits
+		sweepDataTxTLNB[0][3][INDEP_HEADSTAGE] = listOfSets
 	else
-		sweepDataLNB[0][9][]    = bits
-		sweepDataTxTLNB[0][4][] = listOfSets
+		sweepDataLNB[0][9][INDEP_HEADSTAGE]    = bits
+		sweepDataTxTLNB[0][4][INDEP_HEADSTAGE] = listOfSets
 	endif
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
@@ -677,7 +851,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 
 	for(i = first; i <= last; i += 1)
 
-		if(!statusTTL[i])
+		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
 			continue
 		endif
 

@@ -4310,13 +4310,15 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
+		WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 		if(mode == DATA_ACQUISITION_MODE)
 			// check all selected TTLs
 			indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
 			Wave statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 			numEntries = DimSize(statusTTL, ROWS)
 			for(i=0; i < numEntries; i+=1)
-				if(!statusTTL[i])
+				if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
 					continue
 				endif
 
@@ -4344,7 +4346,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
 				numEntries = DimSize(statusDA, ROWS)
 				for(i=0; i < numEntries; i+=1)
-					if(!statusDA[i])
+					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
 						continue
 					endif
 
@@ -4361,7 +4363,6 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		// check all active headstages
-		Wave statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 		numEntries = DimSize(statusHS, ROWS)
 		for(i=0; i < numEntries; i+=1)
 			if(!statusHS[i])

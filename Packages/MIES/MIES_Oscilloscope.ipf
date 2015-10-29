@@ -229,7 +229,8 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
 		SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
 	else
+		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 		sampInt = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
-		SetAxis/W=$graph bottom 0, DC_GetStopCollectionPoint(panelTitle, DATA_ACQUISITION_MODE) * sampInt
+		SetAxis/W=$graph bottom 0, stopCollectionPoint * sampInt
 	endif
 End

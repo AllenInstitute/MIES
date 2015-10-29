@@ -57,7 +57,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, setti
 	Wave settingsHistory
 	variable sweepNo
 
-	string key, factor, unit, text
+	string key, factor, unit, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols
 
@@ -112,10 +112,16 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, setti
 				continue
 			endif
 
-			if (!cmpstr(factor, "-"))
-				sprintf text, "HS#%d:%s: %s\r" i, key, SelectString(currentSetting[i], "Off", "On")
+			if(i < NUM_HEADSTAGES)
+				sprintf frontLabel, "HS#%d:" i
 			else
-				sprintf text, "HS#%d:%s: %.2f %s\r" i, key, currentSetting[i], unit
+				frontLabel = ""
+			endif
+
+			if (!cmpstr(factor, "-"))
+				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On")
+			else
+				sprintf text, "%s%s: %.2f %s\r" frontLabel, key, currentSetting[i], unit
 			endif
 
 			str += text
@@ -136,7 +142,7 @@ static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, s
 	Wave/T settingsHistory
 	variable sweepNo
 
-	string key, factor, text
+	string key, factor, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols
 
@@ -181,7 +187,13 @@ static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, s
 				continue
 			endif
 
-			sprintf text, "HS#%d:%s: %s\r" i, key, currentSetting[i]
+			if(i < NUM_HEADSTAGES)
+				sprintf frontLabel, "HS#%d:" i
+			else
+				frontLabel = ""
+			endif
+
+			sprintf text, "%s%s: %s\r" frontLabel, key, currentSetting[i]
 			str += text
 		endfor
 	endfor
@@ -208,7 +220,7 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 
 	variable numCols, col, row, numKeyRows, numKeyCols, i, numAdditions, idx
 	variable lastValidIncomingKeyRow
-	string msg
+	string msg, searchStr
 
 	numKeyRows = DimSize(key, ROWS)
 	numKeyCols = DimSize(key, COLS)
@@ -218,7 +230,10 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
-		FindValue/TXOP=4/TEXT=(incomingKey[0][i]) key
+		searchStr = incomingKey[0][i]
+		ASSERT(!isEmpty(searchStr), "Incoming key can not be empty")
+
+		FindValue/TXOP=4/TEXT=(searchStr) key
 		col = floor(V_value / numKeyRows)
 
 		if(col >= 0)
@@ -285,7 +300,7 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 
 	ASSERT(!cmpstr(textDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
 	ASSERT(DimSize(incomingTextDocWave, ROWS)   == 1, "Mismatched row counts")
-	ASSERT(DimSize(incomingTextDocWave, LAYERS) == NUM_HEADSTAGES, "Mismatched layer counts")
+	ASSERT(DimSize(incomingTextDocWave, LAYERS) == LABNOTEBOOK_LAYER_COUNT, "Mismatched layer counts")
 	ASSERT(DimSize(incomingTextDocWave, COLS)   == DimSize(incomingTextDocKeyWave, COLS), "Mismatched column counts")
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextDocKeyWave, textDocKeyWave, textDocWave, rowIndex)
@@ -336,8 +351,8 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	Make/FREE/N=(1, 2, NUM_HEADSTAGES) numSettings = NaN
-	numSettings[0][0][] = statusHS[r]
+	Make/FREE/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
+	numSettings[0][0][0,7] = statusHS[r]
 
 	// clamp mode string only holds entries for active headstages
 	SVAR clampModeString = $GetClampModeString(panelTitle)
@@ -363,18 +378,18 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	keys[1][1] = "On/Off"
 	keys[2][1] = "-"
 
-	Make/FREE/T/N=(1, 2, NUM_HEADSTAGES) values
+	Make/FREE/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) values
 	values = ""
 
 	if(DAP_DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices))
-			values[0][0][] = listOfFollowerDevices
+			values[0][0][INDEP_HEADSTAGE] = listOfFollowerDevices
 		endif
 	endif
 
 	SVAR miesVersion = $GetMiesVersion()
-	values[0][1][] = miesVersion
+	values[0][1][INDEP_HEADSTAGE] = miesVersion
 
 	ED_createTextNotes(values, keys, SweepCount, panelTitle)
 End
@@ -392,8 +407,8 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 	keys[1][0] =  ""
 	keys[2][0] =  "-"
 
-	Make/FREE/T/N=(1, 1, NUM_HEADSTAGES) values
-	values = comment
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+	values[][][8] = comment
 
 	ED_createTextNotes(values, keys, sweepNo, panelTitle)
 End
@@ -500,8 +515,8 @@ Function ED_TPDocumentation(panelTitle)
 	WAVE/SDFR=dfr InstResistance // wave that contains the peak resistance calculation result from the TP
 	WAVE/SDFR=dfr SSResistance // wave that contains the steady state resistance calculation result from the TP
 
-	Make/FREE/T/N=(3, 12, 1) TPKeyWave
-	Make/FREE/N=(1, 12, NUM_HEADSTAGES) TPSettingsWave = NaN
+	Make/FREE/T/N=(3, 12) TPKeyWave
+	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
 	// add data to TPKeyWave
 	TPKeyWave[0][0]  = "TP Baseline Vm"  // current clamp
@@ -545,7 +560,6 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
-//	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE) /// @toDo Use state when TP was initiated, not current state
 	WAVE guiState =  GetDA_EphysGuiStateNum(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -588,8 +602,8 @@ Function ED_TPSettingsDocumentation(panelTitle)
 	variable sweepNo
 	NVAR/SDFR=GetDeviceTestPulse(panelTitle) baselineFrac, AmplitudeVC, AmplitudeIC, pulseDuration
 
-	Make/FREE/T/N=(3, 4, 1) TPKeyWave
-	Make/FREE/N=(1, 4, NUM_HEADSTAGES) TPSettingsWave = NaN
+	Make/FREE/T/N=(3, 4) TPKeyWave
+	Make/FREE/N=(1, 4, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
 	// name
 	TPKeyWave[0][0] = "TP Baseline Fraction" // fraction of total TP duration
@@ -610,10 +624,10 @@ Function ED_TPSettingsDocumentation(panelTitle)
 	TPKeyWave[2][3] = ""
 
 	// the settings are valid for all headstages
-	TPSettingsWave[0][0][] = baselineFrac
-	TPSettingsWave[0][1][] = AmplitudeVC
-	TPSettingsWave[0][2][] = AmplitudeIC
-	TPSettingsWave[0][3][] = pulseDuration
+	TPSettingsWave[0][0][INDEP_HEADSTAGE] = baselineFrac
+	TPSettingsWave[0][1][INDEP_HEADSTAGE] = AmplitudeVC
+	TPSettingsWave[0][2][INDEP_HEADSTAGE] = AmplitudeIC
+	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)

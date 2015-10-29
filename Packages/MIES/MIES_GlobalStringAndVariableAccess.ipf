@@ -229,3 +229,27 @@ Function/S GetUserComment(panelTitle)
 
 	return GetSVARAsString(GetDevicePath(panelTitle), "userComment")
 End
+
+/// @brief Return the stop collection point as calculated by DC_GetStopCollectionPoint()
+Function/S GetStopCollectionPoint(panelTitle)
+	string panelTitle
+
+	// panelTitle currently unused, but kept for easier upgrade later on
+	return GetNVARAsString(GetITCDevicesFolder(), "stopCollectionPoint", initialValue=NaN)
+End
+
+/// @brief Return the ADC to monitor
+///
+/// This is the first actice AD channel in ITCDataWave and ITCChanConfigWave.
+Function/S GetADChannelToMonitor(panelTitle)
+	string panelTitle
+
+	// panelTitle currently unused, but kept for easier upgrade later on
+	return GetNVARAsString(GetITCDevicesFolder(), "ADChannelToMonitor", initialValue=NaN)
+End
+
+/// @brief Return global panelTitle for background tasks
+Function/S GetPanelTitleGlobal()
+
+	return GetSVARAsString(GetITCDevicesFolder(), "panelTitleG")
+End

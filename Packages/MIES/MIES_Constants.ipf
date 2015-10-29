@@ -336,3 +336,9 @@ Constant TOTAL_NUM_EVENTS   = 5
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ"
+
+/// Number of layers in the labnotebook
+Constant LABNOTEBOOK_LAYER_COUNT = 9
+
+/// Index for storing headstage independent data into the labnotebook
+Constant INDEP_HEADSTAGE = 8

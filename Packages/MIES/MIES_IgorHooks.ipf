@@ -39,12 +39,12 @@ Function IH_KillStimSets()
 	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*", WBstimSetList=list)
 	path = GetDataFolder(1, GetWBSvdStimSetDAPath())
 	list = AddPrefixToEachListItem(path, list)
-	CallFunctionForEachListItem(KillOrMoveToTrash, list)
+	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
 
 	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*", WBstimSetList=list)
 	path = GetDataFolder(1, GetWBSvdStimSetTTLPath())
 	list = AddPrefixToEachListItem(path, list)
-	CallFunctionForEachListItem(KillOrMoveToTrash, list)
+	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
 End
 
 /// @brief Prototype function for #IH_UnlockAllDevicesWrapper

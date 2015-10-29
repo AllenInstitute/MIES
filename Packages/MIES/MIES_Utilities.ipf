@@ -375,7 +375,7 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	endif
 
 	Duplicate/O backup, wv
-	KillWaves/Z backup
+	KillOrMoveToTrash(wv=backup)
 	return 1
 End
 
@@ -869,7 +869,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 		endif
 
 		if(kill && tryKillingTheWave)
-			KillWaves/F/Z refWave
+			KillOrMoveToTrash(wv=refWave)
 		endif
 
 		tryKillingTheWave = 0

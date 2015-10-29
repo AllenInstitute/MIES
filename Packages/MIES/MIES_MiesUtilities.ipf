@@ -278,8 +278,8 @@ End
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
-/// @return Free wave with an entry for each headstage, or an invalid wave reference
-/// if the value could not be found.
+/// @return Free wave with as many layers as the history wave, or an invalid
+///         wave reference if the value could not be found.
 Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
 	WAVE history
 	string setting
@@ -296,7 +296,7 @@ Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/N=(NUM_HEADSTAGES) data = history[idx][%$setting][p]
+	Make/FREE/N=(DimSize(history, LAYERS)) data = history[idx][%$setting][p]
 	sweepNo = history[idx][GetSweepColumn(history)][0]
 
 	return data
@@ -327,7 +327,7 @@ Function/WAVE GetLastSweepWithSettingText(history, setting, sweepNo)
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/T/N=(NUM_HEADSTAGES) data = history[idx][%$setting][p]
+	Make/FREE/T/N=(DimSize(history, LAYERS)) data = history[idx][%$setting][p]
 	sweepNo = str2num(history[idx][GetSweepColumn(history)][0])
 
 	return data
@@ -401,6 +401,20 @@ Function/S GetAllDevicesWithData()
 	return list
 End
 
+/// @brief Convenience wrapper for KillOrMoveToTrashPath()
+Function KillOrMoveToTrash([wv, dfr])
+	WAVE/Z wv
+	DFREF dfr
+
+	if(!ParamIsDefault(wv) && WaveExists(wv))
+		KillOrMoveToTrashPath(GetWavesDataFolder(wv, 2))
+	endif
+
+	if(!ParamIsDefault(dfr) && DataFolderExistsDFR(dfr))
+		KillOrMoveToTrashPath(GetDataFolder(1, dfr))
+	endif
+End
+
 /// @brief Delete a datafolder or wave. If this is not possible, because Igor
 /// has locked the file, the wave or datafolder is moved into a trash folder
 /// named `root:mies:trash_$digit`.
@@ -408,7 +422,7 @@ End
 /// The trash folders will be removed, if possible, from KillTemporaries().
 ///
 /// @param path absolute path to a datafolder or wave
-Function KillOrMoveToTrash(path)
+Function KillOrMoveToTrashPath(path)
 	string path
 
 	string dest
@@ -1168,7 +1182,7 @@ Function SaveExperimentSpecial(mode)
 		return NaN
 	endif
 
-	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrash
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrashPath
 
 	// remove sweep data from all devices with data
 	devicesWithData = GetAllDevicesWithData()
@@ -1483,7 +1497,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			WAVE wv = $StringFromList(i, listOfWaves)
 			RemoveTracesFromGraph(graph, wv=wv)
 		endfor
-		CallFunctionForEachListItem(KillOrMoveToTrash, listOfWaves)
+		CallFunctionForEachListItem(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
 	endif
@@ -1570,7 +1584,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
 
 		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
-		KillDataFolder tmpDFR
+		KillOrMoveToTrash(dfr=tmpDFR)
 	endfor
 End
 

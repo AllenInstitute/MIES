@@ -493,11 +493,11 @@ Function DownsampleWindowHook(s)
 
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
-			Wave/T list       = GetDownsampleListWave()
-			Wave/Wave dataRef = GetDownsampleDataRefWave()
-			Wave   rate       = GetDownsampleRateWave()
 
-			KillWaves/Z list, dataRef, rate
+			KillOrMoveToTrash(wv=GetDownsampleListWave())
+			KillOrMoveToTrash(wv=GetDownsampleDataRefWave())
+			KillOrMoveToTrash(wv=GetDownsampleRateWave())
+
 			RecursiveRemoveEmptyDataFolder($dataPath)
 			if(DataFolderExists(dataPath))
 				printf "Could not remove all contents of %s\r", dataPath
