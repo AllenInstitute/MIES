@@ -94,7 +94,7 @@ End
 
 /// @brief Return the version string for the mies-igor project
 ///
-/// @returns the mies version (e.g. Release_0.3.0.0_20141007-3-gdf4bb1e-dirty) or "unknown version"
+/// @returns the mies version (e.g. Release_0.3.0.0_20141007-3-gdf4bb1e-dirty) or #UNKNOWN_MIES_VERSION
 static Function/S CreateMiesVersion()
 
 	string path, cmd, topDir, gitPaths, version
@@ -122,14 +122,14 @@ static Function/S CreateMiesVersion()
 
 	open/R/Z refNum as path + "version.txt"
 	if(V_flag != 0)
-		return "unknown version"
+		return UNKNOWN_MIES_VERSION
 	endif
 
 	FReadLine refNum, version
 	Close refNum
 
 	if(IsEmpty(version))
-		return "unknown version"
+		return UNKNOWN_MIES_VERSION
 	endif
 
 	return RemoveEnding(version, "\r")

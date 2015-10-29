@@ -342,3 +342,5 @@ Constant LABNOTEBOOK_LAYER_COUNT = 9
 
 /// Index for storing headstage independent data into the labnotebook
 Constant INDEP_HEADSTAGE = 8
+
+StrConstant UNKNOWN_MIES_VERSION = "unknown version"

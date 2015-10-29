@@ -49,6 +49,12 @@ Function HSU_LockDevice(panelTitle)
 	string panelTitleLocked
 	variable locked
 
+	SVAR miesVersion = $GetMiesVersion()
+
+	if(!cmpstr(miesVersion, UNKNOWN_MIES_VERSION))
+		DEBUGPRINT_OR_ABORT("The MIES version is unknown, locking devices is therefore only allowed in debug mode.")
+	endif
+
 	panelTitleLocked = BuildDeviceString(HSU_GetDeviceType(panelTitle), HSU_GetDeviceNumber(panelTitle))
 	if(windowExists(panelTitleLocked))
 		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use."
@@ -74,10 +80,6 @@ Function HSU_LockDevice(panelTitle)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked)
-
-	// the first time call of this function is expensive
-	// call it here, in order to avoid problems later on
-	GetMiesVersion()
 End
 
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
