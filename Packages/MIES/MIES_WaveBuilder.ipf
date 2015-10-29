@@ -46,20 +46,67 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 	return stimSet
 End
 
+/// @brief Return the wave `WP` for a stim set
+///
+/// @return valid/invalid wave reference
+Function/Wave WB_GetWaveParamForSet(setName)
+	string setName
+
+	variable type
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetParamFolder(type)
+
+	WAVE/Z/SDFR=dfr wv = $("WP" + "_" + setName)
+
+	return wv
+End
+
+/// @brief Return the wave `WPT` for a stim set
+///
+/// @return valid/invalid wave reference
+Function/Wave WB_GetWaveTextParamForSet(setName)
+	string setName
+
+	variable type
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetParamFolder(type)
+
+	WAVE/Z/T/SDFR=dfr wv = $("WPT" + "_" + setName)
+
+	return wv
+End
+
+/// @brief Return the wave `SegmentWvType` for a stim set
+///
+/// @return valid/invalid wave reference
+Function/Wave WB_GetSegWvTypeForSet(setName)
+	string setName
+
+	variable type
+
+	type = GetStimSetType(setName)
+	DFREF dfr = GetSetParamFolder(type)
+
+	WAVE/Z/SDFR=dfr wv = $("SegWvType" + "_" + setName)
+
+	return wv
+End
+
 /// @return One if one of the parameter waves is newer than the stim set wave, zero otherwise
 static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
 	variable type, lastModStimSet
 
-	type = GetStimSetType(setName)
-	DFREF dfr = GetSetParamFolder(type)
-	WAVE/Z/SDFR=dfr   WP        = $("WP"        + "_" + setName)
-	WAVE/Z/T/SDFR=dfr WPT       = $("WPT"       + "_" + setName)
-	WAVE/Z/SDFR=dfr   SegWvType = $("SegWvType" + "_" + setName)
+	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
+	WAVE/Z WPT       = WB_GetWaveTextParamForSet(setName)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
 
 	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
 
+		type = GetStimSetType(setName)
 		DFREF dfr = GetSetFolder(type)
 		WAVE/Z/SDFR=dfr stimSet = $setName
 		if(!WaveExists(stimSet))
@@ -90,7 +137,7 @@ Function/Wave WB_GetStimSet([setName])
 	string setName
 
 	variable i, numEpochs, numSteps, updateEpochIDWave
-	variable last, lengthOf1DWaves, type, length
+	variable last, lengthOf1DWaves, length
 	string wvName
 	variable start = stopmstimer(-2)
 
@@ -101,12 +148,9 @@ Function/Wave WB_GetStimSet([setName])
 		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
 		WAVE SegWvType = GetSegmentTypeWave()
 	else
-		type = GetStimSetType(setName)
-		DFREF dfr = GetSetParamFolder(type)
-
-		WAVE/Z/SDFR=dfr   WP        = $("WP"        + "_" + setName)
-		WAVE/Z/T/SDFR=dfr WPT       = $("WPT"       + "_" + setName)
-		WAVE/Z/SDFR=dfr   SegWvType = $("SegWvType" + "_" + setName)
+		WAVE WP        = WB_GetWaveParamForSet(setName)
+		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
+		WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
 
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
