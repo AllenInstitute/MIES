@@ -156,6 +156,14 @@ Function DEBUGPRINT(msg, [var, str, format])
 	endif
 End
 
+/// @brief Prints a message to the command history in debug mode,
+///        aborts with dialog in release mode
+Function DEBUGPRINT_OR_ABORT(msg)
+	string msg
+
+	DEBUGPRINT(msg)
+End
+
 #else
 
 Function DEBUGPRINTv(var, [format])
@@ -181,6 +189,12 @@ Function DEBUGPRINT(msg, [var, str, format])
 	string str, format
 
 	// do nothing
+End
+
+Function DEBUGPRINT_OR_ABORT(msg)
+	string msg
+
+	Abort msg
 End
 
 #endif
