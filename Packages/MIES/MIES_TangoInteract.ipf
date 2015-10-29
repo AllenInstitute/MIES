@@ -54,7 +54,7 @@ Function TI_TangoCommandInput(cmdString)
 	endif
 End	
 
-///@brief test function for opening da_ephys panel remotely from the WSE
+///@brief function for opening da_ephys panel remotely from the WSE
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
 Function TI_OpenDAPanel(placeHolder, [cmdID])
 	variable placeHolder
@@ -71,14 +71,29 @@ Function TI_OpenDAPanel(placeHolder, [cmdID])
 	endif
 End
 
-///@brief test function for selecting the ITC18USB device
+///@brief function for selecting the device number from the WSE
+/// @param devHolder -- device number, set from the WSE
+Function TI_selectDeviceNumber(devNumber, [cmdID])
+	variable devNumber
+	string cmdID
+	
+	// Not the most elegant thing, but we know what the popup menu always is
+	SetPopupMenuIndex(BASE_WINDOW_TITLE, "popup_moreSettings_DeviceNo", devNumber)
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 0)
+	endif
+End
+
+///@brief function for selecting the ITC18USB device
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
 Function TI_selectITCDevice(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
 	
 	// Not the most elegant thing, but we know what the popup menu always is
-	SetPopupMenuIndex("DA_Ephys", "popup_MoreSettings_DeviceType", 5)
+	SetPopupMenuIndex(BASE_WINDOW_TITLE, "popup_MoreSettings_DeviceType", 5)
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -86,14 +101,16 @@ Function TI_selectITCDevice(placeHolder, [cmdID])
 	endif
 End
 
-///@brief test function for locking the device selection
+///@brief function for locking the device selection
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
 Function TI_lockITCDevice(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
 	
+	string lockDevButton = "button_SettingsPlus_LockDevice"
+	
 	// Lock the ITC device
-	HSU_LockDevice("DA_Ephys")
+	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, lockDevButton)
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -101,7 +118,7 @@ Function TI_lockITCDevice(placeHolder, [cmdID])
 	endif
 End
 
-///@brief test function for querying the connected amps
+///@brief function for querying the connected amps
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
 Function TI_queryAmps(placeHolder, [cmdID])
 	variable placeHolder
@@ -116,7 +133,7 @@ Function TI_queryAmps(placeHolder, [cmdID])
 	endif
 End
 		
-///@brief test function for querying the connected amps
+///@brief function for querying the connected amps
 /// @param ampChannel -- amplifier channel to be connected by the WSE 
 Function TI_selectAmpChannel(ampChannel, [cmdID])
 	variable ampChannel
@@ -132,33 +149,16 @@ Function TI_selectAmpChannel(ampChannel, [cmdID])
 	endif
 End	
 
-///@brief test function for hitting the autofill button
+///@brief function for hitting the autofill button
 ///@headstage -- headstage to be used in pipeline experiments and set via the WSE
 Function TI_autoFillAmps(headStage, [cmdID])
 	variable headStage
 	string cmdID
 
 	string panelTitle = "ITC18USB_Dev_0"
-	variable axonSerial
-	// again, not the most elegant way to do this, but these commands are always done the same way
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
-
-	// Is an amp associated with the headstage?
-	headStage  = GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
-	axonSerial = ChanAmpAssign[8][headStage]
-
-	if(!IsFinite(axonSerial))
-		print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
-		return 0
-	endif
-
-	// Is the amp still connected?
-	FindValue/I=(axonSerial)/T=0 W_TelegraphServers
-	if(V_Value != -1)
-		HSU_AutoFillGain(panelTitle)
-		HSU_UpdateChanAmpAssignStorWv(panelTitle)
-	endif
+	string controlTitle = "button_Hardware_AutoGainAndUnit"
+	
+	PGC_SetAndActivateControl(panelTitle, controlTitle)
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
