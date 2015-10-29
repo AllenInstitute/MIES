@@ -156,6 +156,7 @@ Function NWB_ExportAllData()
 		return NaN
 	endif
 
+	NWB_AddMiesVersion(locationID)
 	IPNWB#AddModificationTimeEntry(locationID)
 
 	numEntries = ItemsInList(devicesWithData)
@@ -177,6 +178,15 @@ Function NWB_ExportAllData()
 	endfor
 End
 
+Function NWB_AddMiesVersion(locationID)
+	variable locationID
+
+	SVAR miesVersion = $GetMiesVersion()
+
+	IPNWB#H5_WriteTextDataset(locationID, "/general/version", str=miesVersion, overwrite=1)
+	IPNWB#MarkAsCustomEntry(locationID, "/general/version")
+End
+
 Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	string panelTitle
 	WAVE ITCDataWave, ITCChanConfigWave
@@ -189,6 +199,7 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 		return NaN
 	endif
 
+	NWB_AddMiesVersion(locationID)
 	IPNWB#AddModificationTimeEntry(locationID)
 	NWB_AddDeviceSpecificData(locationID, panelTitle)
 	NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
