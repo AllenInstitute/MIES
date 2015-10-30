@@ -3,7 +3,6 @@
 ## Full Installation
 
 * Quit Igor Pro
-* Make the VTD2.xop available in Igor Pro
 * Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files"
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
