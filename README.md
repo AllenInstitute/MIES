@@ -2,6 +2,8 @@
 
 ## Full Installation
 
+### Igor Pro 6.3.x (32bit only)
+
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files"
 	* In "User Procedures" a shortcut pointing to
@@ -10,8 +12,24 @@
 		* "Packages\MIES"
 		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-	* In "Igor Extensions" a shortcut pointing to XOPs and XOP-tango
+	* In "Igor Extensions" a shortcut pointing to XOPs
+	* In "Igor Extensions" a shortcut pointing to XOP-tango
 	* In "Igor Help File"  a shortcut pointing to HelpFiles
+* Start Igor Pro
+
+### Igor Pro 7.0.x (32bit only)
+
+* Quit Igor Pro
+* Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 7 User Files"
+	* In "User Procedures" a shortcut pointing to
+		* "Packages\Arduino"
+		* "Packages\HDF"
+		* "Packages\MIES"
+		* "Packages\Tango"
+	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
+	* In "Igor Extensions" a shortcut pointing to XOPs-IP7
+	* In "Igor Extensions" a shortcut pointing to XOP-tango
+	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
 ## Partial Installation without hardware dependencies
