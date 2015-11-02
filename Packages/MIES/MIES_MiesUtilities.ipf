@@ -1414,6 +1414,8 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
 	SetScale d, 0, 0, StringFromList(column, note(config)), data
 
+	Note data, note(sweep)
+
 	return data
 End
 
