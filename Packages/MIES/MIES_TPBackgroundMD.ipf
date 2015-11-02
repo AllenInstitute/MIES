@@ -38,7 +38,7 @@ Function ITC_BkrdTPFuncMD(s)
 
 	variable NumberOfActiveDevices, ADChannelToMonitor, i
 	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
-	String cmd, Keyboard, panelTitle
+	String cmd, panelTitle
 
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
 	WAVE/SDFR=dfr ActiveDeviceList
@@ -125,10 +125,10 @@ Function ITC_BkrdTPFuncMD(s)
 
 		NVAR count = $GetCount(panelTitle)
 		if(!IsFinite(count))
-			Keyboard = KeyboardState("")
-			if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
+			if(GetKeyState(0) & ESCAPE_KEY)
 				panelTitle = GetMainWindow(GetCurrentWindow())
-				if(stringmatch(panelTitle,ActiveDeviceTextList[i]) == 1) // makes sure the panel title being passed is a data acq panel title -  allows space bar hit to apply to a particualr data acquisition panel
+				// only stop the currently active device
+				if(!cmpstr(panelTitle,ActiveDeviceTextList[i]))
 					beep 
 					DAM_StopTPMD(panelTitle)
 				endif
@@ -172,13 +172,7 @@ Function ITC_StopTPMD(panelTitle)
 		endif
 	endif
 
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
-	ED_TPDocumentation(panelTitle)
-	EnableControl(panelTitle, "StartTestPulseButton")
-	DAP_RestoreTTLState(panelTitle)
-
-	headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
+	TP_Teardown(panelTitle)
 End
 
 static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)

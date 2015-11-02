@@ -263,3 +263,10 @@ Function/S GetInteractiveMode()
 
 	return GetNVARAsString(GetMiesPath(), "interactiveMode", initialValue=1)
 End
+
+/// @brief Returns the absolute path to the testpulse running modes, holds one of @ref TestPulseRunModes
+Function/S GetTestpulseRunMode(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "runMode", initialValue=NaN)
+End

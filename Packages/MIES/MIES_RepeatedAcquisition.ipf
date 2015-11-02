@@ -18,7 +18,7 @@ static Function RA_HandleITI_MD(panelTitle)
 	endif
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-	DAM_StartTestPulseMD(panelTitle)
+	DAM_StartTestPulseMD(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
 	ITC_StartBackgroundTimerMD(ITI,"DAM_StopTPMD(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 End
@@ -37,14 +37,12 @@ static Function RA_HandleITI(panelTitle)
 		return NaN
 	endif
 
-	TP_Setup(panelTitle)
+	TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
 	ITC_StartBackgroundTestPulse(panelTitle)
 	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
-
-	TP_Teardown(panelTitle)
 End
 
 /// @brief Function gets called after the first trial is already

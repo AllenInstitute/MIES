@@ -60,17 +60,17 @@ Function P_PressureControl(panelTitle)
 						P_MethodApproach(panelTitle, headStage)
 					break
 				case P_METHOD_1_SEAL:
-					if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
 						P_MethodSeal(panelTitle, headStage)
 					endif
 					break
 				case P_METHOD_2_BREAKIN:
-					if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
 						P_MethodBreakIn(panelTitle, headStage)
 					endif
 					break
 				case P_METHOD_3_CLEAR:
-					if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
 						 P_MethodClear(panelTitle, headStage)
 					endif
 					break
@@ -1089,7 +1089,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode			
 			elseif(PressureMode) // all other modes, only apply if TP is running
-				if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
+				if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
 					SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 					PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
@@ -1118,7 +1118,7 @@ Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 		if(getCheckboxState(panelTitle, StringFromList(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 				if(P_ValidatePressureSetHeadstage(panelTitle, headStage))
-					if(pressureMode && P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(pressureMode && TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
 						PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
 					else
 						PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode // pressure mode = 0
@@ -1146,7 +1146,7 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 				SetControlTitle(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), ("Stop " + StringFromList(SavedPressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 			elseif(SavedPressureMode) // other pressure modes
-				if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
+				if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
 					SetControlTitle(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), ("Stop " + StringFromList(SavedPressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 				endif
@@ -1168,7 +1168,7 @@ Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	
 	string PRESSURE_CONTROLS_BUTTON_subset = RemoveListItem(0, PRESSURE_CONTROLS_BUTTON_LIST)
 
-	if(P_IsTPActive(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
+	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
 		if(getCheckBoxState(panelTitle, StringFromList(P_METHOD_3_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			EnableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
 		else
@@ -1277,23 +1277,6 @@ Function IsITCCollectingData(panelTitle, headStage)
 	ExecuteITCOperation(cmd)
 
 	return StateWave[0] != 0
-End
-
-/// @brief Determines if bacground TP is active
-///
-/// Accounts for different acquistion modes (different background functions are used for different TP acquisition modes)
-Function P_IsTPActive(panelTitle)
-	string panelTitle
-
-	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-		if(getControlDisable(panelTitle, "StartTestPulseButton")) // check if TP is running on this particular device by seeing if the TP button is disabled
-			return IsBackgroundTaskRunning("TestPulseMD") // check if the background function that runs the TP is also active
-		endif
-	else
-		return IsBackgroundTaskRunning("testpulse")
-	endif
-
-	return 0
 End
 
 /// @brief Determines headStage is on and in V-Clamp mode
@@ -1479,7 +1462,7 @@ End
 Function P_SetApproach(panelTitle, cntrlName)
 	string panelTitle, cntrlName
 	P_UpdatePressureMode(panelTitle, P_METHOD_0_APPROACH, cntrlName, 1)
-	if(!P_IsTPActive(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
+	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(panelTitle)
 	endif
 End
@@ -1536,7 +1519,7 @@ End
 Function P_SetManual(panelTitle, cntrlName)
 	string panelTitle, cntrlName
 	P_UpdatePressureMode(panelTitle, P_METHOD_4_MANUAL, cntrlName, 1)
-	if(!P_IsTPActive(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
+	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(panelTitle)
 	endif
 End
@@ -1549,7 +1532,7 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 		case 2: // mouse up
 			Variable checked = cba.checked
 			if(checked)
-				if(P_IsTPActive(cba.win) && P_IsHSActiveAndInVClamp(cba.win, GetSliderPositionIndex(cba.win, "slider_DataAcq_ActiveHeadstage")))
+				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, GetSliderPositionIndex(cba.win, "slider_DataAcq_ActiveHeadstage")))
 					EnableControl(cba.win, "button_DataAcq_Clear")
 				endif
 			else
@@ -1646,7 +1629,7 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			P_UpdatePressureDataStorageWv(cba.win)
-			if(!P_IsTPActive(cba.win)) // P_PressureControl will be called from TP functions when the TP is running
+			if(!TP_CheckIfTestpulseIsRunning(cba.win)) // P_PressureControl will be called from TP functions when the TP is running
 				P_PressureControl(cba.win)
 			endif
 			break

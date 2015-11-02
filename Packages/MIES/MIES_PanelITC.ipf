@@ -461,7 +461,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value= _NUM:0
 	Button StartTestPulseButton,pos={51,404},size={384,40},disable=1,proc=DAP_ButtonProc_TestPulse,title="\\Z14\\f01Start Test \rPulse"
-	Button StartTestPulseButton,help={"Starts generating test pulses. Can be stopped by pressing space bar."}
+	Button StartTestPulseButton,help={"Starts generating test pulses. Can be stopped by pressing the Escape key."}
 	Button StartTestPulseButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo)= A"!!,Cp!!#B3!!#C%!!#>Nz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button StartTestPulseButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3695,28 +3695,6 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 	endfor
 End
 
-Function DAP_StoreTTLState(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevicePath(panelTitle)
-	string/G dfr:StoredTTLState = Convert1DWaveToList(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL))
-End
-
-Function DAP_RestoreTTLState(panelTitle)
-	string panelTitle
-
-	variable i, state
-	string control
-
-	SVAR/SDFR=GetDevicePath(panelTitle) StoredTTLState
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		control = "Check_TTL_0" + num2str(i)
-		state = str2num(StringFromList(i , StoredTTLState))
-		SetCheckBoxState(panelTitle, control, state)
-	endfor
-End
-
 Function DAP_ButtonProc_TTLOff(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -3960,7 +3938,7 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 		ASSERT(0, "unknown mode")
 	endif
 
-	return SI_CalculateMinSampInterval(panelTitle) * multiplier
+	return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
 End
 
 Function DAP_UpdateSweepSetVariables(panelTitle)
@@ -4877,6 +4855,27 @@ Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 	Button DataAcquireButton title=text, fcolor=(color.red, color.green, color.blue), win = $panelTitle
 End
 
+/// @brief Set the testpulse button text
+///
+/// @param panelTitle device
+/// @param mode       One of @ref ToggleTestpulseButtonConstants
+Function DAP_ToggleTestpulseButton(panelTitle, mode)
+	string panelTitle
+	variable mode
+
+	ASSERT(mode == TESTPULSE_BUTTON_TO_STOP || mode == TESTPULSE_BUTTON_TO_START, "Invalid mode")
+
+	string text
+
+	if(mode == TESTPULSE_BUTTON_TO_STOP)
+		text = "\\Z14\\f01Stop Test \rPulse"
+	elseif(mode == TESTPULSE_BUTTON_TO_START)
+		text = "\\Z14\\f01Start Test \rPulse"
+	endif
+
+	Button StartTestPulseButton title=text, win = $panelTitle
+End
+
 /// Returns the list of potential followers for yoking.
 ///
 /// Used by popup_Hardware_AvailITC1600s from the hardware tab
@@ -5415,7 +5414,14 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			panelTitle = ba.win
-			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			NVAR DataAcqState = $GetDataAcqState(panelTitle)
+
+			// if data acquisition is currently running we just
+			// want just call TP_StartTestPulse* which automatically
+			// ends DAQ
+			if(!DataAcqState && TP_CheckIfTestpulseIsRunning(panelTitle))
+				TP_StopTestPulse(panelTitle)
+			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				TP_StartTestPulseMultiDevice(panelTitle)
 			else
 				TP_StartTestPulseSingleDevice(panelTitle)

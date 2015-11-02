@@ -284,7 +284,7 @@ Function ITC_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	String cmd, Keyboard
+	String cmd
 	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
 	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
 	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
@@ -318,8 +318,7 @@ Function ITC_TestPulseFunc(s)
 
 	NVAR count = $GetCount(panelTitle)
 	if(!IsFinite(count))
-		Keyboard = KeyboardState("")
-		if (cmpstr(Keyboard[9], " ") == 0)	// Is space bar pressed (note the space between the quotations)?
+		if(GetKeyState(0) & ESCAPE_KEY)
 			beep
 			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
@@ -334,15 +333,8 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 	variable headstage
 
 	CtrlNamedBackground TestPulse, stop
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
-	DAP_RestoreTTLState(panelTitle)
-	EnableControl(panelTitle, "StartTestPulseButton")
-
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
-
-	ED_TPDocumentation(panelTitle)
+	TP_Teardown(panelTitle)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
@@ -468,7 +460,7 @@ End
 Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 
-	string cmd, keyboard
+	string cmd
 	variable i
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
@@ -513,16 +505,9 @@ Function ITC_StartTestPulse(panelTitle)
 		endif
 
 		i += 1	
-		Keyboard = KeyboardState("")
-	while (cmpstr(Keyboard[9], " ") != 0)
-	
-	DAP_RestoreTTLState(panelTitle)
-	ED_TPDocumentation(panelTitle)
-	EnableControl(panelTitle,"StartTestPulseButton")
-	
-	// Update pressure buttons
-	variable headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
-	P_LoadPressureButtonState(panelTitle, headStage)
+	while(!(GetKeyState(0) & ESCAPE_KEY))
+
+	TP_Teardown(panelTitle)
 END
 
 Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600

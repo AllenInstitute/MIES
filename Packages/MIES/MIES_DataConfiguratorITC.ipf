@@ -233,12 +233,17 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 			continue
 		endif
 
-		WAVE wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			WAVE/Z wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			WAVE/Z wv = GetTestPulse()
+		else
+			ASSERT(0, "unhandled case")
+		endif
+
 		if(WaveExists(wv))
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
-
-		maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 	endfor
 
 	return maxNumRows
@@ -553,9 +558,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
 
-		setName = StringFromList(i, setNameList)
-		ASSERT(dataAcqOrTP == IsTestPulseSet(setName), "Unexpected combination")
-		WAVE stimSet = WB_CreateAndGetStimSet(setName)
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			setName = StringFromList(i, setNameList)
+			WAVE stimSet = WB_CreateAndGetStimSet(setName)
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			setName = "testpulse"
+			WAVE stimSet = GetTestPulse()
+		else
+			ASSERT(0, "unknown mode")
+		endif
+
 		setLength = round(DimSize(stimSet, ROWS) / decimationFactor) - 1
 
 		if(distributedDAQ)
@@ -584,14 +596,28 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			endif
 		endif
 
-		// checks if user wants to set scaling to 0 on sets that have already cycled once
-		if(scalingZero && (indexingLocked || !indexing))
-			// makes sure test pulse wave scaling is maintained
-			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				if(oneFullCycle) // checks if set has completed one full cycle
-					DAScale = 0
-				endif
+		channelMode = ChannelClampMode[i][%DAC]
+		if(channelMode == V_CLAMP_MODE)
+			testPulseAmplitude = TPAmpVClamp
+		elseif(channelMode == I_CLAMP_MODE)
+			testPulseAmplitude = TPAmpIClamp
+		else
+			ASSERT(0, "Unknown clamp mode")
+		endif
+
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		DAScale = GetSetVariable(panelTitle, ctrl)
+
+		// DAScale tuning for special cases
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			// checks if user wants to set scaling to 0 on sets that have already cycled once
+			if(scalingZero && (indexingLocked || !indexing) && oneFullCycle)
+				DAScale = 0
 			endif
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			DAScale = testPulseAmplitude
+		else
+			ASSERT(0, "unknown mode")
 		endif
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, i, var=i)
@@ -601,9 +627,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
 
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
-
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DAScale = GetSetVariable(panelTitle, ctrl)
 
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName)
 
@@ -633,16 +656,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
 		// of the onset delay
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
-			channelMode = ChannelClampMode[i][%DAC]
-			testPulseAmplitude = NaN
-			if(channelMode == V_CLAMP_MODE)
-				testPulseAmplitude = TPAmpVClamp * DAGain
-			elseif(channelMode == I_CLAMP_MODE)
-				testPulseAmplitude = TPAmpIClamp * DAGain
-			else
-				ASSERT(0, "Unknown clamp mode")
-			endif
-			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude
+			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude * DAGain
 		endif
 
 		itcDataColumn += 1

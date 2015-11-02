@@ -3,129 +3,6 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
-/// @brief Selects Test Pulse output wave for all checked DA channels
-static Function TP_SelectTestPulseWave(panelTitle)
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Wave_DA_0" + num2str(i)
-			PopUpMenu $control mode = 2, win = $panelTitle
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	Wave 	SelectedDACWaveList
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Wave_DA_0" + num2str(i)
-			ControlInfo /w = $panelTitle $control
-			SelectedDACWaveList[i] = v_value
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-end
-
-static Function TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	Wave 	SelectedDACWaveList
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Wave_DA_0" + num2str(i)
-			PopupMenu $control mode = SelectedDACWaveList[i], win = $panelTitle
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_StoreDAScale(SelectedDACScale, panelTitle)
-	Wave 	SelectedDACScale
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Scale_DA_0" + num2str(i)
-			ControlInfo /w = $panelTitle $control
-			SelectedDACScale[i] = v_value
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_SetDAScaleToOne(panelTitle)
-	string 	panelTitle
-
-	string control
-	variable scalingFactor, i
-	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Scale_DA_0" + num2str(i)
-			if(ChannelClampMode[i][0] == V_CLAMP_MODE)
-				scalingFactor = 1
-			elseif(ChannelClampMode[i][0] == I_CLAMP_MODE)
-				// this adjust the scaling in current clamp so that the TP wave
-				// (constructed based on v-clamp param) is converted into the I clamp amp
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitudeIC
-				scalingFactor = v_value
-				controlinfo /w = $panelTitle SetVar_DataAcq_TPAmplitude
-				scalingFactor /= v_value
-			else
-				ASSERT(0, "no other modes are supported")
-			endif
-
-			SetSetVariable(panelTitle, control, scalingFactor)
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
-static Function TP_RestoreDAScale(SelectedDACScale, panelTitle)
-	Wave 	SelectedDACScale
-	string 	panelTitle
-
-	string control
-	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	do
-		if(DC_ChannelIsActive(panelTitle, TEST_PULSE_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-			control = "Scale_DA_0" + num2str(i)
-			SetSetVariable(panelTitle, control, SelectedDACScale[i])
-		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-end
-
 Function TP_UpdateGlobals(panelTitle)
 	string panelTitle
 
@@ -193,16 +70,14 @@ static Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
 
 	variable length
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR amplitudeVC, baselineFrac, pulseDuration
+	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
 
 	// this length here is with minimum sampling interval, it will
 	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
 	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
-	// TP_SetDAScaleToOne adapts to the different clamp modes
-	// so setting it here unconditionally for V_CLAMP is correct
-	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = amplitudeVC
+	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
 /// @brief MD-variant of #TP_UpdateTestPulseWave
@@ -238,30 +113,19 @@ End
 Function TP_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
-	variable headstage
-
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DisableControl(panelTitle, "StartTestPulseButton")
 	DAP_StopOngoingDataAcquisition(panelTitle)
-
-	NVAR count = $GetCount(panelTitle)
-	KillVariables/Z count
-
 	DAP_UpdateITCSampIntDisplay(panelTitle)
-	TP_Setup(panelTitle)
-	
+
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
+		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StartBackgroundTestPulse(panelTitle)
 	else
+		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
 		ITC_StartTestPulse(panelTitle)
-		SCOPE_KillScopeWindowIfRequest(panelTitle)
+		TP_Teardown(panelTitle)
 	endif
-
-	TP_Teardown(panelTitle)
-
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
@@ -269,15 +133,10 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
 	variable headstage
+
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DAP_StopOngoingDataAcqMD(panelTitle)
-	DisableControl(panelTitle, "StartTestPulseButton")
-
-	// @todo Need to modify (killing count global) for yoked devices
-	NVAR count = $GetCount(panelTitle)
-	KillVariables/Z count
-
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	DAM_StartTestPulseMD(panelTitle)
@@ -644,6 +503,12 @@ Function TP_GetTPResultsColOfHS(panelTitle, headStage)
 	return V_value - FirstADColumn
 End
 
+/// @brief Stop running background testpulse on all locked devices
+Function TP_StopTestPulseOnAllDevices()
+
+	CallFunctionForEachListItem(TP_StopTestPulse, GetListOfLockedDevices())
+End
+
 /// @brief Stop any running background test pulses
 ///
 /// Assumes that single device and multi device do not run at the same time.
@@ -651,12 +516,25 @@ End
 Function TP_StopTestPulse(panelTitle)
 	string panelTitle
 
-	if(IsBackgroundTaskRunning("TestPulse"))
+	variable runMode
+
+	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+
+	// create copy as TP_TearDown() will change runModeGlobal
+	runMode = runModeGlobal
+
+	// clear all modifiers from runMode
+	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
+
+	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StopTestPulseSingleDevice(panelTitle)
-		return TEST_PULSE_BG_SINGLE_DEVICE
-	elseif(IsBackgroundTaskRunning("TestPulseMD"))
+		return runMode
+	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
 		ITC_StopTPMD(panelTitle)
-		return TEST_PULSE_BG_MULTI_DEVICE
+		return runMode
+	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
+		// can not be stopped
+		return TEST_PULSE_FG_SINGLE_DEVICE
 	endif
 
 	return TEST_PULSE_NOT_RUNNING
@@ -677,35 +555,32 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			TP_StartTestPulseMultiDevice(panelTitle)
 			break
 		default:
-			ASSERT(0, "Unhandled case in ITC_RestartTestPulse")
+			ASSERT(0, "Unhandled case")
 			break
 	endswitch
 End
 
 /// @brief Prepare device for TestPulse
 /// @param panelTitle  device
-/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
-Function TP_Setup(panelTitle, [multiDevice])
+/// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
+Function TP_Setup(panelTitle, runMode)
 	string panelTitle
+	variable runMode
+
 	variable multiDevice
 
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	DAP_StoreTTLState(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
+	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
+
+	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
+		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
+	endif
+
 
 	TP_UpdateGlobals(panelTitle)
 
 	TP_ResetTPStorage(panelTitle)
-
-	// stores panel settings
-	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACWaveList/Wave=SelectedDACWaveList
-	TP_StoreSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	TP_SelectTestPulseWave(panelTitle)
-
-	Make/O/N=(NUM_DA_TTL_CHANNELS) deviceDFR:SelectedDACScale/Wave=SelectedDACScale
-	TP_StoreDAScale(SelectedDACScale,panelTitle)
-	TP_SetDAScaleToOne(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
 	if(multiDevice)
@@ -713,6 +588,9 @@ Function TP_Setup(panelTitle, [multiDevice])
 	else
 		TP_UpdateTestPulseWave(panelTitle, TestPulse)
 	endif
+
+	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+	runModeGlobal = runMode
 
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
@@ -726,10 +604,28 @@ End
 Function TP_Teardown(panelTitle)
 	string panelTitle
 
+	variable headstage
+
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/SDFR=dfr SelectedDACWaveList
-	TP_ResetSelectedDACWaves(SelectedDACWaveList, panelTitle)
-	WAVE/SDFR=dfr SelectedDACScale
-	TP_RestoreDAScale(SelectedDACScale, panelTitle)
+	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
+
+	ED_TPDocumentation(panelTitle)
+
+	SCOPE_KillScopeWindowIfRequest(panelTitle)
+
+	NVAR runMode= $GetTestpulseRunMode(panelTitle)
+	runMode = TEST_PULSE_NOT_RUNNING
+
+	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	P_LoadPressureButtonState(panelTitle, headStage)
+End
+
+/// @brief Check if the testpulse is running
+Function TP_CheckIfTestpulseIsRunning(panelTitle)
+	string panelTitle
+
+	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING
 End
