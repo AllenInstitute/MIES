@@ -99,7 +99,7 @@ static Function DC_UpdateClampModeString(panelTitle)
 End
 
 /// @brief Return the number of selected checkboxes for the given type
-Function DC_NoOfChannelsSelected(panelTitle, type)
+static Function DC_NoOfChannelsSelected(panelTitle, type)
 	string panelTitle
 	variable type
 
@@ -1008,7 +1008,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
-Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
@@ -1034,7 +1034,7 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 End
 
 /// @brief Return the `first` and `last` TTL bits for the given `rack`
-Function DC_GetRackRange(rack, first, last)
+static Function DC_GetRackRange(rack, first, last)
 	variable rack
 	variable &first, &last
 
