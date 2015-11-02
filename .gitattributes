@@ -24,6 +24,7 @@
 tools        export-ignore
 Packages/ITC export-ignore
 Packages/doc export-ignore
+Guidelines   export-ignore
 
 .git* export-ignore
 
