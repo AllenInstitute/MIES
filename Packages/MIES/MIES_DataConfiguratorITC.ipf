@@ -103,7 +103,7 @@ static Function DC_NoOfChannelsSelected(panelTitle, type)
 	string panelTitle
 	variable type
 
-	return sum(DC_ControlStatusWave(panelTitle, type))
+	return sum(DC_ControlStatusWaveCache(panelTitle, type))
 End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
@@ -125,6 +125,53 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 		ctrl = GetPanelControl(panelTitle, i, type, CHANNEL_CONTROL_CHECK)
 		wv[i] = GetCheckboxState(panelTitle, ctrl)
 	endfor
+
+	return wv
+End
+
+/// @brief Return a free wave of the status of the checkboxes specified by
+///        channelType, uses GetDA_EphysGuiStateNum() instead of GUI queries.
+///
+/// This function does only return correct values if GetDA_EphysGuiStateNum() is up to date.
+/// At the moment this is ensured as all callers of this function have TP_UpdateGlobals() called before.
+///
+/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
+/// @param panelTitle  panel title
+Function/Wave DC_ControlStatusWaveCache(panelTitle, type)
+	string panelTitle
+	variable type
+
+	variable numEntries, col
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	numEntries = GetNumberFromType(var=type)
+
+	switch(type)
+		case CHANNEL_TYPE_ASYNC:
+			col = 12
+			break
+		case CHANNEL_TYPE_ALARM:
+			col = 14
+			break
+		case CHANNEL_TYPE_TTL:
+			col = 9
+			break
+		case CHANNEL_TYPE_DAC:
+			col = 2
+			break
+		case CHANNEL_TYPE_HEADSTAGE:
+			col = 0
+			break
+		case CHANNEL_TYPE_ADC:
+			col = 7
+			break
+		default:
+			ASSERT(0, "invalid type")
+			break
+	endswitch
+
+	Make/FREE/U/B/N=(numEntries) wv = GUIState[p][col]
 
 	return wv
 End
@@ -167,7 +214,7 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 
 	variable a
 	variable b
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusTTL = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
 
 	if(RackNo == 0)
 		 a = 0
@@ -223,8 +270,8 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	variable maxNumRows, i, numEntries
 	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
-	WAVE statusChannel = DC_ControlStatusWave(panelTitle, channelType)
-	WAVE statusHS      = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusChannel = DC_ControlStatusWaveCache(panelTitle, channelType)
+	WAVE statusHS      = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	numEntries = DimSize(statusChannel, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -411,10 +458,10 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	// query DA properties
-	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE channelStatus = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -431,7 +478,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	endfor
 
 	// query AD properties
-	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE channelStatus = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -536,8 +583,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusDA         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusDA         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
@@ -662,7 +709,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		itcDataColumn += 1
 	endfor
 
-	WAVE statusAD = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE statusAD = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(statusAD, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -827,8 +874,8 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	string set
 	string listOfSets = ""
 
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusTTL = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
