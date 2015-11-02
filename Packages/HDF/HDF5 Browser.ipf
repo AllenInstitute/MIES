@@ -10,10 +10,15 @@
 //	the LoadPackagePrefs and SavePackagePrefs operations. This requires
 // Igor Pro 5.04B07 or later.
 
-// Version 1.03, February 6, 2006: Fixed a cosmetic bug in HDF5MakeHyperslabWave,
-// pointed out by James Allan.
+// Version 1.03, January 15, 2010: Now uses HDF5ListGroup/R=2 to deal with
+// files that use hard or soft links to include the same group more than one time.
+// This version of this procedure file requires HDF5XOP 1.09 or later.
 
-#pragma version = 1.02
+// Version 1.04, May 21, 2015: Defines HDF5 library constants such as
+// H5T_ORDER_LE and H5T_ORDER_BE. This version of this procedure file requires
+// HDF5XOP 1.14 or earlier.
+
+#pragma version = 1.04
 
 #include <WaveSelectorWidget>
 
@@ -22,6 +27,57 @@
 Menu "Load Waves"
 	"New HDF5 Browser", /Q, CreateNewHDF5Browser()
 End
+
+Constant H5S_MAX_RANK = 32
+
+// Constants for HDF5DataInfo datatype_order field and HDF5DatatypeInfo order field
+Constant H5T_ORDER_ERROR = -1		// Error
+Constant H5T_ORDER_LE = 0			// Little endian
+Constant H5T_ORDER_BE = 1			// Big endian
+Constant H5T_ORDER_VAX = 2			// VAX mixed endian
+// The following is valid only with HDF5 library 1.8.5 or before because this value was changed in 1.8.6.
+#if (Exists("HDF5LibraryInfo") == 3)
+	// This is just to create a compile error if you are running with a newer HDF5 XOP
+	// and therefore should be using a new "HDF5 Browser.ipf" file.
+	#define *** You are using a newer HDF5 XOP which uses a newer HDF5 library. You need a newer "HDF5 Browser.ipf" file - version 1.20 or later. ***
+#endif
+Constant H5T_ORDER_NONE = 3		// No particular order (strings, bits,..)
+
+// Constants for HDF5DataInfo datatype_sign field and HDF5DatatypeInfo sign field
+Constant H5T_SGN_ERROR = -1			// Error
+Constant H5T_SGN_NONE = 0			// Unsigned
+Constant H5T_SGN_2 = 1				// Two's complement 
+
+// Constants for HDF5DataInfo datatype_class field and HDF5DatatypeInfo type_class field
+Constant H5T_NO_CLASS = -1			// Error
+Constant H5T_INTEGER = 0				// Integer types
+Constant H5T_FLOAT = 1				// Floating-point types
+Constant H5T_TIME = 2					// Date and time types
+Constant H5T_STRING = 3				// Character string types
+Constant H5T_BITFIELD = 4			// Bit field types
+Constant H5T_OPAQUE = 5				// Opaque types
+Constant H5T_COMPOUND = 6			// Compound types
+Constant H5T_REFERENCE = 7			// Reference types
+Constant H5T_ENUM = 8					// Enumeration types
+Constant H5T_VLEN = 9					// Variable-Length types
+Constant H5T_ARRAY = 10				// Array types
+
+// Constants for HDF5DataInfo dataspace_type field
+Constant H5S_NO_CLASS = -1			// Error 
+Constant H5S_SCALAR = 0				// Scalar variable 
+Constant H5S_SIMPLE = 1				// Constant simple data space
+Constant H5S_NULL = 2					// Constant null data space
+
+// Constants for HDF5DatatypeInfo strpad field
+Constant H5T_STR_ERROR = -1			// Error
+Constant H5T_STR_NULLTERM = 0		// Null terminate like in C
+Constant H5T_STR_NULLPAD = 1			// Ppad with nulls
+Constant H5T_STR_SPACEPAD = 2		// Pad with spaces like in Fortran
+
+// Constants for HDF5DatatypeInfo cset field
+Constant H5T_CSET_ERROR = -1			// Error
+Constant H5T_CSET_ASCII = 0			// US ASCII
+Constant H5T_CSET_UTF8  = 1			// UTF-8 Unicode encoding
 
 Structure HDF5BrowserData
 	SVAR browserName
@@ -152,7 +208,8 @@ Function/S GetGroupHierarchy(fileID, startPath, level, mode)
 	Variable i, j
 	
 	// This gives full hierarchy with full paths
-	HDF5ListGroup /F /R /TYPE=1 fileID, startPath
+	// The /R=2 flag requires HDF5 1.09 or later. If you get an error here, you need to activate a more recent version of HDF5XOP.
+	HDF5ListGroup /F /R=2 /TYPE=1 fileID, startPath	// REQUIRES HDF5XOP 1.09 or later
 	result = S_HDF5ListGroup
 	
 	if (mode == 0)				// Want just names, not full paths
@@ -2854,6 +2911,13 @@ static Function GetPrefWindowCoords(windowName, left, top, right, bottom)
 	endswitch
 End
 
+#if (Exists("PanelResolution") != 3)				// Igor7 has a PanelResolution function that Igor6 lacks
+Static Function PanelResolution(wName)			// For compatibility with Igor 7
+	String wName
+	return 72
+End
+#endif
+
 static Function SetPrefWindowCoords(windowName)
 	String windowName
 	
@@ -2866,7 +2930,7 @@ static Function SetPrefWindowCoords(windowName)
 	// NewPanel uses device coordinates. We therefore need to scale from
 	// points (returned by GetWindow) to device units for windows created
 	// by NewPanel.
-	Variable scale = ScreenResolution / 72
+	Variable scale = PanelResolution(windowName) / 72
 	
 	strswitch(windowName)
 		case "HDF5BrowserGraph":
@@ -2964,23 +3028,21 @@ Function HDF5MakeHyperslabWave(path, numRows)
 	SetDimLabel 1, 3, Block, slab
 End
 
-Constant H5S_MAX_RANK = 32
-
 Constant kHDF5DataInfoVersion = 1000		// 1000 means 1.000.
-Structure HDF5DataInfo					// Use with HDF5DatasetInfo and HDF5AttributeInfo functions
+Structure HDF5DataInfo						// Use with HDF5DatasetInfo and HDF5AttributeInfo functions
 	// Input fields (inputs to HDF5 XOP)
 	uint32 version							// Must be set to kHDF5DataInfoVersion
-	char structName[16]						// Must be "HDF5DataInfo".
+	char structName[16]					// Must be "HDF5DataInfo".
 
 	// Output fields (outputs from HDF5 XOP)
-	double datatype_class;				// e.g., H5T_INTEGER, H5T_FLOAT.
-	char datatype_class_str[32];		// String with class spelled out. e.g., "H5T_INTEGER", "H5T_FLOAT".
+	double datatype_class;					// e.g., H5T_INTEGER, H5T_FLOAT.
+	char datatype_class_str[32];			// String with class spelled out. e.g., "H5T_INTEGER", "H5T_FLOAT".
 	double datatype_size;					// Size in bytes of one element.
 	double datatype_sign;					// H5T_SGN_NONE (unsigned), H5T_SGN_2 (signed), H5T_SGN_ERROR (this type does not have a sign, i.e., it is not an integer type).
-	double datatype_order;				// H5T_ORDER_LE, H5T_ORDER_BE, H5T_ORDER_VAX
-	char datatype_str[64];				// Human-readable string, e.g., "16-bit unsigned integer"
-	double dataspace_type;				// H5S_NO_CLASS (-1), H5S_SCALAR (0), H5S_SIMPLE (1), H5S_COMPLEX (2).
-	double ndims;								// Zero for H5S_SCALAR. Number of dimensions in the dataset for H5S_SIMPLE.
+	double datatype_order;					// H5T_ORDER_LE, H5T_ORDER_BE, H5T_ORDER_VAX
+	char datatype_str[64];					// Human-readable string, e.g., "16-bit unsigned integer"
+	double dataspace_type;					// H5S_NO_CLASS, H5S_SCALAR, H5S_SIMPLE
+	double ndims;							// Zero for H5S_SCALAR. Number of dimensions in the dataset for H5S_SIMPLE.
 	double dims[H5S_MAX_RANK];			// Size of each dimension.
 	double maxdims[H5S_MAX_RANK];		// Maximum size of each dimension.
 EndStructure
@@ -3033,18 +3095,18 @@ Constant kHDF5DatatypeInfoVersion = 1000		// 1000 means 1.000.
 Structure  HDF5DatatypeInfo							// Use with HDF5TypeInfo functions
 	// Input fields (inputs to HDF5 XOP)
 	uint32 version					// Structure version. Used for backward compatibility.
-	char structName[32]				// Must be "HDF5DatatypeInfo". Used to prevent passing wrong structure to XFUNC.
+	char structName[32]			// Must be "HDF5DatatypeInfo". Used to prevent passing wrong structure to XFUNC.
 	
 	// Output fields (outputs from HDF5 XOP)
 	double type_class				// e.g., H5T_INTEGER, H5T_FLOAT.
-	char type_class_str[32]		// String with class spelled out. e.g., "H5T_INTEGER", "H5T_FLOAT".
+	char type_class_str[32]			// String with class spelled out. e.g., "H5T_INTEGER", "H5T_FLOAT".
 	double size						// Size in bytes of one element.
 	double sign						// H5T_SGN_NONE (unsigned), H5T_SGN_2 (signed), H5T_SGN_ERROR (this type does not have a sign, i.e., it is not an integer type).
-	double order						// H5T_ORDER_LE, H5T_ORDER_BE, H5T_ORDER_VAX, H5T_ORDER_ERROR (this type does not have an order).
-	double cset						// Currently must be H5T_CSET_ASCII (0).
-	double strpad						// H5T_str_t: H5T_STR_ERROR (-1), H5T_STR_NULLTERM (0), H5T_STR_NULLPAD (1), H5T_STR_SPACEPAD (2)
-	double nmembers					// For enum or compound datatypes only, number of members.
-	String names						// For enum or compound datatypes only, semicolon-separated list of enum names.
+	double order					// H5T_ORDER_LE, H5T_ORDER_BE, H5T_ORDER_VAX, H5T_ORDER_ERROR (this type does not have an order).
+	double cset						// H5T_CSET_ASCII, H5T_CSET_UTF8, H5T_CSET_ERROR
+	double strpad					// H5T_str_t: H5T_STR_ERROR, H5T_STR_NULLTERM, H5T_STR_NULLPAD, H5T_STR_SPACEPAD
+	double nmembers				// For enum or compound datatypes only, number of members.
+	String names					// For enum or compound datatypes only, semicolon-separated list of enum names.
 	int32 values[100]				// For enum datatype only, list of enum values. For compound datatype, list of classes.
 	String opaque_tag				// For opaque datatypes only, tag name.
 EndStructure

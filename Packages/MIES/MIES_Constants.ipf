@@ -17,10 +17,12 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 
 StrConstant amPanel = "analysisMaster"
 
-/// @name RegExps matching all sweep and config waves
+/// @name Various mies specific regular expressions
+/// @anchor MIES_REGEXPS
 /// @{
 StrConstant DATA_SWEEP_REGEXP  = "(?i)^Sweep_[[:digit:]]+$"
 StrConstant DATA_CONFIG_REGEXP = "(?i)^Config_Sweep_[[:digit:]]+$"
+StrConstant TP_STORAGE_REGEXP  = "(?i)^TPStorage(_[[:digit:]]+)?$"
 /// @}
 
 StrConstant UNTITLED_EXPERIMENT           = "Untitled"
@@ -220,10 +222,18 @@ Constant CHECKBOX_UNSELECTED   = 0
 /// Interval in iterations between the switch from live update false to true
 Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
 
-/// @name Constants for FunctionInfo
-/// @anchor FunctionInfoParameterTypes
+/// @name Constants for FunctionInfo and WaveType
+///
+/// @anchor IgorTypes
 /// @{
-Constant STRUCT_PARAMETER_TYPE = 512
+Constant IGOR_TYPE_COMPLEX          = 0x001
+CONSTANT IGOR_TYPE_32BIT_FLOAT      = 0x002
+CONSTANT IGOR_TYPE_64BIT_FLOAT      = 0x004
+Constant IGOR_TYPE_8BIT_INT         = 0x008
+Constant IGOR_TYPE_16BIT_INT        = 0x010
+Constant IGOR_TYPE_32BIT_INT        = 0x020
+CONSTANT IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
+Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 /// @}
 
 /// User data which identifies MIES related panels

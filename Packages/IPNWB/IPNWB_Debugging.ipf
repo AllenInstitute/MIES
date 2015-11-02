@@ -1,8 +1,58 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma IgorVersion=6.3
+#pragma IndependentModule=IPNWB
+#pragma version=0.1
 
-/// @file MIES_Debugging.ipf
+/// @file IPNWB_Debugging.ipf
 ///
-/// @brief Holds functions for handling debugging information
+/// @brief Holds functions for debugging
+
+/// @brief Low overhead function to check assertions
+///
+/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
+///                 nothing is done otherwise.  If the debugger is enabled, it also steps into it.
+/// @param errorMsg error message to output in failure case
+///
+/// Example usage:
+///@code
+///ControlInfo/W = $panelTitle popup_MoreSettings_DeviceType
+///ASSERT(V_flag > 0, "Non-existing control or window")
+///do something with S_value
+///@endcode
+///
+/// @hidecallgraph
+/// @hidecallergraph
+Function ASSERT(var, errorMsg)
+	variable var
+	string errorMsg
+
+	string file, line, func, caller, stacktrace
+	string abortMsg
+	variable numCallers
+
+	try
+		AbortOnValue var==0, 1
+	catch
+		stacktrace = GetRTStackInfo(3)
+		numCallers = ItemsInList(stacktrace)
+
+		if(numCallers >= 2)
+			caller = StringFromList(numCallers-2, stacktrace)
+			func   = StringFromList(0, caller, ",")
+			file   = StringFromList(1, caller, ",")
+			line   = StringFromList(2, caller, ",")
+		else
+			func = ""
+			file = ""
+			line = ""
+		endif
+
+		sprintf abortMsg, "Assertion FAILED in function %s(...) %s:%s.\rMessage: %s\r", func, file, line, errorMsg
+		printf abortMsg
+		Debugger
+		Abort
+	endtry
+End
 
 #if defined(DEBUGGING_ENABLED)
 
@@ -156,14 +206,6 @@ Function DEBUGPRINT(msg, [var, str, format])
 	endif
 End
 
-/// @brief Prints a message to the command history in debug mode,
-///        aborts with dialog in release mode
-Function DEBUGPRINT_OR_ABORT(msg)
-	string msg
-
-	DEBUGPRINT(msg)
-End
-
 /// @brief Start a timer for performance measurements
 ///
 /// Usage:
@@ -212,12 +254,6 @@ Function DEBUGPRINT(msg, [var, str, format])
 	string str, format
 
 	// do nothing
-End
-
-Function DEBUGPRINT_OR_ABORT(msg)
-	string msg
-
-	Abort msg
 End
 
 Function DEBUG_TIMER_START()

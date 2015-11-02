@@ -270,3 +270,21 @@ Function/S GetTestpulseRunMode(panelTitle)
 
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "runMode", initialValue=NaN)
 End
+
+/// @brief Return the experiment session start time in NWB-speech
+Function/S GetSessionStartTime()
+
+	return GetNVARAsString(GetNWBFolder(), "sessionStartTime", initialValue=DateTimeInUTC())
+End
+
+/// @brief Return the HDF5 file identifier for the NWB export
+Function/S GetNWBFileIDExport()
+
+	return GetNVARAsString(GetNWBFolder(), "fileIdExport", initialValue=NaN)
+End
+
+/// @brief Return the absolute path to the file for NWB export
+Function/S GetNWBFilePathExport()
+
+	return GetSVARAsString(GetNWBFolder(), "filePathExport")
+End

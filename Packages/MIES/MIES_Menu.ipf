@@ -13,7 +13,8 @@ Menu "Mies Panels", dynamic
 		"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 		"Close Mies"                 , /Q, CloseMies()
 		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
-		"Open AnalysisMaster Panel", /Q, analysisMaster()
+		"Open AnalysisMaster Panel"  , /Q, analysisMaster()
+		"Export all data into NWB"   , /Q, NWB_ExportAllData()
 		"-"
 		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 		"-"

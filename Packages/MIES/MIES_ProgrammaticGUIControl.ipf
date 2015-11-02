@@ -75,7 +75,7 @@ static Function/S PGC_GetProcAndCheckParamType(win, control)
 	endif
 
 	paramType = GetFunctionParameterType(procedure, 0)
-	ASSERT(paramType & STRUCT_PARAMETER_TYPE, "No support for old style control procedures")
+	ASSERT(paramType & IGOR_TYPE_STRUCT_PARAMETER, "No support for old style control procedures")
 
 	return procedure
 End

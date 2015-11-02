@@ -474,10 +474,8 @@ End
 
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
-Function GetSamplingInterval(sweepWave)
-	Wave sweepWave
-
-	Wave config = GetConfigWave(sweepWave)
+Function GetSamplingInterval(config)
+	Wave config
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
@@ -1225,6 +1223,8 @@ Function SaveExperimentSpecial(mode)
 	endif
 
 	SaveExperiment
+
+	CloseNWBFile()
 End
 
 /// @brief Return the maximum count of the given type
@@ -1415,6 +1415,8 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 	MatrixOP/FREE data = col(sweep, column)
 	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
 	SetScale d, 0, 0, StringFromList(column, note(config)), data
+
+	Note data, note(sweep)
 
 	return data
 End
@@ -1951,6 +1953,32 @@ Function GetTTLBits(numericValues, sweep, channel)
 	return ttlBits[0]
 End
 
+/// @brief Get the TTL stim sets from the labnotebook
+/// @param numericValues   Numerical labnotebook values
+/// @param textValues      Text labnotebook values
+/// @param sweep           Sweep number
+/// @param channel         TTL channel
+///
+/// @return list of stim sets, empty entries for non active TTL bits
+Function/S GetTTLStimSets(numericValues, textValues, sweep, channel)
+	WAVE numericValues
+	WAVE/T textValues
+	variable sweep, channel
+
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
+
+	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[0] == channel)
+		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack zero stim sets")
+	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[0] == channel)
+		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack one stim sets")
+	else
+		return ""
+	endif
+
+	return ttlStimSets[0]
+End
+
 /// @brief Return a sorted list of all DA/TTL stim set waves
 ///
 /// @param DAorTTL                  #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
@@ -2060,4 +2088,48 @@ Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
 	ASSERT(!IsEmpty(eventName), "Unknown event type")
 
 	return StringByKey(eventName, wvnote, "=", ";")
+End
+
+/// @brief Split TTL data into a single wave for each channel
+/// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
+/// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
+/// @param targetDFR  datafolder where to put the waves, can be a free datafolder
+/// @param wavePrefix prefix of the created wave names
+Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
+	WAVE data
+	variable ttlBits
+	DFREF targetDFR
+	string wavePrefix
+
+	variable i, bit
+
+	if(!IsFinite(ttlBits))
+		return NaN
+	endif
+
+	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
+
+		bit = 2^i
+		if(!(ttlBits & bit))
+			continue
+		endif
+
+		Duplicate data, targetDFR:$(wavePrefix + num2str(i))/Wave=dest
+		MultiThread dest[] = dest[p] & bit
+	endfor
+End
+
+/// @brief Close a possibly open export-into-NWB file
+Function CloseNWBFile()
+	NVAR fileID = $GetNWBFileIDExport()
+
+	if(IsFinite(fileID))
+		HDF5CloseFile/Z fileID
+		DEBUGPRINT("Trying to close the NWB file using HDF5CloseFile returned: ", var=V_flag)
+		if(!V_flag) // success
+			fileID = NaN
+			SVAR filePath = $GetNWBFilePathExport()
+			filepath = ""
+		endif
+	endif
 End

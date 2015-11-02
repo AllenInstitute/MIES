@@ -14,6 +14,9 @@
 #include "Arduino_Sequencer_Vs1"
 #include "FixScrolling"
 
+// NWB for Igor Pro
+#include "IPNWB_Include"
+
 // our includes
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisFunctionHelpers"
@@ -40,6 +43,7 @@
 #include "MIES_Manipulator"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
+#include "MIES_NeuroDataWithoutBorders"
 #include "MIES_Oscilloscope"
 #include "MIES_PanelITC"
 #include "MIES_PressureControl"

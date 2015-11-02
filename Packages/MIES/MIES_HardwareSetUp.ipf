@@ -187,6 +187,11 @@ Function HSU_UnlockDevice(panelTitle)
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	HSU_UpdateListOfITCPanels()
 	DAP_UpdateAllYokeControls()
+
+	SVAR/SDFR=GetITCDevicesFolder() ITCPanelTitleList
+	if(!cmpstr(ITCPanelTitleList, ""))
+		CloseNWBFile()
+	endif
 End
 
 /// @brief Query the device lock status

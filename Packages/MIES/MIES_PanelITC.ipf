@@ -634,14 +634,6 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
 	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,0,1},value= _NUM:0
-	CheckBox Check_Settings_SaveData,pos={34,242},size={106,14},disable=1,proc=DAP_CheckProc_SaveData,title="Do Not Save Data"
-	CheckBox Check_Settings_SaveData,help={"Use cautiously - intended primarily for software development"}
-	CheckBox Check_Settings_SaveData,userdata(tabnum)=  "5"
-	CheckBox Check_Settings_SaveData,userdata(tabcontrol)=  "ADC"
-	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo)= A"!!,HT!!#?-!!#?C!!#=3z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox Check_Settings_SaveData,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_SaveData,value= 0
 	CheckBox Check_Settings_UseDoublePrec,pos={243,218},size={151,14},disable=1,title="Use Double Precision Floats"
 	CheckBox Check_Settings_UseDoublePrec,help={"Enable the saving of the raw data in double precision. If unchecked the raw data will be saved in single precision, which should be good enough for most use cases"}
 	CheckBox Check_Settings_UseDoublePrec,userdata(tabnum)=  "5"
@@ -2594,6 +2586,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Hardware_UseManip,value= 0
+	CheckBox Check_Settings_NwbExport,pos={34,243},size={97,14},disable=1,title="Export into NWB"
+	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
+	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
+	CheckBox Check_Settings_NwbExport,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo)= A"!!,Ch!!#?k!!#A+!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_NwbExport,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2705,7 +2705,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	SetVariable SetVar_DataAcq_SetRepeats WIN = $panelTitle,value= _NUM:1
 
-	CheckBox Check_Settings_SaveData WIN = $panelTitle, value= 0
 	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
 	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 0
 	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode = 1
@@ -2831,6 +2830,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
 
 	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
+	CheckBox Check_Settings_NwbExport WIN = $panelTitle,value= 0
 
 	SetVariable SetVar_AsyncAD_min_00 WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_AsyncAD_max_00 WIN = $panelTitle,value= _NUM:0
@@ -4821,7 +4821,7 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	print "Data acquisition was manually terminated"
 End
 
-/// @brief Set the acquisition button text and color
+/// @brief Set the acquisition button text
 ///
 /// @param panelTitle device
 /// @param mode       One of @ref ToggleAcquisitionButtonConstants
@@ -4831,28 +4831,15 @@ Function DAP_ToggleAcquisitionButton(panelTitle, mode)
 
 	ASSERT(mode == DATA_ACQ_BUTTON_TO_STOP || mode == DATA_ACQ_BUTTON_TO_DAQ, "Invalid mode")
 
-	STRUCT RGBColor color
 	string text
 
-	if(!GetCheckBoxstate(panelTitle, "Check_Settings_SaveData"))
-		if(mode == DATA_ACQ_BUTTON_TO_STOP)
-			text = "\\Z14\\f01Stop\rAcquistion"
-		elseif(mode == DATA_ACQ_BUTTON_TO_DAQ)
-			text = "\\Z14\\f01Acquire\rData"
-		endif
-	else // Don't save data
-		color.red = 52224
-
-		if(mode == DATA_ACQ_BUTTON_TO_STOP)
-			text  = "\\Z12\\f01Stop Acquisition\r * DATA WILL NOT BE SAVED *"
-			text += "\r\\Z08\\f00 (autosave state is in settings tab)"
-		elseif(mode == DATA_ACQ_BUTTON_TO_DAQ)
-			text  = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-			text += "\r\\Z08\\f00 (autosave state is in settings tab)"
-		endif
+	if(mode == DATA_ACQ_BUTTON_TO_STOP)
+		text = "\\Z14\\f01Stop\rAcquistion"
+	elseif(mode == DATA_ACQ_BUTTON_TO_DAQ)
+		text = "\\Z14\\f01Acquire\rData"
 	endif
 
-	Button DataAcquireButton title=text, fcolor=(color.red, color.green, color.blue), win = $panelTitle
+	Button DataAcquireButton title=text, win = $panelTitle
 End
 
 /// @brief Set the testpulse button text

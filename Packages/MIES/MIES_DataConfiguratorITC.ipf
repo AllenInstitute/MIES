@@ -841,7 +841,7 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	for(i = first; i <= last; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
-			listOfSets = AddListItem(";", listOfSets, ";", inf)
+			listOfSets = AddListItem("", listOfSets, ";", inf)
 			continue
 		endif
 
