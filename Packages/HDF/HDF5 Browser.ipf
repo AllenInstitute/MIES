@@ -39,7 +39,6 @@ Constant H5T_ORDER_VAX = 2			// VAX mixed endian
 #if (Exists("HDF5LibraryInfo") == 3)
 	// This is just to create a compile error if you are running with a newer HDF5 XOP
 	// and therefore should be using a new "HDF5 Browser.ipf" file.
-	#define *** You are using a newer HDF5 XOP which uses a newer HDF5 library. You need a newer "HDF5 Browser.ipf" file - version 1.20 or later. ***
 #endif
 Constant H5T_ORDER_NONE = 3		// No particular order (strings, bits,..)
 
