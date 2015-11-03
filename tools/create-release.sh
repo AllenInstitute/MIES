@@ -1,24 +1,35 @@
 #!/bin/sh
 
-git diff-index --quiet --cached HEAD
-if [ $? -eq 1 ]
+git --version > /dev/null
+if [ $? -ne 0 ]
 then
-  echo "Your repository has staged changes, please commit/reset them before continuing."
-  exit 1
-fi
-
-git diff-files --quiet
-if [ $? -eq 1 ]
-then
-  echo "Your working tree has changed files, please commit/reset them before continuing."
+  echo "Could not find git executable"
   exit 1
 fi
 
 version=$(git describe --always --tags)
+top_level=$(git rev-parse --show-toplevel)
+git_dir=$(git rev-parse --git-dir)
 
-echo $version > ../version.txt
+case $MSYSTEM in
+  MINGW*)
+    zip_exe=$top_level/tools/zip.exe;;
+  *)
+    zip_exe=zip;;
+esac
 
-cd ..
-git archive -o tools/$version.zip HEAD
-tools/zip -q tools/$version.zip version.txt
-cd tools
+echo "Removing old release packages"
+rm -f Release_*zip
+
+git --git-dir=$git_dir archive -o $version.zip HEAD
+
+version_file=$top_level/version.txt
+echo $version > "$version_file"
+"$zip_exe" -qju $version.zip "$version_file"
+
+# git seems to be buggy on honouring export-ignore attributes on shallow clones
+# (bamboo does them by default so we delete the unwanted folders manually here
+"$zip_exe" -qd $version.zip "Packages/doc/*"  > /dev/null
+"$zip_exe" -qd $version.zip "Packages/ITC/*" > /dev/null
+"$zip_exe" -qd $version.zip "tools/*" > /dev/null
+"$zip_exe" -qd $version.zip "Guidelines/*" > /dev/null
