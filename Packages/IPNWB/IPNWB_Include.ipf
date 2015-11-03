@@ -3,8 +3,6 @@
 /// @file IPNWB_Include.ipf
 /// @brief Main include
 
-#include "HDF5 Browser" version=1.04
-
 #include "IPNWB_Constants" version>=0.1
 #include "IPNWB_Debugging" version>=0.1
 #include "IPNWB_HDF5Helpers" version>=0.1

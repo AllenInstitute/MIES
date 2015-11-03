@@ -4,7 +4,7 @@
 #pragma version=0.1
 
 /// @cond DOXYGEN_IGNORES_THIS
-#include "HDF5 Browser"
+#include "HDF5 Browser", version=1.04
 /// @endcond
 
 /// @file IPNWB_HDF5Helpers.ipf
