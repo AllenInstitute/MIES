@@ -25,6 +25,7 @@
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
 		* "Packages\HDF"
+		* "Packages\IPNWB"
 		* "Packages\MIES"
 		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
