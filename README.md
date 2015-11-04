@@ -73,3 +73,16 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 ### Installing it
 - Extract the zip archive into a folder on the target machine
 - Follow the steps outlined in the section "Full Installation"
+
+## Continuous integration server
+Our CI server, called bamboo, can be reached [here](http://bamboo.corp.alleninstitute.org/browse/MIES)
+and provides the following services for MIES.
+
+### Automatic release package building
+* The release branch, currently release/0.5, is polled every 3 minutes for changes
+* If changes are detected, a shallow clone is fetched, and inside a checked
+  out git working tree, the release script `tools/create-release.sh` is executed.
+* The result of the release script, called an artifact in CI-speech, is then
+  available as zip package from the [Package section](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful).
+* The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
+  This is ensured by a platform requirement for the job.
