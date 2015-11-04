@@ -49,7 +49,7 @@
 
 ### Required 3rd party tools
 * [Doxygen](http://doxygen.org) 1.8.10
-* [Gawk](http://gnuwin32.sourceforge.net/packages/gawk.htm) 3.1.6 or later
+* [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
 
 Remember to add all paths with executables from these tools to your `PATH` variable.<br>
