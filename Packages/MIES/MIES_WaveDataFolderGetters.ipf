@@ -971,7 +971,7 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 7
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
 
@@ -985,16 +985,16 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 
 	wv = ""
 
-	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY            , wv
-	SetDimLabel COLS, 1, $"DA unit"                     , wv
-	SetDimLabel COLS, 2, $"AD unit"                     , wv
-	SetDimLabel COLS, 3, $"TTL rack zero stim sets"     , wv
-	SetDimLabel COLS, 4, $"TTL rack one stim sets"      , wv
-	SetDimLabel COLS, 5, $"Pre DAQ analysis function"   , wv
-	SetDimLabel COLS, 6, $"Mid sweep analysis function" , wv
-	SetDimLabel COLS, 7, $"Post sweep analysis function", wv
-	SetDimLabel COLS, 8, $"Post set analysis function"  , wv
-	SetDimLabel COLS, 9, $"Post DAQ analysis function"  , wv
+	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY        , wv
+	SetDimLabel COLS, 1, $"DA unit"                 , wv
+	SetDimLabel COLS, 2, $"AD unit"                 , wv
+	SetDimLabel COLS, 3, $"TTL rack zero stim sets" , wv
+	SetDimLabel COLS, 4, $"TTL rack one stim sets"  , wv
+	SetDimLabel COLS, 5, $"Pre DAQ function"        , wv
+	SetDimLabel COLS, 6, $"Mid sweep function"      , wv
+	SetDimLabel COLS, 7, $"Post sweep function"     , wv
+	SetDimLabel COLS, 8, $"Post set function"       , wv
+	SetDimLabel COLS, 9, $"Post DAQ function"       , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1023,7 +1023,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 7
 
 	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
 
@@ -1042,22 +1042,22 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][2] = "AD unit"
 	wv[0][3] = "TTL rack zero stim sets"
 	wv[0][4] = "TTL rack one stim sets"
-	wv[0][5] = "Pre DAQ analysis function"
-	wv[0][6] = "Mid sweep analysis function"
-	wv[0][7] = "Post sweep analysis function"
-	wv[0][8] = "Post set analysis function"
-	wv[0][9] = "Post DAQ analysis function"
+	wv[0][5] = "Pre DAQ function"
+	wv[0][6] = "Mid sweep function"
+	wv[0][7] = "Post sweep function"
+	wv[0][8] = "Post set function"
+	wv[0][9] = "Post DAQ function"
 
-	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY            , wv
-	SetDimLabel COLS, 1, $"DA unit"                     , wv
-	SetDimLabel COLS, 2, $"AD unit"                     , wv
-	SetDimLabel COLS, 3, $"TTL rack zero stim sets"     , wv
-	SetDimLabel COLS, 4, $"TTL rack one stim sets"      , wv
-	SetDimLabel COLS, 5, $"Pre DAQ analysis function"   , wv
-	SetDimLabel COLS, 6, $"Mid sweep analysis function" , wv
-	SetDimLabel COLS, 7, $"Post sweep analysis function", wv
-	SetDimLabel COLS, 8, $"Post set analysis function"  , wv
-	SetDimLabel COLS, 9, $"Post DAQ analysis function"  , wv
+	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY        , wv
+	SetDimLabel COLS, 1, $"DA unit"                 , wv
+	SetDimLabel COLS, 2, $"AD unit"                 , wv
+	SetDimLabel COLS, 3, $"TTL rack zero stim sets" , wv
+	SetDimLabel COLS, 4, $"TTL rack one stim sets"  , wv
+	SetDimLabel COLS, 5, $"Pre DAQ function"        , wv
+	SetDimLabel COLS, 6, $"Mid sweep function"      , wv
+	SetDimLabel COLS, 7, $"Post sweep function"     , wv
+	SetDimLabel COLS, 8, $"Post set function"       , wv
+	SetDimLabel COLS, 9, $"Post DAQ function"       , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
