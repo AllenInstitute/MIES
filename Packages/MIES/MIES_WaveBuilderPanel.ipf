@@ -199,7 +199,8 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,help={"Select epoch type"}
 	TabControl WBP_WaveType,userdata(tabcontrol)=  "WBP_WaveType"
 	TabControl WBP_WaveType,userdata(currenttab)=  "0"
-	TabControl WBP_WaveType,userdata(initialhook)=  "TabTJHook"
+	TabControl WBP_WaveType,userdata(initialhook)= "WBP_InitialTabHook"
+	TabControl WBP_WaveType,userdata(finalhook)= "WBP_FinalTabHook"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GK!!#8L!!#D;J,hr/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
@@ -715,6 +716,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postSweep_S3,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
 	TabControl WBP_Set_Parameters,pos={3,29},size={182,174},proc=ACL_DisplayTab
+	TabControl WBP_Set_Parameters,userdata(finalhook)= "WBP_FinalTabHook"
 	TabControl WBP_Set_Parameters,help={"Stimulus set parameters and custom analysis functions."}
 	TabControl WBP_Set_Parameters,userdata(currenttab)=  "0"
 	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo)= A"!!,>M!!#=K!!#AE!!#A?z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -907,12 +909,6 @@ static Function WBP_UpdatePanelIfAllowed()
 		WBP_DisplaySetInPanel()
 	endif
 
-	// enable controls which might have been disabled on tab 7
-	EnableControl(panel, "SetVar_WaveBuilder_P0")
-	EnableControl(panel, "SetVar_WaveBuilder_P1")
-	EnableControl(panel, "SetVar_WaveBuilder_P2")
-	EnableControl(panel, "SetVar_WaveBuilder_P3")
-
 	switch(GetTabID(panel, "WBP_WaveType"))
 		case 2:
 			if(GetCheckBoxState(panel,"check_Noise_Pink_P41"))
@@ -952,16 +948,6 @@ static Function WBP_UpdatePanelIfAllowed()
 				EnableControl(panel, "SetVar_WaveBuilder_P0")
 				DisableListOfControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
 			endif
-			break
-		case 7:
-			DisableControl(panel, "SetVar_WaveBuilder_P0")
-			DisableControl(panel, "SetVar_WaveBuilder_P1")
-			DisableControl(panel, "SetVar_WaveBuilder_P2")
-			DisableControl(panel, "SetVar_WaveBuilder_P3")
-			SetSetVariable(panel, "SetVar_WaveBuilder_P0", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P1", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P2", 0)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P3", 0)
 			break
 		default:
 			// nothing to do
@@ -1122,8 +1108,8 @@ Function WBP_CheckProc(cba) : CheckBoxControl
 	return 0
 End
 
-///@brief Gets run by ACLight's tab control function every time a tab is selected
-Function TabTJHook(tca)
+/// @brief Additional `initialhook` called in `ACL_DisplayTab`
+Function WBP_InitialTabHook(tca)
 	STRUCT WMTabControlAction &tca
 
 	string type
@@ -1146,6 +1132,17 @@ Function TabTJHook(tca)
 
 	WBP_ParameterWaveToPanel(tabnum)
 	WBP_UpdatePanelIfAllowed()
+	return 0
+End
+
+/// @brief Additional `finalhook` called in `ACL_DisplayTab`
+Function WBP_FinalTabHook(tca)
+	STRUCT WMTabControlAction &tca
+
+	if(tca.tab == 7)
+		HideListOfControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_exp_P40")
+	endif
+
 	return 0
 End
 
