@@ -414,6 +414,9 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 			ancestry = "TimeSeries;PatchClampSeries"
 		endif
 	elseif(p.channelType == CHANNEL_TYPE_DAC)
+		sprintf str, "electrode_%d", p.electrodeNumber
+		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
+
 		if(p.clampMode == V_CLAMP_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;VoltageClampStimulusSeries"
 		elseif(p.clampMode == I_CLAMP_MODE)
