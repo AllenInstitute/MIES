@@ -47,7 +47,7 @@ static Function NWB_GetFileForExport()
 		if(V_flag)
 			HDf5DumpErrors/CLR=1
 			HDF5DumpState
-			ASSERT(0, "Could not store HDF5 dataset to file")
+			ASSERT(0, "Could not open HDF5 file")
 		endif
 
 		fileIDExport   = fileID

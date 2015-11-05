@@ -33,7 +33,7 @@ Function H5_WriteTextDataset(locationID, name, [str, wvText, overwrite, chunkedL
 	skipIfExists  = ParamIsDefault(skipIfExists)  ? 0 : !!skipIfExists
 	writeIgorAttr = ParamIsDefault(writeIgorAttr) ? 0 : !!writeIgorAttr
 
-	ASSERT(ParamIsDefault(str) + ParamIsDefault(wvText) == 1, "Need exactly one of var or wv")
+	ASSERT(ParamIsDefault(str) + ParamIsDefault(wvText) == 1, "Need exactly one of str or wvText")
 
 	if(!ParamIsDefault(str))
 		Make/FREE/T/N=1 wvText = str
@@ -174,14 +174,14 @@ Function H5_WriteTextAttribute(locationID, attrName, path, [wvText, list, str, o
 	string list, str
 	variable overwrite
 
-	ASSERT(ParamIsDefault(wvText) + ParamIsDefault(str) + ParamIsDefault(list) == 2, "Need exactly one of textWave, str or list")
+	ASSERT(ParamIsDefault(wvText) + ParamIsDefault(str) + ParamIsDefault(list) == 2, "Need exactly one of wvText, str or list")
 
 	if(!ParamIsDefault(str))
 		Make/FREE/T/N=(1) data = str
 	elseif(!ParamIsDefault(list))
 		Make/FREE/T/N=(ItemsInList(list)) data = StringFromList(p, list)
 	elseif(!ParamIsDefault(wvText))
-		ASSERT(WaveExists(wvText), "wave does not exist")
+		ASSERT(WaveExists(wvText), "wvText does not exist")
 		WAVE/T data = wvText
 	endif
 
