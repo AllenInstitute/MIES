@@ -3449,25 +3449,26 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 		Redimension/N=(NUM_MAX_CHANNELS, 17, -1, -1) wv
  	else
 		Make/N=(NUM_MAX_CHANNELS, 17) dfr:DA_EphysGuiState/Wave=wv
- 		wv = Nan
- 		SetDimLabel COLS, 0, HSState, wv
- 		SetDimLabel COLS, 1, HSMode, wv
- 		SetDimLabel COLS, 2, DAState, wv
- 		SetDimLabel COLS, 3, DAGain, wv
- 		SetDimLabel COLS, 4, DAScale, wv
- 		SetDimLabel COLS, 5, DAStartIndex, wv
- 		SetDimLabel COLS, 6, DAEndIndex, wv
- 		SetDimLabel COLS, 7, ADState, wv
- 		SetDimLabel COLS, 8, ADGain, wv
- 		SetDimLabel COLS, 9, TTLState, wv
- 		SetDimLabel COLS, 10, TTLStartIndex, wv
- 		SetDimLabel COLS, 11, TTLEndIndex, wv
- 		SetDimLabel COLS, 12, AsyncState, wv
- 		SetDimLabel COLS, 13, AsyncGain, wv
- 		SetDimLabel COLS, 14, AlarmState, wv
- 		SetDimLabel COLS, 15, AlarmMin, wv
- 		SetDimLabel COLS, 16, AlarmMax, wv
+		wv = Nan
  	endif
+
+	SetDimLabel COLS, 0, HSState, wv
+	SetDimLabel COLS, 1, HSMode, wv
+	SetDimLabel COLS, 2, DAState, wv
+	SetDimLabel COLS, 3, DAGain, wv
+	SetDimLabel COLS, 4, DAScale, wv
+	SetDimLabel COLS, 5, DAStartIndex, wv
+	SetDimLabel COLS, 6, DAEndIndex, wv
+	SetDimLabel COLS, 7, ADState, wv
+	SetDimLabel COLS, 8, ADGain, wv
+	SetDimLabel COLS, 9, TTLState, wv
+	SetDimLabel COLS, 10, TTLStartIndex, wv
+	SetDimLabel COLS, 11, TTLEndIndex, wv
+	SetDimLabel COLS, 12, AsyncState, wv
+	SetDimLabel COLS, 13, AsyncGain, wv
+	SetDimLabel COLS, 14, AlarmState, wv
+	SetDimLabel COLS, 15, AlarmMin, wv
+	SetDimLabel COLS, 16, AlarmMax, wv
 
  	SetWaveVersion(wv, versionOfNewWave)
 
