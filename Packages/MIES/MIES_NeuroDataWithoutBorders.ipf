@@ -105,6 +105,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	path = "/general/labnotebook/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 
+	IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
+
 	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=settingsHistory, overwrite=1, chunkedLayout=chunkedLayout)
 	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=settingsHistoryKeys, overwrite=1, chunkedLayout=chunkedLayout)
 	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=settingsHistoryText, overwrite=1, chunkedLayout=chunkedLayout)
@@ -116,6 +118,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	path = "/general/user_comment/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 
+	IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
+
 	SVAR userComment = $GetUserComment(panelTitle)
 	IPNWB#H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, chunkedLayout=chunkedLayout)
 
@@ -124,6 +128,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	path = "/general/testpulse/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+
+	IPNWB#MarkAsCustomEntry(locationID, "/general/testpulse")
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	list = GetListOfWaves(dfr, TP_STORAGE_REGEXP)
