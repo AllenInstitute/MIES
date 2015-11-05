@@ -294,7 +294,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 		DEBUGPRINT_ELAPSED(refTime)
 
-		NWB_WriteStimsetTemplateWaves(locationID, stimSets[i], params, chunkedLayout)
+		params.stimSet = stimSets[i]
+		NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -337,34 +338,35 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				continue
 			endif
 
-			NWB_WriteStimsetTemplateWaves(locationID, name, params, chunkedLayout)
+			params.stimSet = name
+			NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 		endfor
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-static Function NWB_WriteStimsetTemplateWaves(locationID, setName, params, chunkedLayout)
+static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 	variable locationID
-	string setName
 	STRUCT IPNWB#WriteChannelParams &params
 	variable chunkedLayout
 
 	STRUCT IPNWB#TimeSeriesProperties tsp
-	string stimSet
+	string stimSet, path
 
 	stimSet = params.stimSet
 
 	params.channelNumber = NaN
 	params.channelType   = -1
-	WAVE params.data     = WB_CreateAndGetStimset(setName)
+	WAVE params.data     = WB_CreateAndGetStimset(stimSet)
 	NWB_GetTimeSeriesProperties(params, tsp)
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	path = "/stimulus/templates"
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	// write also the stim set parameter waves if all three exist
-	WAVE/Z WP  = WB_GetWaveParamForSet(setName)
-	WAVE/Z WPT = WB_GetWaveTextParamForSet(setName)
-	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	WAVE/Z WP  = WB_GetWaveParamForSet(stimSet)
+	WAVE/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
 		// don't need to write the stimset parameter waves
@@ -375,15 +377,15 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, setName, params, chunk
 
 	params.stimSet = stimSet + "_WP"
 	WAVE params.data = WP
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	params.stimSet = stimSet + "_WPT"
 	WAVE params.data = WPT
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	params.stimSet = stimSet + "_SegWvType"
 	WAVE params.data = SegWvType
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 End
 
 static Function NWB_GetTimeSeriesProperties(p, tsp)
