@@ -20,6 +20,8 @@ static Function NWB_GetFileForExport()
 		return fileIDExport
 	endif
 
+	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
+
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
 
@@ -50,6 +52,9 @@ static Function NWB_GetFileForExport()
 			ASSERT(0, "Could not open HDF5 file")
 		endif
 
+		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
+
 		fileIDExport   = fileID
 		filePathExport = filePath
 	else // file does not exist
@@ -63,12 +68,17 @@ static Function NWB_GetFileForExport()
 			return NWB_GetFileForExport()
 		endif
 
-		IPNWB#CreateCommonGroups(fileID)
+		NVAR sessionStartTime = $GetSessionStartTime()
+
+		STRUCT IPNWB#ToplevelInfo ti
+		IPNWB#InitToplevelInfo(ti)
+		ti.session_start_time = sessionStartTime
+
+		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 		IPNWB#CreateIntraCellularEphys(fileID)
 
-		// update NWB session start time
-		NVAR sessionStartTime = $GetSessionStartTime()
-		sessionStartTime = DateTimeInUTC()
+		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
@@ -80,6 +90,34 @@ static Function NWB_GetFileForExport()
 	DEBUGPRINT("filePathExport", str=filePathExport)
 
 	return fileIDExport
+End
+
+static Function NWB_ReadSessionStartTime(fileID)
+	variable fileID
+
+	string str
+
+	if(!IPNWB#H5_DatasetExists(fileID, "/session_start_time"))
+		return NaN
+	endif
+
+	HDF5LoadData/O/TYPE=2/Z fileID, "/session_start_time"
+
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "Could not load the HDF5 dataset /session_start_time")
+	endif
+
+	ASSERT(ItemsInList(S_WaveNames) == 1, "Expected only one wave")
+	WAVE/T wv = $StringFromList(0, S_WaveNames)
+	ASSERT(WaveType(wv, 1) == 2, "Expected a dataset of type text")
+	ASSERT(numpnts(wv) == 1, "Expected a wave with only one entry")
+
+	str = wv[0]
+	KillOrMoveToTrash(wv=wv)
+
+	return ParseISO8601TimeStamp(str)
 End
 
 static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout])
@@ -225,7 +263,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
 
-	NVAR session_start_time = $GetSessionStartTime()
+	NVAR session_start_time = $GetSessionStartTimeReadBack()
 
 	WAVE settingsHistory           = GetNumDocWave(panelTitle)
 	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)

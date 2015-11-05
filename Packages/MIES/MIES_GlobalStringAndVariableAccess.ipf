@@ -272,9 +272,11 @@ Function/S GetTestpulseRunMode(panelTitle)
 End
 
 /// @brief Return the experiment session start time in NWB-speech
+///
+/// This is the time when the last device was locked.
 Function/S GetSessionStartTime()
 
-	return GetNVARAsString(GetNWBFolder(), "sessionStartTime", initialValue=DateTimeInUTC())
+	return GetNVARAsString(GetNWBFolder(), "sessionStartTime", initialValue=NaN)
 End
 
 /// @brief Return the HDF5 file identifier for the NWB export
@@ -287,4 +289,11 @@ End
 Function/S GetNWBFilePathExport()
 
 	return GetSVARAsString(GetNWBFolder(), "filePathExport")
+End
+
+/// @brief Return the experiment session start time in NWB-speech as
+///        read back from the NWB file.
+Function/S GetSessionStartTimeReadBack()
+
+	return GetNVARAsString(GetNWBFolder(), "sessionStartTimeReadBack", initialValue=NaN)
 End
