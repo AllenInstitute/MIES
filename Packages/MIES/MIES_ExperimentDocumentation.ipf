@@ -560,12 +560,12 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
-	WAVE guiState =  GetDA_EphysGuiStateNum(panelTitle)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		TPSettingsWave[0][8][i] = guiState[i][%HSState]
+		TPSettingsWave[0][8][i] = statusHS[i]
 
-		if(!guiState[i][%HSState])
+		if(!statusHS[i])
 			continue
 		endif
 
