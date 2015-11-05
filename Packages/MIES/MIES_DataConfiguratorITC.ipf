@@ -4,6 +4,49 @@
 /// @brief __DC__ Handle preparations before data acquisition or
 /// test pulse related to the ITC waves
 
+/// @brief Update global variables used by the Testpulse or DAQ
+///
+/// @param panelTitle device
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
+	string panelTitle
+	variable dataAcqOrTP
+
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	variable/G testPulseDFR:pulseDuration
+	NVAR/SDFR=testPulseDFR pulseDuration
+
+	variable/G testPulseDFR:duration
+	NVAR/SDFR=testPulseDFR duration
+
+	variable/G testPulseDFR:AmplitudeVC
+	NVAR/SDFR=testPulseDFR AmplitudeVC
+
+	variable/G testPulseDFR:AmplitudeIC
+	NVAR/SDFR=testPulseDFR AmplitudeIC
+
+	variable/G testPulseDFR:baselineFrac
+	NVAR/SDFR=testPulseDFR baselineFrac
+
+	DAP_RecordDA_EphysGuiState(panelTitle)
+
+	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
+	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+
+	// need to deal with units here to ensure that resistance is calculated correctly
+	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+
+	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
+	// n determines the number of TP cycles to average
+	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
+
+	SVAR panelTitleG = $GetPanelTitleGlobal()
+	panelTitleG = panelTitle
+End
+
 /// @brief Prepare test pulse/data acquisition
 ///
 /// @param panelTitle  panel title
@@ -27,11 +70,19 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
 
+	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		WAVE TestPulse = GetTestPulse()
+		if(multiDevice)
+			DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+		else
+			DC_UpdateTestPulseWave(panelTitle, TestPulse)
+		endif
+	endif
+
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-
-	SVAR panelTitleG = $GetPanelTitleGlobal()
-	panelTitleG = panelTitle
 
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
@@ -73,6 +124,50 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 			DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
 		endif
 	endif
+End
+
+static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
+	string panelTitle
+	WAVE TestPulse
+
+	variable length
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
+
+	// this length here is with minimum sampling interval, it will
+	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
+	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
+	Redimension/N=(length) TestPulse
+	FastOp TestPulse = 0
+	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
+End
+
+/// @brief MD-variant of #DC_UpdateTestPulseWave
+static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+	string panelTitle
+	WAVE TestPulse
+
+	variable length, numPulses
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	Make/FREE singlePulse
+	DC_UpdateTestPulseWave(panelTitle, singlePulse)
+
+	length = 2^MINIMUM_ITCDATAWAVE_EXPONENT
+	Redimension/N=0 TestPulse
+
+	do
+		Concatenate/NP=0 {singlePulse}, TestPulse
+		numPulses += 1
+
+		if(DimSize(TestPulse, ROWS) >= length)
+			if(numPulses < 3) // keep creating more pulses
+				length *= 2
+				continue
+			endif
+			break
+		endif
+	while(1)
 End
 
 /// @brief Updates the global string of clamp modes based on the AD channel associated with the headstage
