@@ -3482,7 +3482,6 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 		Controlinfo/W=$panelTitle $DACWave
 		if(stringmatch(s_value,"- none -"))
 			SetCheckBoxState(panelTitle, cba.ctrlName, 0)
-			print "Select " + DACwave[5,7] + " Wave"
 		endif
 
 		DAP_UpdateITIAcrossSets(panelTitle)
