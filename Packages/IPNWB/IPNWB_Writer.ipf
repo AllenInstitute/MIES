@@ -457,8 +457,8 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 
 	if(p.channelType == CHANNEL_TYPE_ADC || p.channelType == CHANNEL_TYPE_TTL)
 		// custom data not specified by NWB spec
-		H5_WriteTextDataset(groupID, "aibs_stimulus_description", str=p.stimSet, overwrite=1)
-		MarkAsCustomEntry(groupID, "aibs_stimulus_description")
+		H5_WriteTextDataset(groupID, "stimulus_description", str=p.stimSet, overwrite=1)
+		MarkAsCustomEntry(groupID, "stimulus_description")
 	endif
 
 	HDF5CloseGroup groupID
