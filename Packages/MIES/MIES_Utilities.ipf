@@ -1708,9 +1708,10 @@ Function SaveExperimentWrapper(path, filename)
 		if(V_flag != 0)
 			return 1
 		endif
+
+		Close refNum
 	endif
 
-	Close refNum
 	SaveExperiment as S_fileName
 	return 0
 End
