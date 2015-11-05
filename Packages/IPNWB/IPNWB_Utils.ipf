@@ -141,3 +141,23 @@ Function GetDecimalMultiplierValue(prefix)
 	ASSERT(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")
 	return values[V_Value]
 End
+
+/// @brief Write a text dataset only if it is not equal to #PLACEHOLDER
+///
+/// @param locationID                                  HDF5 identifier, can be a file or group
+/// @param name                                        Name of the HDF5 dataset
+/// @param str                                         Contents to write into the dataset
+/// @param chunkedLayout [optional, defaults to false] Use chunked layout with compression and shuffling. Will be ignored for small waves.
+Function WriteTextDatasetIfSet(locationID, name, str, [chunkedLayout])
+	variable locationID
+	string name, str
+	variable chunkedLayout
+
+	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
+
+	if(!cmpstr(str, PLACEHOLDER))
+		return NaN
+	endif
+
+	H5_WriteTextDataset(locationID, name, str=str, chunkedLayout=chunkedLayout)
+End

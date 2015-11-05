@@ -118,41 +118,41 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 		ti = toplevelInfo
 	endif
 
-	H5_WriteTextDataset(locationID, "neurodata_version", str=NWB_VERSION)
-	H5_WriteTextDataset(locationID, "identifier", str=Hash(GetISO8601TimeStamp() + num2str(enoise(1, 2)), 1))
-	// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
-	H5_WriteTextDataset(locationID, "file_create_date", str=GetISO8601TimeStamp(), chunkedLayout=1)
-	H5_WriteTextDataset(locationID, "session_start_time", str=GetISO8601TimeStamp(secondsSinceIgorEpoch=ti.session_start_time))
-	H5_WriteTextDataset(locationID, "session_description", str=ti.session_description)
+		WriteTextDatasetIfSet(locationID, "neurodata_version", NWB_VERSION)
+		WriteTextDatasetIfSet(locationID, "identifier", Hash(GetISO8601TimeStamp() + num2str(enoise(1, 2)), 1))
+		// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
+		WriteTextDatasetIfSet(locationID, "file_create_date", GetISO8601TimeStamp(), chunkedLayout=1)
+		WriteTextDatasetIfSet(locationID, "session_start_time", GetISO8601TimeStamp(secondsSinceIgorEpoch=ti.session_start_time))
+		WriteTextDatasetIfSet(locationID, "session_description", ti.session_description)
 
-	H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
+		H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
 
-	H5_WriteTextDataset(groupID, "session_id"            , str=gi.session_id)
-	H5_WriteTextDataset(groupID, "experimenter"          , str=gi.experimenter)
-	H5_WriteTextDataset(groupID, "institution"           , str=gi.institution)
-	H5_WriteTextDataset(groupID, "lab"                   , str=gi.lab)
-	H5_WriteTextDataset(groupID, "related_publications"  , str=gi.related_publications)
-	H5_WriteTextDataset(groupID, "notes"                 , str=gi.notes)
-	H5_WriteTextDataset(groupID, "experiment_description", str=gi.experiment_description)
-	H5_WriteTextDataset(groupID, "data_collection"       , str=gi.data_collection)
-	H5_WriteTextDataset(groupID, "stimulus"              , str=gi.stimulus)
-	H5_WriteTextDataset(groupID, "pharmacology"          , str=gi.pharmacology)
-	H5_WriteTextDataset(groupID, "surgery"               , str=gi.surgery)
-	H5_WriteTextDataset(groupID, "protocol"              , str=gi.protocol)
-	H5_WriteTextDataset(groupID, "virus"                 , str=gi.virus)
-	H5_WriteTextDataset(groupID, "slices"                , str=gi.slices)
+		WriteTextDatasetIfSet(groupID, "session_id"            , gi.session_id)
+		WriteTextDatasetIfSet(groupID, "experimenter"          , gi.experimenter)
+		WriteTextDatasetIfSet(groupID, "institution"           , gi.institution)
+		WriteTextDatasetIfSet(groupID, "lab"                   , gi.lab)
+		WriteTextDatasetIfSet(groupID, "related_publications"  , gi.related_publications)
+		WriteTextDatasetIfSet(groupID, "notes"                 , gi.notes)
+		WriteTextDatasetIfSet(groupID, "experiment_description", gi.experiment_description)
+		WriteTextDatasetIfSet(groupID, "data_collection"       , gi.data_collection)
+		WriteTextDatasetIfSet(groupID, "stimulus"              , gi.stimulus)
+		WriteTextDatasetIfSet(groupID, "pharmacology"          , gi.pharmacology)
+		WriteTextDatasetIfSet(groupID, "surgery"               , gi.surgery)
+		WriteTextDatasetIfSet(groupID, "protocol"              , gi.protocol)
+		WriteTextDatasetIfSet(groupID, "virus"                 , gi.virus)
+		WriteTextDatasetIfSet(groupID, "slices"                , gi.slices)
 
-	HDF5CloseGroup/Z groupID
+		HDF5CloseGroup/Z groupID
 
-	H5_CreateGroupsRecursively(locationID, "/general/subject", groupID=groupID)
+		H5_CreateGroupsRecursively(locationID, "/general/subject", groupID=groupID)
 
-	H5_WriteTextDataset(groupID, "subject_id" , str=si.subject_id)
-	H5_WriteTextDataset(groupID, "description", str=si.description)
-	H5_WriteTextDataset(groupID, "species"    , str=si.species)
-	H5_WriteTextDataset(groupID, "genotype"   , str=si.genotype)
-	H5_WriteTextDataset(groupID, "sex"        , str=si.sex)
-	H5_WriteTextDataset(groupID, "age"        , str=si.age)
-	H5_WriteTextDataset(groupID, "weight"     , str=si.weight)
+		WriteTextDatasetIfSet(groupID, "subject_id" , si.subject_id)
+		WriteTextDatasetIfSet(groupID, "description", si.description)
+		WriteTextDatasetIfSet(groupID, "species"    , si.species)
+		WriteTextDatasetIfSet(groupID, "genotype"   , si.genotype)
+		WriteTextDatasetIfSet(groupID, "sex"        , si.sex)
+		WriteTextDatasetIfSet(groupID, "age"        , si.age)
+		WriteTextDatasetIfSet(groupID, "weight"     , si.weight)
 
 	HDF5CloseGroup/Z groupID
 
