@@ -242,7 +242,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	ASSERT(!cmpstr(WaveUnits(ITCDataWave, ROWS), "ms"), "Expected ms as wave units")
 	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(ITCDataWave, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
 	params.startingTime -= session_start_time // relative to the start of the session
-	params.startingTime -= DimSize(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	params.startingTime -= DimSize(ITCDataWave, ROWS) * DimDelta(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
 
