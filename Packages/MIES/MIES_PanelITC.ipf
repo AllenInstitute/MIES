@@ -3485,10 +3485,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 		endif
 
 		DAP_UpdateITIAcrossSets(panelTitle)
-
-		Controlinfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		Valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+		DAP_UpdateSweepSetVariables(panelTitle)
 		break
 	endswitch
 End
