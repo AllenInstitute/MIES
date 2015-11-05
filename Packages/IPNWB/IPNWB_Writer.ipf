@@ -421,6 +421,8 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 			ancestry = "TimeSeries;PatchClampSeries;VoltageClampStimulusSeries"
 		elseif(p.clampMode == I_CLAMP_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;CurrentClampStimulusSeries"
+		else
+			ancestry = "TimeSeries;PatchClampSeries"
 		endif
 	else
 		ancestry = "TimeSeries"
