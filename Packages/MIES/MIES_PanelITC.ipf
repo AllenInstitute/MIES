@@ -5709,3 +5709,17 @@ Function DAP_Activate_Manips(cba) : CheckBoxControl
 
 	return 0
 End
+
+/// @brief Create a new DA_Ephys panel
+///
+/// @returns panel name
+Function/S DAP_CreateDAEphysPanel()
+
+	string panel
+
+	Execute "DA_Ephys()"
+
+	panel = GetCurrentWindow()
+
+	return panel
+End
