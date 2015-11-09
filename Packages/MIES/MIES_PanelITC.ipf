@@ -876,7 +876,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_Append,value= 0
 	CheckBox Check_Settings_BkgTP,pos={34,86},size={93,14},disable=1,title="Background TP"
-	CheckBox Check_Settings_BkgTP,help={"Use cautiously - intended primarily for software development"}
+	CheckBox Check_Settings_BkgTP,help={"Perform testpulse in the background, keeping the GUI responsive."}
 	CheckBox Check_Settings_BkgTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BkgTP,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo)= A"!!,Gn!!#?o!!#@e!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -884,7 +884,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_BkgTP,value= 0
 	CheckBox Check_Settings_BackgrndDataAcq,pos={34,193},size={156,14},disable=1,title="Background Data Acquisition"
-	CheckBox Check_Settings_BackgrndDataAcq,help={"You may notice that onscreen update isn't as smooth with background data acquisition. This is normal and unavoidable."}
+	CheckBox Check_Settings_BackgrndDataAcq,help={"Perform data acquisition in the background, keeping the GUI responsive."}
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(ResizeControlsInfo)= A"!!,Ch!!#?k!!#A+!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
