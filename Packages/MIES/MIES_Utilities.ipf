@@ -2091,3 +2091,25 @@ Function QuerySetIgorOption(name)
 
 	return result
 End
+
+/// @brief Parse a timestamp created by GetISO8601TimeStamp() and returns the number
+/// of seconds since Igor Pro epoch (1/1/1904) in UTC time zone
+Function ParseISO8601TimeStamp(timestamp)
+	string timestamp
+
+	string year, month, day, hour, minute, second, regexp
+	variable secondsSinceEpoch
+
+	regexp = "([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+) ([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)Z"
+	SplitString/E=regexp timestamp, year, month, day, hour, minute, second
+
+	if(V_flag != 6)
+		return NaN
+	endif
+
+	secondsSinceEpoch  = date2secs(str2num(year), str2num(month), str2num(day))          // date
+	secondsSinceEpoch += 60 * 60* str2num(hour) + 60 * str2num(minute) + str2num(second) // time
+	// timetstamp is in UTC so we don't need to add/subtract anything
+
+	return secondsSinceEpoch
+End
