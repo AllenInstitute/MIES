@@ -2746,8 +2746,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_AsyncAD_Unit_07 WIN = $panelTitle,value= _STR:""
 	
 	CheckBox Check_Settings_Append WIN = $panelTitle,value= 0
-	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
 	CheckBox Radio_ClampMode_0 WIN = $panelTitle,value= 1,mode=1
 	
 	// Sets MIES headstage to V-Clamp
@@ -2966,7 +2964,10 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
+
 	DAP_SwitchSingleMultiMode(panelTitle, 0)
+	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
+	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
 
 	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 0
 	CheckBox check_Settings_Override_Set_ITI WIN = $panelTitle, value = 0
