@@ -99,13 +99,8 @@ static Function H5_WriteDatasetLowLevel(locationID, name, wv, overwrite, chunked
 
 	numDims = WaveDims(wv)
 
-	if(skipIfExists)
-		STRUCT HDF5DataInfo di
-		InitHDF5DataInfo(di)
-
-		if(HDF5DatasetInfo(locationID, name, 2^0, di) == 0) // dataset already exists
-			return NaN
-		endif
+	if(skipIfExists && H5_DatasetExists(locationID, name))
+		return NaN
 	endif
 
 	attrFlag = writeIgorAttr ? -1 : 0
@@ -242,6 +237,21 @@ Function H5_IsFileOpen(fileID)
 
 	// group "/" does exist, therefore the fileID refers to an open file
 	return H5_GroupExists(fileID, "/")
+End
+
+/// @brief Return 1 if the given HDF5 dataset exists, 0 otherwise.
+///
+/// @param[in] locationID           HDF5 identifier, can be a file or group
+/// @param[in] path                 Additional path on top of `locationID` which identifies
+///                                 the dataset
+Function H5_DatasetExists(locationID, name)
+	variable locationID
+	string name
+
+	STRUCT HDF5DataInfo di
+	InitHDF5DataInfo(di)
+
+	return !HDF5DatasetInfo(locationID, name, 2^0, di)
 End
 
 /// @brief Return 1 if the given HDF5 group exists, 0 otherwise.
