@@ -2064,3 +2064,29 @@ Function GetDecimalMultiplierValue(prefix)
 	ASSERT(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")
 	return values[V_Value]
 End
+
+/// @brief Query a numeric option settable with `SetIgorOption`
+Function QuerySetIgorOption(name)
+	string name
+
+	string cmd
+	variable result
+
+	DFREF dfr = GetDataFolderDFR()
+
+	// we remove V_flag as the existence of it determines
+	// if the operation was successfull
+	KillVariables/Z V_Flag
+	sprintf cmd, "SetIgorOption %s=?", name
+	Execute/Q/Z cmd
+
+	NVAR/Z/SDFR=dfr flag = V_Flag
+	if(!NVAR_Exists(flag))
+		return NaN
+	endif
+
+	result = flag
+	KillVariables/Z flag
+
+	return result
+End
