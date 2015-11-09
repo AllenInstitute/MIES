@@ -2822,7 +2822,10 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	PopupMenu Popup_TTL_IndexEnd_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu Popup_TTL_IndexEnd_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 
-	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle,value= 0
+	// don't make the scope subwindow part of the recreation macro
+	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle, value= 0
+	SCOPE_KillScopeWindowIfRequest(panelTitle)
+	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle, value= 1
 
 	CheckBox check_Settings_ITITP WIN = $panelTitle, value= 0
 	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
@@ -2974,8 +2977,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
-
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	return 0
 End
@@ -5720,6 +5721,7 @@ Function/S DAP_CreateDAEphysPanel()
 	Execute "DA_Ephys()"
 
 	panel = GetCurrentWindow()
+	SCOPE_OpenScopeWindow(panel)
 
 	return panel
 End
