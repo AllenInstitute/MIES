@@ -473,7 +473,7 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			TP_StartTestPulseMultiDevice(panelTitle)
 			break
 		default:
-			ASSERT(0, "Unhandled case")
+			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)
 			break
 	endswitch
 End
@@ -530,10 +530,12 @@ Function TP_Teardown(panelTitle)
 End
 
 /// @brief Check if the testpulse is running
+///
+/// Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs.
 Function TP_CheckIfTestpulseIsRunning(panelTitle)
 	string panelTitle
 
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
 
-	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"))
 End
