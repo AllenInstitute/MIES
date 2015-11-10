@@ -1440,30 +1440,25 @@ static Function/S WBP_AssembleSetName()
 	return CleanupName(AssembledBaseName, 0)
 End
 
-/// @brief Returns a folder path based on they wave type ie. TTL or DA - this is used to store the actual sets in the correct folders
-static Function/S WBP_FolderAssignment()
-	ControlInfo/W=$panel popup_WaveBuilder_OutputType
-	return GetWaveBuilderPathAsString() + ":SavedStimulusSets:" + s_value + ":"
-End
+/// @brief Return the output type, one of #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+Function WBP_GetOutputType()
 
-/// @brief Returns a folder path based on they wave type ie. TTL or DA - this is used to store the set parameters in the correct folders
-static Function/S WBP_WPFolderAssignment()
-	ControlInfo/W=$panel popup_WaveBuilder_OutputType
-	return GetWaveBuilderPathAsString() + ":SavedStimulusSetParameters:" + s_value + ":"
-End
+	variable outputType, idx
+	idx = GetPopupMenuIndex(panel, "popup_WaveBuilder_OutputType")
 
-/// This will fail if the NameOfWaveToBeMoved is already in use by a non-wave in the target folder
-static Function WBP_MoveWaveTOFolder(FolderPath, NameOfWaveToBeMoved, Kill, BaseName)
-	string FolderPath, NameOfWaveToBeMoved, BaseName
-	variable Kill
+	switch(idx)
+		case 0:
+			outputType = CHANNEL_TYPE_DAC
+			break
+		case 1:
+			outputType = CHANNEL_TYPE_TTL
+			break
+		default:
+			ASSERT(0, "unknown channelType")
+			break
+	endswitch
 
-	Wave/Z/SDFR=GetWaveBuilderDataPath() srcWave = $NameOfWaveToBeMoved
-	string NameOfWaveWithFolderPath = FolderPath + NameOfWaveToBeMoved + BaseName
-
-	Duplicate/O srcWave $NameOfWaveWithFolderPath
-	if(kill)
-		KillOrMoveToTrash(wv=srcWave)
-	endif
+	return outputType
 End
 
 /// @brief Return a list of all stim sets for the given type
@@ -1488,13 +1483,18 @@ end
 
 static Function WBP_SaveSetParam()
 
-	string setName, folder
+	string setName
 
-	folder  = WBP_WPFolderAssignment()
-	setName = "_" + WBP_AssembleSetName()
-	WBP_MoveWaveToFolder(folder, "SegWvType", 0, setName)
-	WBP_MoveWaveToFolder(folder, "WP"       , 0, setName)
-	WBP_MoveWaveToFolder(folder, "WPT"      , 0, setName)
+	WAVE SegWvType = GetSegmentTypeWave()
+	WAVE WP        = GetWaveBuilderWaveParam()
+	WAVE WPT       = GetWaveBuilderWaveTextParam()
+
+	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
+	setName = WBP_AssembleSetName()
+
+	Duplicate/O SegWvType , dfr:$("SegWvType_" + setName)
+	Duplicate/O WP	       , dfr:$("WP_" + setName)
+	Duplicate/O WPT       , dfr:$("WPT_" + setName)
 End
 
 static Function WBP_LoadSet()
