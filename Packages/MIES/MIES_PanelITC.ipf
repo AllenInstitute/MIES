@@ -3536,13 +3536,9 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
 	string ctrl
-	variable numHS, i
+	variable i
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	numHS = DimSize(statusHS, ROWS)
-	for(i = 0; i < numHS; i += 1)
-
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		sprintf ctrl, "Check_DataAcq_HS_%02d", i
 		EnableControl(panelTitle, ctrl)
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
