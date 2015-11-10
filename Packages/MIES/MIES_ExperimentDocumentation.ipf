@@ -349,7 +349,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys[1][1] =  ""
 	numKeys[2][1] =  "-"
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
 	numSettings[0][0][0,7] = statusHS[r]
