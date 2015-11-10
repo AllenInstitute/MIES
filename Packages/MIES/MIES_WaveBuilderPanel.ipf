@@ -1437,7 +1437,7 @@ static Function/S WBP_AssembleSetName()
 	ControlInfo/W=$panel setvar_WaveBuilder_SetNumber
 	AssembledBaseName += num2str(v_value)
 
-	return AssembledBaseName
+	return CleanupName(AssembledBaseName, 0)
 End
 
 /// @brief Returns a folder path based on they wave type ie. TTL or DA - this is used to store the actual sets in the correct folders
