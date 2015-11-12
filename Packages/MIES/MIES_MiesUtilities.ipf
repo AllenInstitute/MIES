@@ -181,7 +181,7 @@ End
 /// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
-/// @returns a wave with the value for each headstage in a row. In case
+/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 Function/WAVE GetLastSetting(history, sweepNo, setting)
 	Wave history
@@ -226,9 +226,9 @@ End
 /// @brief Returns a wave with latest value of a setting from the history wave
 /// for a given sweep number.
 ///
-/// Text wave version of `GetLastSetting`.
+/// Text wave version of GetLastSetting().
 ///
-/// @returns a wave with the value for each headstage in a row. In case
+/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 Function/WAVE GetLastSettingText(history, sweepNo, setting)
 	Wave/T history
@@ -278,8 +278,8 @@ End
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
-/// @return Free wave with as many layers as the history wave, or an invalid
-///         wave reference if the value could not be found.
+/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
+/// the setting could not be found an invalid wave reference is returned.
 Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
 	WAVE history
 	string setting
@@ -309,8 +309,8 @@ End
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
-/// @return Free wave with an entry for each headstage, or an invalid wave reference
-/// if the value could not be found.
+/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
+/// the setting could not be found an invalid wave reference is returned.
 Function/WAVE GetLastSweepWithSettingText(history, setting, sweepNo)
 	WAVE/T history
 	string setting
