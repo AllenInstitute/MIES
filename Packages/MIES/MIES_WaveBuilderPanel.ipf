@@ -38,6 +38,12 @@ static StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 static Constant  STIMULUS_TYPE_DA            = 1
 static Constant  STIMULUS_TYPE_TLL           = 2
 
+/// @name Parameters for WBP_TranslateControlContents()
+/// @{
+static Constant FROM_PANEL_TO_WAVE = 0x1
+static Constant FROM_WAVE_TO_PANEL = 0x2
+/// @}
+
 Function WBP_CreateWaveBuilderPanel()
 
 	if(windowExists(panel))
@@ -58,6 +64,7 @@ Function WBP_CreateWaveBuilderPanel()
 	KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
 
 	Execute "WaveBuilder()"
+	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList()
 End
 
 Window WaveBuilder() : Panel
@@ -207,7 +214,7 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
 	TabControl WBP_WaveType,tabLabel(2)="GPB-Noise",tabLabel(3)="Sin"
 	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
-	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load custom wave"
+	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load",tabLabel(8)="Combine"
 	TabControl WBP_WaveType,value= 0
 	SetVariable setvar_WaveBuilder_CurrentEpoch,pos={37,129},size={122,20},proc=WBP_SetVarProc_EpochToEdit,title="Epoch to edit"
 	SetVariable setvar_WaveBuilder_CurrentEpoch,help={"Epoch to edit. The active epoch is displayed on the graph with a white background. Inactive epochs have a gray background."}
@@ -700,6 +707,22 @@ Window WaveBuilder() : Panel
 	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_NewSeedForEachStep_P49,value= 0
+	ListBox listbox_combineEpochMap,pos={194,25},size={228,178}, disable=1
+	ListBox listbox_combineEpochMap,help={"Shorthand <-> Stimset mapping for use with the formula"}
+	ListBox listbox_combineEpochMap,userdata(tabnum)=  "8"
+	ListBox listbox_combineEpochMap,userdata(tabcontrol)=  "WBP_WaveType"
+	ListBox listbox_combineEpochMap,widths={58,120}
+	ListBox listbox_combineEpochMap,userdata(ResizeControlsInfo)= A"!!,GR!!#=+!!#As!!#AAz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	ListBox listbox_combineEpochMap,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	ListBox listbox_combineEpochMap,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_combine_formula_T6,pos={428,180},size={437,16},proc=WBP_SetVarCombineEpochFormula,title="Formula", disable=1
+	SetVariable setvar_combine_formula_T6,help={"Mathematical formula for combining stim sets. All math operators from Igor are supported. Examples: +/-*^,sin,cos,tan. All are applied elementwise on the stim set contents. Mutiple sweeps are flattened into one sweep."}
+	SetVariable setvar_combine_formula_T6,userdata(tabnum)=  "8"
+	SetVariable setvar_combine_formula_T6,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable setvar_combine_formula_T6,limits={-inf,inf,0},value= _STR:""
+	SetVariable setvar_combine_formula_T6,userdata(ResizeControlsInfo)= A"!!,I<!!#AC!!#C?J,hlcz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	SetVariable setvar_combine_formula_T6,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable setvar_combine_formula_T6,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_FlipEpoch_S98,pos={121,174},size={34,14},proc=WBP_CheckProc_FlipStimSet,title="Flip"
 	CheckBox check_FlipEpoch_S98,help={"Flip the whole stim set in the time domain"}
 	CheckBox check_FlipEpoch_S98,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -956,6 +979,9 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableListOfControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
 			endif
 			break
+		case 8:
+			WB_UpdateEpochCombineList(WBP_GetOutputType())
+			break
 		default:
 			// nothing to do
 			break
@@ -975,10 +1001,11 @@ End
 static Function WBP_ParameterWaveToPanel(stimulusType)
 	variable stimulusType
 
-	string list, control
+	string list, control, data
 	variable segment, numEntries, i, row
 
-	WAVE WP = GetWaveBuilderWaveParam()
+	WAVE WP    = GetWaveBuilderWaveParam()
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	segment = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
 
@@ -987,8 +1014,18 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
-		row = WBP_ExtractRowNumberFromControl(control)
+		row = WBP_ExtractRowNumberFromControl(control, "P")
 		WBP_SetControl(panel, control, WP[row][segment][stimulusType])
+	endfor
+
+	list = GrepList(ControlNameList(panel), ".*_T[[:digit:]]+")
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		control = StringFromList(i, list)
+		row = WBP_ExtractRowNumberFromControl(control, "T")
+		data = WBP_TranslateControlContents(control, FROM_WAVE_TO_PANEL, WPT[row][segment])
+		SetSetVariableString(panel, control, data)
 	endfor
 End
 
@@ -1146,7 +1183,9 @@ End
 Function WBP_FinalTabHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	if(tca.tab == 7)
+	variable tabID = GetTabID(panel, "WBP_WaveType")
+
+	if(tabID == 7 || tabID == 8)
 		HideListOfControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_exp_P40")
 	endif
 
@@ -1162,6 +1201,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 			RemoveTracesFromGraph(WaveBuilderGraph)
 			WBP_SaveSetParam()
 			WBP_UpdateITCPanelPopUps()
+			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", "StimulusSetA")
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
@@ -1178,14 +1218,15 @@ End
 
 /// @brief Returns the row index into the parameter wave of the parameter represented by the named control
 ///
-/// @param control name of the control, the expected format is `$str_P$row_$suffix` where `$str` may contain any
-/// characters but `$suffix` is not allowed to include the substring `_P`.
-static Function WBP_ExtractRowNumberFromControl(control)
-	string control
+/// @param control name of the control, the expected format is `$str_$sep$row_$suffix` where `$str` may contain any
+/// @param sep single character, either `P` or `T`
+/// characters but `$suffix` is not allowed to include the substring `_$sep`.
+static Function WBP_ExtractRowNumberFromControl(control, sep)
+	string control, sep
 
 	variable start, stop, row
 
-	start = strsearch(control, "_P", Inf, 1)
+	start = strsearch(control, "_" + sep, Inf, 1)
 	ASSERT(start != -1, "Could not find the row indicator in the parameter name")
 
 	stop = strsearch(control, "_", start + 2)
@@ -1213,7 +1254,7 @@ Function WBP_UpdateControlAndWP(control, value)
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	paramRow     = WBP_ExtractRowNumberFromControl(control)
+	paramRow     = WBP_ExtractRowNumberFromControl(control, "P")
 	WP[paramRow][epoch][stimulusType] = value
 
 	if(stimulusType == 2)
@@ -2014,4 +2055,65 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+Function WBP_SetVarCombineEpochFormula(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	struct FormulaProperties fp
+	string win, formula
+	variable currentEpoch, lastSweep
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			win     = sva.win
+			formula = sva.sval
+
+			WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
+			lastSweep = GetSetVariable(win, "SetVar_WB_SweepCount_S101") - 1
+
+			if(WB_ParseCombinerFormula(formula, lastSweep, fp))
+				break
+			endif
+
+			currentEpoch = GetSetVariable(win, "setvar_WaveBuilder_CurrentEpoch")
+
+			WPT[6][currentEpoch] = WBP_TranslateControlContents(sva.ctrlName, FROM_PANEL_TO_WAVE, formula)
+			WPT[7][currentEpoch] = WAVEBUILDER_COMBINE_FORMULA_VER
+
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Convert a control entry for the panel or the wave.
+///
+/// Useful if the visualization is different from the stored data.
+///
+/// @param control   name of WaveBuilder GUI control
+/// @param direction one of #FROM_PANEL_TO_WAVE or #FROM_WAVE_TO_PANEL
+/// @param data      string to convert
+static Function/S WBP_TranslateControlContents(control, direction, data)
+	string control, data
+	variable direction
+
+	strswitch(control)
+		case "setvar_combine_formula_T6":
+			if(direction == FROM_PANEL_TO_WAVE)
+				struct FormulaProperties fp
+				WB_FormulaSwitchToStimset(data, fp)
+				return fp.formula
+			elseif(direction == FROM_WAVE_TO_PANEL)
+				return WB_FormulaSwitchToShorthand(data)
+			endif
+			break
+		default:
+			return data
+			break
+	endswitch
 End

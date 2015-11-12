@@ -137,7 +137,7 @@ Function/Wave WB_GetStimSet([setName])
 	string setName
 
 	variable i, numEpochs, numSteps, updateEpochIDWave
-	variable last, lengthOf1DWaves, length
+	variable last, lengthOf1DWaves, length, channelType
 	string wvName
 	variable start = stopmstimer(-2)
 
@@ -147,10 +147,12 @@ Function/Wave WB_GetStimSet([setName])
 		WAVE WP        = GetWaveBuilderWaveParam()
 		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
 		WAVE SegWvType = GetSegmentTypeWave()
+		channelType    = WBP_GetOutputType()
 	else
 		WAVE WP        = WB_GetWaveParamForSet(setName)
 		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
 		WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
+		channelType    = GetStimSetType(setName)
 
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
@@ -171,7 +173,7 @@ Function/Wave WB_GetStimSet([setName])
 	MAKE/WAVE/FREE/N=(numSteps) stepData
 
 	for(i=0; i < numSteps; i+=1)
-		stepData[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, updateEpochIDWave)
+		stepData[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave)
 		lengthOf1DWaves = max(DimSize(stepData[i], ROWS), lengthOf1DWaves)
 		WB_AddDelta(WPCopy, numEpochs)
 	endfor
@@ -333,17 +335,18 @@ static Structure SegmentParameters
 	variable trigFuncType // 0: sin, 1: cos
 EndStructure
 
-static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, updateEpochIDWave)
+static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave)
 	Wave WP
 	Wave/T WPT
 	Wave SegWvType
-	variable stepCount, numEpochs, updateEpochIDWave
+	variable stepCount, numEpochs, channelType, updateEpochIDWave
 
 	DFREF dfr = GetWaveBuilderDataPath()
 
 	Make/FREE/N=0 WaveBuilderWave
 
-	string customWaveName, debugMsg, defMode
+	string customWaveName, debugMsg, defMode, formula, formula_version
+	string formula_for_note
 	variable i, j, type, accumulatedDuration
 	STRUCT SegmentParameters params
 
@@ -531,6 +534,41 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				elseif(!isEmpty(customWaveName))
 					print "Wave currently selected no longer exists. Please select a new Wave from the pull down menu"
 				endif
+				break
+			case 8:
+				WAVE segmentWave = WB_GetSegmentWave(0)
+
+				formula_for_note = WPT[6][i]
+				formula          = WB_FormulaSwitchToShorthand(formula_for_note)
+				formula_version  = WPT[7][i]
+
+				if(isEmpty(formula))
+					printf "Skipping combine epoch with empty formula\r"
+					break
+				endif
+
+				if(cmpstr(formula_version, WAVEBUILDER_COMBINE_FORMULA_VER))
+					printf "Could not create the wave from formula of version %s\r", WAVEBUILDER_COMBINE_FORMULA_VER
+					break
+				endif
+
+				WAVE/Z combinedWave = WB_FillWaveFromFormula(formula, channelType, stepCount)
+
+				if(!WaveExists(combinedWave))
+					print "Could not create the wave from the formula"
+					break
+				endif
+
+				Duplicate/O combinedWave, segmentWave
+
+				params.Duration = DimSize(segmentWave, ROWS) * MINIMUM_SAMPLING_INTERVAL
+
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"           , var=i)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"            , str="Combine")
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"        , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula"         , str=formula_for_note)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula Version" , str=formula_version)
+
 				break
 			default:
 				printf "Ignoring unknown epoch type %d\r", type
@@ -851,4 +889,228 @@ static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 	WaveStats/Q SegmentWave
 	SegmentWave *= pa.amplitude / V_sdev
 End
+
+/// @brief Create a wave segment as combination of existing stim sets
+static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
+	string formula
+	variable channelType
+	variable sweep
+
+	STRUCT FormulaProperties fp
+
+	WB_UpdateEpochCombineList(channelType)
+
+	if(WB_ParseCombinerFormula(formula, sweep, fp))
+		return $""
+	endif
+
+	DEBUGPRINT("Formula:", str=fp.formula)
+
+	DFREF dfr       = GetDataFolderDFR()
+	DFREF targetDFR = GetSetFolder(channelType)
+
+	SetDataFolder targetDFR
+	Make/O/D/N=(fp.numRows) d
+	Execute/Q/Z fp.formula
+
+	if(V_Flag)
+		printf "WB_FillWaveFromFormula: Error executing the formula \"%s\"\r", formula
+		KillOrMoveToTrash(wv=d)
+		SetDataFolder dfr
+		return $""
+	endif
+
+	SetDataFolder dfr
+
+	// convert a persistent wave to a free wave
+	DFREF dfr = NewFreeDataFolder()
+	MoveWave d, dfr
+
+	return d
+End
 /// @}
+
+/// @brief Update the shorthand/stimset wave for the epoch type `Combine`
+///
+/// The rows are sorted by creationDate of the WP/stimset wave to try to keep
+/// the shorthands constants even when new stimsets are added.
+Function WB_UpdateEpochCombineList(channelType)
+	variable channelType
+
+	string list, setPath, setParamPath, entry
+	variable numEntries, i
+
+	list = ReturnListOfAllStimSets(channelType, "*")
+	list = RemoveFromList("TestPulse", list)
+
+	numEntries = ItemsInList(list)
+	Make/D/FREE/N=(numEntries) creationDates
+	Make/T/FREE/N=(numEntries) stimsets = StringFromList(p, list)
+
+	DFREF dfr = GetSetFolder(channelType)
+
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list)
+		WAVE/SDFR=dfr/Z stimset = entry
+		WAVE/Z WP = WB_GetWaveParamForSet(entry)
+
+		if(WaveExists(WP))
+			creationDates[i] = CreationDate(WP)
+		elseif(WaveExists(stimset))
+			creationDates[i] = CreationDate(stimset)
+		else
+			ASSERT(0, "Missing stimset/param wave")
+		endif
+	endfor
+
+	Sort creationDates, stimsets
+
+	Wave/T epochCombineList = GetWBEpochCombineList()
+	Redimension/N=(numEntries, -1) epochCombineList
+
+	epochCombineList[][%StimSet]   = stimsets[p]
+	epochCombineList[][%Shorthand] = WB_GenerateUniqueLabel(p)
+End
+
+/// @brief Generate a unique textual representation of an index
+///
+/// Returns the alphabet for 1-26, and then A1, B1, ..., Z1000
+static Function/S WB_GenerateUniqueLabel(idx)
+	variable idx
+
+	variable number, charNum
+	string str
+
+	charNum = mod(idx, 26)
+	number  = floor(idx / 26)
+
+	if(!number)
+		return num2char(65 + charNum)
+	endif
+
+	sprintf str, "%s%d", num2char(65 + charNum), number
+	return str
+End
+
+/// @brief Parse the formula from the epoch type `Combine`
+///
+/// @param[in]  formula  math formula to execute, all operators which Igor can grok are allowed
+/// @param      sweep    current sweep (aka step)
+/// @param[out] fp       parsed formula structure, with shorthands replaced by stimsets,
+///                      empty on parse error, ready to be executed by WB_FillWaveFromFormula()
+///
+/// @returns 0 on success, 1 on parse errors (currently not many are found)
+Function WB_ParseCombinerFormula(formula, sweep, fp)
+	string formula
+	variable sweep
+	struct FormulaProperties &fp
+
+	struct FormulaProperties trans
+	WB_FormulaSwitchToStimset(formula, trans)
+
+	InitFormulaProperties(fp)
+
+	// and now we look for shorthand-like strings not referring to existing stimsets
+	if(GrepString(trans.formula, "\\b[A-Z][0-9]*\\b"))
+		printf "WBP_ParseCombinerFormula: Parse error in the formula \"%s\": Non-existing shorthand found\r", formula
+		return 1
+	endif
+
+	if(sweep >= trans.numCols)
+		printf "Requested step %d is larger as the minimum number of sweeps in the referenced stim sets\r", sweep
+		return 1
+	endif
+
+	WB_PrepareFormulaForExecute(trans, sweep)
+
+	if(strlen(trans.formula) >= MAX_COMMANDLINE_LENGTH)
+		printf "WBP_ParseCombinerFormula: Parsed formula is too long to be executed in one step. Please shorten it and perform the desired task in two steps.\r"
+		return 1
+	endif
+
+	fp = trans
+
+	return 0
+End
+
+/// @brief Replace shorthands with the real stimset names suffixed with `?`
+Function WB_FormulaSwitchToStimset(formula, fp)
+	string formula
+	struct FormulaProperties &fp
+
+	string stimset, shorthand, replacedFormula, stimsetSpec
+	variable numSets, i
+	variable numRows = Inf
+	variable numCols = Inf
+
+	InitFormulaProperties(fp)
+
+	if(isEmpty(formula))
+		return NaN
+	endif
+
+	WAVE/T epochCombineList = GetWBEpochCombineList()
+
+	formula = UpperStr(formula)
+
+	// we replace, case sensitive!, all upper case shorthands with lower case
+	// stimsets in that way we don't mess up the formula
+	numSets = DimSize(epochCombineList, ROWS)
+	for(i = 0; i < numSets; i += 1)
+		shorthand   = epochCombineList[i][%Shorthand]
+		stimset     = epochCombineList[i][%stimset]
+		stimsetSpec = LowerStr(stimset) + "?"
+
+		replacedFormula = ReplaceString(shorthand, formula, stimsetSpec, 1)
+
+		if(cmpstr(replacedFormula, formula))
+			// create the stimset as it is part of the formula
+			WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
+			ASSERT(WaveExists(wv), "Could not recreate a required stimset")
+			numRows = min(numRows, DimSize(wv, ROWS))
+			numCols = min(numCols, DimSize(wv, COLS))
+		endif
+
+		formula = replacedFormula
+	endfor
+
+	fp.formula = formula
+	fp.numRows = numRows
+	fp.numCols = numCols
+End
+
+/// @brief Add wave ranges to every stimset (location marked by `?`) and
+///        add a left hand side to the formula
+Function WB_PrepareFormulaForExecute(fp, sweep)
+	struct FormulaProperties &fp
+	variable sweep
+
+	string spec
+	sprintf spec, "[p][%d]", sweep
+
+	fp.formula = "d[]=" + ReplaceString("?", fp.formula, spec)
+End
+
+/// @brief Replace all stimsets suffixed with `?` by their shorthands
+Function/S WB_FormulaSwitchToShorthand(formula)
+	string formula
+
+	variable numSets, i
+	string stimset, shorthand
+
+	if(isEmpty(formula))
+		return ""
+	endif
+
+	WAVE/T epochCombineList = GetWBEpochCombineList()
+
+	numSets = DimSize(epochCombineList, ROWS)
+	for(i = 0; i < numSets; i += 1)
+		shorthand = epochCombineList[i][%Shorthand]
+		stimset   = epochCombineList[i][%stimset]
+
+		formula = ReplaceString(stimset + "?", formula, shorthand)
+	endfor
+
+	return formula
+End
