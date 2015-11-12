@@ -634,11 +634,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 		endif
 
 		if(tgs.splitTTLBits)
+			idx = GetIndexForHeadstageIndepData(settingsHistory)
 			if(WaveExists(ttlRackZeroChannel))
-				numTTLBits += PopCount(ttlRackZeroChannel[0])
+				numTTLBits += PopCount(ttlRackZeroChannel[idx])
 			 endif
 			if(WaveExists(ttlRackOneChannel))
-				numTTLBits += PopCount(ttlRackOneChannel[0])
+				numTTLBits += PopCount(ttlRackOneChannel[idx])
 			 endif
 		endif
 	endif
@@ -1939,18 +1940,31 @@ Function GetTTLBits(numericValues, sweep, channel)
 	WAVE numericValues
 	variable sweep, channel
 
+	variable index = GetIndexForHeadstageIndepData(numericValues)
+
 	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
 	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
 
-	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[0] == channel)
+	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
 		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack zero bits")
-	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[0] == channel)
+	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
 		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack one bits")
 	else
 		return NaN
 	endif
 
-	return ttlBits[0]
+	return ttlBits[index]
+End
+
+/// @brief Return the index for headstage independent data
+///
+/// Before 4ada04a2 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
+/// we stored headstage independent data in either all entries or only the first one.
+/// Since that commit we store the data in `INDEP_HEADSTAGE`.
+Function GetIndexForHeadstageIndepData(numericalValues)
+	WAVE numericalValues
+
+	return DimSize(numericalValues, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
 End
 
 /// @brief Get the TTL stim sets from the labnotebook
@@ -1965,18 +1979,20 @@ Function/S GetTTLStimSets(numericValues, textValues, sweep, channel)
 	WAVE/T textValues
 	variable sweep, channel
 
+	variable index = GetIndexForHeadstageIndepData(numericValues)
+
 	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
 	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
 
-	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[0] == channel)
+	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
 		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack zero stim sets")
-	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[0] == channel)
+	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
 		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack one stim sets")
 	else
 		return ""
 	endif
 
-	return ttlStimSets[0]
+	return ttlStimSets[index]
 End
 
 /// @brief Return a sorted list of all DA/TTL stim set waves

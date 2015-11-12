@@ -191,15 +191,15 @@ static Function AB_FillListWave(expFolder, expName, device)
 		list[index][%'#ADC'][0] = str
 
 		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Headstage Active")
-		numRows = WaveExists(settings) ? DimSize(settings, ROWS) : 0
+		numRows = WaveExists(settings) ? NUM_HEADSTAGES : 0
 		if(numRows > 0)
-			list[index][%'#headstages'][0] = num2str(Sum(settings))
+			list[index][%'#headstages'][0] = num2str(Sum(settings, 0, NUM_HEADSTAGES - 1))
 		else
 			list[index][%'#headstages'][0] = "unknown"
 		endif
 
 		WAVE/T/Z settingsText = GetLastSettingText(textValues, sweepNo, "Stim Wave Name")
-		numRows = WaveExists(settingsText) ? DimSize(settingsText, ROWS) : 0
+		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
@@ -217,7 +217,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 				list[index][%'stim sets'][0] = str
 
 				WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
-				numRows = WaveExists(settings) ? DimSize(settings, ROWS) : 0
+				numRows = WaveExists(settings) ? NUM_HEADSTAGES : 0
 				if(numRows > 0)
 					setCount = settings[j]
 
