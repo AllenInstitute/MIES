@@ -7,7 +7,7 @@ static StrConstant optionalTangoInclude = "MIES_TangoInteract"
 static StrConstant optionalHDF5Include = "MIES_HDF5Ops"
 
 Menu "Mies Panels", dynamic
-		"DA_Ephys"                   , /Q, Execute "DA_Ephys()"
+		"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
 		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
 		"Data Browser"               , /Q, Execute "DataBrowser()"
 		"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
