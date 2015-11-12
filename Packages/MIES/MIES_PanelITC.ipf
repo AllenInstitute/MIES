@@ -2435,7 +2435,7 @@ Window DA_Ephys() : Panel
 	Button button_Settings_UpdateDACList,help={"Updates the popup menu contents to show the available ITC devices"}
 	Button button_Settings_UpdateDACList,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateDACList,userdata(tabcontrol)=  "ADC"
-	Button button_Hardware_P_Enable,pos={285,527},size={60,46},disable=2,proc=P_ButtonProc_Enable,title="Enable"
+	Button button_Hardware_P_Enable,pos={285,527},size={60,46},proc=P_ButtonProc_Enable,title="Enable"
 	Button button_Hardware_P_Enable,help={"Enable ITC devices used for pressure regulation."}
 	Button button_Hardware_P_Enable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Enable,userdata(tabcontrol)=  "ADC",fSize=14
@@ -2973,6 +2973,9 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
+
+	EnableControl(panelTitle, "button_Hardware_P_Enable")
+	DisableControl(panelTitle, "button_Hardware_P_Disable")
 
 	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
