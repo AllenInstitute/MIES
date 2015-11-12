@@ -903,7 +903,6 @@ End
 static Function WBP_UpdatePanelIfAllowed()
 
 	string controls, deltaMode
-	variable currentTab
 
 	if(!GetCheckBoxState(panel, "check_PreventUpdate"))
 		WBP_DisplaySetInPanel()
