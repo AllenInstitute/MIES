@@ -2682,7 +2682,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 
 	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,fSize=8,value= _STR:""
 
-	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 0
+	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 1
 	CheckBox Check_DataAcq1_DistribDaq Win = $panelTitle, value = 0
 
 	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0
@@ -2827,7 +2827,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SCOPE_KillScopeWindowIfRequest(panelTitle)
 	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle, value= 1
 
-	CheckBox check_Settings_ITITP WIN = $panelTitle, value= 0
+	CheckBox check_Settings_ITITP WIN = $panelTitle, value= 1
 	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
 
 	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
@@ -2972,7 +2972,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
 
-	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 0
+	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 1
 	CheckBox check_Settings_Override_Set_ITI WIN = $panelTitle, value = 0
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
