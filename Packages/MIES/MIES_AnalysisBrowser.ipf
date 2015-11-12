@@ -838,12 +838,12 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = config[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
-		str = channelType + "_" + num2istr(channelNumber) + "_"
+		str = channelType + "_" + num2istr(channelNumber)
 
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
-			SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
+			SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str + "_")
 		endif
 
 		MoveWave data, sweepFolder:$str
