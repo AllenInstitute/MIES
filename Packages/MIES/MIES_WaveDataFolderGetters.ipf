@@ -3446,7 +3446,6 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
 	DFREF dfr= GetDevicePath(panelTitle)
 	variable versionOfNewWave = 1
-	variable Rows = max(max(max(max(NUM_DA_TTL_CHANNELS, NUM_HEADSTAGES),NUM_AD_CHANNELS),NUM_ASYNC_CHANNELS),NUM_TTL_BITS_PER_RACK)
 	Wave/Z/SDFR=dfr wv = DA_EphysGuiState
 
  	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -3454,28 +3453,29 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
  	elseif(WaveExists(wv)) // handle upgrade
  	    // change the required dimensions and leave all others untouched with -1
  	    // the extended dimensions are initialized with zero
- 		Redimension/N=(Rows, 17, -1, -1) wv
+		Redimension/N=(NUM_MAX_CHANNELS, 17, -1, -1) wv
  	else
- 		Make/N=(Rows, 17) dfr:DA_EphysGuiState/Wave=wv
- 		wv = Nan
- 		SetDimLabel COLS, 0, HSState, wv
- 		SetDimLabel COLS, 1, HSMode, wv
- 		SetDimLabel COLS, 2, DAState, wv
- 		SetDimLabel COLS, 3, DAGain, wv
- 		SetDimLabel COLS, 4, DAScale, wv
- 		SetDimLabel COLS, 5, DAStartIndex, wv
- 		SetDimLabel COLS, 6, DAEndIndex, wv
- 		SetDimLabel COLS, 7, ADState, wv
- 		SetDimLabel COLS, 8, ADGain, wv
- 		SetDimLabel COLS, 9, TTLState, wv
- 		SetDimLabel COLS, 10, TTLStartIndex, wv
- 		SetDimLabel COLS, 11, TTLEndIndex, wv
- 		SetDimLabel COLS, 12, AsyncState, wv
- 		SetDimLabel COLS, 13, AsyncGain, wv
- 		SetDimLabel COLS, 14, AlarmState, wv
- 		SetDimLabel COLS, 15, AlarmMin, wv
- 		SetDimLabel COLS, 16, AlarmMax, wv
+		Make/N=(NUM_MAX_CHANNELS, 17) dfr:DA_EphysGuiState/Wave=wv
+		wv = Nan
  	endif
+
+	SetDimLabel COLS, 0, HSState, wv
+	SetDimLabel COLS, 1, HSMode, wv
+	SetDimLabel COLS, 2, DAState, wv
+	SetDimLabel COLS, 3, DAGain, wv
+	SetDimLabel COLS, 4, DAScale, wv
+	SetDimLabel COLS, 5, DAStartIndex, wv
+	SetDimLabel COLS, 6, DAEndIndex, wv
+	SetDimLabel COLS, 7, ADState, wv
+	SetDimLabel COLS, 8, ADGain, wv
+	SetDimLabel COLS, 9, TTLState, wv
+	SetDimLabel COLS, 10, TTLStartIndex, wv
+	SetDimLabel COLS, 11, TTLEndIndex, wv
+	SetDimLabel COLS, 12, AsyncState, wv
+	SetDimLabel COLS, 13, AsyncGain, wv
+	SetDimLabel COLS, 14, AlarmState, wv
+	SetDimLabel COLS, 15, AlarmMin, wv
+	SetDimLabel COLS, 16, AlarmMax, wv
 
  	SetWaveVersion(wv, versionOfNewWave)
 

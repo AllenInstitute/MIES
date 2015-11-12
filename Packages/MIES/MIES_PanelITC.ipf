@@ -3482,14 +3482,10 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 		Controlinfo/W=$panelTitle $DACWave
 		if(stringmatch(s_value,"- none -"))
 			SetCheckBoxState(panelTitle, cba.ctrlName, 0)
-			print "Select " + DACwave[5,7] + " Wave"
 		endif
 
 		DAP_UpdateITIAcrossSets(panelTitle)
-
-		Controlinfo/W=$panelTitle SetVar_DataAcq_SetRepeats
-		ValDisplay valdisp_DataAcq_SweepsInSet win = $panelTitle, value = _NUM:(IDX_MaxNoOfSweeps(panelTitle,0) * v_value)
-		Valdisplay valdisp_DataAcq_SweepsActiveSet win = $panelTitle, value = _NUM:IDX_MaxNoOfSweeps(panelTitle,1)
+		DAP_UpdateSweepSetVariables(panelTitle)
 		break
 	endswitch
 End
@@ -3505,8 +3501,6 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	if(NVAR_Exists(count))
 		KillVariables count
 	endif
-
-	TP_UpdateGlobals(panelTitle)
 
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
 		DM_DeleteDataWaves(panelTitle, GetSetVariable(panelTitle, "SetVar_Sweep"))
@@ -3537,13 +3531,9 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
 	string ctrl
-	variable numHS, i
+	variable i
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	numHS = DimSize(statusHS, ROWS)
-	for(i = 0; i < numHS; i += 1)
-
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		sprintf ctrl, "Check_DataAcq_HS_%02d", i
 		EnableControl(panelTitle, ctrl)
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
@@ -4686,20 +4676,25 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	string panelTitle
-	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo
+	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo, activeHS
 	variable testPulseMode
 
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
-			testPulseMode = TP_StopTestPulse(panelTitle)
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
+
+			activeHS = GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage))
+			if(activeHS)
+				testPulseMode = TP_StopTestPulse(panelTitle)
+			endif
+
 			pairedRadioButtonNo = mode == V_CLAMP_MODE ? ctrlNo + 1 : ctrlNo - 1
 			SetCheckboxState(panelTitle, "Radio_ClampMode_" + num2str(pairedRadioButtonNo), CHECKBOX_UNSELECTED)
 			oppositeMode = mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE
 
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage)))
+			if(activeHS)
 				DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
 				DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
 				AI_SetClampMode(panelTitle, headStage, mode)
@@ -4709,7 +4704,10 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCSampIntDisplay(panelTitle)
-			TP_RestartTestPulse(panelTitle, testPulseMode)
+
+			if(activeHS)
+				TP_RestartTestPulse(panelTitle, testPulseMode)
+			endif
 		break
 	endswitch
 

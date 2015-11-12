@@ -4,6 +4,49 @@
 /// @brief __DC__ Handle preparations before data acquisition or
 /// test pulse related to the ITC waves
 
+/// @brief Update global variables used by the Testpulse or DAQ
+///
+/// @param panelTitle device
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
+	string panelTitle
+	variable dataAcqOrTP
+
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	variable/G testPulseDFR:pulseDuration
+	NVAR/SDFR=testPulseDFR pulseDuration
+
+	variable/G testPulseDFR:duration
+	NVAR/SDFR=testPulseDFR duration
+
+	variable/G testPulseDFR:AmplitudeVC
+	NVAR/SDFR=testPulseDFR AmplitudeVC
+
+	variable/G testPulseDFR:AmplitudeIC
+	NVAR/SDFR=testPulseDFR AmplitudeIC
+
+	variable/G testPulseDFR:baselineFrac
+	NVAR/SDFR=testPulseDFR baselineFrac
+
+	DAP_RecordDA_EphysGuiState(panelTitle)
+
+	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
+	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+
+	// need to deal with units here to ensure that resistance is calculated correctly
+	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+
+	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
+	// n determines the number of TP cycles to average
+	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
+
+	SVAR panelTitleG = $GetPanelTitleGlobal()
+	panelTitleG = panelTitle
+End
+
 /// @brief Prepare test pulse/data acquisition
 ///
 /// @param panelTitle  panel title
@@ -27,11 +70,19 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
 
+	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		WAVE TestPulse = GetTestPulse()
+		if(multiDevice)
+			DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+		else
+			DC_UpdateTestPulseWave(panelTitle, TestPulse)
+		endif
+	endif
+
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-
-	SVAR panelTitleG = $GetPanelTitleGlobal()
-	panelTitleG = panelTitle
 
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
@@ -75,6 +126,50 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	endif
 End
 
+static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
+	string panelTitle
+	WAVE TestPulse
+
+	variable length
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
+
+	// this length here is with minimum sampling interval, it will
+	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
+	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
+	Redimension/N=(length) TestPulse
+	FastOp TestPulse = 0
+	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
+End
+
+/// @brief MD-variant of #DC_UpdateTestPulseWave
+static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+	string panelTitle
+	WAVE TestPulse
+
+	variable length, numPulses
+	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+
+	Make/FREE singlePulse
+	DC_UpdateTestPulseWave(panelTitle, singlePulse)
+
+	length = 2^MINIMUM_ITCDATAWAVE_EXPONENT
+	Redimension/N=0 TestPulse
+
+	do
+		Concatenate/NP=0 {singlePulse}, TestPulse
+		numPulses += 1
+
+		if(DimSize(TestPulse, ROWS) >= length)
+			if(numPulses < 3) // keep creating more pulses
+				length *= 2
+				continue
+			endif
+			break
+		endif
+	while(1)
+End
+
 /// @brief Updates the global string of clamp modes based on the AD channel associated with the headstage
 ///
 /// In the order of the ADchannels in ITCDataWave - i.e. numerical order
@@ -99,11 +194,11 @@ static Function DC_UpdateClampModeString(panelTitle)
 End
 
 /// @brief Return the number of selected checkboxes for the given type
-Function DC_NoOfChannelsSelected(panelTitle, type)
+static Function DC_NoOfChannelsSelected(panelTitle, type)
 	string panelTitle
 	variable type
 
-	return sum(DC_ControlStatusWave(panelTitle, type))
+	return sum(DC_ControlStatusWaveCache(panelTitle, type))
 End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
@@ -125,6 +220,53 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 		ctrl = GetPanelControl(panelTitle, i, type, CHANNEL_CONTROL_CHECK)
 		wv[i] = GetCheckboxState(panelTitle, ctrl)
 	endfor
+
+	return wv
+End
+
+/// @brief Return a free wave of the status of the checkboxes specified by
+///        channelType, uses GetDA_EphysGuiStateNum() instead of GUI queries.
+///
+/// This function does only return correct values if GetDA_EphysGuiStateNum() is up to date.
+/// At the moment this is ensured as all callers of this function have TP_UpdateGlobals() called before.
+///
+/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
+/// @param panelTitle  panel title
+Function/Wave DC_ControlStatusWaveCache(panelTitle, type)
+	string panelTitle
+	variable type
+
+	variable numEntries, col
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	numEntries = GetNumberFromType(var=type)
+
+	switch(type)
+		case CHANNEL_TYPE_ASYNC:
+			col = 12
+			break
+		case CHANNEL_TYPE_ALARM:
+			col = 14
+			break
+		case CHANNEL_TYPE_TTL:
+			col = 9
+			break
+		case CHANNEL_TYPE_DAC:
+			col = 2
+			break
+		case CHANNEL_TYPE_HEADSTAGE:
+			col = 0
+			break
+		case CHANNEL_TYPE_ADC:
+			col = 7
+			break
+		default:
+			ASSERT(0, "invalid type")
+			break
+	endswitch
+
+	Make/FREE/U/B/N=(numEntries) wv = GUIState[p][col]
 
 	return wv
 End
@@ -167,7 +309,7 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 
 	variable a
 	variable b
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusTTL = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
 
 	if(RackNo == 0)
 		 a = 0
@@ -223,8 +365,8 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	variable maxNumRows, i, numEntries
 	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
-	WAVE statusChannel = DC_ControlStatusWave(panelTitle, channelType)
-	WAVE statusHS      = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusChannel = DC_ControlStatusWaveCache(panelTitle, channelType)
+	WAVE statusHS      = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	numEntries = DimSize(statusChannel, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -411,10 +553,10 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	// query DA properties
-	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE channelStatus = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -431,7 +573,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	endfor
 
 	// query AD properties
-	WAVE channelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE channelStatus = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -536,8 +678,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusDA         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS         = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusDA         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
@@ -662,7 +804,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		itcDataColumn += 1
 	endfor
 
-	WAVE statusAD = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE statusAD = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(statusAD, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -827,8 +969,8 @@ static Function DC_MakeITCTTLWave(rackNo, panelTitle)
 	string set
 	string listOfSets = ""
 
-	WAVE statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusTTL = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
@@ -1008,7 +1150,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
-Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
@@ -1034,7 +1176,7 @@ Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 End
 
 /// @brief Return the `first` and `last` TTL bits for the given `rack`
-Function DC_GetRackRange(rack, first, last)
+static Function DC_GetRackRange(rack, first, last)
 	variable rack
 	variable &first, &last
 

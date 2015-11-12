@@ -779,7 +779,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string mccSerial
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ChannelClampMode
-	WAVE statusHS              = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS              = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave(panelTitle)
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave(panelTitle)
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave(panelTitle)

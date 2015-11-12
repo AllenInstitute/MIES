@@ -3,44 +3,6 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
-Function TP_UpdateGlobals(panelTitle)
-	string panelTitle
-
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-
-	variable/G testPulseDFR:pulseDuration
-	NVAR/SDFR=testPulseDFR pulseDuration
-
-	variable/G testPulseDFR:duration
-	NVAR/SDFR=testPulseDFR duration
-
-	variable/G testPulseDFR:AmplitudeVC
-	NVAR/SDFR=testPulseDFR AmplitudeVC
-
-	variable/G testPulseDFR:AmplitudeIC
-	NVAR/SDFR=testPulseDFR AmplitudeIC
-
-	variable/G testPulseDFR:baselineFrac
-	NVAR/SDFR=testPulseDFR baselineFrac
-
-	// other globals in testPulseDFR are written in DC_ConfigureDataForITC()
-
-	// Stores panelTitle GUI control state
-	DAP_RecordDA_EphysGuiState(panelTitle)
-
-	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
-	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
-
-	// need to deal with units here to ensure that resistance is calculated correctly
-	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-
-	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
-	// n determines the number of TP cycles to average
-	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
-End
-
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -62,50 +24,6 @@ Function TP_GetTestPulseLengthInPoints(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
 	return TP_CalculateTestPulseLength(duration, baselineFrac)
-End
-
-static Function TP_UpdateTestPulseWave(panelTitle, TestPulse)
-	string panelTitle
-	WAVE TestPulse
-
-	variable length
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
-
-	// this length here is with minimum sampling interval, it will
-	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
-	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
-	Redimension/N=(length) TestPulse
-	FastOp TestPulse = 0
-	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
-End
-
-/// @brief MD-variant of #TP_UpdateTestPulseWave
-static Function TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
-	string panelTitle
-	WAVE TestPulse
-
-	variable length, numPulses
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-
-	Make/FREE singlePulse
-	TP_UpdateTestPulseWave(panelTitle, singlePulse)
-
-	length = 2^MINIMUM_ITCDATAWAVE_EXPONENT
-	Redimension/N=0 TestPulse
-
-	do
-		Concatenate/NP=0 {singlePulse}, TestPulse
-		numPulses += 1
-
-		if(DimSize(TestPulse, ROWS) >= length)
-			if(numPulses < 3) // keep creating more pulses
-				length *= 2
-				continue
-			endif
-			break
-		endif
-	while(1)
 End
 
 /// @brief Start a single device test pulse, either in background
@@ -555,7 +473,7 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			TP_StartTestPulseMultiDevice(panelTitle)
 			break
 		default:
-			ASSERT(0, "Unhandled case")
+			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)
 			break
 	endswitch
 End
@@ -577,17 +495,7 @@ Function TP_Setup(panelTitle, runMode)
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 	endif
 
-
-	TP_UpdateGlobals(panelTitle)
-
 	TP_ResetTPStorage(panelTitle)
-
-	WAVE TestPulse = GetTestPulse()
-	if(multiDevice)
-		TP_UpdateTestPulseWaveMD(panelTitle, TestPulse)
-	else
-		TP_UpdateTestPulseWave(panelTitle, TestPulse)
-	endif
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 	runModeGlobal = runMode
@@ -622,10 +530,12 @@ Function TP_Teardown(panelTitle)
 End
 
 /// @brief Check if the testpulse is running
+///
+/// Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs.
 Function TP_CheckIfTestpulseIsRunning(panelTitle)
 	string panelTitle
 
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
 
-	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"))
 End

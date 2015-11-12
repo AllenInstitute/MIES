@@ -540,7 +540,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
 	asyncMeasurementWave[0][] = NaN
 
-	WAVE asyncChannelState = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE asyncChannelState = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
 	deviceChannelOffset = ITC_CalculateDevChannelOffset(panelTitle)
 
 	numEntries = DimSize(asyncChannelState, ROWS)

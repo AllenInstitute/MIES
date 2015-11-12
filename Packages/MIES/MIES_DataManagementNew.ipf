@@ -79,11 +79,11 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 
 	NVAR count = $GetCount(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
-	WAVE guiState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		if(!guiState[i][%HSState])
+		if(!statusHS[i])
 			continue
 		endif
 
