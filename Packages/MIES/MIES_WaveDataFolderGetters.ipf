@@ -597,6 +597,7 @@ End
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
 /// - Addition of nineth layer for headstage independent data
+/// - Conversion of numeric labnotebook to 64bit floats
 Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
@@ -659,6 +660,12 @@ Function UpgradeLabNotebook(panelTitle)
 		settingsHistory[][][8] = NaN
 
 		DEBUGPRINT("Upgraded labnotebooks to handle headstage independent data")
+	endif
+
+	if(WaveType(settingsHistory) == IGOR_TYPE_32BIT_FLOAT)
+		Redimension/Y=(IGOR_TYPE_64BIT_FLOAT) settingsHistory
+
+		DEBUGPRINT("Upgraded numeric labnotebook to 64bit floats")
 	endif
 End
 
@@ -729,7 +736,7 @@ End
 Function/Wave GetNumDocKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
 	Wave/T/Z/SDFR=dfr wv = keyWave
