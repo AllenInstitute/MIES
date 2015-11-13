@@ -154,6 +154,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
+	variable sweepCountExists
 
 	string str, name, listOfSweepConfigWaves
 
@@ -201,6 +202,9 @@ static Function AB_FillListWave(expFolder, expName, device)
 		WAVE/T/Z settingsText = GetLastSettingText(textValues, sweepNo, "Stim Wave Name")
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
+		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
+		sweepCountExists = WaveExists(settings)
+
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
 			list[index][%'set count'][0] = "-"
@@ -215,25 +219,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 				EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 				list[index][%'stim sets'][0] = str
-
-				WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
-				numRows = WaveExists(settings) ? NUM_HEADSTAGES : 0
-				if(numRows > 0)
-					setCount = settings[j]
-
-					if(setCount == 0)
-						list[index][%'set count'][0] = "-"
-					else
-						// start showing the set count if we only have more than one set
-						if(setCount == 1)
-							list[index - 1][%'set count'][0] = "0"
-						endif
-
-						list[index][%'set count'][0] = num2istr(settings[j])
-					endif
-				else
-					list[index][%'set count'][0] = "-"
-				endif
+				list[index][%'set count'][0] = SelectString(sweepCountExists, "-", num2istr(settings[j]))
 
 				index += 1
 			endfor
