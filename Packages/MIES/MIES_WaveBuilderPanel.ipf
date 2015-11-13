@@ -1439,6 +1439,24 @@ static Function/S WBP_AssembleSetName()
 	return CleanupName(AssembledBaseName, 0)
 End
 
+/// @brief Split the full setname into its three parts: prefix, outputType and set number
+///
+/// Counterpart to WBP_AssembleSetName()
+static Function WBP_SplitSetName(setName, setPrefix, channelType, setNumber)
+	string setName
+	string &setPrefix
+	variable &channelType, &setNumber
+
+	string channelTypeString, setNumberString
+
+	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefix, channelTypeString, setNumberString
+
+	ASSERT(V_flag == 3, "Invalid setName format")
+
+	channelType = cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
+	setNumber   = str2num(setNumberString)
+End
+
 /// @brief Return the output type, one of #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
 Function WBP_GetOutputType()
 
@@ -1497,7 +1515,8 @@ static Function WBP_SaveSetParam()
 End
 
 static Function WBP_LoadSet()
-	string setName, funcList
+	string setName, funcList, setPrefix
+	variable channelType, setNumber
 
 	ControlInfo/W=$panel popup_WaveBuilder_SetList
 	setName = s_value
@@ -1542,6 +1561,11 @@ static Function WBP_LoadSet()
 	SetSetVariable(panel, "SetVar_WB_NumEpochs_S100", SegWvType[100])
 	SetSetVariable(panel, "SetVar_WB_SweepCount_S101", SegWvType[101])
 	SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", 0)
+
+	WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
+
+	SetSetVariableString(panel, "setvar_WaveBuilder_baseName", setPrefix)
+	SetSetVariable(panel, "setvar_WaveBuilder_SetNumber", setNumber)
 
 	funcList = WBP_GetAnalysisFunctions()
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_preDAQEvent_S1", funcList, WPT[1][99])
