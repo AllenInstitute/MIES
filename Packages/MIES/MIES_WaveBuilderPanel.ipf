@@ -70,6 +70,7 @@ End
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(522,113,1529,751)
+	SetWindow WaveBuilder, hook(main)=WBP_MainWindowHook
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
@@ -2116,4 +2117,53 @@ static Function/S WBP_TranslateControlContents(control, direction, data)
 			return data
 			break
 	endswitch
+End
+
+/// @brief Wavebuilder panel window hook
+///
+/// The epoch selection is done on the mouseup event if there exists no marquee.
+/// This allows to still use the zooming capability.
+Function WBP_MainWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win
+	variable numEntries, i, loc
+
+	switch(s.eventCode)
+		case 5:
+
+		win = s.winName
+
+		GetWindow $win activeSW
+		// abort if not in the subwindow
+		if(cmpstr(S_value,WaveBuilderGraph))
+			break
+		endif
+
+		loc = AxisValFromPixel(WaveBuilderGraph, "bottom", s.mouseLoc.h)
+
+		if(!IsFinite(loc))
+			break
+		endif
+
+		GetMarquee/W=$WaveBuilderGraph/Z
+		if(V_flag)
+			break
+		endif
+
+		WAVE epochID = GetEpochID()
+		numEntries = DimSize(epochID, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+			if(epochID[i][%timeBegin] < loc && epochID[i][%timeEnd] > loc)
+				SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", i)
+				WBP_SelectEpoch(i)
+				break
+			endif
+		endfor
+
+		return 1
+		break
+	endswitch
+
+	return 0
 End
