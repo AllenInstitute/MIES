@@ -2,8 +2,8 @@
 
 /// @file MIES_AnalysisFunctions.ipf
 /// @brief __AF__ Analysis functions to be called during data acquisition
-
-/// @brief Function prototype for analysis functions
+///
+/// Function prototypes for analysis functions
 ///
 /// Users can implement functions which are called at certain events for each
 /// data acquisition cycle. These functions should *never* abort, error out with a runtime error, or open dialogs!
@@ -17,6 +17,7 @@
 /// Post Sweep | After each sweep                     | None
 /// Post Set   | After a *full* set has been acquired | This event is not always reached as the user might not acquire all steps of a set
 /// Post DAQ   | After all DAQ has been finished      | None
+
 ///
 /// @param panelTitle  device
 /// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
