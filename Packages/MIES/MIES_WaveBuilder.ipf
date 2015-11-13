@@ -329,6 +329,8 @@ static Structure SegmentParameters
 	variable brownNoise, pinkNoise
 	variable sinChirp
 	variable randomSeed
+	// popupmenues
+	variable trigFuncType // 0: sin, 1: cos
 EndStructure
 
 static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, updateEpochIDWave)
@@ -384,6 +386,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		params.sinChirp                   = WP[43][i][type]
 		params.poisson                    = WP[44][i][type]
 		params.numberOfPulses             = WP[45][i][type]
+		params.trigFuncType               = WP[53][i][type]
 
 		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
 		DEBUGPRINT("params", str=debugMsg)
@@ -453,7 +456,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=params.DeltaOffset, appendCR=1)
 				break
 			case 3:
-				WB_SinSegment(params)
+				WB_TrigSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"              , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"               , str="Sin Wave")
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"          , var=params.Frequency)
@@ -651,22 +654,35 @@ static Function WB_NoiseSegment(pa)
 	SegmentWave += pa.offset
 End
 
-static Function WB_SinSegment(pa)
+static Function WB_TrigSegment(pa)
 	struct SegmentParameters &pa
 
 	variable k0, k1, k2, k3
-	string cmd
+
+	if(pa.trigFuncType != 0 && pa.trigFuncType != 1)
+		printf "Ignoring unknown trigonometric function"
+		Wave SegmentWave = WB_GetSegmentWave(0)
+		return NaN
+	endif
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
 	if(!pa.sinChirp)
-		MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+		if(pa.trigFuncType == 0)
+			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+		else
+			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+		endif
 	else
-		 k0 = ln(pa.frequency / 1000)
-		 k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration)
-		 k2 = 2 * pi * e^k0 / k1
-		 k3 = mod(k2, 2 * pi)		// LH040117: start on rising edge of sin and don't try to round.
-		 MultiThread SegmentWave = pa.amplitude * sin(k2 * e^(k1 * x) - k3)
+		k0 = ln(pa.frequency / 1000)
+		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration)
+		k2 = 2 * pi * e^k0 / k1
+		k3 = mod(k2, 2 * pi)		// LH040117: start on rising edge of sin and don't try to round.
+		if(pa.trigFuncType == 0)
+			MultiThread SegmentWave = pa.amplitude * sin(k2 * e^(k1 * x) - k3)
+		else
+			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
+		endif
 	endif
 
 	SegmentWave += pa.offset

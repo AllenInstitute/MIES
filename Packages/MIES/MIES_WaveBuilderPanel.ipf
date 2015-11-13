@@ -277,7 +277,7 @@ Window WaveBuilder() : Panel
 	Button button_WaveBuilder_KillSet,userdata(ResizeControlsInfo)= A"!!,Jc!!#D(!!#A'!!#<pz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	Button button_WaveBuilder_KillSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_WaveBuilder_KillSet,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_exp_P40,pos={467,32},size={55,21},proc=WBP_DeltaPopup
+	PopupMenu popup_WaveBuilder_exp_P40,pos={467,32},size={55,21},proc=WBP_PopupMenu
 	PopupMenu popup_WaveBuilder_exp_P40,help={"Epoch delta type."}
 	PopupMenu popup_WaveBuilder_exp_P40,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_exp_P40,userdata(ResizeControlsInfo)= A"!!,IOJ,hn9!!#>j!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -763,6 +763,14 @@ Window WaveBuilder() : Panel
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo)= A"!!,E6!!#AD!!#@L!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	PopupMenu popup_WaveBuilder_trig_type_P53,pos={410,127},size={44,21},disable=1,proc=WBP_PopupMenu
+	PopupMenu popup_WaveBuilder_trig_type_P53,help={"Type of trigonometric function"}
+	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(tabcontrol)=  "WBP_WaveType"
+	PopupMenu popup_WaveBuilder_trig_type_P53,mode=1,popvalue="Sin",value= #"\"Sin;Cos\""
+	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo)= A"!!,I3!!#@b!!#>>!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(tabnum)=  "3"
 	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E6^]6bEJ,fQLzzzzzzzzzzzzzzzzzzzz"
@@ -1899,7 +1907,7 @@ Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
 	endif
 End
 
-Function WBP_DeltaPopup(pa) : PopupMenuControl
+Function WBP_PopupMenu(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	switch(pa.eventCode)
