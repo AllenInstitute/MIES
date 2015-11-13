@@ -530,7 +530,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 				break
 			default:
-				ASSERT(0, "Unknown Wave type to create")
+				printf "Ignoring unknown epoch type %d\r", type
+				continue
 		endswitch
 
 		if(updateEpochIDWave)
