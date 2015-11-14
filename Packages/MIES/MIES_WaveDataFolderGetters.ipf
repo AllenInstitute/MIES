@@ -1710,7 +1710,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 2
+static Constant WP_WAVE_LAYOUT_VERSION = 3
 
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
@@ -1721,7 +1721,7 @@ Function UpgradeWaveParam(wv)
 		return NaN
 	endif
 
-	Redimension/N=(61, -1, -1) wv
+	Redimension/N=(61, -1, 9) wv
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
 
@@ -1741,6 +1741,7 @@ End
 /// - Square pulse train
 /// - PSC
 /// - Load custom wave
+/// - Combine
 Function/WAVE GetWaveBuilderWaveParam()
 
 	dfref dfr = GetWaveBuilderDataPath()
@@ -1749,7 +1750,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
 	else
-		Make/N=(61, 100, 8) dfr:WP/Wave=wv
+		Make/N=(61, 100, 9) dfr:WP/Wave=wv
 
 		// sets low pass filter to off (off value is related to sampling frequency)
 		wv[20][][2] = 10001
@@ -1764,7 +1765,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 2
+static Constant WPT_WAVE_LAYOUT_VERSION = 3
 
 /// @brief Upgrade the wave layout of `WPT` to the most recent one
 ///        as defined in `WPT_WAVE_LAYOUT_VERSION`
@@ -1788,7 +1789,9 @@ End
 /// - 3: Analysis function, post sweep
 /// - 4: Analysis function, post set
 /// - 5: Analysis function, post daq
-/// - 6-50: unused
+/// - 6: Formula
+/// - 7: Formula version: "[[:digit:]]+"
+/// - 8-50: unused
 ///
 /// Columns:
 /// - Segment/Epoch, the very last index is reserved for
@@ -1866,6 +1869,23 @@ Function/Wave GetWaveBuilderDispWave()
 	endif
 
 	Make/N=(0) dfr:dispData/Wave=wv
+
+	return wv
+End
+
+Function/WAVE GetWBEpochCombineList()
+
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = epochCombineList
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(1, 2) dfr:epochCombineList/Wave=wv
+
+	SetDimLabel 1, 0, Shorthand, wv
+	SetDimLabel 1, 1, Stimset,   wv
 
 	return wv
 End
