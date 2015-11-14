@@ -365,3 +365,11 @@ StrConstant UNKNOWN_MIES_VERSION = "unknown version"
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
+
+#if (IgorVersion() >= 7.0)
+	Constant MAX_COMMANDLINE_LENGTH = 1000
+#else
+	Constant MAX_COMMANDLINE_LENGTH = 400
+#endif
+
+StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"

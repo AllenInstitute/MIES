@@ -1919,7 +1919,7 @@ Function/DF GetSetFolder(channelType)
 	endif
 End
 
-/// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+/// @brief Return the stimset parameter folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
 Function/DF GetSetParamFolder(channelType)
 	variable channelType
 

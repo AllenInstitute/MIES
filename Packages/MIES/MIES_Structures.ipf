@@ -2,7 +2,8 @@
 
 /// @file MIES_Structures.ipf
 ///
-/// @brief All non-static structures are defined here
+/// @brief All non-static structures together with their initialization
+///        routines are defined here.
 
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
@@ -44,3 +45,17 @@ Structure TiledGraphSettings
 	int16 overlaySweep
 	int16 overlayChannels
 EndStructure
+
+/// @brief Helper structure for formula parsing of the Wavebuilder combine epoch
+Structure FormulaProperties
+	string formula
+	variable numRows, numCols /// minimum number of rows and colums in the referenced sets
+EndStructure
+
+Function InitFormulaProperties(fp)
+	struct FormulaProperties &fp
+
+	fp.formula = ""
+	fp.numRows = NaN
+	fp.numCols = NaN
+End

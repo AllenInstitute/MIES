@@ -70,7 +70,7 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 	string panelTitle
 	variable eventType
 
-	variable error, i
+	variable error, i, valid_f1, valid_f2
 	string func, setName
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
@@ -78,6 +78,7 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 	endif
 
 	NVAR count = $GetCount(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 	WAVE guiState = GetDA_EphysGuiStateNum(panelTitle)
 
@@ -120,9 +121,13 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f = $func
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
 
-		if(!FuncRefIsAssigned(FuncRefInfo(f))) // not a valid analysis function
+		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
+		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
+
+		if(!valid_f1 && !valid_f2) // not a valid analysis function
 			continue
 		endif
 
@@ -130,7 +135,13 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 		SetWaveLock 1, ITCDataWave
 
 		try
-			f(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
+			if(valid_f1)
+				f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
+			elseif(valid_f2)
+				f2(panelTitle, eventType, ITCDataWave, i, stopCollectionPoint - 1); AbortOnRTE
+			else
+				ASSERT(0, "impossible case")
+			endif
 		catch
 			error = GetRTError(1)
 			printf "The analysis function %s aborted, this is dangerous and must *not* happen!\r", func

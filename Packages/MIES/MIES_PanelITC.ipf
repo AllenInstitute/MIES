@@ -4378,7 +4378,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	string ctrl, dacWave, endWave, unit, func, info, str
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale, ctrlNo, clampMode, i
+	variable gain, scale, ctrlNo, clampMode, i, valid_f1, valid_f2
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -4518,10 +4518,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 					continue
 				endif
 
-				FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f = $func
-				info = FuncRefInfo(f)
+				FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
+				FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
 
-				if(!FuncRefIsAssigned(info)) // not a valid analysis function
+				valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
+				valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
+
+				if(!valid_f1 && !valid_f2) // not a valid analysis function
 					printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
 					return 1
 				endif

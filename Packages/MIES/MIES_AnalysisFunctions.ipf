@@ -2,8 +2,8 @@
 
 /// @file MIES_AnalysisFunctions.ipf
 /// @brief __AF__ Analysis functions to be called during data acquisition
-
-/// @brief Function prototype for analysis functions
+///
+/// Function prototypes for analysis functions
 ///
 /// Users can implement functions which are called at certain events for each
 /// data acquisition cycle. These functions should *never* abort, error out with a runtime error, or open dialogs!
@@ -17,6 +17,8 @@
 /// Post Sweep | After each sweep                     | None
 /// Post Set   | After a *full* set has been acquired | This event is not always reached as the user might not acquire all steps of a set
 /// Post DAQ   | After all DAQ has been finished      | None
+
+/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V2() instead
 ///
 /// @param panelTitle  device
 /// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
@@ -32,6 +34,22 @@ Function AF_PROTO_ANALYSIS_FUNC_V1(panelTitle, eventType, ITCDataWave, headStage
 	variable headstage
 End
 
+/// @param panelTitle     device
+/// @param eventType      eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
+///                       always compare `eventType` with the constants, never use the current numerical value directly
+/// @param ITCDataWave    data wave (locked to prevent changes using `SetWaveLock`)
+/// @param headStage      active headstage index
+/// @param realDataLength number of rows in `ITCDataWave` with data, the total number of rows in `ITCDataWave` might be
+///                       higher due to alignment requirements of the data acquisition hardware
+///
+/// @return ignored
+Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+End
+
 Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
 	variable eventType
@@ -40,4 +58,13 @@ Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 
 	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
 	printf "Next sweep: %d\r", GetSetVariable(panelTitle, "SetVar_Sweep")
+End
+
+Function TestAnalysisFunction_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
 End
