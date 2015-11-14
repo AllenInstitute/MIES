@@ -154,6 +154,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
+	variable sweepCountExists
 
 	string str, name, listOfSweepConfigWaves
 
@@ -191,15 +192,18 @@ static Function AB_FillListWave(expFolder, expName, device)
 		list[index][%'#ADC'][0] = str
 
 		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Headstage Active")
-		numRows = WaveExists(settings) ? DimSize(settings, ROWS) : 0
+		numRows = WaveExists(settings) ? NUM_HEADSTAGES : 0
 		if(numRows > 0)
-			list[index][%'#headstages'][0] = num2str(Sum(settings))
+			list[index][%'#headstages'][0] = num2str(Sum(settings, 0, NUM_HEADSTAGES - 1))
 		else
 			list[index][%'#headstages'][0] = "unknown"
 		endif
 
 		WAVE/T/Z settingsText = GetLastSettingText(textValues, sweepNo, "Stim Wave Name")
-		numRows = WaveExists(settingsText) ? DimSize(settingsText, ROWS) : 0
+		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
+
+		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
+		sweepCountExists = WaveExists(settings)
 
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
@@ -215,25 +219,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 				EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 				list[index][%'stim sets'][0] = str
-
-				WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
-				numRows = WaveExists(settings) ? DimSize(settings, ROWS) : 0
-				if(numRows > 0)
-					setCount = settings[j]
-
-					if(setCount == 0)
-						list[index][%'set count'][0] = "-"
-					else
-						// start showing the set count if we only have more than one set
-						if(setCount == 1)
-							list[index - 1][%'set count'][0] = "0"
-						endif
-
-						list[index][%'set count'][0] = num2istr(settings[j])
-					endif
-				else
-					list[index][%'set count'][0] = "-"
-				endif
+				list[index][%'set count'][0] = SelectString(sweepCountExists, "-", num2istr(settings[j]))
 
 				index += 1
 			endfor
@@ -838,12 +824,12 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = config[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
-		str = channelType + "_" + num2istr(channelNumber) + "_"
+		str = channelType + "_" + num2istr(channelNumber)
 
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
-			SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str)
+			SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str + "_")
 		endif
 
 		MoveWave data, sweepFolder:$str

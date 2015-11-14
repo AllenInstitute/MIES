@@ -31,6 +31,8 @@ End
 Function TP_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
+	variable headstage
+
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DAP_StopOngoingDataAcquisition(panelTitle)
@@ -39,6 +41,9 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StartBackgroundTestPulse(panelTitle)
+
+		headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+		P_LoadPressureButtonState(panelTitle, headStage)
 	else
 		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
 		ITC_StartTestPulse(panelTitle)
