@@ -2026,7 +2026,7 @@ Function/S WBP_GetAnalysisFunctions()
 
 	string funcList, func
 	string funcListClean = NONE
-	variable numEntries, i
+	variable numEntries, i, valid_f1, valid_f2
 
 	funcList = FunctionList("!AF_PROTO_ANALYSIS_FUNC*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
 
@@ -2034,11 +2034,15 @@ Function/S WBP_GetAnalysisFunctions()
 	for(i = 0; i < numEntries; i += 1)
 		func = StringFromList(i, funcList)
 
-		// assign each function to the function reference of type AF_PROTO_ANALYSIS_FUNC_V1
-		// this allows to check if the signature of func is the same as the one of AF_PROTO_ANALYSIS_FUNC_V1
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f = $func
+		// assign each function to the function reference of type AF_PROTO_ANALYSIS_FUNC_V*
+		// this allows to check if the signature of func is the same as the one of AF_PROTO_ANALYSIS_FUNC_V*
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
 
-		if(FuncRefIsAssigned(FuncRefInfo(f))) // func has the expected signature
+		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
+		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
+
+		if(valid_f1 || valid_f2)
 			funcListClean = AddListItem(func, funcListClean, ";", Inf)
 		endif
 	endfor
