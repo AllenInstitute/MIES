@@ -2928,7 +2928,7 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	wv[2][1] = 0 // TTL rack 0
 	wv[3][1] = 3 // TTL rack 1
 
-	wv[][2] = SAMPLE_INT_MICRO // 5 micro second sampling interval
+	wv[][2] = MINIMUM_SAMPLING_INTERVAL * 1000
 
 	SetDimLabel ROWS, 0, DA, 		wv
 	SetDimLabel ROWS, 1, AD, 		wv

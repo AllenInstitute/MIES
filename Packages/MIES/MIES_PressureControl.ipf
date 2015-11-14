@@ -23,7 +23,6 @@ static Constant 		NEG_PRESSURE_PULSE_INCREMENT 	= 0.2 // psi
 static Constant 		POS_PRESSURE_PULSE_INCREMENT 	= 0.1 // psi
 static Constant 		PRESSURE_PULSE_STARTpt       		= 1 // 12000
 static Constant 		PRESSURE_PULSE_ENDpt         			= 70000
-static Constant 		SAMPLE_INT_MILLI             				= 0.005
 static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -2
@@ -826,7 +825,7 @@ Function P_FIFOMonitorProc(s)
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(FIFOAvail, 2)
 	ExecuteITCOperation(cmd)
 
-	if(FIFOAvail[1][2] > 350 / SAMPLE_INT_MILLI)
+	if(FIFOAvail[1][2] > 350 / MINIMUM_SAMPLING_INTERVAL)
 		sprintf cmd, "ITCStopAcq"
 		ExecuteITCOperation(cmd)
 		pressureDataWv[][%OngoingPessurePulse]	= 0

@@ -40,8 +40,6 @@ Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 
 /// @name Pressure Control constants
 /// @{
-Constant SAMPLE_INT_MICRO       = 5
-
 /// Max and min pressure regulator pressure in psi
 Constant MAX_REGULATOR_PRESSURE =  9.95
 Constant MIN_REGULATOR_PRESSURE = -9.95
