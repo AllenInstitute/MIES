@@ -1500,8 +1500,6 @@ Function ButtonProc_Approach(ba) : ButtonControl
 		case 2: // mouse up
 			P_SetApproach(ba.win, ba.ctrlName)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1527,8 +1525,6 @@ Function ButtonProc_Seal(ba) : ButtonControl
 			variable PressureMode = 1
 			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1543,8 +1539,6 @@ Function ButtonProc_BreakIn(ba) : ButtonControl
 			variable PressureMode = 2
 			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1558,8 +1552,6 @@ Function ButtonProc_Clear(ba) : ButtonControl
 		case 2: // mouse up
 			variable PressureMode = 3
 			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 0)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1590,8 +1582,6 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1606,8 +1596,6 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 			string DeviceList = "- none -;" + HSU_ListDevices()
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_ITCdev", DeviceList)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1620,8 +1608,6 @@ Function P_ButtonProc_Enable(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_Enable()
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1636,8 +1622,6 @@ Function P_ButtonProc_Disable(ba) : ButtonControl
 		case 2: // mouse up
 			P_Disable()
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1650,8 +1634,6 @@ Function ButtonProc_DataAcq_ManPressSet(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_SetManual(ba.win, ba.ctrlname)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1666,8 +1648,6 @@ Function ButtonProc_ManPP(ba) : ButtonControl
 		case 2: // mouse up
 			variable headStage = GetSliderPositionIndex(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1684,8 +1664,6 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 				P_PressureControl(cba.win)
 			endif
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1697,8 +1675,6 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			P_UpdatePressureDataStorageWv(cba.win)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
