@@ -80,6 +80,9 @@ Function HSU_LockDevice(panelTitle)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
+
+	NVAR sessionStartTime = $GetSessionStartTime()
+	sessionStartTime = DateTimeInUTC()
 End
 
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)

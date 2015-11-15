@@ -20,6 +20,8 @@ static Function NWB_GetFileForExport()
 		return fileIDExport
 	endif
 
+	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
+
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
 
@@ -47,8 +49,11 @@ static Function NWB_GetFileForExport()
 		if(V_flag)
 			HDf5DumpErrors/CLR=1
 			HDF5DumpState
-			ASSERT(0, "Could not store HDF5 dataset to file")
+			ASSERT(0, "Could not open HDF5 file")
 		endif
+
+		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
@@ -63,12 +68,17 @@ static Function NWB_GetFileForExport()
 			return NWB_GetFileForExport()
 		endif
 
-		IPNWB#CreateCommonGroups(fileID)
+		NVAR sessionStartTime = $GetSessionStartTime()
+
+		STRUCT IPNWB#ToplevelInfo ti
+		IPNWB#InitToplevelInfo(ti)
+		ti.session_start_time = sessionStartTime
+
+		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 		IPNWB#CreateIntraCellularEphys(fileID)
 
-		// update NWB session start time
-		NVAR sessionStartTime = $GetSessionStartTime()
-		sessionStartTime = DateTimeInUTC()
+		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
@@ -80,6 +90,34 @@ static Function NWB_GetFileForExport()
 	DEBUGPRINT("filePathExport", str=filePathExport)
 
 	return fileIDExport
+End
+
+static Function NWB_ReadSessionStartTime(fileID)
+	variable fileID
+
+	string str
+
+	if(!IPNWB#H5_DatasetExists(fileID, "/session_start_time"))
+		return NaN
+	endif
+
+	HDF5LoadData/O/TYPE=2/Z fileID, "/session_start_time"
+
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "Could not load the HDF5 dataset /session_start_time")
+	endif
+
+	ASSERT(ItemsInList(S_WaveNames) == 1, "Expected only one wave")
+	WAVE/T wv = $StringFromList(0, S_WaveNames)
+	ASSERT(WaveType(wv, 1) == 2, "Expected a dataset of type text")
+	ASSERT(numpnts(wv) == 1, "Expected a wave with only one entry")
+
+	str = wv[0]
+	KillOrMoveToTrash(wv=wv)
+
+	return ParseISO8601TimeStamp(str)
 End
 
 static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout])
@@ -105,6 +143,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	path = "/general/labnotebook/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 
+	IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
+
 	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=settingsHistory, overwrite=1, chunkedLayout=chunkedLayout)
 	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=settingsHistoryKeys, overwrite=1, chunkedLayout=chunkedLayout)
 	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=settingsHistoryText, overwrite=1, chunkedLayout=chunkedLayout)
@@ -116,6 +156,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	path = "/general/user_comment/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 
+	IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
+
 	SVAR userComment = $GetUserComment(panelTitle)
 	IPNWB#H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, chunkedLayout=chunkedLayout)
 
@@ -124,6 +166,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	path = "/general/testpulse/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+
+	IPNWB#MarkAsCustomEntry(locationID, "/general/testpulse")
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	list = GetListOfWaves(dfr, TP_STORAGE_REGEXP)
@@ -219,7 +263,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
 
-	NVAR session_start_time = $GetSessionStartTime()
+	NVAR session_start_time = $GetSessionStartTimeReadBack()
 
 	WAVE settingsHistory           = GetNumDocWave(panelTitle)
 	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
@@ -242,7 +286,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	ASSERT(!cmpstr(WaveUnits(ITCDataWave, ROWS), "ms"), "Expected ms as wave units")
 	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(ITCDataWave, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
 	params.startingTime -= session_start_time // relative to the start of the session
-	params.startingTime -= DimSize(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	params.startingTime -= DimSize(ITCDataWave, ROWS) * DimDelta(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
 
@@ -287,7 +332,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 		DEBUGPRINT_ELAPSED(refTime)
 
-		NWB_WriteStimsetTemplateWaves(locationID, stimSets[i], params, chunkedLayout)
+		params.stimSet = stimSets[i]
+		NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -330,34 +376,35 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				continue
 			endif
 
-			NWB_WriteStimsetTemplateWaves(locationID, name, params, chunkedLayout)
+			params.stimSet = name
+			NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 		endfor
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-static Function NWB_WriteStimsetTemplateWaves(locationID, setName, params, chunkedLayout)
+static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 	variable locationID
-	string setName
 	STRUCT IPNWB#WriteChannelParams &params
 	variable chunkedLayout
 
 	STRUCT IPNWB#TimeSeriesProperties tsp
-	string stimSet
+	string stimSet, path
 
 	stimSet = params.stimSet
 
 	params.channelNumber = NaN
 	params.channelType   = -1
-	WAVE params.data     = WB_CreateAndGetStimset(setName)
+	WAVE params.data     = WB_CreateAndGetStimset(stimSet)
 	NWB_GetTimeSeriesProperties(params, tsp)
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	path = "/stimulus/templates"
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	// write also the stim set parameter waves if all three exist
-	WAVE/Z WP  = WB_GetWaveParamForSet(setName)
-	WAVE/Z WPT = WB_GetWaveTextParamForSet(setName)
-	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	WAVE/Z WP  = WB_GetWaveParamForSet(stimSet)
+	WAVE/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
 		// don't need to write the stimset parameter waves
@@ -368,15 +415,15 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, setName, params, chunk
 
 	params.stimSet = stimSet + "_WP"
 	WAVE params.data = WP
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	params.stimSet = stimSet + "_WPT"
 	WAVE params.data = WPT
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	params.stimSet = stimSet + "_SegWvType"
 	WAVE params.data = SegWvType
-	IPNWB#WriteSingleChannel(locationID, "/stimulus/templates", params, tsp, chunkedLayout=chunkedLayout)
+	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 End
 
 static Function NWB_GetTimeSeriesProperties(p, tsp)
