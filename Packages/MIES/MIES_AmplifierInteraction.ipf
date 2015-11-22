@@ -581,7 +581,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				break
 			case "check_DataAcq_Amp_Chain":
 				AmpStorageWave[%RSCompChaining][0][i] = value
-				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=value)
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i])
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
