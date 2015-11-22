@@ -728,7 +728,7 @@ Function SetGuiControlValue(win, control, value)
 	string win, control
 	string value
 
-	variable controlType
+	variable controlType, variableType
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -737,7 +737,16 @@ Function SetGuiControlValue(win, control, value)
 	if(controlType == CONTROL_TYPE_CHECKBOX)
 		SetCheckBoxState(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
-		SetSetVariableString(win, control, value)
+		variableType = GetInternalSetVariableType(S_recreation)
+		if(variableType == SET_VARIABLE_BUILTIN_STR)
+			SetSetVariableString(win, control, value)
+		elseif(variableType == SET_VARIABLE_BUILTIN_NUM)
+			SetSetVariable(win, control, str2num(value))
+		else
+			ASSERT(0, "SetVariable globals are not supported")
+		endif
+	elseif(controlType == CONTROL_TYPE_POPUPMENU)
+		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SLIDER)
@@ -750,22 +759,26 @@ End
 /// @brief Generic wrapper for getting a control's value 
 Function/S GetGuiControlValue(win, control)
 	string win, control
-	
+
 	string value
-	variable controlType
-	
+	variable controlType, variableType
+
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
-	
+
 	if(controlType == CONTROL_TYPE_CHECKBOX)
 		value = num2str(GetCheckBoxState(win, control))
 	elseif(controlType == CONTROL_TYPE_SLIDER) 
 		value = num2str(V_value)
 	elseif(controlType == CONTROL_TYPE_SETVARIABLE) 
-		value = num2str(GetSetVariable(win, control))
-		if (cmpstr(value, "NaN") == 0)
+		variableType = GetInternalSetVariableType(S_recreation)
+		if(variableType == SET_VARIABLE_BUILTIN_STR)
 			value = GetSetVariableString(win, control)
+		elseif(variableType == SET_VARIABLE_BUILTIN_NUM)
+			value = num2str(GetSetVariable(win, control))
+		else
+			ASSERT(0, "SetVariable globals are not supported")
 		endif
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		value = num2str(GetPopupMenuIndex(win, control))
