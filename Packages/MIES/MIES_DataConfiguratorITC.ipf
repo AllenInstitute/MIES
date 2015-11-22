@@ -658,7 +658,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
 	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
+	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
 	variable multiplier, j
 	variable/C ret
 
@@ -674,7 +674,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
-	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
+	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
+	onsetDelay            = onsetDelayUser + onsetDelayAuto
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
@@ -1112,25 +1113,31 @@ End
 /// All returned values are in number of points, *not* in time.
 ///
 /// @param[in] panelTitle                      panel title
-/// @param[out] onsetDelay [optional]          onset delay
+/// @param[out] onsetDelayUser [optional]      onset delay set by the user
+/// @param[out] onsetDelayAuto [optional]      onset delay required by other settings
 /// @param[out] terminationDelay [optional]    termination delay
 /// @param[out] distributedDAQDelay [optional] distributed DAQ delay
-static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay, distributedDAQDelay])
+static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetDelayAuto, terminationDelay, distributedDAQDelay])
 	string panelTitle
-	variable &onsetDelay, &terminationDelay, &distributedDAQDelay
+	variable &onsetDelayUser, &onsetDelayAuto, &terminationDelay, &distributedDAQDelay
 
-	variable minSamplingInterval, onsetDelayVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
+	variable minSamplingInterval, onsetDelayUserVal, onsetDelayAutoVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
 	variable distributedDAQ
 
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
-	onsetDelayVal          = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000))
+	onsetDelayUserVal      = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
+	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (minSamplingInterval / 1000))
 	terminationDelayVal    = round(GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
 	distributedDAQDelayVal = round(GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
 
-	if(!ParamIsDefault(onsetDelay))
-		onsetDelay = onsetDelayVal
+	if(!ParamIsDefault(onsetDelayUser))
+		onsetDelayUser = onsetDelayUserVal
+	endif
+
+	if(!ParamIsDefault(onsetDelayAuto))
+		onsetDelayAuto = onsetDelayAutoVal
 	endif
 
 	if(!ParamIsDefault(terminationDelay))
@@ -1143,9 +1150,9 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 
 	if(distributedDAQ)
 		ASSERT(numActiveDACs > 0, "Number of DACs must be at least one")
-		return onsetDelayVal + terminationDelayVal + distributedDAQDelayVal * (numActiveDACs - 1)
+		return onsetDelayUserVal + onsetDelayAutoVal + terminationDelayVal + distributedDAQDelayVal * (numActiveDACs - 1)
 	else
-		return onsetDelayVal + terminationDelayVal
+		return onsetDelayUserVal + onsetDelayAutoVal + terminationDelayVal
 	endif
 End
 

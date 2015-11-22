@@ -1748,14 +1748,6 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_moreSettings_DeviceNo,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
-	SetVariable setvar_DataAcq_OnsetDelay,pos={315,605},size={117,16},bodyWidth=35,disable=1,title="Onset delay (ms)"
-	SetVariable setvar_DataAcq_OnsetDelay,help={"A global parameter that delays the onset time of a set after the initiation of data acquistion. Data acquisition start time is NOT delayed. Useful when set(s) have insufficient baseline epoch."}
-	SetVariable setvar_DataAcq_OnsetDelay,userdata(tabnum)=  "0"
-	SetVariable setvar_DataAcq_OnsetDelay,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_DataAcq_OnsetDelay,userdata(ResizeControlsInfo)= A"!!,D/!!#C#!!#A>!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_DataAcq_OnsetDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_DataAcq_OnsetDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_OnsetDelay,limits={20,inf,1},value= _NUM:1
 	SetVariable setvar_DataAcq_TerminationDelay,pos={288,626},size={144,16},bodyWidth=35,disable=1,title="Termination delay (ms)"
 	SetVariable setvar_DataAcq_TerminationDelay,help={"Global set(s) termination delay. Continues recording after set sweep is complete. Useful when recorded phenomena continues after termination of final set epoch."}
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(tabnum)=  "0"
@@ -2594,6 +2586,23 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_NwbExport,value= 0
+	SetVariable setvar_DataAcq_OnsetDelayUser,pos={292,607},size={140,16},bodyWidth=35,disable=1,title="User onset delay (ms)"
+	SetVariable setvar_DataAcq_OnsetDelayUser,help={"A global parameter that delays the onset time of a set after the initiation of data acquistion. Data acquisition start time is NOT delayed. Useful when set(s) have insufficient baseline epoch."}
+	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(tabnum)=  "0"
+	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo)= A"!!,D/!!#C#!!#A>!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_OnsetDelayUser,limits={0,inf,1},value= _NUM:0
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,pos={315,670},size={115,14},bodyWidth=33,disable=1,title="Onset delay (ms)"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,help={"The additional onset delay required by the \"Insert TP\" setting."}
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(tabnum)=  "0"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(tabcontrol)=  "ADC"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(ResizeControlsInfo)= A"!!,D/!!#C#!!#A>!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,value= _NUM:0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -2876,7 +2885,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_Sweep WIN = $panelTitle, limits={0,0,1}, value= _NUM:0
 
 	SetVariable SetVar_DataAcq_dDAQDelay WIN = $panelTitle,value= _NUM:0
-	SetVariable SetVar_DataAcq_OnsetDelay WIN = $panelTitle,value= _NUM:1
+	SetVariable SetVar_DataAcq_OnsetDelayUser WIN = $panelTitle,value= _NUM:1
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto WIN = $panelTitle,value= _NUM:0
 	ValDisplay valdisp_DataAcq_SweepsInSet WIN = $panelTitle,value= _NUM:1
 	ValDisplay valdisp_DataAcq_SweepsActiveSet WIN = $panelTitle,value= _NUM:1
 	ValDisplay valdisp_DataAcq_TrialsCountdown WIN = $panelTitle,value= _NUM:1
@@ -5269,54 +5279,29 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2:
-			DAP_UpdateOnsetDelay(cba.win, reset_after_uncheck=!cba.checked)
+			DAP_UpdateOnsetDelay(cba.win)
 		break
 	endswitch
 
 	return 0
 End
 
-/// @brief Update the onset delay
-///
-/// @param panelTitle          device
-/// @param reset_after_uncheck [optional, defaults to false] handle the special transition between "global TP insertion" on -> off
-Function DAP_UpdateOnsetDelay(panelTitle, [reset_after_uncheck])
+/// @brief Update the onset delay due to the `Insert TP` setting
+Function DAP_UpdateOnsetDelay(panelTitle)
 	string panelTitle
-	variable reset_after_uncheck
 
-	variable pulseDuration, baselineFrac, existingOnsetDelay, onsetDelayResetValue
-	variable testPulseDurWithBL, globalTPinsertion
+	variable pulseDuration, baselineFrac
+	variable testPulseDurWithBL
 
-	if(ParamIsDefault(reset_after_uncheck))
-		reset_after_uncheck = 0
+	if(GetCheckBoxState(panelTitle, "Check_Settings_InsertTP"))
+		pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+		baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+		testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	else
-		reset_after_uncheck = !!reset_after_uncheck
+		testPulseDurWithBL = 0
 	endif
 
-	globalTPinsertion = GetCheckBoxState(panelTitle, "Check_Settings_InsertTP")
-
-	if(!globalTPinsertion && !reset_after_uncheck)
-		return NaN
-	endif
-
-	ASSERT(globalTPinsertion + reset_after_uncheck == 1, "Can not handle that situation")
-
-	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
-	testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
-
-	existingOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay")
-
-	if(globalTPinsertion)
-		if(existingOnsetDelay < testPulseDurWithBL) // only increases onset delay if it is not big enough to for the TP
-			SetSetVariable(paneltitle, "setvar_DataAcq_OnsetDelay", testPulseDurWithBL)
-		endif
-
-		SetVariable setvar_DataAcq_OnsetDelay win=$panelTitle, limits={testPulseDurWithBL, inf, 1}
-	elseif(reset_after_uncheck)
-		onsetDelayResetValue = max(0, existingOnsetDelay - testPulseDurWithBL) // makes sure onset delay is never less than 0
-		Setvariable setvar_DataAcq_OnsetDelay win=$panelTitle, value=_NUM:onsetDelayResetValue, limits={0, inf, 1}
-	endif
+	SetValDisplaySingleVariable(paneltitle, "valdisp_DataAcq_OnsetDelayAuto", testPulseDurWithBL)
 End
 
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
