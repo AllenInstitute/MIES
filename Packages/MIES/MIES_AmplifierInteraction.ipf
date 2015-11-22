@@ -543,7 +543,9 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AmpStorageWave[5][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsPred", i, value=AmpStorageWave[6][0][i] + diff)
+					AmpStorageWave[6][0][i] += diff
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[6][0][i])
+					AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_RsPred")
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
@@ -551,7 +553,9 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AmpStorageWave[6][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i] + diff)
+					AmpStorageWave[5][0][i] += diff
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[5][0][i])
+					AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_RsCorr")
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
