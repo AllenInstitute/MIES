@@ -1736,7 +1736,7 @@ End
 /// @param graph graph
 /// @param ignoreAxesWithLevelCrossing [optional, defaults to false] ignore all vertical axis which
 /// cross the given level in the visible range
-/// @param level [optional, defaults to zero] level to be used for ignoreAxesWithLevelCrossing=1`
+/// @param level [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
 Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 	string graph
 	variable ignoreAxesWithLevelCrossing
@@ -2135,6 +2135,8 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 	endfor
 End
 
+#if exists("HDF5CloseFile")
+
 /// @brief Close a possibly open export-into-NWB file
 Function CloseNWBFile()
 	NVAR fileID = $GetNWBFileIDExport()
@@ -2149,3 +2151,11 @@ Function CloseNWBFile()
 		endif
 	endif
 End
+
+#else
+
+Function CloseNWBFile()
+	DEBUGPRINT("HDF5 XOP could not be found, not closing any NWB files")
+End
+
+#endif
