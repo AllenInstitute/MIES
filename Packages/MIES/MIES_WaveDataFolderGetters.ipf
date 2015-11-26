@@ -818,32 +818,43 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	Wave/Z/SDFR=dfr wv = sweepSettingsWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 23, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) dfr:sweepSettingsWave/Wave=wv
+		Make/N=(1, 23, LABNOTEBOOK_LAYER_COUNT) dfr:sweepSettingsWave/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS, 0 , $"Stim Scale Factor"    , wv
-	SetDimLabel COLS, 1 , $"DAC"                  , wv
-	SetDimLabel COLS, 2 , $"ADC"                  , wv
-	SetDimLabel COLS, 3 , $"DA Gain"              , wv
-	SetDimLabel COLS, 4 , $"AD Gain"              , wv
-	SetDimLabel COLS, 5 , $"Set Sweep Count"      , wv
-	SetDimLabel COLS, 6 , $"TP Insert Checkbox"   , wv
-	SetDimLabel COLS, 7 , $"Inter-trial interval" , wv
-	SetDimLabel COLS, 8 , $"TTL rack zero bits"   , wv
-	SetDimLabel COLS, 9 , $"TTL rack one bits"    , wv
-	SetDimLabel COLS, 10, $"TTL rack zero channel", wv
-	SetDimLabel COLS, 11, $"TTL rack one channel" , wv
+	SetDimLabel COLS, 0 , $"Stim Scale Factor"          , wv
+	SetDimLabel COLS, 1 , $"DAC"                        , wv
+	SetDimLabel COLS, 2 , $"ADC"                        , wv
+	SetDimLabel COLS, 3 , $"DA Gain"                    , wv
+	SetDimLabel COLS, 4 , $"AD Gain"                    , wv
+	SetDimLabel COLS, 5 , $"Set Sweep Count"            , wv
+	SetDimLabel COLS, 6 , $"TP Insert Checkbox"         , wv
+	SetDimLabel COLS, 7 , $"Inter-trial interval"       , wv
+	SetDimLabel COLS, 8 , $"TTL rack zero bits"         , wv
+	SetDimLabel COLS, 9 , $"TTL rack one bits"          , wv
+	SetDimLabel COLS, 10, $"TTL rack zero channel"      , wv
+	SetDimLabel COLS, 11, $"TTL rack one channel"       , wv
+	SetDimLabel COLS, 12, $"Delay onset user"           , wv
+	SetDimLabel COLS, 13, $"Delay onset auto"           , wv
+	SetDimLabel COLS, 14, $"Delay termination"          , wv
+	SetDimLabel COLS, 15, $"Delay distributed DAQ"      , wv
+	SetDimLabel COLS, 16, $"Distributed DAQ"            , wv
+	SetDimLabel COLS, 17, $"Repeat Sets"                , wv
+	SetDimLabel COLS, 18, $"Scaling zero"               , wv
+	SetDimLabel COLS, 19, $"Indexing"                   , wv
+	SetDimLabel COLS, 20, $"Locked indexing"            , wv
+	SetDimLabel COLS, 21, $"Repeated Acquisition"       , wv
+	SetDimLabel COLS, 22, $"Random Repeated Acquisition", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -873,20 +884,31 @@ End
 /// - 9:  TTL rack one bits
 /// - 10: TTL rack zero channel
 /// - 11: TTL rack one channel
+/// - 12: Delay onset user
+/// - 13: Delay onset auto
+/// - 14: Delay termination
+/// - 15: Delay distributed DAQ
+/// - 16: Distributed DAQ
+/// - 17: Repeat Sets
+/// - 18: Scaling zero
+/// - 19: Indexing
+/// - 20: Locked indexing
+/// - 21: Repeated Acquisition
+/// - 22: Random Repeated Acquisition
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12) wv
+		Redimension/N=(-1, 23) wv
 	else
-		Make/T/N=(3, 12) dfr:sweepSettingsKeyWave/Wave=wv
+		Make/T/N=(3, 23) dfr:sweepSettingsKeyWave/Wave=wv
 	endif
 
 	wv = ""
@@ -943,18 +965,73 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][11]     = ""
 	wv[%Tolerance][11] = "-"
 
-	SetDimLabel COLS, 0 , $"Stim Scale Factor"    , wv
-	SetDimLabel COLS, 1 , $"DAC"                  , wv
-	SetDimLabel COLS, 2 , $"ADC"                  , wv
-	SetDimLabel COLS, 3 , $"DA Gain"              , wv
-	SetDimLabel COLS, 4 , $"AD Gain"              , wv
-	SetDimLabel COLS, 5 , $"Set Sweep Count"      , wv
-	SetDimLabel COLS, 6 , $"TP Insert Checkbox"   , wv
-	SetDimLabel COLS, 7 , $"Inter-trial interval" , wv
-	SetDimLabel COLS, 8 , $"TTL rack zero bits"   , wv
-	SetDimLabel COLS, 9 , $"TTL rack one bits"    , wv
-	SetDimLabel COLS, 10, $"TTL rack zero channel", wv
-	SetDimLabel COLS, 11, $"TTL rack one channel" , wv
+	wv[%Parameter][12] = "Delay onset user"
+	wv[%Units][12]     = "ms"
+	wv[%Tolerance][12] = "1"
+
+	wv[%Parameter][13] = "Delay onset auto"
+	wv[%Units][13]     = "ms"
+	wv[%Tolerance][13] = "1"
+
+	wv[%Parameter][14] = "Delay termination"
+	wv[%Units][14]     = "ms"
+	wv[%Tolerance][14] = "1"
+
+	wv[%Parameter][15] = "Delay distributed DAQ"
+	wv[%Units][15]     = "ms"
+	wv[%Tolerance][15] = "1"
+
+	wv[%Parameter][16] = "Distributed DAQ"
+	wv[%Units][16]     = "On/Off"
+	wv[%Tolerance][16] = "-"
+
+	wv[%Parameter][17] = "Repeat Sets"
+	wv[%Units][17]     = "On/Off"
+	wv[%Tolerance][17] = "-"
+
+	wv[%Parameter][18] = "Scaling zero"
+	wv[%Units][18]     = "On/Off"
+	wv[%Tolerance][18] = "-"
+
+	wv[%Parameter][19] = "Indexing"
+	wv[%Units][19]     = "On/Off"
+	wv[%Tolerance][19] = "-"
+
+	wv[%Parameter][20] = "Locked indexing"
+	wv[%Units][20]     = "On/Off"
+	wv[%Tolerance][20] = "-"
+
+	wv[%Parameter][21] = "Repeated Acquisition"
+	wv[%Units][21]     = "On/Off"
+	wv[%Tolerance][21] = "-"
+
+	wv[%Parameter][22] = "Random Repeated Acquisition"
+	wv[%Units][22]     = "On/Off"
+	wv[%Tolerance][22] = "-"
+
+	SetDimLabel COLS, 0 , $"Stim Scale Factor"          , wv
+	SetDimLabel COLS, 1 , $"DAC"                        , wv
+	SetDimLabel COLS, 2 , $"ADC"                        , wv
+	SetDimLabel COLS, 3 , $"DA Gain"                    , wv
+	SetDimLabel COLS, 4 , $"AD Gain"                    , wv
+	SetDimLabel COLS, 5 , $"Set Sweep Count"            , wv
+	SetDimLabel COLS, 6 , $"TP Insert Checkbox"         , wv
+	SetDimLabel COLS, 7 , $"Inter-trial interval"       , wv
+	SetDimLabel COLS, 8 , $"TTL rack zero bits"         , wv
+	SetDimLabel COLS, 9 , $"TTL rack one bits"          , wv
+	SetDimLabel COLS, 10, $"TTL rack zero channel"      , wv
+	SetDimLabel COLS, 11, $"TTL rack one channel"       , wv
+	SetDimLabel COLS, 12, $"Delay onset user"           , wv
+	SetDimLabel COLS, 13, $"Delay onset auto"           , wv
+	SetDimLabel COLS, 14, $"Delay termination"          , wv
+	SetDimLabel COLS, 15, $"Delay distributed DAQ"      , wv
+	SetDimLabel COLS, 16, $"Distributed DAQ"            , wv
+	SetDimLabel COLS, 17, $"Repeat Sets"                , wv
+	SetDimLabel COLS, 18, $"Scaling zero"               , wv
+	SetDimLabel COLS, 19, $"Indexing"                   , wv
+	SetDimLabel COLS, 20, $"Locked indexing"            , wv
+	SetDimLabel COLS, 21, $"Repeated Acquisition"       , wv
+	SetDimLabel COLS, 22, $"Random Repeated Acquisition", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
