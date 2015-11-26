@@ -657,13 +657,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string ctrl, firstSetName, str, list, func, colLabel
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
-	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
+	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
 	variable multiplier, j
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
-	ITI                   = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	scalingZero           = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
 	indexingLocked        = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	indexing              = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
@@ -785,9 +784,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale)
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn)
 
-		DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, i, var=GlobalTPInsert)
-		DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, i, var=ITI)
-
 		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
 			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
@@ -804,6 +800,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		itcDataColumn += 1
 	endfor
+
+	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, var=GlobalTPInsert)
+	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
 
 	WAVE statusAD = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
