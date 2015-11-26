@@ -1736,7 +1736,7 @@ End
 /// @param graph graph
 /// @param ignoreAxesWithLevelCrossing [optional, defaults to false] ignore all vertical axis which
 /// cross the given level in the visible range
-/// @param level [optional, defaults to zero] level to be used for ignoreAxesWithLevelCrossing=1`
+/// @param level [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
 Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 	string graph
 	variable ignoreAxesWithLevelCrossing
