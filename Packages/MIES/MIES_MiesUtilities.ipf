@@ -2135,6 +2135,8 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 	endfor
 End
 
+#if exists("HDF5CloseFile")
+
 /// @brief Close a possibly open export-into-NWB file
 Function CloseNWBFile()
 	NVAR fileID = $GetNWBFileIDExport()
@@ -2149,3 +2151,11 @@ Function CloseNWBFile()
 		endif
 	endif
 End
+
+#else
+
+Function CloseNWBFile()
+	DEBUGPRINT("HDF5 XOP could not be found, not closing any NWB files")
+End
+
+#endif
