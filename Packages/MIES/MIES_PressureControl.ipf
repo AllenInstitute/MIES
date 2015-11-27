@@ -109,7 +109,7 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 End
 
 /// @brief Sets the pressure to atmospheric
-Function P_MethodAtmospheric(panelTitle, headstage)
+static Function P_MethodAtmospheric(panelTitle, headstage)
 	string panelTitle
 	variable headStage
 
@@ -120,7 +120,7 @@ Function P_MethodAtmospheric(panelTitle, headstage)
 End
 
 /// @brief Applies approach pressures
-Function P_MethodApproach(panelTitle, headStage)
+static Function P_MethodApproach(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -149,7 +149,7 @@ Function P_MethodApproach(panelTitle, headStage)
 End
 
 /// @brief Applies seal methods
-Function P_MethodSeal(panelTitle, headStage)
+static Function P_MethodSeal(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -230,7 +230,7 @@ Function P_MethodSeal(panelTitle, headStage)
 End
 
 /// @brief Applies break-in method
-Function P_MethodBreakIn(panelTitle, headStage)
+static Function P_MethodBreakIn(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -271,7 +271,7 @@ Function P_MethodBreakIn(panelTitle, headStage)
 End
 
 /// @brief Applies pipette clearing method
-Function P_MethodClear(panelTitle, headStage)
+static Function P_MethodClear(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -310,7 +310,7 @@ Function P_MethodClear(panelTitle, headStage)
 End
 
 /// @brief Applies updates the command Voltage so that -100 pA current is applied up to the target voltage
-Function P_ApplyNegV(panelTitle, headStage)
+static Function P_ApplyNegV(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -337,12 +337,10 @@ Function P_ApplyNegV(panelTitle, headStage)
 End
 
 /// @brief Updates the command voltage
-Function P_UpdateVcom(panelTitle, vCom, headStage)
+static Function P_UpdateVcom(panelTitle, vCom, headStage)
 	string panelTitle
 	variable vCom
 	variable headStage
-
-	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
 	// apply holding
 	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage, value=vCom)
@@ -431,7 +429,7 @@ Function P_OpenITCDevice(panelTitle, ITCDeviceToOpen)
 End
 
 /// @brief Used to close ITC device used for pressure regulation
-Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
+static Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
 	string panelTitle, ITCDevToClose
 	variable DevID
 
@@ -506,7 +504,7 @@ Function/S P_ITCDevToOpen()
 End
 
 /// @brief Sets the pressure on a headStage
-Function P_SetPressure(panelTitle, headStage, psi)
+static Function P_SetPressure(panelTitle, headStage, psi)
 	string panelTitle
 	variable headStage, psi
 
@@ -527,7 +525,7 @@ Function P_SetPressure(panelTitle, headStage, psi)
 End
 
 /// @brief Sets the pressure using a single DA channel on a ITC device
-Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_ScaleFactor)
+static Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_ScaleFactor)
 	string panelTitle
 	variable ITCDeviceIDGlobal 	// ITC device used for pressure control
 	variable DAC, ADC 				// the DA channel that the pressure regulator recieves its command voltage from
@@ -548,7 +546,7 @@ Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_Scal
 End
 
 /// @brief Gets the pressure on a headStage
-Function P_GetPressure(panelTitle, headStage)
+static Function P_GetPressure(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -557,7 +555,7 @@ Function P_GetPressure(panelTitle, headStage)
 End
 
 /// @brief Gets the pressure using a single AD channel on a ITC device
-Function P_ReadADC(panelTitle, ITCDeviceIDGlobal, ADC, AD_ScaleFactor)
+static Function P_ReadADC(panelTitle, ITCDeviceIDGlobal, ADC, AD_ScaleFactor)
 	string panelTitle
 	variable ITCDeviceIDGlobal, ADC, AD_ScaleFactor
 
@@ -580,7 +578,7 @@ End
 ///
 /// 	When setting TTLs, all channels are set at once. To keep existing TTL state on some channels, active state must be known.
 /// 	This funcition queries the hardware to determine the active state.*****This requires the TTL out to be looped back to the TTL in on the ITC DAC.*****
-Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
+static Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 	string panelTitle
 	variable headStage
 	variable ONorOFF
@@ -624,7 +622,7 @@ End
 
 /// @brief Updates resistance slope and the resistance in PressureDataWv from TPStorageWave
 /// param
-Function P_UpdateSSRSlopeAndSSR(panelTitle)
+static Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	string panelTitle
 
 	WAVE TPStorageWave     = GetTPStorage(panelTitle)
@@ -720,7 +718,7 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 End
 
 /// @brief Updates the popupmenu popup_Settings_Pressure_ITCdev
-Function P_UpdatePopupITCdev(panelTitle, headStageNo)
+static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
 
@@ -743,7 +741,7 @@ Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 End
 
 /// @brief Sends a negative pressure pulse to the pressure regulator. Gates the TTLs apropriately to maintain the exisiting TTL state while opening the TTL on the channel with the pressure pulse
-Function P_NegPressurePulse(panelTitle, headStage)
+static Function P_NegPressurePulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -754,7 +752,7 @@ Function P_NegPressurePulse(panelTitle, headStage)
 End
 
 /// @brief Initiates a positive pressure pulse to the pressure regulator. Gates the TTLs apropriately to maintain the exisiting TTL state while opening the TTL on the channel with the pressure pulse
-Function P_PosPressurePulse(panelTitle, headStage)
+static Function P_PosPressurePulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -765,7 +763,7 @@ Function P_PosPressurePulse(panelTitle, headStage)
 End
 
 /// @brief Runs acquisition cycle on ITC devices for pressure control.
-Function P_ITCDataAcq(panelTitle, headStage)
+static Function P_ITCDataAcq(panelTitle, headStage)
 	string panelTitle
 	variable headstage
 
@@ -837,22 +835,8 @@ Function P_FIFOMonitorProc(s)
 	return 0
 End
 
-Function P_ScaleP_ITCDataAD(panelTitle, headStage)
-	string panelTitle
-	variable headStage
-
-	Wave ITCData        = P_GetITCData(panelTitle)
-	Wave pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-
-	Redimension /d ITCData
-	ITCData[][%AD] /= BITS_PER_VOLT
-	ITCData[][%AD] -= PRESSURE_OFFSET
-	ITCData[][%AD] *= pressureDataWv[headStage][%ADC_Gain]
-	redimension /w ITCData
-End
-
 /// @brief Returns the panelTitle of the ITC device associated with ITC device conducting a pressure pulse
-Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
+static Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
 	string &panelTitle
 	variable &DevID, &headStage
 
@@ -873,7 +857,7 @@ Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a negative pressure pulse
-Function P_DAforNegPpulse(panelTitle, Headstage)
+static Function P_DAforNegPpulse(panelTitle, Headstage)
 	string panelTitle
 	variable Headstage
 
@@ -939,7 +923,7 @@ static Function P_LastPulseCount(pulseAmp)
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a positive pressure pulse
-Function P_DAforPosPpulse(panelTitle, Headstage)
+static Function P_DAforPosPpulse(panelTitle, Headstage)
 	string panelTitle
 	variable Headstage
 
@@ -985,7 +969,7 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a manual pressure pulse
-Function P_DAforManPpulse(panelTitle, Headstage)
+static Function P_DAforManPpulse(panelTitle, Headstage)
 	string panelTitle
 	variable Headstage
 
@@ -1013,7 +997,7 @@ Function P_DAforManPpulse(panelTitle, Headstage)
 End
 
 /// @brief Update the AD data used for ITC controlled pressure devices
-Function P_ADforPpulse(panelTitle, Headstage)
+static Function P_ADforPpulse(panelTitle, Headstage)
 	string panelTitle
 	variable Headstage
 
@@ -1030,7 +1014,7 @@ Function P_ADforPpulse(panelTitle, Headstage)
 End
 
 /// @brief Updates the rack 0 and rack 1 TTL waves used for ITC controlled pressure devices.
-Function P_TTLforPpulse(panelTitle, Headstage)
+static Function P_TTLforPpulse(panelTitle, Headstage)
 	string panelTitle
 	variable Headstage
 
@@ -1069,7 +1053,7 @@ Function P_TTLforPpulse(panelTitle, Headstage)
 End
 
 /// @brief returns the new TTL state based on the starting TTL state.
-Function UpdateTTLdecimal(startDecimal, TTL, ONorOFF)
+static Function UpdateTTLdecimal(startDecimal, TTL, ONorOFF)
 	variable startDecimal
 	variable	TTL
 	variable ONorOFF
@@ -1142,7 +1126,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 End
 
 /// @brief Applies pressure mode to all headstages with valid pressure settings
-Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
+static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 	string panelTitle
 	variable pressureMode, SavedPressureMode
 
@@ -1200,7 +1184,7 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 End
 
 /// @brief Checks if the Approach button can be enabled or all pressure mode buttons can be enabled. Enables buttons that pass checks.
-Function P_EnableButtonsIfValid(panelTitle, headStageNo)
+static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
 
@@ -1226,7 +1210,7 @@ End
 /// @brief Checks if all the pressure settings for a headStage are valid
 ///
 /// @returns 1 if all settings are valid, 0 otherwise
-Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
+static Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
 
@@ -1300,7 +1284,7 @@ End
 /// @brief Determines if ITC device is active (i.e. collecting data)
 ///
 /// used to determine if pressure pulse has completed.
-Function IsITCCollectingData(panelTitle, headStage)
+static Function IsITCCollectingData(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1318,7 +1302,7 @@ Function IsITCCollectingData(panelTitle, headStage)
 End
 
 /// @brief Determines headStage is on and in V-Clamp mode
-Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
+static Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1330,7 +1314,7 @@ Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 End
 
 /// @brief Returns the four pressure buttons to the base state (gray color; removes "Stop" string from button title)
-Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
+static Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
 	string panelTitle
 
 	variable i = 0
@@ -1341,7 +1325,7 @@ Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
 End
 
 /// @brief Highlite pressure display
-Function P_PressureDisplayHighlite(panelTitle, headStageNo)
+static Function P_PressureDisplayHighlite(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
 
@@ -1408,7 +1392,7 @@ End
 ///
 /// List is always 4 items long so that each TTL channel on the front of the ITC DAC gets "encoded"
 /// use commented out code for arbitrary decimal numbers
-Function/S P_DecToBinary(dec)
+static Function/S P_DecToBinary(dec)
 	variable dec
 
 	variable bit
@@ -1429,7 +1413,7 @@ End
 // MANUAL PRESSURE CONTROL
 
 /// @brief Sets the pressure on the active headstage or all headstages.
-Function P_ManSetPressure(panelTitle, headStage)
+static Function P_ManSetPressure(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1455,7 +1439,7 @@ Function P_ManSetPressure(panelTitle, headStage)
 End
 
 /// @brief Initiates a pressure pulse who's settings are are controlled in the manual tab of the pressure regulation controls
-Function P_ManPressurePulse(panelTitle, headStage)
+static Function P_ManPressurePulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1559,7 +1543,7 @@ Function ButtonProc_Clear(ba) : ButtonControl
 End
 
 /// @brief Handles the TP depency of the Manual pressure application
-Function P_SetManual(panelTitle, cntrlName)
+static Function P_SetManual(panelTitle, cntrlName)
 	string panelTitle, cntrlName
 	P_UpdatePressureMode(panelTitle, P_METHOD_4_MANUAL, cntrlName, 1)
 	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
