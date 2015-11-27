@@ -242,7 +242,7 @@ End
 /// @brief Return 1 if the given HDF5 dataset exists, 0 otherwise.
 ///
 /// @param[in] locationID           HDF5 identifier, can be a file or group
-/// @param[in] path                 Additional path on top of `locationID` which identifies
+/// @param[in] name                 Additional path on top of `locationID` which identifies
 ///                                 the dataset
 Function H5_DatasetExists(locationID, name)
 	variable locationID
