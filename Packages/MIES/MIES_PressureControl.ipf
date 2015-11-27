@@ -160,7 +160,7 @@ static Function P_MethodSeal(panelTitle, headStage)
 	variable timeInSec 				= ticks / 60
 	variable ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
 
-	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2 || !ElapsedTimeInSeconds) // checks for first time thru.
+	if(!lastRSlopeCheck || !IsFinite(lastRSlopeCheck) || !ElapsedTimeInSeconds) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 	endif
@@ -239,7 +239,7 @@ static Function P_MethodBreakIn(panelTitle, headStage)
 	variable timeInSec 				= ticks / 60
 	variable ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
 
-	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2) // checks for first time thru.
+	if(!lastRSlopeCheck || !IsFinite(lastRSlopeCheck)) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 	endif
@@ -282,7 +282,7 @@ static Function P_MethodClear(panelTitle, headStage)
 
 	P_UpdateSSRSlopeAndSSR(panelTitle)
 
-	if(!lastRpeakCheck || numType(lastRpeakCheck) == 2) // checks for first time thru.
+	if(!lastRpeakCheck || !IsFinite((lastRpeakCheck))) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimePeakRcheck] = ticks
 		PressureDataWv[headStage][%LastPeakR] = PressureDataWv[headStage][%PeakR] // sets the last peak R = to the current peak R
