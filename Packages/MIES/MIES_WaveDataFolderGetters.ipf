@@ -3196,7 +3196,7 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	SetDimLabel ROWS, 6, Headstage_6, PressureDataTextWv
 	SetDimLabel ROWS, 7, Headstage_7, PressureDataTextWv
 
-	PressureDataTextWv[][0] = "- none -"
+	PressureDataTextWv[][0] = NONE
 
 	return PressureDataTextWv
 End

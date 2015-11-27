@@ -127,7 +127,6 @@ Function ITC_FIFOMonitorMD(s)
 		if(fifoPos >= ActiveDeviceList[i][2])
 			print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
 			DeviceIDGlobal = ActiveDeviceList[i][0]
-			ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1)
 			ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
 			i = 0
 			continue
