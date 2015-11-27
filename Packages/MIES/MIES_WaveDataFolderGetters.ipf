@@ -3161,8 +3161,6 @@ End
 
 /// @brief Returns wave reference for wave used to store text used in pressure control.
 ///
-/// creates the text storage wave if it doesn't already exist.
-///
 /// Rows:
 /// - 0 - 7: Headstage 0 through 7
 ///
