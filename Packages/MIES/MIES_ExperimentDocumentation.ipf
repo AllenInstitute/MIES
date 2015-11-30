@@ -589,7 +589,7 @@ Function ED_TPDocumentation(panelTitle)
 			   // headstage (no place holder columns), j only increments for active headstages.
 	endfor
 
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
 
 	ED_TPSettingsDocumentation(panelTitle)
@@ -629,6 +629,6 @@ Function ED_TPSettingsDocumentation(panelTitle)
 	TPSettingsWave[0][2][INDEP_HEADSTAGE] = AmplitudeIC
 	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
 
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
 End

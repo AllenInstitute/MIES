@@ -251,15 +251,6 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 	endfor
 end
 
-Function DM_ReturnLastSweepAcquired(panelTitle)
-	string panelTitle
-	
-	string list
-
-	list = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
-	return ItemsInList(list) - 1
-End
-
 /// @brief Delete all sweep and config waves having a sweep number
 /// of `sweepNo` and higher
 Function DM_DeleteDataWaves(panelTitle)

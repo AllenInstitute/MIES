@@ -150,3 +150,39 @@ Function AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
 
 	return NaN
 End
+
+/// @brief Return the sweep number of the last acquired sweep
+///
+/// Handles sweep number rollback properly.
+///
+/// @return a non-negative integer sweep number or NaN if there is no data
+Function AFH_GetLastSweepAcquired(panelTitle)
+	string panelTitle
+
+	string list, name
+	variable numItems, i, sweep
+
+	list = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	list = SortList(list, ";", 1 + 16) // descending and case-insensitive alphanumeric
+
+	numItems = ItemsInList(list)
+	for(i = 0; i < numItems; i += 1)
+		name = StringFromList(i, list)
+		sweep = ExtractSweepNumber(name)
+
+		if(WaveExists(GetSweepWave(panelTitle, sweep)))
+			return sweep
+		endif
+	endfor
+
+	return NaN
+End
+
+/// @brief Return the sweep wave of the last acquired sweep
+///
+/// @return an existing sweep wave or an invalid wave reference if there is no data
+Function/WAVE AFH_GetLastSweepWaveAcquired(panelTitle)
+	string panelTitle
+
+	return GetSweepWave(panelTitle, AFH_GetLastSweepAcquired(panelTitle))
+End

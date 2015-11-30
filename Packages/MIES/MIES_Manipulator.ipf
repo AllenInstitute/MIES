@@ -159,9 +159,10 @@ End
 // This funciton should be run once whole cell config is aquired on all cells in experiment. Not sure how to do this.
 Function M_DocumentManipulatorXYZ(panelTitle)
 	string panelTitle
+
 	string manipulatorName, manipulatorXYZ
-	variable i
-	
+	variable i, sweepNo
+
 	AbortOnValue M_CheckSettings(panelTitle),1	
 	
 	Make/FREE/T/N=(3, 3, 1) TPKeyWave
@@ -201,8 +202,8 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 		TPSettingsWave[0][1][i] = str2num(stringfromlist(1, ManipulatorXYZ))
 		TPSettingsWave[0][2][i] = str2num(stringfromlist(2, ManipulatorXYZ))
 	endfor
-	
-	variable sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
 End
 
@@ -272,7 +273,7 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	WAVE settingsHistory = GetNumDocWave(panelTitle)
 	WAVE WaveForGizmo = GetManipulatorPos(panelTitle)
 	if(paramIsDefault(sweep))
-		sweep = DM_ReturnLastSweepAcquired(panelTitle)
+		sweep = AFH_GetLastSweepAcquired(panelTitle)
 		// Need to check if there is actually manipulator data stored for the sweep
 	endif
 	

@@ -930,7 +930,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 	print "Data Set Loaded..."
 	
 	// Now ask the user if they want to advance the NextSweepNumber to append any new sweep data, rather then overwrite one of the sweeps just restored
-	nextSweepNumber = DM_ReturnLastSweepAcquired(panelName) + 1
+	nextSweepNumber = AFH_GetLastSweepAcquired(panelName) + 1
 	if(nextSweepNumber != GetSetVariable(panelName, "SetVar_Sweep"))	
 		advanceSweepNumberString = "Advance Next Sweep Number to " + Num2Str(nextSweepNumber) + "?"
 		DoAlert/T="Advance Sweep Number" 1, advanceSweepNumberString

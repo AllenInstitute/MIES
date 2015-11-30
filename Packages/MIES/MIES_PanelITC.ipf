@@ -3886,8 +3886,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endif
 
 	// query maximum next sweep
-	// the next sweep equals the number of data waves as these start counting with zero
-	maxNextSweep = -INF
+	maxNextSweep = 0
 	numPanels = ItemsInList(panelList)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
@@ -3896,8 +3895,8 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
 		endif
 
-		dfref dfr = GetDeviceDataPath(panelTitle)
-		maxNextSweep = max(maxNextSweep, ItemsInList(GetListOfWaves(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")))
+		nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+		maxNextSweep = max(maxNextSweep, nextSweep)
 	endfor
 
 	for(i = 0; i < numPanels; i += 1)
@@ -5518,7 +5517,7 @@ Function DAP_AddUserComment(panelTitle)
 
 	DAP_OpenCommentPanel(panelTitle)
 
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	comment = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
