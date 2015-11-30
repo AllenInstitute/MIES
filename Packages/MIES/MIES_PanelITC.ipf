@@ -3508,7 +3508,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	endif
 
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
-		DM_DeleteDataWaves(panelTitle, GetSetVariable(panelTitle, "SetVar_Sweep"))
+		DM_DeleteDataWaves(panelTitle)
 	endif
 
 	// disable the clamp mode checkboxes of all active headstages

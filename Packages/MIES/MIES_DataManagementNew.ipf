@@ -262,16 +262,16 @@ End
 
 /// @brief Delete all sweep and config waves having a sweep number
 /// of `sweepNo` and higher
-Function DM_DeleteDataWaves(panelTitle, sweepNo)
+Function DM_DeleteDataWaves(panelTitle)
 	string panelTitle
-	variable sweepNo
 
 	string list, path, name
-	variable i, numItems, waveSweepNo
+	variable i, numItems, waveSweepNo, sweepNo
 
-	path  = GetDeviceDataPathAsString(panelTitle)
-	list  = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
-	list += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP, waveProperty="MINCOLS:2")
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	path    = GetDeviceDataPathAsString(panelTitle)
+	list    = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	list   += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP, waveProperty="MINCOLS:2")
 
 	numItems = ItemsInList(list)
 	for(i = 0; i < numItems; i += 1)
