@@ -3866,23 +3866,23 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
+static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	string panelTitle
 
 	string panelList
-	variable sweep, maxNextSweep, numPanels, i
+	variable sweep, nextSweep, maxNextSweep, numPanels, i
 
 	panelList = panelTitle
 
-	if(!CmpStr(panelTitle, ITC1600_FIRST_DEVICE) && DAP_DeviceIsLeader(panelTitle))
+	if(DAP_DeviceIsLeader(panelTitle))
 
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
 			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 		endif
-		sweep = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_Sweep")
+		sweep = GetSetVariable(panelTitle, "SetVar_Sweep")
 	else
-		sweep = -INF
+		sweep = NaN
 	endif
 
 	// query maximum next sweep
@@ -3892,7 +3892,7 @@ Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		if(IsFinite(sweep) && i > 0) // panelTitle is a follower and we were called by the leader
+		if(IsFinite(sweep) && DAP_DeviceIsFollower(panelTitle))
 			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
 		endif
 
