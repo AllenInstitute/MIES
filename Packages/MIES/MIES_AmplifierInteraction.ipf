@@ -539,22 +539,22 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value)
 				break
 			case "setvar_DataAcq_RsCorr":
-				diff = value - AmpStorageWave[5][0][i]
-				AmpStorageWave[5][0][i] = value
+				diff = value - AmpStorageWave[%Correction][0][i]
+				AmpStorageWave[%Correction][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					AmpStorageWave[6][0][i] += diff
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[6][0][i])
+					AmpStorageWave[%Prediction][0][i] += diff
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[%Prediction][0][i])
 					AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_RsPred")
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
-				diff = value - AmpStorageWave[6][0][i]
-				AmpStorageWave[6][0][i] = value
+				diff = value - AmpStorageWave[%Prediction][0][i]
+				AmpStorageWave[%Prediction][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					AmpStorageWave[5][0][i] += diff
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[5][0][i])
+					AmpStorageWave[%Correction][0][i] += diff
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[%Correction][0][i])
 					AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_RsCorr")
 				endif
 				break
