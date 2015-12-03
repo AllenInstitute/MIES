@@ -455,6 +455,8 @@ End
 /// @param value      [optional: defaults to the controls value] value to set
 /// @param sendToAll  [optional: defaults to the state of the checkbox] should the value be send
 ///                   to all active headstages (true) or just to the given one (false)
+///
+/// @return 0 on success, 1 otherwise
 Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	string panelTitle
 	string ctrl
@@ -493,6 +495,11 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
+	endif
+
+	if(!CheckIfValueIsInsideLimits(panelTitle, ctrl, value))
+		DEBUGPRINT("Ignoring value to set as it is out of range compared to the control limits")
+		return 1
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -638,6 +645,8 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 			AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
 		endif
 	endfor
+
+	return 0
 End
 
 /// @brief Convenience wrapper for #AI_UpdateAmpView
