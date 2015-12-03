@@ -970,6 +970,10 @@ End
 /// to the graph as these can not be immediately queried using
 /// `TraceNameList` as that would require an `DoUpdate` call before.
 ///
+/// Assumes that the traceList displays information from the labnotebook. All entries
+/// with indizes equal or higher than #NUM_HEADSTAGES will be labeled as `all` denoting that
+/// the information is headstage independent and therefore valid for all headstages.
+///
 /// @param graph       name of the graph
 /// @param traceList   list of traces in the graph
 Function UpdateLBGraphLegend(graph, [traceList])
@@ -995,7 +999,14 @@ Function UpdateLBGraphLegend(graph, [traceList])
 
 	numEntries = ItemsInList(traceList)
 	for(i = 0 ; i < numEntries; i += 1)
-		str += "\\s(" + PossiblyQuoteName(StringFromList(i, traceList)) + ") " + num2str(i + 1)
+		str += "\\s(" + PossiblyQuoteName(StringFromList(i, traceList)) + ") "
+
+		if(i < NUM_HEADSTAGES)
+			str += num2str(i + 1)
+		else
+			str += "all"
+		endif
+
 		if(mod(i, 2))
 			str += "\r"
 		endif
