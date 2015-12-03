@@ -3508,7 +3508,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	endif
 
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
-		DM_DeleteDataWaves(panelTitle, GetSetVariable(panelTitle, "SetVar_Sweep"))
+		DM_DeleteDataWaves(panelTitle)
 	endif
 
 	// disable the clamp mode checkboxes of all active headstages
@@ -3866,38 +3866,37 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
+static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	string panelTitle
 
 	string panelList
-	variable sweep, maxNextSweep, numPanels, i
+	variable sweep, nextSweep, maxNextSweep, numPanels, i
 
 	panelList = panelTitle
 
-	if(!CmpStr(panelTitle, ITC1600_FIRST_DEVICE) && DAP_DeviceIsLeader(panelTitle))
+	if(DAP_DeviceIsLeader(panelTitle))
 
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
 			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 		endif
-		sweep = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_Sweep")
+		sweep = GetSetVariable(panelTitle, "SetVar_Sweep")
 	else
-		sweep = -INF
+		sweep = NaN
 	endif
 
 	// query maximum next sweep
-	// the next sweep equals the number of data waves as these start counting with zero
-	maxNextSweep = -INF
+	maxNextSweep = 0
 	numPanels = ItemsInList(panelList)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		if(IsFinite(sweep) && i > 0) // panelTitle is a follower and we were called by the leader
+		if(IsFinite(sweep) && DAP_DeviceIsFollower(panelTitle))
 			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
 		endif
 
-		dfref dfr = GetDeviceDataPath(panelTitle)
-		maxNextSweep = max(maxNextSweep, ItemsInList(GetListOfWaves(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")))
+		nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+		maxNextSweep = max(maxNextSweep, nextSweep)
 	endfor
 
 	for(i = 0; i < numPanels; i += 1)
@@ -5518,7 +5517,7 @@ Function DAP_AddUserComment(panelTitle)
 
 	DAP_OpenCommentPanel(panelTitle)
 
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep") - 1
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	comment = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
