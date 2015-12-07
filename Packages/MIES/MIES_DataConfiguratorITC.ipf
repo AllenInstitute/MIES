@@ -657,13 +657,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string ctrl, firstSetName, str, list, func, colLabel
 	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
-	variable GlobalTPInsert, ITI, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, indexActiveHeadStage, decimationFactor, cutoff
+	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
+	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
 	variable multiplier, j
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
-	ITI                   = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	scalingZero           = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
 	indexingLocked        = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	indexing              = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
@@ -674,7 +673,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
-	DC_ReturnTotalLengthIncrease(panelTitle,onSetdelay=onSetDelay, distributedDAQDelay=distributedDAQDelay)
+	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
+	onsetDelay            = onsetDelayUser + onsetDelayAuto
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
@@ -784,9 +784,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale)
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn)
 
-		DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, i, var=GlobalTPInsert)
-		DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, i, var=ITI)
-
 		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
 			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
@@ -803,6 +800,21 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		itcDataColumn += 1
 	endfor
+
+	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
+	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
+	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
+	DC_DocumentChannelProperty(panelTitle, "Delay termination", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay"))
+	DC_DocumentChannelProperty(panelTitle, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay"))
+
+	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, var=GlobalTPInsert)
+	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, var=distributedDAQ)
+	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats"))
+	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, var=scalingZero)
+	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, var=indexing)
+	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, var=indexingLocked)
+	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "check_DataAcq_RepAcqRandom"))
 
 	WAVE statusAD = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
@@ -1112,25 +1124,31 @@ End
 /// All returned values are in number of points, *not* in time.
 ///
 /// @param[in] panelTitle                      panel title
-/// @param[out] onsetDelay [optional]          onset delay
+/// @param[out] onsetDelayUser [optional]      onset delay set by the user
+/// @param[out] onsetDelayAuto [optional]      onset delay required by other settings
 /// @param[out] terminationDelay [optional]    termination delay
 /// @param[out] distributedDAQDelay [optional] distributed DAQ delay
-static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminationDelay, distributedDAQDelay])
+static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetDelayAuto, terminationDelay, distributedDAQDelay])
 	string panelTitle
-	variable &onsetDelay, &terminationDelay, &distributedDAQDelay
+	variable &onsetDelayUser, &onsetDelayAuto, &terminationDelay, &distributedDAQDelay
 
-	variable minSamplingInterval, onsetDelayVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
+	variable minSamplingInterval, onsetDelayUserVal, onsetDelayAutoVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
 	variable distributedDAQ
 
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
-	onsetDelayVal          = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelay") / (minSamplingInterval / 1000))
+	onsetDelayUserVal      = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
+	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (minSamplingInterval / 1000))
 	terminationDelayVal    = round(GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
 	distributedDAQDelayVal = round(GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
 
-	if(!ParamIsDefault(onsetDelay))
-		onsetDelay = onsetDelayVal
+	if(!ParamIsDefault(onsetDelayUser))
+		onsetDelayUser = onsetDelayUserVal
+	endif
+
+	if(!ParamIsDefault(onsetDelayAuto))
+		onsetDelayAuto = onsetDelayAutoVal
 	endif
 
 	if(!ParamIsDefault(terminationDelay))
@@ -1143,9 +1161,9 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelay, terminatio
 
 	if(distributedDAQ)
 		ASSERT(numActiveDACs > 0, "Number of DACs must be at least one")
-		return onsetDelayVal + terminationDelayVal + distributedDAQDelayVal * (numActiveDACs - 1)
+		return onsetDelayUserVal + onsetDelayAutoVal + terminationDelayVal + distributedDAQDelayVal * (numActiveDACs - 1)
 	else
-		return onsetDelayVal + terminationDelayVal
+		return onsetDelayUserVal + onsetDelayAutoVal + terminationDelayVal
 	endif
 End
 

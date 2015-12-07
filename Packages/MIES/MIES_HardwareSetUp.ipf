@@ -83,6 +83,8 @@ Function HSU_LockDevice(panelTitle)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
+
+	DAP_UpdateOnsetDelay(panelTitleLocked)
 End
 
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
