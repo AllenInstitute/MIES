@@ -455,6 +455,8 @@ End
 /// @param value      [optional: defaults to the controls value] value to set
 /// @param sendToAll  [optional: defaults to the state of the checkbox] should the value be send
 ///                   to all active headstages (true) or just to the given one (false)
+///
+/// @return 0 on success, 1 otherwise
 Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	string panelTitle
 	string ctrl
@@ -493,6 +495,11 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
+	endif
+
+	if(!CheckIfValueIsInsideLimits(panelTitle, ctrl, value))
+		DEBUGPRINT("Ignoring value to set as it is out of range compared to the control limits")
+		return 1
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -539,19 +546,33 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value)
 				break
 			case "setvar_DataAcq_RsCorr":
-				diff = value - AmpStorageWave[5][0][i]
-				AmpStorageWave[5][0][i] = value
+				diff = value - AmpStorageWave[%Correction][0][i]
+				// abort if the corresponding value with chaining would be outside the limits
+				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(panelTitle, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][i] + diff))
+					AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
+					return 1
+				endif
+				AmpStorageWave[%Correction][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsPred", i, value=AmpStorageWave[6][0][i] + diff)
+					AmpStorageWave[%Prediction][0][i] += diff
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[%Prediction][0][i])
+					AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_RsPred")
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
-				diff = value - AmpStorageWave[6][0][i]
-				AmpStorageWave[6][0][i] = value
+				diff = value - AmpStorageWave[%Prediction][0][i]
+				// abort if the corresponding value with chaining would be outside the limits
+				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(panelTitle, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][i] + diff))
+					AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
+					return 1
+				endif
+				AmpStorageWave[%Prediction][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value)
 				if(AmpStorageWave[%RSCompChaining][0][i])
-					AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i] + diff)
+					AmpStorageWave[%Correction][0][i] += diff
+					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[%Correction][0][i])
+					AI_UpdateAmpView(panelTitle, i, cntrlName = "setvar_DataAcq_RsCorr")
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
@@ -577,7 +598,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				break
 			case "check_DataAcq_Amp_Chain":
 				AmpStorageWave[%RSCompChaining][0][i] = value
-				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=value)
+				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i])
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -634,6 +655,8 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 			AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
 		endif
 	endfor
+
+	return 0
 End
 
 /// @brief Convenience wrapper for #AI_UpdateAmpView

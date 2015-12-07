@@ -901,3 +901,51 @@ Function GetInternalSetVariableType(recMacro)
 
 	return SET_VARIABLE_GLOBAL
 End
+
+/// @brief Extract the limits specification of the control and return it in `minVal`, `maxVal` and `incVal`
+///
+/// @return 0 on success, 1 if no specification could be found
+Function ExtractLimits(win, control, minVal, maxVal, incVal)
+	string win, control
+	variable &minVal, &maxVal, &incVal
+
+	string minStr, maxStr, incStr
+
+	minVal = NaN
+	maxVal = NaN
+	incVal = NaN
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "win or control does not exist")
+
+	SplitString/E="(?i).*limits={([^,]+),([^,]+),([^,]+)}.*" S_recreation, minStr, maxStr, incStr
+
+	if(V_flag != 3)
+		return 1
+	endif
+
+	minVal = str2num(minStr)
+	maxVal = str2num(maxStr)
+	incVal = str2num(incStr)
+
+	return 0
+End
+
+/// @brief Check if the given value is inside the limits defined by the control
+///
+/// @return - 0: outside limits
+///         - 1: inside limits, i.e. val lies in the range [min, max]
+///         - NaN: no limits could be found
+///
+Function CheckIfValueIsInsideLimits(win, control, val)
+	string win, control
+	variable val
+
+	variable minVal, maxVal, incVal
+
+	if(ExtractLimits(win, control, minVal, maxVal, incVal))
+		return NaN
+	endif
+
+	return val >= minVal && val <= maxVal
+End
