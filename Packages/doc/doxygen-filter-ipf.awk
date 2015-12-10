@@ -101,9 +101,9 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   # remove whitespace from front and back
   code=trim(code)
 
-  if(match(code, /^#pragma independentModule\s*=\s*(.+)/, arr))
+  if(match(code, /^#pragma independentModule\s*=\s*/))
   {
-	  namespace = arr[1]
+	  namespace = substr(code, RSTART + RLENGTH)
 	  code = "namespace " namespace " {"
 	  insideNamespace = 1
   }
