@@ -21,8 +21,13 @@ BEGIN{
   output=""
   warning=""
 
-  menuEndCount=0
-  insideNamespace=0
+  menuEndCount    = 0
+  insideNamespace = 0
+  insideFunction  = 0
+  insideStructure = 0
+  insideMacro     = 0
+  insideMenu      = 0
+
   namespace=""
 }
 
@@ -124,6 +129,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   else if(!insideFunction && ( match(code,/[[:space:]]function[\/[:space:]]/) || match(code,/^function[\/[:space:]]/)))
   {
     insideFunction=1
+    paramsToHandle=0
     # remove whitespace between function and return type flag
     gsub(/function[[:space:]]*\//,"function/",code)
 
