@@ -21,8 +21,13 @@ BEGIN{
   output=""
   warning=""
 
-  menuEndCount=0
-  insideNamespace=0
+  menuEndCount    = 0
+  insideNamespace = 0
+  insideFunction  = 0
+  insideStructure = 0
+  insideMacro     = 0
+  insideMenu      = 0
+
   namespace=""
 }
 
@@ -32,6 +37,8 @@ BEGIN{
 # to reconstruct the indentation
 function trim(str)
 {
+  gsub(/[[:space:]]+$/,"",str)
+
   if(match(str, /^[[:space:]]+/))
   {
     frontSpace = substr(str, 1, RLENGTH)
@@ -39,8 +46,6 @@ function trim(str)
   }
   else
     frontSpace = ""
-
-  gsub(/[[:space:]]+$/,"",str)
 
   return str
 }
@@ -85,7 +90,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   # split current line into code and comment
   if(match($0,/\/\/.*/))
   {
-    code=substr($0,0,RSTART-1)
+    code=substr($0,1,RSTART-1)
     comment=substr($0,RSTART,RLENGTH)
   }
   else
@@ -96,9 +101,9 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   # remove whitespace from front and back
   code=trim(code)
 
-  if(match(code, /^#pragma independentModule\s*=\s*(.+)/, arr))
+  if(match(code, /^#pragma independentModule\s*=\s*/))
   {
-	  namespace = arr[1]
+	  namespace = substr(code, RSTART + RLENGTH)
 	  code = "namespace " namespace " {"
 	  insideNamespace = 1
   }
@@ -124,6 +129,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   else if(!insideFunction && ( match(code,/[[:space:]]function[\/[:space:]]/) || match(code,/^function[\/[:space:]]/)))
   {
     insideFunction=1
+    paramsToHandle=0
     # remove whitespace between function and return type flag
     gsub(/function[[:space:]]*\//,"function/",code)
 
@@ -150,7 +156,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
       # print "paramStrWithTypes __ " paramStrWithTypes
       # print "paramsToHandle __ " paramsToHandle
 
-      code = substr(code,0,RSTART) "" paramStrWithTypes "" substr(code,RSTART+RLENGTH-1)
+      code = substr(code,1,RSTART) "" paramStrWithTypes "" substr(code,RSTART+RLENGTH-1)
     }
   }
   else if(insideFunction && paramsToHandle > 0)
@@ -251,7 +257,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   gsub(/\yelseif\y/,"else if",code)
 
   # code outside of function/macro definitions is "translated" into statements
-  if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,0,1) != "#")
+  if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,1,1) != "#")
   {
     if(code != "}" && !insideStructure && DO_WARN)
       warning = warning "\n" "warning " NR ": outside code \"" code "\""
