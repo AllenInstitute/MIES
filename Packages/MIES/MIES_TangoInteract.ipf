@@ -54,8 +54,9 @@ Function TI_TangoCommandInput(cmdString)
 	endif
 End	
 
-///@brief function for opening da_ephys panel remotely from the WSE
+/// @brief function for opening da_ephys panel remotely from the WSE
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_OpenDAPanel(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
@@ -71,8 +72,9 @@ Function TI_OpenDAPanel(placeHolder, [cmdID])
 	endif
 End
 
-///@brief function for selecting the device number from the WSE
-/// @param devHolder -- device number, set from the WSE
+/// @brief function for selecting the device number from the WSE
+/// @param devNumber -- device number, set from the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_selectDeviceNumber(devNumber, [cmdID])
 	variable devNumber
 	string cmdID
@@ -86,8 +88,9 @@ Function TI_selectDeviceNumber(devNumber, [cmdID])
 	endif
 End
 
-///@brief function for selecting the ITC18USB device
+/// @brief function for selecting the ITC18USB device
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_selectITCDevice(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
@@ -101,8 +104,9 @@ Function TI_selectITCDevice(placeHolder, [cmdID])
 	endif
 End
 
-///@brief function for locking the device selection
+/// @brief function for locking the device selection
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_lockITCDevice(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
@@ -118,8 +122,9 @@ Function TI_lockITCDevice(placeHolder, [cmdID])
 	endif
 End
 
-///@brief function for querying the connected amps
+/// @brief function for querying the connected amps
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_queryAmps(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
@@ -133,8 +138,9 @@ Function TI_queryAmps(placeHolder, [cmdID])
 	endif
 End
 		
-///@brief function for querying the connected amps
+/// @brief function for querying the connected amps
 /// @param ampChannel -- amplifier channel to be connected by the WSE 
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_selectAmpChannel(ampChannel, [cmdID])
 	variable ampChannel
 	string cmdID
@@ -149,10 +155,11 @@ Function TI_selectAmpChannel(ampChannel, [cmdID])
 	endif
 End	
 
-///@brief function for hitting the autofill button
-///@headstage -- headstage to be used in pipeline experiments and set via the WSE
-Function TI_autoFillAmps(headStage, [cmdID])
-	variable headStage
+/// @brief function for hitting the autofill button
+/// @param headstage -- headstage to be used in pipeline experiments and set via the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+Function TI_autoFillAmps(headstage, [cmdID])
+	variable headstage
 	string cmdID
 
 	string panelTitle = "ITC18USB_Dev_0"
@@ -168,7 +175,7 @@ End
 
 /// @brief Save Mies Experiment as a packed experiment.  This saves the entire Tango data space.  Will be supplimented in the future with a second function that will save the Sweep Data only.
 /// @param saveFileName		file name for the saved packed experiment
-///@param cmdID					optional parameter...if being called from WSE, this will be present.
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_TangoSave(saveFileName, [cmdID])
 	string saveFileName
 	string cmdID
