@@ -37,6 +37,8 @@ BEGIN{
 # to reconstruct the indentation
 function trim(str)
 {
+  gsub(/[[:space:]]+$/,"",str)
+
   if(match(str, /^[[:space:]]+/))
   {
     frontSpace = substr(str, 1, RLENGTH)
@@ -44,8 +46,6 @@ function trim(str)
   }
   else
     frontSpace = ""
-
-  gsub(/[[:space:]]+$/,"",str)
 
   return str
 }
