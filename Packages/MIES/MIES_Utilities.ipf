@@ -1662,7 +1662,11 @@ End
 Function GetFreeMemory()
 	variable freeMem
 
+#if defined(IGOR64)
+	freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
+#else
 	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
+#endif
 
 	return freeMem / 1024 / 1024 / 1024
 End
