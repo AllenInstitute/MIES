@@ -101,7 +101,7 @@ static Function NWB_ReadSessionStartTime(fileID)
 		return NaN
 	endif
 
-	HDF5LoadData/O/TYPE=2/Z fileID, "/session_start_time"
+	HDF5LoadData/O/Q/TYPE=2/Z fileID, "/session_start_time"
 
 	if(V_flag)
 		HDf5DumpErrors/CLR=1
