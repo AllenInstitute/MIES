@@ -145,10 +145,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
 
-	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=settingsHistory, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=settingsHistoryKeys, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=settingsHistoryText, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=settingsHistoryTextKeys, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=settingsHistory, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=settingsHistoryKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=settingsHistoryText, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=settingsHistoryTextKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
 
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
@@ -175,7 +175,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, list)
 		WAVE/SDFR=dfr wv = $name
-		IPNWB#H5_WriteDataset(groupID, name, wv=wv, overwrite=1, chunkedLayout=chunkedLayout)
+		IPNWB#H5_WriteDataset(groupID, name, wv=wv, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
 	endfor
 
 	HDF5CloseGroup/Z groupID
