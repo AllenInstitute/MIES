@@ -1660,9 +1660,11 @@ End
 /// Due to memory fragmentation you can not assume that you can still create a wave
 /// occupying as much space as returned.
 Function GetFreeMemory()
-	string memStr = StringByKey("FREEMEM", IgorInfo(0))
+	variable freeMem
 
-	return str2num(memStr) / 1024 / 1024 / 1024
+	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
+
+	return freeMem / 1024 / 1024 / 1024
 End
 
 /// @brief Remove the given reguluar expression from the end of the string
