@@ -4230,7 +4230,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
+	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, ctrlNo, clampMode
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
@@ -4352,6 +4352,49 @@ Function DAP_CheckSettings(panelTitle, mode)
 					endif
 				endfor
 			endif
+		endif
+
+		// avoid having different headstages reference the same amplifiers
+		// and/or DA/AD channels in the "DAC Channel and Device Associations" menu
+		Make/FREE/N=(NUM_HEADSTAGES) DACs, ADCs
+
+		WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+			sprintf ctrl, "Check_DataAcq_HS_%02d", i
+			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, i)
+
+			if(clampMode == V_CLAMP_MODE)
+				DACs[i] = ChanAmpAssign[0][i]
+				ADCs[i] = ChanAmpAssign[2][i]
+			elseif(clampMode == I_CLAMP_MODE)
+				DACs[i] = ChanAmpAssign[4][i]
+				ADCs[i] = ChanAmpAssign[6][i]
+			else
+				printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
+				return 1
+			endif
+		endfor
+
+		if(SearchForDuplicates(DACs))
+			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same DA channels.\r", panelTitle
+			printf "Please clear the associations for unused headstages.\r"
+			return 1
+		endif
+
+		if(SearchForDuplicates(ADCs))
+			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same AD channels.\r", panelTitle
+			printf "Please clear the associations for unused headstages.\r"
+			return 1
+		endif
+
+		MatrixOP/FREE ampIndex = row(chanAmpAssign, 10)
+
+		if(SearchForDuplicates(ampIndex))
+			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", panelTitle
+			printf "Please clear the associations for unused headstages.\r"
+			return 1
 		endif
 
 		// check all active headstages
