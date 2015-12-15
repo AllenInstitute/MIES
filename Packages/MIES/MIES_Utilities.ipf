@@ -3,6 +3,12 @@
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
+#if defined(IGOR64)
+#if (IgorVersion() < 7.0)
+	#define *** The 64bit version of MIES can only be used with Igor Pro 7 or later ***
+#endif
+#endif
+
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 ///
 /// @hidecallgraph
