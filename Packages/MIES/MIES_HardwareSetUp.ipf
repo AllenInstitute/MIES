@@ -336,30 +336,39 @@ End
 Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 
-	Variable HeadStageNo
+	variable HeadStageNo, channel, amp
+
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
 	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
-	
+
 	// VC DA settings
-	Popupmenu Popup_Settings_VC_DA win = $panelTitle, mode = (ChanAmpAssign[0][HeadStageNo] + 1)
+	channel = ChanAmpAssign[0][HeadStageNo]
+	Popupmenu Popup_Settings_VC_DA win = $panelTitle, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
 	Setvariable setvar_Settings_VC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[1][HeadStageNo]
 	Setvariable SetVar_Hardware_VC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[0][HeadStageNo]
+
 	// VC AD settings
-	Popupmenu Popup_Settings_VC_AD win = $panelTitle, mode = (ChanAmpAssign[2][HeadStageNo] + 1)
+	channel = ChanAmpAssign[2][HeadStageNo]
+	Popupmenu Popup_Settings_VC_AD win = $panelTitle, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
 	Setvariable setvar_Settings_VC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[3][HeadStageNo]
 	Setvariable SetVar_Hardware_VC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[1][HeadStageNo]
+
 	// IC DA settings
-	Popupmenu Popup_Settings_IC_DA win = $panelTitle, mode = (ChanAmpAssign[4][HeadStageNo] + 1)
+	channel = ChanAmpAssign[4][HeadStageNo]
+	Popupmenu Popup_Settings_IC_DA win = $panelTitle, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
 	Setvariable setvar_Settings_IC_DAgain win = $panelTitle, value = _num:ChanAmpAssign[5][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_DA_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[2][HeadStageNo]
+
 	// IC AD settings
-	Popupmenu  Popup_Settings_IC_AD win = $panelTitle, mode = (ChanAmpAssign[6][HeadStageNo] + 1)
+	channel = ChanAmpAssign[6][HeadStageNo]
+	Popupmenu  Popup_Settings_IC_AD win = $panelTitle, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
 	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
-	
-	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = ChanAmpAssign[10][HeadStageNo] + 1
+
+	amp = ChanAmpAssign[10][HeadStageNo]
+	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = (IsFinite(channel) ? amp : 0) + 1
 End
 
 /// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
