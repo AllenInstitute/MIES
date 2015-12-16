@@ -2190,7 +2190,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_HoldEnableVC,value= 0
-	SetVariable setvar_DataAcq_WCR,pos={136,211},size={60,18},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="M\\F'Symbol'W"
+	SetVariable setvar_DataAcq_WCR,pos={136,211},size={60,18},disable=1,proc=DAP_SetVarProc_AmpCntrls,title="M\\F'Symbol'W\\F]0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR,value= _NUM:0
@@ -2413,12 +2413,12 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SealMaxP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealMaxP,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_SealMaxP,limits={-10,0,0.1},value= _NUM:-1.39999997615814
-	SetVariable setvar_Settings_SurfaceHeight,pos={35,721},size={165,16},disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SurfaceHeight,pos={35,721},size={165,16},disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SurfaceHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_SurfaceHeight,limits={0,inf,100},value= _NUM:3500
-	SetVariable setvar_Settings_SliceSurfHeight,pos={225,721},size={166,16},disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface height\\Z11 (\\F'Symbol'm\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SliceSurfHeight,pos={225,721},size={166,16},disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface height\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SliceSurfHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabcontrol)=  "ADC"
