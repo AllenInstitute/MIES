@@ -6,7 +6,7 @@
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
-static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)R\\B%s\\M(\\Z10M\\F'Symbol'W\\M)\\]1\K(0, 0, 0) = \\{\"%%.01#f\", TagVal(2)}"
+static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)R\\B%s\\M(\\Z10M%s)\\]1\K(0, 0, 0) = \\{\"%%.01#f\", TagVal(2)}"
 
 Function/S SCOPE_GetGraph(panelTitle)
 	string panelTitle
@@ -165,7 +165,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.2}, freePos($rightAxis)={0, kwFraction}
 				ModifyGraph/W=$graph lblPos($rightAxis) = 70, lblRot($rightAxis) = 180
 
-				Label/W=$graph $rightAxis "Resistance \\Z10(M\\F'Symbol'W\\M)"
+				Label/W=$graph $rightAxis "Resistance \\Z10(M" + GetSymbolOhm() + ")"
 				Label/W=$graph top "Relative time (s)"
 				SetAxis/W=$graph/A=2 $rightAxis
 				SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
@@ -188,7 +188,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			endif
 
 			tagName = "SSR" + adcStr
-			sprintf str, TAG_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, "ss"
+			sprintf str, TAG_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, "ss", GetSymbolOhm()
 			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagSteadyStateTrace, 0, str
 
 			tagPeakTrace = "InstR" + adcStr
@@ -206,7 +206,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			endif
 
 			tagName = "InstR" + adcStr
-			sprintf str, TAG_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, "peak"
+			sprintf str, TAG_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, "peak", GetSymbolOhm()
 			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagPeakTrace, 0, str
 
 			ModifyGraph/W=$graph noLabel($tagAxis) = 2, axThick($tagAxis) = 0, width = 25
