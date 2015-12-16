@@ -3486,22 +3486,15 @@ End
 Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 	struct WMCheckboxAction &cba
 
-	string DACWave, panelTitle
+	string panelTitle
 
 	switch(cba.eventCode)
 		case 2:
-		paneltitle   = cba.win
-		DACWave      = cba.ctrlName
-		DACwave[0,4] = "wave"
+			paneltitle   = cba.win
 
-		Controlinfo/W=$panelTitle $DACWave
-		if(stringmatch(s_value,"- none -"))
-			SetCheckBoxState(panelTitle, cba.ctrlName, 0)
-		endif
-
-		DAP_UpdateITIAcrossSets(panelTitle)
-		DAP_UpdateSweepSetVariables(panelTitle)
-		break
+			DAP_UpdateITIAcrossSets(panelTitle)
+			DAP_UpdateSweepSetVariables(panelTitle)
+			break
 	endswitch
 End
 
@@ -3828,7 +3821,7 @@ End
 Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
-	string ctrl, stimSetCtrl, list
+	string stimSetCtrl, list
 	string panelTitle, stimSet
 
 	switch(pa.eventCode)
@@ -3836,17 +3829,6 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			stimSetCtrl = pa.ctrlName
 			panelTitle  = pa.win
 			stimSet     = pa.popStr
-
-			if(!StringMatch(stimSetCtrl, "*indexEnd*") && !cmpstr(stimSet, NONE))
-				ctrl = stimSetCtrl
-				ctrl[0,3] = "check"
-				SetCheckBoxState(paneLTitle, ctrl, CHECKBOX_UNSELECTED)
-			endif
-
-			// prevent the user from selecting the testpulse
-			if(StringMatch(stimSetCtrl, "Wave_DA_*") && IsTestPulseSet(stimSet))
-				SetPopupMenuIndex(panelTitle, stimSetCtrl, 2)
-			endif
 
 			// check if this is a third party stim set which
 			// is not yet reflected in the "MenuExp" user data
@@ -4481,7 +4463,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		dacWave = GetPopupMenuString(panelTitle, ctrl)
 		if(!CmpStr(dacWave, NONE) || IsTestPulseSet(dacWave))
-			printf "(%s) Please select a valid DA wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+			printf "(%s) Please select a stimulus set for DA channel %d referenced by Headstage %d\r", panelTitle, DACchannel, headStage
 			return 1
 		endif
 
