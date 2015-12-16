@@ -2807,7 +2807,7 @@ End
 ///
 /// Columns:
 /// - 0: Channel Type
-/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 1: Channel number
 /// - 2: Sampling interval
 /// - 3: Decimation
 Function/WAVE P_GetITCChanConfig(panelTitle)
@@ -2855,7 +2855,7 @@ End
 /// - 3: TTL rack 1 specifications
 /// Columns:
 /// - 0: Channel Type
-/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 1: Channel number
 /// - 2: FIFO advance
 /// - 3: Reserved
 Function/WAVE P_GetITCFIFOConfig(panelTitle)
@@ -2902,7 +2902,7 @@ End
 /// - 3: TTL rack 1 specifications
 /// Columns:
 /// - 0: Channel Type
-/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 1: Channel number
 /// - 2: FIFO available
 /// - 3: Reserved
 Function/WAVE P_GetITCFIFOAvail(panelTitle)
