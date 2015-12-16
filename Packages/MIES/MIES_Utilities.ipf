@@ -1944,10 +1944,29 @@ Function/S AddPrefixToEachListItem(prefix, list)
 	return result
 End
 
+#if (IgorVersion() >= 7.0)
+
 /// @brief Detects duplicate values in a 1d wave.
 ///
 /// @return one if duplicates could be found, zero otherwise
-/// Igor 7 will have a findDuplicates command
+Function SearchForDuplicates(wv)
+	WAVE wv
+
+	variable sucess
+
+	FindDuplicates/INDX=idx wv
+
+	sucess = DimSize(idx, ROWS) > 0
+	KillOrMoveToTrash(wv=idx)
+
+	return sucess
+End
+
+#else
+
+/// @brief Detects duplicate values in a 1d wave.
+///
+/// @return one if duplicates could be found, zero otherwise
 Function SearchForDuplicates(Wv)
 	WAVE Wv
 	ASSERT(WaveType(wv), "Expected numeric wave")
@@ -1962,6 +1981,8 @@ Function SearchForDuplicates(Wv)
 	FindValue/V=1 WvCopyOne
 	return V_value != -1
 End
+
+#endif
 
 /// @brief Check wether the function reference points to
 /// the prototype function or to an assigned function

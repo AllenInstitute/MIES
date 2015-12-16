@@ -2601,6 +2601,10 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,value= _NUM:0
+	Button button_Hardware_ClearChanConn,pos={261.00,329.00},size={150.00,20.00},proc=DAP_ButtonProc_ClearChanCon,title="Clear Associations"
+	Button button_Hardware_ClearChanConn,help={"Clear the channel/amplifier association of the current headstage."}
+	Button button_Hardware_ClearChanConn,userdata(tabnum)=  "6"
+	Button button_Hardware_ClearChanConn,userdata(tabcontrol)=  "ADC"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -4128,6 +4132,30 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	return 0
 End
 
+Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+	variable headStage
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			panelTitle = ba.win
+			WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
+
+			headStage = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
+
+			// set all DA/AD channels for both clamp modes to an invalid channel number
+			ChanAmpAssign[0, 6;2][headStage] = NaN
+			ChanAmpAssign[8, 10][headStage]  = NaN
+
+			HSU_UpdateChanAmpAssignPanel(panelTitle)
+			break
+	endswitch
+
+	return 0
+End
+
 /// @brief Check the settings across yoked devices
 static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	string listOfFollowerDevices
@@ -4200,7 +4228,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled
+	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, ctrlNo, clampMode
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
@@ -4322,6 +4350,49 @@ Function DAP_CheckSettings(panelTitle, mode)
 					endif
 				endfor
 			endif
+		endif
+
+		// avoid having different headstages reference the same amplifiers
+		// and/or DA/AD channels in the "DAC Channel and Device Associations" menu
+		Make/FREE/N=(NUM_HEADSTAGES) DACs, ADCs
+
+		WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+			sprintf ctrl, "Check_DataAcq_HS_%02d", i
+			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, i)
+
+			if(clampMode == V_CLAMP_MODE)
+				DACs[i] = ChanAmpAssign[0][i]
+				ADCs[i] = ChanAmpAssign[2][i]
+			elseif(clampMode == I_CLAMP_MODE)
+				DACs[i] = ChanAmpAssign[4][i]
+				ADCs[i] = ChanAmpAssign[6][i]
+			else
+				printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
+				return 1
+			endif
+		endfor
+
+		if(SearchForDuplicates(DACs))
+			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same DA channels.\r", panelTitle
+			printf "Please clear the associations for unused headstages.\r"
+			return 1
+		endif
+
+		if(SearchForDuplicates(ADCs))
+			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same AD channels.\r", panelTitle
+			printf "Please clear the associations for unused headstages.\r"
+			return 1
+		endif
+
+		MatrixOP/FREE ampIndex = row(chanAmpAssign, 10)
+
+		if(SearchForDuplicates(ampIndex))
+			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", panelTitle
+			printf "Please clear the associations for unused headstages.\r"
+			return 1
 		endif
 
 		// check all active headstages
