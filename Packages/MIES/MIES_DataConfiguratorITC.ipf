@@ -787,7 +787,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
-		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
+		DAGain = HARDWARE_ITC_BITS_PER_VOLT / val
 
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
 
