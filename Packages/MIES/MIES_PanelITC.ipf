@@ -2603,6 +2603,10 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,value= _NUM:0
+	Button button_Hardware_ClearChanConn,pos={261.00,329.00},size={150.00,20.00},proc=DAP_ButtonProc_ClearChanCon,title="Clear Associations"
+	Button button_Hardware_ClearChanConn,help={"Clear the channel/amplifier association of the current headstage."}
+	Button button_Hardware_ClearChanConn,userdata(tabnum)=  "6"
+	Button button_Hardware_ClearChanConn,userdata(tabcontrol)=  "ADC"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -4124,6 +4128,30 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 			HSU_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+	variable headStage
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			panelTitle = ba.win
+			WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
+
+			headStage = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
+
+			// set all DA/AD channels for both clamp modes to an invalid channel number
+			ChanAmpAssign[0, 6;2][headStage] = NaN
+			ChanAmpAssign[8, 10][headStage]  = NaN
+
+			HSU_UpdateChanAmpAssignPanel(panelTitle)
 			break
 	endswitch
 
