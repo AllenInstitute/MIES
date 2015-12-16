@@ -3,6 +3,12 @@
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
+#if defined(IGOR64)
+#if (IgorVersion() < 7.0)
+	#define *** The 64bit version of MIES can only be used with Igor Pro 7 or later ***
+#endif
+#endif
+
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 ///
 /// @hidecallgraph
@@ -1654,9 +1660,15 @@ End
 /// Due to memory fragmentation you can not assume that you can still create a wave
 /// occupying as much space as returned.
 Function GetFreeMemory()
-	string memStr = StringByKey("FREEMEM", IgorInfo(0))
+	variable freeMem
 
-	return str2num(memStr) / 1024 / 1024 / 1024
+#if defined(IGOR64)
+	freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
+#else
+	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
+#endif
+
+	return freeMem / 1024 / 1024 / 1024
 End
 
 /// @brief Remove the given reguluar expression from the end of the string
