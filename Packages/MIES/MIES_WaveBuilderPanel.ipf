@@ -74,6 +74,28 @@ Window WaveBuilder() : Panel
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
+	TabControl WBP_WaveType,pos={187,3},size={686,205},proc=ACL_DisplayTab
+	TabControl WBP_WaveType
+	TabControl WBP_WaveType,userdata(tabcontrol)=  "WBP_WaveType"
+	TabControl WBP_WaveType,userdata(currenttab)=  "0"
+	TabControl WBP_WaveType,userdata(initialhook)= "WBP_InitialTabHook"
+	TabControl WBP_WaveType,userdata(finalhook)= "WBP_FinalTabHook"
+	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GK!!#8L!!#D;J,hr/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
+	TabControl WBP_WaveType,tabLabel(2)="GPB-Noise",tabLabel(3)="Sin"
+	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
+	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load",tabLabel(8)="Combine"
+	TabControl WBP_WaveType,value= 0
+	TabControl WBP_Set_Parameters,pos={3,29},size={182,174},proc=ACL_DisplayTab
+	TabControl WBP_Set_Parameters,userdata(finalhook)= "WBP_FinalTabHook"
+	TabControl WBP_Set_Parameters,userdata(currenttab)=  "0"
+	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo)= A"!!,>M!!#=K!!#AE!!#A?z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	TabControl WBP_Set_Parameters,labelBack=(60928,60928,60928),tabLabel(0)="Basic"
+	TabControl WBP_Set_Parameters,tabLabel(1)="Analysis Functions",value= 0
 	SetVariable SetVar_WB_NumEpochs_S100,pos={35,81},size={124,20},proc=WBP_SetVarProc_TotEpoch,title="Total Epochs"
 	SetVariable SetVar_WB_NumEpochs_S100,help={"Number of consecutive epochs in a sweep"}
 	SetVariable SetVar_WB_NumEpochs_S100,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -203,20 +225,6 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P6,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P6,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P6,userdata(tabnum)=  "3",value= _NUM:0
-	TabControl WBP_WaveType,pos={187,3},size={686,205},proc=ACL_DisplayTab
-	TabControl WBP_WaveType,help={"Select epoch type"}
-	TabControl WBP_WaveType,userdata(tabcontrol)=  "WBP_WaveType"
-	TabControl WBP_WaveType,userdata(currenttab)=  "0"
-	TabControl WBP_WaveType,userdata(initialhook)= "WBP_InitialTabHook"
-	TabControl WBP_WaveType,userdata(finalhook)= "WBP_FinalTabHook"
-	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GK!!#8L!!#D;J,hr/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
-	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
-	TabControl WBP_WaveType,tabLabel(2)="GPB-Noise",tabLabel(3)="Sin"
-	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
-	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load",tabLabel(8)="Combine"
-	TabControl WBP_WaveType,value= 0
 	SetVariable setvar_WaveBuilder_CurrentEpoch,pos={37,129},size={122,20},proc=WBP_SetVarProc_EpochToEdit,title="Epoch to edit"
 	SetVariable setvar_WaveBuilder_CurrentEpoch,help={"Epoch to edit. The active epoch is displayed on the graph with a white background. Inactive epochs have a gray background."}
 	SetVariable setvar_WaveBuilder_CurrentEpoch,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -739,15 +747,6 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postSweep_S3,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	TabControl WBP_Set_Parameters,pos={3,29},size={182,174},proc=ACL_DisplayTab
-	TabControl WBP_Set_Parameters,userdata(finalhook)= "WBP_FinalTabHook"
-	TabControl WBP_Set_Parameters,help={"Stimulus set parameters and custom analysis functions."}
-	TabControl WBP_Set_Parameters,userdata(currenttab)=  "0"
-	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo)= A"!!,>M!!#=K!!#AE!!#A?z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	TabControl WBP_Set_Parameters,labelBack=(60928,60928,60928),tabLabel(0)="Basic"
-	TabControl WBP_Set_Parameters,tabLabel(1)="Analysis Functions",value= 0
 	PopupMenu popup_af_postSet_S4,pos={24,128},size={153,21},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Set"
 	PopupMenu popup_af_postSet_S4,help={"After a *full* set has been acquired (This event is not always reached as the user might not acquire all sweeps of a set)"}
 	PopupMenu popup_af_postSet_S4,userdata(tabnum)=  "1"
