@@ -2768,7 +2768,7 @@ End
 /// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
 ///
 /// Rows:
-/// - data points (@ 50 microsecond intervals)
+/// - data points, see P_GetITCChanConfig() for the sampling interval
 ///
 /// Columns:
 /// - 0: DA data
