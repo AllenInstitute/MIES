@@ -116,7 +116,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_11,value= 0,side= 1
-	SetVariable Gain_AD_00,pos={49,74},size={50,16},disable=1,help={"hello"}
+	SetVariable Gain_AD_00,pos={49,74},size={50,16},disable=1
 	SetVariable Gain_AD_00,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo)= A"!!,EF!!#>>!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -231,7 +231,7 @@ Window DA_Ephys() : Panel
 	SetVariable Gain_AD_15,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_15,limits={0,inf,1},value= _NUM:0
 	CheckBox Check_DA_00,pos={20,75},size={24,14},disable=1,proc=DAP_DAorTTLCheckProc,title="0"
-	CheckBox Check_DA_00,help={"hello!"},userdata(tabnum)=  "1"
+	CheckBox Check_DA_00,userdata(tabnum)=  "1"
 	CheckBox Check_DA_00,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo)= A"!!,B)!!#?M!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -279,7 +279,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DA_07,value= 0,side= 1
-	SetVariable Gain_DA_00,pos={47,75},size={40,16},disable=1,help={"hello"}
+	SetVariable Gain_DA_00,pos={47,75},size={40,16},disable=1
 	SetVariable Gain_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo)= A"!!,EF!!#?M!!#>.!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Gain_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -651,7 +651,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_SkipAnalysFuncs,value= 0
 	CheckBox Check_AsyncAD_00,pos={172,46},size={42,14},disable=1,title="AD 0"
-	CheckBox Check_AsyncAD_00,help={"hello!"},userdata(tabnum)=  "4"
+	CheckBox Check_AsyncAD_00,userdata(tabnum)=  "4"
 	CheckBox Check_AsyncAD_00,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,G<!!#>F!!#>6!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -700,7 +700,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_07,value= 0
 	SetVariable SetVar_AsyncAD_Gain_00,pos={226,44},size={75,16},disable=1,title="gain"
-	SetVariable SetVar_AsyncAD_Gain_00,help={"hello"},userdata(tabnum)=  "4"
+	SetVariable SetVar_AsyncAD_Gain_00,userdata(tabnum)=  "4"
 	SetVariable SetVar_AsyncAD_Gain_00,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_AsyncAD_Gain_00,userdata(ResizeControlsInfo)= A"!!,Gr!!#>>!!#?O!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_AsyncAD_Gain_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1894,95 +1894,95 @@ Window DA_Ephys() : Panel
 	TitleBox Title_Hardware_IC_unit,pos={331,395},size={17,13},title="unit"
 	TitleBox Title_Hardware_IC_unit,userdata(tabnum)=  "6"
 	TitleBox Title_Hardware_IC_unit,userdata(tabcontrol)=  "ADC",frame=0
-	SetVariable Unit_DA_00,pos={92,75},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_00,pos={92,75},size={30,16},disable=1
 	SetVariable Unit_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_00,limits={0,inf,1},value= _STR:""
 	TitleBox Title_DA_Unit,pos={95,50},size={23,13},disable=1,title="Unit"
 	TitleBox Title_DA_Unit,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	TitleBox Title_DA_Unit,frame=0,fStyle=1
-	SetVariable Unit_DA_01,pos={91,120},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_01,pos={91,120},size={30,16},disable=1
 	SetVariable Unit_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_01,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_02,pos={91,167},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_02,pos={91,167},size={30,16},disable=1
 	SetVariable Unit_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_02,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_03,pos={91,214},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_03,pos={91,214},size={30,16},disable=1
 	SetVariable Unit_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_03,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_04,pos={91,258},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_04,pos={91,258},size={30,16},disable=1
 	SetVariable Unit_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_04,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_05,pos={91,305},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_05,pos={91,305},size={30,16},disable=1
 	SetVariable Unit_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_05,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_06,pos={91,352},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_06,pos={91,352},size={30,16},disable=1
 	SetVariable Unit_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_06,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_07,pos={91,399},size={30,16},disable=1,help={"hello"}
+	SetVariable Unit_DA_07,pos={91,399},size={30,16},disable=1
 	SetVariable Unit_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_DA_07,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_00,pos={106,74},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_00,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_00,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_00,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_00,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_01,pos={106,120},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_01,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_01,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_01,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_01,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_02,pos={106,166},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_02,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_02,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_02,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_02,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_03,pos={106,212},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_03,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_03,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_03,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_03,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_04,pos={106,259},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_04,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_04,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_04,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_04,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_05,pos={106,305},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_05,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_05,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_05,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_05,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_06,pos={106,351},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_06,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_06,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_06,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_06,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_07,pos={106,398},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_07,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_07,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_07,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_07,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_08,pos={278,74},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_08,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_08,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_08,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_08,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_09,pos={278,120},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_09,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_09,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_09,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_09,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_10,pos={278,166},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_10,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_10,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_10,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_10,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_11,pos={278,212},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_11,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_11,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_11,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_11,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_12,pos={278,259},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_12,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_12,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_12,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_12,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_13,pos={278,305},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_13,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_13,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_13,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_13,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_14,pos={278,351},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_14,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_14,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_14,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_14,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_15,pos={278,398},size={40,16},disable=1,title="V/"
-	SetVariable Unit_AD_15,help={"hello"},userdata(tabnum)=  "2"
+	SetVariable Unit_AD_15,userdata(tabnum)=  "2"
 	SetVariable Unit_AD_15,userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AD_15,limits={0,inf,1},value= _STR:""
 	TitleBox Title_AD_Unit,pos={122,50},size={23,13},disable=1,title="Unit"
