@@ -6,7 +6,7 @@
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
-static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)R\\B%s\\M(\\Z10M%s)\\]1\K(0, 0, 0) = \\{\"%%.01#f\", TagVal(2)}"
+static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%.01#f\", TagVal(2)}\\]1\K(0, 0, 0)"
 
 Function/S SCOPE_GetGraph(panelTitle)
 	string panelTitle
@@ -33,9 +33,10 @@ Function SCOPE_OpenScopeWindow(panelTitle)
 
 	graph = SCOPE_GetGraph(panelTitle)
 
-	NewPanel/EXT=0/W=(0,0,434,784)/HOST=$panelTitle/N=Scope/K=2
+	NewPanel/EXT=0/W=(0,0,460,784)/HOST=$panelTitle/N=Scope/K=2
 	Display/W=(0,10,358,776)/HOST=$win/N=oscilloscope/FG=(FL,FT,FR,FB)
 	ModifyPanel/W=$win fixedSize=0
+	ModifyGraph/W=$graph gfSize=14
 	ModifyGraph/W=$graph wbRGB=(60928,60928,60928),gbRGB=(60928,60928,60928)
 	SetActiveSubWindow $paneltitle
 End
@@ -53,10 +54,11 @@ End
 Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
-	variable latest, count
-	string graph
+	variable latest, count, i, numADCs, minVal, maxVal, range, numDigits
+	string graph, rightAxis, info
 
 	graph = SCOPE_GetGraph(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	GetAxis/W=$graph/Q top
 	if(!V_flag) // axis exists in graph
@@ -67,6 +69,45 @@ Function SCOPE_UpdateGraph(panelTitle)
 		if(latest >= V_max)
 			SetAxis/W=$graph top, latest -  0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE, latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 		endif
+
+		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+		numADCs = DimSize(ADCs, ROWS)
+
+		for(i = 0; i < numADCs; i += 1)
+
+			rightAxis = "resistance" + num2str(ADCs[i])
+
+			info = AxisInfo(graph, rightAxis)
+
+			if(isEmpty(info))
+				continue
+			endif
+
+			Duplicate/FREE/R=[][i][1] TPStorage, peak
+			Duplicate/FREE/R=[][i][2] TPStorage, steady
+
+			WaveStats/M=1/Q peak
+			minVal = V_min
+			maxVal = V_max
+
+			WaveStats/M=1/Q steady
+			minVal = min(V_min, minVal)
+			maxVal = max(V_max, maxVal)
+
+			range = maxVal - minVal
+
+			if(!IsFinite(range) || range == 0)
+				continue
+			endif
+
+			minVal = minVal + 0.02 * range
+			range *= 0.98
+
+			numDigits = ceil(abs(log(maxVal - minVal)))
+
+			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,numDigits}
+			ModifyGraph/W=$graph manMinor($rightAxis)={3,0}
+		endfor
 	endif
 
 	ModifyGraph/W=$graph live = 0
@@ -93,7 +134,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	string panelTitle
 
 	string dataName, graph, tagName
-	variable i, adc, numActiveDACs, numADChannels
+	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
 	variable showSteadyStateResistance, showPeakResistance
 	string leftAxis, rightAxis, tagAxis, str
 	string tagPeakTrace, tagSteadyStateTrace
@@ -141,7 +182,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 		// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		unit = StringFromList(numActiveDACs + i, unitWaveNote)
 		Label/W=$graph $leftAxis, leftAxis + " (" + unit + ")"
-		ModifyGraph/W=$graph lblPos($leftAxis) = 60
+		ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
 		// add the also the trace for the current resistance values from the test pulse
@@ -162,13 +203,20 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			endif
 
 			if(showPeakResistance ||showSteadyStateResistance)
-				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.2}, freePos($rightAxis)={0, kwFraction}
-				ModifyGraph/W=$graph lblPos($rightAxis) = 70, lblRot($rightAxis) = 180
+				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
+				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
+				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit(top)=1
+				Label/W=$graph $rightAxis "(M" + GetSymbolOhm() + ")"
 
-				Label/W=$graph $rightAxis "Resistance \\Z10(M" + GetSymbolOhm() + ")"
-				Label/W=$graph top "Relative time (s)"
-				SetAxis/W=$graph/A=2 $rightAxis
-				SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
+				if(!oneTimeInitDone)
+					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(M%s)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(M%s)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, GetSymbolOhm(), peakColor.red, peakColor.green, peakColor.blue, GetSymbolOhm()
+					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2  str
+
+					Label/W=$graph top "Relative time (s)"
+					SetAxis/W=$graph/A=2 $rightAxis
+					SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
+					oneTimeInitDone = 1
+				endif
 			endif
 
 			tagAxis = rightAxis + "_tags"
@@ -178,8 +226,8 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			ModifyGraph/W=$graph mode($tagSteadyStateTrace) = 2, lsize($tagSteadyStateTrace) = 0
 
 			if(showPeakResistance || showSteadyStateResistance)
-				xPos = 50
-				yPos = 5
+				xPos = 40
+				yPos = 2
 				anchor = "RB"
 			else
 				XPos = 0
@@ -188,7 +236,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			endif
 
 			tagName = "SSR" + adcStr
-			sprintf str, TAG_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, "ss", GetSymbolOhm()
+			sprintf str, TAG_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue
 			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagSteadyStateTrace, 0, str
 
 			tagPeakTrace = "InstR" + adcStr
@@ -196,8 +244,8 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			ModifyGraph/W=$graph mode($tagPeakTrace) = 2, lsize($tagPeakTrace) = 0
 
 			if(showPeakResistance || showSteadyStateResistance)
-				xPos = 100
-				yPos = 3
+				xPos = 90
+				yPos = 0
 				anchor = "RB"
 			else
 				xPos = -15
@@ -206,7 +254,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 			endif
 
 			tagName = "InstR" + adcStr
-			sprintf str, TAG_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, "peak", GetSymbolOhm()
+			sprintf str, TAG_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue
 			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagPeakTrace, 0, str
 
 			ModifyGraph/W=$graph noLabel($tagAxis) = 2, axThick($tagAxis) = 0, width = 25
