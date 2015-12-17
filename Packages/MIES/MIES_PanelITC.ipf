@@ -4387,7 +4387,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		MatrixOP/FREE ampIndex = row(chanAmpAssign, 10)
+		MatrixOP/FREE ampIndex = row(chanAmpAssign, 10)^t
 
 		if(SearchForDuplicates(ampIndex))
 			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", panelTitle
