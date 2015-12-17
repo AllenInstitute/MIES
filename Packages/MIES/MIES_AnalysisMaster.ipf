@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file MIES_analysisMaster.ipf
+/// @file MIES_AnalysisMaster.ipf
 /// @brief __AM__ Waveform analysis framework
 
 /// Function used to create a framework for calling post-sweep analysis functions

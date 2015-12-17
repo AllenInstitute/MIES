@@ -1,6 +1,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-/// @file MIES_ProgrammaticGuiControl.ipf
+/// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
 
 static StrConstant PROCEDURE_START = "proc="
