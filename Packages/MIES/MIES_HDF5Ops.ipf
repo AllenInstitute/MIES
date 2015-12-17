@@ -5,7 +5,7 @@
 
 Menu "HDF5 Tools"
 		"-"
-		"Open HDF5 Browser", CreateNewHDF5Browser()
+		"Open HDF5 Browser", IPNWB#CreateNewHDF5Browser()
 		"Save HDF5 File", HD_Convert_To_HDF5("menuSaveFile.h5")
 		"Save Stim Set", HD_SaveStimSet()
 		"Load and Replace Stim Set", HD_LoadReplaceStimSet()
