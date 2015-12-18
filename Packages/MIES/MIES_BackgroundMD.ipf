@@ -96,29 +96,21 @@ Function ITC_FIFOMonitorMD(s)
 	WAVE/SDFR=activeDevices ActiveDeviceList
 	WAVE/SDFR=activeDevices/T ActiveDeviceTextList
 	WAVE/WAVE/SDFR=activeDevices ActiveDevWavePathWave
-	string cmd
-	variable deviceID
+	variable deviceID, moreData
 	variable i, fifoPos
-	string panelTitle, oscilloscopeSubwindow
+	string panelTitle
 
 	for(i = 0; i < DimSize(ActiveDeviceTextList, ROWS); i += 1)
 		panelTitle = ActiveDeviceTextList[i]
-		oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-		deviceID = ActiveDeviceList[i][0]
-
-		WAVE ITCDataWave = ActiveDevWavePathWave[i][0]
-		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
+		deviceID   = ActiveDeviceList[i][0]
 
 		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
-		ExecuteITCOperation(cmd)
+		moreData = HW_ITC_MoreData(deviceID, fifoAvail=ActiveDevWavePathWave[i][1], ADChannelToMonitor=ActiveDeviceList[i][1], stopCollectionPoint=ActiveDeviceList[i][2], fifoPos=fifoPos)
 
-		fifoPos = ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2]
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
-
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
-		if(fifoPos >= ActiveDeviceList[i][2])
+		if(!moreData)
 			print "stopped data acq on " + panelTitle, "device ID global = ", deviceID
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
 			ITC_StopDataAcqMD(panelTitle, deviceID)

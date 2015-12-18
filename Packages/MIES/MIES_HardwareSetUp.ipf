@@ -154,8 +154,6 @@ End
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
-	string cmd
-
 	if(!windowExists(panelTitle))
 		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
 		return NaN
