@@ -61,8 +61,6 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
-	string cmd
-
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
@@ -73,19 +71,11 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
-	
-	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER)
-		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
-		endif
-		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperationAbortOnError(cmd)
-	elseif(triggerMode == HARDWARE_DAC_EXTERNAL_TRIGGER)
-		sprintf cmd, "ITCStartAcq 1, %d", 256
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ASSERT(0, "Unknown triggerMode")
+	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		ITC_StartITCDeviceTimer(panelTitle)
 	endif
+
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 
@@ -149,16 +139,11 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
-	string cmd
 	NVAR count = $GetCount(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
-	ExecuteITCOperation(cmd)
-	
 	DM_SaveAndScaleITCData(panelTitle)
 	if(!IsFinite(count))
 		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
@@ -183,8 +168,7 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceTextList
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	
 	ITC_ZeroITCOnActiveChan(panelTitle)
 	

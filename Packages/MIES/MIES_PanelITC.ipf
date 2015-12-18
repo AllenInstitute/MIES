@@ -5578,7 +5578,6 @@ End
 Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
 
-	string cmd
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 
@@ -5599,8 +5598,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		ITC_STOPFifoMonitor()
 
-		sprintf cmd, "ITCStopAcq /z = 0"
-		ExecuteITCOperation(cmd)
+		HW_ITC_StopAcq()
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
 

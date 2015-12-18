@@ -54,8 +54,6 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
-	string cmd
-
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
@@ -73,15 +71,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 		CtrlNamedBackground TestPulseMD, start
 	endif
 
-	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER) // Start data acquisition triggered on immediate - triggered is used for syncronizing/yoking multiple DACs
-		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperationAbortOnError(cmd)
-	elseif(triggerMode == HARDWARE_DAC_EXTERNAL_TRIGGER)
-		sprintf cmd, "ITCStartAcq 1, %d", 256
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ASSERT(0, "Unknown triggerMode")
-	endif
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 Function ITC_BkrdTPFuncMD(s)
@@ -152,8 +142,7 @@ Function ITC_BkrdTPFuncMD(s)
 		if(!DAP_DeviceCanLead(panelTitle))
 			WAVE/Z/SDFR=deviceDFR FIFOAdvance
 			if((WaveExists(FIFOAdvance) && FIFOAdvance[0][2] <= 0) || (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] > 0 && abs(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][5]) <= 1)) // checks to see if the hardware buffer is at max capacity
-				sprintf cmd, "ITCStopAcq" // stop and restart acquisition
-				ExecuteITCOperation(cmd)
+				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
 				ITCFIFOAvailAllConfigWave[][2] = 0
 				FIFOAdvance[0][2] = NaN
 				WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -163,8 +152,7 @@ Function ITC_BkrdTPFuncMD(s)
 				ExecuteITCOperation(cmd)
 				sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 				ExecuteITCOperation(cmd)
-				sprintf cmd, "ITCStartAcq"
-				ExecuteITCOperationAbortOnError(cmd)
+				HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 				printf "Device %s restarted\r", panelTitle
 			endif
 		endif
@@ -219,8 +207,7 @@ static Function ITC_StopTPMD(panelTitle)
 	ExecuteITCOperation(cmd)
 
 	if(StateWave[0] != 0) // makes sure the device being stopped is actually running
-		sprintf cmd, "ITCStopAcq"
-		ExecuteITCOperation(cmd)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.

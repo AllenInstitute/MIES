@@ -34,8 +34,7 @@ Function ITC_DataAcq(panelTitle)
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
-	sprintf cmd, "ITCStartAcq"
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do
 		sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
@@ -48,11 +47,8 @@ Function ITC_DataAcq(panelTitle)
 	//Check Status
 	sprintf cmd, "ITCGetState /R /O /C /E %s" GetWavesDataFolder(ResultsWave, 2)
 	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
 
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0" //as long as this command is within the do-while loop the number of cycles can be repeated
-	ExecuteITCOperation(cmd)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitle)
 End
@@ -83,25 +79,18 @@ Function ITC_BkrdDataAcq(panelTitle)
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
-	sprintf cmd, "ITCStartAcq" 
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	ITC_StartBckgrdFIFOMonitor()
 End
 
 Function ITC_StopDataAcq()
-	string cmd
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"
-	ExecuteITCOperation(cmd)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitleG)
 
@@ -248,8 +237,7 @@ Function ITC_TestPulseFunc(s)
 
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	ExecuteITCOperation(cmd) // this also seems necessary to update the DA channel data to the board!!
-	sprintf cmd, "ITCStartAcq"
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
@@ -258,10 +246,7 @@ Function ITC_TestPulseFunc(s)
 
 	sprintf cmd, "ITCGetState /R /O /C /E %s", GetWavesDataFolder(ResultsWave, 2)
 	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated
-	ExecuteITCOperation(cmd)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 	TP_Delta(panelTitle)
 
@@ -416,6 +401,7 @@ Function ITC_StartTestPulse(panelTitle)
 	string cmd
 	variable i
 
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 
@@ -435,8 +421,8 @@ Function ITC_StartTestPulse(panelTitle)
 		// this also seems necessary to update the DA channel data to the board!!
 		sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
-		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperationAbortOnError(cmd)
+
+		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 		do
 			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
@@ -445,13 +431,10 @@ Function ITC_StartTestPulse(panelTitle)
 
 		sprintf cmd, "ITCGetState /R /O /C /E %s", GetWavesDataFolder(ResultsWave, 2)
 		ExecuteITCOperation(cmd)
-		sprintf cmd, "ITCStopAcq /z = 0"
-		ExecuteITCOperation(cmd)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 		DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
 		DoUpdate/W=$oscilloscopeSubwindow
-		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
-		ExecuteITCOperation(cmd)
 
 		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
