@@ -5870,11 +5870,9 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
-	string cmd
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
 	HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
-	sprintf cmd, "ITCInitialize /M = 0"
-	ExecuteITCOperation(cmd)
+	HW_DisableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 End
 
 Function DAP_RemoveAllYokedDACs(panelTitle)

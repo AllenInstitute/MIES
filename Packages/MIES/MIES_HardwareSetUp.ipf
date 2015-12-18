@@ -396,16 +396,13 @@ End
 Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	string leadDAC, followerDAC
 
-	string cmd
-
 	SVAR listOfFollowerDevices = $HSU_CreateITCFollowerList(leadDAC)
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerDAC)
 	
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
 		HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
-		sprintf cmd, "ITCInitialize /M = 1"
-		ExecuteITCOperation(cmd)
+		HW_EnableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
 	// TB: what does this comment mean?
