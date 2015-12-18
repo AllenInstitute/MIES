@@ -4887,7 +4887,9 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 
-		if(HSU_CanSelectDevice(panelTitle))
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			return 1
 		endif
