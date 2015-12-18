@@ -2328,3 +2328,14 @@ Function/WAVE GetColfromWavewithDimLabel(waveRef, dimLabel)
 	matrixOp/FREE OneDWv = col(waveRef, column)
 	return OneDWv
 End
+
+/// @brief Turn a persistent wave into a free wave
+Function/Wave MakeWaveFree(wv)
+	WAVE wv
+
+	DFREF dfr = NewFreeDataFolder()
+
+	MoveWave wv, dfr
+
+	return wv
+End
