@@ -280,19 +280,17 @@ End
 Function HSU_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
-	string cmd
-	variable deviceType = HSU_GetDeviceTypeIndex(panelTitle)
+	variable numDevices
 
-	Make/O/I/N=1 localwave
-	sprintf cmd, "ITCGetDevices /Z=0 %d, localWave" deviceType
-	ExecuteITCOperation(cmd)
-	if(LocalWave[0] == 0)
-		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
+	numDevices = ItemsInList(ListMatch(HSU_ListDevices(), HSU_GetDeviceType(panelTitle) + "_DEV_*"))
+
+	if(!numDevices)
+		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
 	else
-		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 0
+		EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
 	endif
-	print "Available number of specified ITC devices =", LocalWave[0]
-	KillOrMoveToTrash(wv=localwave)
+
+	printf "Available number of specified ITC devices = %d\r" numDevices
 End
 
 /// @brief Update the list of locked devices
