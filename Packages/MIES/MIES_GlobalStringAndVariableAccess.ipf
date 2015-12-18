@@ -247,6 +247,7 @@ Function/S GetADChannelToMonitor(panelTitle)
 End
 
 /// @brief Return global panelTitle for background tasks
+/// @todo remove and use background struct members for the deviceID and GetDeviceMapping instead
 Function/S GetPanelTitleGlobal()
 
 	return GetSVARAsString(GetITCDevicesFolder(), "panelTitleG")
