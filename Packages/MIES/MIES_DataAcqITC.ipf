@@ -526,16 +526,15 @@ End
 
 /// @brief Sets active DA channels to Zero - used after TP MD
 Function ITC_ZeroITCOnActiveChan(panelTitle)
-	string panelTitle // function operates on active device - does not check to see if a device is open.
+	string panelTitle
 
-	string cmd
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(statusDA[i])
-			sprintf cmd, "ITCSetDAC /z = 0 %d, 0" i
-			ExecuteITCOperation(cmd)
+			HW_WriteDAC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i, 0)
 		endif
 	endfor
 End
