@@ -188,8 +188,7 @@ Function HSU_UnlockDevice(panelTitle)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	sprintf cmd, "ITCCloseDevice"
-	ExecuteITCOperation(cmd)
+	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
