@@ -218,20 +218,6 @@ End
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	string cmd
-
-	SVAR panelTitleG       = $GetPanelTitleGlobal()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-
-	WAVE ITCDataWave       = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
-
 	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 End
@@ -618,23 +604,4 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 	endif
-End
-
-Function ITC_ConfigUploadDAC(panelTitle)
-	string panelTitle
-
-	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-
-	string cmd
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	ExecuteITCOperation(cmd)
 End

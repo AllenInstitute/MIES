@@ -18,8 +18,10 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	string followerPanelTitle
 
 	// configure passed device
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-	ITC_ConfigUploadDAC(panelTitle)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
 	if(!DAP_DeviceHasFollower(panelTitle))
 		ITC_BkrdDataAcqMD(panelTitle)
@@ -33,7 +35,9 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 		DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
-		ITC_ConfigUploadDAC(followerPanelTitle)
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
+		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 	endfor
 
 	// start lead device
