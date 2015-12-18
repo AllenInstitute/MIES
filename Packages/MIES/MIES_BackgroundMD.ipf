@@ -37,12 +37,12 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	endfor
 
 	// start lead device
-	ITC_BkrdDataAcqMD(panelTitle, triggerMode=256)
+	ITC_BkrdDataAcqMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 
 	// start follower devices
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		ITC_BkrdDataAcqMD(followerPanelTitle, triggerMode=256)
+		ITC_BkrdDataAcqMD(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
@@ -60,7 +60,7 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 	string cmd
 
 	if(ParamIsDefault(triggerMode))
-		triggerMode = 0
+		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
@@ -72,15 +72,17 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
 	
-	if(TriggerMode == 0)
+	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER)
 		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
 		sprintf cmd, "ITCStartAcq"
 		ExecuteITCOperationAbortOnError(cmd)
-	elseif(TriggerMode > 0)
-		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode
+	elseif(triggerMode == HARDWARE_DAC_EXTERNAL_TRIGGER)
+		sprintf cmd, "ITCStartAcq 1, %d", 256
 		ExecuteITCOperationAbortOnError(cmd)
+	else
+		ASSERT(0, "Unknown triggerMode")
 	endif
 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device

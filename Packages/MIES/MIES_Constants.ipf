@@ -391,3 +391,11 @@ Constant REAL_SAMPLING_INTERVAL_TYPE = 0x2
 
 /// Conversion factor between volts and bits for the AD/DA channels
 Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
+
+/// @name Trigger modes
+/// External trigger is used for yoking multiple ITC 1600 devices
+/// @anchor TriggerModeStartAcq
+/// @{
+Constant HARDWARE_DAC_DEFAULT_TRIGGER  = 0x0
+Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
+/// @}
