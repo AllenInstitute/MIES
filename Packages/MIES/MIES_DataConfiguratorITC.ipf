@@ -617,15 +617,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
-			ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-			ASSERT(ret, "Could not parse device string")
-
-			if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
-				channel = 1
-			else
-				channel = 0
-			endif
-
+			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
 			ITCChanConfigWave[j][1] = channel
 			sweepDataLNB[0][10][]   = channel
 
@@ -635,7 +627,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
-			channel = 3
+			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
 			ITCChanConfigWave[j][1] = channel
 			sweepDataLNB[0][11][]   = channel
 		endif
@@ -1011,7 +1003,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
-	DC_GetRackRange(rackNo, first, last)
+	HW_ITC_GetRackRange(rackNo, first, last)
 
 	for(i = first; i <= last; i += 1)
 
@@ -1211,20 +1203,4 @@ static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
 	endif
 
 	ASSERT(0, "unknown mode")
-End
-
-/// @brief Return the `first` and `last` TTL bits for the given `rack`
-static Function DC_GetRackRange(rack, first, last)
-	variable rack
-	variable &first, &last
-
-	if(rack == RACK_ZERO)
-		first = 0
-		last = NUM_TTL_BITS_PER_RACK - 1
-	elseif(rack == RACK_ONE)
-		first = NUM_TTL_BITS_PER_RACK
-		last = 2 * NUM_TTL_BITS_PER_RACK - 1
-	else
-		ASSERT(0, "Invalid rack parameter")
-	endif
 End

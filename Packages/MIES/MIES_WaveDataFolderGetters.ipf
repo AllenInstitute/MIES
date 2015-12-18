@@ -2858,10 +2858,10 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE=wv
 
 	wv = 0
-	wv[0][0] = 1 // DA
-	wv[1][0] = 0 // AD
-	wv[2][0] = 3 // TTL
-	wv[3][0] = 3 // TTL
+	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
+	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
+	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
+	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
 	wv[2][1] = 0 // TTL rack 0
 	wv[3][1] = 3 // TTL rack 1
@@ -2906,10 +2906,10 @@ Function/WAVE P_GetITCFIFOConfig(panelTitle)
 	Make/I/N=(4, 4) dfr:P_ITCFIFOConfig/WAVE=wv
 
 	wv = 0
-	wv[0][0] = 1 // DA
-	wv[1][0] = 0 // AD
-	wv[2][0] = 3 // TTL
-	wv[3][0] = 3 // TTL
+	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
+	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
+	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
+	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
 	wv[2][1] = 0 // TTL rack 0
 	wv[3][1] = 3 // TTL rack 1
@@ -2962,10 +2962,10 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 	SetDimLabel COLS, 2, FIFO_avail, wv
 
 	wv = 0
-	wv[0][0] = 1 // DA
-	wv[1][0] = 0 // AD
-	wv[2][0] = 3 // TTL
-	wv[3][0] = 3 // TTL
+	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
+	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
+	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
+	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
 	wv[2][1] = 0 // TTL rack 0
 	wv[3][1] = 3 // TTL rack 1
