@@ -482,23 +482,6 @@ Function ITC_StartTestPulse(panelTitle)
 	TP_Teardown(panelTitle)
 END
 
-Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
-	variable Channel
-	string panelTitle
-
-	variable channelValue
-	string cmd
-	DFREF deviceDFR = GetDevicePath(panelTitle)
-
-	Make/O/N=1 deviceDFR:AsyncChannelData/Wave=AsyncChannelData
-	sprintf cmd, "ITCReadADC /V = 1 %d, %s" Channel, GetWavesDataFolder(AsyncChannelData, 2)
-	ExecuteITCOperation(cmd)
-
-	channelValue = AsyncChannelData[0]
-	KillOrMoveToTrash(wv=AsyncChannelData)
-	return channelValue
-End 
-
 Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	WAVE dataWave
 	string panelTitle
@@ -507,6 +490,8 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	// this is the wave that the note gets appended to. The note contains the async ad channel value and info
 	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
 	string setvarTitle, setvarGain, title
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	// Create the measurement wave that will hold the measurement values
 	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
@@ -523,7 +508,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 		endif
 
 		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
-		rawChannelValue = ITC_SingleADReading(i + deviceChannelOffset, panelTitle)
+		rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i + deviceChannelOffset)
 
 		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
 		setvarGain= GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
