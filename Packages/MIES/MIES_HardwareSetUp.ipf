@@ -3,28 +3,18 @@
 /// @file MIES_HardwareSetUp.ipf
 /// @brief __HSU__ ITC Hardware Configuration Functions
 
-Function HSU_QueryITCDevice(panelTitle)
-	string panelTitle
-
-	variable DeviceType, DeviceNumber
-	string cmd
-	DeviceType   = HSU_GetDeviceTypeIndex(panelTitle)
-	DeviceNumber = str2num(HSU_GetDeviceNumber(panelTitle))
-	
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
-	ExecuteITCOperation(cmd)
-	DoAlert /t = "Ready light check"  0, "Click \"OK\" when finished checking device"
-
-	sprintf cmd, "ITCCloseDevice"
-	ExecuteITCOperation(cmd)
-End
-
 Function HSU_ButtonProc_Settings_OpenDev(ba) : ButtonControl
 	struct WMButtonAction& ba
 
+	string panelTitle, deviceToOpen
+	variable hwType, deviceID
+
 	switch(ba.eventCode)
 		case 2: // mouse up
-			HSU_QueryITCDevice(ba.win)
+			deviceToOpen = BuildDeviceString(HSU_GetDeviceType(ba.win), HSU_GetDeviceNumber(ba.win))
+			deviceID = HW_OpenDevice(deviceToOpen, hwType)
+			DoAlert/T="Ready light check" 0, "Click \"OK\" when finished checking device"
+			HW_CloseDevice(hwType, deviceID)
 			break
 	endswitch
 
@@ -47,10 +37,8 @@ End
 Function HSU_LockDevice(panelTitle)
 	string panelTitle
 
-	string deviceType
-	variable deviceNo
+	variable locked, hardwareType
 	string panelTitleLocked
-	variable locked
 
 	SVAR miesVersion = $GetMiesVersion()
 
@@ -79,8 +67,8 @@ Function HSU_LockDevice(panelTitle)
 	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
 	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
-	HSU_OpenITCDevice(panelTitleLocked)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
+	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
 	DAP_UpdateListOfPressureDevices()
 	HSU_UpdateChanAmpAssignPanel(panelTitleLocked)
 
@@ -303,26 +291,6 @@ End
 Function HSU_UpdateListOfITCPanels()
 	DFREF dfr = GetITCDevicesFolder()
 	string/G dfr:ITCPanelTitleList = WinList("ITC*", ";", "WIN:64")
-End
-
-Function HSU_OpenITCDevice(panelTitle)
-	String panelTitle
-
-	variable deviceType, deviceNumber
-	string cmd
-
-	deviceType = HSU_GetDeviceTypeIndex(panelTitle)
-	deviceNumber = str2num(HSU_GetDeviceNumber(panelTitle))
-
-	Make/O/I/U/N=1 DevID = 50
-	sprintf cmd, "ITCOpenDevice %d, %d, DevID", deviceType, deviceNumber
-	ExecuteITCOperation(cmd)
-
-	print "ITC Device ID = ",DevID[0], "is locked."
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	ITCDeviceIDGlobal = DevID[0]
-
-	KillOrMoveToTrash(wv=DevID)
 End
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)

@@ -952,6 +952,25 @@ End
 /// @name Utility functions not interacting with hardware
 /// @{
 
+/// @brief Returns the device channel offset for the given device
+///
+/// @returns 16 for ITC1600 and 0 for all other types
+Function HW_ITC_CalculateDevChannelOff(panelTitle)
+	string panelTitle
+
+	variable ret
+	string deviceType, deviceNum
+
+	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
+	ASSERT(ret, "Could not parse device string")
+
+	if(!cmpstr(deviceType, "ITC1600"))
+		return 16
+	endif
+
+	return 0
+End
+
 /// @brief Return the `first` and `last` TTL bits/channels for the given `rack`
 Function HW_ITC_GetRackRange(rack, first, last)
 	variable rack
