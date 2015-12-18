@@ -66,8 +66,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
@@ -88,7 +87,7 @@ End
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable ADChannelToMonitor, i
+	variable ADChannelToMonitor, i, deviceID
 	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
 	String cmd, panelTitle
 
@@ -116,12 +115,11 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
 		WAVE ITCFIFOPositionAllConfigWave = ActiveDevWavePathWave[i][2]
 
-		ADChannelToMonitor = ActiveDeviceList[i][1]
+		deviceID            = ActiveDeviceList[i][0]
+		ADChannelToMonitor  = ActiveDeviceList[i][1]
 		stopCollectionPoint = ActiveDeviceList[i][2]
 
-		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
-		ExecuteITCOperationAbortOnError(cmd)
-
+		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
 		pointsCompletedInITCDataWave = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], DimSize(ITCDataWave, ROWS))
@@ -212,9 +210,8 @@ static Function ITC_StopTPMD(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
 
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	///@todo rename to ResultsWave if possible
 	Make/I/O/N=4 deviceDFR:StateWave/Wave=StateWave
 	// code section below is used to get the state of the DAC

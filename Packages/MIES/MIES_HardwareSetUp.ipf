@@ -154,6 +154,8 @@ End
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
+	string cmd
+
 	if(!windowExists(panelTitle))
 		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
 		return NaN
@@ -185,9 +187,7 @@ Function HSU_UnlockDevice(panelTitle)
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
-	string cmd
-	sprintf cmd, "ITCSelectDevice/Z %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	sprintf cmd, "ITCCloseDevice"
 	ExecuteITCOperation(cmd)
 	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
@@ -404,8 +404,7 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
-		sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
-		ExecuteITCOperation(cmd)
+		HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 		sprintf cmd, "ITCInitialize /M = 1"
 		ExecuteITCOperation(cmd)
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0

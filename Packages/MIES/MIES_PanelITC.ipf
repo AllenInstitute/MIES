@@ -5872,8 +5872,7 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 
 	string cmd
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
-	sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 	sprintf cmd, "ITCInitialize /M = 0"
 	ExecuteITCOperation(cmd)
 End

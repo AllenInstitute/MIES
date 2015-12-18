@@ -71,10 +71,8 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
 	
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER)
 		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
@@ -121,8 +119,7 @@ Function ITC_FIFOMonitorMD(s)
 		WAVE ITCDataWave = ActiveDevWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
 
-		sprintf cmd, "ITCSelectDevice %d" deviceID
-		ExecuteITCOperationAbortOnError(cmd)
+		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
 		ExecuteITCOperation(cmd)
 
@@ -155,8 +152,7 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	string cmd
 	NVAR count = $GetCount(panelTitle)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 
@@ -186,9 +182,7 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceTextList
 
-	// stop data acq on device passsed in
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 	
