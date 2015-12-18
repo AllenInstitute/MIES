@@ -3768,3 +3768,39 @@ End
 Function/S GetNWBFolderAS()
 	return GetMiesPathAsString() + ":NWB"
 End
+
+/// @brief Return a wave mapping the deviceIDs (numeric) to the device name(NI HW only) and user visible device name
+///
+/// Rows:
+/// - DeviceIDs, supports 32 as the ITC XOP does
+///
+/// COLS:
+/// - One column for each supported HW type
+///
+/// LAYERS:
+/// - 0: Main device (aka panelTitle of a DA_Ephys panel), used for deriving datafolders for storage
+/// - 1: (NI only) Internally used name of the device
+/// - 2: Name of the device used for pressure control (maybe empty)
+Function/WAVE GetDeviceMapping()
+
+	DFREF dfr = GetITCDevicesFolder()
+
+	WAVE/Z/T/SDFR=dfr wv = deviceMapping
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 3) dfr:deviceMapping/Wave=wv
+
+	SetDimLabel ROWS, -1, DeviceID, wv
+
+	SetDimLabel COLS, 0, ITC_DEVICE, wv
+	SetDimLabel COLS, 1, NI_DEVICE , wv
+
+	SetDimLabel LAYERS, 0, MainDevice    , wv
+	SetDimLabel LAYERS, 1, InternalDevice, wv
+	SetDimLabel LAYERS, 2, PressureDevice, wv
+
+	return wv
+End

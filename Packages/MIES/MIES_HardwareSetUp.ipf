@@ -80,6 +80,7 @@ Function HSU_LockDevice(panelTitle)
 	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
 	HSU_OpenITCDevice(panelTitleLocked)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DAP_UpdateListOfPressureDevices()
 	HSU_UpdateChanAmpAssignPanel(panelTitleLocked)
 
@@ -96,6 +97,8 @@ Function HSU_LockDevice(panelTitle)
 	sessionStartTime = DateTimeInUTC()
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
+
+	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 End
 
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
@@ -199,6 +202,7 @@ Function HSU_UnlockDevice(panelTitle)
 	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCCloseDevice"
 	ExecuteITCOperation(cmd)
+	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	HSU_UpdateListOfITCPanels()
@@ -237,6 +241,8 @@ Function HSU_UnlockDevice(panelTitle)
 		if(SVAR_Exists(listOfFollowers))
 			listOfFollowers = ""
 		endif
+
+		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
 End
 
