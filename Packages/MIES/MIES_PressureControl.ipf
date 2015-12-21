@@ -18,7 +18,6 @@ static Constant     P_METHOD_3_CLEAR               = 3
 static Constant     P_METHOD_4_MANUAL              = 4
 static Constant     RACK_ZERO                      = 0
 static Constant     RACK_ONE                       = 3 // 3 is defined by the ITCWriteDigital command instructions.
-static Constant     BITS_PER_VOLT                  = 3200
 static Constant     NEG_PRESSURE_PULSE_INCREMENT   = 0.2 // psi
 static Constant     POS_PRESSURE_PULSE_INCREMENT   = 0.1 // psi
 static Constant     PRESSURE_PULSE_STARTpt         = 1 // 12000
@@ -883,8 +882,8 @@ static Function P_DAforNegPpulse(panelTitle, Headstage)
 	endif
 
 	if((CalibratedPressureCom) > MIN_REGULATOR_PRESSURE)
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (CalibratedPressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (CalibratedPressureCom / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]	= pressureDataWv[headStage][%DAC]
@@ -892,11 +891,11 @@ static Function P_DAforNegPpulse(panelTitle, Headstage)
 		pressureDataWv[Headstage][%LastPressureCommand] =  PressureCom
 		print "pulse amp",(PressureCom)
 	else
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
 		if(isFinite(PressureDataWv[headStage][%NegCalConst]))
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		else
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (MIN_NEG_PRESSURE_PULSE / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (MIN_NEG_PRESSURE_PULSE / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		endif
 		pressureDataWv[Headstage][%RealTimePressure] = MIN_NEG_PRESSURE_PULSE
 		pressureDataWv[Headstage][%LastPressureCommand] =  MIN_NEG_PRESSURE_PULSE
@@ -946,8 +945,8 @@ static Function P_DAforPosPpulse(panelTitle, Headstage)
 	endif
 
 	if((CalibratedPressureCom) < MAX_REGULATOR_PRESSURE && CalibratedPressureCom > 0)
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * BITS_PER_VOLT)
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]											= pressureDataWv[headStage][%DAC]
@@ -956,11 +955,11 @@ static Function P_DAforPosPpulse(panelTitle, Headstage)
 		pressureDataWv[Headstage][%LastPressureCommand] =  PressureCom
 		print "pulse amp",(PressureCom)
 	else
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
 		if(isFinite(PressureDataWv[headStage][%PosCalConst]))
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		else
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (0.1 / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (0.1 / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		endif
 		pressureDataWv[Headstage][%LastPressureCommand] =  0.1
 		pressureDataWv[Headstage][%RealTimePressure] = 0.1
@@ -984,13 +983,13 @@ static Function P_DAforManPpulse(panelTitle, Headstage)
 	 variable PPEndPoint      = PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / MINIMUM_SAMPLING_INTERVAL)
 
 	if((PressureCom) < MAX_REGULATOR_PRESSURE && PressureCom > MIN_REGULATOR_PRESSURE)
-		ITCData[][%DA]                                   = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PPEndPoint][%DA] = (PressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		ITCData[][%DA]                                   = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PPEndPoint][%DA] = (PressureCom / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		ITCConfig[%DA][%Chan_num]                        = pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig[%DA][%Chan_num]                       = pressureDataWv[headStage][%DAC]
 		FIFOAvail[%DA][%Chan_num]                        = pressureDataWv[headStage][%DAC]
 		pressureDataWv[Headstage][%LastPressureCommand]  = PressureCom
-		print "pulse amp",(PressureCom)
+		print "pulse amp", PressureCom
 	else
 		print "pressure command is out of range"
 	endif
