@@ -18,6 +18,8 @@ Menu "Mies Panels", dynamic
 		"-"
 		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 		"-"
+		"About MIES"                 , /Q, OpenAboutDialog()
+		"-"
 	SubMenu "Advanced"
 		"Enable debug mode", /Q, EnableDebugMode()
 		"Disable debug mode", /Q, DisableDebugMode()
@@ -107,4 +109,53 @@ Function CloseMies()
 	endfor
 
 	print "Exiting Mies..."
+End
+
+Function OpenAboutDialog()
+
+	string panel = "AboutMIES"
+
+	DoWindow/F $panel
+	if(V_flag)
+		return NaN
+	endif
+
+	Execute panel + "()"
+	SVAR miesVersion = $GetMiesVersion()
+	SetSetVariableString(panel, "setvar_info", "MIES Version: " + miesVersion)
+End
+
+Window AboutMies() : Panel
+	PauseUpdate; Silent 1		// building window...
+	NewPanel /K=1 /W=(348,491,612,592) as "About MIES"
+	Button button_okay,pos={99.00,71.00},size={50.00,20.00},proc=ButtonProc_AboutMIESClose,title="OK"
+	SetVariable setvar_info,pos={18.00,20.00},size={213.00,15.00}
+	Button button_copy_to_clipboard,pos={181.00,71.00},size={50.00,20.00},proc=ButtonProc_AboutMIESCopy,title="Copy"
+EndMacro
+
+Function ButtonProc_AboutMIESClose(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			KillWindow $ba.win
+			break
+	endswitch
+
+	return 0
+End
+
+Function ButtonProc_AboutMIESCopy(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string str
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			str = GetSetVariableString(ba.win, "setvar_info")
+			PutScrapText str
+			break
+	endswitch
+
+	return 0
 End
