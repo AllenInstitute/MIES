@@ -2750,55 +2750,6 @@ Function/DF P_PressureFolderReference(panelTitle)
 	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
 End
 
-/// @brief Returns a wave reference to the data wave for the ITC TTL state
-///
-/// Rows:
-/// - one row
-///
-/// Columns:
-/// - one column
-Function/WAVE P_DIO(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr DIO
-
-	if(WaveExists(DIO))
-		return DIO
-	endif
-
-	Make/N=1/W dfr:DIO/WAVE=wv
-
-	return wv
-End
-
-/// @brief Returns a wave reference to the wave used to store the ITC device state
-///
-/// Rows:
-/// - 1: State
-/// - 2: Overflow / Underrun
-/// - 3: Clipping conditions
-/// - 4: Error code
-///
-/// Columns:
-/// - 1: State
-Function/WAVE P_ITCState(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr ITCState
-
-	if(WaveExists(ITCState))
-		return ITCState
-	endif
-
-	Make/I/N=4 dfr:ITCState/WAVE=wv
-
-	return wv
-End
-
 /// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
 ///
 /// Rows:
@@ -2981,9 +2932,9 @@ End
 ///
 /// Columns:
 /// - 0: Pressure method. -1 = none, 0 = Approach, 1 = Seal, 2 = Break In, 3 = Clear
-/// - 1: List position of DAC (used for presssure control) selected for headstage .
-/// - 2: Type of Instrutech DAC.
-/// - 3: Device ID used by Instrutech DACs.
+/// - 1: List position of DAC (used for presssure control) selected for headstage
+/// - 2: Type of DAC, index into #HARDWARE_DAC_TYPES
+/// - 3: Device ID used by Instrutech DACs or index into HW_NI_ListDevices depending on column 2
 /// - 4: DA channel used for pressure regulation.
 /// - 5: Gain of DA channel used for presssure regulation.
 /// - 6: AD channel used for pressure regulation.
@@ -3015,87 +2966,90 @@ End
 /// - 32: Peak resistance on previous method cycle.
 /// - 33: Peak resistance on active method cycle.
 /// - 34: Time of last peak resistance check.
-
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	dfref 	dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	variable versionOfNewWave = 1
+	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	Wave/Z/SDFR=dfr wv=PressureData
 
-	Wave/Z/SDFR=dfr PressureData
-
-	if(WaveExists(PressureData))
-		return PressureData
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(8,40) wv
+	else
+		Make/N=(8,40) dfr:PressureData/Wave=wv
 	endif
 
-	Make/N=(8,40) dfr:PressureData/Wave=PressureData
+	wv 	= nan
 
-	PressureData 	= nan
-
-	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear,		PressureData // -1 = atmospheric pressure; 0 = approach; 1 = Seal; Break in = 2     , Clear = 3
-	SetDimLabel COLS, 1 , DAC_List_Index,				PressureData // The position in the popup menu list of attached ITC devices
-	SetDimLabel COLS, 2 , DAC_Type, 					PressureData // type of ITC DAC
-	SetDimLabel COLS, 3 , DAC_DevID,					PressureData // ITC DAC number
-	SetDimLabel COLS, 4 , DAC,							PressureData // DA channel
-	SetDimLabel COLS, 5 , DAC_Gain,						PressureData
-	SetDimLabel COLS, 6 , ADC,							PressureData
-	SetDimLabel COLS, 7 , ADC_Gain, 					PressureData
-	SetDimLabel COLS, 8 , TTL, 							PressureData // TTL channel
-	SetDimLabel COLS, 9 , PSI_air,						PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 10, PSI_solution,					PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 11, PSI_slice,						PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 12, PSI_nearCell,					PressureData // used to set pipette pressure on approach
-	SetDimLabel COLS, 13, PSI_SealInitial,					PressureData // used to set the minium negative pressure for sealing
-	SetDimLabel COLS, 14, PSI_SealMax,					PressureData // used to set the maximum negative pressure for sealing
-	SetDimLabel COLS, 15, solutionZaxis,					PressureData // solution height in microns (as measured from bottom of the chamber).
-	SetDimLabel COLS, 16, sliceZaxis,						PressureData // top of slice in microns (as measured from bottom of the chamber).
-	SetDimLabel COLS, 17, cellZaxis,						PressureData // height of cell (as measured from bottom of the chamber).
-	SetDimLabel COLS, 18, cellXaxis,						PressureData // cell position data
-	SetDimLabel COLS, 19, cellYaxis,						PressureData // cell position data
-	SetDimLabel COLS, 20, PlaceHolderZero,				PressureData // used to store pressure method currently being used on cell
-	SetDimLabel COLS, 21, RealTimePressure,				PressureData // // stores the last pressure pulse amplitude in psi. This is used to determine the amplitude of the next pressure pulse.
-	SetDimLabel COLS, 22, LastResistanceValue,			PressureData // last steady state resistance value
-	SetDimLabel COLS, 23, PeakResistanceSlope,			PressureData // Slope of the peak TP resistance value over the last 5 seconds
+	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear, wv
+	SetDimLabel COLS, 1 , DAC_List_Index           , wv
+	SetDimLabel COLS, 2 , HW_DAC_Type              , wv
+	SetDimLabel COLS, 3 , DAC_DevID                , wv
+	SetDimLabel COLS, 4 , DAC                      , wv
+	SetDimLabel COLS, 5 , DAC_Gain                 , wv
+	SetDimLabel COLS, 6 , ADC                      , wv
+	SetDimLabel COLS, 7 , ADC_Gain                 , wv
+	SetDimLabel COLS, 8 , TTL                      , wv
+	SetDimLabel COLS, 9 , PSI_air                  , wv
+	SetDimLabel COLS, 10, PSI_solution             , wv
+	SetDimLabel COLS, 11, PSI_slice                , wv
+	SetDimLabel COLS, 12, PSI_nearCell             , wv
+	SetDimLabel COLS, 13, PSI_SealInitial          , wv
+	SetDimLabel COLS, 14, PSI_SealMax              , wv
+	SetDimLabel COLS, 15, solutionZaxis            , wv
+	SetDimLabel COLS, 16, sliceZaxis               , wv
+	SetDimLabel COLS, 17, cellZaxis                , wv
+	SetDimLabel COLS, 18, cellXaxis                , wv
+	SetDimLabel COLS, 19, cellYaxis                , wv
+	SetDimLabel COLS, 20, PlaceHolderZero          , wv
+	SetDimLabel COLS, 21, RealTimePressure         , wv
+	SetDimLabel COLS, 22, LastResistanceValue      , wv
+	SetDimLabel COLS, 23, PeakResistanceSlope      , wv // Slope of the peak TP resistance value over the last 5 seconds
 	/// @todo Dim label for  col 23 needs to be changed to steadStateResistanceSlope
-	SetDimLabel COLS, 24, ActiveTP,						PressureData // Indicates if the TP is active on the headStage
+	SetDimLabel COLS, 24, ActiveTP				   , wv // Indicates if the TP is active on the headStage
 	/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
 	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
 	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
-	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, 	PressureData // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
-	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck,		PressureData // The time in ticks of the last check of the resistance slopes
-	SetDimLabel COLS, 26, LastPressureCommand, 		PressureData
-	SetDimLabel COLS, 27, OngoingPessurePulse,			PressureData
-	SetDimLabel COLS, 28, LastVcom,						PressureData
-	SetDimLabel COLS, 29, ManSSPressure,				PressureData
-	SetDimLabel COLS, 30, ManPPPressure,				PressureData
-	SetDimLabel COLS, 31, ManPPDuration,				PressureData
-	SetDimLabel COLS, 32, LastPeakR,					PressureData
-	SetDimLabel COLS, 33, PeakR,						PressureData
-	SetDimLabel COLS, 34, TimePeakRcheck,				PressureData
-	SetDimLabel COLS, 35, PosCalConst,					PressureData
-	SetDimLabel COLS, 36, NegCalConst,					PressureData
-	SetDimLabel COLS, 37, ApproachNear,					PressureData
-	SetDimLabel COLS, 38, SealAtm,						PressureData
-	SetDimLabel COLS, 39, UserSelectedHeadStage			PressureData
-	
-	SetDimLabel ROWS, 0, Headstage_0, PressureData
-	SetDimLabel ROWS, 1, Headstage_1, PressureData
-	SetDimLabel ROWS, 2, Headstage_2, PressureData
-	SetDimLabel ROWS, 3, Headstage_3, PressureData
-	SetDimLabel ROWS, 4, Headstage_4, PressureData
-	SetDimLabel ROWS, 5, Headstage_5, PressureData
-	SetDimLabel ROWS, 6, Headstage_6, PressureData
-	SetDimLabel ROWS, 7, Headstage_7, PressureData
+	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, wv // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
+	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck, wv
+	SetDimLabel COLS, 26, LastPressureCommand  , wv
+	SetDimLabel COLS, 27, OngoingPessurePulse  , wv
+	SetDimLabel COLS, 28, LastVcom             , wv
+	SetDimLabel COLS, 29, ManSSPressure        , wv
+	SetDimLabel COLS, 30, ManPPPressure        , wv
+	SetDimLabel COLS, 31, ManPPDuration        , wv
+	SetDimLabel COLS, 32, LastPeakR            , wv
+	SetDimLabel COLS, 33, PeakR                , wv
+	SetDimLabel COLS, 34, TimePeakRcheck       , wv
+	SetDimLabel COLS, 35, PosCalConst          , wv
+	SetDimLabel COLS, 36, NegCalConst          , wv
+	SetDimLabel COLS, 37, ApproachNear         , wv
+	SetDimLabel COLS, 38, SealAtm              , wv
+	SetDimLabel COLS, 39, UserSelectedHeadStage, wv
 
-	PressureData[][0]					= -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
-	PressureData[][%DAC_List_Index]	= 0
-	PressureData[][%DAC]			= 0
-	PressureData[][%ADC]			= 0
-	PressureData[][%TTL]				= 0
-	PressureData[][%ApproachNear]	= 0
-	PressureData[][%SealAtm]		= 0
-	PressureData[][%ManSSPressure]= 0
-	
-	return PressureData
+	SetDimLabel ROWS, 0, Headstage_0, wv
+	SetDimLabel ROWS, 1, Headstage_1, wv
+	SetDimLabel ROWS, 2, Headstage_2, wv
+	SetDimLabel ROWS, 3, Headstage_3, wv
+	SetDimLabel ROWS, 4, Headstage_4, wv
+	SetDimLabel ROWS, 5, Headstage_5, wv
+	SetDimLabel ROWS, 6, Headstage_6, wv
+	SetDimLabel ROWS, 7, Headstage_7, wv
+
+	wv[][0]               = -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
+	wv[][%DAC_List_Index] = 0
+	wv[][%DAC]            = 0
+	wv[][%ADC]            = 0
+	wv[][%TTL]            = 0
+	wv[][%ApproachNear]   = 0
+	wv[][%SealAtm]        = 0
+	wv[][%ManSSPressure]  = 0
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
 End
 
 /// @brief Returns wave reference for wave used to store text used in pressure control.
@@ -3110,34 +3064,38 @@ End
 Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	string panelTitle
 
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	variable versionOfNewWave = 1
+	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 
-	Wave/Z/T/SDFR=dfr PressureDataTextWv
+	Wave/Z/T/SDFR=dfr wv=PressureDataTextWv
 
-	if(WaveExists(PressureDataTextWv))
-		return PressureDataTextWv
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(8, 3) wv
+	else
+		Make/T/N=(8, 3) dfr:PressureDataTextWv/WAVE=wv
 	endif
 
-	Make/T/N=(8, 3) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
+	SetDimLabel COLS, 0, Device     , wv
+	SetDimLabel COLS, 1, DA_Unit    , wv
+	SetDimLabel COLS, 2, AD_Unit    , wv
 
-	SetDimLabel COLS, 0, ITC_Device, PressureDataTextWv
-	SetDimLabel COLS, 1, DA_Unit, 	PressureDataTextWv
-	SetDimLabel COLS, 2, AD_Unit, 	PressureDataTextWv
+	SetDimLabel ROWS, 0, Headstage_0, wv
+	SetDimLabel ROWS, 1, Headstage_1, wv
+	SetDimLabel ROWS, 2, Headstage_2, wv
+	SetDimLabel ROWS, 3, Headstage_3, wv
+	SetDimLabel ROWS, 4, Headstage_4, wv
+	SetDimLabel ROWS, 5, Headstage_5, wv
+	SetDimLabel ROWS, 6, Headstage_6, wv
+	SetDimLabel ROWS, 7, Headstage_7, wv
 
-	SetDimLabel ROWS, 0, Headstage_0, PressureDataTextWv
-	SetDimLabel ROWS, 1, Headstage_1, PressureDataTextWv
-	SetDimLabel ROWS, 2, Headstage_2, PressureDataTextWv
-	SetDimLabel ROWS, 3, Headstage_3, PressureDataTextWv
-	SetDimLabel ROWS, 4, Headstage_4, PressureDataTextWv
-	SetDimLabel ROWS, 5, Headstage_5, PressureDataTextWv
-	SetDimLabel ROWS, 6, Headstage_6, PressureDataTextWv
-	SetDimLabel ROWS, 7, Headstage_7, PressureDataTextWv
+	wv[][0] = NONE
 
-	PressureDataTextWv[][0] = NONE
+	SetWaveVersion(wv, versionOfNewWave)
 
-	return PressureDataTextWv
+	return wv
 End
-
 /// @}
 
 /// @brief Returns a wave reference to the Analysis Master Wave

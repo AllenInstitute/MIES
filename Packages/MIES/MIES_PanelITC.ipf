@@ -2754,14 +2754,14 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_ApproachAll,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_ApproachAll,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_ApproachAll,value= 0
-	PopupMenu popup_Settings_Pressure_ITCdev,pos={51.00,495.00},size={213.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="ITC devices"
-	PopupMenu popup_Settings_Pressure_ITCdev,help={"List of available ITC devices for pressure control"}
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabnum)=  "6"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Pressure_ITCdev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
+	PopupMenu popup_Settings_Pressure_dev,pos={51.00,495.00},size={213.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="DAC devices"
+	PopupMenu popup_Settings_Pressure_dev,help={"List of available DAC devices for pressure control"}
+	PopupMenu popup_Settings_Pressure_dev,userdata(tabnum)=  "6"
+	PopupMenu popup_Settings_Pressure_dev,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
 	TitleBox Title_settings_Hardware_Pressur,pos={45.00,475.00},size={44.00,15.00},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC"

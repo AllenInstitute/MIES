@@ -254,9 +254,6 @@ StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 /// Generic axis name for graphs using split axis
 StrConstant AXIS_BASE_NAME = "col"
 
-/// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
-Constant HARDWARE_ITC_MIN_SAMPINT = 0.005
-
 /// Fallback value for  the sampling interval in milliseconds (1e-3) used by
 /// #SI_CalculateMinSampInterval if the lookup table could not be found on disk.
 Constant SAMPLING_INTERVAL_FALLBACK = 0.050
@@ -427,3 +424,9 @@ Constant HARDWARE_NI_DAC  = 1
 /// @}
 
 Constant HARDWARE_MAX_DEVICES = 32
+
+/// @name Minimum possible sampling intervals in milliseconds (1e-3s)
+/// @{
+Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
+Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
+/// @}
