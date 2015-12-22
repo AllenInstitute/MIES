@@ -97,7 +97,7 @@ Our CI server, called bamboo, can be reached [here](http://bamboo.corp.alleninst
 and provides the following services for MIES.
 
 ### Automatic release package building
-* The release branch, currently release/0.6, is polled every 3 minutes for changes
+* The release branch, `release/$number` with the highest `$number`, is polled every 3 minutes for changes
 * If changes are detected, a shallow clone is fetched, and inside a checked
   out git working tree, the release script `tools/create-release.sh` is executed.
 * The result of the release script, called an artifact in CI-speech, is then
