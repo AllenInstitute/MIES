@@ -171,7 +171,37 @@ Function TI_autoFillAmps(headstage, [cmdID])
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 0)
 	endif
-End	
+End
+
+/// @brief function for saving data space in the nwb format, to be invoked from the WSE
+/// @param fileLocation				file path for nwb file location
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+Function TI_saveNWBFile(nwbFileLocation, [cmdID])
+	string nwbFileLocation
+	string cmdID
+	
+	string filename
+	
+	//make sure that the file location exists
+	CreateFolderOnDisk(nwbFileLocation)
+	
+	//build up the filename
+	fileName="\\_" + GetTimeStamp() + ".nwb"
+	
+	//Now set the global string variable to the filepath+filename so that the NWB code knows where to save everything
+	SVAR changefilepath=$GetNWBFilePathExport()
+	changefilepath=nwbFileLocation+fileName
+	
+	print "Saving experiment data in NWB format to ", changefilepath
+	
+	//make the call to the NWB_ExportAllData Function, passing the nwbFileLocation
+	 NWB_ExportAllData()
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 1)
+	endif 
+End
 
 /// @brief Save Mies Experiment as a packed experiment.  This saves the entire Tango data space.  Will be supplimented in the future with a second function that will save the Sweep Data only.
 /// @param saveFileName		file name for the saved packed experiment

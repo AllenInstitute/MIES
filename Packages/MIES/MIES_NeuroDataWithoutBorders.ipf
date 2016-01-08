@@ -24,8 +24,11 @@ static Function NWB_GetFileForExport()
 
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
-
+	
+	print "in getfile for export..."
+	
 	if(isEmpty(filePath)) // need to derive a new NWB filename
+		print "filepath is empty..."	
 		expName = GetExperimentName()
 
 		if(!cmpstr(expName, UNTITLED_EXPERIMENT))
@@ -41,9 +44,10 @@ static Function NWB_GetFileForExport()
 			filePath = S_path + expName + ".nwb"
 		endif
 	endif
-
+	
 	GetFileFolderInfo/Q/Z filePath
 	if(!V_flag)
+		print "flag1"
 		HDF5OpenFile/Z fileID as filePath
 
 		if(V_flag)
@@ -58,6 +62,7 @@ static Function NWB_GetFileForExport()
 		fileIDExport   = fileID
 		filePathExport = filePath
 	else // file does not exist
+		print "flag2"
 		HDF5CreateFile/Z fileID as filePath
 		if(V_flag)
 			// invalidate stored path and ID
@@ -185,7 +190,7 @@ End
 Function NWB_ExportAllData()
 	string devicesWithData, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves
-
+	
 	devicesWithData = GetAllDevicesWithData()
 
 	if(isEmpty(devicesWithData))
@@ -196,13 +201,19 @@ Function NWB_ExportAllData()
 	print "Please be patient while we export all existing data of all devices to NWB"
 
 	locationID = NWB_GetFileForExport()
+	
+	print "locationID: ", locationID
+	
 	if(!IsFinite(locationID))
 		return NaN
 	endif
 
+	print "adding mies version..."
 	NWB_AddMiesVersion(locationID)
 	IPNWB#AddModificationTimeEntry(locationID)
+	print "Done adding mies version..."
 
+	print "adding device specific data..."
 	numEntries = ItemsInList(devicesWithData)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithData)
@@ -220,6 +231,7 @@ Function NWB_ExportAllData()
 			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, chunkedLayout=1)
 		endfor
 	endfor
+	print "done adding device specific data..."
 End
 
 Function NWB_AddMiesVersion(locationID)
