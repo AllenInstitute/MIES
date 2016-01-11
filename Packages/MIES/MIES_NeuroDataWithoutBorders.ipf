@@ -17,6 +17,7 @@ static Function NWB_GetFileForExport()
 	NVAR fileIDExport = $GetNWBFileIDExport()
 
 	if(IPNWB#H5_IsFileOpen(fileIDExport))
+		print "returning from GetFileForExport here..."
 		return fileIDExport
 	endif
 
@@ -45,6 +46,7 @@ static Function NWB_GetFileForExport()
 		endif
 	endif
 	
+	print "filePath: ", filePath
 	GetFileFolderInfo/Q/Z filePath
 	if(!V_flag)
 		print "flag1"
@@ -297,8 +299,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	// starting time of the dataset
 	ASSERT(!cmpstr(WaveUnits(ITCDataWave, ROWS), "ms"), "Expected ms as wave units")
 	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(ITCDataWave, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
+	print "startingTime: ", params.startingTime
 	params.startingTime -= session_start_time // relative to the start of the session
+	print "session start time: ", session_start_time
+	print "startingTime: ", params.startingTime
 	params.startingTime -= DimSize(ITCDataWave, ROWS) * DimDelta(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	print "startingTime: ", params.startingTime
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
