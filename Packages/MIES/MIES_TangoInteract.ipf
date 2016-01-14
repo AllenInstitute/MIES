@@ -180,36 +180,37 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	string nwbFileLocation
 	string cmdID
 	
-	string filePath
-	variable result
+	string filename, filepath
 	variable fileID
 	
-	NVAR fileIDExport = $GetNWBFileIDExport()
-	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
-	print "sessionStartTime: ", sessionStartTimeReadBack
-	SVAR filePathExport = $GetNWBFilePathExport()
-	
+	print "testing..."
 	//make sure that the file location exists
 	CreateFolderOnDisk(nwbFileLocation)
 	
 	//build up the filename
-	filePath=nwbFileLocation + "\\_" + GetTimeStamp() + ".nwb"
+	fileName="\\_" + GetTimeStamp() + ".nwb"
 	
 	//Now set the global string variable to the filepath+filename so that the NWB code knows where to save everything
 	SVAR changefilepath=$GetNWBFilePathExport()
-	changefilepath=filePath
+	changefilepath=nwbFileLocation+fileName
+	
+	SVAR filePathExport = $GetNWBFilePathExport()
+	filePath = filePathExport
+	
+	NVAR fileIDExport = $GetNWBFileIDExport()
+	
+	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
 	
 	print "Saving experiment data in NWB format to ", changefilepath
 	
-	//make the call to the NWB_ExportAllData Function, passing the nwbFileLocation
-	 HDF5CreateFile/Z fileID as filePath
+	HDF5CreateFile/Z fileID as changefilePath
 	if(V_flag)
 		// invalidate stored path and ID
 		filePathExport = ""
 		fileIDExport   = NaN
 		DEBUGPRINT("Could not create HDF5 file")
 		// and retry
-		return result
+		return NWB_GetFileForExport()
 	endif
 
 	NVAR sessionStartTime = $GetSessionStartTime()
@@ -221,13 +222,16 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 	IPNWB#CreateIntraCellularEphys(fileID)
 
-	//sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
-	//ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
+	sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+	ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
 	fileIDExport   = fileID
 	filePathExport = filePath
 
 	NWB_ExportAllData()
+	
+	//close the file
+	hdf5CloseFile/A fileID
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -235,6 +239,35 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	endif 
 End
 
+/// @brief Return the string containing the location of the saved NWB formatted data file.
+/// @param cmdID	optional parameter...if being called from WSE, this will be present.
+Function TI_returnNWBFileLocation([cmdID])
+	string cmdID
+	
+	string locationValue
+	string responseString
+	
+	// Get the file location value
+	SVAR changefilepath=$GetNWBFilePathExport()	
+	locationValue = changefilepath
+	
+	// build up the response string
+	responseString = "nwbSaveFileLocation:" + locationValue
+	
+	// see if a cmdID was passed
+	if(!ParamIsDefault(cmdID))
+		// write the ack back to the WSE
+		TI_WriteAck(cmdID, 1)
+		
+		// and now call the async function to return the value
+		TI_WriteAsyncResponse(cmdID, responseString)
+	else
+		print "no WSE response required"
+		print "NWB saveFileLocation: ", locationValue
+	endif 
+End
+	
+	
 /// @brief Save Mies Experiment as a packed experiment.  This saves the entire Tango data space.  Will be supplimented in the future with a second function that will save the Sweep Data only.
 /// @param saveFileName		file name for the saved packed experiment
 /// @param cmdID					optional parameter...if being called from WSE, this will be present.

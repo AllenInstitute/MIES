@@ -10,14 +10,18 @@
 ///        for export
 ///
 ///        Open one if it does not exist yet.
-static Function NWB_GetFileForExport()
+///
+///        @param newFilePath file path for new files to override the internal
+///                           generation algorithm
+Function NWB_GetFileForExport()
+	string newFilePath
+
 	string expName, fileName, filePath
 	variable fileID, refNum
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
 
 	if(IPNWB#H5_IsFileOpen(fileIDExport))
-		print "returning from GetFileForExport here..."
 		return fileIDExport
 	endif
 
@@ -25,11 +29,8 @@ static Function NWB_GetFileForExport()
 
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
-	
-	print "in getfile for export..."
-	
+
 	if(isEmpty(filePath)) // need to derive a new NWB filename
-		print "filepath is empty..."	
 		expName = GetExperimentName()
 
 		if(!cmpstr(expName, UNTITLED_EXPERIMENT))
@@ -45,11 +46,9 @@ static Function NWB_GetFileForExport()
 			filePath = S_path + expName + ".nwb"
 		endif
 	endif
-	
-	print "filePath: ", filePath
+
 	GetFileFolderInfo/Q/Z filePath
 	if(!V_flag)
-		print "flag1"
 		HDF5OpenFile/Z fileID as filePath
 
 		if(V_flag)
@@ -64,7 +63,6 @@ static Function NWB_GetFileForExport()
 		fileIDExport   = fileID
 		filePathExport = filePath
 	else // file does not exist
-		print "flag2"
 		HDF5CreateFile/Z fileID as filePath
 		if(V_flag)
 			// invalidate stored path and ID
@@ -99,7 +97,7 @@ static Function NWB_GetFileForExport()
 	return fileIDExport
 End
 
-static Function NWB_ReadSessionStartTime(fileID)
+Function NWB_ReadSessionStartTime(fileID)
 	variable fileID
 
 	string str
@@ -190,9 +188,11 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 End
 
 Function NWB_ExportAllData()
+	string newFilePath
+
 	string devicesWithData, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves
-	
+
 	devicesWithData = GetAllDevicesWithData()
 
 	if(isEmpty(devicesWithData))
@@ -202,20 +202,16 @@ Function NWB_ExportAllData()
 
 	print "Please be patient while we export all existing data of all devices to NWB"
 
+	
 	locationID = NWB_GetFileForExport()
-	
-	print "locationID: ", locationID
-	
+
 	if(!IsFinite(locationID))
 		return NaN
 	endif
 
-	print "adding mies version..."
 	NWB_AddMiesVersion(locationID)
 	IPNWB#AddModificationTimeEntry(locationID)
-	print "Done adding mies version..."
 
-	print "adding device specific data..."
 	numEntries = ItemsInList(devicesWithData)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithData)
@@ -233,7 +229,6 @@ Function NWB_ExportAllData()
 			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, chunkedLayout=1)
 		endfor
 	endfor
-	print "done adding device specific data..."
 End
 
 Function NWB_AddMiesVersion(locationID)
@@ -299,12 +294,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	// starting time of the dataset
 	ASSERT(!cmpstr(WaveUnits(ITCDataWave, ROWS), "ms"), "Expected ms as wave units")
 	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(ITCDataWave, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
-	print "startingTime: ", params.startingTime
 	params.startingTime -= session_start_time // relative to the start of the session
-	print "session start time: ", session_start_time
-	print "startingTime: ", params.startingTime
 	params.startingTime -= DimSize(ITCDataWave, ROWS) * DimDelta(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
-	print "startingTime: ", params.startingTime
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
