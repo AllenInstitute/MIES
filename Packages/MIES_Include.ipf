@@ -24,6 +24,7 @@
 #include "MIES_AnalysisMaster"
 #include "MIES_BackgroundMD"
 #include "MIES_BackgroundTimerMD"
+#include "MIES_CheckInstallation"
 #include "MIES_Constants"
 #include "MIES_DataAcqITC"
 #include "MIES_DataAcqMgmt"
