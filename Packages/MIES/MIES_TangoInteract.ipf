@@ -180,58 +180,25 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	string nwbFileLocation
 	string cmdID
 	
-	string filename, filepath
-	variable fileID
+	string changeFilePath
+	string fileName
+	
+	NVAR fileIDExport = $GetNWBFileIDExport()
 	
 	print "testing..."
-	//make sure that the file location exists
+	//make sure that the file directory exists
 	CreateFolderOnDisk(nwbFileLocation)
 	
 	//build up the filename
 	fileName="\\_" + GetTimeStamp() + ".nwb"
-	
-	//Now set the global string variable to the filepath+filename so that the NWB code knows where to save everything
-	SVAR changefilepath=$GetNWBFilePathExport()
-	changefilepath=nwbFileLocation+fileName
-	
-	SVAR filePathExport = $GetNWBFilePathExport()
-	filePath = filePathExport
-	
-	NVAR fileIDExport = $GetNWBFileIDExport()
-	
-	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
+	changeFilePath = nwbFileLocation + fileName
 	
 	print "Saving experiment data in NWB format to ", changefilepath
-	
-	HDF5CreateFile/Z fileID as changefilePath
-	if(V_flag)
-		// invalidate stored path and ID
-		filePathExport = ""
-		fileIDExport   = NaN
-		DEBUGPRINT("Could not create HDF5 file")
-		// and retry
-		return NWB_GetFileForExport()
-	endif
 
-	NVAR sessionStartTime = $GetSessionStartTime()
-
-	STRUCT IPNWB#ToplevelInfo ti
-	IPNWB#InitToplevelInfo(ti)
-	ti.session_start_time = sessionStartTime
-
-	IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
-	IPNWB#CreateIntraCellularEphys(fileID)
-
-	sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
-	ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
-
-	fileIDExport   = fileID
-	filePathExport = filePath
-
-	NWB_ExportAllData()
+	NWB_ExportAllData(newFilePath=changeFilePath)
 	
 	//close the file
-	hdf5CloseFile/A fileID
+	hdf5CloseFile/A fileIDExport
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
