@@ -83,7 +83,6 @@ Function HSU_LockDevice(panelTitle)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
-	print "sessionStartTime: ", sessionStartTime
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 End
