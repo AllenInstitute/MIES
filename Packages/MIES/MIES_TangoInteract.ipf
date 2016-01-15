@@ -183,8 +183,6 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	string changeFilePath
 	string fileName
 	
-	NVAR fileIDExport = $GetNWBFileIDExport()
-	
 	print "testing..."
 	//make sure that the file directory exists
 	CreateFolderOnDisk(nwbFileLocation)
@@ -197,8 +195,11 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 
 	NWB_ExportAllData(newFilePath=changeFilePath)
 	
+	//Get the file ID so we can close the HDF5 file
+	NVAR fileIDExport = $GetNWBFileIDExport()
+	
 	//close the file
-	hdf5CloseFile/A fileIDExport
+	hdf5CloseFile/Z fileIDExport
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -211,15 +212,13 @@ End
 Function TI_returnNWBFileLocation([cmdID])
 	string cmdID
 	
-	string locationValue
 	string responseString
 	
 	// Get the file location value
-	SVAR changefilepath=$GetNWBFilePathExport()	
-	locationValue = changefilepath
+	SVAR fileValue =$GetNWBFilePathExport()	
 	
 	// build up the response string
-	responseString = "nwbSaveFileLocation:" + locationValue
+	responseString = "nwbSaveFileLocation:" + fileValue
 	
 	// see if a cmdID was passed
 	if(!ParamIsDefault(cmdID))
@@ -230,7 +229,7 @@ Function TI_returnNWBFileLocation([cmdID])
 		TI_WriteAsyncResponse(cmdID, responseString)
 	else
 		print "no WSE response required"
-		print "NWB saveFileLocation: ", locationValue
+		print responseString
 	endif 
 End
 	
