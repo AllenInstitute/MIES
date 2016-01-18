@@ -111,13 +111,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
-
-		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-		SCOPE_CreateGraph(OscilloscopeData, panelTitle)
 	else
-		WAVE ITCDataWave = GetITCDataWave(panelTitle)
-		SCOPE_CreateGraph(ITCDataWave, panelTitle)
-
 		NVAR count = $GetCount(panelTitle)
 		// only call before the very first acquisition and
 		// not each time during repeated acquisition
@@ -125,6 +119,8 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 			DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
 		endif
 	endif
+
+	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 End
 
 static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)

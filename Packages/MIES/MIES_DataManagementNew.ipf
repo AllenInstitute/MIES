@@ -7,14 +7,18 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
 
 	variable sweepNo, rowsToCopy
-	string savedDataWaveName, savedSetUpWaveName
+	string savedDataWaveName, savedSetUpWaveName, oscilloscopeSubwindow
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 	DM_ADScaling(ITCDataWave, panelTitle)
 	DM_DAScaling(ITCDataWave, panelTitle)
+
+	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+	DoUpdate/W=$oscilloscopeSubwindow
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 

@@ -129,11 +129,11 @@ static Function GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, s
 	endif
 End
 
-Function SCOPE_CreateGraph(plotData, panelTitle)
-	wave plotData
+Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
-	string dataName, graph, tagName
+	string graph, tagName
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
 	variable showSteadyStateResistance, showPeakResistance
 	string leftAxis, rightAxis, tagAxis, str
@@ -148,11 +148,11 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 	graph = SCOPE_GetGraph(panelTitle)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE SSResistance   = GetSSResistanceWave(panelTitle)
-	WAVE InstResistance = GetInstResistanceWave(panelTitle)
-	Wave TPStorage = GetTPStorage(panelTitle)
+	WAVE SSResistance      = GetSSResistanceWave(panelTitle)
+	WAVE InstResistance    = GetInstResistanceWave(panelTitle)
+	Wave TPStorage         = GetTPStorage(panelTitle)
+	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
 
-	dataName = NameOfWave(plotData)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
 	numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
@@ -174,7 +174,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 		adc    = ADCs[i]
 		adcStr = num2str(adc)
 		leftAxis = "AD" + adcStr
-		AppendToGraph/W=$graph/L=$leftAxis plotData[][numActiveDACs + i]
+		AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
 
 		ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
 		SetAxis/W=$graph/A=2/N=2 $leftAxis
@@ -186,7 +186,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
 		// add the also the trace for the current resistance values from the test pulse
-		if(!cmpstr(dataName, "TestPulseITC"))
+		if(dataAcqOrTP == TEST_PULSE_MODE)
 
 			rightAxis = "resistance" + adcStr
 
@@ -269,7 +269,7 @@ Function SCOPE_CreateGraph(plotData, panelTitle)
 
 	Label/W=$graph bottom "Time (\\U)"
 
-	if(!cmpstr(dataName, "TestPulseITC"))
+	if(dataAcqOrTP == TEST_PULSE_MODE)
 		sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
 		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
 		NVAR duration = $GetTestpulseDuration(panelTitle)
