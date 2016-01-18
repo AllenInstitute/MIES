@@ -1317,6 +1317,7 @@ Function ReportAndAbortOnITCErrors()
 		print "- Is your ITC Device connected to a power socket?"
 		print "- Is your ITC Device connected to your computer?"
 		print "- Have you tried unlocking/locking the device already?"
+		print "- Reseating all connections between the DAC and the computer has also helped in the past."
 		Abort
 	elseif(ITCXOPError != 0)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
