@@ -111,8 +111,8 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
 
-		WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-		SCOPE_CreateGraph(TestPulseITC, panelTitle)
+		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+		SCOPE_CreateGraph(OscilloscopeData, panelTitle)
 	else
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 		SCOPE_CreateGraph(ITCDataWave, panelTitle)

@@ -177,8 +177,8 @@ Function DM_CreateScaleTPHoldingWave(panelTitle, [chunk])
 
 	variable length, first, last
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
+	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	length = TP_GetTestPulseLengthInPoints(panelTitle)
 
 	if(ParamIsDefault(chunk))
@@ -189,10 +189,10 @@ Function DM_CreateScaleTPHoldingWave(panelTitle, [chunk])
 	last  = first + length - 1
 	ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS), "Invalid wave subrange")
 
-	Duplicate/O/R=[first, last][] ITCDataWave, TestPulseITC
-	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
-	SetScale/P x, 0, DimDelta(TestPulseITC, ROWS), "ms", TestPulseITC
-	DM_ADScaling(TestPulseITC, panelTitle)
+	Duplicate/O/R=[first, last][] ITCDataWave, OscilloscopeData
+	Redimension/Y=(GetRawDataFPType(panelTitle)) OscilloscopeData
+	SetScale/P x, 0, DimDelta(OscilloscopeData, ROWS), "ms", OscilloscopeData
+	DM_ADScaling(OscilloscopeData, panelTitle)
 End
 
 static Function DM_ADScaling(WaveToScale, panelTitle)
