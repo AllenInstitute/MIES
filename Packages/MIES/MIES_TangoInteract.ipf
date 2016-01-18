@@ -174,7 +174,7 @@ Function TI_autoFillAmps(headstage, [cmdID])
 End
 
 /// @brief function for saving data space in the nwb format, to be invoked from the WSE
-/// @param fileLocation				file path for nwb file location
+/// @param nwbFileLocation			file path for nwb file location
 /// @param cmdID					optional parameter...if being called from WSE, this will be present.
 Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	string nwbFileLocation
