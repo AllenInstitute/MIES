@@ -1294,8 +1294,9 @@ End
 /// @brief Report ITC/ITCXOP errors in a user friendly manner and abort
 Function ReportAndAbortOnITCErrors()
 
-	NVAR ITCError, ITCXOPError
 	string cmd
+	NVAR/Z ITCError, ITCXOPError
+	ASSERT(NVAR_EXISTS(ITCError) && NVAR_EXISTS(ITCXOPError), "The global variables ITCError and ITCXOPError must exist in the CDF")
 
 	// we only need the lower 32bits of the error
 	ITCError = ITCError & 0x00000000ffffffff
