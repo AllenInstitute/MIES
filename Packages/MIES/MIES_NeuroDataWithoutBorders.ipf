@@ -11,7 +11,7 @@
 ///
 ///        Open one if it does not exist yet.
 ///
-///        @param newFilePath file path for new files to override the internal
+///        @param overrideFilePath file path for new files to override the internal
 ///                           generation algorithm
 static Function NWB_GetFileForExport([overrideFilePath])
 	string overrideFilePath
