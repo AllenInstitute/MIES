@@ -162,7 +162,6 @@ Function ITC_FIFOMonitor(s)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitleG)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitleG)
 	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitleG)
-	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitleG)
 
 	WAVE ITCFIFOAvailAllConfigWave = GetITCFIFOAvailAllConfigWave(panelTitleG)
 	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
