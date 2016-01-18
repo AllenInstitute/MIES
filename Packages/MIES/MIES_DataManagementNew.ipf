@@ -171,27 +171,47 @@ static Function DM_AfterSweepDataSaveHook(panelTitle)
 	endfor
 End
 
-Function DM_CreateScaleTPHoldingWave(panelTitle, [chunk])
+/// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
+/// oscilloscope panel
+///
+/// @param panelTitle  panel title
+/// @param dataAcqOrTP One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
+///                    the testpulse to extract
+Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk])
 	string panelTitle
-	variable chunk
+	variable dataAcqOrTP, chunk
 
-	variable length, first, last
+	variable length, first, last, fifoPos
 
-	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	length = TP_GetTestPulseLengthInPoints(panelTitle)
+	WAVE OscilloscopeData             = GetOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
+	NVAR ADChannelToMonitor           = $GetADChannelToMonitor(panelTitle)
 
-	if(ParamIsDefault(chunk))
-		chunk = 0
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		if(ParamIsDefault(chunk))
+			chunk = 0
+		endif
+
+		length = TP_GetTestPulseLengthInPoints(panelTitle)
+		first  = chunk * length
+		last   = first + length - 1
+		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
+
+		Multithread OscilloscopeData[][] = ITCDataWave[first + p][q]
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+
+		fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		ASSERT(fifoPos >= 0 && fifoPos < DimSize(OscilloscopeData, ROWS), "Invalid fifoPos")
+
+		Multithread OscilloscopeData[0, fifoPos][] = ITCDataWave[p][q]
+	else
+		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
 
-	first = chunk * length
-	last  = first + length - 1
-	ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS), "Invalid wave subrange")
-
-	Duplicate/O/R=[first, last][] ITCDataWave, OscilloscopeData
-	Redimension/Y=(GetRawDataFPType(panelTitle)) OscilloscopeData
-	SetScale/P x, 0, DimDelta(OscilloscopeData, ROWS), "ms", OscilloscopeData
 	DM_ADScaling(OscilloscopeData, panelTitle)
 End
 
