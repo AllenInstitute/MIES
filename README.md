@@ -62,9 +62,13 @@
 	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s) 
 	* Restart Igor Pro
 
-## Building the documentation
+## Doxygen documentation
 
-### Required 3rd party tools
+The documentation of the master branch is available [here](http://10.128.24.29/master/index.html)
+
+### Building the documentation
+
+#### Required 3rd party tools
 * [Doxygen](http://doxygen.org) 1.8.10
 * [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
