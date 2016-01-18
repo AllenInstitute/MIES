@@ -171,8 +171,69 @@ Function TI_autoFillAmps(headstage, [cmdID])
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 0)
 	endif
-End	
+End
 
+/// @brief function for saving data space in the nwb format, to be invoked from the WSE
+/// @param fileLocation				file path for nwb file location
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+Function TI_saveNWBFile(nwbFileLocation, [cmdID])
+	string nwbFileLocation
+	string cmdID
+	
+	string changeFilePath
+	string fileName
+	
+	print "testing..."
+	//make sure that the file directory exists
+	CreateFolderOnDisk(nwbFileLocation)
+	
+	//build up the filename
+	fileName="\\_" + GetTimeStamp() + ".nwb"
+	changeFilePath = nwbFileLocation + fileName
+	
+	print "Saving experiment data in NWB format to ", changefilepath
+
+	NWB_ExportAllData(overrideFilePath=changeFilePath)
+	
+	//Get the file ID so we can close the HDF5 file
+	NVAR fileIDExport = $GetNWBFileIDExport()
+	
+	//close the file
+	hdf5CloseFile/Z fileIDExport
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 1)
+	endif 
+End
+
+/// @brief Return the string containing the location of the saved NWB formatted data file.
+/// @param cmdID	optional parameter...if being called from WSE, this will be present.
+Function TI_returnNWBFileLocation([cmdID])
+	string cmdID
+	
+	string responseString
+	
+	// Get the file location value
+	SVAR fileValue =$GetNWBFilePathExport()	
+	
+	// build up the response string
+	responseString = "nwbSaveFileLocation:" + fileValue
+	
+	// see if a cmdID was passed
+	if(!ParamIsDefault(cmdID))
+		// write the ack back to the WSE
+		TI_WriteAck(cmdID, 1)
+		
+		// and now call the async function to return the value
+		TI_WriteAsyncResponse(cmdID, responseString)
+	else
+		print "no WSE response required"
+		print responseString
+	endif 
+End
+	
+	
 /// @brief Save Mies Experiment as a packed experiment.  This saves the entire Tango data space.  Will be supplimented in the future with a second function that will save the Sweep Data only.
 /// @param saveFileName		file name for the saved packed experiment
 /// @param cmdID					optional parameter...if being called from WSE, this will be present.

@@ -10,7 +10,12 @@
 ///        for export
 ///
 ///        Open one if it does not exist yet.
-static Function NWB_GetFileForExport()
+///
+///        @param overrideFilePath file path for new files to override the internal
+///                           generation algorithm
+static Function NWB_GetFileForExport([overrideFilePath])
+	string overrideFilePath
+
 	string expName, fileName, filePath
 	variable fileID, refNum
 
@@ -28,7 +33,9 @@ static Function NWB_GetFileForExport()
 	if(isEmpty(filePath)) // need to derive a new NWB filename
 		expName = GetExperimentName()
 
-		if(!cmpstr(expName, UNTITLED_EXPERIMENT))
+		if(!ParamIsDefault(overrideFilePath))
+			filePath = overrideFilePath
+		elseif(!cmpstr(expName, UNTITLED_EXPERIMENT))
 			fileName = "_" + GetTimeStamp() + ".nwb"
 			Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
 
@@ -182,7 +189,9 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-Function NWB_ExportAllData()
+Function NWB_ExportAllData([overrideFilePath])
+	string overrideFilePath
+
 	string devicesWithData, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves
 
@@ -195,7 +204,12 @@ Function NWB_ExportAllData()
 
 	print "Please be patient while we export all existing data of all devices to NWB"
 
-	locationID = NWB_GetFileForExport()
+	if(!ParamIsDefault(overrideFilePath))
+		locationID = NWB_GetFileForExport(overrideFilePath=overrideFilePath)
+	else
+		locationID = NWB_GetFileForExport()
+	endif
+
 	if(!IsFinite(locationID))
 		return NaN
 	endif
