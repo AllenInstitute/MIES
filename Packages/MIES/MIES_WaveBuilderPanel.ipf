@@ -1185,6 +1185,10 @@ Function WBP_FinalTabHook(tca)
 
 	variable tabID = GetTabID(panel, "WBP_WaveType")
 
+	if(tabID != 5)
+		EnableControl(panel, "SetVar_WaveBuilder_P0")
+	endif
+
 	if(tabID == 7 || tabID == 8)
 		HideListOfControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_exp_P40")
 	endif
