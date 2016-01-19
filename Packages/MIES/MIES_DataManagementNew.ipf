@@ -201,19 +201,18 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 
 	variable startOfADColumns
 	variable gain, i, numEntries, adc
-	string ctrl
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
 	numEntries = DimSize(ADCs, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		adc = ADCs[i]
 
-		ctrl = GetPanelControl(panelTitle, adc, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		gain = GetSetVariable(panelTitle, ctrl)
+		gain = DA_EphysGuiState[adc][%ADGain]
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
 			// w' = w  / (g * s)
@@ -227,18 +226,18 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
-	string ctrl
 	variable gain, i, dac, numEntries
 	DFREF deviceDFR       = GetDevicePath(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave, ITCChanConfigWave
 	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
 
 	numEntries = DimSize(DACs, ROWS)
 	for(i = 0; i < numEntries ; i += 1)
 		dac  = DACs[i]
-		ctrl = GetPanelControl(panelTitle, dac, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		gain = GetSetVariable(panelTitle, ctrl)
+
+		gain = DA_EphysGuiState[dac][%DAGain]
 
 		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)
 			// w' = w * g / s
