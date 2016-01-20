@@ -3,9 +3,6 @@
 /// @file MIES_DataManagementNew.ipf
 /// @brief __DM__ Convert and scale acquired data
 
-static Constant FLOAT_32BIT = 0x02
-static Constant FLOAT_64BIT = 0x04
-
 Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
 
@@ -282,5 +279,5 @@ End
 static Function GetRawDataFPType(panelTitle)
 	string panelTitle
 
-	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? FLOAT_64BIT : FLOAT_32BIT
+	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
 End
