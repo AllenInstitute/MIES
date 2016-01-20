@@ -186,7 +186,7 @@ Function DM_CreateScaleTPHoldingWave(panelTitle, [chunk])
 	endif
 
 	first = chunk * length
-	last  = first + length
+	last  = first + length - 1
 	ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS), "Invalid wave subrange")
 
 	Duplicate/O/R=[first, last][] ITCDataWave, TestPulseITC
