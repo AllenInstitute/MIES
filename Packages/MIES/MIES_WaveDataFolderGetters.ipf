@@ -705,7 +705,7 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 
 	wv = ""
 
-	wv[0][0] = "SweepNum"
+	wv[0][0] = "Sweep #"
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
 
