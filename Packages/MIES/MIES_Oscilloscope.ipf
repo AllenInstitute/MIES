@@ -55,8 +55,10 @@ Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
 	variable latest, count, i, numADCs, minVal, maxVal, range, numDigits
+	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
 	string graph, rightAxis, info
 
+	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 	graph = SCOPE_GetGraph(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
@@ -65,9 +67,11 @@ Function SCOPE_UpdateGraph(panelTitle)
 		Wave TPStorage = GetTPStorage(panelTitle)
 		count  = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 		latest = DimOffset(TPStorage, ROWS) + count * DimDelta(TPStorage, ROWS)
+		relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+		relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 
 		if(latest >= V_max)
-			SetAxis/W=$graph top, latest -  0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE, latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+			SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
 		endif
 
 		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -83,16 +87,24 @@ Function SCOPE_UpdateGraph(panelTitle)
 				continue
 			endif
 
-			Duplicate/FREE/R=[][i][1] TPStorage, peak
-			Duplicate/FREE/R=[][i][2] TPStorage, steady
+			minVal = +Inf
+			maxVal = -Inf
 
-			WaveStats/M=1/Q peak
-			minVal = V_min
-			maxVal = V_max
+			/// @todo switch to WaveStats/RMD once IP7 is mandatory
 
-			WaveStats/M=1/Q steady
-			minVal = min(V_min, minVal)
-			maxVal = max(V_max, maxVal)
+			if(showPeakResistance)
+				Duplicate/FREE/R=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage, peak
+				WaveStats/M=1/Q peak
+				minVal = min(V_min, minVal)
+				maxVal = max(V_max, maxVal)
+			endif
+
+			if(showSteadyStateResistance)
+				Duplicate/FREE/R=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage, steady
+				WaveStats/M=1/Q steady
+				minVal = min(V_min, minVal)
+				maxVal = max(V_max, maxVal)
+			endif
 
 			range = maxVal - minVal
 
