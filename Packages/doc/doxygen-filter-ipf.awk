@@ -2,8 +2,8 @@
 # This awk script serves as input filter for Igor procedures and produces a C++-ish version of the declarations
 # Tested with Igor Pro 6.37 and doxygen 1.8.10
 #
-# Thomas Braun: 10/2015
-# Version: 0.26
+# Thomas Braun: 1/2016
+# Version: 0.27
 
 # Supported Features:
 # -Functions
@@ -181,6 +181,9 @@ function handleParameter(params, a,  i, iOpt, str, entry)
           if(match(code,/\&/))
             paramType = paramType "*"
 
+          # translate module separator "#" to C++ namespace separator
+          gsub("#", "::", paramType)
+
           output = gensub("__Param__" j " ",paramType " ","g",output)
           # printf("Found parameter type %s at index %d\n",paramType,j)
         }
@@ -201,6 +204,17 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     gsub(/\yhook\y(\([^\)]+\))?[[:space:]]*=[[:space:]]*/, "&__", code)
     # comment out FUNCREF lines
     gsub(/^FUNCREF/, "//&", code)
+
+    # translate function calls to functions located in modules to use
+    # the C++ namespace separator
+    # We don't have to translated references to constants in modules as
+    # this is at least for independent modules impossible to use in Igor Pro.
+    if(match(code, /\y[A-Za-z0-9_-]+\y\#\y[A-Za-z0-9_-]+\y\(/))
+    {
+      part = substr(code, RSTART, RLENGTH)
+      gsub("#", "::", part)
+      code = substr(code, 1, RSTART - 1) "" part "" substr(code, RSTART + RLENGTH)
+    }
   }
 
   # structure declaration
