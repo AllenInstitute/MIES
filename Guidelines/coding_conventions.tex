@@ -40,9 +40,10 @@ pdfauthor={Thomas Braun, byte physics, thomas.braun@byte-physics.de}
 %	
 	\item Filenames are built from the characters \mintinline{text}{[A-Za-z_-]} and end with \mintinline{text}{.ipf}
 %	
-	\item The file encoding is OS-dependent but the used charset should always be restricted to ASCII characters
-%	
-	\item The first line consists of \mintinline{igor}{#pragma rtGlobals=3} with optional comment
+	\item The file encoding is OS-dependent but the used charset should always be restricted to ASCII characters.
+		  Code parts exclusively used with Igor Pro 7 should use UTF-8 as text encoding and specify \mintinline{igor}{#pragma TextEncoding = "UTF-8"}.
+%
+	\item The beginning of each procedure file has \mintinline{igor}{#pragma rtGlobals=3} with optional comment.
 %	
 	\item Always use UNIX (LF) end-of-line style
 \end{itemize}
