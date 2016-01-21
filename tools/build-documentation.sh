@@ -25,7 +25,9 @@ output=$( (cat Doxyfile; echo "PROJECT_NUMBER = \"($branch) $version\""; echo $F
 
 if [ ! -z  "$output" ]
 then
-  echo "Errors building the documentation"
+  echo "Errors building the documentation" 1>&2
+  echo "Doxygen says: "                    1>&2
+  echo "$output"                           1>&2
   exit 1
 fi
 
