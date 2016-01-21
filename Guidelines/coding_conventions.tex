@@ -365,12 +365,12 @@ pdfauthor={Thomas Braun, byte physics, thomas.braun@byte-physics.de}
 		StringFromList(0, list, ";")
 	\end{minted}
 %
-	\item Use brackets \mintinline{text}{()} sparingly\par
+	\item Use parentheses sparingly\par
 	Good:
 	\begin{minted}{igor}
 		variable a = b * (1 + 2)
 		
-		if(A && B && (C || D))
+		if(a < b || a < c)
 			// code
 		endif
 	\end{minted}
@@ -378,12 +378,34 @@ pdfauthor={Thomas Braun, byte physics, thomas.braun@byte-physics.de}
 	Bad:
 	\begin{minted}{igor}
 		variable a = (b * (1 + 2))
-		
-		if((A && B) && (C || D))
+
+		if((a < b) || (a < c))
 			// code
 		endif
 	\end{minted}
 	\end{minipage}
+	\item Use parentheses when combining operators with the same precedence\par
+	Good:
+	\begin{minted}{igor}
+		if((A || B) && C)
+			// code
+		endif
+
+		if(A == (B >= C))
+			// code
+		endif
+	\end{minted}
+	Bad:
+	\begin{minted}{igor}
+		if(A || B && C) // same as above as these are left to right
+			// code
+		endif
+
+		if(A == B >= C) // same as above as these are right to left
+			// code
+		endif
+	\end{minted}
+	The reason is that remembering the exact associativity is too error-prone. See also \mintinline{igor}{DisplayHelpTopic "Operators"}.
 	\end{itemize}
 	%
 \subsection{Constants}
