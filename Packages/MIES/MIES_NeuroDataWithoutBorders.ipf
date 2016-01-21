@@ -9,9 +9,9 @@
 /// @brief Return the HDF5 file identifier referring to an open NWB file
 ///        for export
 ///
-///        Open one if it does not exist yet.
+/// Open one if it does not exist yet.
 ///
-///        @param overrideFilePath file path for new files to override the internal
+/// @param overrideFilePath file path for new files to override the internal
 ///                           generation algorithm
 static Function NWB_GetFileForExport([overrideFilePath])
 	string overrideFilePath
