@@ -30,7 +30,7 @@ case "$branch" in
 	master)
 		target_dir=${www_root}/master
 		;;
-	release-*)
+	release/*)
 		target_dir=${www_root}/release
 		;;
 	*)
