@@ -60,11 +60,12 @@ Function ITC_FIFOMonitorMD(s)
 	variable NumberOfActiveDevices
 	variable DeviceIDGlobal
 	variable i
-	string panelTitle
+	string panelTitle, oscilloscopeSubwindow
 
 	do
 		NumberOfActiveDevices = DimSize(ActiveDeviceTextList, ROWS)
 		panelTitle = ActiveDeviceTextList[i]
+		oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 		WAVE ITCDataWave = ActiveDevWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
@@ -74,7 +75,8 @@ Function ITC_FIFOMonitorMD(s)
 		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
 		ExecuteITCOperation(cmd)
 
-		ITCDataWave[0][0] += 0
+		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+		DoUpdate/W=$oscilloscopeSubwindow
 
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
@@ -102,15 +104,12 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 
 	string cmd
 	NVAR count = $GetCount(panelTitle)
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperation(cmd)
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 
-	itcdatawave[0][0] += 0 // Force onscreen update
-	
 	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
 	ExecuteITCOperation(cmd)
 	

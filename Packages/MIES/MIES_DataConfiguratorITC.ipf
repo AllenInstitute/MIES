@@ -87,6 +87,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
+	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle, numActiveChannels)
 
@@ -110,13 +111,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
-
-		WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-		SCOPE_CreateGraph(TestPulseITC, panelTitle)
 	else
-		WAVE ITCDataWave = GetITCDataWave(panelTitle)
-		SCOPE_CreateGraph(ITCDataWave, panelTitle)
-
 		NVAR count = $GetCount(panelTitle)
 		// only call before the very first acquisition and
 		// not each time during repeated acquisition
@@ -124,6 +119,8 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 			DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
 		endif
 	endif
+
+	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 End
 
 static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
@@ -464,6 +461,33 @@ static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
 
 	FastOp ITCDataWave = 0
 	SetScale/P x 0, DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / 1000, "ms", ITCDataWave
+End
+
+/// @brief Initializes the wave used for displaying DAQ/TP results in the
+/// oscilloscope window
+///
+/// @param panelTitle  panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
+	string panelTitle
+	variable numActiveChannels, dataAcqOrTP
+
+	variable numRows
+	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		numRows = TP_GetTestPulseLengthInPoints(panelTitle)
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		numRows = DimSize(ITCDataWave, ROWS)
+	else
+		ASSERT(0, "Invalid dataAcqOrTP value")
+	endif
+
+	Redimension/N=(numRows, numActiveChannels) OscilloscopeData
+	SetScale/P x, 0, DimDelta(ITCDataWave, ROWS), "ms", OscilloscopeData
+	Multithread OscilloscopeData = NaN
 End
 
 /// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device

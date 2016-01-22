@@ -91,7 +91,7 @@ Function ITC_BkrdTPFuncMD(s)
 		// Ensures that the new TP chunk isn't the same as the last one.
 		// This is required to keep the TP buffer in sync.
 		if(activeChunk != ActiveDeviceList[i][4])
-			DM_CreateScaleTPHoldingWave(panelTitle, chunk=activeChunk)
+			DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
 			TP_Delta(panelTitle)
 			ActiveDeviceList[i][4] = activeChunk
 		endif

@@ -1209,18 +1209,18 @@ Function/S GetDeviceTestPulseAsString(panelTitle)
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
 End
 
-/// @brief Return the ITC testpulse wave
-Function/Wave GetTestPulseITCWave(panelTitle)
+/// @brief Return a wave for displaying scaled data in the oscilloscope window
+Function/Wave GetOscilloscopeWave(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = TestPulseITC
+	dfref dfr = GetDevicePath(panelTitle)
+	WAVE/Z/SDFR=dfr wv = OscilloscopeData
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:TestPulseITC/Wave=wv
+	Make/R/N=(1, NUM_DA_TTL_CHANNELS) dfr:OscilloscopeData/Wave=wv
 
 	return wv
 End

@@ -80,7 +80,7 @@ Function TP_Delta(panelTitle)
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
-	WAVE/SDFR=dfr TestPulseITC
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
 	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
 	NVAR/SDFR=dfr baselineFrac
@@ -92,9 +92,9 @@ Function TP_Delta(panelTitle)
 	amplitudeIC = abs(amplitudeICGlobal)
 	amplitudeVC = abs(amplitudeVCGlobal)
 
-	variable DimOffsetVar = DimOffset(TestPulseITC, ROWS)
-	variable DimDeltaVar = DimDelta(TestPulseITC, ROWS)
-	variable duration = DimSize(TestPulseITC, ROWS) * DimDeltaVar // total duration of TP in ms
+	variable DimOffsetVar = DimOffset(OscilloscopeData, ROWS)
+	variable DimDeltaVar = DimDelta(OscilloscopeData, ROWS)
+	variable duration = DimSize(OscilloscopeData, ROWS) * DimDeltaVar // total duration of TP in ms
 	variable BaselineSteadyStateStartTime = 0.1 * duration
 	variable BaselineSteadyStateEndTime = (baselineFrac - 0.01) * duration
 	variable TPSSEndTime = (1 - (baselineFrac + 0.01)) * duration
@@ -108,10 +108,10 @@ Function TP_Delta(panelTitle)
 	variable columns
 
 	//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
-	// 	TestPulseITC has the AD columns in the order of active AD channels, not the order of active headstages
-	Duplicate/FREE/R=[BaselineSSStartPoint, BaslineSSEndPoint][] TestPulseITC, BaselineSS
-	Duplicate/FREE/R=[TPSSStartPoint, TPSSEndPoint][] TestPulseITC, TPSS
-	Duplicate/FREE/R=[TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] TestPulseITC, Instantaneous
+	// 	OscilloscopeData has the AD columns in the order of active AD channels, not the order of active headstages
+	Duplicate/FREE/R=[BaselineSSStartPoint, BaslineSSEndPoint][] OscilloscopeData, BaselineSS
+	Duplicate/FREE/R=[TPSSStartPoint, TPSSEndPoint][] OscilloscopeData, TPSS
+	Duplicate/FREE/R=[TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] OscilloscopeData, Instantaneous
 	//	average the steady state wave
 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 	avgTPSS /= dimsize(TPSS, ROWS)

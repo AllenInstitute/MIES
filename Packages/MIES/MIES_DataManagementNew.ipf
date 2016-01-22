@@ -3,21 +3,22 @@
 /// @file MIES_DataManagementNew.ipf
 /// @brief __DM__ Convert and scale acquired data
 
-static Constant FLOAT_32BIT = 0x02
-static Constant FLOAT_64BIT = 0x04
-
 Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
 
 	variable sweepNo, rowsToCopy
-	string savedDataWaveName, savedSetUpWaveName
+	string savedDataWaveName, savedSetUpWaveName, oscilloscopeSubwindow
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
 	DM_ADScaling(ITCDataWave, panelTitle)
 	DM_DAScaling(ITCDataWave, panelTitle)
+
+	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+	DoUpdate/W=$oscilloscopeSubwindow
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
@@ -174,28 +175,48 @@ static Function DM_AfterSweepDataSaveHook(panelTitle)
 	endfor
 End
 
-Function DM_CreateScaleTPHoldingWave(panelTitle, [chunk])
+/// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
+/// oscilloscope panel
+///
+/// @param panelTitle  panel title
+/// @param dataAcqOrTP One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
+///                    the testpulse to extract
+Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk])
 	string panelTitle
-	variable chunk
+	variable dataAcqOrTP, chunk
 
-	variable length, first, last
+	variable length, first, last, fifoPos
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE TestPulseITC = GetTestPulseITCWave(panelTitle)
-	length = TP_GetTestPulseLengthInPoints(panelTitle)
+	WAVE OscilloscopeData             = GetOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
+	NVAR ADChannelToMonitor           = $GetADChannelToMonitor(panelTitle)
 
-	if(ParamIsDefault(chunk))
-		chunk = 0
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		if(ParamIsDefault(chunk))
+			chunk = 0
+		endif
+
+		length = TP_GetTestPulseLengthInPoints(panelTitle)
+		first  = chunk * length
+		last   = first + length - 1
+		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
+
+		Multithread OscilloscopeData[][] = ITCDataWave[first + p][q]
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+
+		fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		ASSERT(fifoPos >= 0 && fifoPos < DimSize(OscilloscopeData, ROWS), "Invalid fifoPos")
+
+		Multithread OscilloscopeData[0, fifoPos][] = ITCDataWave[p][q]
+	else
+		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
 
-	first = chunk * length
-	last  = first + length
-	ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS), "Invalid wave subrange")
-
-	Duplicate/O/R=[first, last][] ITCDataWave, TestPulseITC
-	Redimension/Y=(GetRawDataFPType(panelTitle)) TestPulseITC
-	SetScale/P x, 0, DimDelta(TestPulseITC, ROWS), "ms", TestPulseITC
-	DM_ADScaling(TestPulseITC, panelTitle)
+	DM_ADScaling(OscilloscopeData, panelTitle)
 End
 
 static Function DM_ADScaling(WaveToScale, panelTitle)
@@ -204,19 +225,18 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 
 	variable startOfADColumns
 	variable gain, i, numEntries, adc
-	string ctrl
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
 	numEntries = DimSize(ADCs, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		adc = ADCs[i]
 
-		ctrl = GetPanelControl(panelTitle, adc, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		gain = GetSetVariable(panelTitle, ctrl)
+		gain = DA_EphysGuiState[adc][%ADGain]
 
 		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
 			// w' = w  / (g * s)
@@ -230,18 +250,18 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 	wave WaveToScale
 	string panelTitle
 
-	string ctrl
 	variable gain, i, dac, numEntries
 	DFREF deviceDFR       = GetDevicePath(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave, ITCChanConfigWave
 	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
 
 	numEntries = DimSize(DACs, ROWS)
 	for(i = 0; i < numEntries ; i += 1)
 		dac  = DACs[i]
-		ctrl = GetPanelControl(panelTitle, dac, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		gain = GetSetVariable(panelTitle, ctrl)
+
+		gain = DA_EphysGuiState[dac][%DAGain]
 
 		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)
 			// w' = w * g / s
@@ -282,5 +302,5 @@ End
 static Function GetRawDataFPType(panelTitle)
 	string panelTitle
 
-	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? FLOAT_64BIT : FLOAT_32BIT
+	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
 End
