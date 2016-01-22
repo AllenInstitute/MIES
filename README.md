@@ -64,7 +64,7 @@
 
 ## Doxygen documentation
 
-The documentation of the master branch is available [here](http://10.128.24.29/master/index.html)
+Within the Allen Institute, the latest documentation builds can be found [here](http://10.128.24.29/master/index.html) for the master branch and [here](http://10.128.24.29/release/index.html) for the release branch.
 
 ### Building the documentation
 
