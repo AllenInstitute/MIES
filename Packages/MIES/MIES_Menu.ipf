@@ -23,6 +23,7 @@ Menu "Mies Panels", dynamic
 	SubMenu "Advanced"
 		"Enable debug mode", /Q, EnableDebugMode()
 		"Disable debug mode", /Q, DisableDebugMode()
+		"Check Installation", /q, CHI_CheckInstallation()
 	End
 End
 

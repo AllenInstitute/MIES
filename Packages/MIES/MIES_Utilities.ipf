@@ -2158,3 +2158,187 @@ Function/S GetSymbolOhm()
 	return "\\[0\\F'Symbol'W\\F]0"
 #endif
 End
+
+/// @brief Return the disc folder name where the XOPs are located
+///
+/// Distinguishes between i386 and x64 Igor versions
+Function/S GetIgorExtensionFolderName()
+
+#if defined(IGOR64)
+	return "Igor Extensions (64-bit)"
+#else
+	return "Igor Extensions"
+#endif
+End
+
+/// @brief Recursively resolve shortcuts to files/directories
+///
+/// @return full path or an empty string if the file does not exist or the
+/// 		shortcut points to a non existing file/folder
+Function/S ResolveAlias(pathName, path)
+	string pathName, path
+
+	GetFileFolderInfo/P=$pathName/Q/Z path
+
+	if(V_flag)
+		return ""
+	endif
+
+	if(V_isAliasShortcut)
+		return ResolveAlias(pathName, S_aliasPath)
+	endif
+
+	return path
+End
+
+/// @brief Return a free wave with all duplicates removed, might change the
+/// relative order of the entries
+Function/WAVE RemoveDuplicates(txtWave)
+	WAVE/T txtWave
+
+	variable i, numRows
+	numRows = DimSize(txtWave, ROWS)
+
+	Duplicate/FREE/T txtWave, dest
+
+	if(numRows <= 1)
+		return dest
+	endif
+
+#if (IgorVersion() >= 7.0)
+	FindDuplicates/RT=dest txtWave
+#else
+	ASSERT(DimSize(dest, COLS) == 0, "Can only work with 1D waves")
+	Sort dest, dest
+	for(i = 1; i < DimSize(dest, ROWS); i += 1)
+		if(!cmpstr(dest[i - 1], dest[i]))
+			DeletePoints/M=(ROWS) i, 1, dest
+		endif
+	endfor
+#endif
+
+	return dest
+End
+
+/// @brief Return the number of bits of the architecture
+///        Igor Pro was built for.
+Function GetArchitectureBits()
+
+#if defined(IGOR64)
+	return 64
+#else
+	return 32
+#endif
+End
+
+/// @brief Return a unique symbolic path name
+///
+/// @code
+///	string symbPath = GetUniqueSymbolicPath()
+///	NewPath/Q/O $symbPath, "C:"
+/// @endcode
+Function/S GetUniqueSymbolicPath([prefix])
+	string prefix
+
+	if(ParamIsDefault(prefix))
+		prefix = "temp_"
+	endif
+
+	return prefix + num2istr(GetNonReproducibleRandom() * 1e6)
+End
+
+/// @brief Return a list of all files from the given symbolic path
+///        and its subfolders.
+Function/S GetAllFilesRecursivelyFromPath(pathName)
+	String pathName
+
+	string fileOrPath, directory, subFolderPathName
+	string files
+	string allFiles = ""
+	string dirs = ""
+	variable i, numEntries, numDirs
+
+	PathInfo $pathName
+	ASSERT(V_flag, "Given symbolic path does not exist")
+
+	files = IndexedFile($pathName, -1, "????")
+
+	numEntries = ItemsInList(files)
+	for(i = 0; i < numEntries; i+= 1)
+
+		fileOrPath = StringFromList(i, files)
+		fileOrPath = ResolveAlias(pathName, fileOrPath)
+
+		if(isEmpty(fileOrPath))
+			continue
+		endif
+
+		GetFileFolderInfo/P=$pathName/Q/Z fileOrPath
+		ASSERT(!V_Flag, "Error in GetFileFolderInfo")
+
+		if(V_isFile)
+			allFiles = AddListItem(S_path, allFiles, ";", INF)
+		elseif(V_isFolder)
+			dirs = AddListItem(S_path, dirs, ";", INF)
+		else
+			ASSERT(0, "Unexpected file type")
+		endif
+	endfor
+
+	dirs = AddListItem(IndexedDir($pathName, -1, 1), dirs, ";", INF)
+	numDirs = ItemsInList(dirs)
+
+	for(i = 0; i < numDirs; i += 1)
+
+		directory = StringFromList(i, dirs)
+
+		if(isEmpty(directory))
+			continue
+		endif
+
+		subFolderPathName = GetUniqueSymbolicPath()
+
+		NewPath/Q/O $subFolderPathName, directory
+		files = GetAllFilesRecursivelyFromPath(subFolderPathName)
+		KillPath/Z $subFolderPathName
+
+		if(!isEmpty(files))
+			allFiles = AddListItem(files, allFiles, ";", INF)
+		endif
+	endfor
+
+	// remove empty entries
+	return ListMatch(allFiles, "!")
+End
+
+#if (IgorVersion() >= 7.0)
+	// ListToTextWave is available
+#else
+/// @brief Convert a string list to a text wave
+Function/WAVE ListToTextWave(list, sep)
+	string list, sep
+
+	Make/T/FREE/N=(ItemsInList(list, sep)) result = StringFromList(p, list, sep)
+
+	return result
+End
+#endif
+
+/// @brief Convert a text wave to string list
+Function/S TextWaveToList(txtWave, sep)
+	WAVE/T txtWave
+	string sep
+
+	string list = ""
+	variable i, numRows
+
+	ASSERT(WaveType(txtWave, 1) == 2, "Expected a text wave")
+	ASSERT(DimSize(txtWave, COLS) == 0, "Expected a 1D wave")
+
+	numRows = DimSize(txtWave, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		list = AddListItem(txtWave[i], list, sep, Inf)
+	endfor
+
+	return list
+End
