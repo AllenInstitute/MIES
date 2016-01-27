@@ -2480,7 +2480,7 @@ function tango_dp_tab_proc (tca) : TabControl
 	//-PopupMenu sca_ppm, win=$tca.win, disable = (new_selected_tab == 0) ? 0 : 1
 	PopupMenu spe_ppm, win=$tca.win, disable = (new_selected_tab == kSPECTRUM) ? 0 : 1
 	PopupMenu img_ppm, win=$tca.win, disable = (new_selected_tab == kIMAGE) ? 0 : 1
-	Button stdln_mon_but, win=$tca.win, disable = (new_selected_tab == kSPECTRUM || (new_selected_tab == kIMAGE) ? 0 : 1
+	Button stdln_mon_but, win=$tca.win, disable = (new_selected_tab == kSPECTRUM || (new_selected_tab == kIMAGE) ? 0 : 1)
 	String dev = GetUserData(tca.win, "", "dev")
    tango_dp_attr_changed(dev, cur_selected_attr, new_selected_attr, tca.win)
  	switch (new_selected_tab)
