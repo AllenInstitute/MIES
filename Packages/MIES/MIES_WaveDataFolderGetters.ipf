@@ -335,7 +335,7 @@ Function/S GetDevicePathAsString(panelTitle)
 
 	string deviceType, deviceNumber
 	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
-		Abort "Invalid/Non-locked paneltitle"
+		ASSERT(0, "Invalid/Non-locked paneltitle")
 	endif
 
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
