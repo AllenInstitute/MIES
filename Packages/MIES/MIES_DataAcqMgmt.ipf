@@ -218,26 +218,6 @@ Function DAM_StopDataAcq(panelTitle)
 	endif
 End
 
-/// @brief Stop the TP on yoked devices simultaneously
-///
-/// Handles also non-yoked devices in multi device mode correctly.
-Function DAM_StopTPMD(panelTitle)
-	string panelTitle
- 
-	if(!DAP_DeviceIsLeader(panelTitle))
-		ITC_StopTPMD(panelTitle)
-		return NaN
-	endif
-
-	// stop leader board
-	ITC_StopTPMD(panelTitle)
-
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
-		CallFunctionForEachListItem(ITC_StopTPMD, listOfFollowerDevices)
-	endif
-End
-
 /// @brief if devices are yoked, RA_StartMD is only called once the last device has finished the TP,
 /// and it is called for the lead device if devices are not yoked, it is the same as it would be if
 /// RA_StartMD was called directly

@@ -4871,7 +4871,7 @@ Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
 
 	if(IsBackgroundTaskRunning("TestPulseMD")) // stops the testpulse
-		 ITC_StopTPMD(panelTitle)
+		 ITC_StopTestPulseMultiDevice(panelTitle)
 	endif
 
 	if(IsBackgroundTaskRunning("ITC_TimerMD")) // stops the background timer

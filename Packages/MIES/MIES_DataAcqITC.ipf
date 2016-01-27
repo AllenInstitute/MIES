@@ -662,7 +662,7 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 			numEntries = DimSize(ActiveDeviceTextList, ROWS)
 			for(i = 0; i < numEntries; i += 1)
 				if(!cmpstr(ActiveDeviceTextList[i], panelTitle))
-					 ITC_StopTPMD(panelTitle)
+					 ITC_StopTestPulseMultiDevice(panelTitle)
 				endif
 			endfor
 		endif

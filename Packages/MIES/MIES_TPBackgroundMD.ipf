@@ -131,7 +131,7 @@ Function ITC_BkrdTPFuncMD(s)
 				// only stop the currently active device
 				if(!cmpstr(panelTitle,ActiveDeviceTextList[i]))
 					beep 
-					DAM_StopTPMD(panelTitle)
+					ITC_StopTestPulseMultiDevice(panelTitle)
 				endif
 			endif
 		endif
@@ -140,8 +140,27 @@ Function ITC_BkrdTPFuncMD(s)
 	return 0
 End
 
-/// @brief Stop the test pulse in multi device mode
-Function ITC_StopTPMD(panelTitle)
+/// @brief Stop the TP on yoked devices simultaneously
+///
+/// Handles also non-yoked devices in multi device mode correctly.
+Function ITC_StopTestPulseMultiDevice(panelTitle)
+	string panelTitle
+
+	if(!DAP_DeviceIsLeader(panelTitle))
+		ITC_StopTPMD(panelTitle)
+		return NaN
+	endif
+
+	// stop leader board
+	ITC_StopTPMD(panelTitle)
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
+		CallFunctionForEachListItem(ITC_StopTPMD, listOfFollowerDevices)
+	endif
+End
+
+static Function ITC_StopTPMD(panelTitle)
 	string panelTitle
 
 	string cmd
