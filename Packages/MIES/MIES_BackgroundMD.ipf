@@ -59,7 +59,7 @@ Function ITC_FIFOMonitorMD(s)
 	string cmd
 	variable NumberOfActiveDevices
 	variable DeviceIDGlobal
-	variable i
+	variable i, fifoPos
 	string panelTitle, oscilloscopeSubwindow
 
 	do
@@ -75,12 +75,13 @@ Function ITC_FIFOMonitorMD(s)
 		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
 		ExecuteITCOperation(cmd)
 
-		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+		fifoPos = ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2]
+		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
 
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
-		if(ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2] >= ActiveDeviceList[i][2])
+		if(fifoPos >= ActiveDeviceList[i][2])
 			print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
 			DeviceIDGlobal = ActiveDeviceList[i][0]
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1)

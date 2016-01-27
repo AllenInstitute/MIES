@@ -17,7 +17,10 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	DM_ADScaling(ITCDataWave, panelTitle)
 	DM_DAScaling(ITCDataWave, panelTitle)
 
-	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	rowsToCopy = stopCollectionPoint - 1
+
+	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=rowsToCopy)
 	DoUpdate/W=$oscilloscopeSubwindow
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -182,21 +185,23 @@ End
 /// @param dataAcqOrTP One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
 ///                    the testpulse to extract
-Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk])
+/// @param fifoPos     Position of the fifo used by the ITC XOP to keep track of
+/// 				   the last written position
+Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	string panelTitle
-	variable dataAcqOrTP, chunk
+	variable dataAcqOrTP, chunk, fifoPos
 
-	variable length, first, last, fifoPos
+	variable length, first, last
 
-	WAVE OscilloscopeData             = GetOscilloscopeWave(panelTitle)
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-	NVAR ADChannelToMonitor           = $GetADChannelToMonitor(panelTitle)
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		if(ParamIsDefault(chunk))
 			chunk = 0
 		endif
+
+		ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
 
 		length = TP_GetTestPulseLengthInPoints(panelTitle)
 		first  = chunk * length
@@ -208,7 +213,7 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk])
 		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
 
-		fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 		ASSERT(fifoPos >= 0 && fifoPos < DimSize(OscilloscopeData, ROWS), "Invalid fifoPos")
 
 		Multithread OscilloscopeData[0, fifoPos][] = ITCDataWave[p][q]
