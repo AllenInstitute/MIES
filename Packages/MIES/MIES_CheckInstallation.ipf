@@ -56,13 +56,13 @@ Function CheckIfPathsRefIdenticalFiles(list)
 	variable i, numEntries
 	string path, refHash, newHash
 
-	if(ItemsInList(list) <= 1)
+	if(ItemsInList(list, "|") <= 1)
 		return 1
 	endif
 
-	numEntries = ItemsInList(list)
+	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
-		path = StringFromList(i, list)
+		path = StringFromList(i, list, "|")
 
 		if(i == 0)
 			refHash = CalcHashForFile(path)
@@ -97,8 +97,8 @@ static Function CHI_CheckXOP(list, item, name, state)
 	variable numMatches, i
 	string matches
 
-	matches    = ListMatch(list, "*" + item)
-	numMatches = ItemsInList(matches)
+	matches    = ListMatch(list, "*" + item, "|")
+	numMatches = ItemsInList(matches, "|")
 
 	if(numMatches > 1)
 		if(CheckIfPathsRefIdenticalFiles(matches))
@@ -116,13 +116,13 @@ static Function CHI_CheckXOP(list, item, name, state)
 			state.numErrors += 1
 			break
 		case 1:
-			printf "%s: Found version %s (Nice!)\r", name, CHI_GetFileVersion(StringFromList(0, matches))
+			printf "%s: Found version %s (Nice!)\r", name, CHI_GetFileVersion(StringFromList(0, matches, "|"))
 			break
 		default:
 			printf "%s: Found multiple versions (Might create problems)\r", name
 			printf "%s: Duplicates are:\r", name
 			for(i = 0; i < numMatches; i += 1)
-				printf "%s: Found version %s\r", name, CHI_GetFileVersion(StringFromList(i, matches))
+				printf "%s: Found version %s\r", name, CHI_GetFileVersion(StringFromList(i, matches, "|"))
 			endfor
 			state.numWarnings += 1
 			break
@@ -150,8 +150,8 @@ Function CHI_CheckInstallation()
 
 	KillPath $symbPath
 
-	listOfXOPs = ListMatch(allFilesUser + ";" + allFilesSystem, "*.xop")
-	listOfXOPs = TextWaveToList(RemoveDuplicates(ListToTextWave(listOfXOPs, ";")), ";")
+	listOfXOPs = ListMatch(allFilesUser + "|" + allFilesSystem, "*.xop", "|")
+	listOfXOPs = TextWaveToList(RemoveDuplicates(ListToTextWave(listOfXOPs, "|")), "|")
 
 	STRUCT CHI_InstallationState state
 

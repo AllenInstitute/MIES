@@ -858,15 +858,15 @@ Function AB_ScanFolder(win)
 
 	AB_ClearWaves()
 
-	pxpList = GetFilesRecursively(path, ".pxp")
-	uxpList = GetFilesRecursively(path, ".uxp")
+	pxpList = GetAllFilesRecursivelyFromPath(path, extension=".pxp")
+	uxpList = GetAllFilesRecursivelyFromPath(path, extension=".uxp")
 	KillPath $path
 
-	list = SortList(pxpList + uxpList)
+	list = SortList(pxpList + uxpList, "|")
 
-	numEntries = ItemsInList(list)
+	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
-		AB_AddExperimentFile(StringFromList(i, list))
+		AB_AddExperimentFile(StringFromList(i, list, "|"))
 	endfor
 
 	WAVE expBrowserList = GetExperimentBrowserGUIList()

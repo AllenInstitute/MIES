@@ -1207,82 +1207,6 @@ Function FindRange(wv, col, val, forwardORBackward, first, last)
 	endif
 End
 
-/// @brief Returns a list of all files with the extension given in the symbolic path pathName
-///
-/// Adapted from the example in the `IndexedDir` documentation
-///
-/// Warning! This function uses recursion, so it might take some time
-///
-/// @param pathName                   Name of symbolic path in which to look for folders and files
-/// @param extension                  File name extension (e.g., ".txt") or "????" for all files
-/// @param level [optional, don't use] Indicate level of recursion
-Function/S GetFilesRecursively(pathName, extension, [level])
-	string pathName
-	string extension
-	variable level
-
-	variable fileIndex, folderIndex, levelValue
-	string path, fileName, fileNames, subFolderPathName, subFolderPath
-	string foundFilesList = ""
-	string recursFoundFilesList = ""
-
-	if(ParamIsDefault(level))
-		levelValue = 0
-	else
-		levelValue = level
-	endif
-
-	levelValue += 1
-
-	// get folder name from symbolic path
-	PathInfo $pathName
-	path = S_path
-	ASSERT(V_flag != 0 , "path does not exist")
-
-	fileNames = IndexedFile($pathName, -1, extension)
-	fileIndex = 0
-
-	// get all files in the folder pathName
-	do
-		fileName = StringFromList(fileIndex, fileNames)
-
-		if (isEmpty(fileName))
-			break // No more files
-		endif
-
-		foundFilesList = AddListItem(path + fileName, foundFilesList, ";", inf)
-		fileIndex += 1
-	while(1)
-
-	// traverse into the first subfolder and call this function recursively
-	string paths = IndexedDir($pathName, -1, 1)
-	folderIndex = 0
-	do
-		path = StringFromList(folderIndex, paths)
-
-		if(isEmpty(path))
-			break // No more folders
-		endif
-
-		// name of the new symbolic path
-		subFolderPathName =  UniqueName("tempPrintFoldersPath_", 12, levelValue)
-		// Now we get the path to the new parent folder
-		subFolderPath = path
-
-		NewPath/Q/O $subFolderPathName, subFolderPath
-		recursFoundFilesList = GetFilesRecursively(subFolderPathName, extension, level = levelValue)
-		KillPath/Z $subFolderPathName
-
-		if(!isEmpty(recursFoundFilesList))
-			foundFilesList += recursFoundFilesList
-		endif
-
-		folderIndex += 1
-	while(1)
-
-	return foundFilesList
-End
-
 /// @brief Returns a reference to a newly created datafolder
 ///
 /// Basically a datafolder aware version of UniqueName for datafolders
@@ -2248,28 +2172,42 @@ Function/S GetUniqueSymbolicPath([prefix])
 End
 
 /// @brief Return a list of all files from the given symbolic path
-///        and its subfolders.
-Function/S GetAllFilesRecursivelyFromPath(pathName)
-	String pathName
+///        and its subfolders. The list is pipe (`|`) separated as
+///        the semicolon (`;`) is a valid character in filenames.
+///
+/// Note: This function does *not* work on MacOSX as there filenames are allowed
+///       to have pipe symbols in them.
+///
+/// @param pathName igor symbolic path to search recursively
+/// @param extension [optional, defaults to all files] file suffixes to search for
+Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
+	string pathName, extension
 
 	string fileOrPath, directory, subFolderPathName
 	string files
 	string allFiles = ""
 	string dirs = ""
-	variable i, numEntries, numDirs
+	variable i, numDirs
 
 	PathInfo $pathName
 	ASSERT(V_flag, "Given symbolic path does not exist")
 
-	files = IndexedFile($pathName, -1, "????")
+	if(ParamIsDefault(extension))
+		extension = "????"
+	endif
 
-	numEntries = ItemsInList(files)
-	for(i = 0; i < numEntries; i+= 1)
+	for(i = 0; ;i += 1)
+		fileOrPath = IndexedFile($pathName, i, extension)
 
-		fileOrPath = StringFromList(i, files)
+		if(isEmpty(fileOrPath))
+			// no more files
+			break
+		endif
+
 		fileOrPath = ResolveAlias(pathName, fileOrPath)
 
 		if(isEmpty(fileOrPath))
+			// invalid shortcut, try next file
 			continue
 		endif
 
@@ -2277,38 +2215,42 @@ Function/S GetAllFilesRecursivelyFromPath(pathName)
 		ASSERT(!V_Flag, "Error in GetFileFolderInfo")
 
 		if(V_isFile)
-			allFiles = AddListItem(S_path, allFiles, ";", INF)
+			allFiles = AddListItem(S_path, allFiles, "|", INF)
 		elseif(V_isFolder)
-			dirs = AddListItem(S_path, dirs, ";", INF)
+			dirs = AddListItem(S_path, dirs, "|", INF)
 		else
 			ASSERT(0, "Unexpected file type")
 		endif
 	endfor
 
-	dirs = AddListItem(IndexedDir($pathName, -1, 1), dirs, ";", INF)
-	numDirs = ItemsInList(dirs)
+	for(i = 0; ; i += 1)
 
-	for(i = 0; i < numDirs; i += 1)
-
-		directory = StringFromList(i, dirs)
+		directory = IndexedDir($pathName, i, 1)
 
 		if(isEmpty(directory))
-			continue
+			break
 		endif
 
+		dirs = AddListItem(directory, dirs, "|", INF)
+	endfor
+
+	numDirs = ItemsInList(dirs, "|")
+	for(i = 0; i < numDirs; i += 1)
+
+		directory = StringFromList(i, dirs, "|")
 		subFolderPathName = GetUniqueSymbolicPath()
 
 		NewPath/Q/O $subFolderPathName, directory
-		files = GetAllFilesRecursivelyFromPath(subFolderPathName)
+		files = GetAllFilesRecursivelyFromPath(subFolderPathName, extension=extension)
 		KillPath/Z $subFolderPathName
 
 		if(!isEmpty(files))
-			allFiles = AddListItem(files, allFiles, ";", INF)
+			allFiles = AddListItem(files, allFiles, "|", INF)
 		endif
 	endfor
 
 	// remove empty entries
-	return ListMatch(allFiles, "!")
+	return ListMatch(allFiles, "!", "|")
 End
 
 #if (IgorVersion() >= 7.0)
