@@ -3872,7 +3872,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
-			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
+			panelList = AddListItem(panelList, listOfFollowerDevices, ";", 0)
 		endif
 		sweep = GetSetVariable(panelTitle, "SetVar_Sweep")
 	else
@@ -5035,7 +5035,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	panelList = leadPanel
 	SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 	if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
-		panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
+		panelList = AddListItem(panelList, listOfFollowerDevices, ";", 0)
 	endif
 
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
