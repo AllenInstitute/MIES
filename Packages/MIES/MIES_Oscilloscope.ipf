@@ -54,7 +54,7 @@ End
 Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
-	variable latest, count, i, numADCs, minVal, maxVal, range, numDigits
+	variable latest, count, i, numADCs, minVal, maxVal, range
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
 	string graph, rightAxis, info
 
@@ -115,9 +115,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 			minVal = minVal + 0.02 * range
 			range *= 0.98
 
-			numDigits = ceil(abs(log(maxVal - minVal)))
-
-			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,numDigits}
+			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,1}
 			ModifyGraph/W=$graph manMinor($rightAxis)={3,0}
 		endfor
 	endif
