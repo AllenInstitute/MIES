@@ -36,7 +36,7 @@ End
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable NumberOfActiveDevices, ADChannelToMonitor, i
+	variable ADChannelToMonitor, i
 	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
 	String cmd, panelTitle
 
@@ -54,8 +54,9 @@ Function ITC_BkrdTPFuncMD(s)
 
 	// works through list of active devices
 	// update parameters for a particular active device
-	NumberOfActiveDevices = DimSize(ActiveDeviceTextList, ROWS)
-	for(i = 0; i < NumberOfActiveDevices; i += 1)
+	// ActiveDeviceTextList size might change inside the loop so we can
+	// *not* precompute it.
+	for(i = 0; i < DimSize(ActiveDeviceTextList, ROWS); i += 1)
 		panelTitle = ActiveDeviceTextList[i]
 		DFREF deviceDFR = GetDevicePath(panelTitle)
 
