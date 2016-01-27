@@ -1835,7 +1835,7 @@ End
 Function WBP_UpdateITCPanelPopUps([panelTitle])
 	string panelTitle
 
-	variable i, numPanels
+	variable i, j, numPanels
 	string ctrlWave, ctrlIndexEnd, DAlist, TTLlist, listOfPanels
 
 	if(ParamIsDefault(panelTitle))
@@ -1857,14 +1857,14 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, listOfPanels)
 
-		for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-			ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		for(j = 0; j < NUM_DA_TTL_CHANNELS; j += 1)
+			ctrlWave     = GetPanelControl(panelTitle, j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = GetPanelControl(panelTitle, j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
 
-			ctrlWave     = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = GetPanelControl(panelTitle, j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = GetPanelControl(panelTitle, j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
 		endfor
