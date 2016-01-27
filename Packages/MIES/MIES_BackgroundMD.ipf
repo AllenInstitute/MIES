@@ -38,8 +38,8 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
-	
-	if(!IsBackgroundTaskRunning("ITC_BckgrdFIFOMonitorMD"))
+
+	if(!IsBackgroundTaskRunning("ITC_FIFOMonitorMD"))
 		ITC_StartBckrdFIFOMonitorMD()
 	endif
 End
