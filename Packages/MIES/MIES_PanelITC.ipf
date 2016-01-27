@@ -4952,6 +4952,7 @@ Function DAP_ButtonProc_Lead(ba) : ButtonControl
 			EnableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
 			DisableControl(panelTitle,"button_Hardware_Lead1600")
 			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
+			createDFWithAllParents("root:ImageHardware:Arduino")
 			break
 	endswitch
 
