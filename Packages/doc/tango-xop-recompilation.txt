@@ -1,0 +1,83 @@
+1. Required tools
+- Visual Studio 2012, Express Version is enough
+- CMake 3.1 from https://cmake.org/download/
+
+2. Download
+- Tango 8.1.2 from http://sourceforge.net/projects/tango-cs/files/tango812_win64_vc11a.zip/download
+  - Extract into e:\dev\tango_812_x64_vc11
+- Get SVN snapshot
+  - svn checkout svn://svn.code.sf.net/p/tango-cs/code/ tango-cs-code (takes ages)
+
+3. Recompile yat from tango-cs/share/yat/tags/YAT-1.10.3/
+- Open VS2012 command line prompt
+- cd share/yat/tags/YAT-1.10.3
+- mkdir build
+- cd build
+- cmake -G "Visual Studio 11 2012 Win64" -D CMAKE_INSTALL_PREFIX=e:\dev\tango_812_x64_vc11 ..
+- Open yat.sln and build project INSTALL
+- Close sln
+- Open msvc/11.0/YAT.sln
+- Build all combinations
+- Copy x64-build, x86-build to e:\dev\tango_812_x64_vc11
+
+4. Recompile yat4tango from tango-cs/share/yat4tango/tags/YAT4Tango-1.9.3/
+- Adapt msvc/11.0/edit_then_launch_me_to_compile.bat
+- Execute msvc/11.0/edit_then_launch_me_to_compile.bat
+- Compile the static library in all four combinations, shared library does not work
+- Copy x64-build, x86-build to e:\dev\tango_812_x64_vc11
+
+5. Recompile Tango XOP
+- Go to tango-cs-code\bindings\igorpro\trunk\windows\msvc10
+- Extract XOP Toolkit into E:\projekte\tango-cs-code\bindings\igorpro\trunk\XOP Toolkit 6
+- Adapt paths in compil-x64-env-setup.bat
+- Execute compil-x64-env-setup.bat
+
+7. Installation
+- Copy the following files into a folder searched by Igor Pro for 64bit XOPs
+  COS416_vc11_rt.dll
+  log4tango.dll
+  msvcp110.dll
+  msvcr110.dll
+  omniDynamic416_vc11_rt.dll
+  omniORB416_vc11_rt.dll
+  omnithread34_vc11_rt.dll
+  tango812.dll
+  tango_binding-64.xop
+  zmq.dll
+
+Hints:
+  - msvc* can be found in C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Packages\Debugger\X64
+  - The other dlls in E:\dev\tango_812_x64_vc11\lib\vc11_dll
+
+8. Testing
+- Install tango from http://sourceforge.net/projects/tango-cs/files/TangoSetup-8.1.2b_win32.exe/download
+- Install mysql server from https://dev.mysql.com/downloads/installer/ and set the password to 1234
+
+Create a file e:\tango.bat with the following contents
+```
+set TANGO_HOST=localhost:20000
+set TANGO_ROOT=c:\program files\tango
+
+set MYSQL_USER=root
+set MYSQL_PASSWORD=1234
+```
+
+- Open a cmd prompt
+- call e:\tango.bat
+- cd %TANGO_ROOT%\share\tango\db
+- set PATH=%PATH%;"c:\Program Files\MySQL\MySQL Server 5.7\bin\"
+- call create_db.bat
+- cd %TANGO_ROOT%\bin
+- start-db.bat // keep running
+
+- Open a cmd prompt
+- call e:\tango.bat
+- cd %TANGO_ROOT%\bin
+- start-tangotest.bat test // keep running
+
+- Open a cmd prompt
+- call e:\tango.bat
+- "C:\Program Files\WaveMetrics\Igor Pro 7 Folder\IgorBinaries_x64\Igor64.exe"
+- Open tango-cs-code\bindings\igorpro\trunk\regtest\tango_reg_test.ipf
+- Execute in Igor tango_test_all(dev_name="sys/tg_test/1")
+- All tests must pass
