@@ -216,6 +216,11 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 		ASSERT(fifoPos >= 0 && fifoPos < DimSize(OscilloscopeData, ROWS), "Invalid fifoPos")
 
+		if(fifoPos == 0)
+			// nothing to do
+			return NaN
+		endif
+
 		Multithread OscilloscopeData[0, fifoPos][] = ITCDataWave[p][q]
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
