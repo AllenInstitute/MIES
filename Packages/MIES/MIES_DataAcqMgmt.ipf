@@ -219,41 +219,22 @@ Function DAM_StopDataAcq(panelTitle)
 End
 
 /// @brief Stop the TP on yoked devices simultaneously
+///
+/// Handles also non-yoked devices in multi device mode correctly.
 Function DAM_StopTPMD(panelTitle)
-
 	string panelTitle
-	variable i = 0
  
-	if(DAP_DeviceIsYokeable(panelTitle)) // if the device is a ITC1600 i.e., capable of yoking
-		controlinfo /w = $panelTitle setvar_Hardware_Status
-		string ITCDACStatus = s_value
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0)
-			print "TP stopped on independent ITC1600"
-			ITC_StopTPMD(panelTitle)
-		else
-			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-			if(SVAR_Exists(listOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
-				if(numberOfFollowerDevices != 0)
-					string followerPanelTitle
-	                
-					//Lead board commands
-					ITC_StopTPMD(panelTitle)
-					do
-						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						ITC_StopTPMD(followerPanelTitle)
-						i += 1
-					while(i < numberOfFollowerDevices)
-	                
-				else
-					ITC_StopTPMD(panelTitle)
-				endif
-			else
-				ITC_StopTPMD(panelTitle)
-			endif
-		endif
-	else
+	if(!DAP_DeviceIsLeader(panelTitle))
 		ITC_StopTPMD(panelTitle)
+		return NaN
+	endif
+
+	// stop leader board
+	ITC_StopTPMD(panelTitle)
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
+		CallFunctionForEachListItem(ITC_StopTPMD, listOfFollowerDevices)
 	endif
 End
 
