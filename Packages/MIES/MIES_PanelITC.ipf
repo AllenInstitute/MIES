@@ -4202,7 +4202,7 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 			printf "(%s) Repeat sets does not match leader panel\r", panelTitle
 			return 1
 		endif
-		if(leaderdDAQDelay != GetCheckBoxState(panelTitle, "SetVar_DataAcq_dDAQDelay"))
+		if(leaderdDAQDelay != GetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay"))
 			printf "(%s) Distributed acquisition delay does not match leader panel\r", panelTitle
 			return 1
 		endif
@@ -5038,7 +5038,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 		panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
 	endif
 
-	leaderdDAQ         = GetSetVariable(leadPanel, "Check_DataAcq1_DistribDaq")
+	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
 	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
 	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1)
