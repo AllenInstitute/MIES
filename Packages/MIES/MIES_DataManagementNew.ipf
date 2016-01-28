@@ -214,11 +214,16 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
 
 		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
-		ASSERT(fifoPos >= 0 && fifoPos < DimSize(OscilloscopeData, ROWS), "Invalid fifoPos")
 
 		if(fifoPos == 0)
 			// nothing to do
 			return NaN
+		elseif(fifoPos < 0)
+			printf "fifoPos was clipped to zero, old value %g\r", fifoPos
+			return NaN
+		elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
+			printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
+			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
 		Multithread OscilloscopeData[0, fifoPos][] = ITCDataWave[p][q]
