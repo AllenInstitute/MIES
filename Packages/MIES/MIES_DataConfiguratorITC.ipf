@@ -708,8 +708,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
-	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	if(NVAR_exists(count))
+	NVAR count = $GetCount(panelTitle)
+	if(IsFinite(count))
 		setColumn = count - 1
 	else
 		setColumn = 0
@@ -1074,14 +1074,14 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	string sequenceWaveName
 
 	DFREF devicePath = GetDevicePath(panelTitle)
-	NVAR/Z/SDFR=devicePath count
+	NVAR count = $GetCount(panelTitle)
 
 	// wave exists only if random set sequence is selected
 	sequenceWaveName = SetName + num2str(channelType) + num2str(channelNo) + "_S"
 	WAVE/Z/SDFR=devicePath WorkingSequenceWave = $sequenceWaveName
 
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
-	if(NVAR_exists(count))// the global variable count is created at the initiation of the repeated aquisition functions and killed at their completion,
+	if(IsFinite(count))
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		ControlInfo/W=$panelTitle Check_DataAcq_Indexing // check indexing status
 		if(v_value == 0)// if indexing is off...
@@ -1138,6 +1138,8 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 			column = WorkingSequenceWave[0]
 		endif
 	endif
+
+	ASSERT(IsFinite(column), "column has to be finite")
 
 	return cmplx(column, cycleCount)
 End
