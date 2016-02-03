@@ -463,8 +463,7 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
 			for(i = 0; i < numberOfFollowerDevices; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-				NVAR followerCount = $GetCount(followerPanelTitle)
-				KillVariables/Z followerCount
+				DAP_OneTimeCallAfterDAQ(followerPanelTitle)
 			endfor
 		endif
 	endif
