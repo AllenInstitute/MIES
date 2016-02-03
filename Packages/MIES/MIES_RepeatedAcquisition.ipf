@@ -460,19 +460,12 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		RA_FinishAcquisition(panelTitle)
 
 		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
-			print "*****************path to list of follower devices exists"
-			numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
-			if(numberOfFollowerDevices != 0) // there are followers
-				i = 0
-				do
-					followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-					NVAR followerCount = $GetCount(followerPanelTitle)
-					KillVariables/Z followerCount
-					i += 1
-
-				while(i < numberOfFollowerDevices)
-			
-			endif
+			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
+			for(i = 0; i < numberOfFollowerDevices; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+				NVAR followerCount = $GetCount(followerPanelTitle)
+				KillVariables/Z followerCount
+			endfor
 		endif
 	endif
 End
