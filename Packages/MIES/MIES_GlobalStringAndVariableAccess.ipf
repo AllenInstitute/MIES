@@ -234,8 +234,7 @@ End
 Function/S GetStopCollectionPoint(panelTitle)
 	string panelTitle
 
-	// panelTitle currently unused, but kept for easier upgrade later on
-	return GetNVARAsString(GetITCDevicesFolder(), "stopCollectionPoint", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "stopCollectionPoint", initialValue=NaN)
 End
 
 /// @brief Return the ADC to monitor
@@ -244,8 +243,7 @@ End
 Function/S GetADChannelToMonitor(panelTitle)
 	string panelTitle
 
-	// panelTitle currently unused, but kept for easier upgrade later on
-	return GetNVARAsString(GetITCDevicesFolder(), "ADChannelToMonitor", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "ADChannelToMonitor", initialValue=NaN)
 End
 
 /// @brief Return global panelTitle for background tasks
