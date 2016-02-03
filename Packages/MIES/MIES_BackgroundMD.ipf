@@ -128,7 +128,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	endif
 END
 
-Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
+/// @brief Stop ongoing multi device DAQ
+///
+/// Follower handling for yoked devices is done by the caller.
+Function ITC_TerminateOngoingDataAcqMD(panelTitle)
 	String panelTitle
 
 	string cmd
@@ -147,9 +150,9 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	ITC_ZeroITCOnActiveChan(panelTitle)
 	
 	// remove device passed in from active device lists
-	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
+	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-	/// @todo It seems like stopping the follower devices is missing
+
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if (dimsize(ActiveDeviceTextList, 0) == 0) 
 		print "no more active devices, stopping named background"
