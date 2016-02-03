@@ -158,11 +158,6 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 
 	DM_SaveAndScaleITCData(panelTitle)
 
-	// kills the global variable associated with ongoing repeated data acquisition
-	if(NVAR_Exists(count))
-		KillVariables count
-	endif
-
 	DAP_OneTimeCallAfterDAQ(panelTitle)
 END
 
