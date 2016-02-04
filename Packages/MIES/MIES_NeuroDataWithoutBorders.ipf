@@ -374,8 +374,9 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE/T stimSets  = GetLastSettingText(settingsHistoryText, sweep, STIM_WAVE_NAME_KEY)
 
 	STRUCT IPNWB#WriteChannelParams params
-	params.sweep = sweep
+	IPNWB#InitWriteChannelParams(params)
 
+	params.sweep         = sweep
 	params.device        = panelTitle
 	params.channelSuffix = ""
 
@@ -405,23 +406,27 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		params.stimset         = stimSets[i]
 
 		if(IsFinite(adc))
+			path                 = "/acquisition/timeseries"
 			params.channelNumber = ADCs[i]
 			params.channelType   = ITC_XOP_CHANNEL_TYPE_ADC
 			col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 			WAVE params.data     = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
-			IPNWB#WriteSingleChannel(locationID, "/acquisition/timeseries", params, tsp, chunkedLayout=chunkedLayout)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
 
 		if(IsFinite(dac))
+			path                 = "/stimulus/presentation"
 			params.channelNumber = DACs[i]
 			params.channelType   = ITC_XOP_CHANNEL_TYPE_DAC
 			col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 			WAVE params.data     = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
-			IPNWB#WriteSingleChannel(locationID, "/stimulus/presentation", params, tsp, chunkedLayout=chunkedLayout)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
@@ -455,10 +460,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		for(j = 0; j < numEntries; j += 1)
 			name = StringFromList(j, list)
 			WAVE/SDFR=dfr params.data = $name
+			path                 = "/stimulus/presentation"
 			params.channelSuffix = name
 			params.stimset       = StringFromList(str2num(name[1,inf]), listOfStimsets)
 			NWB_GetTimeSeriesProperties(params, tsp)
-			IPNWB#WriteSingleChannel(locationID, "/stimulus/presentation", params, tsp, chunkedLayout=chunkedLayout)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endfor
 
 		numEntries = ItemsInList(listOfStimsets)
@@ -488,11 +495,12 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 
 	stimSet = params.stimSet
 
+	path                 = "/stimulus/templates"
 	params.channelNumber = NaN
 	params.channelType   = -1
 	WAVE params.data     = WB_CreateAndGetStimset(stimSet)
 	NWB_GetTimeSeriesProperties(params, tsp)
-	path = "/stimulus/templates"
+	params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	// write also the stim set parameter waves if all three exist
