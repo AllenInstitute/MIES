@@ -280,6 +280,7 @@ End
 Structure TimeSeriesProperties
 	WAVE/T names
 	WAVE   data
+	WAVE   isCustom ///< 1 if the entry should be marked as NWB custom
 	string missing_fields
 EndStructure
 
@@ -297,6 +298,9 @@ Function InitTimeSeriesProperties(tsp, channelType, clampMode)
 
 	Make/FREE data = NaN
 	WAVE tsp.data = data
+
+	Make/FREE isCustom = 0
+	WAVE tsp.isCustom = isCustom
 
 	// AddProperty() will remove the entries on addition of values
 	if(channelType == CHANNEL_TYPE_ADC)
@@ -334,6 +338,25 @@ Function AddProperty(tsp, nwbProp, value)
 
 	propNames[V_value] = nwbProp
 	propData[V_value]  = value
+End
+
+/// @brief Add a custom TimeSeries property to the `names` and `data` waves
+Function AddCustomProperty(tsp, nwbProp, value)
+	STRUCT TimeSeriesProperties &tsp
+	string nwbProp
+	variable value
+
+	WAVE/T propNames = tsp.names
+	WAVE propData    = tsp.data
+	WAVE isCustom    = tsp.isCustom
+
+	FindValue/TEXT=""/TXOP=(4) propNames
+	ASSERT(V_Value != -1, "Could not find space for new entry")
+	ASSERT(!IsFinite(propData[V_Value]), "data row already filled")
+
+	propNames[V_value] = nwbProp
+	propData[V_value]  = value
+	isCustom[V_value]  = 1
 End
 
 /// @brief Helper structure for WriteSingleChannel()
@@ -436,6 +459,10 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		endif
 
 		H5_WriteDataset(groupID, tsp.names[i], var=tsp.data[i], varType=IGOR_TYPE_32BIT_FLOAT, overwrite=1)
+
+		if(tsp.isCustom[i])
+			MarkAsCustomEntry(groupID, tsp.names[i])
+		endif
 	endfor
 
 	if(cmpstr(tsp.missing_fields, ""))
