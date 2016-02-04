@@ -548,6 +548,11 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 		NWB_AddSweepDataSets(settingsHistory, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
 	elseif(p.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
 		NWB_AddSweepDataSets(settingsHistory, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
+
+		WAVE/Z values = GetLastSetting(settingsHistory, p.sweep, "Stim Scale Factor")
+		if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
+			IPNWB#AddCustomProperty(tsp, "scale", values[p.electrodeNumber])
+		endif
 	endif
 End
 
