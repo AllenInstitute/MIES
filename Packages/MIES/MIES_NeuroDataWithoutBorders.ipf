@@ -11,10 +11,12 @@
 ///
 /// Open one if it does not exist yet.
 ///
-/// @param overrideFilePath file path for new files to override the internal
-///                           generation algorithm
-static Function NWB_GetFileForExport([overrideFilePath])
+/// @param[in] overrideFilePath    [optional] file path for new files to override the internal
+///                                generation algorithm
+/// @param[out] createdNewNWBFile  [optional] a new NWB file was created (1) or an existing opened (0)
+static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	string overrideFilePath
+	variable &createdNewNWBFile
 
 	string expName, fileName, filePath
 	variable fileID, refNum
@@ -64,6 +66,10 @@ static Function NWB_GetFileForExport([overrideFilePath])
 
 		fileIDExport   = fileID
 		filePathExport = filePath
+
+		if(!ParamIsDefault(createdNewNWBFile))
+			createdNewNWBFile = 0
+		endif
 	else // file does not exist
 		HDF5CreateFile/Z fileID as filePath
 		if(V_flag)
@@ -90,7 +96,9 @@ static Function NWB_GetFileForExport([overrideFilePath])
 		fileIDExport   = fileID
 		filePathExport = filePath
 
-		NWB_ExportAllData()
+		if(!ParamIsDefault(createdNewNWBFile))
+			createdNewNWBFile = 1
+		endif
 	endif
 
 	DEBUGPRINT("fileIDExport", var=fileIDExport, format="%15d")
@@ -261,17 +269,21 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	WAVE ITCDataWave, ITCChanConfigWave
 	variable sweep
 
-	variable locationID
+	variable locationID, createdNewNWBFile
 
-	locationID = NWB_GetFileForExport()
+	locationID = NWB_GetFileForExport(createdNewNWBFile=createdNewNWBFile)
 	if(!IsFinite(locationID))
 		return NaN
 	endif
 
-	NWB_AddMiesVersion(locationID)
-	IPNWB#AddModificationTimeEntry(locationID)
-	NWB_AddDeviceSpecificData(locationID, panelTitle)
-	NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+	if(createdNewNWBFile)
+		NWB_ExportAllData()
+	else
+		NWB_AddMiesVersion(locationID)
+		IPNWB#AddModificationTimeEntry(locationID)
+		NWB_AddDeviceSpecificData(locationID, panelTitle)
+		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+	endif
 End
 
 static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep, [chunkedLayout])
