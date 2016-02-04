@@ -25,6 +25,7 @@ Function DM_SaveAndScaleITCData(panelTitle)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
+	GetDeviceDataPath(panelTitle)
 	savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
 	savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
 
