@@ -127,6 +127,18 @@ static Function NWB_ReadSessionStartTime(fileID)
 	return ParseISO8601TimeStamp(str)
 End
 
+static Function/S NWB_GenerateDeviceDescription(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, desc
+
+	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse panelTitle")
+
+	sprintf desc, "Harvard Bioscience (formerly HEKA/Instrutech) Model: %s", deviceType
+
+	return desc
+End
+
 static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout])
 	variable locationID
 	string panelTitle
@@ -139,8 +151,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
 
-	sprintf contents, "ITC hardware: %s", panelTitle
-	IPNWB#AddDevice(locationID, panelTitle, contents)
+	IPNWB#AddDevice(locationID, panelTitle, NWB_GenerateDeviceDescription(panelTitle))
 
 	WAVE settingsHistory           = GetNumDocWave(panelTitle)
 	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
