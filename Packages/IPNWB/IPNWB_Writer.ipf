@@ -359,6 +359,31 @@ Function AddCustomProperty(tsp, nwbProp, value)
 	isCustom[V_value]  = 1
 End
 
+/// @brief Return the next free group index of the format `data_$NUM`
+Function GetNextFreeGroupIndex(locationID, path)
+	variable locationID
+	string path
+
+	string str, list
+	variable idx
+
+	HDF5ListGroup/TYPE=(2^0) locationID, path
+
+	list = S_HDF5ListGroup
+
+	if(IsEmpty(list))
+		return 0
+	endif
+
+	list = SortList(list, ";", 16)
+
+	str = StringFromList(ItemsInList(list) - 1, list)
+	sscanf str, "data_%d.*", idx
+	ASSERT(V_Flag == 1, "Could not find running data index")
+
+	return idx + 1
+End
+
 /// @brief Helper structure for WriteSingleChannel()
 Structure WriteChannelParams
 	string device            ///< name of the measure device, e.g. "ITC18USB_Dev_0"
@@ -371,8 +396,18 @@ Structure WriteChannelParams
 	variable channelNumber   ///< running number of the channel
 	variable electrodeNumber ///< electrode identifier the channel was acquired with
 	variable clampMode       ///< clamp mode, one of @ref IPNWB_ClampModes
+	variable groupIndex      ///< Should be filled with the result of GetNextFreeGroupIndex(locationID, path) before
+							 ///  the first call and must stay constant for all channels for this measurement.
+							 ///  If `NaN` an automatic solution is provided.
 	WAVE data                ///< channel data
 EndStructure
+
+/// @brief Initialize WriteChannelParams structure
+Function InitWriteChannelParams(p)
+	STRUCT WriteChannelParams &p
+
+	p.groupIndex = NaN
+End
 
 /// @brief Write the data of a single channel to the NWB file
 ///
@@ -389,7 +424,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 	STRUCT TimeSeriesProperties &tsp
 	variable chunkedLayout
 
-	variable groupID, numPlaces, nwbDataCounter, numEntries, i
+	variable groupID, numPlaces, numEntries, i
 	string ancestry, str, source, channelTypeStr, group
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
@@ -398,15 +433,17 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		channelTypeStr = "stimset"
 		sprintf group, "%s/%s", path, p.stimSet
 	else
-		HDF5ListGroup/F/TYPE=(2^0) locationID, path
-		nwbDataCounter = ItemsInList(S_HDF5ListGroup)
+		if(!IsFinite(p.groupIndex))
+			HDF5ListGroup/F/TYPE=(2^0) locationID, path
+			p.groupIndex = ItemsInList(S_HDF5ListGroup)
+		endif
 
 		channelTypeStr = StringFromList(p.channelType, CHANNEL_NAMES)
 		ASSERT(!IsEmpty(channelTypeStr), "invalid channel type string")
 		ASSERT(IsFinite(p.channelNumber), "invalid channel number")
 
-		numPlaces = max(5, ceil(log(nwbDataCounter)))
-		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, nwbDataCounter, channelTypeStr, p.channelNumber, p.channelSuffix
+		numPlaces = max(5, ceil(log(p.groupIndex)))
+		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
 	endif
 
 	H5_CreateGroupsRecursively(locationID, group, groupID=groupID)

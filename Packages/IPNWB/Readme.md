@@ -43,6 +43,8 @@ Function NWBWriterExample()
 
 	// write AD data to the file
 	STRUCT IPNWB#WriteChannelParams params
+	IPNWB#InitWriteChannelParams(params)
+
 	params.device          = "My Hardware"
 	params.clampMode       = 0 // 0 for V_CLAMP_MODE 1 for I_CLAMP_MODE
 	params.channelSuffix   = ""
