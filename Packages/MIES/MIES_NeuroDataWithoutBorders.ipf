@@ -247,7 +247,7 @@ Function NWB_ExportAllData([overrideFilePath])
 	endfor
 End
 
-Function NWB_AddMiesVersion(locationID)
+static Function NWB_AddMiesVersion(locationID)
 	variable locationID
 
 	SVAR miesVersion = $GetMiesVersion()
