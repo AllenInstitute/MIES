@@ -6,6 +6,21 @@
 /// @todo
 /// - use IPNWB#CHANNEL_TYPE_OTHER instead of -1 if possible
 
+/// @brief Return the starting time, in seconds since Igor Pro epoch in UTC, of the given sweep
+static Function NWB_GetStartTimeOfSweep(sweepWave)
+	WAVE sweepWave
+
+	variable startingTime
+
+	ASSERT(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
+	// last time the wave was modified (UTC)
+	startingTime  = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
+	// we want the timestamp of the beginning of the measurement
+	startingTime -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000
+
+	return startingTime
+End
+
 /// @brief Return the HDF5 file identifier referring to an open NWB file
 ///        for export
 ///
@@ -319,11 +334,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	params.device        = panelTitle
 	params.channelSuffix = ""
 
-	// starting time of the dataset
-	ASSERT(!cmpstr(WaveUnits(ITCDataWave, ROWS), "ms"), "Expected ms as wave units")
-	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(ITCDataWave, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
-	params.startingTime -= session_start_time // relative to the start of the session
-	params.startingTime -= DimSize(ITCDataWave, ROWS) * DimDelta(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	// starting time of the dataset, relative to the start of the session
+	params.startingTime = NWB_GetStartTimeOfSweep(ITCDataWave) - session_start_time
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
