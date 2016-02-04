@@ -2,7 +2,7 @@
 
 /// @file MIES_NeuroDataWithoutBorders.ipf
 /// @brief __NWB__ Functions related to MIES data export into the NeuroDataWithoutBorders format
-
+///
 /// @todo
 /// - use IPNWB#CHANNEL_TYPE_OTHER instead of -1 if possible
 
