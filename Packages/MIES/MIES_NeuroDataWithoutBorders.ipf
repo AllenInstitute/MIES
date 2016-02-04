@@ -21,6 +21,39 @@ static Function NWB_GetStartTimeOfSweep(sweepWave)
 	return startingTime
 End
 
+/// @brief Return the creation time, in seconds since Igor Pro epoch in UTC, of the oldest sweep wave for all devices
+///
+/// Return NaN if no sweeps could be found
+static Function NWB_FirstStartTimeOfAllSweeps()
+
+	string devicesWithData, panelTitle, list, name
+	variable numEntries, numWaves, i, j
+	variable oldest = Inf
+
+	devicesWithData = GetAllDevicesWithData()
+
+	if(isEmpty(devicesWithData))
+		return NaN
+	endif
+
+	numEntries = ItemsInList(devicesWithData)
+	for(i = 0; i < numEntries; i += 1)
+		panelTitle = StringFromList(i, devicesWithData)
+
+		DFREF dfr = GetDeviceDataPath(panelTitle)
+		list = GetListOfWaves(dfr, DATA_SWEEP_REGEXP)
+		numWaves = ItemsInList(list)
+		for(j = 0; j < numWaves; j += 1)
+			name = StringFromList(j, list)
+			WAVE/SDFR=dfr sweepWave = $name
+
+			oldest = min(oldest, NWB_GetStartTimeOfSweep(sweepWave))
+		endfor
+	endfor
+
+	return oldest
+End
+
 /// @brief Return the HDF5 file identifier referring to an open NWB file
 ///        for export
 ///
@@ -34,7 +67,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	variable &createdNewNWBFile
 
 	string expName, fileName, filePath
-	variable fileID, refNum
+	variable fileID, refNum, oldestData
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
 
@@ -96,11 +129,23 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 			return NWB_GetFileForExport()
 		endif
 
-		NVAR sessionStartTime = $GetSessionStartTime()
-
 		STRUCT IPNWB#ToplevelInfo ti
 		IPNWB#InitToplevelInfo(ti)
-		ti.session_start_time = sessionStartTime
+
+		NVAR sessionStartTime = $GetSessionStartTime()
+
+		if(!IsFinite(sessionStartTime))
+			sessionStartTime = DateTimeInUTC()
+		endif
+
+		oldestData = NWB_FirstStartTimeOfAllSweeps()
+
+		// adjusting the session start time, as older sweeps than the
+		// timestamp of the last device locking are to be exported
+		// not adjusting it would result in negative starting times for the lastest sweep
+		if(IsFinite(oldestData))
+			ti.session_start_time = min(sessionStartTime, floor(oldestData))
+		endif
 
 		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 		IPNWB#CreateIntraCellularEphys(fileID)
