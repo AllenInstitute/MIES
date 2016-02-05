@@ -252,6 +252,16 @@ Function/S GetPanelTitleGlobal()
 	return GetSVARAsString(GetITCDevicesFolder(), "panelTitleG")
 End
 
+/// @brief Return the active set count
+///
+/// Active set count keeps track of how many steps of the largest currently
+/// selected set on all active channels has been taken
+Function/S GetActiveSetCount(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "activeSetCount", initialValue=NaN)
+End
+
 /// @brief Return the interactive mode
 ///
 /// By default MIES operates in interactive mode (1). The user can change

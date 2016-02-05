@@ -45,114 +45,146 @@ static Function RA_HandleITI(panelTitle)
 	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
 End
 
+/// @brief Return the total number of sets
+///
+/// Takes into account yoking
+static Function RA_GetTotalNumberOfSets(panelTitle)
+	string panelTitle
+
+	variable i, numFollower, numSets
+	string followerPanelTitle
+
+	numSets = IDX_MaxNoOfSweeps(panelTitle, 1)
+
+	if(DAP_DeviceIsYokeable(panelTitle))
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
+			numFollower = ItemsInList(listOfFollowerDevices)
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+
+				numSets = max(numSets, IDX_MaxNoOfSweeps(followerPanelTitle, 1))
+			endfor
+		endif
+	endif
+
+	return numSets
+End
+
+/// @brief Calculate the total number of trials for repeated acquisition
+///
+/// Helper function for plain calculation without lead and follower logic
+static Function RA_GetTotalNumberOfTrialsLowLev(panelTitle)
+	string panelTitle
+
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+		return GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+	else
+		return IDX_CalculcateActiveSetCount(panelTitle)
+	endif
+End
+
+/// @brief Calculate the total number of trials for repeated acquisition
+static Function RA_GetTotalNumberOfTrials(panelTitle)
+	string panelTitle
+
+	variable i, numFollower, totTrials
+	string followerPanelTitle
+
+	totTrials = RA_GetTotalNumberOfTrialsLowLev(panelTitle)
+
+	if(DAP_DeviceIsYokeable(panelTitle))
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
+			numFollower = ItemsInList(listOfFollowerDevices)
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+
+				totTrials = max(totTrials, RA_GetTotalNumberOfTrialsLowLev(followerPanelTitle))
+			endfor
+		endif
+	endif
+
+	return totTrials
+End
+
 /// @brief Function gets called after the first trial is already
 /// acquired and if repeated acquisition is on
 Function RA_Start(panelTitle)
 	string panelTitle
-	variable ITI
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	variable totTrials
+
 	NVAR count = $GetCount(panelTitle)
 	count = 0
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
-	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-	variable /g $ActiveSetCountPath = v_value
-	NVAR ActiveSetCount = $ActiveSetCountPath
-	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-	ActiveSetCount *= v_value
-	variable TotTrials
 
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	if(v_value == 0)
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials = v_value
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value)//+1
-	else
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-		TotTrials = v_value
-	endif
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
-	if(TotTrials == 1)
+	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+
+	if(totTrials == 1)
 		return RA_FinishAcquisition(panelTitle)
 	endif
 
-	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))//updates trials remaining in panel
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 	RA_HandleITI(panelTitle)
 End
 
 Function RA_Counter(panelTitle)
 	string panelTitle
 
-	variable TotTrials
+	variable totTrials, indexing, indexingLocked, backgroundDAQ
+	variable numSets
 	string str
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
-	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
-	NVAR ActiveSetCount = $ActiveSetCountPath
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 
-	Count += 1
-	ActiveSetCount -= 1
-	
-	controlinfo/w = $panelTitle Check_DataAcq_Indexing
-	if(v_value == 0)
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials = v_value
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value)//+1
-	else
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-		TotTrials = v_value
-	endif
+	count += 1
+	activeSetCount -= 1
+
+	numSets        = RA_GetTotalNumberOfSets(panelTitle)
+	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
+	indexing       = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+	indexingLocked = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
+	backgroundDAQ  = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	If(v_value == 1)// if indexing is activated, indexing is applied.
+	if(indexing)
 		if(count == 1)
 			IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
-		//print "active set count "+num2str(activesetcount)
-		if(activeSetcount == 0)//mod(Count,v_value)==0)
-			controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 1)//indexing is locked
-				print "Index Step taken"
-				IDX_IndexingDoIt(panelTitle)//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-			endif	
+		if(activeSetcount == 0)
+			if(indexingLocked)
+				IDX_IndexingDoIt(panelTitle)
+			endif
 
-			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-			controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-			activeSetCount = v_value
-			controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-			ActiveSetCount *= v_value
+			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		endif
-		
-		controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-		if(v_value == 0)// indexing is not locked = channel indexes when set has completed all its steps
-			//print "should have indexed independently"
+
+		if(!indexingLocked)
 			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
 			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
 		endif
 	endif
-	
+
 	if(Count < TotTrials)
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-	
-		ControlInfo /w = $panelTitle Check_Settings_BackgrndDataAcq
-		If(v_value == 0)//No background aquisition
+
+		if(!backgroundDAQ)
 			ITC_DataAcq(panelTitle)
 			if(Count < (TotTrials - 1)) //prevents test pulse from running after last trial is acquired
 				RA_HandleITI(panelTitle)
 			else
 				RA_FinishAcquisition(panelTitle)
 			endif
-		else //background aquisition is on
+		else
 			ITC_BkrdDataAcq(panelTitle)
 		endif
 	else
@@ -170,21 +202,12 @@ End
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
 
-	variable TotTrials
+	variable totTrials
 	NVAR count = $GetCount(panelTitle)
 
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	if(v_value == 0)
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials = v_value
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value)//+1
-	else
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-		TotTrials = v_value
-	endif
-	
-	if(Count < (TotTrials - 1))
+	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+
+	if(Count < (totTrials - 1))
 		RA_HandleITI(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
@@ -194,205 +217,117 @@ End
 Function RA_StartMD(panelTitle)
 	string panelTitle
 
-	variable ITI
-	variable i = 0
+	variable i, totTrials, numFollower
+	string followerPanelTitle
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
-	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
-	controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-	variable /g $ActiveSetCountPath = v_value
-	NVAR ActiveSetCount = $ActiveSetCountPath
-	controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-	ActiveSetCount *= v_value
-	variable TotTrials
-	
-	// makes adjustments for indexing being on or off
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	if(v_value == 0)
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials = v_value
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value)
-	else
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-		TotTrials = v_value
-	endif
-	
-	// if the device is an ITC1600 it will handle follower or independent devices
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
+	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+
 	if(DAP_DeviceIsYokeable(panelTitle))
-		
-		controlinfo /w = $panelTitle setvar_Hardware_Status
-		string ITCDACStatus = s_value	
-
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)  // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
-			if(numberOfFollowerDevices != 0) 
-				string followerPanelTitle
-				variable followerTotTrials
-				
-				do // handles status update of variables that are used for indexing on follower devices
-					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-					print "follower panel title =", followerPanelTitle
-					
-					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
-					if(v_value == 0)
-						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
-						followerTotTrials = v_value
-						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-						followerTotTrials = (followerTotTrials * v_value) // + 1
-					else
-						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
-						followerTotTrials = v_value
-					endif
-				
-					TotTrials = max(TotTrials, followerTotTrials)
-					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count)) // updates a status value on follower panels
+		if(SVAR_exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
+			numFollower = ItemsInList(listOfFollowerDevices)
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-					NVAR followerCount = $GetCount(followerPanelTitle)
-					followerCount = 0
-					i += 1
-			
-				while(i < numberOfFollowerDevices)
-			endif
+				totTrials = max(totTrials, RA_GetTotalNumberOfTrials(followerPanelTitle))
+				SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+
+				NVAR followerCount = $GetCount(followerPanelTitle)
+				followerCount = 0
+			endfor
 		endif
 	endif
 
-	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count)) // updates trials remaining in panel
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 	RA_HandleITI_MD(panelTitle)
 End
 
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable TotTrials
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	variable totTrials, numSets, recalcActiveSetCount
 	NVAR count = $GetCount(panelTitle)
-	string ActiveSetCountPath = GetDevicePathAsString(panelTitle) + ":ActiveSetCount"
-	NVAR ActiveSetCount = $ActiveSetCountPath
-	variable i = 0
-	string str
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
+	string str, followerPanelTitle
 
 	Count += 1
 	ActiveSetCount -= 1
-	
-	controlinfo/w = $panelTitle Check_DataAcq_Indexing
-	if(v_value == 0)
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials = v_value
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value)//+1
-	else
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-		TotTrials = v_value
-	endif
+
+	numSets        = RA_GetTotalNumberOfSets(panelTitle)
+	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
+	indexing       = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+	indexingLocked = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
-	
-	ValDisplay valdisp_DataAcq_TrialsCountdown win = $panelTitle, value = _NUM:(TotTrials - (Count))// reports trials remaining
-	
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	If(v_value == 1)// if indexing is activated, indexing is applied.
+
+	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+
+	recalcActiveSetCount = (activeSetCount == 0)
+
+	if(indexing)
 		if(count == 1)
 			IDX_StoreStartFinishForIndexing(panelTitle)
 		endif
-		//print "active set count "+num2str(activesetcount)
-		if(activeSetcount == 0)//mod(Count,v_value)==0)
-			controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-			if(v_value == 1)//indexing is locked
+
+		if(recalcActiveSetCount)
+			if(indexingLocked)
 				print "Index Step taken"
 				IDX_IndexingDoIt(panelTitle)
-			endif	
+			endif
 
-			valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:IDX_MaxNoOfSweeps(panelTitle,1)
-			controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-			activeSetCount = v_value
-			controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the active set count is multiplied by the times the set is to repeated
-			ActiveSetCount *= v_value
+			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		endif
-		
-		controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-		if(v_value == 0)// indexing is not locked = channel indexes when set has completed all its steps
-			//print "unlocked indexing about to be initiated"
+
+		if(!indexingLocked)
+			// indexing is not locked = channel indexes when set has completed all its steps
 			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
 			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
 		endif
 	endif
-	
+
 	if(DAP_DeviceIsYokeable(panelTitle))
-	
-		controlinfo /w = $panelTitle setvar_Hardware_Status
-		string ITCDACStatus = s_value	
-
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
-			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
-			if(numberOfFollowerDevices != 0) 
-				string followerPanelTitle
-				variable followerTotTrials
-				
-				do
-					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-					NVAR followerCount = $GetCount(followerPanelTitle)
-					followerCount += 1
+		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
+			numFollower = ItemsInList(listOfFollowerDevices)
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+				NVAR followerCount = $GetCount(followerPanelTitle)
+				followerCount += 1
 
-					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
-					if(v_value == 0)
-						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
-						followerTotTrials = v_value
-						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-						followerTotTrials = (followerTotTrials * v_value) // + 1
-					else
-						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
-						followerTotTrials = v_value
+				SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+
+				if(indexing)
+					if(count == 1)
+						IDX_StoreStartFinishForIndexing(followerPanelTitle)
 					endif
-				
-					TotTrials = max(TotTrials, followerTotTrials)
-					ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count))
-					
-					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
-					If(v_value == 1)// if indexing is activated, indexing is applied.
-						if(count == 1)
-							IDX_StoreStartFinishForIndexing(followerPanelTitle)
+
+					if(recalcActiveSetCount)
+						if(indexingLocked)
+							IDX_IndexingDoIt(followerPanelTitle)
 						endif
-						//print "active set count "+num2str(activesetcount)
-						if(activeSetcount == 0)//mod(Count,v_value)==0)
-							controlinfo /w = $followerPanelTitle Check_DataAcq1_IndexingLocked
-							if(v_value == 1)//indexing is locked
-								print "Index Step taken"
-								IDX_IndexingDoIt(followerPanelTitle) //
-							endif	
-							variable followerActiveSetCount
-							valdisplay valdisp_DataAcq_SweepsActiveSet win=$followerPanelTitle, value=_NUM:max(IDX_MaxNoOfSweeps(panelTitle,1), IDX_MaxNoOfSweeps(followerPanelTitle,1))
-							valdisplay valdisp_DataAcq_SweepsActiveSet win=$panelTitle, value=_NUM:max(IDX_MaxNoOfSweeps(panelTitle,1), IDX_MaxNoOfSweeps(followerPanelTitle,1))
-							controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
-							followerActiveSetCount = v_value
-							controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats// the lead panel determines the repeats so panelTitle is correct here
-							followerActiveSetCount *= v_value
-						endif
-						
-						ActiveSetCount = max(ActiveSetCount, followerActiveSetCount)
-						
-						controlinfo /w = $panelTitle Check_DataAcq1_IndexingLocked
-						if(v_value == 0)// indexing is not locked = channel indexes when set has completed all its steps
-							//print "unlocked indexing about to be initiated"
-							IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 0)
-							IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 1)
-						endif
-					endif					
-					
-					i += 1
-				
-				while(i < numberOfFollowerDevices)
-			
-			endif
+						SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+						followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
+						activeSetCount = max(activeSetCount, followerActiveSetCount)
+					endif
+
+					if(!indexingLocked)
+						// channel indexes when set has completed all its steps
+						IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 0)
+						IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 1)
+					endif
+				endif
+			endfor
 		endif
 	endif
 
-	if(Count < TotTrials)
+	if(count < totTrials)
 		DAM_FunctionStartDataAcq(panelTitle)
 	endif
 End
@@ -400,66 +335,19 @@ End
 Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
-	variable TotTrials
+	variable totTrials, numFollower, i, numberOfFollowerDevices
+	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 
-	// check if indexing is selected
-	controlinfo /w = $panelTitle Check_DataAcq_Indexing
-	if(v_value == 0)
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsActiveSet
-		TotTrials = v_value
-		controlinfo /w = $panelTitle SetVar_DataAcq_SetRepeats
-		TotTrials = (TotTrials * v_value) // + 1
-	else
-		controlinfo /w = $panelTitle valdisp_DataAcq_SweepsInSet
-		TotTrials = v_value
-	endif
+	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
-	if(DAP_DeviceIsYokeable(panelTitle)) // handling of  yoked ITC1600
-
-		controlinfo /w = $panelTitle setvar_Hardware_Status
-		string ITCDACStatus = s_value	
-
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 0)
-			variable numberOfFollowerDevices = itemsinlist(listOfFollowerDevices)
-			if(numberOfFollowerDevices != 0) // there are followers
-				string followerPanelTitle
-				variable followerTotTrials
-				variable i = 0
-				do
-					followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-					print "follower panel title =", followerPanelTitle
-					
-					controlinfo /w = $followerPanelTitle Check_DataAcq_Indexing
-					if(v_value == 0)
-						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsActiveSet
-						followerTotTrials = v_value
-						controlinfo /w = $followerPanelTitle SetVar_DataAcq_SetRepeats
-						followerTotTrials = (followerTotTrials * v_value) // + 1
-					else
-						controlinfo /w = $followerPanelTitle valdisp_DataAcq_SweepsInSet
-						followerTotTrials = v_value
-					endif
-//					print "followerTotTrials =", followerTotTrials
-//					print "totalTrials BEFORE MAX =", TotTrials
-					TotTrials = max(TotTrials, followerTotTrials)
-//					print "totalTrials AFTER MAX =", TotTrials
-					// ValDisplay valdisp_DataAcq_TrialsCountdown win = $followerPanelTitle, value = _NUM:(TotTrials - (Count))
-					i += 1
-			
-				while(i < numberOfFollowerDevices)
-			
-			endif
-		endif
-	endif	
-			
-	if(Count < (TotTrials - 1))
+	if(count < (totTrials - 1))
 		RA_HandleITI_MD(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 
-		if(SVAR_exists(listOfFollowerDevices) && stringmatch(ITCDACStatus, "Independent") != 1)
+		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
 			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
 			for(i = 0; i < numberOfFollowerDevices; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)

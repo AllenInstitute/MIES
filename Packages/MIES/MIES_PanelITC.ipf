@@ -3512,6 +3512,12 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		KillVariables count
 	endif
 
+	/// @todo add this here, once we call DAP_OneTimeCallBeforeDAQ also for yoked devices
+	/// then this will be the only place where we have to call IDX_StoreStartFinishForIndexing
+	/// if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+	/// 	IDX_StoreStartFinishForIndexing(panelTitle)
+	/// endif
+
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
 		DM_DeleteDataWaves(panelTitle)
 	endif
@@ -3929,6 +3935,7 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
 End
 
+/// @todo display correct values for yoked devices using #RA_GetTotalNumberOfSets
 Function DAP_UpdateSweepSetVariables(panelTitle)
 	string panelTitle
 
