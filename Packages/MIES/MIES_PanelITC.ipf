@@ -4832,21 +4832,21 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 
-	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
+	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 		ITC_StopTestPulseSingleDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
 		ITC_StopBackgroundTimerTask()
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing background data aquistion
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		ITC_STOPFifoMonitor()
 
 		sprintf cmd, "ITCStopAcq /z = 0"
@@ -4877,15 +4877,15 @@ End
 Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
 
-	if(IsBackgroundTaskRunning("TestPulseMD")) // stops the testpulse
+	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 		 ITC_StopTestPulseMultiDevice(panelTitle)
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_TimerMD")) // stops the background timer
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
 		ITC_StopTimerForDeviceMD(panelTitle)
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
 

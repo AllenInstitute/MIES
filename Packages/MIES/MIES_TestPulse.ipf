@@ -542,5 +542,5 @@ Function TP_CheckIfTestpulseIsRunning(panelTitle)
 
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
 
-	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"))
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 End

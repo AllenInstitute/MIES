@@ -2172,3 +2172,47 @@ Function CloseNWBFile()
 End
 
 #endif
+
+/// @brief Check wether the given background task is running and that the
+///        device is active in multi device mode.
+Function IsDeviceActiveWithBGTask(panelTitle, task)
+	string panelTitle, task
+
+	if(!IsBackgroundTaskRunning(task))
+		return 0
+	endif
+
+	/// @todo merge all these waves into one and add flags for what currently is performed
+	strswitch(task)
+		case "TestPulseMD":
+			WAVE/Z/SDFR=GetActITCDevicesTestPulseFolder() deviceIDList = ActiveDeviceList
+			break
+		case "ITC_TimerMD":
+			WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
+			break
+		case "ITC_FIFOMonitorMD":
+			WAVE/Z/SDFR=GetActiveITCDevicesFolder() deviceIDList = ActiveDeviceList
+			break
+		case "TestPulse":
+		case "ITC_Timer":
+		case "ITC_FIFOMonitor":
+			// single device tasks, nothing more to do
+			return 1
+			break
+		default:
+			DEBUGPRINT("Querying unknown task: " + task)
+			break
+	endswitch
+
+	if(!WaveExists(deviceIDList) || DimSize(deviceIDList, ROWS) == 0)
+		DEBUGPRINT("Inconsistent state encountered in IsDeviceActiveWithBGTask")
+		return 1
+	endif
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+	// running in multi device mode
+	Duplicate/FREE/R=[][0] deviceIDList, deviceIDs
+	FindValue/V=(ITCDeviceIDGlobal) deviceIDs
+	return V_Value != -1
+End

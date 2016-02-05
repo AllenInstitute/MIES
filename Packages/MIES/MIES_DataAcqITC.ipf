@@ -623,7 +623,7 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 
 	if(!DataAcqState) // data aquisition is stopped
 
-		if(IsBackgroundTaskRunning("testpulse"))
+		if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
 
@@ -660,15 +660,8 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 	if(!DataAcqState)
-		 // stops test pulse if it is running
-		if(IsBackgroundTaskRunning("TestPulseMD"))
-			WAVE/T/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceTextList
-			numEntries = DimSize(ActiveDeviceTextList, ROWS)
-			for(i = 0; i < numEntries; i += 1)
-				if(!cmpstr(ActiveDeviceTextList[i], panelTitle))
-					 ITC_StopTestPulseMultiDevice(panelTitle)
-				endif
-			endfor
+		if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+			 ITC_StopTestPulseMultiDevice(panelTitle)
 		endif
 
 		DAP_OneTimeCallBeforeDAQ(panelTitle)
