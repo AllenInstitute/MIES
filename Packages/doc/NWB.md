@@ -1,12 +1,10 @@
 ## NWB file format description
 
-- Our data naming scheme is restricted to ~10^6 sweeps per file with single
-  DA/AD channels.
 - Datasets which originate from Igor Pro waves have the special attributes
   IGORWaveScaling, IGORWaveType, IGORWaveUnits, IGORWaveNote. These attributes
   allow easy and convenient loading of the data into Igor Pro.
 - For AD/DA/TTL groups the naming scheme is data_`XXXXX`_[AD/TTL]`suffix` where
-  `XXXXX` is a running number incremented for every dataset and $suffix the
+  `XXXXX` is a running number incremented for every sweep $suffix the
   channel number (TTL channels: plus TTL line).
 
 ### The following tree decsribes how MIES creates NWB files
@@ -45,7 +43,7 @@ acquisition:
 
 stimulus:
     presentation:
-        data_XXXXX_DAY: DA data as sent to the neuron, including delays, scaling, initial TP, etc.
+        data_XXXXX_DA_Y: DA data as sent to the neuron, including delays, scaling, initial TP, etc.
                 data           : 1D dataset
                 electrode_name : Name of the electrode headstage, more info in /general/intracellular_ephys/electrode_name
                 gain           :
@@ -81,7 +79,7 @@ stimulus:
 
 general:
     devices:
-        device_XXX: Name of the DA_ephys device, something like ITC18USB_Dev_0
+        device_XXX: Name of the DA_ephys device, something like "Harvard Bioscience ITC 18USB"
         intracellular_ephys:
                 electrode_XXX: Holds the description of the electrode, something like Headstage 1
                 filtering: Unused
