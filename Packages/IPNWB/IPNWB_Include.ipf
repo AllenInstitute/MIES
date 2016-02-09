@@ -3,8 +3,8 @@
 /// @file IPNWB_Include.ipf
 /// @brief Main include
 
-#include "IPNWB_Constants" version>=0.11
-#include "IPNWB_Debugging" version>=0.11
-#include "IPNWB_HDF5Helpers" version>=0.11
-#include "IPNWB_Utils" version>=0.11
-#include "IPNWB_Writer" version>=0.11
+#include "IPNWB_Constants" version>=0.12
+#include "IPNWB_Debugging" version>=0.12
+#include "IPNWB_HDF5Helpers" version>=0.12
+#include "IPNWB_Utils" version>=0.12
+#include "IPNWB_Writer" version>=0.12
