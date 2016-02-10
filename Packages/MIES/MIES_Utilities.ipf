@@ -1797,10 +1797,16 @@ Function ZeroWave(wv)
 End
 
 /// @brief Check wether the given background task is currently running
-Function IsBackgroundTaskRunning(func)
-	string func
+///
+/// Note:
+/// Background functions which are currently waiting for their
+/// period to be reached are also running.
+///
+/// @param task Named background task identifier, this is *not* the function set with `proc=`
+Function IsBackgroundTaskRunning(task)
+	string task
 
-	CtrlNamedBackground $func, status
+	CtrlNamedBackground $task, status
 	return NumberByKey("RUN", s_info)
 End
 

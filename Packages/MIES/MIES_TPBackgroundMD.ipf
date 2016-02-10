@@ -18,8 +18,8 @@ Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable
 	
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
-	
-	if (IsBackgroundTaskRunning("ITC_BkrdTPFuncMD") == 0)
+
+	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
 		CtrlNamedBackground TestPulseMD, start
 	endif
@@ -36,7 +36,7 @@ End
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable NumberOfActiveDevices, ADChannelToMonitor, i
+	variable ADChannelToMonitor, i
 	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
 	String cmd, panelTitle
 
@@ -54,8 +54,9 @@ Function ITC_BkrdTPFuncMD(s)
 
 	// works through list of active devices
 	// update parameters for a particular active device
-	NumberOfActiveDevices = DimSize(ActiveDeviceTextList, ROWS)
-	for(i = 0; i < NumberOfActiveDevices; i += 1)
+	// ActiveDeviceTextList size might change inside the loop so we can
+	// *not* precompute it.
+	for(i = 0; i < DimSize(ActiveDeviceTextList, ROWS); i += 1)
 		panelTitle = ActiveDeviceTextList[i]
 		DFREF deviceDFR = GetDevicePath(panelTitle)
 
@@ -99,11 +100,12 @@ Function ITC_BkrdTPFuncMD(s)
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct FIFO error
 		if(!DAP_DeviceCanLead(panelTitle))
-			WAVE/SDFR=deviceDFR FIFOAdvance
-			if(FIFOAdvance[0][2] <= 0 || ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] <= (ActiveDeviceList[i][5] + 1) && ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= (ActiveDeviceList[i][5] - 1)) // checks to see if the hardware buffer is at max capacity
+			WAVE/Z/SDFR=deviceDFR FIFOAdvance
+			if((WaveExists(FIFOAdvance) && FIFOAdvance[0][2] <= 0) || (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] > 0 && abs(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][5]) <= 1)) // checks to see if the hardware buffer is at max capacity
 				sprintf cmd, "ITCStopAcq" // stop and restart acquisition
 				ExecuteITCOperation(cmd)
 				ITCFIFOAvailAllConfigWave[][2] = 0
+				FIFOAdvance[0][2] = NaN
 				WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 				WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
@@ -130,7 +132,7 @@ Function ITC_BkrdTPFuncMD(s)
 				// only stop the currently active device
 				if(!cmpstr(panelTitle,ActiveDeviceTextList[i]))
 					beep 
-					DAM_StopTPMD(panelTitle)
+					ITC_StopTestPulseMultiDevice(panelTitle)
 				endif
 			endif
 		endif
@@ -139,8 +141,27 @@ Function ITC_BkrdTPFuncMD(s)
 	return 0
 End
 
-/// @brief Stop the test pulse in multi device mode
-Function ITC_StopTPMD(panelTitle)
+/// @brief Stop the TP on yoked devices simultaneously
+///
+/// Handles also non-yoked devices in multi device mode correctly.
+Function ITC_StopTestPulseMultiDevice(panelTitle)
+	string panelTitle
+
+	if(!DAP_DeviceIsLeader(panelTitle))
+		ITC_StopTPMD(panelTitle)
+		return NaN
+	endif
+
+	// stop leader board
+	ITC_StopTPMD(panelTitle)
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
+		CallFunctionForEachListItem(ITC_StopTPMD, listOfFollowerDevices)
+	endif
+End
+
+static Function ITC_StopTPMD(panelTitle)
 	string panelTitle
 
 	string cmd

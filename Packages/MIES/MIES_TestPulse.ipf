@@ -453,7 +453,7 @@ Function TP_StopTestPulse(panelTitle)
 		ITC_StopTestPulseSingleDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
-		ITC_StopTPMD(panelTitle)
+		ITC_StopTestPulseMultiDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
@@ -542,5 +542,5 @@ Function TP_CheckIfTestpulseIsRunning(panelTitle)
 
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
 
-	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"))
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 End

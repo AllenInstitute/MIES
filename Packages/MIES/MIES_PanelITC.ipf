@@ -3512,6 +3512,12 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		KillVariables count
 	endif
 
+	/// @todo add this here, once we call DAP_OneTimeCallBeforeDAQ also for yoked devices
+	/// then this will be the only place where we have to call IDX_StoreStartFinishForIndexing
+	/// if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+	/// 	IDX_StoreStartFinishForIndexing(panelTitle)
+	/// endif
+
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
 		DM_DeleteDataWaves(panelTitle)
 	endif
@@ -3872,7 +3878,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
-			panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
+			panelList = AddListItem(panelList, listOfFollowerDevices, ";", 0)
 		endif
 		sweep = GetSetVariable(panelTitle, "SetVar_Sweep")
 	else
@@ -3929,6 +3935,7 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
 End
 
+/// @todo display correct values for yoked devices using #RA_GetTotalNumberOfSets
 Function DAP_UpdateSweepSetVariables(panelTitle)
 	string panelTitle
 
@@ -4202,7 +4209,7 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 			printf "(%s) Repeat sets does not match leader panel\r", panelTitle
 			return 1
 		endif
-		if(leaderdDAQDelay != GetCheckBoxState(panelTitle, "SetVar_DataAcq_dDAQDelay"))
+		if(leaderdDAQDelay != GetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay"))
 			printf "(%s) Distributed acquisition delay does not match leader panel\r", panelTitle
 			return 1
 		endif
@@ -4825,21 +4832,21 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 
-	if(IsBackgroundTaskRunning("testpulse") == 1) // stops the testpulse
+	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 		ITC_StopTestPulseSingleDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_Timer") == 1) // stops the background timer
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
 		ITC_StopBackgroundTimerTask()
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_FIFOMonitor") == 1) // stops ongoing background data aquistion
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		ITC_STOPFifoMonitor()
 
 		sprintf cmd, "ITCStopAcq /z = 0"
@@ -4870,15 +4877,15 @@ End
 Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
 
-	if(IsBackgroundTaskRunning("TestPulseMD")) // stops the testpulse
-		 ITC_StopTPMD(panelTitle)
+	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+		 ITC_StopTestPulseMultiDevice(panelTitle)
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_TimerMD")) // stops the background timer
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
 		ITC_StopTimerForDeviceMD(panelTitle)
 	endif
 
-	if(IsBackgroundTaskRunning("ITC_FIFOMonitorMD")) // stops ongoing background data aquistion
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
 	endif
 
@@ -4952,6 +4959,7 @@ Function DAP_ButtonProc_Lead(ba) : ButtonControl
 			EnableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
 			DisableControl(panelTitle,"button_Hardware_Lead1600")
 			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
+			createDFWithAllParents("root:ImageHardware:Arduino")
 			break
 	endswitch
 
@@ -5035,10 +5043,10 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	panelList = leadPanel
 	SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 	if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
-		panelList = AddListItem(listOfFollowerDevices, panelList, ";", inf)
+		panelList = AddListItem(panelList, listOfFollowerDevices, ";", 0)
 	endif
 
-	leaderdDAQ         = GetSetVariable(leadPanel, "Check_DataAcq1_DistribDaq")
+	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
 	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
 	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1)

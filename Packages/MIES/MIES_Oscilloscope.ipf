@@ -54,13 +54,15 @@ End
 Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
-	variable latest, count, i, numADCs, minVal, maxVal, range, numDigits
+	variable latest, count, i, numADCs, minVal, maxVal, range
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
-	string graph, rightAxis, info
+	string graph, rightAxis, leftAxis, info
 
 	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 	graph = SCOPE_GetGraph(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	numADCs = DimSize(ADCs, ROWS)
 
 	GetAxis/W=$graph/Q top
 	if(!V_flag) // axis exists in graph
@@ -73,9 +75,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 		if(latest >= V_max)
 			SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
 		endif
-
-		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-		numADCs = DimSize(ADCs, ROWS)
 
 		for(i = 0; i < numADCs; i += 1)
 
@@ -115,15 +114,37 @@ Function SCOPE_UpdateGraph(panelTitle)
 			minVal = minVal + 0.02 * range
 			range *= 0.98
 
-			numDigits = ceil(abs(log(maxVal - minVal)))
-
-			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,numDigits}
+			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,1}
 			ModifyGraph/W=$graph manMinor($rightAxis)={3,0}
 		endfor
 	endif
 
-	ModifyGraph/W=$graph live = 0
-	ModifyGraph/W=$graph live = 1
+	// scale the left AD axes
+	// We use autoscaling to get the axis range and then set
+	// that axis range manually.
+	// This is done in order to prevent a jumping testpulse
+	for(i = 0; i < numADCs; i += 1)
+
+		leftAxis = "AD" + num2str(ADCs[i])
+
+		info = AxisInfo(graph, leftAxis)
+
+		if(isEmpty(info))
+			continue
+		endif
+
+		SetAxis/W=$graph/A/N=2 $leftAxis
+		DoUpdate/W=$graph
+		GetAxis/W=$graph/Q $leftAxis
+
+		// data is propably just zero, skip the axis
+		if((V_min == 0 && V_max == 0) || (V_min == -1 && V_max == 1))
+			continue
+		endif
+
+		SetAxis/W=$graph $leftAxis V_min, V_max
+		DoUpdate/W=$graph
+	endfor
 End
 
 static Function GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)

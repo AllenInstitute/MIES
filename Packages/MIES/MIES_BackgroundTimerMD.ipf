@@ -22,7 +22,7 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 		ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, StartTicks, DurationTicks, EndTimeTicks, 1)
 	
 	// Check if bacground timer operation is running. If no, start background timer operation.
-	if (IsBackgroundTaskRunning("ITC_TimerMD") == 0)
+	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
 		// print "background data acq is not running"
 		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD // period 6 = 100 ms
 		CtrlNamedBackground ITC_TimerMD, start

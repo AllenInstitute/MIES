@@ -35,7 +35,6 @@ Function DAM_FunctionStartDataAcq(panelTitle)
 			if(SVAR_Exists(listOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 				numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 				if(numberOfFollowerDevices != 0) // List of yoked ITC1600 devices does contain 1 or more yoked ITC1600s
-					ARDStartSequence() // runs the arduino once before it matters to make sure it is intialized - not sure if i need to do this
 					do // LOOP that configures data and oscilloscope for data acquisition on all follower ITC1600 devices
 						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
 						DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
@@ -68,7 +67,8 @@ Function DAM_FunctionStartDataAcq(panelTitle)
 					endif
 					// activates trigger	
 					print "DATA Acquisition initiated"				
-					ARDStartSequence() // runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually!!!!!! THIS TRIGGERS THE YOKED ITC1600s
+					// runs sequence already loaded on arduino - sequence and arduino hardware need to be set up manually
+					ARDStartSequence()
 				else
 					DAM_ConfigUploadDAC(panelTitle)
 					ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
@@ -137,7 +137,6 @@ Function DAM_StartTestPulseMD(panelTitle, [runModifier])
 			if(SVAR_exists(ListOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
 				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
 				if(numberOfFollowerDevices != 0) 
-					ARDStartSequence()
 					string followerPanelTitle
 					
 					do // configure follower device for TP acquistion
@@ -159,9 +158,8 @@ Function DAM_StartTestPulseMD(panelTitle, [runModifier])
 						i += 1
 					while(i < numberOfFollowerDevices)
 
-					// Arduino gives trigger
 					ARDStartSequence()
-					
+
 				elseif(numberOfFollowerDevices == 0)
 					TP_Setup(panelTitle, runMode)
 					ITC_BkrdTPMD(0, panelTitle) // START TP DATA ACQUISITION
@@ -215,45 +213,6 @@ Function DAM_StopDataAcq(panelTitle)
 		endif
 	else
 		DAP_StopOngoingDataAcqMD(panelTitle)
-	endif
-End
-
-/// @brief Stop the TP on yoked devices simultaneously
-Function DAM_StopTPMD(panelTitle)
-
-	string panelTitle
-	variable i = 0
- 
-	if(DAP_DeviceIsYokeable(panelTitle)) // if the device is a ITC1600 i.e., capable of yoking
-		controlinfo /w = $panelTitle setvar_Hardware_Status
-		string ITCDACStatus = s_value
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0)
-			print "TP stopped on independent ITC1600"
-			ITC_StopTPMD(panelTitle)
-		else
-			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-			if(SVAR_Exists(listOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
-				if(numberOfFollowerDevices != 0)
-					string followerPanelTitle
-	                
-					//Lead board commands
-					ITC_StopTPMD(panelTitle)
-					do
-						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						ITC_StopTPMD(followerPanelTitle)
-						i += 1
-					while(i < numberOfFollowerDevices)
-	                
-				else
-					ITC_StopTPMD(panelTitle)
-				endif
-			else
-				ITC_StopTPMD(panelTitle)
-			endif
-		endif
-	else
-		ITC_StopTPMD(panelTitle)
 	endif
 End
 

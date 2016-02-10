@@ -7,6 +7,7 @@ Function ITC_DataAcq(panelTitle)
 	string panelTitle
 
 	string cmd
+	variable fifoPos
 
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
@@ -43,9 +44,10 @@ Function ITC_DataAcq(panelTitle)
 	do
 		sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 		ExecuteITCOperation(cmd)
-		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+		fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
-	while(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
+	while(fifoPos < StopCollectionPoint)
 
 	//Check Status
 	sprintf cmd, "ITCGetState /R /O /C /E %s" GetWavesDataFolder(ResultsWave, 2)
@@ -150,6 +152,7 @@ Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	string cmd, oscilloscopeSubwindow
+	variable fifoPos
 
 	SVAR panelTitleG         = $GetPanelTitleGlobal()
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitleG)
@@ -165,12 +168,13 @@ Function ITC_FIFOMonitor(s)
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
 	ExecuteITCOperation(cmd)
 
-	DM_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE)
+	fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+	DM_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 	DoUpdate/W=$oscilloscopeSubwindow
 
 	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
 
-	if(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] >= StopCollectionPoint)	
+	if(fifoPos >= StopCollectionPoint)
 		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()
 	endif
@@ -619,7 +623,7 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 
 	if(!DataAcqState) // data aquisition is stopped
 
-		if(IsBackgroundTaskRunning("testpulse"))
+		if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
 
@@ -656,15 +660,8 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 	if(!DataAcqState)
-		 // stops test pulse if it is running
-		if(IsBackgroundTaskRunning("TestPulseMD"))
-			WAVE/T/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceTextList
-			numEntries = DimSize(ActiveDeviceTextList, ROWS)
-			for(i = 0; i < numEntries; i += 1)
-				if(!cmpstr(ActiveDeviceTextList[i], panelTitle))
-					 ITC_StopTPMD(panelTitle)
-				endif
-			endfor
+		if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+			 ITC_StopTestPulseMultiDevice(panelTitle)
 		endif
 
 		DAP_OneTimeCallBeforeDAQ(panelTitle)

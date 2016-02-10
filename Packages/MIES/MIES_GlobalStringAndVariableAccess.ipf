@@ -234,8 +234,7 @@ End
 Function/S GetStopCollectionPoint(panelTitle)
 	string panelTitle
 
-	// panelTitle currently unused, but kept for easier upgrade later on
-	return GetNVARAsString(GetITCDevicesFolder(), "stopCollectionPoint", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "stopCollectionPoint", initialValue=NaN)
 End
 
 /// @brief Return the ADC to monitor
@@ -244,14 +243,23 @@ End
 Function/S GetADChannelToMonitor(panelTitle)
 	string panelTitle
 
-	// panelTitle currently unused, but kept for easier upgrade later on
-	return GetNVARAsString(GetITCDevicesFolder(), "ADChannelToMonitor", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "ADChannelToMonitor", initialValue=NaN)
 End
 
 /// @brief Return global panelTitle for background tasks
 Function/S GetPanelTitleGlobal()
 
 	return GetSVARAsString(GetITCDevicesFolder(), "panelTitleG")
+End
+
+/// @brief Return the active set count
+///
+/// Active set count keeps track of how many steps of the largest currently
+/// selected set on all active channels has been taken
+Function/S GetActiveSetCount(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "activeSetCount", initialValue=NaN)
 End
 
 /// @brief Return the interactive mode

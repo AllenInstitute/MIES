@@ -305,7 +305,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if(!IsBackgroundTaskRunning("TestPulse"))
+		if(!IsBackgroundTaskRunningForDevice(panelTitle, "TestPulse"))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 		
@@ -428,7 +428,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		startInstResistanceVal = InstResistance[0][adChannel]
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsBackgroundTaskRunning("TestPulse")))
+		if (!(IsBackgroundTaskRunningForDevice(panelTitle, "TestPulse")))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 
@@ -682,7 +682,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsBackgroundTaskRunning("TestPulse")))
+		if (!(IsBackgroundTaskRunningForDevice(panelTitle, "TestPulse")))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 		

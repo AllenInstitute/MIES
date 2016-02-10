@@ -1211,7 +1211,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 	
 	variable i, col
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
-	If(IsBackgroundTaskRunning("TestPulse") || IsBackgroundTaskRunning("TestPulseMD"))
+	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 		DFREF dfr = GetDeviceTestPulse(panelTitle)
 		WAVE/SDFR=dfr baselineSSAvg
 		if(!ParamIsDefault(headstage))

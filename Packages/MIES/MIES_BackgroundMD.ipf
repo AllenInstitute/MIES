@@ -38,8 +38,8 @@ Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, 1) // adds a device
-	
-	if(!IsBackgroundTaskRunning("ITC_BckgrdFIFOMonitorMD"))
+
+	if(!IsBackgroundTaskRunning("ITC_FIFOMonitorMD"))
 		ITC_StartBckrdFIFOMonitorMD()
 	endif
 End
@@ -59,7 +59,7 @@ Function ITC_FIFOMonitorMD(s)
 	string cmd
 	variable NumberOfActiveDevices
 	variable DeviceIDGlobal
-	variable i
+	variable i, fifoPos
 	string panelTitle, oscilloscopeSubwindow
 
 	do
@@ -75,12 +75,13 @@ Function ITC_FIFOMonitorMD(s)
 		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
 		ExecuteITCOperation(cmd)
 
-		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE)
+		fifoPos = ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2]
+		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
 
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
-		if(ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2] >= ActiveDeviceList[i][2])
+		if(fifoPos >= ActiveDeviceList[i][2])
 			print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
 			DeviceIDGlobal = ActiveDeviceList[i][0]
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1)
@@ -127,7 +128,10 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	endif
 END
 
-Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoing data acquisition
+/// @brief Stop ongoing multi device DAQ
+///
+/// Follower handling for yoked devices is done by the caller.
+Function ITC_TerminateOngoingDataAcqMD(panelTitle)
 	String panelTitle
 
 	string cmd
@@ -146,9 +150,9 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	ITC_ZeroITCOnActiveChan(panelTitle)
 	
 	// remove device passed in from active device lists
-	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1) // removes device from list of active Devices. ActiveDeviceTextList[i] = ITCGlobalDeviceID
+	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-	/// @todo It seems like stopping the follower devices is missing
+
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if (dimsize(ActiveDeviceTextList, 0) == 0) 
 		print "no more active devices, stopping named background"
@@ -156,11 +160,6 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle) // called to terminate ongoin
 	endif
 
 	DM_SaveAndScaleITCData(panelTitle)
-
-	// kills the global variable associated with ongoing repeated data acquisition
-	if(NVAR_Exists(count))
-		KillVariables count
-	endif
 
 	DAP_OneTimeCallAfterDAQ(panelTitle)
 END

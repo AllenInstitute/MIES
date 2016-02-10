@@ -803,3 +803,15 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		endif
 	return AtSetBorder
 End
+
+/// @brief Calculate the active set count
+Function IDX_CalculcateActiveSetCount(panelTitle)
+	string panelTitle
+
+	variable value
+
+	value  = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsActiveSet")
+	value *= GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+
+	return value
+End
