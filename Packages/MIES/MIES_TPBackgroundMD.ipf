@@ -180,9 +180,9 @@ static Function ITC_StopTPMD(panelTitle)
 			CtrlNamedBackground TestPulseMD, stop
 			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
 		endif
-	endif
 
-	TP_Teardown(panelTitle)
+		TP_Teardown(panelTitle)
+	endif
 End
 
 static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
