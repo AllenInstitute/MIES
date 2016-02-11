@@ -41,37 +41,36 @@ Function ITC_TimerMD(s)
 	// column 0 = ITCDeviceIDGlobal; column 1 = Start time; column 2 = run time; column 3 = end time
 	WAVE/T/SDFR=GetActiveITCDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
-	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
-	Variable i = 0
-	Variable FunctionListCount
-	string panelTitle
-	Variable TimeLeft
-	
-	do
-		ActiveDevTimeParam[i][4] = (ticks - ActiveDevTimeParam[i][1])
-		TimeLeft = ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4]
-		panelTitle = TimerFunctionListWave[i][0]
-		if(TimeLeft <= 0)
-			TimeLeft = 0
-					do 
-						Execute stringfromlist(FunctionListCount, TimerFunctionListWave[i][1], ";")
-						FunctionListCount +=1
-					while(FunctionListCount < ItemsInList(TimerFunctionListWave[i][1]))
-					ITC_MakeOrUpdateTimerParamWave(TimerFunctionListWave[i][0], "", 0, 0, 0, -1)
-					DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
-					if(DevicesWithActiveTimers == 0) // stops background timer if no more devices are in the parameter waves
-						CtrlNamedBackground ITC_TimerMD, Stop
-					elseif (DevicesWithActiveTimers > 0) // resets i ** NEED TO CHECK HOW REMOVING A DEVICE FROM THE START, MIDDLE OR END OF LIST AFFECTS THINGS
-						i -= 1
-					endif
-		endif
-		//print TimeLeft/60
-		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:(TimeLeft/60)
-		
-		i+=1
-	while(i < DevicesWithActiveTimers)
+	variable i, j
+	string panelTitle, functionsToCall
+	variable TimeLeft
 
-	//printf "NextRunTicks %d", s.nextRunTicks
+	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1)
+		ActiveDevTimeParam[i][4] = (ticks - ActiveDevTimeParam[i][1])
+		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
+		panelTitle = TimerFunctionListWave[i][0]
+
+		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:(TimeLeft/60)
+
+		if(timeLeft == 0)
+			functionsToCall = TimerFunctionListWave[i][1]
+			for(j = 0; j < ItemsInList(functionsToCall); j += 1)
+				Execute StringFromList(j, functionsToCall)
+			endfor
+
+			ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
+
+			if(DimSize(ActiveDevTimeParam, ROWS) == 0)
+				CtrlNamedBackground ITC_TimerMD, Stop
+				return 0
+			endif
+
+			// restart iterating over the remaining devices
+			i = 0
+			continue
+		endif
+	endfor
+
 	return 0
 End
 
