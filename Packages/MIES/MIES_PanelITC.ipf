@@ -3279,6 +3279,14 @@ Function DAP_DeviceIsLeader(panelTitle)
 	return cmpstr(S_value,LEADER) == 0
 End
 
+Function DAP_DeviceHasFollower(panelTitle)
+	string panelTitle
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+
+	return DAP_DeviceIsLeader(panelTitle) && SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0
+End
+
 /// @brief Updates the yoking controls on all locked/unlocked panels
 Function DAP_UpdateAllYokeControls()
 
