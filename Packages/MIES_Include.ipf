@@ -27,7 +27,6 @@
 #include "MIES_CheckInstallation"
 #include "MIES_Constants"
 #include "MIES_DataAcqITC"
-#include "MIES_DataAcqMgmt"
 #include "MIES_DataBrowser" menus=0
 #include "MIES_DataConfiguratorITC"
 #include "MIES_DataManagementNew"

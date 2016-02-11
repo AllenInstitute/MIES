@@ -665,9 +665,28 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		endif
 
 		DAP_OneTimeCallBeforeDAQ(panelTitle)
-		DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
+		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data aquistion is ongoing, stop data acq
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 	endif
+End
+
+Function ITC_ConfigUploadDAC(panelTitle)
+	string panelTitle
+
+	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
+
+	string cmd
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	ExecuteITCOperationAbortOnError(cmd)
+
+	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
+	ExecuteITCOperation(cmd)
+
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	ExecuteITCOperation(cmd)
 End

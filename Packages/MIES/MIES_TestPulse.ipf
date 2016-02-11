@@ -509,7 +509,7 @@ Function TP_Setup(panelTitle, runMode)
 
 	/// @todo use also for single device
 	if(multiDevice)
-		DAM_ConfigUploadDAC(panelTitle)
+		ITC_ConfigUploadDAC(panelTitle)
 	endif
 End
 

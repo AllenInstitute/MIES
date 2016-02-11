@@ -6,12 +6,62 @@
 //Reinitialize Device 1 with intrabox clock
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
- 
-Function ITC_BkrdDataAcqMD(TriggerMode, panelTitle)
-	variable TriggerMode
+
+/// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
+///
+/// Handles the calls to the data configurator (DC) functions and BackgroundMD
+/// it is required because of the special handling syncronous ITC1600s require
+Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	string panelTitle
 
+	variable numFollower, i
+	string followerPanelTitle
+
+	// configure passed device
+	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+	ITC_ConfigUploadDAC(panelTitle)
+
+	if(!DAP_DeviceHasFollower(panelTitle))
+		ITC_BkrdDataAcqMD(panelTitle)
+		return NaN
+	endif
+
+	SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	numFollower = ItemsInList(listOfFollowerDevices)
+
+	// configure follower devices
+	for(i = 0; i < numFollower; i += 1)
+		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+		DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
+		ITC_ConfigUploadDAC(followerPanelTitle)
+	endfor
+
+	// start lead device
+	ITC_BkrdDataAcqMD(panelTitle, triggerMode=256)
+
+	// start follower devices
+	for(i = 0; i < numFollower; i += 1)
+		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+		ITC_BkrdDataAcqMD(followerPanelTitle, triggerMode=256)
+	endfor
+
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		ITC_StartITCDeviceTimer(panelTitle)
+	endif
+
+	// trigger
+	ARDStartSequence()
+End
+
+static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
+	string panelTitle
+	variable triggerMode
+
 	string cmd
+
+	if(ParamIsDefault(triggerMode))
+		triggerMode = 0
+	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
@@ -119,12 +169,12 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 		ControlInfo/W=$panelTitle Check_DataAcq1_RepeatAcq
 		if(v_value == 1)//repeated aquisition is selected
 			// RA_StartMD(panelTitle)  // *************THIS NEEDS TO BE POSTPONED FOR YOKED DEVICES*********************************
-			DAM_YokedRAStartMD(panelTitle)
+			RA_YokedRAStartMD(panelTitle)
 		else
 			DAP_OneTimeCallAfterDAQ(panelTitle)
 		endif
 	else
-		DAM_YokedRABckgTPCallRACounter(panelTitle)
+		RA_YokedRABckgTPCallRACounter(panelTitle)
 	endif
 END
 
