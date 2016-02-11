@@ -149,6 +149,14 @@ Function HSU_ButProc_Hrdwr_UnlckDev(s) : ButtonControl
 	HSU_UnlockDevice(s.win)
 End
 
+static Function HSU_ClearWaveIfExists(wv)
+	WAVE/Z wv
+
+	if(WaveExists(wv))
+		Redimension/N=(0, -1, -1, -1) wv
+	endif
+End
+
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
@@ -193,9 +201,39 @@ Function HSU_UnlockDevice(panelTitle)
 	HSU_UpdateListOfITCPanels()
 	DAP_UpdateAllYokeControls()
 
+	// reset our state variables to safe defaults
+	NVAR dataAcqState = $GetDataAcqState(panelTitle)
+	dataAcqState = 0
+	NVAR count = $GetCount(panelTitle)
+	count = NaN
+	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+	runMode = TEST_PULSE_NOT_RUNNING
+
 	SVAR/SDFR=GetITCDevicesFolder() ITCPanelTitleList
 	if(!cmpstr(ITCPanelTitleList, ""))
 		CloseNWBFile()
+
+		DFREF dfr = GetActITCDevicesTestPulseFolder()
+		WAVE/Z/SDFR=dfr ActiveDeviceList, ActiveDeviceTextList, ActiveDevWavePathWave
+		HSU_ClearWaveIfExists(ActiveDeviceList)
+		HSU_ClearWaveIfExists(ActiveDeviceTextList)
+		HSU_ClearWaveIfExists(ActiveDevWavePathWave)
+
+		DFREF dfr = GetActiveITCDevicesFolder()
+		WAVE/Z/SDFR=dfr ActiveDeviceList, ActiveDeviceTextList, ActiveDevWavePathWave
+		HSU_ClearWaveIfExists(ActiveDeviceList)
+		HSU_ClearWaveIfExists(ActiveDeviceTextList)
+		HSU_ClearWaveIfExists(ActiveDevWavePathWave)
+
+		DFREF dfr = GetActiveITCDevicesTimerFolder()
+		WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
+		HSU_ClearWaveIfExists(ActiveDevTimeParam)
+		HSU_ClearWaveIfExists(TimerFunctionListWave)
+
+		SVAR/Z listOfFollowers = $GetFollowerList(doNotCreateSVAR=1)
+		if(SVAR_Exists(listOfFollowers))
+			listOfFollowers = ""
+		endif
 	endif
 End
 
