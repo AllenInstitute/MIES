@@ -4885,21 +4885,37 @@ End
 Function DAP_StopOngoingDataAcqMD(panelTitle)
 	string panelTitle
 
+	variable needsOTCAfterDAQ = 0
+	variable discardData      = 0
+
 	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
-		 ITC_StopTestPulseMultiDevice(panelTitle)
+		ITC_StopTestPulseMultiDevice(panelTitle)
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		discardData      = discardData      | 1
 	endif
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
 		ITC_StopTimerForDeviceMD(panelTitle)
+
+		/// @todo why needs that to be different than for single device
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+		discardData      = discardData      | 1
 	endif
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		ITC_TerminateOngoingDataAcqMD(panelTitle)
+
+		if(!discardData)
+			DM_SaveAndScaleITCData(panelTitle)
+		endif
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	endif
 
-	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	KillVariables/Z count
-	print "Data acquisition was manually terminated"
+	if(needsOTCAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(panelTitle)
+	endif
 End
 
 /// @brief Set the acquisition button text

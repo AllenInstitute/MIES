@@ -669,6 +669,5 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 	else // data aquistion is ongoing, stop data acq
 		DAM_StopDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
-		DAP_OneTimeCallAfterDAQ(panelTitle)
 	endif
 End

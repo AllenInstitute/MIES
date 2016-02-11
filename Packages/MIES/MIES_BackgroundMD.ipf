@@ -158,10 +158,6 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle)
 		print "no more active devices, stopping named background"
 		CtrlNamedBackground ITC_FIFOMonitorMD, stop
 	endif
-
-	DM_SaveAndScaleITCData(panelTitle)
-
-	DAP_OneTimeCallAfterDAQ(panelTitle)
 END
 
 Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
