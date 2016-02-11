@@ -663,6 +663,7 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		DAP_OneTimeCallBeforeDAQ(panelTitle)
 		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data aquistion is ongoing, stop data acq
+		DataAcqState = 0
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 	endif
