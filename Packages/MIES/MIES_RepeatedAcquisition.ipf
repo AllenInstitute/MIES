@@ -18,7 +18,7 @@ static Function RA_HandleITI_MD(panelTitle)
 	endif
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-	DAM_StartTestPulseMD(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
+	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
 	ITC_StartBackgroundTimerMD(ITI,"ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 End

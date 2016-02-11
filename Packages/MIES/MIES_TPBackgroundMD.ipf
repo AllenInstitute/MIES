@@ -3,7 +3,54 @@
 /// @file MIES_TPBackgroundMD.ipf
 /// @brief __ITC__ Multi device background test pulse functionality
 
-Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
+/// @brief Start the test pulse when MD support is activated.
+///
+/// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
+/// The external trigger is assumed to be a arduino device using the arduino squencer.
+Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
+	string panelTitle
+	variable runModifier
+
+	variable i, TriggerMode
+	variable runMode, numFollower
+	string followerPanelTitle
+
+	runMode = TEST_PULSE_BG_MULTI_DEVICE
+
+	if(!ParamIsDefault(runModifier))
+		runMode = runMode | runModifier
+	endif
+
+	if(!DAP_DeviceHasFollower(panelTitle))
+		TP_Setup(panelTitle, runMode)
+		ITC_BkrdTPMD(0, panelTitle)
+		return NaN
+	endif
+
+	SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	numFollower = ItemsInList(listOfFollowerDevices)
+
+	// configure all followers
+	for(i = 0; i < numFollower; i += 1)
+		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+		TP_Setup(followerPanelTitle, runMode)
+	endfor
+
+	// Sets lead board in wait for trigger
+	TP_Setup(panelTitle, runMode)
+	ITC_BkrdTPMD(256, panelTitle)
+
+	// set followers in wait for trigger
+	for(i = 0; i < numFollower; i += 1)
+		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+		ITC_BkrdTPMD(256, followerPanelTitle)
+	endfor
+
+	// trigger
+	ARDStartSequence()
+End
+
+static Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
 	variable TriggerMode
 	string panelTitle
 
