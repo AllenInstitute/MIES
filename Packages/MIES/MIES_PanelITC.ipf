@@ -4271,6 +4271,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 	endif
 
+	// check that if multiple devices are locked we are in multi device mode
+	if(ItemsInList(GetListOfLockedDevices()) > 1 && !GetCheckBoxState(panelTitle, "check_Settings_MD"))
+		print "If multiple devices are locked, DAQ/TP is only possible in multi device mode"
+		return 1
+	endif
+
 	list = panelTitle
 
 	if(DAP_DeviceCanLead(panelTitle))
