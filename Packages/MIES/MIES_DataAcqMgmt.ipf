@@ -175,45 +175,13 @@ Function DAM_StartTestPulseMD(panelTitle, [runModifier])
 	endif
 End
 
-/// @brief Stop DAQ on yoked devices simultaneously
-Function DAM_StopDataAcq(panelTitle)
+/// @brief Stop the DAQ on yoked devices simultaneously
+///
+/// Handles also non-yoked devices in multi device mode correctly.
+Function DAM_StopDAQMultiDevice(panelTitle)
 	string panelTitle
 
-	variable i
-
-	if(DAP_DeviceIsYokeable(panelTitle)) // if the device is a ITC1600 i.e., capable of yoking
-		controlinfo /w = $panelTitle setvar_Hardware_Status
-		string ITCDACStatus = s_value	
-		if(stringmatch(panelTitle, "ITC1600_Dev_0") == 0 && stringmatch(ITCDACStatus, "Follower") == 0) 
-			print "Data Acquisition stopped on independent ITC1600"
-			DAP_StopOngoingDataAcqMD(panelTitle)
-		elseif(DAP_DeviceCanLead(panelTitle))
-			SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-			if(SVAR_Exists(listOfFollowerDevices)) // ITC1600 device with the potential for yoked devices - need to look in the list of yoked devices to confirm, but the list does exist
-				variable numberOfFollowerDevices = itemsinlist(ListOfFollowerDevices)
-				if(numberOfFollowerDevices != 0) 
-					string followerPanelTitle
-			
-					//Lead board commands
-					DAP_StopOngoingDataAcqMD(panelTitle)
-					//Follower board commands
-					do
-						followerPanelTitle = stringfromlist(i,ListOfFollowerDevices, ";")
-						DAP_StopOngoingDataAcqMD(followerPanelTitle)
-						i += 1
-					while(i < numberOfFollowerDevices)
-	
-					
-				elseif(numberOfFollowerDevices == 0)
-					DAP_StopOngoingDataAcqMD(panelTitle)
-				endif
-			else
-				DAP_StopOngoingDataAcqMD(panelTitle)
-			endif
-		endif
-	else
-		DAP_StopOngoingDataAcqMD(panelTitle)
-	endif
+	ITC_CallFuncForDevicesMDYoked(panelTitle, DAP_StopOngoingDataAcqMD)
 End
 
 /// @brief if devices are yoked, RA_StartMD is only called once the last device has finished the TP,

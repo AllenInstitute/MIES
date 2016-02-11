@@ -667,7 +667,7 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		DAP_OneTimeCallBeforeDAQ(panelTitle)
 		DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
 	else // data aquistion is ongoing, stop data acq
-		DAM_StopDataAcq(panelTitle)
+		DAM_StopDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 		DAP_OneTimeCallAfterDAQ(panelTitle)
 	endif
