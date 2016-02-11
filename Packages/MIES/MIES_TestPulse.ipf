@@ -59,7 +59,7 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DAP_StopOngoingDataAcqMD(panelTitle)
+	ITC_StopOngoingDAQMultiDevice(panelTitle)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	DAM_StartTestPulseMD(panelTitle)

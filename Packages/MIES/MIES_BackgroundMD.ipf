@@ -131,7 +131,7 @@ END
 /// @brief Stop ongoing multi device DAQ
 ///
 /// Follower handling for yoked devices is done by the caller.
-Function ITC_TerminateOngoingDataAcqMD(panelTitle)
+static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	String panelTitle
 
 	string cmd
@@ -159,6 +159,51 @@ Function ITC_TerminateOngoingDataAcqMD(panelTitle)
 		CtrlNamedBackground ITC_FIFOMonitorMD, stop
 	endif
 END
+
+/// @brief Stop the DAQ on yoked devices simultaneously
+///
+/// Handles also non-yoked devices in multi device mode correctly.
+Function ITC_StopOngoingDAQMultiDevice(panelTitle)
+	string panelTitle
+
+	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopOngoingDAQMDHelper)
+End
+
+static Function ITC_StopOngoingDAQMDHelper(panelTitle)
+	string panelTitle
+
+	variable needsOTCAfterDAQ = 0
+	variable discardData      = 0
+
+	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+		ITC_StopTestPulseMultiDevice(panelTitle)
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		discardData      = discardData      | 1
+	endif
+
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
+		ITC_StopTimerForDeviceMD(panelTitle)
+
+		/// @todo why needs that to be different than for single device
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+		discardData      = discardData      | 1
+	endif
+
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
+		ITC_TerminateOngoingDAQMDHelper(panelTitle)
+
+		if(!discardData)
+			DM_SaveAndScaleITCData(panelTitle)
+		endif
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+	endif
+
+	if(needsOTCAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(panelTitle)
+	endif
+End
 
 Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
 	string panelTitle

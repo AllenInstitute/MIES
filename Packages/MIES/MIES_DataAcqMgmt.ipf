@@ -175,15 +175,6 @@ Function DAM_StartTestPulseMD(panelTitle, [runModifier])
 	endif
 End
 
-/// @brief Stop the DAQ on yoked devices simultaneously
-///
-/// Handles also non-yoked devices in multi device mode correctly.
-Function DAM_StopDAQMultiDevice(panelTitle)
-	string panelTitle
-
-	ITC_CallFuncForDevicesMDYoked(panelTitle, DAP_StopOngoingDataAcqMD)
-End
-
 /// @brief if devices are yoked, RA_StartMD is only called once the last device has finished the TP,
 /// and it is called for the lead device if devices are not yoked, it is the same as it would be if
 /// RA_StartMD was called directly
