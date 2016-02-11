@@ -71,12 +71,9 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
-
-	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
-	variable RepeatedAcqOnOrOff = v_value
 	
 	if(TriggerMode == 0)
-		if(RepeatedAcqOnOrOff)
+		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 		endif
 		sprintf cmd, "ITCStartAcq"
@@ -166,9 +163,7 @@ Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	
 	DM_SaveAndScaleITCData(panelTitle)
 	if(!IsFinite(count))
-		ControlInfo/W=$panelTitle Check_DataAcq1_RepeatAcq
-		if(v_value == 1)//repeated aquisition is selected
-			// RA_StartMD(panelTitle)  // *************THIS NEEDS TO BE POSTPONED FOR YOKED DEVICES*********************************
+		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			RA_YokedRAStartMD(panelTitle)
 		else
 			DAP_OneTimeCallAfterDAQ(panelTitle)

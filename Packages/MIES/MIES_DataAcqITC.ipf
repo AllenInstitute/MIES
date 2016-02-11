@@ -28,13 +28,10 @@ Function ITC_DataAcq(panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 
-	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
-	variable RepeatedAcqOnOrOff = v_value
-
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	ExecuteITCOperation(cmd)// this also seems necessary to update the DA channel data to the board!!
 
-	if(RepeatedAcqOnOrOff)
+	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
@@ -125,21 +122,20 @@ Function ITC_StopDataAcq()
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"
 	ExecuteITCOperation(cmd)
 
 	DM_SaveAndScaleITCData(panelTitleG)
 
 	NVAR count = $GetCount(panelTitleG)
 	if(!IsFinite(count))
-		controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
-		if(v_value == 1)//repeated aquisition is selected
+		if(GetCheckboxState(panelTitleG, "Check_DataAcq1_RepeatAcq"))
 			RA_Start(PanelTitleG)
 		else
 			DAP_OneTimeCallAfterDAQ(panelTitleG)
 		endif
 	else
-		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ
+		RA_BckgTPwithCallToRACounter(panelTitleG)
 	endif
 END
 
