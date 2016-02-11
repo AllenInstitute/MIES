@@ -95,8 +95,6 @@ Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, 
 	string panelTitle, ListOfFunctions
 	variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
 
-	variable start = stopmstimer(-2)
-
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	DFREF activeDevicesTimer = GetActiveITCDevicesTimerFolder()
 
@@ -125,7 +123,6 @@ Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, 
 		variable rowToRemove = v_value
 		DeletePoints /m = 0 rowToRemove, 1, ActiveDevTimeParam // removes the row that contains the device 
 	endif
-	//print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 	
 	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
 End
@@ -134,7 +131,6 @@ Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, A
 	string panelTitle, ListOfFunctions
 	Variable RowToRemove, AddOrRemoveDevice
 
-	Variable start = stopmstimer(-2)
 	DFREF activeDevices = GetActiveITCDevicesTimerFolder()
 
 	WAVE/Z/T/SDFR=activeDevices TimerFunctionListWave
@@ -152,8 +148,6 @@ Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, A
 	elseif(AddOrRemoveDevice == -1) // remove a device
 		DeletePoints /m = 0 RowToRemove, 1, TimerFunctionListWave
 	endif
-
-	print "text wave creation took (ms):", (stopmstimer(-2) - start) / 1000
 End
  
 
