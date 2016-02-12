@@ -146,7 +146,7 @@ Function ITC_FIFOMonitorMD(s)
 	return 0
 End
 
-Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
+static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
