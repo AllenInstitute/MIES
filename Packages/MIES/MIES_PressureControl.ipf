@@ -1439,6 +1439,22 @@ Function P_SaveUserSelectedHeadstage(panelTitle, headStage)
 	PressureDataWv[][%UserSelectedHeadStage] =  headStage
 End
 
+/// @brief Sets all headstage to atmospheric pressure
+///
+Function P_SetAllHStoAtmospheric(panelTitle)
+	string panelTitle
+	
+	DFREF dfr=P_DeviceSpecificPressureDFRef(panelTitle)
+	WAVE/Z/SDFR=dfr PressureData
+
+	if(WaveExists(PressureData))
+		if(sum(GetColfromWavewithDimLabel(PressureData, "Approach_Seal_BrkIn_Clear")) != (P_METHOD_neg1_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
+			PressureData[][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
+			P_PressureControl(panelTitle)
+		endif
+	endif
+End
+
 // PRESSURE CONTROLS; DA_ePHYS PANEL; DATA ACQUISTION TAB
 
 /// @brief Approach button.

@@ -2290,3 +2290,14 @@ Function/S TextWaveToList(txtWave, sep)
 
 	return list
 End
+
+/// @brief Returns the column from a multidimensional wave using the dimlabel
+Function/WAVE GetColfromWavewithDimLabel(waveRef, dimLabel)
+	WAVE waveRef
+	string dimLabel
+	
+	variable column = FindDimLabel(waveRef, COLS, dimLabel)
+	ASSERT(column != -2, "dimLabel:" + dimLabel + "cannot be found")
+	matrixOp/FREE OneDWv = col(waveRef, column)
+	return OneDWv
+End

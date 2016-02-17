@@ -2605,6 +2605,9 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_ClearChanConn,help={"Clear the channel/amplifier association of the current headstage."}
 	Button button_Hardware_ClearChanConn,userdata(tabnum)=  "6"
 	Button button_Hardware_ClearChanConn,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_DisablePressure,pos={384.00,705.00},size={57.00,48.00},disable=1,title="Stop\rpressure\ron data\racquisition"
+	CheckBox check_Settings_DisablePressure,userdata(tabnum)=  "5"
+	CheckBox check_Settings_DisablePressure,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Du5QF1NJ,fQL!!*'\"zzzzzzzzzzzzzzzzzzz"
@@ -3546,6 +3549,11 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 1
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
+	
+	// turn off active pressure control modes
+	if(getCheckboxState(panelTitle, "check_Settings_DisablePressure", allowMissingControl = 1))
+		P_SetAllHStoAtmospheric(panelTitle)
+	endif
 End
 
 /// @brief Enable all controls which were disabled before DAQ by #DAP_OneTimeCallBeforeDAQ
