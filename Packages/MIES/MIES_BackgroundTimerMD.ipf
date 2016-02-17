@@ -19,7 +19,7 @@ Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameB
 	string ListOfFunctions = FunctionNameAPassedIn + ";" + FunctionNameBPassedIn + ";" + FunctionNameCPassedIn
 	
 	// Make or update waves that store parameters that the background timer references
-		ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, StartTicks, DurationTicks, EndTimeTicks, 1)
+	ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, StartTicks, DurationTicks, EndTimeTicks, 1)
 	
 	// Check if bacground timer operation is running. If no, start background timer operation.
 	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
@@ -89,65 +89,79 @@ Function ITC_StopTimerForDeviceMD(panelTitle)
 	endif
 End
 
-Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, AddOrRemoveDevice)
+static Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, addOrRemoveDevice)
 	string panelTitle, ListOfFunctions
-	variable startTime, RunTime, EndTime, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
+	variable startTime, RunTime, EndTime, addOrRemoveDevice
+
+	variable rowToRemove = NaN
+	variable numberOfRows
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DFREF activeDevicesTimer = GetActiveITCDevicesTimerFolder()
+	DFREF dfr = GetActiveITCDevicesTimerFolder()
 
-	WAVE/Z/SDFR=activeDevicesTimer ActiveDevTimeParam
-	if (AddorRemoveDevice == 1) // add a ITC device
+	WAVE/Z/SDFR=dfr ActiveDevTimeParam
+	if(addOrRemoveDevice == 1) // add a ITC device
 		if(!WaveExists(ActiveDevTimeParam))
-			Make/N=(1, 5) activeDevicesTimer:ActiveDevTimeParam/Wave=ActiveDevTimeParam
+			Make/N=(1, 5) dfr:ActiveDevTimeParam/Wave=ActiveDevTimeParam
 			ActiveDevTimeParam[0][0] = ITCDeviceIDGlobal
 			ActiveDevTimeParam[0][1] = startTime
 			ActiveDevTimeParam[0][2] = RunTime
 			ActiveDevTimeParam[0][3] = EndTime
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		else
-			variable numberOfRows = DimSize(ActiveDevTimeParam, 0)
-			// print numberofrows
-			Redimension /n = (numberOfRows + 1, 5) ActiveDevTimeParam
+			numberOfRows = DimSize(ActiveDevTimeParam, ROWS)
+			Redimension/N=(numberOfRows + 1, 5) ActiveDevTimeParam
 			ActiveDevTimeParam[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDevTimeParam[numberOfRows][1] = startTime
 			ActiveDevTimeParam[numberOfRows][2] = RunTime
 			ActiveDevTimeParam[numberOfRows][3] = EndTime
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
-	elseif (AddorRemoveDevice == -1) // remove a ITC device
-		Duplicate /FREE /r = [][0] ActiveDevTimeParam ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		FindValue /V = (ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
-		variable rowToRemove = v_value
-		DeletePoints /m = 0 rowToRemove, 1, ActiveDevTimeParam // removes the row that contains the device 
+	elseif(addOrRemoveDevice == -1) // remove a ITC device
+		Duplicate/FREE/R=[][0] ActiveDevTimeParam ListOfITCDeviceIDGlobal
+		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
+		rowToRemove = V_Value
+		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
+		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevTimeParam
+	else
+		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif
-	
-	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice)
+
+	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, rowToRemove, addOrRemoveDevice)
+
+	WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
+	ASSERT(WaveExists(ActiveDevTimeParam), "Missing wave ActiveDevTimeParam")
+	ASSERT(WaveExists(TimerFunctionListWave), "Missing wave TimerFunctionListWave")
+	ASSERT(DimSize(TimerFunctionListWave, ROWS) == DimSize(ActiveDevTimeParam, ROWS), "Number of rows in ActiveDevTimeParam and TimerFunctionListWave must be equal")
 End
 
-Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, RowToRemove, AddorRemoveDevice) // creates or updates wave that contains string of active panel title names
-	string panelTitle, ListOfFunctions
-	Variable RowToRemove, AddOrRemoveDevice
+static Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, listOfFunctions, rowToRemove, addOrRemoveDevice)
+	string panelTitle, listOfFunctions
+	variable rowToRemove, addOrRemoveDevice
 
-	DFREF activeDevices = GetActiveITCDevicesTimerFolder()
+	variable numberOfRows
 
-	WAVE/Z/T/SDFR=activeDevices TimerFunctionListWave
-	if(AddOrRemoveDevice == 1) // Add a device
+	DFREF dfr = GetActiveITCDevicesTimerFolder()
+	WAVE/Z/T/SDFR=dfr TimerFunctionListWave
+
+	if(addOrRemoveDevice == 1) // Add a device
 		if(!WaveExists(TimerFunctionListWave))
-			Make/T/N=(1, 2) activeDevices:TimerFunctionListWave/Wave=TimerFunctionListWave
+			Make/T/N=(1, 2) dfr:TimerFunctionListWave/Wave=TimerFunctionListWave
 			TimerFunctionListWave[0][0] = panelTitle
-			TimerFunctionListWave[0][1] = ListOfFunctions
+			TimerFunctionListWave[0][1] = listOfFunctions
 		else
-			Variable numberOfRows = dimSize(TimerFunctionListWave, 0)
-			Redimension /n = (numberOfRows + 1, 2) TimerFunctionListWave
+			numberOfRows = DimSize(TimerFunctionListWave, ROWS)
+			Redimension/N=(numberOfRows + 1, 2) TimerFunctionListWave
 			TimerFunctionListWave[numberOfRows][0] = panelTitle
-			TimerFunctionListWave[numberOfRows][1] = ListOfFunctions
+			TimerFunctionListWave[numberOfRows][1] = listOfFunctions
 		endif
-	elseif(AddOrRemoveDevice == -1) // remove a device
-		DeletePoints /m = 0 RowToRemove, 1, TimerFunctionListWave
+	elseif(addOrRemoveDevice == -1) // remove a device
+		ASSERT(rowToRemove >= 0 && rowToRemove < DimSize(TimerFunctionListWave, ROWS), "Trying to remove a non existing index")
+		DeletePoints/M=(ROWS) rowToRemove, 1, TimerFunctionListWave
+	else
+		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif
 End
- 
 
 /// @brief Stores the timer number in a wave where the row number corresponds to the Device ID global.
 ///

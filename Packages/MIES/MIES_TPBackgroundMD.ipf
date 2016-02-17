@@ -61,8 +61,7 @@ static Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the v
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
-	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, 1)
-	
+
 	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(cmd)
 
@@ -221,7 +220,6 @@ static Function ITC_StopTPMD(panelTitle)
 		ExecuteITCOperation(cmd)
 
 		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
-		ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, -1)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 		if (dimsize(ActiveDeviceTextList, 0) == 0) 
 			CtrlNamedBackground TestPulseMD, stop
@@ -232,14 +230,16 @@ static Function ITC_StopTPMD(panelTitle)
 	endif
 End
 
-static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice)
+static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice)
 	string panelTitle
-	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, AddorRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
+	variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice
+
+	variable numberOfRows
 
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
 	WAVE/Z/SDFR=dfr ActiveDeviceList
 
-	if (AddorRemoveDevice == 1) // add a ITC device
+	if(addOrRemoveDevice == 1) // add a ITC device
 		if(!WaveExists(ActiveDeviceList))
 			Make/N=(1, 6) dfr:ActiveDeviceList/Wave=ActiveDeviceList
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
@@ -249,8 +249,8 @@ static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADCh
 			ActiveDeviceList[0][4] = NaN // Active chunk of the ITCDataWave
 			ActiveDeviceList[0][5] = 0 // FIFO position
 		else
-			variable numberOfRows = DimSize(ActiveDeviceList, 0)
-			Redimension /n = (numberOfRows + 1, 6) ActiveDeviceList
+			numberOfRows = DimSize(ActiveDeviceList, ROWS)
+			Redimension/N=(numberOfRows + 1, 6) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
@@ -258,43 +258,62 @@ static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADCh
 			ActiveDeviceList[numberOfRows][4] = NaN
 			ActiveDeviceList[numberOfRows][5] = 0
 		endif
-	elseif (AddorRemoveDevice == -1) // remove a ITC device
-		Duplicate/FREE/R=[][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal // searchs the duplicated column for the device to be turned off
-		DeletePoints/m=0 v_value, 1, ActiveDeviceList // removes the row that contains the device
+	elseif(addOrRemoveDevice == -1) // remove a ITC device
+		Duplicate/FREE/R=[][0] ActiveDeviceList ListOfITCDeviceIDGlobal
+		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
+		ASSERT(V_Value >= 0, "Trying to remove a non existing device")
+		DeletePoints/m=(ROWS) V_Value, 1, ActiveDeviceList
+	else
+		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif
-End 
 
-static Function ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, AddorRemoveDevice)
+	ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, addOrRemoveDevice)
+
+	WAVE/Z/SDFR=dfr ActiveDeviceList, ActiveDeviceTextList, ActiveDevWavePathWave
+	ASSERT(WaveExists(ActiveDeviceList), "Missing wave ActiveDeviceList")
+	ASSERT(WaveExists(ActiveDeviceTextList), "Missing wave ActiveDeviceTextList")
+	ASSERT(WaveExists(ActiveDevWavePathWave), "Missing wave ActiveDevWavePathWave")
+	ASSERT(DimSize(ActiveDeviceList, ROWS) == DimSize(ActiveDeviceTextList, ROWS), "Number of rows in ActiveDeviceList and ActiveDeviceTextList must be equal")
+	ASSERT(DimSize(ActiveDeviceList, ROWS) == DimSize(ActiveDevWavePathWave, ROWS), "Number of rows in ActiveDeviceList and ActiveDevWavePathWave must be equal")
+End
+
+static Function ITC_MakeOrUpdtTPDevListTxtWv(panelTitle, addOrRemoveDevice)
 	string panelTitle
-	Variable AddOrRemoveDevice
+	variable addOrRemoveDevice
+
+	variable rowToRemove = NaN
+	variable numberOfRows
 
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
-
 	WAVE/Z/T/SDFR=dfr ActiveDeviceTextList
-	if (AddOrRemoveDevice == 1) // Add a device
+
+	if(addOrRemoveDevice == 1) // Add a device
 		if(!WaveExists(ActiveDeviceTextList))
 			Make/T/N=1 dfr:ActiveDeviceTextList/WAVE=ActiveDeviceTextList
-			ActiveDeviceTextList = panelTitle
+			ActiveDeviceTextList[0] = panelTitle
 		else
-			Variable numberOfRows = numpnts(ActiveDeviceTextList)
+			numberOfRows = DimSize(ActiveDeviceTextList, ROWS)
 			Redimension/N=(numberOfRows + 1) ActiveDeviceTextList
 			ActiveDeviceTextList[numberOfRows] = panelTitle
 		endif
-	elseif (AddOrRemoveDevice == -1) // remove a device
-		FindValue/Text=panelTitle ActiveDeviceTextList
-		Variable RowToRemove = v_value
-		DeletePoints /m = 0 RowToRemove, 1, ActiveDeviceTextList
+	elseif(addOrRemoveDevice == -1) // remove a device
+		FindValue/TEXT=panelTitle ActiveDeviceTextList
+		rowToRemove = V_Value
+		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
+		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDeviceTextList
+	else
+		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif
 
-	ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
+	ITC_MakeOrUpdtTPDevWvPth(panelTitle, addOrRemoveDevice, rowToRemove)
 End
 
-static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
+static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, addOrRemoveDevice, rowToRemove)
 	string panelTitle
-	variable AddOrRemoveDevice, RowToRemove
+	variable addOrRemoveDevice, rowToRemove
 
 	variable numberOfRows
+
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
 
 	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
@@ -304,7 +323,7 @@ static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRem
 	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
 
 	WAVE/Z/WAVE/SDFR=dfr ActiveDevWavePathWave
-	if(AddOrRemoveDevice == 1)
+	if(addOrRemoveDevice == 1)
 		if(!WaveExists(ActiveDevWavePathWave))
 			Make/WAVE/N=(1,5) dfr:ActiveDevWavePathWave/Wave=ActiveDevWavePathWave
 			ActiveDevWavePathWave[0][0] = ITCDataWave
@@ -321,7 +340,10 @@ static Function ITC_MakeOrUpdtTPDevWvPth(panelTitle, AddOrRemoveDevice, RowToRem
 			ActiveDevWavePathWave[numberOfRows][3] = ResultsWave
 			ActiveDevWavePathWave[numberOfRows][4] = ITCChanConfigWave
 		endif
-	elseif(AddOrRemoveDevice == -1)
-		DeletePoints/m=0 RowToRemove, 1, ActiveDevWavePathWave
+	elseif(addOrRemoveDevice == -1)
+		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
+		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevWavePathWave
+	else
+		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif
 End
