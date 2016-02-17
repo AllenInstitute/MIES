@@ -5373,10 +5373,13 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	string panelTitle, headStageCtrl
 	variable enabled
 
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	variable mode, headStage, ctrlNo, TPState
 
 	TPState = TP_StopTestPulse(panelTitle)
 	DAP_GetInfoFromControl(panelTitle, headStageCtrl, ctrlNo, mode, headStage)
+
+	GuiState[headStage][%HSState] = enabled
 
 	If(!enabled)
 		DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
@@ -6335,4 +6338,13 @@ Function/S DAP_CreateDAEphysPanel()
 	SCOPE_OpenScopeWindow(panel)
 
 	return panel
+End
+
+// @brief Returns the headstage State
+Function DAP_GetHSState(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	WAVE wv = GetDA_EphysGuiStateNum(panelTitle)
+	return wv[headStage][%HSState]
 End
