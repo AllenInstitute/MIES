@@ -122,7 +122,6 @@ Function ITC_FIFOMonitorMD(s)
 
 		fifoPos = ITCFIFOAvailAllConfigWave[ActiveDeviceList[i][1]][2]
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
-		DoUpdate/W=$oscilloscopeSubwindow
 
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 

@@ -21,7 +21,6 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	rowsToCopy = stopCollectionPoint - 1
 
 	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=rowsToCopy)
-	DoUpdate/W=$oscilloscopeSubwindow
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
