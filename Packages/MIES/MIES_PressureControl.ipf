@@ -792,8 +792,8 @@ Function P_FIFOMonitorProc(s)
 	variable		headStage
 
 	if(!P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage))
-		CtrlNamedBackground P_FIFOMonitor, stop
 		print "No device can be found that is executing a pressure pulse"
+		return 1
 	endif
 
 	Wave		FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
@@ -810,8 +810,8 @@ Function P_FIFOMonitorProc(s)
 		sprintf cmd, "ITCStopAcq"
 		ExecuteITCOperation(cmd)
 		pressureDataWv[][%OngoingPessurePulse]	= 0
-		CtrlNamedBackground P_FIFOMonitor, stop
 		print "Pressure pulse is complete"
+		return 1
 	endif
 
 	return 0

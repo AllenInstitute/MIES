@@ -60,16 +60,15 @@ Function ITC_TimerMD(s)
 
 			ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 
-			if(DimSize(ActiveDevTimeParam, ROWS) == 0)
-				CtrlNamedBackground ITC_TimerMD, Stop
-				return 0
-			endif
-
 			// restart iterating over the remaining devices
 			i = 0
 			continue
 		endif
 	endfor
+
+	if(DimSize(ActiveDevTimeParam, ROWS) == 0)
+		return 1
+	endif
 
 	return 0
 End

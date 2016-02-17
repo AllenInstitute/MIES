@@ -131,15 +131,16 @@ Function ITC_FIFOMonitorMD(s)
 			DeviceIDGlobal = ActiveDeviceList[i][0]
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, DeviceIDGlobal, 0, 0, -1)
 			ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, -1)
-			if (DimSize(ActiveDeviceTextList, ROWS) == 0)
-				print "no more active devices, stopping named background"
-				CtrlNamedBackground ITC_FIFOMonitorMD, stop
-			endif
 			ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
 			i = 0
 			continue
 		endif
 	endfor
+
+	if(DimSize(ActiveDeviceTextList, ROWS) == 0)
+		print "no more active devices, stopping named background"
+		return 1
+	endif
 
 	return 0
 End

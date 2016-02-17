@@ -169,13 +169,12 @@ Function ITC_FIFOMonitor(s)
 	DoUpdate/W=$oscilloscopeSubwindow
 
 	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+	AM_analysisMasterMidSweep(panelTitleG)
 
 	if(fifoPos >= StopCollectionPoint)
-		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()
+		return 1
 	endif
-	
-	AM_analysisMasterMidSweep(panelTitleG)
 
 	return 0
 End
@@ -220,6 +219,7 @@ Function ITC_Timer(s)
 
 	if(elapsedTime >= runTime)
 		ITC_StopBackgroundTimerTask()
+		return 1
 	endif
 
 	return 0
