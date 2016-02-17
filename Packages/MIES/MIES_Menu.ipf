@@ -9,7 +9,7 @@ static StrConstant optionalHDF5Include = "MIES_HDF5Ops"
 Menu "Mies Panels", dynamic
 		"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
 		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
-		"Data Browser"               , /Q, Execute "DataBrowser()"
+		"Data Browser"               , /Q, DB_OpenDataBrowser()
 		"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 		"Close Mies"                 , /Q, CloseMies()
 		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
