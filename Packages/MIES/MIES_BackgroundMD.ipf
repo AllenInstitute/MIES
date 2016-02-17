@@ -104,13 +104,11 @@ Function ITC_FIFOMonitorMD(s)
 	WAVE/SDFR=activeDevices/T ActiveDeviceTextList
 	WAVE/WAVE/SDFR=activeDevices ActiveDevWavePathWave
 	string cmd
-	variable NumberOfActiveDevices
 	variable DeviceIDGlobal
 	variable i, fifoPos
 	string panelTitle, oscilloscopeSubwindow
 
-	do
-		NumberOfActiveDevices = DimSize(ActiveDeviceTextList, ROWS)
+	for(i = 0; i < DimSize(ActiveDeviceTextList, ROWS); i += 1)
 		panelTitle = ActiveDeviceTextList[i]
 		oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
@@ -138,10 +136,10 @@ Function ITC_FIFOMonitorMD(s)
 				CtrlNamedBackground ITC_FIFOMonitorMD, stop
 			endif
 			ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
-			NumberOfActiveDevices = numpnts(ActiveDeviceTextList)
+			i = 0
+			continue
 		endif
-		i += 1
-	while(i < NumberOfActiveDevices)
+	endfor
 
 	return 0
 End
