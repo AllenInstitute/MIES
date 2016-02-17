@@ -213,12 +213,9 @@ Function ITC_Timer(s)
 	NVAR runTime = root:MIES:ITCDevices:RunTime
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 
-	elapsedTime = (ticks - Start)
+	elapsedTime = ticks - Start
+	timeLeft = max((runTime - elapsedTime) / 60, 0)
 
-	timeLeft = abs(((runTime - (elapsedTime)) / 60))
-	if(timeLeft < 0)
-		timeleft = 0
-	endif
 	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:timeLeft
 
 	if(elapsedTime >= runTime)
