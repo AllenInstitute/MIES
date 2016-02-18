@@ -156,9 +156,6 @@ Function RA_Counter(panelTitle)
 	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
 	if(indexing)
-		if(count == 1)
-			IDX_StoreStartFinishForIndexing(panelTitle)
-		endif
 		if(activeSetcount == 0)
 			if(indexingLocked)
 				IDX_IndexingDoIt(panelTitle)
@@ -271,10 +268,6 @@ Function RA_CounterMD(panelTitle)
 	recalcActiveSetCount = (activeSetCount == 0)
 
 	if(indexing)
-		if(count == 1)
-			IDX_StoreStartFinishForIndexing(panelTitle)
-		endif
-
 		if(recalcActiveSetCount)
 			if(indexingLocked)
 				print "Index Step taken"
@@ -304,10 +297,6 @@ Function RA_CounterMD(panelTitle)
 				SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
 				if(indexing)
-					if(count == 1)
-						IDX_StoreStartFinishForIndexing(followerPanelTitle)
-					endif
-
 					if(recalcActiveSetCount)
 						if(indexingLocked)
 							IDX_IndexingDoIt(followerPanelTitle)
