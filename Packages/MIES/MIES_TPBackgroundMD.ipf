@@ -147,18 +147,7 @@ End
 Function ITC_StopTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
-	if(!DAP_DeviceIsLeader(panelTitle))
-		ITC_StopTPMD(panelTitle)
-		return NaN
-	endif
-
-	// stop leader board
-	ITC_StopTPMD(panelTitle)
-
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
-		CallFunctionForEachListItem(ITC_StopTPMD, listOfFollowerDevices)
-	endif
+	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopTPMD)
 End
 
 static Function ITC_StopTPMD(panelTitle)

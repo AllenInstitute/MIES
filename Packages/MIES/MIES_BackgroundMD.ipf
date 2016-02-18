@@ -240,3 +240,24 @@ Function ITC_MakeOrUpdtActDevWvPth(panelTitle, AddOrRemoveDevice, RowToRemove)
 		DeletePoints /m = 0 RowToRemove, 1, ActiveDevWavePathWave
 	endif
 End
+
+/// @brief Call a function for a device and if this device is a leader with followers
+/// for all follower too.
+///
+/// Handles also non-yoked devices in multi device mode correctly.
+Function ITC_CallFuncForDevicesMDYoked(panelTitle, func)
+	string panelTitle
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE func
+
+	if(!DAP_DeviceHasFollower(panelTitle))
+		func(panelTitle)
+		return NaN
+	endif
+
+	func(panelTitle)
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
+		CallFunctionForEachListItem(func, listOfFollowerDevices)
+	endif
+End
