@@ -5699,7 +5699,7 @@ Function DAP_RecordDA_EphysGuiState(panelTitle)
 	Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
 
 	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
-	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = GetAllHSMode(panelTitle)[p]
+	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = DAP_GetAllHSMode(panelTitle)[p]
 	
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)[p]
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)[p]
@@ -5723,7 +5723,7 @@ Function DAP_RecordDA_EphysGuiState(panelTitle)
 End
 
 /// @brief Return the mode of all DA_Ephys panel headstages
-Function/Wave GetAllHSMode(panelTitle)
+Function/Wave DAP_GetAllHSMode(panelTitle)
 	string panelTitle
 	make/FREE/n=(NUM_HEADSTAGES) Mode
 	variable i
