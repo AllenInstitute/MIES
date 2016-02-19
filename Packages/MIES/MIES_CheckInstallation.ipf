@@ -2,7 +2,7 @@
 
 /// @file MIES_CheckInstallation.ipf
 ///
-/// @brief Routines for checking the health of the
+/// @brief __CHI__ Routines for checking the health of the
 ///        MIES installation
 
 /// @brief Collection of counters used for installation checking
