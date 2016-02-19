@@ -305,10 +305,10 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if(!IsBackgroundTaskRunningForDevice(panelTitle, "TestPulse"))
+		if(!IsDeviceActiveWithBGTask(currentPanel, "TestPulse"))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
-		
+
 		// and now hit the Auto pipette offset
 		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", headStage)
 		
@@ -428,7 +428,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		startInstResistanceVal = InstResistance[0][adChannel]
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsBackgroundTaskRunningForDevice(panelTitle, "TestPulse")))
+		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 
@@ -682,7 +682,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsBackgroundTaskRunningForDevice(panelTitle, "TestPulse")))
+		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 		

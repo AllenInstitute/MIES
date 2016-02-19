@@ -20,8 +20,7 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	rowsToCopy = stopCollectionPoint - 1
 
-	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=rowsToCopy)
-	DoUpdate/W=$oscilloscopeSubwindow
+	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
@@ -187,7 +186,7 @@ End
 /// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
 ///                    the testpulse to extract
 /// @param fifoPos     Position of the fifo used by the ITC XOP to keep track of
-/// 				   the last written position
+///                    the position which will be written next
 Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos
@@ -227,7 +226,7 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
-		Multithread OscilloscopeData[0, fifoPos][] = ITCDataWave[p][q]
+		Multithread OscilloscopeData[0, fifoPos - 1][] = ITCDataWave[p][q]
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif

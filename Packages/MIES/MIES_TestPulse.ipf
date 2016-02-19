@@ -59,10 +59,10 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DAP_StopOngoingDataAcqMD(panelTitle)
+	ITC_StopOngoingDAQMultiDevice(panelTitle)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
-	DAM_StartTestPulseMD(panelTitle)
+	ITC_StartTestPulseMultiDevice(panelTitle)
 
 	// Enable pressure buttons
 	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
@@ -509,7 +509,7 @@ Function TP_Setup(panelTitle, runMode)
 
 	/// @todo use also for single device
 	if(multiDevice)
-		DAM_ConfigUploadDAC(panelTitle)
+		ITC_ConfigUploadDAC(panelTitle)
 	endif
 End
 

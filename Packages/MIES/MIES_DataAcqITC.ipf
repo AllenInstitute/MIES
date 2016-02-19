@@ -28,13 +28,10 @@ Function ITC_DataAcq(panelTitle)
 	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
 	ExecuteITCOperation(cmd)
 
-	controlinfo /w =$panelTitle Check_DataAcq1_RepeatAcq
-	variable RepeatedAcqOnOrOff = v_value
-
 	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
 	ExecuteITCOperation(cmd)// this also seems necessary to update the DA channel data to the board!!
 
-	if(RepeatedAcqOnOrOff)
+	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
@@ -125,21 +122,20 @@ Function ITC_StopDataAcq()
 	sprintf cmd, "ITCStopAcq /z = 0"
 	ExecuteITCOperation(cmd)
 
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
+	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"
 	ExecuteITCOperation(cmd)
 
 	DM_SaveAndScaleITCData(panelTitleG)
 
 	NVAR count = $GetCount(panelTitleG)
 	if(!IsFinite(count))
-		controlinfo /w = $panelTitleG Check_DataAcq1_RepeatAcq
-		if(v_value == 1)//repeated aquisition is selected
+		if(GetCheckboxState(panelTitleG, "Check_DataAcq1_RepeatAcq"))
 			RA_Start(PanelTitleG)
 		else
 			DAP_OneTimeCallAfterDAQ(panelTitleG)
 		endif
 	else
-		RA_BckgTPwithCallToRACounter(panelTitleG)//FUNCTION THAT ACTIVATES BCKGRD TP AND THEN CALLS REPEATED ACQ
+		RA_BckgTPwithCallToRACounter(panelTitleG)
 	endif
 END
 
@@ -170,16 +166,14 @@ Function ITC_FIFOMonitor(s)
 
 	fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 	DM_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
-	DoUpdate/W=$oscilloscopeSubwindow
 
 	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+	AM_analysisMasterMidSweep(panelTitleG)
 
 	if(fifoPos >= StopCollectionPoint)
-		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()
+		return 1
 	endif
-	
-	AM_analysisMasterMidSweep(panelTitleG)
 
 	return 0
 End
@@ -217,16 +211,14 @@ Function ITC_Timer(s)
 	NVAR runTime = root:MIES:ITCDevices:RunTime
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 
-	elapsedTime = (ticks - Start)
+	elapsedTime = ticks - Start
+	timeLeft = max((runTime - elapsedTime) / 60, 0)
 
-	timeLeft = abs(((runTime - (elapsedTime)) / 60))
-	if(timeLeft < 0)
-		timeleft = 0
-	endif
 	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:timeLeft
 
 	if(elapsedTime >= runTime)
 		ITC_StopBackgroundTimerTask()
+		return 1
 	endif
 
 	return 0
@@ -664,11 +656,30 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 			 ITC_StopTestPulseMultiDevice(panelTitle)
 		endif
 
-		DAP_OneTimeCallBeforeDAQ(panelTitle)
-		DAM_FunctionStartDataAcq(panelTitle) // initiates background aquisition
+		ITC_CallFuncForDevicesMDYoked(panelTitle, DAP_OneTimeCallBeforeDAQ)
+		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data aquistion is ongoing, stop data acq
-		DAM_StopDataAcq(panelTitle)
+		DataAcqState = 0
+		ITC_StopOngoingDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
-		DAP_OneTimeCallAfterDAQ(panelTitle)
 	endif
+End
+
+Function ITC_ConfigUploadDAC(panelTitle)
+	string panelTitle
+
+	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
+	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
+
+	string cmd
+	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
+	ExecuteITCOperationAbortOnError(cmd)
+
+	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
+	ExecuteITCOperation(cmd)
+
+	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
+	ExecuteITCOperation(cmd)
 End

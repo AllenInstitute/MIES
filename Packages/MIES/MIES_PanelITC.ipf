@@ -1739,7 +1739,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo)= A"!!,E.!!#?k!!#A/!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_MoreSettings_DeviceType,mode=1,popvalue="ITC16",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
+	PopupMenu popup_MoreSettings_DeviceType,mode=1,popvalue="ITC16",value= #"\"ITC16;ITC18;ITC1600;\\M1(ITC00;ITC16USB;ITC18USB;\""
 	PopupMenu popup_moreSettings_DeviceNo,pos={60,100},size={133,21},bodyWidth=58,title="Device number"
 	PopupMenu popup_moreSettings_DeviceNo,help={"Step 2. Guess a device number. 0 is a good initial guess. Device number is determined in hardware. Unfortunately, it cannot be predetermined. "}
 	PopupMenu popup_moreSettings_DeviceNo,userdata(tabnum)=  "6"
@@ -3279,6 +3279,14 @@ Function DAP_DeviceIsLeader(panelTitle)
 	return cmpstr(S_value,LEADER) == 0
 End
 
+Function DAP_DeviceHasFollower(panelTitle)
+	string panelTitle
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+
+	return DAP_DeviceIsLeader(panelTitle) && SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0
+End
+
 /// @brief Updates the yoking controls on all locked/unlocked panels
 Function DAP_UpdateAllYokeControls()
 
@@ -3512,11 +3520,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		KillVariables count
 	endif
 
-	/// @todo add this here, once we call DAP_OneTimeCallBeforeDAQ also for yoked devices
-	/// then this will be the only place where we have to call IDX_StoreStartFinishForIndexing
-	/// if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-	/// 	IDX_StoreStartFinishForIndexing(panelTitle)
-	/// endif
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+		IDX_StoreStartFinishForIndexing(panelTitle)
+	endif
 
 	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
 		DM_DeleteDataWaves(panelTitle)
@@ -4263,6 +4269,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 	endif
 
+	// check that if multiple devices are locked we are in multi device mode
+	if(ItemsInList(GetListOfLockedDevices()) > 1 && !GetCheckBoxState(panelTitle, "check_Settings_MD"))
+		print "If multiple devices are locked, DAQ/TP is only possible in multi device mode"
+		return 1
+	endif
+
 	list = panelTitle
 
 	if(DAP_DeviceCanLead(panelTitle))
@@ -4872,26 +4884,6 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	if(needsOTCAfterDAQ)
 		DAP_OneTimeCallAfterDAQ(panelTitle)
 	endif
-End
-
-Function DAP_StopOngoingDataAcqMD(panelTitle)
-	string panelTitle
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
-		 ITC_StopTestPulseMultiDevice(panelTitle)
-	endif
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
-		ITC_StopTimerForDeviceMD(panelTitle)
-	endif
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
-		ITC_TerminateOngoingDataAcqMD(panelTitle)
-	endif
-
-	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	KillVariables/Z count
-	print "Data acquisition was manually terminated"
 End
 
 /// @brief Set the acquisition button text

@@ -18,7 +18,7 @@ static Function RA_HandleITI_MD(panelTitle)
 	endif
 
 	ITI -= ITC_StopITCDeviceTimer(panelTitle)
-	DAM_StartTestPulseMD(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
+	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
 	ITC_StartBackgroundTimerMD(ITI,"ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
 End
@@ -156,9 +156,6 @@ Function RA_Counter(panelTitle)
 	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
 	if(indexing)
-		if(count == 1)
-			IDX_StoreStartFinishForIndexing(panelTitle)
-		endif
 		if(activeSetcount == 0)
 			if(indexingLocked)
 				IDX_IndexingDoIt(panelTitle)
@@ -214,7 +211,7 @@ Function RA_BckgTPwithCallToRACounter(panelTitle)
 	endif
 End
 
-Function RA_StartMD(panelTitle)
+static Function RA_StartMD(panelTitle)
 	string panelTitle
 
 	variable i, totTrials, numFollower
@@ -271,10 +268,6 @@ Function RA_CounterMD(panelTitle)
 	recalcActiveSetCount = (activeSetCount == 0)
 
 	if(indexing)
-		if(count == 1)
-			IDX_StoreStartFinishForIndexing(panelTitle)
-		endif
-
 		if(recalcActiveSetCount)
 			if(indexingLocked)
 				print "Index Step taken"
@@ -304,10 +297,6 @@ Function RA_CounterMD(panelTitle)
 				SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
 				if(indexing)
-					if(count == 1)
-						IDX_StoreStartFinishForIndexing(followerPanelTitle)
-					endif
-
 					if(recalcActiveSetCount)
 						if(indexingLocked)
 							IDX_IndexingDoIt(followerPanelTitle)
@@ -328,11 +317,11 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(count < totTrials)
-		DAM_FunctionStartDataAcq(panelTitle)
+		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	endif
 End
 
-Function RA_BckgTPwithCallToRACounterMD(panelTitle)
+static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
 	variable totTrials, numFollower, i, numberOfFollowerDevices
@@ -354,5 +343,71 @@ Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 				DAP_OneTimeCallAfterDAQ(followerPanelTitle)
 			endfor
 		endif
+	endif
+End
+
+static Function RA_AreLeaderAndFollowerFinished()
+
+	variable numCandidates, i
+	string listOfCandidates, candidate
+
+	WAVE/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
+
+	Duplicate/FREE/R=[][0] ActiveDeviceList, activeIDs
+
+	if(DimSize(activeIDs, ROWS) == 0)
+		return 1
+	endif
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	ASSERT(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0, "Messed up logic in RA_AreLeaderAndFollowerFinished")
+
+	listOfCandidates = AddListItem(ITC1600_FIRST_DEVICE, listOfFollowerDevices, ";", Inf)
+	numCandidates = ItemsInList(listOfCandidates)
+
+	for(i = 0; i < numCandidates; i += 1)
+		candidate = StringFromList(i, listOfCandidates)
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(candidate)
+
+		FindValue/V=(ITCDeviceIDGlobal) activeIDs
+		if(V_Value != -1) // device still active
+			return 0
+		endif
+	endfor
+
+	return 1
+End
+
+Function RA_YokedRAStartMD(panelTitle)
+	string panelTitle
+
+	// catches independent devices and leader with no follower
+	if(!DAP_DeviceIsYokeable(panelTitle) || !DAP_DeviceHasFollower(ITC1600_FIRST_DEVICE))
+		RA_StartMD(panelTitle)
+		return NaN
+	endif
+
+	// it is either a leader or a follower
+	ASSERT(DAP_DeviceIsLeader(panelTitle) || DAP_DeviceIsFollower(panelTitle), "Messed up logic in RA_YokedRAStartMD")
+
+	if(RA_AreLeaderAndFollowerFinished())
+		RA_StartMD(ITC1600_FIRST_DEVICE)
+	endif
+End
+
+Function RA_YokedRABckgTPCallRACounter(panelTitle)
+	string panelTitle
+
+	// catches independent devices and leader with no follower
+	if(!DAP_DeviceIsYokeable(panelTitle) || !DAP_DeviceHasFollower(ITC1600_FIRST_DEVICE))
+		RA_BckgTPwithCallToRACounterMD(panelTitle)
+		return NaN
+	endif
+
+	// it is either a leader or a follower
+	ASSERT(DAP_DeviceIsLeader(panelTitle) || DAP_DeviceIsFollower(panelTitle), "Messed up logic in RA_YokedRABckgTPCallRACounter")
+
+	if(RA_AreLeaderAndFollowerFinished())
+		RA_BckgTPwithCallToRACounterMD(ITC1600_FIRST_DEVICE)
 	endif
 End
