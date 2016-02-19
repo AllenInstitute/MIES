@@ -2216,3 +2216,63 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 	FindValue/V=(ITCDeviceIDGlobal) deviceIDs
 	return V_Value != -1
 End
+
+/// @brief Calculate a cryptographic hash for the file contents of path
+///
+/// @param path   absolute path to a file
+/// @param method [optional, defaults to SHA-2 with 256 bytes]
+///               Type of cryptographic hash function
+Function/S CalcHashForFile(path, [method])
+	string path
+	variable method
+
+	variable refNum
+	string contents = ""
+
+	if(ParamIsDefault(method))
+		method = 1
+	endif
+
+	GetFileFolderInfo/Q path
+	ASSERT(V_IsFile, "Expected a file")
+
+	Open/R refNum as path
+
+	contents = PadString(contents, V_logEOF, 0)
+
+	FBinRead refNum, contents
+	Close refNum
+
+	return Hash(contents, method)
+End
+
+/// @brief Check if the file paths referenced in `list` are pointing
+///        to identical files
+Function CheckIfPathsRefIdenticalFiles(list)
+	string list
+
+	variable i, numEntries
+	string path, refHash, newHash
+
+	if(ItemsInList(list, "|") <= 1)
+		return 1
+	endif
+
+	numEntries = ItemsInList(list, "|")
+	for(i = 0; i < numEntries; i += 1)
+		path = StringFromList(i, list, "|")
+
+		if(i == 0)
+			refHash = CalcHashForFile(path)
+			continue
+		endif
+
+		newHash = CalcHashForFile(path)
+
+		if(cmpstr(newHash, refHash))
+			return 0
+		endif
+	endfor
+
+	return 1
+End
