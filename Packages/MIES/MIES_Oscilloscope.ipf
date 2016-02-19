@@ -58,7 +58,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
 	string graph, rightAxis, leftAxis, info
 
-	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+	SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 	graph = SCOPE_GetGraph(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -147,7 +147,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 	endfor
 End
 
-static Function GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+static Function SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 	string panelTitle
 	variable &showSteadyStateResistance, &showPeakResistance
 
@@ -201,7 +201,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-	GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+	SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
