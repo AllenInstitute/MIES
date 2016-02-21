@@ -1216,8 +1216,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 		WAVE/SDFR=dfr baselineSSAvg
 		if(!ParamIsDefault(headstage))
 			col = TP_GetTPResultsColOfHS(panelTitle, headstage)
-			ASSERT(col >= 0, "Invalid column")
-			if(abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
+			if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
 				AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 			endif
 		else
@@ -1228,8 +1227,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 					continue
 				endif
 				col = TP_GetTPResultsColOfHS(panelTitle, i)
-				ASSERT(col >= 0, "Invalid column")				
-				if(abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
+				if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
 					AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 				endif
 			endfor
