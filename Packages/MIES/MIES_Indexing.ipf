@@ -504,6 +504,10 @@ End
 Function IDX_NumberOfTrialsInSet(panelTitle, setName)
 	string panelTitle, setName
 
+	if(isEmpty(setName))
+		return 0
+	endif
+
 	WAVE/Z wv = WB_CreateAndGetStimSet(setName)
 
 	if(!WaveExists(wv))
