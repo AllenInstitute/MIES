@@ -24,6 +24,7 @@ Menu "Mies Panels", dynamic
 		"Enable debug mode", /Q, EnableDebugMode()
 		"Disable debug mode", /Q, DisableDebugMode()
 		"Check Installation", /q, CHI_CheckInstallation()
+		"Start Background Task watcher panel", /Q, BkgWatcher#BW_StartPanel()
 	End
 End
 
