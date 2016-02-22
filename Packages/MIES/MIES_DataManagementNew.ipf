@@ -13,7 +13,7 @@ Function DM_SaveAndScaleITCData(panelTitle)
 	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	Redimension/Y=(GetRawDataFPType(panelTitle)) ITCDataWave
+	Redimension/Y=(DM_GetRawDataFPType(panelTitle)) ITCDataWave
 	DM_ADScaling(ITCDataWave, panelTitle)
 	DM_DAScaling(ITCDataWave, panelTitle)
 
@@ -314,7 +314,7 @@ End
 /// @brief Return the floating point type for storing the raw data
 ///
 /// The returned values are the same as for `WaveType`
-static Function GetRawDataFPType(panelTitle)
+static Function DM_GetRawDataFPType(panelTitle)
 	string panelTitle
 
 	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT

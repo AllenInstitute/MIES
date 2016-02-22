@@ -3,66 +3,6 @@
 /// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
 
-static StrConstant PROCEDURE_START = "proc="
-
-/// @brief Return the parameter type a function parameter
-///
-/// @param func       name of the function
-/// @param paramIndex index of the parameter
-static Function GetFunctionParameterType(func, paramIndex)
-	string func
-	variable paramIndex
-
-	string funcInfo, param
-	variable numParams
-
-	funcInfo = FunctionInfo(func, "")
-
-	ASSERT(paramIndex < NumberByKey("N_PARAMS", funcInfo), "Requested parameter number does not exist.")
-	sprintf param, "PARAM_%d_TYPE", paramIndex
-
-	return NumberByKey(param, funcInfo)
-End
-
-/// @brief Return the control procedure for the given control
-///
-/// @returns name of control procedure or an empty string
-static Function/S GetControlProcedure(win, control)
-	string win, control
-
-	variable last, first
-	variable comma, cr
-	string procedure, list
-
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-	first = strsearch(S_recreation, "proc=", 0)
-
-	if(first == -1)
-		return ""
-	endif
-
-	comma = strsearch(S_recreation, ",", first + 1)
-	cr    = strsearch(S_recreation, "\r", first + 1)
-
-	if(comma > 0 && cr > 0)
-		last = min(comma, cr)
-	elseif(comma == -1)
-		last = cr
-	elseif(cr == -1)
-		last = comma
-	else
-		ASSERT(0, "impossible case")
-	endif
-
-	procedure = S_recreation[first + strlen(PROCEDURE_START), last - 1]
-	list = FunctionList(procedure, ";", "")
-
-	ASSERT(!isEmpty(procedure) && !isEmpty(list), "no or invalid procedure")
-
-	return procedure
-End
-
 static Function/S PGC_GetProcAndCheckParamType(win, control)
 	string win, control
 
