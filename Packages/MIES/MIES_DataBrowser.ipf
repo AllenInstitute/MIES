@@ -24,7 +24,18 @@
 #include ":MIES_WaveDataFolderGetters"
 
 Menu "Mies Panels", dynamic
-		"Data Browser", /Q, Execute "DataBrowser()"
+	"Data Browser", /Q, DB_OpenDataBrowser()
+End
+
+///@brief Executes Igor version appropriate data browser macro
+///
+Function DB_OpenDataBrowser()
+
+#if (IgorVersion() >= 7.0)
+	Execute "DataBrowser_IP7()"
+#else
+	Execute "DataBrowser()"
+#endif
 End
 
 static Function/DF DB_GetDataPath(panelTitle)
@@ -414,6 +425,149 @@ Window DataBrowser() : Panel
 	RenameWindow #,WaveNoteDisplay
 	SetActiveSubwindow ##
 	Display/W=(17,427,1051,614)/FG=(,UGH1,UGV0,UGH0)/HOST=#
+	ModifyGraph margin(right)=74
+	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
+	RenameWindow #,LabNoteBook
+	SetActiveSubwindow ##
+EndMacro
+
+Window DataBrowser_IP7() : Panel
+	PauseUpdate; Silent 1		// building window...
+	NewPanel /K=1 /W=(2037,71,3250,791) as "DataBrowser"
+	SetDrawLayer UserBack
+	Button button_DataBrowser_NextSweep,pos={628.00,630.00},size={425.00,45.00},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
+	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-J,hsdJ,hnmz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
+	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	Button button_DataBrowser_NextSweep,fSize=20
+	Button button_DataBrowser_PrevSweep,pos={20.00,630.00},size={425.00,45.00},proc=DB_ButtonProc_Sweep,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo)= A"!!,BY!!#D-J,hsdJ,hnmz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	Button button_DataBrowser_PrevSweep,fSize=20
+	ValDisplay valdisp_DataBrowser_LastSweep,pos={530.00,634.00},size={89.00,34.00},bodyWidth=60,title="of"
+	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo)= A"!!,IjJ,htYJ,hpA!!#=kz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
+	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	ValDisplay valdisp_DataBrowser_LastSweep,fSize=24,frame=2,fStyle=1
+	ValDisplay valdisp_DataBrowser_LastSweep,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_DataBrowser_LastSweep,value= #"0"
+	ValDisplay valdisp_DataBrowser_LastSweep,barBackColor= (56576,56576,56576)
+	CheckBox check_DataBrowser_DisplayDAchan,pos={20.00,9.00},size={122.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display DA channels"
+	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo)= A"!!,BY!!#:r!!#@X!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_DisplayDAchan,value= 0
+	CheckBox check_databrowser_OverlayChan,pos={205.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G]!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_databrowser_OverlayChan,value= 0
+	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1759.00,75.00},size={197.00,39.00}
+	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LBhuH*0!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
+	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
+	CheckBox check_DataBrowser_SweepOverlay,pos={205.00,9.00},size={97.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Sweeps"
+	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo)= A"!!,G]!!#:r!!#@&!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_SweepOverlay,value= 0
+	CheckBox check_DataBrowser_AutoUpdate,pos={484.00,9.00},size={159.00,15.00},title="Display last sweep acquired"
+	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,IX!!#:r!!#A.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_AutoUpdate,value= 0
+	PopupMenu popup_DB_lockedDevices,pos={639.00,684.00},size={275.00,19.00},bodyWidth=170,title="Device assingment:"
+	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0^]6bQ!!#BCJ,hm&z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
+	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
+	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	Button Button_dataBrowser_lockBrowser,pos={983.00,682.00},size={70.00,23.00},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
+	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K1^]6bPJ,hop!!#<pz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
+	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_DisplayTTL,pos={20.00,27.00},size={128.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,BY!!#=;!!#@d!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_DisplayTTL,value= 0
+	CheckBox check_DataBrowser_DisplayADChan,pos={20.00,45.00},size={124.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display AD Channels"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo)= A"!!,BY!!#>B!!#@\\!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_DisplayADChan,value= 1
+	CheckBox check_DataBrowser_AverageTraces,pos={349.00,9.00},size={92.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Average traces"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo)= A"!!,HiJ,hkH!!#?q!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_AverageTraces,value= 0
+	Button button_DataBrowser_setaxis,pos={20.00,682.00},size={150.00,23.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BY!!#D:J,hqP!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataBrowser_SweepNo,pos={454.00,634.00},size={74.00,35.00},proc=DB_SetVarProc_SweepNo
+	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo)= A"!!,II!!#D.J,hp#!!#=oz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataBrowser_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
+	SetVariable setvar_DataBrowser_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
+	PopupMenu popup_labenotebookViewableCols,pos={1043.00,458.00},size={153.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo)= A"!!,K>?iWRU!!#A(!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	PopupMenu popup_labenotebookViewableCols,mode=1,popvalue="- none -",value= #"\"- none -\""
+	Button button_clearlabnotebookgraph,pos={1043.00,498.00},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,K>?iWRi!!#?Y!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	GroupBox group_labnotebook_ctrls,pos={1036.00,439.00},size={169.00,47.00},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=J,hskJ,hqc!!#>Jz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	Button button_switchxaxis,pos={1043.00,525.00},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,K>?iWRs5QF-D!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_ZeroTraces,pos={349.00,27.00},size={73.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero traces"
+	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo)= A"!!,HiJ,hmf!!#?K!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_ZeroTraces,value= 0
+	SetVariable setvar_DataBrowser_SweepStep,pos={498.00,674.00},size={67.00,18.00},bodyWidth=40,title="Step"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo)= A"!!,I_!!#D8J,hoj!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataBrowser_SweepStep,userdata(lastSweep)=  "0",fSize=12
+	SetVariable setvar_DataBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,pos={179.00,686.00},size={40.00,15.00},proc=DB_ScaleAxis,title="Vis X"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,help={"Scale the y axis to the visible x data range"}
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo)= A"!!,GC!!#D;J,hnY!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
+	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH1;UGH0;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B0eb=</het@7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^0JGQ"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1bpd<0JGRY<CoSI0fhd'4%E:B6q&jl7RB1778-NR;b9q[:JNr)/i>UF2_m-M"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B2DI3E0JGRY<CoSI0fi<)8231r<CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0E2DR$A2`h"
+	Display/W=(18,72,1039,362)/FG=($"",$"",UGV0,UGH1)/HOST=#
+	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
+	RenameWindow #,DataBrowserGraph
+	SetActiveSubwindow ##
+	NewNotebook /F=1 /N=WaveNoteDisplay /W=(1052,72,1220,341)/FG=(UGV0,$"",FR,UGH1) /HOST=# /OPTS=10
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
+	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,127}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu_S&%T4L]iZ-,W[?i6\"=DG6/B>,7,t^s'8'dlAmu5P!&>c+OT"
+	Notebook kwTopWin, zdataEnd= 1
+	RenameWindow #,WaveNoteDisplay
+	SetActiveSubwindow ##
+	Display/W=(17,427,1051,614)/FG=($"",UGH1,UGV0,UGH0)/HOST=#
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
 	RenameWindow #,LabNoteBook
