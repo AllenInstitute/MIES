@@ -103,18 +103,19 @@ Function ITC_FIFOMonitorMD(s)
 	WAVE/SDFR=activeDevices/T ActiveDeviceTextList
 	WAVE/WAVE/SDFR=activeDevices ActiveDevWavePathWave
 	string cmd
-	variable DeviceIDGlobal
+	variable deviceID
 	variable i, fifoPos
 	string panelTitle, oscilloscopeSubwindow
 
 	for(i = 0; i < DimSize(ActiveDeviceTextList, ROWS); i += 1)
 		panelTitle = ActiveDeviceTextList[i]
 		oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
+		deviceID = ActiveDeviceList[i][0]
 
 		WAVE ITCDataWave = ActiveDevWavePathWave[i][0]
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
 
-		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
+		sprintf cmd, "ITCSelectDevice %d" deviceID
 		ExecuteITCOperationAbortOnError(cmd)
 		sprintf cmd, "ITCFIFOAvailableALL/z=0, %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave,2)
 		ExecuteITCOperation(cmd)
@@ -125,9 +126,9 @@ Function ITC_FIFOMonitorMD(s)
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
 		if(fifoPos >= ActiveDeviceList[i][2])
-			print "stopped data acq on " + panelTitle, "device ID global = ", ActiveDeviceList[i][0]
-			DeviceIDGlobal = ActiveDeviceList[i][0]
-			ITC_StopDataAcqMD(panelTitle, DeviceIDGlobal)
+			print "stopped data acq on " + panelTitle, "device ID global = ", deviceID
+			ITC_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
+			ITC_StopDataAcqMD(panelTitle, deviceID)
 			i = 0
 			continue
 		endif
@@ -177,8 +178,6 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	string cmd
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceTextList
 
 	// stop data acq on device passsed in
