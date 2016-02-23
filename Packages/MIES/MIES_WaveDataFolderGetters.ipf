@@ -1811,8 +1811,9 @@ End
 /// - Segment/Epoch
 ///
 /// Layers hold different stimulus wave form types:
+/// - Square pulse
 /// - Ramp
-/// - GPB_Noise
+/// - GPB-Noise
 /// - Sin
 /// - Saw tooth
 /// - Square pulse train
