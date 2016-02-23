@@ -160,6 +160,7 @@ Function/Wave WB_GetStimSet([setName])
 
 		UpgradeWaveParam(WP)
 		UpgradeWaveTextParam(WPT)
+		UpgradeSegWvType(SegWvType)
 	endif
 
 	// WB_AddDelta modifies WP so we pass a copy instead

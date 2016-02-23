@@ -1889,6 +1889,39 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
+static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 1
+
+/// @brief Upgrade the wave layout of `SegWvType` to the most recent one
+///        as defined in `SEGWVTYPE_WAVE_LAYOUT_VERSION`
+Function UpgradeSegWvType(wv)
+	WAVE wv
+
+	if(ExistsWithCorrectLayoutVersion(wv, WPT_WAVE_LAYOUT_VERSION))
+		return NaN
+	endif
+
+	AddDimLabelsToSegWvType(wv)
+	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
+End
+
+/// @brief Add dimension labels to the WaveBuilder `SegWvType` wave
+static Function AddDimLabelsToSegWvType(wv)
+	WAVE wv
+
+	variable i
+
+	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	 SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
+	endfor
+
+	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 1, $("Flip time axis")        , wv
+	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 2, $("Inter trial interval")  , wv
+	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 3, $("Total number of epochs"), wv
+	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 4, $("Total number of steps") , wv
+
+	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
+End
+
 /// @brief Returns the segment type wave used by the wave builder panel
 /// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
 /// - Rows
@@ -1899,17 +1932,19 @@ End
 ///   - 101: total number of steps
 Function/Wave GetSegmentTypeWave()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	Wave/Z/SDFR=dfr wv = SegWvType
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/Z/SDFR=dfr wv = SegWvType
 
 	if(WaveExists(wv))
-		return wv
+		UpgradeSegWvType(wv)
+	else
+		Make/N=102 dfr:SegWvType/Wave=wv
+
+		wv[100] = 1
+		wv[101] = 1
+		AddDimLabelsToSegWvType(wv)
+		SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
 	endif
-
-	Make/N=102 dfr:SegWvType/Wave=wv
-
-	wv[100] = 1
-	wv[101] = 1
 
 	return wv
 End
