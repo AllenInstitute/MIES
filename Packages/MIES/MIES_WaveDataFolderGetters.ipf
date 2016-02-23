@@ -1842,7 +1842,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 3
+static Constant WPT_WAVE_LAYOUT_VERSION = 4
 
 /// @brief Upgrade the wave layout of `WPT` to the most recent one
 ///        as defined in `WPT_WAVE_LAYOUT_VERSION`
@@ -1854,7 +1854,31 @@ Function UpgradeWaveTextParam(wv)
 	endif
 
 	Redimension/N=(51, -1) wv
+	AddDimLabelsToWPT(wv)
 	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
+End
+
+/// @brief Add dimension labels to the WaveBuilder `WPT` wave
+static Function AddDimLabelsToWPT(wv)
+	WAVE wv
+
+	variable i, numEpochs
+
+	SetDimLabel ROWS, 0, $("Custom epoch wave name")       , wv
+	SetDimLabel ROWS, 1, $("Analysis pre DAQ function")    , wv
+	SetDimLabel ROWS, 2, $("Analysis mid sweep function")  , wv
+	SetDimLabel ROWS, 3, $("Analysis post sweep function") , wv
+	SetDimLabel ROWS, 4, $("Analysis post set function")   , wv
+	SetDimLabel ROWS, 5, $("Analysis post DAQ function")   , wv
+	SetDimLabel ROWS, 6, $("Combine epoch formula")        , wv
+	SetDimLabel ROWS, 7, $("Combine epoch formula version"), wv
+
+	numEpochs = DimSize(wv, COLS) - 1
+	for(i = 0; i < numEpochs; i += 1)
+		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
+	endfor
+
+	SetDimLabel COLS, numEpochs, $("Set"), wv
 End
 
 /// @brief Return the parameter text wave for the wave builder panel
@@ -1882,7 +1906,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 		UpgradeWaveTextParam(wv)
 	else
 		Make/N=(51, 100)/T dfr:WPT/Wave=wv
-
+		AddDimLabelsToWPT(wv)
 		SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 	endif
 
