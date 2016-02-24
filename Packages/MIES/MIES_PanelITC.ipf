@@ -5311,15 +5311,26 @@ static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 	string panelTitle
 	variable useMultiDevice
 
-	SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", useMultiDevice)
-	SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", useMultiDevice)
-	SetCheckBoxState(panelTitle, "check_Settings_MD", useMultiDevice)
+	variable checkedState
 
 	if(useMultiDevice)
 		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BkgTP")
+		SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
+		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
+		SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
+
+		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", CHECKBOX_SELECTED)
+		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", CHECKBOX_SELECTED)
 	else
 		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
+		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", checkedState)
+		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))
+		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", checkedState)
 	endif
+
+	SetCheckBoxState(panelTitle, "check_Settings_MD", useMultiDevice)
 End
 
 /// @brief Controls TP Insertion into set sweeps before the sweep begins
