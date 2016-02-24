@@ -268,7 +268,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 		return NaN
 	endif
 
-	headstageMode = AI_MIESHeadstageMode(panelTitle, headStage)
+	headstageMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
 		printf "Headstage %d is in %s but the required one is %s\r", headstage, AI_ConvertAmplifierModeToString(headstageMode), AI_ConvertAmplifierModeToString(mode)
@@ -420,7 +420,7 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
-	storedMode = AI_MIESHeadstageMode(panelTitle, headStage)
+	storedMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 	setMode    = tds.operatingMode
 	equalModes = (setMode == storedMode)
 
@@ -429,19 +429,6 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	endif
 
 	return equalModes
-End
-
-/// @returns the mode of the headstage defined in the locked DA_ephys panel,
-///          can be V_CLAMP_MODE or I_CLAMP_MODE
-Function AI_MIESHeadstageMode(panelTitle, headStage)
-	string panelTitle
-	variable headStage  // range: [0, NUM_HEADSTAGES[
-						// headstage 1 has radio buttons 0 and 1
-
-	string ctrl
-	sprintf ctrl, "Radio_ClampMode_%d", (headStage * 2)
-
-	return GetCheckBoxState(panelTitle, ctrl) == CHECKBOX_SELECTED ? V_CLAMP_MODE : I_CLAMP_MODE
 End
 
 /// @brief Update the AmpStorageWave entry and send the value to the amplifier
@@ -1192,7 +1179,7 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	
 	if(headstage >= 0 && headstage < NUM_HEADSTAGES)	
 		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
-		variable mode = AI_MIESHeadstageMode(panelTitle, headStage)
+		variable mode = DAP_MIESHeadstageMode(panelTitle, headStage)
 		AI_UpdateAmpView(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
@@ -1247,7 +1234,7 @@ Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/SDFR=dfr baselineSSAvg
 	WAVE/SDFR=dfr SSResistance 
-	ASSERT(AI_MIESHeadstageMode(panelTitle, headStage) == V_CLAMP_MODE, "Headstage must be in VC mode to use this function") // headstage must be in VC
+	ASSERT(DAP_MIESHeadstageMode(panelTitle, headStage) == V_CLAMP_MODE, "Headstage must be in VC mode to use this function") // headstage must be in VC
 	variable column =TP_GetTPResultsColOfHS(panelTitle, headstage)
 	ASSERT(column >= 0, "Invalid column number")
 	//calculate delta current to reach zero

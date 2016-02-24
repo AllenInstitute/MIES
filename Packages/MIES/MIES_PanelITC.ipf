@@ -4765,13 +4765,14 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	string panelTitle
 	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo, activeHS
 	variable testPulseMode
+	Wave GUIState = GetDA_EphysGuiStateNum(cba.win)
 
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
-
+			GuiState[headStage][%HSmode] = mode
 			activeHS = GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage))
 			if(activeHS)
 				testPulseMode = TP_StopTestPulse(panelTitle)
@@ -5216,7 +5217,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	if(sc.eventCode & 0x1)
 		panelTitle = sc.win
 		headStage  = sc.curVal
-		mode = AI_MIESHeadstageMode(panelTitle, headStage)
+		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
 		AI_SyncAmpStorageToGUI(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
@@ -5728,9 +5729,18 @@ Function/Wave DAP_GetAllHSMode(panelTitle)
 	make/FREE/n=(NUM_HEADSTAGES) Mode
 	variable i
 	for(i = 0; i < NUM_HEADSTAGES; i+=1)
-		Mode[i] = AI_MIESHeadstageMode(panelTitle, i)
+		Mode[i] = DAP_MIESHeadstageMode(panelTitle, i)
 	endfor
 	return Mode
+End
+
+/// @returns the mode of the headstage defined in the locked DA_ephys panel,
+///          can be V_CLAMP_MODE or I_CLAMP_MODE or NC
+Function DAP_MIESHeadstageMode(panelTitle, headStage)
+	string panelTitle
+	variable headStage  // range: [0, NUM_HEADSTAGES[
+						
+	return GetDA_EphysGuiStateNum(panelTitle)[headStage][%HSMode]
 End
 
 Function DAP_Activate_Manips(cba) : CheckBoxControl

@@ -185,7 +185,7 @@ static Function DC_UpdateClampModeString(panelTitle)
 	for(i = 0; i < numChannels; i += 1)
 		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
 		if(IsFinite(headstage))
-			clampModeString = AddListItem(num2str(AI_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
+			clampModeString = AddListItem(num2str(DAP_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
 		endif
 	endfor
 End

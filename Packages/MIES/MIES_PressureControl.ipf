@@ -1287,7 +1287,7 @@ Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string headStageCheckboxName
 	sprintf headStageCheckboxName, "Check_DataAcq_HS_%0.2d" headStage
 
-	if(!AI_MIESHeadstageMode(panelTitle, headStage) && getcheckboxstate(panelTitle, headStageCheckboxName))
+	if(!DAP_MIESHeadstageMode(panelTitle, headStage) && getcheckboxstate(panelTitle, headStageCheckboxName))
 		return 1
 	endif
 
