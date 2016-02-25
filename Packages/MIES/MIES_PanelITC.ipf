@@ -4765,13 +4765,13 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	string panelTitle
 	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo, activeHS
 	variable testPulseMode
-	Wave GUIState = GetDA_EphysGuiStateNum(cba.win)
 
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
+			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
 			GuiState[headStage][%HSmode] = mode
 			activeHS = GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage))
 			if(activeHS)
