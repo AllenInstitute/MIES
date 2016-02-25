@@ -3570,7 +3570,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	string panelTitle
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
-	DAP_UpdateSweepSetVariables(panelTitle)
 
 	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
@@ -3585,6 +3584,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
+
+	DAP_UpdateSweepSetVariables(panelTitle)
 
 	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", allowMissingControl=1))
 		return NaN
