@@ -3583,7 +3583,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-		IDX_ResetStartFinshForIndexing(panelTitle)
+		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
 
 	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", allowMissingControl=1))
