@@ -2605,7 +2605,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_ClearChanConn,help={"Clear the channel/amplifier association of the current headstage."}
 	Button button_Hardware_ClearChanConn,userdata(tabnum)=  "6"
 	Button button_Hardware_ClearChanConn,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_DisablePressure,pos={384.00,705.00},size={57.00,48.00},disable=1,title="Stop\rpressure\ron data\racquisition"
+	CheckBox check_Settings_DisablePressure,pos={400.00,690.00},size={57.00,48.00},disable=1,title="Stop\rpressure\ron data\racquisition"
 	CheckBox check_Settings_DisablePressure,userdata(tabnum)=  "5"
 	CheckBox check_Settings_DisablePressure,userdata(tabcontrol)=  "ADC",value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
@@ -2992,6 +2992,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
+	CheckBox check_Settings_DisablePressure WIN = $panelTitle, value = 0
 
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
