@@ -645,8 +645,6 @@ End
 Function ITC_StartDAQMultiDevice(panelTitle)
 	string panelTitle
 
-	variable numEntries, i
-
 	AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
