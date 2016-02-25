@@ -73,19 +73,6 @@ static Function IH_SerAllCommentNBsWrapper()
 	f()
 End
 
-/// @brief Use the same pixel <-> point conversion rules as in Igor Pro 6
-static Function IH_SetPanelResolutionAsInIP6()
-
-/// @todo remove PanelResolution hack once we can discontinue Igor Pro 6 support
-#if (IgorVersion() >= 7.0)
-	if(QuerySetIgorOption("PanelResolution") != 72)
-		Execute/P/Q "SetIgorOption PanelResolution=72"
-		Execute/P/Q/Z "COMPILEPROCEDURES "
-	endif
-#endif
-
-End
-
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
 	Variable rN, kind
 	String fileName, path, type, creator
@@ -107,14 +94,5 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 
 	IH_UnlockAllDevicesWrapper()
 	IH_KillTemporaries()
-	IH_SetPanelResolutionAsInIP6()
-
-	return 0
-End
-
-static Function AfterCompiledHook()
-
-	IH_SetPanelResolutionAsInIP6()
-
 	return 0
 End
