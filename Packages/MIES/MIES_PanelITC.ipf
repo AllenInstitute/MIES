@@ -3610,6 +3610,9 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
 			panelTitle = ba.win
+
+			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+
 			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				ITC_StartDAQMultiDevice(panelTitle)
 			else
@@ -5444,6 +5447,9 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			panelTitle = ba.win
+
+			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 			// if data acquisition is currently running we just
