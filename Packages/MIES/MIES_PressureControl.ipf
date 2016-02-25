@@ -423,7 +423,7 @@ Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
 	if(!isInteger(devID) || devID < 0 || devID > 10)
    		 DEBUGPRINT("Trying to close invalid deviceID", var=devID)
     	else	
-		sprintf cmd, "ITCSelectDevice %d" DevID
+		sprintf cmd, "ITCSelectDevice/Z %d" DevID
 		if(!ExecuteITCOperation(cmd))
 			sprintf cmd, "ITCCloseDevice"
 			ExecuteITCOperation(cmd)
