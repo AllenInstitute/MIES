@@ -4778,13 +4778,13 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	string panelTitle
 	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo, activeHS
 	variable testPulseMode
-	Wave GUIState = GetDA_EphysGuiStateNum(cba.win)
 
 	switch( cba.eventCode )
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
 
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
+			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
 			GuiState[headStage][%HSmode] = mode
 			activeHS = GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage))
 			if(activeHS)
@@ -5227,16 +5227,18 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	string panelTitle
 	variable mode, headStage
 
-	if(sc.eventCode & 0x1)
-		panelTitle = sc.win
-		headStage  = sc.curVal
-		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-		AI_SyncAmpStorageToGUI(panelTitle, headStage)
-		P_LoadPressureButtonState(panelTitle, headStage)
-		P_SaveUserSelectedHeadstage(panelTitle, headStage)
-		// chooses the amp tab according to the MIES headstage clamp mode
-		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
-	endif
+	switch(sc.eventCode)
+		case 0x1: // value set
+			panelTitle = sc.win
+			headStage  = sc.curVal
+			mode = DAP_MIESHeadstageMode(panelTitle, headStage)
+			AI_SyncAmpStorageToGUI(panelTitle, headStage)
+			P_LoadPressureButtonState(panelTitle, headStage)
+			P_SaveUserSelectedHeadstage(panelTitle, headStage)
+			// chooses the amp tab according to the MIES headstage clamp mode
+			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+		break
+	endswitch
 
 	return 0
 End
