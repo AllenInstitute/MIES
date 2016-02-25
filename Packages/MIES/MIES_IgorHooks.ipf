@@ -99,6 +99,12 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 
 	IH_UnlockAllDevicesWrapper()
 	IH_KillTemporaries()
+
+	// save the experiment silently if it was saved before
+	if(unsavedExp == 0)
+		SaveExperiment
+	endif
+
 	return 0
 End
 
