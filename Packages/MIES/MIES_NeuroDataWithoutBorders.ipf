@@ -2,22 +2,72 @@
 
 /// @file MIES_NeuroDataWithoutBorders.ipf
 /// @brief __NWB__ Functions related to MIES data export into the NeuroDataWithoutBorders format
-
+///
 /// @todo
 /// - use IPNWB#CHANNEL_TYPE_OTHER instead of -1 if possible
+
+/// @brief Return the starting time, in seconds since Igor Pro epoch in UTC, of the given sweep
+static Function NWB_GetStartTimeOfSweep(sweepWave)
+	WAVE sweepWave
+
+	variable startingTime
+
+	ASSERT(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
+	// last time the wave was modified (UTC)
+	startingTime  = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
+	// we want the timestamp of the beginning of the measurement
+	startingTime -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000
+
+	return startingTime
+End
+
+/// @brief Return the creation time, in seconds since Igor Pro epoch in UTC, of the oldest sweep wave for all devices
+///
+/// Return NaN if no sweeps could be found
+static Function NWB_FirstStartTimeOfAllSweeps()
+
+	string devicesWithData, panelTitle, list, name
+	variable numEntries, numWaves, i, j
+	variable oldest = Inf
+
+	devicesWithData = GetAllDevicesWithData()
+
+	if(isEmpty(devicesWithData))
+		return NaN
+	endif
+
+	numEntries = ItemsInList(devicesWithData)
+	for(i = 0; i < numEntries; i += 1)
+		panelTitle = StringFromList(i, devicesWithData)
+
+		DFREF dfr = GetDeviceDataPath(panelTitle)
+		list = GetListOfWaves(dfr, DATA_SWEEP_REGEXP)
+		numWaves = ItemsInList(list)
+		for(j = 0; j < numWaves; j += 1)
+			name = StringFromList(j, list)
+			WAVE/SDFR=dfr sweepWave = $name
+
+			oldest = min(oldest, NWB_GetStartTimeOfSweep(sweepWave))
+		endfor
+	endfor
+
+	return oldest
+End
 
 /// @brief Return the HDF5 file identifier referring to an open NWB file
 ///        for export
 ///
 /// Open one if it does not exist yet.
 ///
-/// @param overrideFilePath file path for new files to override the internal
-///                           generation algorithm
-static Function NWB_GetFileForExport([overrideFilePath])
+/// @param[in] overrideFilePath    [optional] file path for new files to override the internal
+///                                generation algorithm
+/// @param[out] createdNewNWBFile  [optional] a new NWB file was created (1) or an existing opened (0)
+static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	string overrideFilePath
+	variable &createdNewNWBFile
 
 	string expName, fileName, filePath
-	variable fileID, refNum
+	variable fileID, refNum, oldestData
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
 
@@ -64,6 +114,10 @@ static Function NWB_GetFileForExport([overrideFilePath])
 
 		fileIDExport   = fileID
 		filePathExport = filePath
+
+		if(!ParamIsDefault(createdNewNWBFile))
+			createdNewNWBFile = 0
+		endif
 	else // file does not exist
 		HDF5CreateFile/Z fileID as filePath
 		if(V_flag)
@@ -75,11 +129,23 @@ static Function NWB_GetFileForExport([overrideFilePath])
 			return NWB_GetFileForExport()
 		endif
 
-		NVAR sessionStartTime = $GetSessionStartTime()
-
 		STRUCT IPNWB#ToplevelInfo ti
 		IPNWB#InitToplevelInfo(ti)
-		ti.session_start_time = sessionStartTime
+
+		NVAR sessionStartTime = $GetSessionStartTime()
+
+		if(!IsFinite(sessionStartTime))
+			sessionStartTime = DateTimeInUTC()
+		endif
+
+		oldestData = NWB_FirstStartTimeOfAllSweeps()
+
+		// adjusting the session start time, as older sweeps than the
+		// timestamp of the last device locking are to be exported
+		// not adjusting it would result in negative starting times for the lastest sweep
+		if(IsFinite(oldestData))
+			ti.session_start_time = min(sessionStartTime, floor(oldestData))
+		endif
 
 		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 		IPNWB#CreateIntraCellularEphys(fileID)
@@ -90,7 +156,9 @@ static Function NWB_GetFileForExport([overrideFilePath])
 		fileIDExport   = fileID
 		filePathExport = filePath
 
-		NWB_ExportAllData()
+		if(!ParamIsDefault(createdNewNWBFile))
+			createdNewNWBFile = 1
+		endif
 	endif
 
 	DEBUGPRINT("fileIDExport", var=fileIDExport, format="%15d")
@@ -127,6 +195,18 @@ static Function NWB_ReadSessionStartTime(fileID)
 	return ParseISO8601TimeStamp(str)
 End
 
+static Function/S NWB_GenerateDeviceDescription(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber, desc
+
+	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse panelTitle")
+
+	sprintf desc, "Harvard Bioscience (formerly HEKA/Instrutech) Model: %s", deviceType
+
+	return desc
+End
+
 static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout])
 	variable locationID
 	string panelTitle
@@ -139,8 +219,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
 
-	sprintf contents, "ITC hardware: %s", panelTitle
-	IPNWB#AddDevice(locationID, panelTitle, contents)
+	IPNWB#AddDevice(locationID, panelTitle, NWB_GenerateDeviceDescription(panelTitle))
 
 	WAVE settingsHistory           = GetNumDocWave(panelTitle)
 	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
@@ -236,7 +315,7 @@ Function NWB_ExportAllData([overrideFilePath])
 	endfor
 End
 
-Function NWB_AddMiesVersion(locationID)
+static Function NWB_AddMiesVersion(locationID)
 	variable locationID
 
 	SVAR miesVersion = $GetMiesVersion()
@@ -250,17 +329,21 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	WAVE ITCDataWave, ITCChanConfigWave
 	variable sweep
 
-	variable locationID
+	variable locationID, createdNewNWBFile
 
-	locationID = NWB_GetFileForExport()
+	locationID = NWB_GetFileForExport(createdNewNWBFile=createdNewNWBFile)
 	if(!IsFinite(locationID))
 		return NaN
 	endif
 
-	NWB_AddMiesVersion(locationID)
-	IPNWB#AddModificationTimeEntry(locationID)
-	NWB_AddDeviceSpecificData(locationID, panelTitle)
-	NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+	if(createdNewNWBFile)
+		NWB_ExportAllData()
+	else
+		NWB_AddMiesVersion(locationID)
+		IPNWB#AddModificationTimeEntry(locationID)
+		NWB_AddDeviceSpecificData(locationID, panelTitle)
+		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+	endif
 End
 
 static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep, [chunkedLayout])
@@ -291,16 +374,14 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE/T stimSets  = GetLastSettingText(settingsHistoryText, sweep, STIM_WAVE_NAME_KEY)
 
 	STRUCT IPNWB#WriteChannelParams params
-	params.sweep = sweep
+	IPNWB#InitWriteChannelParams(params)
 
+	params.sweep         = sweep
 	params.device        = panelTitle
 	params.channelSuffix = ""
 
-	// starting time of the dataset
-	ASSERT(!cmpstr(WaveUnits(ITCDataWave, ROWS), "ms"), "Expected ms as wave units")
-	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(ITCDataWave, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
-	params.startingTime -= session_start_time // relative to the start of the session
-	params.startingTime -= DimSize(ITCDataWave, ROWS) * DimDelta(ITCDataWave, ROWS) / 1000 // we want the timestamp of the beginning of the measurement
+	// starting time of the dataset, relative to the start of the session
+	params.startingTime = NWB_GetStartTimeOfSweep(ITCDataWave) - session_start_time
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
@@ -325,23 +406,27 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		params.stimset         = stimSets[i]
 
 		if(IsFinite(adc))
+			path                 = "/acquisition/timeseries"
 			params.channelNumber = ADCs[i]
 			params.channelType   = ITC_XOP_CHANNEL_TYPE_ADC
 			col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 			WAVE params.data     = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
-			IPNWB#WriteSingleChannel(locationID, "/acquisition/timeseries", params, tsp, chunkedLayout=chunkedLayout)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
 
 		if(IsFinite(dac))
+			path                 = "/stimulus/presentation"
 			params.channelNumber = DACs[i]
 			params.channelType   = ITC_XOP_CHANNEL_TYPE_DAC
 			col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 			WAVE params.data     = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
-			IPNWB#WriteSingleChannel(locationID, "/stimulus/presentation", params, tsp, chunkedLayout=chunkedLayout)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
@@ -375,10 +460,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		for(j = 0; j < numEntries; j += 1)
 			name = StringFromList(j, list)
 			WAVE/SDFR=dfr params.data = $name
+			path                 = "/stimulus/presentation"
 			params.channelSuffix = name
 			params.stimset       = StringFromList(str2num(name[1,inf]), listOfStimsets)
 			NWB_GetTimeSeriesProperties(params, tsp)
-			IPNWB#WriteSingleChannel(locationID, "/stimulus/presentation", params, tsp, chunkedLayout=chunkedLayout)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endfor
 
 		numEntries = ItemsInList(listOfStimsets)
@@ -408,11 +495,12 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 
 	stimSet = params.stimSet
 
+	path                 = "/stimulus/templates"
 	params.channelNumber = NaN
 	params.channelType   = -1
 	WAVE params.data     = WB_CreateAndGetStimset(stimSet)
 	NWB_GetTimeSeriesProperties(params, tsp)
-	path = "/stimulus/templates"
+	params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 
 	// write also the stim set parameter waves if all three exist
@@ -468,6 +556,11 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 		NWB_AddSweepDataSets(settingsHistory, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
 	elseif(p.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
 		NWB_AddSweepDataSets(settingsHistory, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
+
+		WAVE/Z values = GetLastSetting(settingsHistory, p.sweep, "Stim Scale Factor")
+		if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
+			IPNWB#AddCustomProperty(tsp, "scale", values[p.electrodeNumber])
+		endif
 	endif
 End
 

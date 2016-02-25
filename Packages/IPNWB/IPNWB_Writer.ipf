@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.11
+#pragma version=0.12
 
 /// @file IPNWB_Writer.ipf
 /// @brief Generic functions related to export into the NeuroDataWithoutBorders format
@@ -118,41 +118,41 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 		ti = toplevelInfo
 	endif
 
-		WriteTextDatasetIfSet(locationID, "neurodata_version", NWB_VERSION)
-		WriteTextDatasetIfSet(locationID, "identifier", Hash(GetISO8601TimeStamp() + num2str(enoise(1, 2)), 1))
-		// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
-		WriteTextDatasetIfSet(locationID, "file_create_date", GetISO8601TimeStamp(), chunkedLayout=1)
-		WriteTextDatasetIfSet(locationID, "session_start_time", GetISO8601TimeStamp(secondsSinceIgorEpoch=ti.session_start_time))
-		WriteTextDatasetIfSet(locationID, "session_description", ti.session_description)
+	WriteTextDatasetIfSet(locationID, "neurodata_version", NWB_VERSION)
+	WriteTextDatasetIfSet(locationID, "identifier", Hash(GetISO8601TimeStamp() + num2str(enoise(1, 2)), 1))
+	// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
+	WriteTextDatasetIfSet(locationID, "file_create_date", GetISO8601TimeStamp(), chunkedLayout=1)
+	WriteTextDatasetIfSet(locationID, "session_start_time", GetISO8601TimeStamp(secondsSinceIgorEpoch=ti.session_start_time))
+	H5_WriteTextDataset(locationID, "session_description", str=ti.session_description)
 
-		H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
+	H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
 
-		WriteTextDatasetIfSet(groupID, "session_id"            , gi.session_id)
-		WriteTextDatasetIfSet(groupID, "experimenter"          , gi.experimenter)
-		WriteTextDatasetIfSet(groupID, "institution"           , gi.institution)
-		WriteTextDatasetIfSet(groupID, "lab"                   , gi.lab)
-		WriteTextDatasetIfSet(groupID, "related_publications"  , gi.related_publications)
-		WriteTextDatasetIfSet(groupID, "notes"                 , gi.notes)
-		WriteTextDatasetIfSet(groupID, "experiment_description", gi.experiment_description)
-		WriteTextDatasetIfSet(groupID, "data_collection"       , gi.data_collection)
-		WriteTextDatasetIfSet(groupID, "stimulus"              , gi.stimulus)
-		WriteTextDatasetIfSet(groupID, "pharmacology"          , gi.pharmacology)
-		WriteTextDatasetIfSet(groupID, "surgery"               , gi.surgery)
-		WriteTextDatasetIfSet(groupID, "protocol"              , gi.protocol)
-		WriteTextDatasetIfSet(groupID, "virus"                 , gi.virus)
-		WriteTextDatasetIfSet(groupID, "slices"                , gi.slices)
+	WriteTextDatasetIfSet(groupID, "session_id"            , gi.session_id)
+	WriteTextDatasetIfSet(groupID, "experimenter"          , gi.experimenter)
+	WriteTextDatasetIfSet(groupID, "institution"           , gi.institution)
+	WriteTextDatasetIfSet(groupID, "lab"                   , gi.lab)
+	WriteTextDatasetIfSet(groupID, "related_publications"  , gi.related_publications)
+	WriteTextDatasetIfSet(groupID, "notes"                 , gi.notes)
+	WriteTextDatasetIfSet(groupID, "experiment_description", gi.experiment_description)
+	WriteTextDatasetIfSet(groupID, "data_collection"       , gi.data_collection)
+	WriteTextDatasetIfSet(groupID, "stimulus"              , gi.stimulus)
+	WriteTextDatasetIfSet(groupID, "pharmacology"          , gi.pharmacology)
+	WriteTextDatasetIfSet(groupID, "surgery"               , gi.surgery)
+	WriteTextDatasetIfSet(groupID, "protocol"              , gi.protocol)
+	WriteTextDatasetIfSet(groupID, "virus"                 , gi.virus)
+	WriteTextDatasetIfSet(groupID, "slices"                , gi.slices)
 
-		HDF5CloseGroup/Z groupID
+	HDF5CloseGroup/Z groupID
 
-		H5_CreateGroupsRecursively(locationID, "/general/subject", groupID=groupID)
+	H5_CreateGroupsRecursively(locationID, "/general/subject", groupID=groupID)
 
-		WriteTextDatasetIfSet(groupID, "subject_id" , si.subject_id)
-		WriteTextDatasetIfSet(groupID, "description", si.description)
-		WriteTextDatasetIfSet(groupID, "species"    , si.species)
-		WriteTextDatasetIfSet(groupID, "genotype"   , si.genotype)
-		WriteTextDatasetIfSet(groupID, "sex"        , si.sex)
-		WriteTextDatasetIfSet(groupID, "age"        , si.age)
-		WriteTextDatasetIfSet(groupID, "weight"     , si.weight)
+	WriteTextDatasetIfSet(groupID, "subject_id" , si.subject_id)
+	WriteTextDatasetIfSet(groupID, "description", si.description)
+	WriteTextDatasetIfSet(groupID, "species"    , si.species)
+	WriteTextDatasetIfSet(groupID, "genotype"   , si.genotype)
+	WriteTextDatasetIfSet(groupID, "sex"        , si.sex)
+	WriteTextDatasetIfSet(groupID, "age"        , si.age)
+	WriteTextDatasetIfSet(groupID, "weight"     , si.weight)
 
 	HDF5CloseGroup/Z groupID
 
@@ -280,6 +280,7 @@ End
 Structure TimeSeriesProperties
 	WAVE/T names
 	WAVE   data
+	WAVE   isCustom ///< 1 if the entry should be marked as NWB custom
 	string missing_fields
 EndStructure
 
@@ -297,6 +298,9 @@ Function InitTimeSeriesProperties(tsp, channelType, clampMode)
 
 	Make/FREE data = NaN
 	WAVE tsp.data = data
+
+	Make/FREE isCustom = 0
+	WAVE tsp.isCustom = isCustom
 
 	// AddProperty() will remove the entries on addition of values
 	if(channelType == CHANNEL_TYPE_ADC)
@@ -336,6 +340,50 @@ Function AddProperty(tsp, nwbProp, value)
 	propData[V_value]  = value
 End
 
+/// @brief Add a custom TimeSeries property to the `names` and `data` waves
+Function AddCustomProperty(tsp, nwbProp, value)
+	STRUCT TimeSeriesProperties &tsp
+	string nwbProp
+	variable value
+
+	WAVE/T propNames = tsp.names
+	WAVE propData    = tsp.data
+	WAVE isCustom    = tsp.isCustom
+
+	FindValue/TEXT=""/TXOP=(4) propNames
+	ASSERT(V_Value != -1, "Could not find space for new entry")
+	ASSERT(!IsFinite(propData[V_Value]), "data row already filled")
+
+	propNames[V_value] = nwbProp
+	propData[V_value]  = value
+	isCustom[V_value]  = 1
+End
+
+/// @brief Return the next free group index of the format `data_$NUM`
+Function GetNextFreeGroupIndex(locationID, path)
+	variable locationID
+	string path
+
+	string str, list
+	variable idx
+
+	HDF5ListGroup/TYPE=(2^0) locationID, path
+
+	list = S_HDF5ListGroup
+
+	if(IsEmpty(list))
+		return 0
+	endif
+
+	list = SortList(list, ";", 16)
+
+	str = StringFromList(ItemsInList(list) - 1, list)
+	sscanf str, "data_%d.*", idx
+	ASSERT(V_Flag == 1, "Could not find running data index")
+
+	return idx + 1
+End
+
 /// @brief Helper structure for WriteSingleChannel()
 Structure WriteChannelParams
 	string device            ///< name of the measure device, e.g. "ITC18USB_Dev_0"
@@ -348,8 +396,18 @@ Structure WriteChannelParams
 	variable channelNumber   ///< running number of the channel
 	variable electrodeNumber ///< electrode identifier the channel was acquired with
 	variable clampMode       ///< clamp mode, one of @ref IPNWB_ClampModes
+	variable groupIndex      ///< Should be filled with the result of GetNextFreeGroupIndex(locationID, path) before
+							 ///  the first call and must stay constant for all channels for this measurement.
+							 ///  If `NaN` an automatic solution is provided.
 	WAVE data                ///< channel data
 EndStructure
+
+/// @brief Initialize WriteChannelParams structure
+Function InitWriteChannelParams(p)
+	STRUCT WriteChannelParams &p
+
+	p.groupIndex = NaN
+End
 
 /// @brief Write the data of a single channel to the NWB file
 ///
@@ -366,7 +424,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 	STRUCT TimeSeriesProperties &tsp
 	variable chunkedLayout
 
-	variable groupID, numPlaces, nwbDataCounter, numEntries, i
+	variable groupID, numPlaces, numEntries, i
 	string ancestry, str, source, channelTypeStr, group
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
@@ -375,15 +433,17 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		channelTypeStr = "stimset"
 		sprintf group, "%s/%s", path, p.stimSet
 	else
-		HDF5ListGroup/F/TYPE=(2^0) locationID, path
-		nwbDataCounter = ItemsInList(S_HDF5ListGroup)
+		if(!IsFinite(p.groupIndex))
+			HDF5ListGroup/F/TYPE=(2^0) locationID, path
+			p.groupIndex = ItemsInList(S_HDF5ListGroup)
+		endif
 
 		channelTypeStr = StringFromList(p.channelType, CHANNEL_NAMES)
 		ASSERT(!IsEmpty(channelTypeStr), "invalid channel type string")
 		ASSERT(IsFinite(p.channelNumber), "invalid channel number")
 
-		numPlaces = max(5, ceil(log(nwbDataCounter)))
-		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, nwbDataCounter, channelTypeStr, p.channelNumber, p.channelSuffix
+		numPlaces = max(5, ceil(log(p.groupIndex)))
+		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
 	endif
 
 	H5_CreateGroupsRecursively(locationID, group, groupID=groupID)
@@ -436,6 +496,10 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		endif
 
 		H5_WriteDataset(groupID, tsp.names[i], var=tsp.data[i], varType=IGOR_TYPE_32BIT_FLOAT, overwrite=1)
+
+		if(tsp.isCustom[i])
+			MarkAsCustomEntry(groupID, tsp.names[i])
+		endif
 	endfor
 
 	if(cmpstr(tsp.missing_fields, ""))
