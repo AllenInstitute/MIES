@@ -60,7 +60,7 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 End
 
 /// @brief Resets the selected set popupmenus stored by #IDX_StoreStartFinishForIndexing
-Function IDX_ResetStartFinshForIndexing(panelTitle)
+Function IDX_ResetStartFinishForIndexing(panelTitle)
 	string panelTitle
 
 	variable i

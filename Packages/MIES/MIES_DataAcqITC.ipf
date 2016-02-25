@@ -609,11 +609,11 @@ End
 Function ITC_StartDAQSingleDevice(panelTitle)
 	string panelTitle
 
-	AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
-
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 	if(!DataAcqState) // data aquisition is stopped
+
+		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
 		if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 			ITC_StopTestPulseSingleDevice(panelTitle)
@@ -645,13 +645,12 @@ End
 Function ITC_StartDAQMultiDevice(panelTitle)
 	string panelTitle
 
-	variable numEntries, i
-
-	AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
-
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 	if(!DataAcqState)
+
+		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
+
 		if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 			 ITC_StopTestPulseMultiDevice(panelTitle)
 		endif

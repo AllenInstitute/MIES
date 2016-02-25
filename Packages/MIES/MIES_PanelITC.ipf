@@ -3579,7 +3579,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	string panelTitle
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
-	DAP_UpdateSweepSetVariables(panelTitle)
 
 	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
@@ -3592,8 +3591,10 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-		IDX_ResetStartFinshForIndexing(panelTitle)
+		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
+
+	DAP_UpdateSweepSetVariables(panelTitle)
 
 	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", allowMissingControl=1))
 		return NaN
@@ -3618,6 +3619,9 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
 			panelTitle = ba.win
+
+			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+
 			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				ITC_StartDAQMultiDevice(panelTitle)
 			else
@@ -5452,6 +5456,9 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			panelTitle = ba.win
+
+			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
 			// if data acquisition is currently running we just
