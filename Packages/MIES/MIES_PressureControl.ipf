@@ -1283,11 +1283,8 @@ End
 Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
-	string headStageCheckboxName
-	sprintf headStageCheckboxName, "Check_DataAcq_HS_%0.2d" headStage
 
-	if(!DAP_MIESHeadstageMode(panelTitle, headStage) && getcheckboxstate(panelTitle, headStageCheckboxName))
+	if(!DAP_MIESHeadstageMode(panelTitle, headStage) && DAP_GetHSState(panelTitle, headStage))
 		return 1
 	endif
 
