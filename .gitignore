@@ -7,6 +7,9 @@ Packages/MIES/backup
 # mies version file
 version.txt
 
+# User analysis functions
+Packages/MIES/UserAnalysisFunctions.ipf
+
 # temp files created by Visual Studio
 *.aps
 *.obj

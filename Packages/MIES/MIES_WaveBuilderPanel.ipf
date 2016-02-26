@@ -2056,9 +2056,27 @@ End
 Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
+	string userFile, baseName, fileName
+	variable refNum
+
 	switch(ba.eventCode)
 		case 2: // mouse up
-			DisplayProcedure/L=(5)/W=$"MIES_AnalysisFunctions.ipf"
+			baseName = "UserAnalysisFunctions"
+			fileName = baseName + ".ipf"
+			userFile = GetFolder(FunctionPath("")) + fileName
+			GetFileFolderInfo/Q/Z userFile
+			if(V_Flag) // create a default file
+				Open refNum as userFile
+
+				fprintf refNum, "#pragma rtGlobals=3		// Use modern global access method and strict wave access.\n"
+				fprintf refNum, "\n"
+				fprintf refNum, "// This file can be used for user analysis functions.\n"
+				fprintf refNum, "// It will not be overwritten by MIES on an upgrade.\n"
+				Close refNum
+			endif
+			Execute/P/Q/Z "INSERTINCLUDE \"" + baseName + "\""
+			Execute/P/Q/Z "COMPILEPROCEDURES "
+			Execute/P/Q/Z "DisplayProcedure/W=$\"" + fileName + "\""
 			break
 	endswitch
 
