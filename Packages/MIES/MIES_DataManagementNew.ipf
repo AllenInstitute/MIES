@@ -70,15 +70,17 @@ Function DM_SaveAndScaleITCData(panelTitle)
 End
 
 /// @brief Call the analysis function associated with the stimset from the wavebuilder
+///
+/// @return 1 to signal the caller that the analysis function requests an immediate abort, 0 to continue
 Function DM_CallAnalysisFunctions(panelTitle, eventType)
 	string panelTitle
 	variable eventType
 
-	variable error, i, valid_f1, valid_f2
+	variable error, i, valid_f1, valid_f2, ret
 	string func, setName
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
-		return NaN
+		return 0
 	endif
 
 	NVAR count = $GetCount(panelTitle)
@@ -127,11 +129,12 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 		SetWaveLock 1, ITCDataWave
 
+		ret = NaN
 		try
 			if(valid_f1)
-				f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
+				ret = f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
 			elseif(valid_f2)
-				f2(panelTitle, eventType, ITCDataWave, i, stopCollectionPoint - 1); AbortOnRTE
+				ret = f2(panelTitle, eventType, ITCDataWave, i, stopCollectionPoint - 1); AbortOnRTE
 			else
 				ASSERT(0, "impossible case")
 			endif
@@ -141,7 +144,13 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 		endtry
 
 		SetWaveLock 0, ITCDataWave
+
+		if(eventType == PRE_DAQ_EVENT && ret == 1)
+			return  1
+		endif
 	endfor
+
+	return 0
 End
 
 /// @brief General hook function which gets always executed after sweep data saving

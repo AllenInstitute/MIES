@@ -111,13 +111,6 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
 		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
-	else
-		NVAR count = $GetCount(panelTitle)
-		// only call before the very first acquisition and
-		// not each time during repeated acquisition
-		if(!IsFinite(count))
-			DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
-		endif
 	endif
 
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
