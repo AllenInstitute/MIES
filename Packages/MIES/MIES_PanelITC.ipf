@@ -3870,14 +3870,6 @@ Function DAP_UpdateAllYokeControls()
 	endfor
 End
 
-Function DAP_GetTabNumber(panelTitle)
-	string panelTitle
-
-	ControlInfo/W=$panelTitle ADC
-	ASSERT(V_flag > 0,"Missing control ADC")
-	return V_value
-End
-
 Function/S DAP_GUIListOfYokedDevices()
 
 	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
@@ -3891,7 +3883,7 @@ End
 Function DAP_UpdateYokeControls(panelTitle)
 	string panelTitle
 
-	if(DAP_GetTabNumber(panelTitle) != HARDWARE_TAB_NUM)
+	if(GetTabID(panelTitle, "ADC") != HARDWARE_TAB_NUM)
 		return NaN
 	endif
 
