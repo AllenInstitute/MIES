@@ -5,6 +5,7 @@
 
 static Constant ZERO_TOLERANCE = 100 // pA
 
+/// @brief Stringified version of the clamp mode
 Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
 
@@ -15,7 +16,7 @@ Function/S AI_ConvertAmplifierModeToString(mode)
 		case I_CLAMP_MODE:
 			return "I_CLAMP_MODE"
 			break
-		case V_CLAMP_MODE:
+		case I_EQUAL_ZERO_MODE:
 			return "I_EQUAL_ZERO_MODE"
 			break
 		default:
