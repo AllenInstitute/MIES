@@ -5516,8 +5516,9 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	variable enabled
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	variable clampMode, headStage, TPState
+	variable clampMode, headStage, TPState, ICstate, VCstate, IZeroState
 	variable channelType, controlType
+	string VCctrl, ICctrl, IZeroCtrl
 
 	DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType)
 	ASSERT(channelType == CHANNEL_TYPE_HEADSTAGE && controlType == CHANNEL_CONTROL_CHECK, "Expected headstage checkbox control")
@@ -5535,7 +5536,20 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
 	DAP_UpdateSweepSetVariables(panelTitle)
-	TP_RestartTestPulse(panelTitle, TPState)
+
+	VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headstage)
+	ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headstage)
+	IZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, headstage)
+
+	VCstate    = GetCheckBoxState(panelTitle, VCctrl)
+	ICstate    = GetCheckBoxState(panelTitle, ICctrl)
+	IZeroState = GetCheckBoxState(panelTitle, IZeroCtrl)
+
+	if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
+		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
+	else
+		TP_RestartTestPulse(panelTitle, TPState)
+	endif
 End
 
 /// @brief Stop the testpulse and data acquisition
