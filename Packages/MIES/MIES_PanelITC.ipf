@@ -4059,7 +4059,6 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	string panelTitle
 
 	variable numHS, i
-	string ctrl
 
 	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
 	if(NVAR_Exists(count))
@@ -4083,8 +4082,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 			continue
 		endif
 
-		sprintf ctrl, "Check_DataAcq_HS_%02d", i
-		EnableControl(panelTitle, ctrl)
+		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
 		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
 	endfor
@@ -4103,12 +4101,10 @@ End
 Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
-	string ctrl
 	variable i
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		sprintf ctrl, "Check_DataAcq_HS_%02d", i
-		EnableControl(panelTitle, ctrl)
+		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
 	endfor
@@ -4335,7 +4331,7 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		sprintf ctrl, "Check_DataAcq_HS_%02d", i
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
 		ASSERT(i == ctrlNo, "invalid index")
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
@@ -4953,7 +4949,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-			sprintf ctrl, "Check_DataAcq_HS_%02d", i
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, i)
 
 			if(clampMode == V_CLAMP_MODE)
@@ -5037,7 +5033,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	sprintf ctrl, "Check_DataAcq_HS_%02d", headStage
+	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 	DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
 
 	if(clampMode == V_CLAMP_MODE)
@@ -5211,7 +5207,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	string panelTitle
 	variable headStage, clampMode
 
-	string ctrlSuffix, ADUnit, DAUnit
+	string ctrl, ADUnit, DAUnit
 	variable DAGain, ADGain
 	variable DACchannel, ADCchannel
 
@@ -5240,17 +5236,21 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	endif
 
 	// DAC channels
-	sprintf ctrlSuffix "_DA_%02d", DACchannel
-	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
-	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, DaGain)
-	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, DaUnit)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+	SetCheckBoxState(panelTitle, 	ctrl, CHECKBOX_SELECTED)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	SetSetVariable(panelTitle, ctrl, DaGain)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	SetSetVariableString(panelTitle, ctrl, DaUnit)
 	ChannelClampMode[DACchannel][%DAC] = clampMode
 
 	// ADC channels
-	sprintf ctrlSuffix "_AD_%02d", ADCchannel
-	SetCheckBoxState(panelTitle, "Check" + ctrlSuffix, CHECKBOX_SELECTED)
-	SetSetVariable(panelTitle, "Gain" + ctrlSuffix, ADGain)
-	SetSetVariableString(panelTitle, "Unit" + ctrlSuffix, ADUnit)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_SELECTED)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	SetSetVariable(panelTitle, ctrl, ADGain)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	SetSetVariableString(panelTitle, ctrl, ADUnit)
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 
@@ -5276,11 +5276,11 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 		return NaN
 	endif
 
-	sprintf ctrl, "Check_DA_%02d", DACchannel
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[DACchannel][%DAC] = nan
 
-	sprintf ctrl, "Check_AD_%02d", ADCchannel
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[ADCchannel][%ADC] = nan
 End
@@ -5337,7 +5337,7 @@ End
 Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string panelTitle
+	string panelTitle, ctrl
 	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo, activeHS
 	variable testPulseMode
 
@@ -5348,7 +5348,8 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
 			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
 			GuiState[headStage][%HSmode] = mode
-			activeHS = GetCheckBoxState(panelTitle, "Check_DataAcq_HS_0" + num2str(headStage))
+			ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+			activeHS = GetCheckBoxState(panelTitle, ctrl)
 			if(activeHS)
 				testPulseMode = TP_StopTestPulse(panelTitle)
 			endif
