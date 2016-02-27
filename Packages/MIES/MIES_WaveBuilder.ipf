@@ -16,6 +16,10 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 
 	variable type, needToCreateStimSet
 
+	if(isEmpty(setName))
+		return $""
+	endif
+
 	type = GetStimSetType(setName)
 	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
