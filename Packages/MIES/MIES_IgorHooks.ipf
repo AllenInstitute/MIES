@@ -81,11 +81,17 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	IH_KillTemporaries()
 End
 
-static Function IgorBeforeQuitHook(igorApplicationNameStr)
-	string igorApplicationNameStr
+static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
+	variable unsavedExp, unsavedNotebooks, unsavedProcedures
 
 	IH_UnlockAllDevicesWrapper()
 	IH_KillTemporaries()
+
+	// save the experiment silently if it was saved before
+	if(unsavedExp == 0)
+		SaveExperiment
+	endif
+
 	return 0
 End
 
