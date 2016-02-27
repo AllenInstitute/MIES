@@ -213,7 +213,7 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 	endif
 
 	if(!IsFinite(MCC_SetMode(mode)))
-		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is longer present\r", mode
+		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
 	endif
 End
 
