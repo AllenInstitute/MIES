@@ -167,7 +167,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	string panelTitle
 	variable headStage, verbose
 
-	variable channel, errorCode, axonSerial
+	variable channel, errorCode, axonSerial, debugOnError
 	string mccSerial
 
 	if(ParamIsDefault(verbose))
@@ -188,6 +188,8 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 		return 1
 	endif
 
+	debugOnError = DisableDebugOnError()
+
 	try
 		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
 	catch
@@ -195,9 +197,11 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 		if(verbose)
 			printf "The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", mccSerial, headStage
 		endif
+		ResetDebugOnError(debugOnError)
 		return 2
 	endtry
 
+	ResetDebugOnError(debugOnError)
 	return 0
 end
 
