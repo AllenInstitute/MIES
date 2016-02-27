@@ -451,10 +451,10 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		// switch to IC
 		// turn off the VC mode first
-		PGC_SetAndActivateControl(currentPanel, "Radio_ClampMode_0", val=CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(currentPanel, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val=CHECKBOX_UNSELECTED)
 		
 		// and now turn on the IC
-		PGC_SetAndActivateControl(currentPanel, "Radio_ClampMode_1", val=CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(currentPanel, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
 		
 		// and now disable the holding current
 		PGC_SetAndActivateControl(currentPanel, "check_DatAcq_HoldEnable", val=CHECKBOX_UNSELECTED)

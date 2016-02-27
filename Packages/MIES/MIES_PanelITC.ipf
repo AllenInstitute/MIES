@@ -4087,8 +4087,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		endif
 
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
-		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
-		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
+		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
+		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 	endfor
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
@@ -4109,8 +4109,8 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
-		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
-		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
+		EnableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
+		EnableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 	endfor
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
@@ -5283,6 +5283,25 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[ADCchannel][%ADC] = nan
+End
+
+/// @brief Return the name of the checkbox control handling the clamp mode of the given headstage
+Function/S DAP_GetClampModeControl(mode, headstage)
+	variable mode, headstage
+
+	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
+
+	switch(mode)
+		case V_CLAMP_MODE:
+			return "Radio_ClampMode_" + num2str(headStage * 2)
+		case I_CLAMP_MODE:
+			return "Radio_ClampMode_" + num2str(headStage * 2 + 1)
+		case I_EQUAL_ZERO_MODE:
+			ASSERT(0, "not implemented")
+		default:
+			ASSERT(0, "invalid mode")
+			break
+	endswitch
 End
 
 /// @brief Return information readout from various gui controls
