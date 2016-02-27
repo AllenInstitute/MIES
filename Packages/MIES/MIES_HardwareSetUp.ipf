@@ -471,7 +471,7 @@ Function HSU_AutoFillGain(panelTitle)
 		SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
 	elseif(Mode == I_EQUAL_ZERO_MODE)
 		if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
-			MCC_SetMode(V_CLAMP_MODE)
+			MCC_SetMode(I_CLAMP_MODE)
 			ResetToModeTwo = 1
 			SetVariable setvar_Settings_IC_DAgain Win = $panelTitle, Value=_NUM:AI_RetrieveDAGain(panelTitle, axonSerial, channel)
 			SetVariable setvar_Settings_IC_ADgain Win = $panelTitle, Value=_NUM:AI_RetrieveADGain(panelTitle, axonSerial, channel)
