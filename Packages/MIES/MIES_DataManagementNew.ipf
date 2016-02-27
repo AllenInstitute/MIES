@@ -70,20 +70,21 @@ Function DM_SaveAndScaleITCData(panelTitle)
 End
 
 /// @brief Call the analysis function associated with the stimset from the wavebuilder
+///
+/// @return 1 to signal the caller that the analysis function requests an immediate abort, 0 to continue
 Function DM_CallAnalysisFunctions(panelTitle, eventType)
 	string panelTitle
 	variable eventType
 
-	variable error, i, valid_f1, valid_f2
+	variable error, i, valid_f1, valid_f2, ret
 	string func, setName
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
-		return NaN
+		return 0
 	endif
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -92,38 +93,28 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
+		GetAnalysisFuncFromHeadstage(panelTitle, i, eventType, func, setName)
+
+		if(isEmpty(func) || isEmpty(setName))
+			continue
+		endif
+
 		switch(eventType)
 			case PRE_DAQ_EVENT:
-				func = sweepDataTxTLNB[0][5][i]
-				break
 			case MID_SWEEP_EVENT:
-				func = sweepDataTxTLNB[0][6][i]
-				break
 			case POST_SWEEP_EVENT:
-				func = sweepDataTxTLNB[0][7][i]
+			case POST_DAQ_EVENT:
+				// nothing to do
 				break
 			case POST_SET_EVENT:
-				func = sweepDataTxTLNB[0][8][i]
-				// we have to check if we acquired a full set for the headstage
-				setName = sweepDataTxTLNB[0][0][i]
-
 				if(mod(count + 1, IDX_NumberOfTrialsInSet(panelTitle, setName)) != 0)
 					continue
 				endif
-				break
-			case POST_DAQ_EVENT:
-				func = sweepDataTxTLNB[0][9][i]
 				break
 			default:
 				ASSERT(0, "Invalid eventType")
 				break
 		endswitch
-
-		DEBUGPRINT("function", str=func)
-
-		if(isEmpty(func))
-			continue
-		endif
 
 		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
 		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
@@ -138,11 +129,12 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 		SetWaveLock 1, ITCDataWave
 
+		ret = NaN
 		try
 			if(valid_f1)
-				f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
+				ret = f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
 			elseif(valid_f2)
-				f2(panelTitle, eventType, ITCDataWave, i, stopCollectionPoint - 1); AbortOnRTE
+				ret = f2(panelTitle, eventType, ITCDataWave, i, stopCollectionPoint - 1); AbortOnRTE
 			else
 				ASSERT(0, "impossible case")
 			endif
@@ -152,7 +144,13 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 		endtry
 
 		SetWaveLock 0, ITCDataWave
+
+		if(eventType == PRE_DAQ_EVENT && ret == 1)
+			return  1
+		endif
 	endfor
+
+	return 0
 End
 
 /// @brief General hook function which gets always executed after sweep data saving
@@ -318,4 +316,60 @@ static Function DM_GetRawDataFPType(panelTitle)
 	string panelTitle
 
 	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
+End
+
+/// @brief Get the analysis function and the stimset from the headstage
+///
+/// We are called earlier than DAP_CheckSettings() so we can not rely on anything setup in a sane way.
+///
+/// @param[in]  panelTitle Device
+/// @param[in]  headStage  Headstage
+/// @param[in]  eventType  One of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
+/// @param[out] func       Analysis function name
+/// @param[out] setName    Name of the Stim set
+static Function GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, func, setName)
+	string panelTitle
+	variable headStage, eventType
+	string &func, &setName
+
+	string ctrl, dacWave, setNameFromCtrl
+	variable clampMode, DACchannel
+
+	func    = ""
+	setName = ""
+
+	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		return NaN
+	endif
+
+	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+	if(clampMode == V_CLAMP_MODE)
+		DACchannel = chanAmpAssign[0][headStage]
+	elseif(clampMode == I_CLAMP_MODE)
+		DACchannel = chanAmpAssign[4][headStage]
+	else
+		return NaN
+	endif
+
+	if(!IsFinite(DACchannel))
+		return NaN
+	endif
+
+	ctrl = GetPanelControl(panelTitle, DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	setNameFromCtrl = GetPopupMenuString(panelTitle, ctrl)
+
+	if(!cmpstr(setNameFromCtrl, NONE) || IsTestPulseSet(setNameFromCtrl))
+		return NaN
+	endif
+
+	WAVE/Z stimSet = WB_CreateAndGetStimSet(setNameFromCtrl)
+
+	if(!WaveExists(stimSet))
+		return NaN
+	endif
+
+	func    = ExtractAnalysisFuncFromStimSet(stimSet, eventType)
+	setName = setNameFromCtrl
 End

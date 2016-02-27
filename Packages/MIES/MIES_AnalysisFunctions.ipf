@@ -10,13 +10,15 @@
 ///
 /// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
 ///
-/// Event      | Description                          | Specialities
-/// -----------|--------------------------------------|---------------------------------------------------------------------------------
-/// Pre DAQ    | Immediately before any DAQ occurs    | None
-/// Mid Sweep  | Each time when new data is polled    | Available for background DAQ only
-/// Post Sweep | After each sweep                     | None
-/// Post Set   | After a *full* set has been acquired | This event is not always reached as the user might not acquire all steps of a set
-/// Post DAQ   | After all DAQ has been finished      | None
+/// @anchor AnalysisFunctionEventDescriptionTable
+///
+/// Event      | Description                          | Analysis function return value            | Specialities
+/// -----------|--------------------------------------|-------------------------------------------|---------------------------------------------------------------
+/// Pre DAQ    | Before any DAQ occurs                | Return 1 to *not* start data acquisition  | Called before the settings are validated
+/// Mid Sweep  | Each time when new data is polled    | Ignored                                   | Available for background DAQ only
+/// Post Sweep | After each sweep                     | Ignored                                   | None
+/// Post Set   | After a *full* set has been acquired | Ignored                                   | This event is not always reached as the user might not acquire all steps of a set
+/// Post DAQ   | After all DAQ has been finished      | Ignored                                   | None
 
 /// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V2() instead
 ///
@@ -42,12 +44,15 @@ End
 /// @param realDataLength number of rows in `ITCDataWave` with data, the total number of rows in `ITCDataWave` might be
 ///                       higher due to alignment requirements of the data acquisition hardware
 ///
-/// @return ignored
+/// @return see @ref AnalysisFunctionEventDescriptionTable
 Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave ITCDataWave
 	variable headstage, realDataLength
+
+	// return value currently only honoured for `Pre DAQ` event
+	return 0
 End
 
 Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)

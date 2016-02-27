@@ -4807,6 +4807,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
+	if(mode == DATA_ACQUISITION_MODE && DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
+		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
+		return 1
+	endif
+
 	if(GetFreeMemory() < FREE_MEMORY_LOWER_LIMIT)
 		DFREF dfr = GetMiesPath()
 		NVAR/Z/SDFR=dfr skip_free_memory_warning
