@@ -37,3 +37,6 @@ MIES is designed to be scalable: MIES can control up to 10 (only 4 have been
 tested) HEKA/Instrutech DACs independently or synchronously(ITC1600).
 
 MIES has two primary modes: The Test Pulse (TP) and Data Acquisition.
+
+Data acquisition modes are visualized in the following image:
+@image html acquisition-repeated-indexing-explained.svg
