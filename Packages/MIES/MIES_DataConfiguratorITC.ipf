@@ -206,7 +206,7 @@ Function/Wave DC_ControlStatusWave(panelTitle, type)
 	Make/FREE/U/B/N=(numEntries) wv
 
 	for(i = 0; i < numEntries; i += 1)
-		ctrl = GetPanelControl(panelTitle, i, type, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(i, type, CHANNEL_CONTROL_CHECK)
 		wv[i] = GetCheckboxState(panelTitle, ctrl)
 	endfor
 
@@ -334,7 +334,7 @@ static Function/s DC_PopMenuStringList(panelTitle, channelType)
 
 	numEntries = GetNumberFromType(var=channelType)
 	for(i = 0; i < numEntries; i += 1)
-		ctrl = GetPanelControl(panelTitle, i, channelType, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 		ControlInfo/W=$panelTitle $ctrl
 		ControlWaveList = AddlistItem(s_value, ControlWaveList, ";", i)
 	endfor
@@ -583,7 +583,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_DAC
 		ITCChanConfigWave[j][1] = i
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
 		j += 1
 	endfor
@@ -600,7 +600,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_ADC
 		ITCChanConfigWave[j][1] = i
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
 		j += 1
 	endfor
@@ -763,7 +763,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ASSERT(0, "Unknown clamp mode")
 		endif
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		DAScale = GetSetVariable(panelTitle, ctrl)
 
 		// DAScale tuning for special cases
@@ -780,7 +780,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, i, var=i)
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
 		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
 
@@ -794,7 +794,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			DC_DocumentChannelProperty(panelTitle, colLabel, headstage, i, str=func)
 		endfor
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
 		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale)
@@ -845,10 +845,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, i, var=i)
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=GetSetVariable(panelTitle, ctrl))
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
 		itcDataColumn += 1

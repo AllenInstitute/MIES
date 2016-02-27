@@ -93,8 +93,7 @@ End
 /// @brief Returns the name of a control from the DA_EPHYS panel
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S GetPanelControl(panelTitle, idx, channelType, controlType)
-	string panelTitle
+Function/S GetPanelControl(idx, channelType, controlType)
 	variable idx, channelType, controlType
 
 	string ctrl
@@ -2080,7 +2079,7 @@ Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
 	make/FREE/n=(CtrlNum) Wv
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		ctrl = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetSetVariable(panelTitle, ctrl)
 	endfor
 	return wv
@@ -2096,7 +2095,7 @@ Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	make/FREE/n=(CtrlNum) Wv
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(panelTitle, i, channelType, controlType)
+		ctrl = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
 	endfor
 	return wv

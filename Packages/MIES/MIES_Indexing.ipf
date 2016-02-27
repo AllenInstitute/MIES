@@ -41,19 +41,19 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		ControlInfo/W=$panelTitle $ctrl
 		DACIndexingStorageWave[0][i] = V_Value
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		ControlInfo/W=$panelTitle $ctrl
 		DACIndexingStorageWave[1][i] = V_Value + 1 // added " +1 " because indexing end no longer has test pulse listed
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		ControlInfo/W=$panelTitle $ctrl
 		TTLIndexingStorageWave[0][i] = V_Value
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 		ControlInfo/W=$panelTitle $ctrl
 		TTLIndexingStorageWave[1][i] = V_Value
 	endfor 
@@ -70,16 +70,16 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[0][i] - 1)
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[1][i] - 2)
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[0][i] - 1)
 
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[1][i] - 1)
 	endfor
 End
@@ -94,7 +94,7 @@ Function IDX_IndexingDoIt(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
 			ControlInfo/W=$panelTitle $ctrl
@@ -116,7 +116,7 @@ Function IDX_IndexingDoIt(panelTitle)
 	endfor
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
 			ControlInfo /w = $panelTitle $ctrl
 			if(v_value < TTLIndexingStorageWave[1][i])
@@ -149,7 +149,7 @@ Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string ctrl
 
-	ctrl = GetPanelControl(panelTitle, i, channelType, CHANNEL_CONTROL_WAVE)
+	ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 	ControlInfo/W=$panelTitle $ctrl
 	popIdx = V_Value
 	if(channelType == CHANNEL_TYPE_DAC)
@@ -447,8 +447,8 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 		ASSERT(0, "Invalid channelType")
 	endif
 	
-	waveCtrl = GetPanelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_WAVE)
-	lastCtrl = GetPanelControl(panelTitle, channel, channelType, CHANNEL_CONTROL_INDEX_END)
+	waveCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
+	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
 	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
 
 	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset

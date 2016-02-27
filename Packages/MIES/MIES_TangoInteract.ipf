@@ -283,7 +283,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// push the waveSet to the ephys panel
 		// first, build up the control name by using the headstage value		
-		waveSelect = GetPanelControl(currentPanel, headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
@@ -394,7 +394,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		// push the waveSet to the ephys panel
 		// first, build up the control name by using the headstage value		
-		waveSelect = GetPanelControl(currentPanel, headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
 		// and build up the analysis master connections
 		sprintf psaMenu, "PSA_headStage%d", headstage
@@ -660,7 +660,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		
 		// push the waveSet to the ephys panel
 		// first, build up the control name by using the headstage value		
-		waveSelect = GetPanelControl(currentPanel, headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 

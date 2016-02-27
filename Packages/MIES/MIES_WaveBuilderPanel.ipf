@@ -1858,13 +1858,13 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 		panelTitle = StringFromList(i, listOfPanels)
 
 		for(j = 0; j < NUM_DA_TTL_CHANNELS; j += 1)
-			ctrlWave     = GetPanelControl(panelTitle, j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(panelTitle, j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
 
-			ctrlWave     = GetPanelControl(panelTitle, j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(panelTitle, j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
 		endfor

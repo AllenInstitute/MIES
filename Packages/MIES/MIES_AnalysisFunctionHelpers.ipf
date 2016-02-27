@@ -199,7 +199,7 @@ Function/S AFH_GetStimSetName(panelTitle, chanNo, channelType)
 	variable channelType
 
 	string ctrl, stimset
-	ctrl = GetPanelControl(panelTitle, chanNo, channelType, CHANNEL_CONTROL_WAVE)
+	ctrl = GetPanelControl(chanNo, channelType, CHANNEL_CONTROL_WAVE)
 	ControlInfo/W=$panelTitle $ctrl
 	stimset = S_Value
 
