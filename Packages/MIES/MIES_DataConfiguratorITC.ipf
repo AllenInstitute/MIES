@@ -727,7 +727,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ASSERT(0, "unknown mode")
 		endif
 
-		setLength = round(DimSize(stimSet, ROWS) / decimationFactor) - 1
+		setLength = round(DimSize(stimSet, ROWS) / decimationFactor)
 
 		if(distributedDAQ)
 			if(itcDataColumn == 0)
@@ -806,7 +806,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
 			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][itcDataColumn] = 0
 		else
-			Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+			Multithread ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
 		endif
 
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
@@ -863,16 +863,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
 			WAVE/SDFR=deviceDFR TTLwave
-			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 			itcDataColumn += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(RACK_ONE, panelTitle)
 			WAVE/SDFR=deviceDFR TTLwave
-			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		endif
 	endif
 End
