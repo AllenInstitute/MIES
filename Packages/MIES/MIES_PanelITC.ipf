@@ -4735,6 +4735,16 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	variable i, numEntries
 	string leaderSampInt
 
+	if(!WindowExists("ArduinoSeq_Panel"))
+		printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
+		return 1
+	endif
+
+	if(IsControlDisabled("ArduinoSeq_Panel", "ArduinoStartButton"))
+		printf "(%s) The Arduino sequencer panel has a disabled \"Start\" button. Is it connected? Have you loaded the default sequence?\r", ITC1600_FIRST_DEVICE
+		return 1
+	endif
+
 	if(mode == TEST_PULSE_MODE)
 		return 0
 	endif
@@ -4837,14 +4847,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	list = panelTitle
 
-	if(DAP_DeviceCanLead(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices))
-			if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
-				return 1
-			endif
-			list = AddListItem(list, listOfFollowerDevices, ";", inf)
+	if(DAP_DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
+			return 1
 		endif
+		list = AddListItem(list, listOfFollowerDevices, ";", inf)
 	endif
 	DEBUGPRINT("Checking the panelTitle list: ", str=list)
 
