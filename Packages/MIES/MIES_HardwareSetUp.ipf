@@ -481,7 +481,7 @@ Function HSU_AutoFillGain(panelTitle)
 	endif
 	
 	if(MCC_GetHoldingEnable() == 0) // checks to see if a holding current or bias current is being applied, if yes, the mode switch required to pull in the gains for all modes is prevented.
-		AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
+		AI_SwitchAxonAmpMode(panelTitle, headStageNo)
 	
 		Mode = MCC_GetMode()
 		 
@@ -494,7 +494,7 @@ Function HSU_AutoFillGain(panelTitle)
 		endif
 		
 		if(ResetToModeTwo == 0)
-			AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
+			AI_SwitchAxonAmpMode(panelTitle, headStageNo)
 		elseif(ResetToModeTwo == 1)
 			MCC_SetMode(I_EQUAL_ZERO_MODE)
 		endif

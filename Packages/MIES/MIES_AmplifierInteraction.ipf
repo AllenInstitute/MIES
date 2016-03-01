@@ -64,13 +64,17 @@ Function AI_RetrieveDAGain(panelTitle, axonSerial, channel)
 End
 
 /// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
-Function AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
+Function AI_SwitchAxonAmpMode(panelTitle, headStage)
 	string panelTitle
-	string mccSerial
-	variable channel
+	variable headStage
 
-	MCC_SelectMultiClamp700B(mccSerial, channel)
-	variable mode = MCC_GetMode()
+	variable mode
+
+	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=1))
+		return NAN
+	endif
+
+	mode = MCC_GetMode()
 
 	if(mode == V_CLAMP_MODE)
 		MCC_SetMode(I_CLAMP_MODE)
