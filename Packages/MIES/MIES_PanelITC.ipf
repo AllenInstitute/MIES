@@ -4837,14 +4837,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	list = panelTitle
 
-	if(DAP_DeviceCanLead(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices))
-			if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
-				return 1
-			endif
-			list = AddListItem(list, listOfFollowerDevices, ";", inf)
+	if(DAP_DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
+			return 1
 		endif
+		list = AddListItem(list, listOfFollowerDevices, ";", inf)
 	endif
 	DEBUGPRINT("Checking the panelTitle list: ", str=list)
 
