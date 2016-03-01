@@ -301,7 +301,7 @@ Function ARDLaunchSeqPanel()
 	SetDataFolder ImageHardware
 	SetDataFolder Arduino
 	DoWindow/K ArduinoSeq_Panel
-	NewPanel /W=(Left, Top, Right, Bottom) as "Arduino Sequencer"
+	NewPanel /W=(Left, Top, Right, Bottom)/K=1 as "Arduino Sequencer"
 	DoWindow/C ArduinoSeq_Panel
 	
 	SetDrawLayer UserBack
