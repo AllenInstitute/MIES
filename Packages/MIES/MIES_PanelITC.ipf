@@ -5778,7 +5778,7 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 			// Is the amp still connected?
 			FindValue/I=(axonSerial)/T=0 W_TelegraphServers
 			if(V_Value != -1)
-				HSU_AutoFillGain(panelTitle)
+				AI_AutoFillGain(panelTitle)
 				HSU_UpdateChanAmpAssignStorWv(panelTitle)
 			endif
 			break
