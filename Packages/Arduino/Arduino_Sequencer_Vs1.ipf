@@ -517,6 +517,9 @@ Function ARDWhichComPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	//	Button SendSequenceButton, disable = 2
 	endif
 	ARDToggleButtons(ShowHide)	// this should be zero for active, 1 for hidden and 2 for disabled
+	if(ShowHide)
+		Button ArduinoStartButton, win=ArduinoSeq_Panel, disable=2
+	endif
 End
 
 Function ARDToggleButtons(ShowHide)	// this should be zero for active, 1 for disabled
