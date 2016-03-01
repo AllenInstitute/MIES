@@ -186,3 +186,24 @@ Function/WAVE AFH_GetLastSweepWaveAcquired(panelTitle)
 
 	return GetSweepWave(panelTitle, AFH_GetLastSweepAcquired(panelTitle))
 End
+
+/// @brief Return the stimset for the given DA channel
+///
+/// @param panelTitle device
+/// @param chanNo	channel number (0-based)
+/// @param channelType		one of the type constants from @ref ChannelTypeAndControlConstants
+/// @return an existing stimulus set name for a DA channel
+Function/S AFH_GetStimSetName(panelTitle, chanNo, channelType)
+	string panelTitle
+	variable chanNo
+	variable channelType
+
+	string ctrl, stimset
+	ctrl = GetPanelControl(panelTitle, chanNo, channelType, CHANNEL_CONTROL_WAVE)
+	ControlInfo/W=$panelTitle $ctrl
+	stimset = S_Value
+
+	ASSERT(!isEmpty(stimset), "Empty stimset")
+
+	return stimset
+End

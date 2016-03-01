@@ -73,3 +73,46 @@ Function TestAnalysisFunction_V2(panelTitle, eventType, ITCDataWave, headStage, 
 
 	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
 End
+
+Function Enforce_VC(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	if(eventType != PRE_DAQ_EVENT)
+	   return 0
+	endif
+
+	Wave GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	if(GuiState[headStage][%HSmode] != V_CLAMP_MODE)
+		variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+
+		string stimSetName = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
+		printf "%s on DAC %d of headstage %d requires voltage clamp mode. Change clamp mode to voltage clamp to allow data acquistion\r" stimSetName, DAC, headStage
+		return 1
+	endif
+
+	return 0
+End
+
+Function Enforce_IC(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	if(eventType != PRE_DAQ_EVENT)
+	   return 0
+	endif
+
+	Wave GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	if(GuiState[headStage][%HSmode] != I_CLAMP_MODE)
+		variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+		string stimSetName = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
+		printf "Stimulus set: %s on DAC: %d of headstage: %d requires current clamp mode. Change clamp mode to current clamp to allow data acquistion\r" stimSetName, DAC, headStage
+		return 1
+	endif
+
+	return 0
+End
