@@ -129,7 +129,7 @@ Function ARDInitialiseSeqGlobals()		// Launches the globals required
 	String/G gProtocolListStr = ""
 
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
-	NewPath/O ArdSeqPath, ArdSeqPathStr
+	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 	gProtocolListStr = IndexedFile(ArdSeqPath,-1,".ibw")
 	
 	Make /O/N=1 wp2,wp3,wp4,wp5,wp6,wp7,wp8,wp9,wp10,wp11,wp12,wp13
@@ -213,7 +213,7 @@ Function ARDSaveSeqWave(FileNameStr)
 	String cdf = getdatafolder(1)
 
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
-	NewPath/O ArdSeqPath, ArdSeqPathStr
+	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 
 	SetDataFolder root:ImageHardware:Arduino 
 	Wave wSeqDefaults =wSeqDefaults
@@ -225,7 +225,7 @@ Function ARDSaveCurrentSeqWave()
 	Wave wSeqDefaults = root:ImageHardware:Arduino:wSeqDefaults
 
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
-	NewPath/O ArdSeqPath, ArdSeqPathStr
+	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 
 	Variable tmpVar
 	String FilterStr = "Igor Binary Files (*.ibw):.ibw;"
@@ -257,7 +257,7 @@ Function ARDLoadSeqWave()
 	SetDataFolder Arduino
 
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
-	NewPath/O ArdSeqPath, ArdSeqPathStr
+	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 
 	Loadwave/H/O
 	SetDataFolder $cdf
@@ -849,7 +849,7 @@ Function ARDLoadNamedProtocol(FileNameStr)
 	SetDataFolder Arduino
 
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
-	NewPath/O ArdSeqPath, ArdSeqPathStr
+	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 
 	Loadwave/H/O/P=ArdSeqPath FileNameStr
 	
