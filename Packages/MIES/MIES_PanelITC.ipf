@@ -5791,18 +5791,18 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	string panelTitle
 	variable mode, headStage
 
-	switch(sc.eventCode)
-		case 0x1: // value set
-			panelTitle = sc.win
-			headStage  = sc.curVal
-			mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-			AI_SyncAmpStorageToGUI(panelTitle, headStage)
-			P_LoadPressureButtonState(panelTitle, headStage)
-			P_SaveUserSelectedHeadstage(panelTitle, headStage)
-			// chooses the amp tab according to the MIES headstage clamp mode
-			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
-		break
-	endswitch
+	// eventCode is a bitmask as opposed to a plain value
+	// compared to other controls
+	if(sc.eventCode > 0 && sc.eventCode & 0x1)
+		panelTitle = sc.win
+		headStage  = sc.curVal
+		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
+		AI_SyncAmpStorageToGUI(panelTitle, headStage)
+		P_LoadPressureButtonState(panelTitle, headStage)
+		P_SaveUserSelectedHeadstage(panelTitle, headStage)
+		// chooses the amp tab according to the MIES headstage clamp mode
+		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+	endif
 
 	return 0
 End
