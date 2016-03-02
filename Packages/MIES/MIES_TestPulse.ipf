@@ -44,7 +44,7 @@ Function TP_GetTestPulseLengthInPoints(panelTitle, sampIntType)
 
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
-	return TP_CalculateTestPulseLength(duration, baselineFrac) / scale
+	return trunc(TP_CalculateTestPulseLength(duration, baselineFrac) / scale)
 End
 
 /// @brief Start a single device test pulse, either in background

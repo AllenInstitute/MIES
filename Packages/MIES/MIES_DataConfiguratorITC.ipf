@@ -121,14 +121,13 @@ static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
 	WAVE TestPulse
 
 	variable length
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
 
-	// this length here is with minimum sampling interval, it will
-	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
-	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
+	length = TP_GetTestPulseLengthInPoints(panelTitle, MIN_SAMPLING_INTERVAL_TYPE)
+
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
+
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
