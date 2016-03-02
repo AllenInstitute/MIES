@@ -121,14 +121,13 @@ static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
 	WAVE TestPulse
 
 	variable length
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-	NVAR/SDFR=testPulseDFR baselineFrac, pulseDuration
 
-	// this length here is with minimum sampling interval, it will
-	// later be downsampled to match the return value of TP_GetTestPulseLengthInPoints
-	length = ceil(TP_CalculateTestPulseLength(pulseDuration , baselineFrac) / MINIMUM_SAMPLING_INTERVAL)
+	length = TP_GetTestPulseLengthInPoints(panelTitle, MIN_SAMPLING_INTERVAL_TYPE)
+
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
+
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
@@ -471,7 +470,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		numRows = TP_GetTestPulseLengthInPoints(panelTitle)
+		numRows = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		numRows = DimSize(ITCDataWave, ROWS)
 	else
@@ -688,7 +687,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
-	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
 	onsetDelay            = onsetDelayUser + onsetDelayAuto
@@ -727,7 +726,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ASSERT(0, "unknown mode")
 		endif
 
-		setLength = round(DimSize(stimSet, ROWS) / decimationFactor) - 1
+		setLength = round(DimSize(stimSet, ROWS) / decimationFactor)
 
 		if(distributedDAQ)
 			if(itcDataColumn == 0)
@@ -806,7 +805,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
 			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][itcDataColumn] = 0
 		else
-			Multithread ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+			Multithread ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
 		endif
 
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
@@ -863,16 +862,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
 			WAVE/SDFR=deviceDFR TTLwave
-			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 			itcDataColumn += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(RACK_ONE, panelTitle)
 			WAVE/SDFR=deviceDFR TTLwave
-			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor) - 1
-			ITCDataWave[insertStart, insertStart + setLength][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		endif
 	endif
 End

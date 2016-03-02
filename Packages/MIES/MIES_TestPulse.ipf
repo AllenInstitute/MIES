@@ -14,16 +14,37 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	return pulseDuration / (1 - 2 * baselineFrac)
 End
 
-/// @brief Return the total length in points of a single testpulse with baseline, equal to one chunk for the MD case, in points
+/// @brief Return the total length in points of a single testpulse with baseline, equal to one
+///        chunk for the MD case, in points for the given sampling interval type
 ///
-/// The used sampling interval is the real sampling interval without multiplier.
-Function TP_GetTestPulseLengthInPoints(panelTitle)
+/// The used sampling interval is the real sampling interval without multiplier, because
+/// the testpulse is *never* subject to the sampling interval multiplier.
+///
+/// @param panelTitle  device
+/// @param sampIntType One of @ref SamplingIntervalQueryFlags
+Function TP_GetTestPulseLengthInPoints(panelTitle, sampIntType)
 	string panelTitle
+	variable sampIntType
 
-	NVAR duration     = $GetTestpulseDuration(panelTitle)
+	variable scale
+
+	switch(sampIntType)
+		case MIN_SAMPLING_INTERVAL_TYPE:
+			NVAR/SDFR=GetDeviceTestPulse(panelTitle) duration = pulseDuration
+			scale = MINIMUM_SAMPLING_INTERVAL
+			break
+		case REAL_SAMPLING_INTERVAL_TYPE:
+			NVAR duration = $GetTestpulseDuration(panelTitle)
+			scale = 1
+			break
+		default:
+			ASSERT(0, "Invalid type of sampIntType")
+			break
+	endswitch
+
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
-	return TP_CalculateTestPulseLength(duration, baselineFrac)
+	return trunc(TP_CalculateTestPulseLength(duration, baselineFrac) / scale)
 End
 
 /// @brief Start a single device test pulse, either in background

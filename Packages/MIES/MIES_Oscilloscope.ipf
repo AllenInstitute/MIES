@@ -304,7 +304,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
+		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) * sampInt
 		NVAR duration = $GetTestpulseDuration(panelTitle)
 		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)

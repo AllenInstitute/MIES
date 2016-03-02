@@ -133,7 +133,7 @@ Function ITC_BkrdTPFuncMD(s)
 		endif
 
 		// don't extract the last chunk for plotting
-		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1)
+		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)) - 1)
 
 		// Ensures that the new TP chunk isn't the same as the last one.
 		// This is required to keep the TP buffer in sync.

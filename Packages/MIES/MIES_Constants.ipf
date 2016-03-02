@@ -380,3 +380,10 @@ Constant ESCAPE_KEY = 32
 #endif
 
 StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
+
+/// @name Flags for functions returning the length of a sampling wave in points
+/// @anchor SamplingIntervalQueryFlags
+/// @{
+Constant MIN_SAMPLING_INTERVAL_TYPE  = 0x1
+Constant REAL_SAMPLING_INTERVAL_TYPE = 0x2
+/// @}
