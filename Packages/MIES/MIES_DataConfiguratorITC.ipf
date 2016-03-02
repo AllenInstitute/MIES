@@ -471,7 +471,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		numRows = TP_GetTestPulseLengthInPoints(panelTitle)
+		numRows = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		numRows = DimSize(ITCDataWave, ROWS)
 	else
@@ -688,7 +688,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
-	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
 	onsetDelay            = onsetDelayUser + onsetDelayAuto
