@@ -40,79 +40,79 @@ Window DA_Ephys() : Panel
 	TabControl ADC,tabLabel(1)="DA",tabLabel(2)="AD",tabLabel(3)="TTL"
 	TabControl ADC,tabLabel(4)="Asynchronous",tabLabel(5)="Settings"
 	TabControl ADC,tabLabel(6)="Hardware",value= 6
-	CheckBox Check_AD_00,pos={20.00,75.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox Check_AD_00,pos={20.00,75.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="0"
 	CheckBox Check_AD_00,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo)= A"!!,BY!!#?O!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_00,value= 0,side= 1
-	CheckBox Check_AD_01,pos={20.00,121.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox Check_AD_01,pos={20.00,121.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="1"
 	CheckBox Check_AD_01,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo)= A"!!,BY!!#@V!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_01,value= 0,side= 1
-	CheckBox Check_AD_02,pos={20.00,167.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox Check_AD_02,pos={20.00,167.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="2"
 	CheckBox Check_AD_02,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo)= A"!!,BY!!#A6!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_02,value= 0,side= 1
-	CheckBox Check_AD_03,pos={20.00,214.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox Check_AD_03,pos={20.00,214.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="3"
 	CheckBox Check_AD_03,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_03,userdata(ResizeControlsInfo)= A"!!,BY!!#Ae!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_03,value= 0,side= 1
-	CheckBox Check_AD_04,pos={20.00,260.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox Check_AD_04,pos={20.00,260.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="4"
 	CheckBox Check_AD_04,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_04,userdata(ResizeControlsInfo)= A"!!,BY!!#B<!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_04,value= 0,side= 1
-	CheckBox Check_AD_05,pos={20.00,307.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox Check_AD_05,pos={20.00,307.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="5"
 	CheckBox Check_AD_05,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_05,userdata(ResizeControlsInfo)= A"!!,BY!!#BSJ,hm6!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_05,value= 0,side= 1
-	CheckBox Check_AD_06,pos={20.00,353.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox Check_AD_06,pos={20.00,353.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="6"
 	CheckBox Check_AD_06,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_06,userdata(ResizeControlsInfo)= A"!!,BY!!#BjJ,hm6!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_06,value= 0,side= 1
-	CheckBox Check_AD_07,pos={20.00,400.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox Check_AD_07,pos={20.00,400.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="7"
 	CheckBox Check_AD_07,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_07,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_07,value= 0,side= 1
-	CheckBox Check_AD_08,pos={200.00,75.00},size={21.00,15.00},disable=1,title="8"
+	CheckBox Check_AD_08,pos={200.00,75.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="8"
 	CheckBox Check_AD_08,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_08,userdata(ResizeControlsInfo)= A"!!,GX!!#?O!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_08,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_08,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_08,value= 0,side= 1
-	CheckBox Check_AD_09,pos={200.00,121.00},size={21.00,15.00},disable=1,title="9"
+	CheckBox Check_AD_09,pos={200.00,121.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="9"
 	CheckBox Check_AD_09,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_09,userdata(ResizeControlsInfo)= A"!!,GX!!#@V!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_09,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_09,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_09,value= 0,side= 1
-	CheckBox Check_AD_10,pos={194.00,167.00},size={27.00,15.00},disable=1,title="10"
+	CheckBox Check_AD_10,pos={194.00,167.00},size={27.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="10"
 	CheckBox Check_AD_10,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_10,userdata(ResizeControlsInfo)= A"!!,GR!!#A6!!#=;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_10,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_10,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_10,value= 0,side= 1
-	CheckBox Check_AD_12,pos={194.00,260.00},size={27.00,15.00},disable=1,title="12"
+	CheckBox Check_AD_12,pos={194.00,260.00},size={27.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="12"
 	CheckBox Check_AD_12,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_12,userdata(ResizeControlsInfo)= A"!!,GR!!#B<!!#=;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_12,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_12,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_12,value= 0,side= 1
-	CheckBox Check_AD_11,pos={194.00,214.00},size={27.00,15.00},disable=1,title="11"
+	CheckBox Check_AD_11,pos={194.00,214.00},size={27.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="11"
 	CheckBox Check_AD_11,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo)= A"!!,GR!!#Ae!!#=;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_11,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -196,19 +196,19 @@ Window DA_Ephys() : Panel
 	SetVariable Gain_AD_12,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AD_12,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AD_12,limits={0,inf,1},value= _NUM:0
-	CheckBox Check_AD_13,pos={194.00,307.00},size={27.00,15.00},disable=1,title="13"
+	CheckBox Check_AD_13,pos={194.00,307.00},size={27.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="13"
 	CheckBox Check_AD_13,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_13,userdata(ResizeControlsInfo)= A"!!,GR!!#BSJ,hmf!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_13,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_13,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_13,value= 0,side= 1
-	CheckBox Check_AD_14,pos={194.00,353.00},size={27.00,15.00},disable=1,title="14"
+	CheckBox Check_AD_14,pos={194.00,353.00},size={27.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="14"
 	CheckBox Check_AD_14,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_14,userdata(ResizeControlsInfo)= A"!!,GR!!#BjJ,hmf!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_14,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AD_14,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AD_14,value= 0,side= 1
-	CheckBox Check_AD_15,pos={194.00,400.00},size={27.00,15.00},disable=1,title="15"
+	CheckBox Check_AD_15,pos={194.00,400.00},size={27.00,15.00},disable=1,proc=DAP_CheckProc_AD,title="15"
 	CheckBox Check_AD_15,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AD_15,userdata(ResizeControlsInfo)= A"!!,GR!!#C-!!#=;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AD_15,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -4008,12 +4008,54 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2:
-			paneltitle   = cba.win
-
+			paneltitle = cba.win
+			DAP_AdaptAssocHeadstageState(panelTitle, cba.ctrlName)
 			DAP_UpdateITIAcrossSets(panelTitle)
 			DAP_UpdateSweepSetVariables(panelTitle)
 			break
 	endswitch
+End
+
+Function DAP_CheckProc_AD(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			DAP_AdaptAssocHeadstageState(cba.win, cba.ctrlName)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Adapt the state of the associated headstage on DA/AD channel change
+///
+static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
+	string panelTitle
+	string checkboxCtrl
+
+	string headStageCheckBox
+	variable headstage, idx, channelType, controlType
+
+	DAP_ParsePanelControl(checkboxCtrl, idx, channelType, controlType)
+	ASSERT(CHANNEL_CONTROL_CHECK == controlType, "Not a valid control type")
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		headStage = AFH_GetHeadstageFromDAC(panelTitle, idx)
+	elseif(channelType == CHANNEL_TYPE_ADC)
+		headStage = AFH_GetHeadstageFromADC(panelTitle, idx)
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		// nothing to do
+		return NaN
+	endif
+
+	// headStage can be NaN for non associated DA/AD channels
+	if(!IsFinite(headStage))
+		return NaN
+	endif
+
+	headStageCheckBox = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=!GetCheckBoxState(panelTitle, headStageCheckBox))
 End
 
 /// @brief One time initialization before data acquisition
