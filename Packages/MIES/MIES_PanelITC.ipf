@@ -6319,11 +6319,18 @@ End
 /// @brief Return the mode of all DA_Ephys panel headstages
 Function/Wave DAP_GetAllHSMode(panelTitle)
 	string panelTitle
-	make/FREE/n=(NUM_HEADSTAGES) Mode
-	variable i
+
+	variable i, ctrlNo, headStage, clampMode
+	string ctrl
+
+	Make/FREE/N=(NUM_HEADSTAGES) Mode
 	for(i = 0; i < NUM_HEADSTAGES; i+=1)
-		Mode[i] = DAP_MIESHeadstageMode(panelTitle, i)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
+		ASSERT(headStage == i, "Unexpected value")
+		Mode[i] = clampMode
 	endfor
+
 	return Mode
 End
 
