@@ -5791,18 +5791,19 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	string panelTitle
 	variable mode, headStage
 
-	switch(sc.eventCode)
-		case 0x1: // value set
-			panelTitle = sc.win
-			headStage  = sc.curVal
-			mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-			AI_SyncAmpStorageToGUI(panelTitle, headStage)
-			P_LoadPressureButtonState(panelTitle, headStage)
-			P_SaveUserSelectedHeadstage(panelTitle, headStage)
-			// chooses the amp tab according to the MIES headstage clamp mode
-			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
-		break
-	endswitch
+	// eventCode is a bitmask as opposed to a plain value
+	// compared to other controls
+	if(sc.eventCode > 0 && sc.eventCode & 0x1)
+		panelTitle = sc.win
+		headStage  = sc.curVal
+		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
+		ASSERT(!IsFinite(mode), "Invalid clamp mode")
+		AI_SyncAmpStorageToGUI(panelTitle, headStage)
+		P_LoadPressureButtonState(panelTitle, headStage)
+		P_SaveUserSelectedHeadstage(panelTitle, headStage)
+		// chooses the amp tab according to the MIES headstage clamp mode
+		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+	endif
 
 	return 0
 End
@@ -6319,11 +6320,18 @@ End
 /// @brief Return the mode of all DA_Ephys panel headstages
 Function/Wave DAP_GetAllHSMode(panelTitle)
 	string panelTitle
-	make/FREE/n=(NUM_HEADSTAGES) Mode
-	variable i
+
+	variable i, ctrlNo, headStage, clampMode
+	string ctrl
+
+	Make/FREE/N=(NUM_HEADSTAGES) Mode
 	for(i = 0; i < NUM_HEADSTAGES; i+=1)
-		Mode[i] = DAP_MIESHeadstageMode(panelTitle, i)
+		ctrl = GetPanelControl(panelTitle, i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
+		ASSERT(headStage == i, "Unexpected value")
+		Mode[i] = clampMode
 	endfor
+
 	return Mode
 End
 
