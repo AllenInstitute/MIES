@@ -222,10 +222,10 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	
 	do // for DAs
 		if((str2num(stringfromlist(i, DAChannelStatusList,";"))) == 1)
-			popMenuIndexStartName = "Wave_DA_0" + num2str(i)
+			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ListStartNo = v_value
-			popMenuIndexEndName = "Popup_DA_IndexEnd_0" + num2str(i)
+			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
 			ListEndNo = v_value + 1 // " +1 " added to compensate for test pulse not being listed in index end popup menu ************************
 			ListLength = abs(ListStartNo - ListEndNo) + 1
@@ -250,10 +250,10 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	
 	do // for TTLs
 		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = "Wave_TTL_0" + num2str(i)
+			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ListStartNo = v_value
-			popMenuIndexEndName = "Popup_TTL_IndexEnd_0" + num2str(i)
+			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
 			ListEndNo = v_value 
 			ListLength = abs(ListStartNo - ListEndNo) + 1
@@ -288,10 +288,10 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	variable i = 0
 	do
 		if((str2num(stringfromlist(i, DAChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = "Wave_DA_0" + num2str(i)
+			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ChannelSets = v_value
-			popMenuIndexEndName = "Popup_DA_IndexEnd_0" + num2str(i)
+			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
 			ChannelSets -= (v_value + 1) // added " +1 " to compensate for test pulse not being listed in indexing end wave *******************
 			ChannelSets = abs(ChannelSets)
@@ -303,10 +303,10 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	i = 0
 	do
 		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName="Wave_TTL_0" + num2str(i)
+			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ChannelSets = v_value
-			popMenuIndexEndName = "Popup_TTL_IndexEnd_0" + num2str(i)
+			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			controlinfo/w=$panelTitle $popMenuIndexEndName
 			ChannelSets -= v_value
 			ChannelSets = abs(ChannelSets)
