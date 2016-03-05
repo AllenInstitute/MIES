@@ -5797,7 +5797,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		panelTitle = sc.win
 		headStage  = sc.curVal
 		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-		ASSERT(!IsFinite(mode), "Invalid clamp mode")
+		ASSERT(IsFinite(mode), "Invalid clamp mode")
 		AI_SyncAmpStorageToGUI(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
