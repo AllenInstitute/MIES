@@ -6398,3 +6398,82 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 
 	return 0
 End
+
+/// @brief Extracts `channelType`, `controlType` and the control index from `ctrl`
+///
+/// Counterpart to GetPanelControl()
+Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
+	string ctrl
+	variable &idx, &channelType, &controlType
+
+	string elem0, elem1
+	variable numUnderlines
+
+	idx         = NaN
+	channelType = NaN
+	controlType = NaN
+
+	ASSERT(!isEmpty(ctrl), "Empty control")
+	numUnderlines = ItemsInList(ctrl, "_")
+	ASSERT(numUnderlines >= 2, "Unexpected control naming scheme")
+
+	idx = str2num(StringFromList(numUnderlines - 1, ctrl, "_"))
+	ASSERT(IsFinite(idx), "Non-finite control index")
+
+	elem0 = StringFromList(0, ctrl, "_")
+	elem1 = StringFromList(1, ctrl, "_")
+
+	strswitch(elem0)
+		case "Wave":
+			controlType = CHANNEL_CONTROL_WAVE
+			break
+		case "IndexEnd":
+			controlType = CHANNEL_CONTROL_INDEX_END
+			break
+		case "Unit":
+			controlType = CHANNEL_CONTROL_UNIT
+			break
+		case "Gain":
+			controlType = CHANNEL_CONTROL_GAIN
+			break
+		case "Scale":
+			controlType = CHANNEL_CONTROL_SCALE
+			break
+		case "Check":
+			controlType = CHANNEL_CONTROL_CHECK
+			break
+		case "Min":
+			controlType = CHANNEL_CONTROL_ALARM_MIN
+			break
+		case "Max":
+			controlType = CHANNEL_CONTROL_ALARM_MAX
+			break
+		default:
+			ASSERT(0, "Invalid controlType")
+			break
+	endswitch
+
+	strswitch(elem1)
+		case "DataAcqHS":
+			channelType = CHANNEL_TYPE_HEADSTAGE
+			break
+		case "DA":
+			channelType = CHANNEL_TYPE_DAC
+			break
+		case "AD":
+			channelType = CHANNEL_TYPE_ADC
+			break
+		case "TTL":
+			channelType = CHANNEL_TYPE_TTL
+			break
+		case "AsyncAlarm":
+			channelType = CHANNEL_TYPE_ALARM
+			break
+		case "AsyncAD":
+			channelType = CHANNEL_TYPE_ASYNC
+			break
+		default:
+			ASSERT(0, "Invalid channelType")
+			break
+	endswitch
+End
