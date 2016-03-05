@@ -3598,7 +3598,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				do
-					sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 
 					i += 1
@@ -3627,7 +3627,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				do
-					sprintf IndexEndPopUpMenuName "Popup_DA_IndexEnd_%.2d" i
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					i += 1
 				while(i < NUM_DA_TTL_CHANNELS)
@@ -3659,8 +3659,8 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 			ctrlName   = sva.ctrlName
 			varstr     = sva.sval
 			sscanf ctrlName, "Search_TTL_%d", TTL_No
-			sprintf TTLPopUpMenuName, "Wave_TTL_%0.2d" TTL_No
-			sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%0.2d" TTL_No
+			TTLPopUpMenuName      = GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			indexEndPopUpMenuName = GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetWBSvdStimSetTTLPath()
@@ -3675,12 +3675,12 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 				endif
 
 				do
-					sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					sprintf IndexEndPopUpMenuName,  "Popup_TTL_IndexEnd_%.2d" i
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
@@ -3740,7 +3740,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 						sprintf SearchSetVarName, "Search_TTL_%.2d" i
 						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
 
-						sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+						TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 						PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 					endif
 					i += 1
@@ -3749,7 +3749,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				do
-					sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 
 					i += 1
@@ -3765,7 +3765,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				ListOfWaves = wavelist(searchstring,";","")
 				do
-					sprintf TTLPopUpMenuName, "Wave_TTL_%.2d" i
+					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 					PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 					if(i > 0) // disables search inputs except for Search_TTL_00
 						sprintf SearchSetVarName, "Search_TTL_%.2d" i
@@ -3777,7 +3777,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				do
-					sprintf IndexEndPopUpMenuName "Popup_TTL_IndexEnd_%.2d" i
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					i += 1
 				while(i < NUM_DA_TTL_CHANNELS)
@@ -3975,8 +3975,8 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 			varstr     = sva.sval
 
 			sscanf ctrlName, "Search_DA_%d", DA_No
-			sprintf DAPopUpMenuName,  "Wave_DA_%0.2d"  DA_No
-			sprintf IndexEndPopUpMenuName, "Popup_DA_IndexEnd_%0.2d" DA_No
+			DAPopUpMenuName       = GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			IndexEndPopUpMenuName = GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetWBSvdStimSetDAPath()
@@ -3996,7 +3996,7 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					sprintf IndexEndPopUpMenuName,  "Popup_DA_IndexEnd_%.2d" i
+					IndexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
