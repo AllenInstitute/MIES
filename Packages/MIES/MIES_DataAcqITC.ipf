@@ -555,30 +555,19 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	endfor
 End
 
-Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+static Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
 	variable Channel, Measurement
 	string MeasurementTitle, panelTitle
 
-	String CheckAlarm, SetVarTitle, SetVarMin, SetVarMax, Title
-	variable ParamMin, ParamMax
+	string minCtrl, maxCtrl, checkCtrl
+	variable paramMin, paramMax
 
-	if(channel < 10)
-		CheckAlarm = "check_Async_Alarm_0" + num2str(channel)
-		SetVarMin = "SetVar_AsyncAD_min_0" + num2str(channel)
-		SetVarMax = "SetVar_AsyncAD_max_0" + num2str(channel)
-	else
-		CheckAlarm = "check_Async_Alarm_" + num2str(channel)
-		SetVarMin = "SetVar_AsyncAD_min_" + num2str(channel)
-		SetVarMax = "SetVar_AsyncAD_max_" + num2str(channel)
-	endif
-
-	ControlInfo /W = $panelTitle $CheckAlarm
-	if(v_value == 1)
-		ControlInfo /W = $panelTitle $SetVarMin
-		ParamMin = v_value
-		ControlInfo /W = $panelTitle $SetVarMax
-		ParamMax = v_value
-		print measurement
+	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	if(GetCheckBoxState(panelTitle, checkCtrl))
+		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		paramMin = GetSetVariable(panelTitle, minCtrl)
+		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		paramMax = GetSetVariable(panelTitle, maxCtrl)
 		if(Measurement >= ParamMax || Measurement <= ParamMin)
 			beep
 			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
