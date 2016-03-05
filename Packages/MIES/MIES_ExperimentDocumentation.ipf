@@ -419,6 +419,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	Variable sweepCount
 
 	string ctrl
+	variable minSettingValue, maxSettingValue
 
 	// Create the numerical wave for saving the numerical settings
 	Wave asyncSettingsWave = GetAsyncSettingsWave(panelTitle)
@@ -439,36 +440,28 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	// first...determine if the head stage is being controlled
 	variable asyncVariablesCounter
 	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
-	// build up the string to get the DA check box to see if the DA is enabled
-		sprintf ctrl, "Check_AsyncAD_0%d" asyncVariablesCounter
-		variable adOnOffValue = GetCheckBoxState(panelTitle, ctrl)
-		if (adOnOffValue == 1)
-			// Save info into the ayncSettingsWave
-			// Async AD OnOff
-			sprintf ctrl, "Check_AsyncAD_0%d" asyncVariablesCounter
-			asyncSettingsWave[0][asyncVariablesCounter] = GetCheckBoxState(panelTitle, ctrl)
-			
-			// Async AD Gain
-			sprintf ctrl, "SetVar_AsyncAD_Gain_0%d" asyncVariablesCounter
+		ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+
+		if (GetCheckBoxState(panelTitle, ctrl))
+			asyncSettingsWave[0][asyncVariablesCounter] = CHECKBOX_SELECTED
+
+			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 			asyncSettingsWave[0][asyncVariablesCounter + 8] = GetSetVariable(panelTitle, ctrl)
+
+			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+			minSettingValue = GetCheckBoxState(panelTitle, ctrl)
+			asyncSettingsWave[0][asyncVariablesCounter + 16] = minSettingValue
 			
-			// Async Alarm OnOff
-			sprintf ctrl, "Check_Async_Alarm_0%d" asyncVariablesCounter
-			asyncSettingsWave[0][asyncVariablesCounter + 16] = GetCheckBoxState(panelTitle, ctrl)
-			
-			// Async Alarm Min
-			sprintf ctrl, "SetVar_AsyncAD_Min_0%d" asyncVariablesCounter
-			variable maxSettingValue = GetSetVariable(panelTitle, ctrl)
+			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+			maxSettingValue = GetSetVariable(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 24] = maxSettingValue
 			
-			// Async Alarm Max
-			sprintf ctrl, "SetVar_AsyncAD_Max_0%d" asyncVariablesCounter
-			variable minSettingValue = GetSetVariable(panelTitle, ctrl)
+			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+			minSettingValue = GetSetVariable(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 32] = minSettingValue
 	
 			// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
-			variable tolSettingValue = (maxSettingValue - minSettingValue)/2
-			asyncMeasurementKey[%Tolerance][asyncVariablesCounter] = num2str(abs(tolSettingValue))
+			asyncMeasurementKey[%Tolerance][asyncVariablesCounter] = num2str(abs((maxSettingValue - minSettingValue)/2))
 	
 			//Now do the text stuff...
 			// Async Title
@@ -479,9 +472,8 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			asyncSettingsTxtWave[0][asyncVariablesCounter] = titleStringValue
 			// add the text unit value into the measurementKey Wave
 			asyncMeasurementKey[%Parameter][asyncVariablesCounter] = adTitleStringValue
-			
-			// Async Unit
-			sprintf ctrl, "SetVar_AsyncAD_Unit_0%d" asyncVariablesCounter
+
+			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adUnitStringValue
 			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue
@@ -491,9 +483,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 		endif
 	endfor
 
-	// create the async wave notes if the Append Async readings to wave note
-	variable appendAsync = GetCheckBoxState(panelTitle, "Check_Settings_Append")
-	if (appendAsync == 1)
+	if(GetCheckBoxState(panelTitle, "Check_Settings_Append"))
 		// call the function that will create the numerical wave notes
 		ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle)
 	

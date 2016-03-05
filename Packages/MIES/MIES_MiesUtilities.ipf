@@ -99,7 +99,7 @@ Function/S GetPanelControl(idx, channelType, controlType)
 	string ctrl
 
 	if(channelType == CHANNEL_TYPE_HEADSTAGE)
-		ctrl = "DataAcq_HS"
+		ctrl = "DataAcqHS"
 	elseif(channelType == CHANNEL_TYPE_DAC)
 		ctrl = "DA"
 	elseif(channelType == CHANNEL_TYPE_ADC)
@@ -107,7 +107,7 @@ Function/S GetPanelControl(idx, channelType, controlType)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		ctrl = "TTL"
 	elseif(channelType == CHANNEL_TYPE_ALARM)
-		ctrl = "Async_Alarm"
+		ctrl = "AsyncAlarm"
 	elseif(channelType == CHANNEL_TYPE_ASYNC)
 		ctrl = "AsyncAD"
 	else
@@ -117,7 +117,7 @@ Function/S GetPanelControl(idx, channelType, controlType)
 	if(controlType == CHANNEL_CONTROL_WAVE)
 		ctrl = "Wave_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_INDEX_END)
-		ctrl = "Popup_" + ctrl + "_IndexEnd"
+		ctrl = "IndexEnd_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_UNIT)
 		ctrl = "Unit_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_GAIN)
@@ -126,12 +126,10 @@ Function/S GetPanelControl(idx, channelType, controlType)
 		ctrl = "Scale_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_CHECK)
 		ctrl = "Check_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_ASYNC_GAIN) /// @todo Change name of async gain setvars to match "convention" of gain naming.
-		ctrl = "SetVar_" + ctrl + "_Gain"
 	elseif(controlType == CHANNEL_CONTROL_ALARM_MIN)
-		ctrl = "SetVar_" + ctrl + "_Min"
+		ctrl = "Min_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_ALARM_MAX)
-		ctrl = "SetVar_" + ctrl + "_Max"	
+		ctrl = "Max_" + ctrl
 	else
 		ASSERT(0, "Invalid controlType")
 	endif
@@ -1254,7 +1252,7 @@ Function GetNumberFromType([var, str])
 			case "TTL":
 				return NUM_DA_TTL_CHANNELS
 				break
-			case "DataAcq_HS":
+			case "DataAcqHS":
 				return NUM_HEADSTAGES
 				break
 			case "AD":

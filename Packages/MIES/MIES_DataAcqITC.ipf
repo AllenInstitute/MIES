@@ -544,7 +544,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 		rawChannelValue = ITC_SingleADReading(i + deviceChannelOffset, panelTitle)
 
 		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
-		sprintf setvarGain,  "SetVar_AsyncAD_Gain_%02d", i
+		setvarGain= GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 
 		title = GetSetVariableString(panelTitle, setvarTitle)
 		gain  = GetSetVariable(panelTitle, setvarGain)
