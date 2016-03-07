@@ -15,7 +15,7 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(10,53,502,889)
+	NewPanel /K=1 /W=(9,53,501,889)
 	GroupBox group_DataAcq_WholeCell,pos={47.00,200.00},size={150.00,62.00},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -455,7 +455,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 1
-	SetVariable SetVar_DataAcq_ITI,pos={84.00,700.00},size={80.00,18.00},bodyWidth=35,disable=3,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={66.00,700.00},size={80.00,18.00},bodyWidth=35,disable=0,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,Eb!!#D?!!#?Y!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -610,7 +610,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_TrigIn,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_TrigIn,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_TrigIn,fColor=(65280,43520,0),value= 0
-	SetVariable SetVar_DataAcq_SetRepeats,pos={57.00,680.00},size={107.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat Set(s)"
+	SetVariable SetVar_DataAcq_SetRepeats,pos={39.00,680.00},size={107.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat Set(s)"
 	SetVariable SetVar_DataAcq_SetRepeats,help={"This number is set automatically at based on the number of 1d waves contained in the largest set on active DA/TTL channels"}
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(tabcontrol)=  "ADC"
@@ -1846,7 +1846,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_IndexingLocked,value= 0
-	SetVariable SetVar_DataAcq_ListRepeats,pos={185.00,710.00},size={109.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat List(s)"
+	SetVariable SetVar_DataAcq_ListRepeats,pos={204.00,710.00},size={109.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat List(s)"
 	SetVariable SetVar_DataAcq_ListRepeats,help={"This number is set automatically at based on the number of 1d waves contained in the largest set on active DA/TTL channels"}
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabcontrol)=  "ADC"
@@ -2619,14 +2619,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_InsertTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_InsertTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_InsertTP,value= 1
-	CheckBox Check_Settings_Override_Set_ITI,pos={243.00,194.00},size={198.00,15.00},disable=1,proc=DAP_CheckProc_Override_ITI,title="Allow to override the calculated ITI"
-	CheckBox Check_Settings_Override_Set_ITI,help={"The total ITI is calculated as the minimum of all ITIs involved in the aquisition. Checking allows the user to override the calculated value."}
-	CheckBox Check_Settings_Override_Set_ITI,userdata(tabnum)=  "5"
-	CheckBox Check_Settings_Override_Set_ITI,userdata(tabcontrol)=  "ADC"
-	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo)= A"!!,H.!!#AQ!!#AU!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox Check_Settings_Override_Set_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_Override_Set_ITI,value= 0
+	CheckBox Check_DataAcq_Get_Set_ITI,pos={150.00,694.00},size={46.00,30.00},disable=1,proc=DAP_CheckProc_GetSet_ITI,title="Get\rset ITI"
+	CheckBox Check_DataAcq_Get_Set_ITI,help={"When checked the stimulus set ITIs are used. The ITI is calculated as the maximum of all active stimulus set ITIs"}
+	CheckBox Check_DataAcq_Get_Set_ITI,userdata(tabnum)=  "0"
+	CheckBox Check_DataAcq_Get_Set_ITI,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DataAcq_Get_Set_ITI,userdata(ResizeControlsInfo)= A"!!,H.!!#AQ!!#AU!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_DataAcq_Get_Set_ITI,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox Check_DataAcq_Get_Set_ITI,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox Check_DataAcq_Get_Set_ITI,value= 0
 	SetVariable setvar_Settings_TPBuffer,pos={325.00,109.00},size={125.00,18.00},bodyWidth=50,disable=1,title="TP Buffer size"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)=  "ADC"
@@ -3101,7 +3101,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_settings_Hardware_Manipul,frame=0
-	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={109.00,604.00},size={153.00,19.00},bodyWidth=150,disable=2,proc=DAP_PopMenuProc_CAA
+	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={112.00,604.00},size={150.00,19.00},bodyWidth=150,disable=2,proc=DAP_PopMenuProc_CAA
 	PopupMenu popup_Settings_Manip_MSSMnipLst,help={"List of available Scientifica micromanipulators"}
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabcontrol)=  "ADC"
@@ -3241,7 +3241,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 1
 	CheckBox Check_DataAcq1_DistribDaq Win = $panelTitle, value = 0
 
-	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0
+	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0, disable = 0
 
 	SetVariable SetVar_DataAcq_TPDuration  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
@@ -4374,17 +4374,13 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1))
-		EnableControl(panelTitle, "SetVar_DataAcq_ITI")
-	elseif(maxITI == 0 && numActiveDAChannels > 0)
-		EnableControl(panelTitle, "SetVar_DataAcq_ITI")
-		ControlInfo/W=$panelTitle Check_Settings_Override_Set_ITI
-		if(V_flag != 0)
-			SetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", CHECKBOX_SELECTED)
-		endif
-	else
-		DisableControl(panelTitle, "SetVar_DataAcq_ITI")
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", allowMissingControl=1))
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
+	elseif(maxITI == 0 && numActiveDAChannels > 0)
+		ControlInfo/W=$panelTitle Check_DataAcq_Get_Set_ITI
+		if(V_flag != 0)
+			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", CHECKBOX_SELECTED)
+		endif
 	endif
 
 	if(DAP_DeviceIsLeader(panelTitle))
@@ -4564,12 +4560,12 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 	endswitch
 End
 
-Function DAP_CheckProc_Override_ITI(cba) : CheckBoxControl
+Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
-			if(!cba.checked)
+			if(cba.checked)
 				DAP_UpdateITIAcrossSets(cba.win)
 			else
 				DAP_SyncGuiFromLeaderToFollower(cba.win)
@@ -5585,7 +5581,7 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 			DAP_SwitchSingleMultiMode(panelToYoke, 1)
 
 			DAP_UpdateITIAcrossSets(leadPanel)
-			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
+			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
 			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
 			EnableControl(leadPanel, "title_hardware_Release")
@@ -5619,7 +5615,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
 	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
-	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", allowMissingControl=1)
+	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", allowMissingControl=1)
 	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
 	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
 	leaderdDAQDelay    = GetSetVariable(leadPanel, "SetVar_DataAcq_dDAQDelay")
@@ -5636,7 +5632,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats", leaderRepeatSets)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay", leaderdDAQDelay)
 		if(IsFinite(leaderOverrrideITI))
-			SetCheckBoxState(panelTitle, "Check_Settings_Override_Set_ITI", leaderOverrrideITI)
+			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", leaderOverrrideITI)
 		endif
 	endfor
 End
@@ -5705,7 +5701,7 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
-	EnableListOfControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_Settings_Override_Set_ITI")
+	EnableListOfControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
