@@ -3598,7 +3598,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				do
-					indexEndPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 
 					i += 1
@@ -3627,7 +3627,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 				do
-					indexEndPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					i += 1
 				while(i < NUM_DA_TTL_CHANNELS)
@@ -3659,8 +3659,8 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 			ctrlName   = sva.ctrlName
 			varstr     = sva.sval
 			sscanf ctrlName, "Search_TTL_%d", TTL_No
-			TTLPopUpMenuName      = DAP_GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			indexEndPopUpMenuName = DAP_GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			TTLPopUpMenuName      = GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			indexEndPopUpMenuName = GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetWBSvdStimSetTTLPath()
@@ -3675,12 +3675,12 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 				endif
 
 				do
-					TTLPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					indexEndPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
@@ -3740,7 +3740,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 						sprintf SearchSetVarName, "Search_TTL_%.2d" i
 						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
 
-						TTLPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+						TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 						PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 					endif
 					i += 1
@@ -3749,7 +3749,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				do
-					indexEndPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 
 					i += 1
@@ -3765,7 +3765,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				ListOfWaves = wavelist(searchstring,";","")
 				do
-					TTLPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 					PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 					if(i > 0) // disables search inputs except for Search_TTL_00
 						sprintf SearchSetVarName, "Search_TTL_%.2d" i
@@ -3777,7 +3777,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				i = 0
 				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 				do
-					indexEndPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					i += 1
 				while(i < NUM_DA_TTL_CHANNELS)
@@ -3975,8 +3975,8 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 			varstr     = sva.sval
 
 			sscanf ctrlName, "Search_DA_%d", DA_No
-			DAPopUpMenuName       = DAP_GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			IndexEndPopUpMenuName = DAP_GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			DAPopUpMenuName       = GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			IndexEndPopUpMenuName = GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetWBSvdStimSetDAPath()
@@ -3996,7 +3996,7 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					IndexEndPopUpMenuName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+					IndexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
@@ -4074,7 +4074,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 			continue
 		endif
 
-		EnableControl(panelTitle, DAP_GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
+		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
 		DisableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
 	endfor
@@ -4096,7 +4096,7 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 	variable i
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		EnableControl(panelTitle, DAP_GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
+		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2))
 		EnableControl(panelTitle, "Radio_ClampMode_" + num2str(i * 2 + 1))
 	endfor
@@ -4275,7 +4275,7 @@ Function DAP_TurnOffAllDACs(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
@@ -4299,7 +4299,7 @@ Function DAP_TurnOffAllADCs(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
-		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
@@ -4323,7 +4323,7 @@ Function DAP_TurnOffAllHeadstages(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
 		ASSERT(i == ctrlNo, "invalid index")
 		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
@@ -4889,7 +4889,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 					continue
 				endif
 
-				ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+				ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 				ttlWave = GetPopupMenuString(panelTitle, ctrl)
 				if(!CmpStr(ttlWave, NONE))
 					printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
@@ -4897,7 +4897,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 
 				if(indexingEnabled)
-					ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+					ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					endWave = GetPopupMenuString(panelTitle, ctrl)
 					if(!CmpStr(endWave, NONE))
 						printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
@@ -4917,7 +4917,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 						continue
 					endif
 
-					ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+					ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 					dacWave = GetPopupMenuString(panelTitle, ctrl)
 					if(isEmpty(refDacWave))
 						refDacWave = dacWave
@@ -4937,7 +4937,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-			ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, i)
 
 			if(clampMode == V_CLAMP_MODE)
@@ -5021,7 +5021,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ctrl = DAP_GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 	DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
 
 	if(clampMode == V_CLAMP_MODE)
@@ -5069,14 +5069,14 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
 		return 1
 	endif
 
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	gain = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", panelTitle, DACchannel
@@ -5084,21 +5084,21 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	// we allow the scale being zero
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	scale = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(scale))
 		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
 		return 1
 	endif
 
-	ctrl = DAP_GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for ADCchannel %d is empty.\r", panelTitle, ADCchannel
 		return 1
 	endif
 
-	ctrl = DAP_GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	gain = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", panelTitle, ADCchannel
@@ -5106,7 +5106,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	if(mode == DATA_ACQUISITION_MODE)
-		ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		dacWave = GetPopupMenuString(panelTitle, ctrl)
 		if(!CmpStr(dacWave, NONE) || IsTestPulseSet(dacWave))
 			printf "(%s) Please select a stimulus set for DA channel %d referenced by Headstage %d\r", panelTitle, DACchannel, headStage
@@ -5165,7 +5165,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		endif
 
 		if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-			ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			endWave = GetPopupMenuString(panelTitle, ctrl)
 			if(!CmpStr(endWave, NONE))
 				printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
@@ -5224,20 +5224,20 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	endif
 
 	// DAC channels
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, 	ctrl, CHECKBOX_SELECTED)
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(panelTitle, ctrl, DaGain)
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, DaUnit)
 	ChannelClampMode[DACchannel][%DAC] = clampMode
 
 	// ADC channels
-	ctrl = DAP_GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_SELECTED)
-	ctrl = DAP_GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(panelTitle, ctrl, ADGain)
-	ctrl = DAP_GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, ADUnit)
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
@@ -5264,11 +5264,11 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 		return NaN
 	endif
 
-	ctrl = DAP_GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[DACchannel][%DAC] = nan
 
-	ctrl = DAP_GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[ADCchannel][%ADC] = nan
 End
@@ -5336,7 +5336,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
 			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
 			GuiState[headStage][%HSmode] = mode
-			ctrl = DAP_GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+			ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 			activeHS = GetCheckBoxState(panelTitle, ctrl)
 			if(activeHS)
 				testPulseMode = TP_StopTestPulse(panelTitle)
@@ -6316,7 +6316,7 @@ Function/Wave DAP_GetAllHSMode(panelTitle)
 
 	Make/FREE/N=(NUM_HEADSTAGES) Mode
 	for(i = 0; i < NUM_HEADSTAGES; i+=1)
-		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
 		ASSERT(headStage == i, "Unexpected value")
 		Mode[i] = clampMode
@@ -6397,7 +6397,7 @@ End
 
 /// @brief Extracts `channelType`, `controlType` and the control index from `ctrl`
 ///
-/// Counterpart to DAP_GetPanelControl()
+/// Counterpart to GetPanelControl()
 Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
 	string ctrl
 	variable &idx, &channelType, &controlType
@@ -6472,54 +6472,4 @@ Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
 			ASSERT(0, "Invalid channelType")
 			break
 	endswitch
-End
-
-/// @brief Returns the name of a control from the DA_EPHYS panel
-///
-/// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S DAP_GetPanelControl(idx, channelType, controlType)
-	variable idx, channelType, controlType
-
-	string ctrl
-
-	if(channelType == CHANNEL_TYPE_HEADSTAGE)
-		ctrl = "DataAcqHS"
-	elseif(channelType == CHANNEL_TYPE_DAC)
-		ctrl = "DA"
-	elseif(channelType == CHANNEL_TYPE_ADC)
-		ctrl = "AD"
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		ctrl = "TTL"
-	elseif(channelType == CHANNEL_TYPE_ALARM)
-		ctrl = "AsyncAlarm"
-	elseif(channelType == CHANNEL_TYPE_ASYNC)
-		ctrl = "AsyncAD"
-	else
-		ASSERT(0, "Invalid channelType")
-	endif
-
-	if(controlType == CHANNEL_CONTROL_WAVE)
-		ctrl = "Wave_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_INDEX_END)
-		ctrl = "IndexEnd_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_UNIT)
-		ctrl = "Unit_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_GAIN)
-		ctrl = "Gain_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_SCALE)
-		ctrl = "Scale_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_CHECK)
-		ctrl = "Check_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_ALARM_MIN)
-		ctrl = "Min_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_ALARM_MAX)
-		ctrl = "Max_" + ctrl
-	else
-		ASSERT(0, "Invalid controlType")
-	endif
-
-	ASSERT(idx >= 0 && idx < 100, "invalid idx")
-	sprintf ctrl, "%s_%02d", ctrl, idx
-
-	return ctrl
 End
