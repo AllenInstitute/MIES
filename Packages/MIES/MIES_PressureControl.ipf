@@ -1591,6 +1591,7 @@ Function P_ButtonProc_Enable(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_Enable()
+			P_UpdatePressureDataStorageWv(ba.win)
 			break
 	endswitch
 
