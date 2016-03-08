@@ -399,6 +399,10 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 	HW_ResetDevice(hwType, deviceID)
 	HW_RegisterDevice(mainDevice, hwType, deviceID, pressureDevice=pressureDevice)
 
+	if(hwType == HARDWARE_ITC_DAC)
+		P_PrepareITCWaves(mainDevice, pressureDevice)
+	endif
+
 	printf "Device used for pressure regulation: %s (%s)\r", pressureDevice, StringFromList(hwType, HARDWARE_DAC_TYPES)
 
 	// update pressure data wave with locked device info
@@ -418,6 +422,45 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 			HW_WriteDAC(hwType, deviceID, PressureDataWv[headStage][%DAC], PRESSURE_OFFSET)
 		endfor
 	endfor
+End
+
+/// @brief Adapt the ITC DAQ waves for hardware specialities
+static Function P_PrepareITCWaves(mainDevice, pressureDevice)
+	string mainDevice, pressureDevice
+
+	variable ret
+	string deviceType, deviceNumber
+
+	ret = ParseDeviceString(pressureDevice, deviceType, deviceNumber)
+	ASSERT(ret, "Could not parse device string")
+
+	WAVE ITCData    = P_GetITCData(mainDevice)
+	WAVE ITCConfig  = P_GetITCChanConfig(mainDevice)
+	WAVE FIFOConfig = P_GetITCFIFOConfig(mainDevice)
+	WAVE FIFOAvail  = P_GetITCFIFOAvail(mainDevice)
+
+	if(!cmpstr(deviceType, "ITC1600")) // two racks
+		Redimension/N=(-1, 4) ITCData
+		Redimension/N=(4, -1) ITCConfig, FIFOConfig, FIFOAvail
+
+		SetDimLabel COLS, 3, TTL_R1, ITCData
+		SetDimLabel ROWS, 3, TTL_R1, ITCConfig, FIFOConfig, FIFOAvail
+
+		ITCConfig[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
+		FIFOConfig[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
+		FIFOAvail[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
+
+		ITCConfig[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
+		FIFOConfig[3][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
+		FIFOAvail[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
+	else // one rack
+		Redimension/N=(-1, 3) ITCData
+		Redimension/N=(3, -1) ITCConfig, FIFOConfig, FIFOAvail
+	endif
+
+	ITCConfig[2][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
+	FIFOConfig[2][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
+	FIFOAvail[2][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
 End
 
 /// @brief Used to close ITC device used for pressure regulation

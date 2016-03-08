@@ -2759,7 +2759,7 @@ End
 /// - 0: DA data
 /// - 1: AD data
 /// - 2: TTL data rack 0
-/// - 3: TTL data rack 1
+/// - 3: TTL data rack 1 (available if supported by the device)
 Function/WAVE P_GetITCData(panelTitle)
 	string panelTitle
 
@@ -2788,7 +2788,7 @@ End
 /// - 0: DA channel specifications
 /// - 1: AD channel specifications
 /// - 2: TTL rack 0 specifications
-/// - 3: TTL rack 1 specifications
+/// - 3: TTL rack 1 specifications (available if supported by the device)
 ///
 /// Columns:
 /// - 0: Channel Type
@@ -2814,8 +2814,9 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
 	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
-	wv[2][1] = 0 // TTL rack 0
-	wv[3][1] = 3 // TTL rack 1
+	// invalid TTL channels
+	wv[2][1] = -1
+	wv[3][1] = -1
 
 	wv[][2]  = HARDWARE_ITC_MIN_SAMPINT * 1000
 
@@ -2837,7 +2838,7 @@ End
 /// - 0: DA channel specifications
 /// - 1: AD channel specifications
 /// - 2: TTL rack 0 specifications
-/// - 3: TTL rack 1 specifications
+/// - 3: TTL rack 1 specifications (available if supported by the device)
 /// Columns:
 /// - 0: Channel Type
 /// - 1: Channel number
@@ -2862,10 +2863,11 @@ Function/WAVE P_GetITCFIFOConfig(panelTitle)
 	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
 	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
-	wv[2][1] = 0 // TTL rack 0
-	wv[3][1] = 3 // TTL rack 1
+	// invalid TTL channels
+	wv[2][1] = -1
+	wv[3][1] = -1
 
-	wv[][2]	= -1 // reset the FIFO
+	wv[][2]  = -1 // reset the FIFO
 
 	SetDimLabel ROWS, 0, DA, 			wv
 	SetDimLabel ROWS, 1, AD, 			wv
@@ -2918,8 +2920,9 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
 	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
-	wv[2][1] = 0 // TTL rack 0
-	wv[3][1] = 3 // TTL rack 1
+	// invalid TTL channels
+	wv[2][1] = -1
+	wv[3][1] = -1
 
 	return wv
 End
@@ -3038,14 +3041,17 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	SetDimLabel ROWS, 6, Headstage_6, wv
 	SetDimLabel ROWS, 7, Headstage_7, wv
 
-	wv[][0]               = -1 // prime the wave to avoid index out of range error for popup menus and to set all pressure methods to OFF (-1)
-	wv[][%DAC_List_Index] = 0
-	wv[][%DAC]            = 0
-	wv[][%ADC]            = 0
-	wv[][%TTL]            = 0
-	wv[][%ApproachNear]   = 0
-	wv[][%SealAtm]        = 0
-	wv[][%ManSSPressure]  = 0
+	// prime the wave to avoid index out of range error for popup menus and to
+	// set all pressure methods to OFF (-1)
+	wv[][0]                    = -1
+	wv[][%DAC_List_Index]      = 0
+	wv[][%DAC]                 = 0
+	wv[][%ADC]                 = 0
+	wv[][%TTL]                 = 0
+	wv[][%ApproachNear]        = 0
+	wv[][%SealAtm]             = 0
+	wv[][%ManSSPressure]       = 0
+	wv[][%LastPressureCommand] = 0
 
 	SetWaveVersion(wv, versionOfNewWave)
 
