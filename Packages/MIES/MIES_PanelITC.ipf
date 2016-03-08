@@ -32,7 +32,6 @@ Window DA_Ephys() : Panel
 	TitleBox Title_settings_SetManagement,fixedSize=1
 	TabControl ADC,pos={3.00,1.00},size={479.00,19.00},proc=ACL_DisplayTab
 	TabControl ADC,userdata(currenttab)=  "6"
-	TabControl ADC,userdata(initialhook)=  "DAP_TabTJHook1"
 	TabControl ADC,userdata(finalhook)=  "DAP_TabControlFinalHook"
 	TabControl ADC,userdata(ResizeControlsInfo)= A"!!,>M!!#66!!#CTJ,hm&z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl ADC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3903,54 +3902,25 @@ Function DAP_UpdateYokeControls(panelTitle)
 	endif
 End
 
+/// @brief Called by ACL tab control after the tab is updated.
+/// see line 257 of ACL_TabUtilities.ipf
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	string panelTitle = tca.win
-
-	DAP_UpdateYokeControls(panelTitle)
-
-	if(tca.tab == DATA_ACQU_TAB_NUM)
-		DAP_UpdateITIAcrossSets(panelTitle)
-		DAP_UpdateSweepSetVariables(panelTitle)
-	endif
-End
-
-/// @brief Gets run by ACLight's tab control function every time a tab is selected,
-/// but before the internal tabs hook is called
-Function DAP_TabTJHook1(tca)
-	STRUCT WMTabControlAction &tca
-
-	variable tabnum , i, numItems, minSampInt
-	string panelTitle
-	panelTitle = tca.win
-	tabnum     = tca.tab
-
-	if(HSU_DeviceIsUnLocked(panelTitle,silentCheck=1))
-		print "Please lock the panel to a ITC device in the Hardware tab"
+	if(HSU_DeviceIsUnLocked(tca.win,silentCheck=1))
+		print "Please lock the panel to a DAC in the Hardware tab"
 		return 0
 	endif
 
-	SVAR/Z ITCPanelTitleList = root:MIES:ITCDevices:ITCPanelTitleList
-	ASSERT(SVAR_exists(ITCPanelTitleList), "missing SVAR ITCPanelTitleList")
-	if(tabnum == 0)
-		numItems = ItemsInList(ITCPanelTitleList)
-		for(i=0; i < numItems; i+=1)
-			panelTitle = StringFromList(i, ITCPanelTitleList,";")
-			DAP_UpdateITCSampIntDisplay(panelTitle)
-			ControlUpdate/W=$panelTitle ValDisp_DataAcq_SamplingInt
-		endfor
-	endif
-	return 0
+	DAP_UpdateYokeControls(tca.win)
 
-///@todo we can move that stuff into DAP_TabControlFinalHook
-//	if(tabnum==1)// this does not work because hook function runs prior to adams tab functions (i assume)
-//	controlinfo/w=datapro_itc1600 Check_DataAcq_Indexing
-//		if(v_value==0)
-//		TitleBox Title_DAC_IndexStartEnd disable=1, win=datapro_itc1600
-//		DAP_ChangePopUpState("IndexEnd_DA_0",1)
-//		endif
-//	endif
+	if(tca.tab == DATA_ACQU_TAB_NUM)
+		DAP_UpdateITIAcrossSets(tca.win)
+		DAP_UpdateSweepSetVariables(tca.win)
+		DAP_UpdateITCSampIntDisplay(tca.win)
+	endif
+
+	return 0
 End
 
 Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
