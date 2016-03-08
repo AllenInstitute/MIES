@@ -126,7 +126,7 @@ Constant PROP_MATCHES_VAR_BIT_MASK     = 0x04 ///< Wave entry matches the bitmas
 Constant PROP_NOT_MATCHES_VAR_BIT_MASK = 0x08 ///< Wave entry does not match the bitmask given in var
 ///@}
 
-/// @name Parameters for GetPanelControl and IDX_GetSetsInRange, GetSetFolder, GetSetParamFolder and GetChanneListFromITCConfig
+/// @name Parameters for DAP_GetPanelControl and IDX_GetSetsInRange, GetSetFolder, GetSetParamFolder and GetChanneListFromITCConfig
 /// @anchor ChannelTypeAndControlConstants
 /// @{
 Constant CHANNEL_TYPE_DAC          = 0x000
@@ -140,10 +140,9 @@ Constant CHANNEL_CONTROL_SCALE     = 0x030
 Constant CHANNEL_CONTROL_CHECK     = 0x040
 Constant CHANNEL_TYPE_HEADSTAGE    = 0x080
 Constant CHANNEL_TYPE_ASYNC        = 0x100
-Constant CHANNEL_TYPE_ALARM = 0x110
-Constant CHANNEL_CONTROL_ASYNC_GAIN = 0x120
-Constant CHANNEL_CONTROL_ALARM_MIN = 0x130
-Constant CHANNEL_CONTROL_ALARM_MAX = 0x140
+Constant CHANNEL_TYPE_ALARM        = 0x110
+Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
+Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
 /// @}
 
 /// @name Constants for the selection wave of a ListBox

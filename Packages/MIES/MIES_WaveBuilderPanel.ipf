@@ -1072,7 +1072,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 
 	string DAorTTL, setWaveToDelete, panelTitle
 	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
-	variable i, numPanels
+	variable i, numPanels, channelType
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1090,16 +1090,16 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				for(i = 0; i < numPanels; i += 1)
 					panelTitle = StringFromList(i, ITCPanelTitleList)
 					if(StringMatch(SetWaveToDelete, "*DA*"))
-						DAorTTL = "DA"
+						channelType = CHANNEL_TYPE_DAC
 					else
-						DAorTTL = "TTL"
+						channelType = CHANNEL_TYPE_TTL
 					endif
 
-					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(DAorTTL, 0, panelTitle)
-					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(DAorTTL, 1, panelTitle)
+					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
+					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END)
 					WBP_DeleteSet()
-					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsStart, DAorTTL, 0, panelTitle)
-					WBP_RestorePopupMenuSelection(popupMenuSelectedItemsEnd, DAorTTL, 1, panelTitle)
+					WBP_RestorePopupMenuSelection(panelTitle, channelType, CHANNEL_CONTROL_WAVE, popupMenuSelectedItemsStart)
+					WBP_RestorePopupMenuSelection(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END, popupMenuSelectedItemsEnd)
 				endfor
 			else
 				WBP_DeleteSet()
@@ -1858,13 +1858,13 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 		panelTitle = StringFromList(i, listOfPanels)
 
 		for(j = 0; j < NUM_DA_TTL_CHANNELS; j += 1)
-			ctrlWave     = GetPanelControl(panelTitle, j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(panelTitle, j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = DAP_GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = DAP_GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
 
-			ctrlWave     = GetPanelControl(panelTitle, j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(panelTitle, j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = DAP_GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = DAP_GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
 		endfor
@@ -1872,61 +1872,43 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 End
 
 /// @brief Returns the names of the items in the popmenu controls in a list
-static Function/S WBP_PopupMenuWaveNameList(DAorTTL, StartOrEnd, panelTitle)
-	string DAorTTL, panelTitle
-	variable StartOrEnd
+static Function/S WBP_PopupMenuWaveNameList(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
 
-	string ListOfSelectedWaveNames = ""
-	string popupMenuName
+	string ctrl, stimset
+	string list = ""
 	variable i
-	DelayUpdate
-	do
-		switch(StartOrEnd)
-			case 0:
-				popupMenuName = "Wave_" + DAorTTL + "_0" + num2str(i)
-				break
-			case 1:
-				popupMenuName = "Popup_" + DAorTTL + "_IndexEnd_0" + num2str(i)
-				break
-		endswitch
-		ControlInfo/W=$panelTitle $popupMenuName
-		ListOfSelectedWaveNames += s_value + ";"
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
 
-	return ListOfSelectedWaveNames
+	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		ctrl = DAP_GetPanelControl(i, channelType, controlType)
+		stimset = GetPopupMenuString(panel, ctrl)
+		list = AddListItem(stimset, list, ";", Inf)
+	endfor
+
+	return list
 End
 
-static Function WBP_RestorePopupMenuSelection(ListOfSelections, DAorTTL, StartOrEnd, panelTitle)
-	string ListOfSelections, DAorTTL, panelTitle
-	variable StartOrEnd
-	string popupMenuName
-	string CheckBoxName
-	variable i
-	DelayUpdate
+static Function WBP_RestorePopupMenuSelection(panelTitle, channelType, controlType, list)
+	variable channelType, controlType
+	string panelTitle, list
 
-	do
-		switch(StartOrEnd)
-			case 0:
-				popupMenuName = "Wave_"+DAorTTL+"_0"+ num2str(i)
-				break
-			case 1:
-				popupMenuName = "Popup_"+DAorTTL+"_IndexEnd_0"+num2str(i)
-				break
-			endswitch
-		ControlInfo/w=$panelTitle $popupMenuName
-		if(cmpstr(s_value, stringfromlist(i, ListOfSelections,";")) == 1 || cmpstr(s_value,"")==0)
-			PopupMenu  $popupMenuName win = $panelTitle, mode = v_value - 1
-			ControlInfo /w = $panelTitle $popupMenuName
-			if(!IsTestPulseSet(s_value))
-				PopupMenu  $popupMenuName win = $panelTitle, mode=1
-				CheckBoxName = "Check_" + DAorTTL + "_0" + num2str(i)
-				CheckBox Check_DA_00 win = $panelTitle, value = 0
-			endif
+	variable i, stimsetIndex
+	string ctrl, stimset
+
+	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		ctrl    = DAP_GetPanelControl(i, channelType, controlType)
+		stimset = GetPopupMenuString(panelTitle, ctrl)
+
+		if(cmpstr(stimset, StringFromList(i, list)) == 1 || isEmpty(stimset))
+			stimsetIndex = GetPopupMenuIndex(panelTitle, ctrl)
+			PGC_SetAndActivateControl(paneltitle, ctrl, val=(stimsetIndex - 1))
 		endif
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-	DoUpdate /W = $panelTitle
+	endfor
 End
 
 Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
