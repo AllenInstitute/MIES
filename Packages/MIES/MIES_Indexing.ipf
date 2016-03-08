@@ -381,7 +381,6 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 		endif
 	endif
 
-	lockedIndexing = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	maxITI = -INF
 	numPanels = ItemsInList(panelList)
 	for(i = 0; i < numPanels; i += 1)
@@ -390,6 +389,11 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 		Wave DAChannelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 		if(i == 0) // this is either the lead panel or the first and only panel
 			numActiveDAChannels = sum(DAChannelStatus)
+			if(numActiveDAChannels > 1)
+				lockedIndexing = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
+			else // With only a single channel, locked and unlocked indexing are equivalent.
+				lockedIndexing = 1
+			endif
 		endif
 
 		numDACs = DimSize(DAChannelStatus, ROWS)
