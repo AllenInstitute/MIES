@@ -544,7 +544,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 		rawChannelValue = ITC_SingleADReading(i + deviceChannelOffset, panelTitle)
 
 		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
-		setvarGain= GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+		setvarGain= DAP_GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 
 		title = GetSetVariableString(panelTitle, setvarTitle)
 		gain  = GetSetVariable(panelTitle, setvarGain)
@@ -562,11 +562,11 @@ static Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, p
 	string minCtrl, maxCtrl, checkCtrl
 	variable paramMin, paramMax
 
-	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	checkCtrl = DAP_GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
 	if(GetCheckBoxState(panelTitle, checkCtrl))
-		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		minCtrl = DAP_GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 		paramMin = GetSetVariable(panelTitle, minCtrl)
-		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		maxCtrl = DAP_GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 		paramMax = GetSetVariable(panelTitle, maxCtrl)
 		if(Measurement >= ParamMax || Measurement <= ParamMin)
 			beep

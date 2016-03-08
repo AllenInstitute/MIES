@@ -1858,13 +1858,13 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 		panelTitle = StringFromList(i, listOfPanels)
 
 		for(j = 0; j < NUM_DA_TTL_CHANNELS; j += 1)
-			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = DAP_GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = DAP_GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
 
-			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			ctrlWave     = DAP_GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			ctrlIndexEnd = DAP_GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
 		endfor
@@ -1883,7 +1883,7 @@ static Function/S WBP_PopupMenuWaveNameList(panelTitle, channelType, controlType
 	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+		ctrl = DAP_GetPanelControl(i, channelType, controlType)
 		stimset = GetPopupMenuString(panel, ctrl)
 		list = AddListItem(stimset, list, ";", Inf)
 	endfor
@@ -1901,7 +1901,7 @@ static Function WBP_RestorePopupMenuSelection(panelTitle, channelType, controlTy
 	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl    = GetPanelControl(i, channelType, controlType)
+		ctrl    = DAP_GetPanelControl(i, channelType, controlType)
 		stimset = GetPopupMenuString(panelTitle, ctrl)
 
 		if(cmpstr(stimset, StringFromList(i, list)) == 1 || isEmpty(stimset))

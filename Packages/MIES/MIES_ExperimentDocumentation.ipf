@@ -440,23 +440,23 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	// first...determine if the head stage is being controlled
 	variable asyncVariablesCounter
 	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
-		ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+		ctrl = DAP_GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
 
 		if (GetCheckBoxState(panelTitle, ctrl))
 			asyncSettingsWave[0][asyncVariablesCounter] = CHECKBOX_SELECTED
 
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+			ctrl = DAP_GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 			asyncSettingsWave[0][asyncVariablesCounter + 8] = GetSetVariable(panelTitle, ctrl)
 
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+			ctrl = DAP_GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
 			minSettingValue = GetCheckBoxState(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 16] = minSettingValue
 			
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+			ctrl = DAP_GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 			maxSettingValue = GetSetVariable(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 24] = maxSettingValue
 			
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+			ctrl = DAP_GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 			minSettingValue = GetSetVariable(panelTitle, ctrl)
 			asyncSettingsWave[0][asyncVariablesCounter + 32] = minSettingValue
 	
@@ -473,7 +473,7 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			// add the text unit value into the measurementKey Wave
 			asyncMeasurementKey[%Parameter][asyncVariablesCounter] = adTitleStringValue
 
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+			ctrl = DAP_GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adUnitStringValue
 			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue

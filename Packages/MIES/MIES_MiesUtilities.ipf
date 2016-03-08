@@ -90,56 +90,6 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	return activeChannels
 End
 
-/// @brief Returns the name of a control from the DA_EPHYS panel
-///
-/// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S GetPanelControl(idx, channelType, controlType)
-	variable idx, channelType, controlType
-
-	string ctrl
-
-	if(channelType == CHANNEL_TYPE_HEADSTAGE)
-		ctrl = "DataAcqHS"
-	elseif(channelType == CHANNEL_TYPE_DAC)
-		ctrl = "DA"
-	elseif(channelType == CHANNEL_TYPE_ADC)
-		ctrl = "AD"
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		ctrl = "TTL"
-	elseif(channelType == CHANNEL_TYPE_ALARM)
-		ctrl = "AsyncAlarm"
-	elseif(channelType == CHANNEL_TYPE_ASYNC)
-		ctrl = "AsyncAD"
-	else
-		ASSERT(0, "Invalid channelType")
-	endif
-
-	if(controlType == CHANNEL_CONTROL_WAVE)
-		ctrl = "Wave_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_INDEX_END)
-		ctrl = "IndexEnd_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_UNIT)
-		ctrl = "Unit_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_GAIN)
-		ctrl = "Gain_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_SCALE)
-		ctrl = "Scale_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_CHECK)
-		ctrl = "Check_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_ALARM_MIN)
-		ctrl = "Min_" + ctrl
-	elseif(controlType == CHANNEL_CONTROL_ALARM_MAX)
-		ctrl = "Max_" + ctrl
-	else
-		ASSERT(0, "Invalid controlType")
-	endif
-
-	ASSERT(idx >= 0 && idx < 100, "invalid idx")
-	sprintf ctrl, "%s_%02d", ctrl, idx
-
-	return ctrl
-End
-
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history wave
 Function GetSweepColumn(settingsHistory)
@@ -2077,7 +2027,7 @@ Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
 	make/FREE/n=(CtrlNum) Wv
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+		ctrl = DAP_GetPanelControl(i, channelType, controlType)
 		wv[i] = GetSetVariable(panelTitle, ctrl)
 	endfor
 	return wv
@@ -2093,7 +2043,7 @@ Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	make/FREE/n=(CtrlNum) Wv
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+		ctrl = DAP_GetPanelControl(i, channelType, controlType)
 		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
 	endfor
 	return wv

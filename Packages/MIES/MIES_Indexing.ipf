@@ -41,19 +41,19 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		ControlInfo/W=$panelTitle $ctrl
 		DACIndexingStorageWave[0][i] = V_Value
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		ControlInfo/W=$panelTitle $ctrl
 		DACIndexingStorageWave[1][i] = V_Value + 1 // added " +1 " because indexing end no longer has test pulse listed
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		ControlInfo/W=$panelTitle $ctrl
 		TTLIndexingStorageWave[0][i] = V_Value
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 		ControlInfo/W=$panelTitle $ctrl
 		TTLIndexingStorageWave[1][i] = V_Value
 	endfor 
@@ -70,16 +70,16 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[0][i] - 1)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[1][i] - 2)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[0][i] - 1)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[1][i] - 1)
 	endfor
 End
@@ -94,7 +94,7 @@ Function IDX_IndexingDoIt(panelTitle)
 	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
 			ControlInfo/W=$panelTitle $ctrl
@@ -116,7 +116,7 @@ Function IDX_IndexingDoIt(panelTitle)
 	endfor
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ctrl = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
 			ControlInfo /w = $panelTitle $ctrl
 			if(v_value < TTLIndexingStorageWave[1][i])
@@ -149,7 +149,7 @@ Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string ctrl
 
-	ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
+	ctrl = DAP_GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 	ControlInfo/W=$panelTitle $ctrl
 	popIdx = V_Value
 	if(channelType == CHANNEL_TYPE_DAC)
@@ -222,10 +222,10 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	
 	do // for DAs
 		if((str2num(stringfromlist(i, DAChannelStatusList,";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			popMenuIndexStartName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ListStartNo = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			popMenuIndexEndName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
 			ListEndNo = v_value + 1 // " +1 " added to compensate for test pulse not being listed in index end popup menu ************************
 			ListLength = abs(ListStartNo - ListEndNo) + 1
@@ -250,10 +250,10 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	
 	do // for TTLs
 		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			popMenuIndexStartName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ListStartNo = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			popMenuIndexEndName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
 			ListEndNo = v_value 
 			ListLength = abs(ListStartNo - ListEndNo) + 1
@@ -288,10 +288,10 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	variable i = 0
 	do
 		if((str2num(stringfromlist(i, DAChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			popMenuIndexStartName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ChannelSets = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			popMenuIndexEndName = DAP_GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
 			ChannelSets -= (v_value + 1) // added " +1 " to compensate for test pulse not being listed in indexing end wave *******************
 			ChannelSets = abs(ChannelSets)
@@ -303,10 +303,10 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	i = 0
 	do
 		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			popMenuIndexStartName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			controlinfo /w = $panelTitle $popMenuIndexStartName
 			ChannelSets = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+			popMenuIndexEndName = DAP_GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			controlinfo/w=$panelTitle $popMenuIndexEndName
 			ChannelSets -= v_value
 			ChannelSets = abs(ChannelSets)
@@ -447,8 +447,8 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 		ASSERT(0, "Invalid channelType")
 	endif
 	
-	waveCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
-	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
+	waveCtrl = DAP_GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
+	lastCtrl = DAP_GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
 	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
 
 	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset
