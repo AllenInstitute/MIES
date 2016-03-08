@@ -7,7 +7,7 @@ static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
 static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%.01#f\", TagVal(2)}\\]1\K(0, 0, 0)"
-
+static Constant 	PRESSURE_SPECTRUM_PERCENT      = 0.05
 Function/S SCOPE_GetGraph(panelTitle)
 	string panelTitle
 
@@ -174,6 +174,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
 	variable testPulseLength, cutOff, sampInt
+	variable headStage
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
@@ -183,8 +184,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE SSResistance      = GetSSResistanceWave(panelTitle)
 	WAVE InstResistance    = GetInstResistanceWave(panelTitle)
-	Wave TPStorage         = GetTPStorage(panelTitle)
+	WAVE TPStorage         = GetTPStorage(panelTitle)
 	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
+	WAVE PressureData		= P_GetPressureDataWaveRef(panelTitle)
 
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
@@ -232,7 +234,17 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
-				ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
+				headStage = AFH_GetHeadstageFromADC(panelTitle, i)
+				ASSERT(isFinite(headStage), "invalid headStage")
+				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
+					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
+					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
+					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535,65535,65535)
+					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE),(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE),BlueBlackRed,0}
+					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][i][%PressureChange],0,1,1,4}
+				else
+					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
+				endif
 			endif
 
 			if(showPeakResistance ||showSteadyStateResistance)
