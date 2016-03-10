@@ -19,8 +19,10 @@
 /// @brief Return the headstage the AD channel is assigned to
 ///
 /// @param panelTitle device
-/// @param AD         AD channel in the range ]0,8[ or ]0,16[
+/// @param AD         AD channel in the range [0,8[ or [0,16[
 ///                   depending on the hardware
+///
+/// @return headstage or NaN (for non-associated channels)
 Function AFH_GetHeadstageFromADC(panelTitle, AD)
 	string panelTitle
 	variable AD
@@ -38,8 +40,6 @@ Function AFH_GetHeadstageFromADC(panelTitle, AD)
 		endif
 	endfor
 
-	DEBUGPRINT("Could not find headstage for AD channel", var = AD)
-
 	return NaN
 End
 
@@ -48,6 +48,8 @@ End
 /// @param panelTitle device
 /// @param DA         DA channel in the range [0,4[ or [0,8[
 ///                   depending on the hardware
+///
+/// @return headstage or NaN (for non-associated channels)
 Function AFH_GetHeadstageFromDAC(panelTitle, DA)
 	string 	panelTitle
 	variable DA
@@ -66,8 +68,6 @@ Function AFH_GetHeadstageFromDAC(panelTitle, DA)
 		endif
 	endfor
 
-	DEBUGPRINT("Could not find headstage for DA channel", var = DA)
-
 	return NaN
 End
 
@@ -75,6 +75,8 @@ End
 ///
 /// @param panelTitle device
 /// @param headstage  headstage in the range [0,8[
+///
+/// @return AD channel or NaN (for non-associated channels)
 Function AFH_GetADCFromHeadstage(panelTitle, headstage)
 	string panelTitle
 	variable headstage
@@ -88,8 +90,6 @@ Function AFH_GetADCFromHeadstage(panelTitle, headstage)
 		endif
 	endfor
 
-	DEBUGPRINT("Could not find the AD channel for the headstage", var = headstage)
-
 	return NaN
 End
 
@@ -97,6 +97,8 @@ End
 ///
 /// @param panelTitle device
 /// @param headstage  headstage in the range [0,8[
+///
+/// @return DA channel or NaN (for non-associated channels)
 Function AFH_GetDACFromHeadstage(panelTitle, headstage)
 	string panelTitle
 	variable headstage
@@ -109,8 +111,6 @@ Function AFH_GetDACFromHeadstage(panelTitle, headstage)
 			return i
 		endif
 	endfor
-
-	DEBUGPRINT("Could not find the DA channel for the headstage", var = headstage)
 
 	return NaN
 End
