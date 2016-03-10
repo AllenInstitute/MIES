@@ -213,7 +213,7 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 	variable headStage
 	variable mode
 
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headStage))
 		return NaN
@@ -269,7 +269,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string str
 
 	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headstage))
 		return NaN
@@ -1321,4 +1321,11 @@ Function AI_AutoFillGain(panelTitle)
 		printf "It appears that a holding potential is being applied, therefore as a precaution, the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
 		printf "The gains were successfully imported for the %s on headstage: %d\r", AI_ConvertAmplifierModeToString(mode), headstage
 	endif
+End
+
+/// @brief Assert on invalid clamp modes, does nothing otherwise
+Function AI_AssertOnInvalidClampMode(clampMode)
+	variable clampMode
+
+	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE, "invalid clamp mode")
 End
