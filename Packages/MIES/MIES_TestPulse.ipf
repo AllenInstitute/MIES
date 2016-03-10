@@ -252,7 +252,7 @@ static Function TP_CalculateAverage(buffer, dest)
 End
 
 /// Sampling interval in seconds
-static Constant samplingInterval = 0.2
+static Constant samplingInterval = 0.18
 
 /// Fitting range in seconds
 static Constant fittingRange = 5

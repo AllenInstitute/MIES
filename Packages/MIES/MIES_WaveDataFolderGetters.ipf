@@ -1160,16 +1160,16 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	Wave/Z/SDFR=dfr wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 11) wv
+		Redimension/N=(-1, -1, 12) wv
 	else
-		Make/N=(128, NUM_AD_CHANNELS, 11) dfr:TPStorage/Wave=wv
+		Make/N=(128, NUM_AD_CHANNELS, 12) dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
@@ -1187,6 +1187,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 8,  Pressure                  , wv
 	SetDimLabel LAYERS, 9,  TimeStamp                 , wv
 	SetDimLabel LAYERS, 10, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel LAYERS, 11, PressureChange            , wv
 
 	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
 	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
@@ -3072,7 +3073,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		return PressureData
 	endif
 
-	Make/N=(8,40,1) dfr:PressureData/Wave=PressureData
+	Make/N=(8,40) dfr:PressureData/Wave=PressureData
 
 	PressureData 	= nan
 
@@ -3164,7 +3165,7 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 		return PressureDataTextWv
 	endif
 
-	Make/T/N=(8, 3, 1) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
+	Make/T/N=(8, 3) dfr:PressureDataTextWv/WAVE= PressureDataTextWv
 
 	SetDimLabel COLS, 0, ITC_Device, PressureDataTextWv
 	SetDimLabel COLS, 1, DA_Unit, 	PressureDataTextWv

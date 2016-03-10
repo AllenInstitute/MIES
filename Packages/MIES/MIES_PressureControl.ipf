@@ -4,7 +4,7 @@
 /// @brief __P__ Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette.
 /// @todo TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
 
-///@name Constants Used by pressure control
+/// @name Constants static Used by pressure control
 /// @{
 static StrConstant 	PRESSURE_CONTROLS_BUTTON_LIST  	= "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
 static StrConstant 	PRESSURE_CONTROL_TITLE_LIST    		= "Approach;Seal;Break In;Clear;Apply"
@@ -27,9 +27,8 @@ static Constant 		SAMPLE_INT_MILLI             				= 0.005
 static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
 static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
-static Constant		MAX_REGULATOR_PRESSURE			= 10
-static Constant		MIN_REGULATOR_PRESSURE			= -10
 static Constant		ATMOSPHERIC_PRESSURE				= 0
+static Constant		PRESSURE_CHANGE					= 1
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -45,13 +44,7 @@ Function P_PressureControl(panelTitle)
 	variable 	headStage, Column
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing).
-			// save pressure in TPStorageWave giving the opportunity for pressure and resistance comparisions
-			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries. This will fail when a new headstage is turned on.
-				Column = TP_GetTPResultsColOfHS(panelTitle, headStage)
-				if(Column != -1)
-					TPStorage[count][column][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0] 
-				endif
-			endif
+
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
 						P_MethodAtmospheric(panelTitle, headstage)
@@ -82,7 +75,16 @@ Function P_PressureControl(panelTitle)
 					P_MethodAtmospheric(panelTitle, headstage)
 					break
 			endswitch
-			
+			// save pressure in TPStorageWave
+			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries. This will fail when a new headstage is turned on.
+				Column = TP_GetTPResultsColOfHS(panelTitle, headStage)
+				if(Column != -1)
+					TPStorage[count][column][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
+					if(count > 0) // record pressure change
+						TPStorage[count][column][%PressureChange] = TPStorage[count - 1][column][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE
+					endif
+				endif
+			endif
 		endif
 	endfor
 End
