@@ -251,7 +251,7 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 
 		gain = DA_EphysGuiState[adc][%ADGain]
 
-		if(ChannelClampMode[adc][1] == V_CLAMP_MODE || ChannelClampMode[adc][1] == I_CLAMP_MODE)
+		if(ChannelClampMode[adc][%ADC] == V_CLAMP_MODE || ChannelClampMode[adc][%ADC] == I_CLAMP_MODE)
 			// w' = w  / (g * s)
 			gain *= 3200
 			MultiThread WaveToScale[][(startOfADColumns + i)] /= gain
@@ -276,7 +276,7 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 
 		gain = DA_EphysGuiState[dac][%DAGain]
 
-		if(ChannelClampMode[dac][0] == V_CLAMP_MODE || ChannelClampMode[dac][0] == I_CLAMP_MODE)
+		if(ChannelClampMode[dac][%DAC] == V_CLAMP_MODE || ChannelClampMode[dac][%DAC] == I_CLAMP_MODE)
 			// w' = w * g / s
 			gain /= 3200
 			MultiThread WaveToScale[][i] *= gain

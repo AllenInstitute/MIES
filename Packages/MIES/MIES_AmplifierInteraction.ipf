@@ -785,10 +785,10 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	variable numHS, i, axonSerial, channel
+	variable numHS, i, axonSerial, channel, DAC
 	string mccSerial
 
-	WAVE/SDFR=GetDevicePath(panelTitle) ChannelClampMode
+	WAVE channelClampMode      = GetChannelClampMode(panelTitle)
 	WAVE statusHS              = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave(panelTitle)
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave(panelTitle)
@@ -811,8 +811,11 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			continue
 		endif
 
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+		ASSERT(IsFinite(DAC), "Expected finite DAC")
+
 		// now start to query the amp to get the status
-		if (ChannelClampMode[i][0] == V_CLAMP_MODE)
+		if(channelClampMode[DAC][%DAC] == V_CLAMP_MODE)
 			// See if the thing is enabled
 			// Save the enabled state in column 0
 			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable() // V-Clamp holding enable
@@ -849,7 +852,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			ampSettingsWave[0][41][i] = MCC_GetFastCompTau() // V-Clamp Fast compensation tau
 			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau() // V-Clamp Slow compensation tau
 
-		elseif (ChannelClampMode[i][0] == I_CLAMP_MODE)
+		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE)
 			// Save the i clamp holding enabled in column 10
 			ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable
 
