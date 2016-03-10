@@ -19,7 +19,7 @@
 /// @brief Return the headstage the AD channel is assigned to
 ///
 /// @param panelTitle device
-/// @param AD         AD channel in the range ]0,8[ or ]0,16[
+/// @param AD         AD channel in the range [0,8[ or [0,16[
 ///                   depending on the hardware
 Function AFH_GetHeadstageFromADC(panelTitle, AD)
 	string panelTitle
