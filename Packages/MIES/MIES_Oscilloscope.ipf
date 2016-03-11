@@ -234,7 +234,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
-				headStage = AFH_GetHeadstageFromADC(panelTitle, i)
+				headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
