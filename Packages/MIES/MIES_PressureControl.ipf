@@ -37,14 +37,12 @@ static Constant		PRESSURE_CHANGE					= 1
 /// A key point is that data acquisition used to run pressure pulses cannot be active if the TP is inactive.
 Function P_PressureControl(panelTitle)
 	string 	panelTitle
-	
-	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	Wave TPStorage = GetTPStorage(panelTitle)
-	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
-	variable 	headStage, Column
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable headStage
+
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !IsITCCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing).
-
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
 						P_MethodAtmospheric(panelTitle, headstage)
@@ -75,18 +73,38 @@ Function P_PressureControl(panelTitle)
 					P_MethodAtmospheric(panelTitle, headstage)
 					break
 			endswitch
-			// save pressure in TPStorageWave
-			if(P_IsHSActiveAndInVClamp(panelTitle, headStage)) /// @todo this is slow! When Headstage settings are converted from control storage to wave storage this should be updated to avoid control queries. This will fail when a new headstage is turned on.
-				Column = TP_GetTPResultsColOfHS(panelTitle, headStage)
-				if(Column != -1)
-					TPStorage[count][column][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
-					if(count > 0) // record pressure change
-						TPStorage[count][column][%PressureChange] = TPStorage[count - 1][column][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE
-					endif
-				endif
-			endif
 		endif
+
+		P_UpdateTPStorage(panelTitle, headStage)
 	endfor
+End
+
+/// @brief Record pressure in TPStorage wave
+static Function P_UpdateTPStorage(panelTitle, headStage)
+	string panelTitle
+	variable headstage
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	WAVE TPStorage      = GetTPStorage(panelTitle)
+	variable count      = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+	variable column
+
+	if(!P_ValidatePressureSetHeadstage(panelTitle, headStage) || !P_IsHSActiveAndInVClamp(panelTitle, headStage))
+		return NaN
+	endif
+
+	column = TP_GetTPResultsColOfHS(panelTitle, headStage)
+	if(column == -1)
+		return NaN
+	endif
+
+	TPStorage[count][column][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
+
+	if(count == 0) // don' record pressure change for first entry
+		return NaN
+	endif
+
+	TPStorage[count][column][%PressureChange] = (TPStorage[count - 1][column][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE)
 End
 
 /// @brief Sets the pressure to atmospheric
