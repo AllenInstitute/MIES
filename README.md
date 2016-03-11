@@ -108,3 +108,11 @@ and provides the following services for MIES.
   available as zip package from the [Package section](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful).
 * The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
   This is ensured by a platform requirement for the job.
+
+## Cutting a new release
+* Check that main MIES and all separate modules compile (IP6 and IP7)
+* Check that doxygen returns neither errors nor warnings
+* Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
+* Create a release branch: `git checkout -b release/X.Y`
+* Push everything: `git push --tags --set-upstream origin release/X.Y`
+* Change the bamboo jobs using release branches to use the branch you just created
