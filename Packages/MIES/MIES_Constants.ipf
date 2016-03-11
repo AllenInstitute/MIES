@@ -43,8 +43,8 @@ Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 Constant SAMPLE_INT_MICRO       = 5
 
 /// Max and min pressure regulator pressure in psi
-Constant MAX_REGULATOR_PRESSURE =  10
-Constant MIN_REGULATOR_PRESSURE = -10
+Constant MAX_REGULATOR_PRESSURE =  9.95
+Constant MIN_REGULATOR_PRESSURE = -9.95
 /// @}
 
 StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"

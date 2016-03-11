@@ -26,7 +26,7 @@ static Constant 		PRESSURE_PULSE_ENDpt         			= 70000
 static Constant 		SAMPLE_INT_MILLI             				= 0.005
 static Constant 		GIGA_SEAL                    					= 1000
 static Constant 		PRESSURE_OFFSET              			= 5
-static Constant 		MIN_NEG_PRESSURE_PULSE       		= -1.8
+static Constant 		MIN_NEG_PRESSURE_PULSE       		= -2
 static Constant		ATMOSPHERIC_PRESSURE				= 0
 static Constant		PRESSURE_CHANGE					= 1
 /// @}
@@ -261,7 +261,7 @@ Function P_MethodBreakIn(panelTitle, headStage)
 		print "Break in on head stage:", headstage,"of", panelTitle
 	else // still need to break - in
 		 PressureDataWv[headStage][%RealTimePressure] 		= 0
-		 if(ElapsedTimeInSeconds > 2.5)
+		 if(ElapsedTimeInSeconds > 5)
 		 	print "applying negative pressure pulse!"
 		 	P_NegPressurePulse(panelTitle, headStage)
 		 	PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
@@ -887,9 +887,9 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 	variable 	CalibratedPressureCom
 
 	if(lastPressureCom > MIN_NEG_PRESSURE_PULSE)
-		PressureCom = lastPressureCom - NEG_PRESSURE_PULSE_INCREMENT + MIN_NEG_PRESSURE_PULSE
+		PressureCom = MIN_NEG_PRESSURE_PULSE
 	else
-		PressureCom = lastPressureCom - NEG_PRESSURE_PULSE_INCREMENT
+		PressureCom = min(MIN_REGULATOR_PRESSURE, P_GetPulseAmp(panelTitle, headStage))
 	endif
 	
 	// apply calibration constants
@@ -917,6 +917,24 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 		pressureDataWv[Headstage][%LastPressureCommand] =  MIN_NEG_PRESSURE_PULSE
 		print "pulse amp", MIN_NEG_PRESSURE_PULSE
 	endif
+End
+
+/// @brief Returns the negative pressure pulse amplitude
+static Function P_GetPulseAmp(panelTitle, headStage)
+	string panelTitle
+	variable headstage
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable NextPulseCount = P_LastPulseCount(PressureDataWv[headStage][%LastPressureCommand]) + 1
+
+	return MIN_NEG_PRESSURE_PULSE - (NextPulseCount/2)^2
+End
+
+///@brief Returns the pulse count
+static Function P_LastPulseCount(pulseAmp)
+	variable pulseAmp
+
+	return -MIN_NEG_PRESSURE_PULSE * ((pulseAmp - MIN_NEG_PRESSURE_PULSE)/ -1)^0.5
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a positive pressure pulse
