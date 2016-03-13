@@ -8,6 +8,7 @@ static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
 static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%.01#f\", TagVal(2)}\\]1\K(0, 0, 0)"
 static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
+static Constant ADDITIONAL_SPACE_AD_GRAPH       = 0.10 ///< percent of total axis range
 
 Function/S SCOPE_GetGraph(panelTitle)
 	string panelTitle
@@ -55,15 +56,19 @@ End
 Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
-	variable latest, count, i, numADCs, minVal, maxVal, range
+	variable latest, count, i, numADCs, minVal, maxVal, range, numDACs, statsMin, statsMax
+	variable axisMin, axisMax, spacing
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
 	string graph, rightAxis, leftAxis, info
 
 	SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
 	graph = SCOPE_GetGraph(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
 	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
 
 	GetAxis/W=$graph/Q top
 	if(!V_flag) // axis exists in graph
@@ -120,32 +125,49 @@ Function SCOPE_UpdateGraph(panelTitle)
 		endfor
 	endif
 
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	Make/Y=(WaveType(OscilloscopeData))/FREE/N=(min(stopCollectionPoint, DimSize(OscilloscopeData, ROWS))) ADdata
+
 	// scale the left AD axes
-	// We use autoscaling to get the axis range and then set
-	// that axis range manually.
-	// This is done in order to prevent a jumping testpulse
 	for(i = 0; i < numADCs; i += 1)
 
 		leftAxis = "AD" + num2str(ADCs[i])
 
-		info = AxisInfo(graph, leftAxis)
+		ADdata[] = OscilloscopeData[p][numDACs + i]
 
-		if(isEmpty(info))
-			continue
-		endif
+		/// @todo switch to WaveStats/RMD once IP7 is mandatory
+		WaveStats/M=1/Q ADdata
 
-		SetAxis/W=$graph/A/N=2 $leftAxis
-		DoUpdate/W=$graph
-		GetAxis/W=$graph/Q $leftAxis
+		statsMin = V_min
+		statsMax = V_max
 
 		// data is propably just zero, skip the axis
-		if((V_min == 0 && V_max == 0) || (V_min == -1 && V_max == 1))
+		if(statsMin == statsMax)
 			continue
 		endif
 
-		SetAxis/W=$graph $leftAxis V_min, V_max
-		DoUpdate/W=$graph
+		GetAxis/Q/W=$graph $leftAxis
+		ASSERT(!V_Flag, "Expected axis does not exist")
+
+		axisMin = V_min
+		axisMax = V_max
+
+		if(axisMax == axisMin)
+			spacing = (statsMax - statsMin) * ADDITIONAL_SPACE_AD_GRAPH
+		else
+			spacing = (axisMax - axisMin) * ADDITIONAL_SPACE_AD_GRAPH
+		endif
+
+		if(axisMin < statsMin && abs(statsMin - axisMin) < spacing)
+			if(axisMax > statsMax && abs(statsMax - axisMax) < spacing)
+				continue
+			endif
+		endif
+
+		SetAxis/W=$graph $leftAxis statsMin - spacing / 2.0, statsMax + spacing / 2.0
 	endfor
+
+	DoUpdate/W=$graph
 End
 
 static Function SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
