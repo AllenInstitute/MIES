@@ -2328,7 +2328,7 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TabControl tab_DataAcq_Amp,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Amp,tabLabel(0)="V-Clamp",tabLabel(1)="I-Clamp"
-	TabControl tab_DataAcq_Amp,tabLabel(2)="I = 0",value= 0
+	TabControl tab_DataAcq_Amp,tabLabel(2)="\f01\Z11I = 0",value= 0
 	TitleBox Title_DataAcq_Hold_IC,pos={97.00,186.00},size={69.00,15.00},disable=1,title="Holding (pA)"
 	TitleBox Title_DataAcq_Hold_IC,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_Hold_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -3184,7 +3184,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
 
 	ChangeTab(panelTitle, "ADC", 0)
-	ChangeTab(panelTitle, "tab_DataAcq_Amp", 0)
+	DAP_UpdateClampmodeTabs(panelTitle, 0, V_CLAMP_MODE)
 	ChangeTab(panelTitle, "ADC", 6)
 	DoUpdate/W=$panelTitle
 
@@ -5404,6 +5404,22 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	return 0
 End
 
+static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
+	string panelTitle
+	variable headStage, clampMode
+
+	string highlightSpec = "\\f01\\Z11"
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	AI_SyncAmpStorageToGUI(panelTitle, headStage)
+	ChangeTab(panelTitle, "tab_DataAcq_Amp", clampMode)
+
+	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(V_CLAMP_MODE)      = SelectString(clampMode == V_CLAMP_MODE,      "", highlightSpec) + "V-Clamp"
+	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(I_CLAMP_MODE)      = SelectString(clampMode == I_CLAMP_MODE,      "", highlightSpec) + "I-Clamp"
+	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(I_EQUAL_ZERO_MODE) = SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
+End
+
 static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	string panelTitle, headStageCtrl
 	variable enabled
@@ -5812,12 +5828,9 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		panelTitle = sc.win
 		headStage  = sc.curVal
 		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-		ASSERT(IsFinite(mode), "Invalid clamp mode")
-		AI_SyncAmpStorageToGUI(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
-		// chooses the amp tab according to the MIES headstage clamp mode
-		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode)
 	endif
 
 	return 0
