@@ -2017,8 +2017,6 @@ static Function AddDimLabelsToSegWvType(wv)
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 2, $("Inter trial interval")  , wv
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 3, $("Total number of epochs"), wv
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 4, $("Total number of steps") , wv
-
-	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
 End
 
 /// @brief Returns the segment type wave used by the wave builder panel
