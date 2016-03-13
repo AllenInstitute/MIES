@@ -3178,10 +3178,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	// remove tools
 	HideTools/W=$panelTitle/A
 
-	// activate only the first headstage
 	DAP_TurnOffAllHeadstages(panelTitle)
-	CheckBox Check_DataAcqHS_00 WIN = $panelTitle,value= 0
-
 	DAP_TurnOffAllDACs(panelTitle)
 	DAP_TurnOffAllADCs(panelTitle)
 	DAP_TurnOffAllTTLs(panelTitle)
