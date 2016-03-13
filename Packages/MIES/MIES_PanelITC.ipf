@@ -4325,20 +4325,19 @@ Function DAP_ButtonProc_ADOff(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_TurnOffAllHeadstages(panelTitle)
+static Function DAP_TurnOffAllHeadstages(panelTitle)
 	string panelTitle
 
-	variable i, ctrlNo, mode, headStage
+	variable i
 	string ctrl
+
+	if(HSU_DeviceIsUnLocked(panelTitle, silentCheck=1))
+		return NaN
+	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
-		ASSERT(i == ctrlNo, "invalid index")
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
-		if(!HSU_DeviceIsUnLocked(panelTitle, silentCheck=1))
-			DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
-		endif
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
