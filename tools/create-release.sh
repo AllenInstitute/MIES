@@ -33,3 +33,5 @@ echo $version > "$version_file"
 "$zip_exe" -qd $version.zip "Packages/ITC/*" > /dev/null
 "$zip_exe" -qd $version.zip "tools/*" > /dev/null
 "$zip_exe" -qd $version.zip "Guidelines/*" > /dev/null
+"$zip_exe" -qd $version.zip "XOPs/NIDAQmx.XOP" > /dev/null
+"$zip_exe" -qd $version.zip "XOPs-IP7/NIDAQmx.XOP" > /dev/null
