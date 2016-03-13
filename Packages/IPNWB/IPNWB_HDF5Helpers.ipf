@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.12
+#pragma version=0.13
 
 /// @cond DOXYGEN_IGNORES_THIS
 #include "HDF5 Browser", version=1.04

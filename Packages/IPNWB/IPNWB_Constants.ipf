@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.12
+#pragma version=0.13
 
 /// @file IPNWB_Constants.ipf
 /// @brief Constants
@@ -46,6 +46,7 @@ Constant CHANNEL_TYPE_TTL   = 3
 /// @name Constants for the acquisition modes
 /// @anchor IPNWB_ClampModes
 /// @{
-Constant V_CLAMP_MODE = 0
-Constant I_CLAMP_MODE = 1
+Constant V_CLAMP_MODE      = 0
+Constant I_CLAMP_MODE      = 1
+Constant I_EQUAL_ZERO_MODE = 2
 /// @}

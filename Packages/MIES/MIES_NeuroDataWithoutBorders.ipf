@@ -495,6 +495,11 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 
 	stimSet = params.stimSet
 
+	// don't output stimsets for I=0 mode
+	if(params.clampMode == I_EQUAL_ZERO_MODE)
+		return NaN
+	endif
+
 	path                 = "/stimulus/templates"
 	params.channelNumber = NaN
 	params.channelType   = -1
