@@ -4804,7 +4804,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, ctrlNo, clampMode
+	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
@@ -4945,8 +4945,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-			DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, i)
+			clampMode = DAP_MIESHeadstageMode(panelTitle, i)
 
 			if(clampMode == V_CLAMP_MODE)
 				DACs[i] = ChanAmpAssign[0][i]
@@ -5015,7 +5014,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	string ctrl, dacWave, endWave, unit, func, info, str
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale, ctrlNo, clampMode, i, valid_f1, valid_f2
+	variable gain, scale, clampMode, i, valid_f1, valid_f2
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -5029,8 +5028,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-	DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headstage)
 
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
@@ -5383,6 +5381,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
 
 			DAP_UpdateITCSampIntDisplay(panelTitle)
+			GuiState[headStage][%HSmode] = mode
 
 			if(activeHS)
 				TP_RestartTestPulse(panelTitle, testPulseMode)
@@ -5410,17 +5409,16 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	variable enabled
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	variable mode, headStage, ctrlNo, TPState
+	variable clampMode, headStage, TPState
 
 	TPState = TP_StopTestPulse(panelTitle)
-	DAP_GetInfoFromControl(panelTitle, headStageCtrl, ctrlNo, mode, headStage)
-
 	GuiState[headStage][%HSState] = enabled
 
-	If(!enabled)
-		DAP_RemoveClampModeSettings(panelTitle, headStage, mode)
+	clampMode = GuiState[headStage][%HSmode]
+	if(!enabled)
+		DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	else
-		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	endif
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
