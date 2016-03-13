@@ -636,10 +636,6 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_BB", i, value=value)
 				AI_UpdateAmpModel(panelTitle, "check_DatAcq_BBEnable", i, value=1)
 				break
-			// I Zero controls
-			case "check_DataAcq_IzeroEnable":
-				AmpStorageWave[30][0][i] = value
-				break
 			default:
 				ASSERT(0, "Unknown control " + ctrl)
 				break
@@ -772,10 +768,6 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			case "button_DataAcq_SlowComp_VC":
 			case "button_DataAcq_AutoPipOffset_VC":
 				// do nothing
-				break
-			// I = zero controls
-			case "check_DataAcq_IzeroEnable":
-				setCheckBoxState(panelTitle, "check_DataAcq_IzeroEnable", AmpStorageWave[%IZeroEnable][0][MIESHeadStageNo])
 				break
 			default:
 				ASSERT(0, "Unknown control " + cntrlName)

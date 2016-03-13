@@ -1321,7 +1321,7 @@ End
 Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	DFREF dfr = GetAmpSettingsFolder()
 
@@ -1367,7 +1367,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 27, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 28, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 29, IclampPlaceHolder     , wv
-	SetDimLabel ROWS  , 30, IZeroEnable           , wv
+	SetDimLabel ROWS  , 30, IclampPlaceHolder     , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 

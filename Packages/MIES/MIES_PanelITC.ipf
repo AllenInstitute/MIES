@@ -2545,13 +2545,6 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo)= A"!!,I-J,hs\\J,hnY!!#>Jz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DataAcq_IzeroEnable,pos={52.00,185.00},size={50.00,15.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
-	CheckBox check_DataAcq_IzeroEnable,userdata(tabnum)=  "2"
-	CheckBox check_DataAcq_IzeroEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
-	CheckBox check_DataAcq_IzeroEnable,userdata(ResizeControlsInfo)= A"!!,D_!!#AH!!#>Z!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataAcq_IzeroEnable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataAcq_IzeroEnable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DataAcq_IzeroEnable,fColor=(65280,43520,0),value= 0
 	CheckBox Check_Settings_AlarmPauseAcq,pos={34.00,474.00},size={181.00,15.00},disable=1,title="\\JCPause acquisition in alarm state"
 	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
@@ -3513,7 +3506,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable SetVar_DataAcq_WCC  WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_RsCorr WIN = $panelTitle,value= _NUM:0
 	SetVariable SetVar_DataAcq_RsPred WIN = $panelTitle,value= _NUM:0
-	CheckBox check_DataAcq_IzeroEnable WIN = $panelTitle,value= 0
 	CheckBox Check_Settings_AlarmPauseAcq WIN = $panelTitle,value= 0
 	CheckBox Check_Settings_AlarmAutoRepeat WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpMCCdefault WIN = $panelTitle,value= 0
