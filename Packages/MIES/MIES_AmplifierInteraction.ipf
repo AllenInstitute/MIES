@@ -38,11 +38,7 @@ static Function AI_RetrieveADGain(panelTitle, headstage)
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 
-	if(tds.OperatingMode == V_CLAMP_MODE)
-		return tds.ScaleFactor * tds.Alpha / 1000
-	elseif(tds.OperatingMode == I_CLAMP_MODE)
-		return tds.ScaleFactor * tds.Alpha / 1000
-	endif
+	return tds.ScaleFactor * tds.Alpha / 1000
 End
 
 /// @returns DA gain of selected Amplifier in current clamp mode
