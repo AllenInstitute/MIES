@@ -166,9 +166,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	string graph, tagName
+	string graph, tagName, color
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
-	variable showSteadyStateResistance, showPeakResistance
+	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue
 	string leftAxis, rightAxis, tagAxis, str
 	string tagPeakTrace, tagSteadyStateTrace
 	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
@@ -209,6 +209,16 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		adc    = ADCs[i]
 		adcStr = num2str(adc)
 		leftAxis = "AD" + adcStr
+		
+		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
+		if(isFinite(headStage))
+			GetTraceColor(headStage, red, green, blue)
+		else
+			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+		endif
+		
+		sprintf color, "\K(%d,%d,%d)" red, green, blue
+		
 		AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
 
 		ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
@@ -216,7 +226,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 		// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
 		unit = StringFromList(numActiveDACs + i, unitWaveNote)
-		Label/W=$graph $leftAxis, leftAxis + " (" + unit + ")"
+		Label/W=$graph $leftAxis, color + leftAxis + " (" + unit + ")"
 		ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
@@ -234,7 +244,6 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
-				headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
