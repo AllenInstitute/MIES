@@ -25,6 +25,7 @@ tools        export-ignore
 Packages/ITC export-ignore
 Packages/doc export-ignore
 Guidelines   export-ignore
+NIDAQmx.XOP  export-ignore
 
 .git* export-ignore
 
