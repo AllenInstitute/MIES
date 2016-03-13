@@ -454,7 +454,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 1
-	SetVariable SetVar_DataAcq_ITI,pos={66.00,700.00},size={80.00,18.00},bodyWidth=35,disable=0,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={66.00,700.00},size={80.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,Eb!!#D?!!#?Y!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3240,7 +3240,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 1
 	CheckBox Check_DataAcq1_DistribDaq Win = $panelTitle, value = 0
 
-	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0, disable = 0
+	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0
 
 	SetVariable SetVar_DataAcq_TPDuration  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
@@ -3529,7 +3529,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
 
 	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 1
-	CheckBox check_Settings_Override_Set_ITI WIN = $panelTitle, value = 0
+	CheckBox Check_DataAcq_Get_Set_ITI WIN = $panelTitle, value = 1
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
