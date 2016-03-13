@@ -26,7 +26,7 @@ Function/S AI_ConvertAmplifierModeToString(mode)
 End
 
 /// @returns AD gain of selected Amplifier in current clamp mode
-/// Gain is returned in V/pA for V_CLAMP_MODE, V/mV for I_CLAMP_MODE
+/// Gain is returned in V/pA for V_CLAMP_MODE, V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
 static Function AI_RetrieveADGain(panelTitle, headstage)
 	string panelTitle
 	variable headstage
@@ -42,7 +42,7 @@ static Function AI_RetrieveADGain(panelTitle, headstage)
 End
 
 /// @returns DA gain of selected Amplifier in current clamp mode
-/// Gain is returned in mV/V for V_CLAMP_MODE and V/mV for I_CLAMP_MODE.
+/// Gain is returned in mV/V for V_CLAMP_MODE and V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
 static Function AI_RetrieveDAGain(panelTitle, headstage)
 	string panelTitle
 	variable headstage
@@ -56,7 +56,7 @@ static Function AI_RetrieveDAGain(panelTitle, headstage)
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
 		return tds.ExtCmdSens * 1000
-	elseif(tds.OperatingMode == I_CLAMP_MODE)
+	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
 		return tds.ExtCmdSens * 1e12
 	endif
 End
@@ -76,7 +76,7 @@ static Function AI_SwitchAxonAmpMode(panelTitle, headStage)
 
 	if(mode == V_CLAMP_MODE)
 		MCC_SetMode(I_CLAMP_MODE)
-	elseif(Mode == I_CLAMP_MODE)
+	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
 		MCC_SetMode(V_CLAMP_MODE)
 	else
 		// do nothing
@@ -851,7 +851,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			ampSettingsWave[0][41][i] = MCC_GetFastCompTau() // V-Clamp Fast compensation tau
 			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau() // V-Clamp Slow compensation tau
 
-		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE)
+		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE || channelClampMode[DAC][%DAC] == I_EQUAL_ZERO_MODE)
 			// Save the i clamp holding enabled in column 10
 			ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable
 

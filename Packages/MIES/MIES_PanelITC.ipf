@@ -1048,6 +1048,57 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_15,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Radio_ClampMode_15,value= 0,mode=1
+	CheckBox Radio_ClampMode_1IZ,pos={145.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_1IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_1IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_1IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_1IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_1IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_3IZ,pos={178.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_3IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_3IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_3IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_3IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_3IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_5IZ,pos={212.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_5IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_5IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_5IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_5IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_5IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_7IZ,pos={246.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_7IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_7IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_7IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_7IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_7IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_9IZ,pos={280.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_9IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_9IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_9IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_9IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_9IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_11IZ,pos={314.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_11IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_11IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_11IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_11IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_11IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_13IZ,pos={348.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_13IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_13IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_13IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_13IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_13IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Radio_ClampMode_15IZ,pos={382.00,181.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
+	CheckBox Radio_ClampMode_15IZ,value= 0,mode=1
+	CheckBox Radio_ClampMode_15IZ,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
+	CheckBox Radio_ClampMode_15IZ,userdata(ResizeControlsInfo)= A"!!,I%!!#@B!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Radio_ClampMode_15IZ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Radio_ClampMode_15IZ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox Title_DataAcq_IE0,pos={82.00,179.00},size={55.00,15.00},disable=1,title="I=0 Clamp"
+	TitleBox Title_DataAcq_IE0,frame=0
+	TitleBox Title_DataAcq_IE0,userdata(tabnum)=  "2",userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	PopupMenu Popup_Settings_VC_DA,pos={46.00,411.00},size={47.00,19.00},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_VC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_VC_DA,userdata(tabcontrol)=  "ADC"
@@ -3310,6 +3361,14 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox Radio_ClampMode_13 WIN = $panelTitle, value= 0,mode=1
 	CheckBox Radio_ClampMode_14 WIN = $panelTitle, value= 1,mode=1
 	CheckBox Radio_ClampMode_15 WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_1IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_3IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_5IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_7IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_9IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_11IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_13IZ WIN = $panelTitle, value= 0,mode=1
+	CheckBox Radio_ClampMode_15IZ WIN = $panelTitle, value= 0,mode=1
 
 	CheckBox Check_DataAcq_SendToAllAmp WIN = $panelTitle, value= 0
 
@@ -4078,6 +4137,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
+		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
@@ -4100,6 +4160,7 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		EnableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		EnableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
+		EnableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
@@ -4942,7 +5003,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 			if(clampMode == V_CLAMP_MODE)
 				DACs[i] = ChanAmpAssign[0][i]
 				ADCs[i] = ChanAmpAssign[2][i]
-			elseif(clampMode == I_CLAMP_MODE)
+			elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 				DACs[i] = ChanAmpAssign[4][i]
 				ADCs[i] = ChanAmpAssign[6][i]
 			else
@@ -5025,7 +5086,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
 		ADCchannel = ChanAmpAssign[2][headStage]
-	elseif(clampMode == I_CLAMP_MODE)
+	elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 		DACchannel = ChanAmpAssign[4][headStage]
 		ADCchannel = ChanAmpAssign[6][headStage]
 	else
@@ -5208,7 +5269,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 		ADGain     = ChanAmpAssign[3][headStage]
 		DAUnit     = ChanAmpAssignUnit[0][headStage]
 		ADUnit     = ChanAmpAssignUnit[1][headStage]
-	elseif(clampMode == I_CLAMP_MODE)
+	elseif(ClampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 		DACchannel = ChanAmpAssign[4][headStage]
 		ADCchannel = ChanAmpAssign[6][headStage]
 		DAGain     = ChanAmpAssign[5][headStage]
@@ -5250,10 +5311,10 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 
-	If(ClampMode == V_CLAMP_MODE)
+	if(ClampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[0][headStage]
 		ADCchannel = ChanAmpAssign[2][headStage]
-	elseif(ClampMode == I_CLAMP_MODE)
+	elseif(ClampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 		DACchannel = ChanAmpAssign[4][headStage]
 		ADCchannel = ChanAmpAssign[6][headStage]
 	endIf
@@ -5283,29 +5344,32 @@ Function/S DAP_GetClampModeControl(mode, headstage)
 		case I_CLAMP_MODE:
 			return "Radio_ClampMode_" + num2str(headStage * 2 + 1)
 		case I_EQUAL_ZERO_MODE:
-			ASSERT(0, "not implemented")
+			return "Radio_ClampMode_" + num2str(headStage * 2 + 1) + "IZ"
 		default:
 			ASSERT(0, "invalid mode")
 			break
 	endswitch
 End
 
-/// @brief Return information readout from various gui controls
+/// @brief Return information readout from headstage and clamp mode controls
+///
+/// Users interested in the clamp mode of a known headstage should prefer DAP_MIESHeadstageMode() instead.
 ///
 /// @param[in]  panelTitle  panel
 /// @param[in]  ctrl        control can be either `Radio_ClampMode_*` or `Check_DataAcqHS_*`
 ///                         referring to an existing control
-/// @param[out] ctrlNo      number of the control (everything behind the last "_" of ctrl)
-/// @param[out] mode        I_CLAMP_MODE or V_CLAMP_MODE
+/// @param[out] mode        I_CLAMP_MODE, V_CLAMP_MODE or I_EQUAL_ZERO_MODE, the currently active mode for headstage controls
+///                         and the clamp mode of the control for clamp mode controls
 /// @param[out] headStage   number of the headstage
-static Function DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage)
+static Function DAP_GetInfoFromControl(panelTitle, ctrl, mode, headStage)
 	string panelTitle, ctrl
-	variable &ctrlNo, &mode, &headStage
+	variable &mode, &headStage
+
 	string clampMode     = "Radio_ClampMode_"
 	string headStageCtrl = "Check_DataAcqHS_"
-	variable id, pos1, pos2
+	variable pos1, pos2, ctrlNo
+	string ICctrl, VCctrl, iZeroCtrl, ctrlClean
 
-	ctrlNo    = NaN
 	mode      = NaN
 	headStage = NaN
 
@@ -5315,69 +5379,56 @@ static Function DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, mode, headStage
 	pos2 = strsearch(ctrl, headStageCtrl, 0)
 
 	if(pos1 != -1)
-		ctrlNo = str2num(ctrl[pos1 + strlen(clampMode), inf])
+		ctrlClean = RemoveEnding(ctrl, "IZ")
+		ctrlNo = str2num(ctrlClean[pos1 + strlen(clampMode), inf])
 		ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
 		if(mod(ctrlNo, 2) == 0)
 			mode = V_CLAMP_MODE
 			headStage = ctrlNo / 2
 		else
-			mode = I_CLAMP_MODE
+			if(!cmpstr(ctrlClean, ctrl))
+				mode = I_CLAMP_MODE
+			else
+				mode = I_EQUAL_ZERO_MODE
+			endif
 			headStage = (ctrlNo - 1) / 2
 		endif
 	elseif(pos2 != -1)
 		ctrlNo = str2num(ctrl[pos2 + strlen(headStageCtrl), inf])
 		ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
 		headStage = ctrlNo
-		// this is the current clamp control, if it is selected mode equals I_CLAMP_MODE, if not it equals V_CLAMP_MODE
-		/// @todo needs adaptation for I = 0
-		mode = GetCheckBoxState(panelTitle, "Radio_ClampMode_" + num2str(headStage * 2 + 1))
+
+		VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headstage)
+		ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headstage)
+		iZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, headstage)
+
+		mode = V_CLAMP_MODE // safe default
+
+		if(GetCheckBoxState(panelTitle, VCctrl))
+			mode = V_CLAMP_MODE
+		elseif(GetCheckBoxState(panelTitle, ICctrl))
+			mode = I_CLAMP_MODE
+		elseif(GetCheckBoxState(panelTitle, iZeroCtrl))
+			mode = I_EQUAL_ZERO_MODE
+		endif
 	else
-		DEBUGPRINT("control", str=ctrl)
 		ASSERT(0, "unhandled control")
 	endif
 
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE, "unexpected mode")
+	AI_AssertOnInvalidClampMode(mode)
 End
 
 Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string panelTitle, ctrl
-	variable ctrlNo, mode, oppositeMode, headStage, pairedRadioButtonNo, activeHS
-	variable testPulseMode
+	variable mode, headStage
+	string panelTitle
 
 	switch(cba.eventCode)
 		case EVENT_MOUSE_UP:
 			panelTitle = cba.win
-
-			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, ctrlNo, mode, headStage)
-			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
-			GuiState[headStage][%HSmode] = mode
-			ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-			activeHS = GetCheckBoxState(panelTitle, ctrl)
-			if(activeHS)
-				testPulseMode = TP_StopTestPulse(panelTitle)
-			endif
-
-			pairedRadioButtonNo = mode == V_CLAMP_MODE ? ctrlNo + 1 : ctrlNo - 1
-			SetCheckboxState(panelTitle, "Radio_ClampMode_" + num2str(pairedRadioButtonNo), CHECKBOX_UNSELECTED)
-			oppositeMode = mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE
-
-			if(activeHS)
-				DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
-				DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, mode)
-				AI_SetClampMode(panelTitle, headStage, mode)
-			endif
-
-			AI_SyncAmpStorageToGUI(panelTitle, headStage)
-			ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
-
-			DAP_UpdateITCSampIntDisplay(panelTitle)
-			GuiState[headStage][%HSmode] = mode
-
-			if(activeHS)
-				TP_RestartTestPulse(panelTitle, testPulseMode)
-			endif
+			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, mode, headStage)
+			DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
 		break
 	endswitch
 
@@ -5394,6 +5445,54 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Change the clamp mode of the given headstage
+/// @param panelTitle device
+/// @param clampMode  clamp mode to activate
+/// @param headStage  Headstage [0, 8[
+static Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
+	string panelTitle
+	variable headStage, clampMode
+
+	string iZeroCtrl, VCctrl, ICctrl, headStageCtrl, ctrl
+	variable activeHS, testPulseMode, oppositeMode
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	headStageCtrl = GetPanelControl(headStage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	activeHS = GetCheckBoxState(panelTitle, headStageCtrl)
+	if(activeHS)
+		testPulseMode = TP_StopTestPulse(panelTitle)
+	endif
+
+	VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headStage)
+	ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headStage)
+	iZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, headStage)
+	ctrl      = DAP_GetClampModeControl(clampMode, headStage)
+
+	SetCheckboxState(panelTitle, VCctrl, CHECKBOX_UNSELECTED)
+	SetCheckboxState(panelTitle, ICctrl, CHECKBOX_UNSELECTED)
+	SetCheckboxState(panelTitle, iZeroCtrl, CHECKBOX_UNSELECTED)
+
+	SetCheckboxState(panelTitle, ctrl, CHECKBOX_SELECTED)
+
+	if(activeHS)
+		oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
+		DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
+		AI_SetClampMode(panelTitle, headStage, clampMode)
+	endif
+
+	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	GuiState[headStage][%HSmode] = clampMode
+
+	if(activeHS)
+		TP_RestartTestPulse(panelTitle, testPulseMode)
+	endif
 End
 
 static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
@@ -5418,6 +5517,10 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	variable clampMode, headStage, TPState
+	variable channelType, controlType
+
+	DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType)
+	ASSERT(channelType == CHANNEL_TYPE_HEADSTAGE && controlType == CHANNEL_CONTROL_CHECK, "Expected headstage checkbox control")
 
 	TPState = TP_StopTestPulse(panelTitle)
 	GuiState[headStage][%HSState] = enabled
@@ -6341,13 +6444,13 @@ End
 Function/Wave DAP_GetAllHSMode(panelTitle)
 	string panelTitle
 
-	variable i, ctrlNo, headStage, clampMode
+	variable i, headStage, clampMode
 	string ctrl
 
 	Make/FREE/N=(NUM_HEADSTAGES) Mode
 	for(i = 0; i < NUM_HEADSTAGES; i+=1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		DAP_GetInfoFromControl(panelTitle, ctrl, ctrlNo, clampMode, headStage)
+		DAP_GetInfoFromControl(panelTitle, ctrl, clampMode, headStage)
 		ASSERT(headStage == i, "Unexpected value")
 		Mode[i] = clampMode
 	endfor
