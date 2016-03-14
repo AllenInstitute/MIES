@@ -1988,19 +1988,19 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 1
+static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 4
 
 /// @brief Upgrade the wave layout of `SegWvType` to the most recent one
 ///        as defined in `SEGWVTYPE_WAVE_LAYOUT_VERSION`
 Function UpgradeSegWvType(wv)
 	WAVE wv
 
-	if(ExistsWithCorrectLayoutVersion(wv, WPT_WAVE_LAYOUT_VERSION))
+	if(ExistsWithCorrectLayoutVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION))
 		return NaN
 	endif
 
 	AddDimLabelsToSegWvType(wv)
-	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
+	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
 End
 
 /// @brief Add dimension labels to the WaveBuilder `SegWvType` wave
@@ -2017,8 +2017,6 @@ static Function AddDimLabelsToSegWvType(wv)
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 2, $("Inter trial interval")  , wv
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 3, $("Total number of epochs"), wv
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 4, $("Total number of steps") , wv
-
-	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
 End
 
 /// @brief Returns the segment type wave used by the wave builder panel
