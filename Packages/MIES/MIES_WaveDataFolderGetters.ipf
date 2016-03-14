@@ -3588,22 +3588,30 @@ End
 /// 14: AlarmState State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
 /// 15: AlarmMin Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
 /// 16: AlarmMax Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
+/// 17+: Unique controls
 Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
-	DFREF dfr= GetDevicePath(panelTitle)
-	variable versionOfNewWave = 1
-	Wave/Z/SDFR=dfr wv = DA_EphysGuiState
 
- 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
- 		return wv
- 	elseif(WaveExists(wv)) // handle upgrade
- 	    // change the required dimensions and leave all others untouched with -1
- 	    // the extended dimensions are initialized with zero
-		Redimension/N=(NUM_MAX_CHANNELS, 17, -1, -1) wv
- 	else
-		Make/N=(NUM_MAX_CHANNELS, 17) dfr:DA_EphysGuiState/Wave=wv
+	DFREF dfr= GetDevicePath(panelTitle)
+	Wave/Z/SDFR=dfr wv = DA_EphysGuiState
+	variable uniqueCtrlCount
+	string uniqueCtrlList
+
+	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
+		return wv
+	elseif(WaveExists(wv)) // handle upgrade
+		// change the required dimensions and leave all others untouched with -1
+		// the extended dimensions are initialized with zero
+		uniqueCtrlList = GetUniqueSpecCtrlTypeList(panelTitle)
+		uniqueCtrlCount = itemsInList(uniqueCtrlList)
+		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT + uniqueCtrlCount, -1, -1) wv
 		wv = Nan
- 	endif
+	else
+		uniqueCtrlList = GetUniqueSpecCtrlTypeList(panelTitle)
+		uniqueCtrlCount = itemsInList(uniqueCtrlList)
+		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT + uniqueCtrlCount) dfr:DA_EphysGuiState/Wave=wv
+		wv = Nan
+	endif
 
 	SetDimLabel COLS, 0, HSState, wv
 	SetDimLabel COLS, 1, HSMode, wv
@@ -3623,9 +3631,76 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetDimLabel COLS, 15, AlarmMin, wv
 	SetDimLabel COLS, 16, AlarmMax, wv
 
- 	SetWaveVersion(wv, versionOfNewWave)
+	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT)
+	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
+	// needs to be called after setting the wave version in order to avoid infinite recursion
+	DAP_RecordDA_EphysGuiState(panelTitle, GUISTATE=wv)
+	return wv
+End
 
- 	return wv
+/// @brief Returns a list of unique and type specific controls
+///
+Function/S GetUniqueSpecCtrlTypeList(panelTitle)
+	string panelTitle
+
+	return GetSpecificCtrlTypes(panelTitle, GetUniqueCtrlList(panelTitle))
+End
+
+/// @brief Parses a list of controls in the panelTitle and returns a list of unique controls
+///
+Function/S GetUniqueCtrlList(panelTitle)
+	string panelTitle
+
+	string list = controlNameList(panelTitle)
+	string relatedSetVar   = "Gain_*;Scale_*;Unit_*;Min_*;Max_*;Search_DA_*;Search_TTL_*"
+	string relatedCheckBox = "Check_AD_*;Check_DA_*;Check_TTL_*;Check_AsyncAlarm_*;Check_AsyncAD_*;Check_DataAcqHS_*;Radio_ClampMode_*;"
+	string relatedPopUp    = "IndexEnd_*;Wave_*;"
+	string relatedValDisp  = "ValDisp_DataAcq_P_*;"
+	string ctrlToRemove    = relatedSetVar + relatedCheckBox + relatedPopUp + relatedValDisp
+	string prunedList
+	variable i,j
+
+	for(i=0;i<itemsinlist(ctrlToRemove);i+=1)
+		prunedList = ListMatch(list, stringfromlist(i, ctrlToRemove))
+		list = removefromlist(prunedList, list)
+	endfor
+
+	return list
+End
+
+/// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
+///
+Function/S GetSpecificCtrlTypes(panelTitle,list)
+	string panelTitle
+	string list
+
+	string subtypeCtrlList = ""
+	variable i, type
+	string controlName
+
+	for(i=0;i<itemsinlist(list);i+=1)
+		controlName = stringfromlist(i, list)
+		controlInfo/W=$panelTitle $controlName
+		type = abs(V_flag)
+		switch(type)
+			case CONTROL_TYPE_CHECKBOX:
+			case CONTROL_TYPE_POPUPMENU:
+			case CONTROL_TYPE_SLIDER: // fallthrough by design
+				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
+				break
+			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
+				if(!DoesControlHaveInternalString(panelTitle, controlName))
+					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
+				endif
+				break
+			default:
+				// do nothing
+				break
+		endswitch
+	endfor
+
+	return subtypeCtrlList
 End
 
 /// @brief Return the datafolder reference to the NeuroDataWithoutBorders folder,
