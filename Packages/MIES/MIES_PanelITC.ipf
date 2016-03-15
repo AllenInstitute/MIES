@@ -6485,3 +6485,18 @@ Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
 			break
 	endswitch
 End
+
+/// @brief Update the list of available pressure devices on all locked device panels
+Function DAP_UpdateListOfPressureDevices()
+
+	string list, panelTitle
+	variable i, numItems
+
+	list = GetListOfLockedDevices()
+	numItems = ItemsInList(list)
+
+	for(i = 0; i < numItems; i += 1)
+		panelTitle = StringFromList(i, list)
+		PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
+	endfor
+End
