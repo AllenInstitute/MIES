@@ -84,6 +84,36 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+/// @brief Return a list of all open ITC devices
+Function/S HW_ITC_ListOfOpenDevices()
+
+	variable i
+	string device, type, number, cmd
+	string list = ""
+
+	Make/N=20/I/O DevInfo
+	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
+		if(HW_ITC_SelectDevice(i))
+			continue
+		endif
+
+		// device could be selected
+		// get the device type
+		DevInfo[] = -1
+		sprintf cmd, "ITCGetDeviceInfo DevInfo"
+		ExecuteITCOperationAbortOnError(cmd)
+
+		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
+		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
+		device = BuildDeviceString(type, number)
+		list   = AddListItem(device, list, ";", Inf)
+	endfor
+
+	KillOrMoveToTrash(wv=DevInfo)
+
+	return list
+End
+
 ///@brief Return a list of all ITC devices which can be opened
 ///
 ///**Warning! This heavily interacts with the ITC* controllers, don't call
