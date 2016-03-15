@@ -264,10 +264,10 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 	string panelTitle
 
 	variable gain, i, dac, numEntries
-	DFREF deviceDFR       = GetDevicePath(panelTitle)
+
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
-	WAVE/SDFR=deviceDFR ITCDataWave, ITCChanConfigWave
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
 
 	numEntries = DimSize(DACs, ROWS)
