@@ -33,16 +33,34 @@ Function/Wave GetChanAmpAssign(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/Z/SDFR=dfr wv = ChanAmpAssign
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(12, NUM_HEADSTAGES, -1, -1) wv
+	else
+		Make/N=(12, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
+		wv = NaN
 	endif
 
-	Make/N=(12, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
-	wv = NaN
+	SetDimLabel ROWS,  0, VC_DA,        wv
+	SetDimLabel ROWS,  1, VC_DAGain,    wv
+	SetDimLabel ROWS,  2, VC_AD,        wv
+	SetDimLabel ROWS,  3, VC_ADGain,    wv
 
+	SetDimLabel ROWS,  4, IC_DA,        wv
+	SetDimLabel ROWS,  5, IC_DAGain,    wv
+	SetDimLabel ROWS,  6, IC_AD,        wv
+	SetDimLabel ROWS,  7, IC_ADGain,    wv
+
+	SetDimLabel ROWS,  8, AmpSerialNo,  wv
+	SetDimLabel ROWS,  9, AmpChannelID, wv
+	SetDimLabel ROWS, 10, AmpIndex,     wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
 

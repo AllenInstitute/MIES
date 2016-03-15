@@ -329,32 +329,20 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	HeadStageNo = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
 
 	// Assigns V-clamp settings for a particular headstage
-	ControlInfo /w = $panelTitle Popup_Settings_VC_DA
-	ChanAmpAssign[0][HeadStageNo] = str2num(s_value)
-	ControlInfo /w = $panelTitle setvar_Settings_VC_DAgain
-	ChanAmpAssign[1][HeadStageNo] = v_value
-	ControlInfo /w = $panelTitle SetVar_Hardware_VC_DA_Unit	
-	ChanAmpAssignUnit[0][HeadStageNo] = s_value
-	ControlInfo /w = $panelTitle Popup_Settings_VC_AD
-	ChanAmpAssign[2][HeadStageNo] = str2num(s_value)
-	ControlInfo /w = $panelTitle setvar_Settings_VC_ADgain
-	ChanAmpAssign[3][HeadStageNo] = v_value
-	ControlInfo /w = $panelTitle SetVar_Hardware_VC_AD_Unit
-	ChanAmpAssignUnit[1][HeadStageNo] = s_value
+	ChanAmpAssign[%VC_DA][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_DA"))
+	ChanAmpAssign[%VC_DAGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_VC_DAgain")
+	ChanAmpAssignUnit[0][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_VC_DA_Unit")
+	ChanAmpAssign[%VC_AD][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_AD"))
+	ChanAmpAssign[%VC_ADGain][HeadStageNo]  = GetSetVariable(panelTitle, "setvar_Settings_VC_ADgain")
+	ChanAmpAssignUnit[1][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_VC_AD_Unit")
 	
 	//Assigns I-clamp settings for a particular headstage
-	ControlInfo /w = $panelTitle Popup_Settings_IC_DA
-	ChanAmpAssign[4][HeadStageNo] = str2num(s_value)
-	ControlInfo /w = $panelTitle setvar_Settings_IC_DAgain
-	ChanAmpAssign[5][HeadStageNo] = v_value
-	ControlInfo /w = $panelTitle SetVar_Hardware_IC_DA_Unit	
-	ChanAmpAssignUnit[2][HeadStageNo] = s_value
-	ControlInfo /w = $panelTitle Popup_Settings_IC_AD
-	ChanAmpAssign[6][HeadStageNo] = str2num(s_value)
-	ControlInfo /w = $panelTitle setvar_Settings_IC_ADgain
-	ChanAmpAssign[7][HeadStageNo] = v_value
-	ControlInfo /w = $panelTitle SetVar_Hardware_IC_AD_Unit	
-	ChanAmpAssignUnit[3][HeadStageNo] = s_value
+	ChanAmpAssign[%IC_DA][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_DA"))
+	ChanAmpAssign[%IC_DAGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_IC_DAgain")
+	ChanAmpAssignUnit[2][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_IC_DA_Unit")
+	ChanAmpAssign[%IC_AD][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_AD"))
+	ChanAmpAssign[%IC_ADGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_IC_ADgain")
+	ChanAmpAssignUnit[3][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_IC_AD_Unit")
 
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
@@ -363,12 +351,12 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 
 	WAVE/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 	if(WaveExists(W_TelegraphServers) && amplifierIdx >= 1)
-		ChanAmpAssign[8][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][0] // serial number
-		ChanAmpAssign[9][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][1] // channel ID
-		ChanAmpAssign[10][HeadStageNo] = amplifierIdx
+		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][0] // serial number
+		ChanAmpAssign[%AmpChannelID][HeadStageNo] = W_TelegraphServers[amplifierIdx - 1][1] // channel ID
+		ChanAmpAssign[%AmpIndex][HeadStageNo]     = amplifierIdx
 	else
-		ChanAmpAssign[8][HeadStageNo] = nan
-		ChanAmpAssign[9][HeadStageNo] = nan
+		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = nan
+		ChanAmpAssign[%AmpChannelID][HeadStageNo] = nan
 	endif
 End
 
