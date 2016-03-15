@@ -241,7 +241,6 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
@@ -249,13 +248,10 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		adc = ADCs[i]
 
-		gain = DA_EphysGuiState[adc][%ADGain]
-
-		if(ChannelClampMode[adc][%ADC] == V_CLAMP_MODE || ChannelClampMode[adc][%ADC] == I_CLAMP_MODE)
-			// w' = w  / (g * s)
-			gain *= 3200
-			MultiThread WaveToScale[][(startOfADColumns + i)] /= gain
-		endif
+		// w' = w  / (g * s)
+		gain  = DA_EphysGuiState[adc][%ADGain]
+		gain *= 3200
+		MultiThread WaveToScale[][(startOfADColumns + i)] /= gain
 	endfor
 end
 
@@ -265,7 +261,6 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 
 	variable gain, i, dac, numEntries
 
-	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
@@ -274,13 +269,10 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 	for(i = 0; i < numEntries ; i += 1)
 		dac  = DACs[i]
 
-		gain = DA_EphysGuiState[dac][%DAGain]
-
-		if(ChannelClampMode[dac][%DAC] == V_CLAMP_MODE || ChannelClampMode[dac][%DAC] == I_CLAMP_MODE)
-			// w' = w * g / s
-			gain /= 3200
-			MultiThread WaveToScale[][i] *= gain
-		endif
+		// w' = w * g / s
+		gain  = DA_EphysGuiState[dac][%DAGain]
+		gain /= 3200
+		MultiThread WaveToScale[][i] *= gain
 	endfor
 end
 
