@@ -889,7 +889,7 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 	if(lastPressureCom > MIN_NEG_PRESSURE_PULSE)
 		PressureCom = MIN_NEG_PRESSURE_PULSE
 	else
-		PressureCom = min(MIN_REGULATOR_PRESSURE, P_GetPulseAmp(panelTitle, headStage))
+		PressureCom = max(MIN_REGULATOR_PRESSURE, P_GetPulseAmp(panelTitle, headStage))
 	endif
 	
 	// apply calibration constants
