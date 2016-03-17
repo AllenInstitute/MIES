@@ -5,6 +5,7 @@
 
 static Constant ZERO_TOLERANCE = 100 // pA
 
+/// @brief Stringified version of the clamp mode
 Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
 
@@ -15,7 +16,7 @@ Function/S AI_ConvertAmplifierModeToString(mode)
 		case I_CLAMP_MODE:
 			return "I_CLAMP_MODE"
 			break
-		case V_CLAMP_MODE:
+		case I_EQUAL_ZERO_MODE:
 			return "I_EQUAL_ZERO_MODE"
 			break
 		default:
@@ -24,30 +25,30 @@ Function/S AI_ConvertAmplifierModeToString(mode)
 	endswitch
 End
 
-/// @returns AD gain of amp in selected mode
-/// Gain is returned in V/pA for V-Clamp, V/mV for I-Clamp
-Function AI_RetrieveADGain(panelTitle, axonSerial, channel)
+/// @returns AD gain of selected Amplifier in current clamp mode
+/// Gain is returned in V/pA for V_CLAMP_MODE, V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
+static Function AI_RetrieveADGain(panelTitle, headstage)
 	string panelTitle
-	variable axonSerial
-	variable channel
+	variable headstage
+
+	variable axonSerial = AI_GetAmpAxonSerial(panelTitle, headstage)
+	variable channel    = AI_GetAmpChannel(panelTitle, headStage)
 
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 
-	if(tds.OperatingMode == V_CLAMP_MODE)
-		return tds.ScaleFactor * tds.Alpha / 1000
-	elseif(tds.OperatingMode == I_CLAMP_MODE)
-		return tds.ScaleFactor * tds.Alpha / 1000
-	endif
+	return tds.ScaleFactor * tds.Alpha / 1000
 End
 
-/// @returns DA gain of amp in selected mode.
-/// Gain is returned in mV/V for V_CLAMP_MODE and V/mV for I_CLAMP_MODE.
-Function AI_RetrieveDAGain(panelTitle, axonSerial, channel)
+/// @returns DA gain of selected Amplifier in current clamp mode
+/// Gain is returned in mV/V for V_CLAMP_MODE and V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
+static Function AI_RetrieveDAGain(panelTitle, headstage)
 	string panelTitle
-	variable axonSerial
-	variable channel
+	variable headstage
+
+	variable axonSerial = AI_GetAmpAxonSerial(panelTitle, headstage)
+	variable channel    = AI_GetAmpChannel(panelTitle, headStage)
 
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
@@ -55,25 +56,27 @@ Function AI_RetrieveDAGain(panelTitle, axonSerial, channel)
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
 		return tds.ExtCmdSens * 1000
-	elseif(tds.OperatingMode == I_CLAMP_MODE)
+	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
 		return tds.ExtCmdSens * 1e12
-	else
-		// do nothing
 	endif
 End
 
 /// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
-Function AI_SwitchAxonAmpMode(panelTitle, mccSerial, channel)
+static Function AI_SwitchAxonAmpMode(panelTitle, headStage)
 	string panelTitle
-	string mccSerial
-	variable channel
+	variable headStage
 
-	MCC_SelectMultiClamp700B(mccSerial, channel)
-	variable mode = MCC_GetMode()
+	variable mode
+
+	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=1))
+		return NAN
+	endif
+
+	mode = MCC_GetMode()
 
 	if(mode == V_CLAMP_MODE)
 		MCC_SetMode(I_CLAMP_MODE)
-	elseif(Mode == I_CLAMP_MODE)
+	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
 		MCC_SetMode(V_CLAMP_MODE)
 	else
 		// do nothing
@@ -116,7 +119,7 @@ static Structure AxonTelegraph_DataStruct
 EndStructure
 
 /// @brief Returns the serial number of the headstage compatible with Axon* functions, @see GetChanAmpAssign
-Function AI_GetAmpAxonSerial(panelTitle, headStage)
+static Function AI_GetAmpAxonSerial(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -126,7 +129,7 @@ Function AI_GetAmpAxonSerial(panelTitle, headStage)
 End
 
 /// @brief Returns the serial number of the headstage compatible with MCC* functions, @see GetChanAmpAssign
-Function/S AI_GetAmpMCCSerial(panelTitle, headStage)
+static Function/S AI_GetAmpMCCSerial(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -144,7 +147,7 @@ Function/S AI_GetAmpMCCSerial(panelTitle, headStage)
 End
 
 ///@brief Return the channel of the currently selected head stage
-Function AI_GetAmpChannel(panelTitle, headStage)
+static Function AI_GetAmpChannel(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -166,7 +169,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	string panelTitle
 	variable headStage, verbose
 
-	variable channel, errorCode, axonSerial
+	variable channel, errorCode, axonSerial, debugOnError
 	string mccSerial
 
 	if(ParamIsDefault(verbose))
@@ -187,6 +190,8 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 		return 1
 	endif
 
+	debugOnError = DisableDebugOnError()
+
 	try
 		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
 	catch
@@ -194,9 +199,11 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 		if(verbose)
 			printf "The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", mccSerial, headStage
 		endif
+		ResetDebugOnError(debugOnError)
 		return 2
 	endtry
 
+	ResetDebugOnError(debugOnError)
 	return 0
 end
 
@@ -206,18 +213,18 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 	variable headStage
 	variable mode
 
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headStage))
 		return NaN
 	endif
 
 	if(!IsFinite(MCC_SetMode(mode)))
-		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is longer present\r", mode
+		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
 	endif
 End
 
-Function AI_IsValidSerialAndChannel([mccSerial, axonSerial, channel])
+static Function AI_IsValidSerialAndChannel([mccSerial, axonSerial, channel])
 	string mccSerial
 	variable axonSerial
 	variable channel
@@ -262,7 +269,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value)
 	string str
 
 	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
-	ASSERT(mode == V_CLAMP_MODE || mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE, "invalid mode")
+	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headstage))
 		return NaN
@@ -629,10 +636,6 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_BB", i, value=value)
 				AI_UpdateAmpModel(panelTitle, "check_DatAcq_BBEnable", i, value=1)
 				break
-			// I Zero controls
-			case "check_DataAcq_IzeroEnable":
-				AmpStorageWave[30][0][i] = value
-				break
 			default:
 				ASSERT(0, "Unknown control " + ctrl)
 				break
@@ -766,10 +769,6 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			case "button_DataAcq_AutoPipOffset_VC":
 				// do nothing
 				break
-			// I = zero controls
-			case "check_DataAcq_IzeroEnable":
-				setCheckBoxState(panelTitle, "check_DataAcq_IzeroEnable", AmpStorageWave[%IZeroEnable][0][MIESHeadStageNo])
-				break
 			default:
 				ASSERT(0, "Unknown control " + cntrlName)
 				break
@@ -852,7 +851,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			ampSettingsWave[0][41][i] = MCC_GetFastCompTau() // V-Clamp Fast compensation tau
 			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau() // V-Clamp Slow compensation tau
 
-		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE)
+		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE || channelClampMode[DAC][%DAC] == I_EQUAL_ZERO_MODE)
 			// Save the i clamp holding enabled in column 10
 			ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable
 
@@ -1250,3 +1249,75 @@ Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
 End
 
+/// @brief Auto fills the units and gains in the hardware tab of the DA_Ephys
+/// panel - has some limitations that are due to the MCC API limitations
+Function AI_AutoFillGain(panelTitle)
+	string panelTitle
+
+	variable mode, resetFromIEqualZero, headstage
+
+	headstage = GetPopupMenuIndex(panelTitle,  "Popup_Settings_HeadStage")
+
+	if(AI_SelectMultiClamp(panelTitle, headstage, verbose=1))
+		return NaN
+	endif
+
+	// sets the units
+	SetSetVariableString(panelTitle, "SetVar_Hardware_VC_DA_Unit", "mV")
+	SetSetVariableString(panelTitle, "SetVar_Hardware_VC_AD_Unit", "pA")
+	SetSetVariableString(panelTitle, "SetVar_Hardware_IC_DA_Unit", "pA")
+	SetSetVariableString(panelTitle, "SetVar_Hardware_IC_AD_Unit", "mV")
+
+	mode = MCC_GetMode()
+	AI_AssertOnInvalidClampMode(mode)
+
+	if(mode == V_CLAMP_MODE)
+		SetSetVariable(panelTitle, "setvar_Settings_VC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
+		SetSetVariable(panelTitle, "setvar_Settings_VC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+	elseif(mode == I_CLAMP_MODE)
+		SetSetVariable(panelTitle, "setvar_Settings_IC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
+		SetSetVariable(panelTitle, "setvar_Settings_IC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+	elseif(mode == I_EQUAL_ZERO_MODE)
+		// checks to see if a holding current or bias current is being
+		// applied, if yes, the mode switch required to pull in the gains
+		// for all modes is prevented.
+		if(!MCC_GetHoldingEnable())
+			AI_SetClampMode(panelTitle, headstage, I_CLAMP_MODE)
+			resetFromIEqualZero = 1
+			SetSetVariable(panelTitle, "setvar_Settings_IC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
+			SetSetVariable(panelTitle, "setvar_Settings_IC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+		else
+			print "It appears that a bias current or holding potential is being applied by the MC Commader suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported"
+		endif
+	endif
+
+	if(!MCC_GetHoldingEnable())
+		AI_SwitchAxonAmpMode(panelTitle, headstage)
+
+		mode = MCC_GetMode()
+
+		if(mode == V_CLAMP_MODE)
+			SetSetVariable(panelTitle, "setvar_Settings_VC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
+			SetSetVariable(panelTitle, "setvar_Settings_VC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+		elseif(mode == I_CLAMP_MODE)
+			SetSetVariable(panelTitle, "setvar_Settings_IC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
+			SetSetVariable(panelTitle, "setvar_Settings_IC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+		endif
+
+		if(resetFromIEqualZero)
+			AI_SetClampMode(panelTitle, headstage, I_EQUAL_ZERO_MODE)
+		else
+			AI_SwitchAxonAmpMode(panelTitle, headstage)
+		endif
+	else
+		printf "It appears that a holding potential is being applied, therefore as a precaution, the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
+		printf "The gains were successfully imported for the %s on headstage: %d\r", AI_ConvertAmplifierModeToString(mode), headstage
+	endif
+End
+
+/// @brief Assert on invalid clamp modes, does nothing otherwise
+Function AI_AssertOnInvalidClampMode(clampMode)
+	variable clampMode
+
+	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE, "invalid clamp mode")
+End

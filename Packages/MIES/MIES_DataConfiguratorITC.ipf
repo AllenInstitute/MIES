@@ -757,7 +757,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		channelMode = ChannelClampMode[i][%DAC]
 		if(channelMode == V_CLAMP_MODE)
 			testPulseAmplitude = TPAmpVClamp
-		elseif(channelMode == I_CLAMP_MODE)
+		elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
 			testPulseAmplitude = TPAmpIClamp
 		else
 			ASSERT(0, "Unknown clamp mode")
@@ -771,6 +771,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			// checks if user wants to set scaling to 0 on sets that have already cycled once
 			if(scalingZero && (indexingLocked || !indexing) && oneFullCycle)
 				DAScale = 0
+			endif
+
+			if(channelMode == I_EQUAL_ZERO_MODE)
+				DAScale            = 0.0
+				testPulseAmplitude = 0.0
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			DAScale = testPulseAmplitude

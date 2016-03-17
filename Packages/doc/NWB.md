@@ -6,6 +6,7 @@
 - For AD/DA/TTL groups the naming scheme is data_`XXXXX`_[AD/TTL]`suffix` where
   `XXXXX` is a running number incremented for every sweep $suffix the
   channel number (TTL channels: plus TTL line).
+- For I=0 clamp mode neither the DA data nor the stimset is saved.
 
 ### The following tree decsribes how MIES creates NWB files
 
@@ -38,7 +39,7 @@ acquisition:
                 comment        : User comment for the sweep
                 missing_fields : Entries missing for voltage clamp/current clamp data
                 ancestry       : Class hierarchy defined by NWB spec, important members are
-                                 CurrentClampSeries and VoltageClampSeries
+                                 CurrentClampSeries, IZeroClampSeries and VoltageClampSeries
                 neurodata_type : TimeSeries
 
 stimulus:

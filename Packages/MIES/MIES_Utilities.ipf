@@ -673,6 +673,33 @@ Function ResetDebuggerState(debuggerState)
 	endif
 End
 
+/// @brief Disable Debug on Error
+///
+/// @returns 1 if it was enabled, 0 if not, pass this value to ResetDebugOnError()
+Function DisableDebugOnError()
+
+	DebuggerOptions
+	if(V_enable && V_debugOnError)
+		DebuggerOptions enable=1, debugOnError=0
+		return 1
+	endif
+
+	return 0
+End
+
+/// @brief Reset Debug on Error state
+///
+/// @param debugOnError state before, usually the same value as DisableDebugOnError() returned
+Function ResetDebugOnError(debugOnError)
+	variable debugOnError
+
+	if(!debugOnError)
+		return NaN
+	endif
+
+	DebuggerOptions enable=1, debugOnError=debugOnError
+End
+
 /// @brief Returns the numeric value of `key` found in the wave note,
 /// returns NaN if it could not be found
 ///

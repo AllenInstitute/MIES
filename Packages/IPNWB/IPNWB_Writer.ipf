@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.12
+#pragma version=0.13
 
 /// @file IPNWB_Writer.ipf
 /// @brief Generic functions related to export into the NeuroDataWithoutBorders format
@@ -307,7 +307,7 @@ Function InitTimeSeriesProperties(tsp, channelType, clampMode)
 		if(clampMode == V_CLAMP_MODE)
 			// VoltageClampSeries
 			 tsp.missing_fields = "gain;capacitance_fast;capacitance_slow;resistance_comp_bandwidth;resistance_comp_correction;resistance_comp_prediction;whole_cell_capacitance_comp;whole_cell_series_resistance_comp"
-		elseif(clampMode == I_CLAMP_MODE)
+		elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 			// CurrentClampSeries
 			 tsp.missing_fields = "gain;bias_current;bridge_balance;capacitance_compensation"
 		else
@@ -446,6 +446,11 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
 	endif
 
+	// skip writing DA data with I=0 clamp mode (it will just be constant zero)
+	if(p.channelType == CHANNEL_TYPE_DAC && p.clampMode == I_EQUAL_ZERO_MODE)
+		return NaN
+	endif
+
 	H5_CreateGroupsRecursively(locationID, group, groupID=groupID)
 	H5_WriteTextAttribute(groupID, "description", group, str=PLACEHOLDER, overwrite=1)
 
@@ -470,6 +475,8 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 			ancestry = "TimeSeries;PatchClampSeries;VoltageClampSeries"
 		elseif(p.clampMode == I_CLAMP_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;CurrentClampSeries"
+		elseif(p.clampMode == I_EQUAL_ZERO_MODE)
+			ancestry = "TimeSeries;PatchClampSeries;CurrentClampSeries;IZeroClampSeries"
 		else
 			ancestry = "TimeSeries;PatchClampSeries"
 		endif
