@@ -914,7 +914,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
@@ -933,7 +933,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	SetDimLabel 0, 2, Tolerance, wv
 
 	wv[%Parameter][0] = "Stim Scale Factor"
-	wv[%Units][0]     = "%"
+	wv[%Units][0]     = ""
 	wv[%Tolerance][0] = ".0001"
 
 	wv[%Parameter][1] = "DAC"
