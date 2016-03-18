@@ -1154,7 +1154,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Cp!!#Bm!!#B%!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;\""
+	PopupMenu popup_Settings_Amplifier,mode=1, value=DAP_GetNiceAmplifierChannelList()
 	PopupMenu Popup_Settings_IC_DA,pos={226.00,411.00},size={47.00,19.00},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
@@ -3380,7 +3380,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	PopupMenu Popup_Settings_VC_AD WIN = $panelTitle, mode=1
 	PopupMenu Popup_Settings_IC_AD WIN = $panelTitle, mode=1
 	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1
-	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1, value= #"\" - none - ;\""
 	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 
@@ -4628,20 +4627,21 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 	return 0
 End
 
-static Function/S DAP_FormatAmplifierChannelList(panelTitle)
-	string panelTitle
+/// @brief Return a nicely layouted list of amplifier channels
+Function/S DAP_GetNiceAmplifierChannelList()
 
-	variable numRows
-	variable i
+	variable i, numRows
 	string str
-	string list = ""
+	string list = NONE
+	string panelTitle = GetCurrentWindow()
 
-	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
+	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 
-	numRows = DimSize(W_TelegraphServers, ROWS)
+	numRows = WaveExists(W_TelegraphServers) ? DimSize(W_TelegraphServers, ROWS) : 0
 	if(!numRows)
 		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		return "MC not available;"
+		list = AddListItem("\\M1(MC not available;", list, ";", inf)
+		return list
 	endif
 
 	for(i=0; i < numRows; i+=1)
@@ -4678,8 +4678,6 @@ Function DAP_FindConnectedAmps(panelTitle)
 	MCC_FindServers/Z=1
 
 	SetDataFolder saveDFR
-
-	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + NONE + ";" + DAP_FormatAmplifierChannelList(panelTitle) + "\"")
 End
 
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
