@@ -3098,7 +3098,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_SealAtm,value= 0
-	CheckBox Check_DataAcq1_DistribDaq,pos={180.00,644.00},size={97.00,15.00},disable=1,proc=DAP_CheckProc_RepeatedAcq,title="Distributed Acq"
+	CheckBox Check_DataAcq1_DistribDaq,pos={180.00,644.00},size={97.00,15.00},disable=1,proc=DAP_CheckProc_DistributedAcq,title="Distributed Acq"
 	CheckBox Check_DataAcq1_DistribDaq,help={"Determines if distributed acquisition is used."}
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabcontrol)=  "ADC"
