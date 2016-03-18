@@ -914,7 +914,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	variable versionOfNewWave = 5
+	variable versionOfNewWave = 6
 
 	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
 
@@ -945,11 +945,11 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][2] = ".0001"
 
 	wv[%Parameter][3] = "DA Gain"
-	wv[%Units][3]     = "mV/V"
+	wv[%Units][3]     = ""
 	wv[%Tolerance][3] = ".000001"
 
 	wv[%Parameter][4] = "AD Gain"
-	wv[%Units][4]     = "V/pA"
+	wv[%Units][4]     = ""
 	wv[%Tolerance][4] = ".000001"
 
 	wv[%Parameter][5] = "Set Sweep Count"
