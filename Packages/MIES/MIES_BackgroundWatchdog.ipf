@@ -7,16 +7,11 @@
 /// @cond DOXYGEN_IGNORES_THIS
 #include ":ACL_TabUtilities"
 
-#include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_Constants"
 #include ":MIES_Debugging"
-#include ":MIES_EnhancedWMRoutines"
-#include ":MIES_GlobalStringAndVariableAccess"
 #include ":MIES_GuiUtilities"
-#include ":MIES_MiesUtilities"
-#include ":MIES_Utilities"
 #include ":MIES_Structures"
-#include ":MIES_WaveDataFolderGetters"
+#include ":MIES_Utilities"
 /// @endcond
 
 static StrConstant PANEL            = "BW_MiesBackgroundWatchPanel"
