@@ -613,10 +613,12 @@ End
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
 /// - Addition of nineth layer for headstage independent data
 /// - Conversion of numeric labnotebook to 64bit floats
-Function UpgradeLabNotebook(panelTitle)
+/// - Removal of invalid units for "Stim Scale Factor", "DA Gain" and "AD Gain"
+static Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
-	variable numCols, i
+	variable numCols, i, col, numEntries
+	string list, key
 
 	WAVE  settingsHistory = GetNumDocWave(panelTitle)
 	WAVE/T txtDocWave     = GetTextDocWave(panelTitle)
@@ -682,6 +684,20 @@ Function UpgradeLabNotebook(panelTitle)
 
 		DEBUGPRINT("Upgraded numeric labnotebook to 64bit floats")
 	endif
+
+	list       = "Stim Scale Factor;DA Gain;AD Gain"
+	numEntries = ItemsInList(list)
+
+	for(i = 0; i < numEntries; i += 1)
+		key = StringFromList(i, list)
+		col = FindDimLabel(keyWave, COLS, key)
+		if(col >= 0 && cmpstr(keyWave[%Units][col], ""))
+			keyWave[%Units][col] = ""
+			if(i == 0)
+				DEBUGPRINT("Upgraded numeric labnotebook key wave to remove invalid units")
+			endif
+		endif
+	endfor
 End
 
 /// @brief Return a wave reference to the textDocKeyWave
@@ -704,7 +720,7 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 
 	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
 
@@ -751,7 +767,7 @@ End
 Function/Wave GetNumDocKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
 	Wave/T/Z/SDFR=dfr wv = keyWave
