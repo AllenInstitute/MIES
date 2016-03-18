@@ -1,5 +1,7 @@
 #pragma rtGlobals=3
 
+#include <Axis Utilities>
+
 /// @file MIES_MiesUtilities.ipf
 /// @brief This file holds utility functions which need to know about MIES internals.
 
@@ -589,7 +591,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numWaves, idx
 	variable numTTLBits, colorIndex
 
-	string axis, trace, traceType, channelID
+	string axis, trace, traceType, channelID, axisLabel, existingLabel
 	string unit, configNote, name, wvName
 
 	ASSERT(!isEmpty(graph), "Empty graph")
@@ -800,7 +802,18 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 						unit = "a.u."
 					endif
 
-					Label/W=$graph $axis, traceType + "\r(" + unit + ")"
+					axisLabel = traceType + "\r(" + unit + ")"
+
+					existingLabel = AxisLabelText(graph, axis, SuppressEscaping=1)
+					// AxisLabelText's SuppressEscaping does only work for Igor commands
+					// and not for standard escape sequences
+					existingLabel = ReplaceString("\\r", existingLabel, "\r")
+
+					if(!isEmpty(existingLabel) && cmpstr(existingLabel, axisLabel))
+						axisLabel =  channelID + "?\r(a. u.)"
+					endif
+
+					Label/W=$graph $axis, axisLabel
 					ModifyGraph/W=$graph lblPosMode = 1
 					ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
 					firstCall[i] = 0
