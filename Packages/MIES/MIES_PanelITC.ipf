@@ -4271,19 +4271,6 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_ChangePopUpState(BaseName, state, panelTitle)
-	string BaseName, panelTitle// IndexEnd_DA_0
-	variable state
-	variable i = 0
-	string CompleteName
-	
-	do
-		CompleteName = Basename + num2str(i)
-		PopupMenu $CompleteName disable = state, win = $panelTitle
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
-End
-
 Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
