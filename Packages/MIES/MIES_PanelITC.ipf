@@ -4296,11 +4296,11 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
 
 	variable i
-	string TTLCheckBoxName
+	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
-		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
+		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
 
