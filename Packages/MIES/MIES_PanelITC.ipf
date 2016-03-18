@@ -4224,28 +4224,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_CheckProc_SaveData(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	string panelTitle, buttonText
-
-	switch(cba.eventCode)
-		case 2:
-			panelTitle = cba.win
-
-			if(cba.checked)
-				Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-				buttonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-				buttonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-				Button DataAcquireButton title=buttonText
-			else
-				Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-				Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
-			endif
-		break
-	endswitch
-End
-
 Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
