@@ -60,6 +60,10 @@ Function HSU_LockDevice(panelTitle)
 		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use."
 	endif
 
+	if(!DAP_PanelIsUpToDate(panelTitle))
+		Abort "Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one."
+	endif
+
 	DisableListOfControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
