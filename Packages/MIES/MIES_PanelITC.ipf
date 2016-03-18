@@ -4603,7 +4603,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
-			DAP_FindConnectedAmps(ba.win)
+			AI_FindConnectedAmps(ba.win)
 			break
 	endswitch
 End
@@ -4650,34 +4650,6 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	endfor
 
 	return list
-End
-
-Function DAP_FindConnectedAmps(panelTitle)
-	string panelTitle
-
-	// compatibility fix
-	// Old panels, created before this change, use
-	// this function as button control and send the
-	// name of the control instead of panelTitle
-	if(!windowExists(panelTitle))
-		GetWindow kwTopWin, activeSW
-		panelTitle = S_value
-	endif
-
-	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder GetAmplifierFolder()
-
-	// old axon interface settings wave
-	Make/O/N=0 W_TelegraphServers
-	AxonTelegraphFindServers
-
-	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
-
-	// new mcc interface settings wave
-	Make/O/N=(0,0)/I W_MultiClamps
-	MCC_FindServers/Z=1
-
-	SetDataFolder saveDFR
 End
 
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl

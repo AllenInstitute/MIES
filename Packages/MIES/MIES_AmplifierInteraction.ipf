@@ -1321,3 +1321,23 @@ Function AI_AssertOnInvalidClampMode(clampMode)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE, "invalid clamp mode")
 End
+
+/// @brief Create the amplifier connection waves
+Function AI_FindConnectedAmps(panelTitle)
+	string panelTitle
+
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder GetAmplifierFolder()
+
+	// old axon interface settings wave
+	Make/O/N=0 W_TelegraphServers
+	AxonTelegraphFindServers
+
+	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
+
+	// new mcc interface settings wave
+	Make/O/N=(0,0)/I W_MultiClamps
+	MCC_FindServers/Z=1
+
+	SetDataFolder saveDFR
+End
