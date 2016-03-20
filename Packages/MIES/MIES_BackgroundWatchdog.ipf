@@ -21,35 +21,43 @@ static Constant    INVALIDATE_STATE = -1
 
 Window BW_MiesBackgroundWatchPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(1267,235,1496,393) as "MIES Background Watcher Panel"
-	ValDisplay valdisp_TestPulseMD,pos={39.00,48.00},size={76.00,20.00},bodyWidth=20,title="TestPulseMD"
+	NewPanel /K=1 /W=(452,264,718,446) as "MIES Background Watcher Panel"
+	ValDisplay valdisp_TestPulseMD,pos={46.00,45.00},size={93.00,20.00},bodyWidth=20,title="TestPulseMD"
+	ValDisplay valdisp_TestPulseMD,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
 	ValDisplay valdisp_TestPulseMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_TestPulseMD,value= _NUM:-1
-	ValDisplay valdisp_TestPulseMD, help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_TestPulse,pos={152.00,48.00},size={62.00,20.00},bodyWidth=20,title="TestPulse"
-	ValDisplay valdisp_TestPulse,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_TestPulse,value= _NUM:-1
+	ValDisplay valdisp_TestPulseMD,value= #"0"
+	ValDisplay valdisp_TestPulse,pos={185.00,43.00},size={74.00,20.00},bodyWidth=20,title="TestPulse"
 	ValDisplay valdisp_TestPulse,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_FIFOMonitorMD,pos={13.00,105.00},size={103.00,20.00},bodyWidth=20,title="ITC_FIFOMonitorMD"
+	ValDisplay valdisp_TestPulse,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay valdisp_TestPulse,value= #"0"
+	ValDisplay valdisp_ITC_FIFOMonitorMD,pos={6.00,102.00},size={133.00,20.00},bodyWidth=20,title="ITC_FIFOMonitorMD"
+	ValDisplay valdisp_ITC_FIFOMonitorMD,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
 	ValDisplay valdisp_ITC_FIFOMonitorMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_FIFOMonitorMD,value= _NUM:-1
-	ValDisplay valdisp_ITC_FIFOMonitorMD, help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_TimerMD,pos={37.00,77.00},size={78.00,20.00},bodyWidth=20,title="ITC_TimerMD"
-	ValDisplay valdisp_ITC_TimerMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_TimerMD,value= _NUM:-1
+	ValDisplay valdisp_ITC_FIFOMonitorMD,value= #"0"
+	ValDisplay valdisp_ITC_TimerMD,pos={42.00,74.00},size={97.00,20.00},bodyWidth=20,title="ITC_TimerMD"
 	ValDisplay valdisp_ITC_TimerMD,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_Timer,pos={150.00,77.00},size={64.00,20.00},bodyWidth=20,title="ITC_Timer"
-	ValDisplay valdisp_ITC_Timer,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_Timer,value= _NUM:-1
+	ValDisplay valdisp_ITC_TimerMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay valdisp_ITC_TimerMD,value= #"0"
+	ValDisplay valdisp_ITC_Timer,pos={181.00,73.00},size={78.00,20.00},bodyWidth=20,title="ITC_Timer"
 	ValDisplay valdisp_ITC_Timer,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_FIFOMonitor,pos={126.00,105.00},size={89.00,20.00},bodyWidth=20,title="ITC_FIFOMonitor"
-	ValDisplay valdisp_ITC_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_FIFOMonitor,value= _NUM:-1
+	ValDisplay valdisp_ITC_Timer,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay valdisp_ITC_Timer,value= #"0"
+	ValDisplay valdisp_ITC_FIFOMonitor,pos={145.00,103.00},size={114.00,20.00},bodyWidth=20,title="ITC_FIFOMonitor"
 	ValDisplay valdisp_ITC_FIFOMonitor,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	Button button_start_bkg,pos={55.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StartTask,title="Start"
+	ValDisplay valdisp_ITC_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay valdisp_ITC_FIFOMonitor,value= #"0"
+	Button button_start_bkg,pos={76.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StartTask,title="Start"
 	Button button_start_bkg,help={"Start the background task for updating the traffic light style controls"}
-	Button button_stop_bkg_task,pos={129.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StopTask,title="Stop"
+	Button button_stop_bkg_task,pos={150.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StopTask,title="Stop"
 	Button button_stop_bkg_task,help={"Stop the background task"}
+	ValDisplay valdisp_P_NI_FIFOMonitor,pos={85.00,131.00},size={120.00,20.00},bodyWidth=20,title="P_NI_FIFOMonitor"
+	ValDisplay valdisp_P_NI_FIFOMonitor,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
+	ValDisplay valdisp_P_NI_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay valdisp_P_NI_FIFOMonitor,value= #"0"
+	ValDisplay valdisp_P_ITC_FIFOMonitor,pos={80.00,157.00},size={126.00,20.00},bodyWidth=20,title="P_ITC_FIFOMonitor"
+	ValDisplay valdisp_P_ITC_FIFOMonitor,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
+	ValDisplay valdisp_P_ITC_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay valdisp_P_ITC_FIFOMonitor,value= #"0"
 	SetWindow kwTopWin,hook(mainHook)=BkgWatcher#BW_WindowHook
 	ModifyPanel fixedSize=1
 EndMacro
