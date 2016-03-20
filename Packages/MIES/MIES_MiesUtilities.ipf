@@ -2273,3 +2273,229 @@ Function CheckIfPathsRefIdenticalFiles(list)
 
 	return 1
 End
+
+/// @brief Remove traces from a graph and optionally try to kill their waves
+///
+/// @param graph                            graph
+/// @param kill [optional, default: false]  try to kill the wave after it has been removed
+/// @param trace [optional, default: all]   remove the given trace only
+/// @param wv [optional, default: ignored]  remove all traces which stem from the given wave
+/// @param dfr [optional, default: ignored] remove all traces which stem from one of the waves in dfr
+///
+/// Only one of trace/wv/dfr may be supplied.
+///
+/// @return number of traces/waves removed from the graph
+Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
+	string graph
+	variable kill
+	string trace
+	WAVE/Z wv
+	DFREF dfr
+
+	variable i, numEntries, removals, tryKillingTheWave, numOptArgs
+	string traceList, refTrace
+
+	if(ParamIsDefault(kill))
+		kill = 0
+	endif
+
+	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
+	ASSERT(numOptArgs == 3 || numOptArgs == 2, "Can only accept one of the trace/wv/dfr parameters")
+
+	if(!ParamIsDefault(wv) && !WaveExists(wv) || !ParamIsDefault(dfr) && !DataFolderExistsDFR(dfr))
+		return 0
+	endif
+
+	if(!ParamIsDefault(dfr))
+		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
+	endif
+
+	traceList  = TraceNameList(graph, ";", 1 )
+	numEntries = ItemsInList(traceList)
+
+	// iterating backwards is required, see http://www.igorexchange.com/node/1677#comment-2315
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		refTrace = StringFromList(i, traceList)
+
+		Wave/Z refWave = TraceNameToWaveRef(graph, refTrace)
+
+		if(ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr))
+			RemoveFromGraph/W=$graph $refTrace
+			removals += 1
+			tryKillingTheWave = 1
+		elseif(!ParamIsDefault(trace))
+			if(!cmpstr(refTrace, trace))
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
+		elseif(!ParamIsDefault(wv))
+			if(WaveRefsEqual(refWave, wv))
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
+		elseif(!ParamIsDefault(dfr))
+			if(GetRowIndex(candidates, refWave=refWave) >= 0)
+				RemoveFromGraph/W=$graph $refTrace
+				removals += 1
+				tryKillingTheWave = 1
+			endif
+		endif
+
+		if(kill && tryKillingTheWave)
+			KillOrMoveToTrash(wv=refWave)
+		endif
+
+		tryKillingTheWave = 0
+	endfor
+
+	return removals
+End
+
+/// @brief Create a backup of the wave wv if it does not already
+/// exist or if `forceCreation` is true.
+///
+/// The backup wave will be located in the same data folder and
+/// its name will be the original name with #WAVE_BACKUP_SUFFIX
+/// appended.
+Function/Wave CreateBackupWave(wv, [forceCreation])
+	Wave wv
+	variable forceCreation
+
+	string backupname
+	dfref dfr
+
+	ASSERT(WaveExists(wv), "missing wave")
+	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
+	dfr        = GetWavesDataFolderDFR(wv)
+
+	if(ParamIsDefault(forceCreation))
+		forceCreation = 0
+	else
+		forceCreation = !!forceCreation
+	endif
+
+	Wave/Z/SDFR=dfr backup = $backupname
+
+	if(WaveExists(backup) && !forceCreation)
+		return backup
+	endif
+
+	Duplicate/O wv, dfr:$backupname/Wave=backup
+
+	return backup
+End
+
+/// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
+///
+/// @param wv                       wave to replace by its backup
+/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup. Passing a non-zero value
+///                                 will abort if the backup wave does not exist, for zero it will just do nothing.
+/// @returns one if the original wave was successfully replaced, zero otherwise.
+Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
+	Wave wv
+	variable nonExistingBackupIsFatal
+
+	string backupname
+	dfref dfr
+
+	if(ParamIsDefault(nonExistingBackupIsFatal))
+		nonExistingBackupIsFatal = 1
+	endif
+
+	ASSERT(WaveExists(wv), "Found no original wave")
+
+	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
+	dfr        = GetWavesDataFolderDFR(wv)
+
+	Wave/Z/SDFR=dfr backup = $backupname
+
+	if(!WaveExists(backup))
+		if(nonExistingBackupIsFatal)
+			Abort "Backup wave does not exist"
+		endif
+		return 0
+	endif
+
+	Duplicate/O backup, wv
+	KillOrMoveToTrash(wv=backup)
+	return 1
+End
+
+/// @brief Returns 1 if the user cancelled, zero if SaveExperiment was called
+///
+/// It is currently not possible to check if SaveExperiment was successfull
+/// (E-Mail from Howard Rodstein WaveMetrics, 30 Jan 2015)
+Function SaveExperimentWrapper(path, filename)
+	string path, filename
+
+	variable refNum
+	NVAR interactiveMode = $GetInteractiveMode()
+
+	if(interactiveMode)
+		Open/D/M="Save experiment"/F="All Files:.*;"/P=$path refNum as filename
+
+		if(isEmpty(S_fileName))
+			return 1
+		endif
+	else
+		if(isEmpty(path))
+			PathInfo Desktop
+			if(!V_flag)
+				NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
+			endif
+			path = "Desktop"
+		endif
+		Open/Z/P=$path refNum as filename
+
+		if(V_flag != 0)
+			return 1
+		endif
+
+		Close refNum
+	endif
+
+	SaveExperiment as S_fileName
+	return 0
+End
+
+#if (IgorVersion() >= 7.0)
+
+/// @brief Detects duplicate values in a 1d wave.
+///
+/// @return one if duplicates could be found, zero otherwise
+Function SearchForDuplicates(wv)
+	WAVE wv
+
+	variable sucess
+
+	FindDuplicates/INDX=idx wv
+
+	sucess = DimSize(idx, ROWS) > 0
+	KillOrMoveToTrash(wv=idx)
+
+	return sucess
+End
+
+#else
+
+/// @brief Detects duplicate values in a 1d wave.
+///
+/// @return one if duplicates could be found, zero otherwise
+Function SearchForDuplicates(Wv)
+	WAVE Wv
+	ASSERT(WaveType(wv), "Expected numeric wave")
+	ASSERT(dimsize(Wv,1) <= 1, (nameofwave(Wv) + " is not a 1D wave")) // make sure wave passed in is 1d
+	ASSERT(dimSize(Wv,0) >= 2, (nameofwave(Wv) + " has less than two rows")) // make sure wave has at least two rows.
+
+	Duplicate/FREE Wv WvCopyOne WvCopyTwo // make two copies. One to store duplicate search results, the other to sort and search for duplicates.
+	variable Rows = dimSize(Wv,0) // create a variable so dimSize is only called once instead of twice.
+	WvCopyOne[Rows- 1] = 0 // Set last point to 0 because if it by chance was 1, it would come up as a duplicate, even when the penultimate value in Wv was not 1
+	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
+	WvCopyOne[0, Rows - 2] = WvCopyTwo[p] != WvCopyTwo[p + 1] ? 0 : 1 // could multithread but, MIES use case will be with short 1d waves.
+	FindValue/V=1 WvCopyOne
+	return V_value != -1
+End
+
+#endif
