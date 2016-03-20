@@ -3,15 +3,17 @@
 /// @file MIES_PanelITC.ipf
 /// @brief __DAP__ Main data acquisition panel DA_EPHYS
 
-static Constant DATA_ACQU_TAB_NUM        = 0
-static Constant HARDWARE_TAB_NUM         = 6
+static Constant DATA_ACQU_TAB_NUM         = 0
+static Constant HARDWARE_TAB_NUM          = 6
 
-static StrConstant YOKE_LIST_OF_CONTROLS = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
-static StrConstant FOLLOWER              = "Follower"
-static StrConstant LEADER                = "Leader"
+static StrConstant YOKE_LIST_OF_CONTROLS  = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
+static StrConstant FOLLOWER               = "Follower"
+static StrConstant LEADER                 = "Leader"
 
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
+
+static Constant DA_EPHYS_PANEL_VERSION    = 1
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
@@ -3222,6 +3224,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	// remove tools
 	HideTools/W=$panelTitle/A
 
+	SetWindow $panelTitle, userData(panelVersion) = ""
+
 	DAP_TurnOffAllHeadstages(panelTitle)
 	DAP_TurnOffAllDACs(panelTitle)
 	DAP_TurnOffAllADCs(panelTitle)
@@ -4919,6 +4923,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
+		if(!DAP_PanelIsUpToDate(panelTitle))
+			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", panelTitle
+			return 1
+		endif
+
 		numHS = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
@@ -6511,6 +6520,7 @@ Function/S DAP_CreateDAEphysPanel()
 
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
+	SetWindow $panel, userData(panelVersion) = num2str(DA_EPHYS_PANEL_VERSION)
 
 	return panel
 End
@@ -6635,3 +6645,15 @@ Function DAP_UpdateListOfPressureDevices()
 		PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
 	endfor
 End
+
+/// @brief Return 1 if the DA_Ephys panel is up to date, zero otherwise
+Function DAP_PanelIsUpToDate(panelTitle)
+	string panelTitle
+
+	variable version
+
+	ASSERT(windowExists(panelTitle), "Non existent window")
+	version = str2num(GetUserData(panelTitle, "", "panelVersion"))
+
+	return version == DA_EPHYS_PANEL_VERSION
+end
