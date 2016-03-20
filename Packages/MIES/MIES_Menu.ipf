@@ -25,6 +25,7 @@ Menu "Mies Panels", dynamic
 		"Disable debug mode", /Q, DisableDebugMode()
 		"Check Installation", /q, CHI_CheckInstallation()
 		"Start Background Task watcher panel", /Q, BkgWatcher#BW_StartPanel()
+		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1
 	End
 End
 
