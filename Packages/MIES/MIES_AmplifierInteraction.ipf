@@ -1245,19 +1245,28 @@ End
 Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
+
+	variable clampMode, column, vDelta, offset, value
+
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/SDFR=dfr baselineSSAvg
-	WAVE/SDFR=dfr SSResistance 
-	ASSERT(DAP_MIESHeadstageMode(panelTitle, headStage) == V_CLAMP_MODE, "Headstage must be in VC mode to use this function") // headstage must be in VC
-	variable column =TP_GetTPResultsColOfHS(panelTitle, headstage)
+	WAVE/Z/SDFR=dfr baselineSSAvg
+	WAVE/Z/SDFR=dfr SSResistance
+
+	if(!WaveExists(baselineSSAvg) || !WaveExists(SSResistance))
+		return NaN
+	endif
+
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+
+	ASSERT(clampMode == V_CLAMP_MODE, "Headstage must be in VC mode to use this function")
+	column =TP_GetTPResultsColOfHS(panelTitle, headstage)
 	ASSERT(column >= 0, "Invalid column number")
 	//calculate delta current to reach zero
-	variable Vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
+	vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
 	// get current DC V offset
-	variable Offset = AI_SendToAmp(panelTitle, headStage, 0, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
+	offset = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
 	// add delta to current DC V offset
-	variable value = Offset - Vdelta
+	value = offset - vDelta
 	// send new V offset to amp
 	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
 End
