@@ -4860,6 +4860,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
+	variable ampSerial, ampChannelID
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
@@ -5000,12 +5001,22 @@ Function DAP_CheckSettings(panelTitle, mode)
 		// avoid having different headstages reference the same amplifiers
 		// and/or DA/AD channels in the "DAC Channel and Device Associations" menu
 		Make/FREE/N=(NUM_HEADSTAGES) DACs, ADCs
+		Make/FREE/N=(NUM_HEADSTAGES)/T ampSpec
 
 		WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-			clampMode = DAP_MIESHeadstageMode(panelTitle, i)
+			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
+			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
+			if(IsFinite(ampSerial) && IsFinite(ampChannelID))
+				ampSpec[i] = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+			else
+				// add a unique alternative entry
+				ampSpec[i] = num2str(i)
+			endif
+
+			clampMode  = DAP_MIESHeadstageMode(panelTitle, i)
 
 			if(clampMode == V_CLAMP_MODE)
 				DACs[i] = ChanAmpAssign[0][i]
@@ -5031,9 +5042,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		MatrixOP/FREE ampIndex = row(chanAmpAssign, 10)^t
-
-		if(SearchForDuplicates(ampIndex))
+		if(SearchForDuplicates(ampSpec))
 			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", panelTitle
 			printf "Please clear the associations for unused headstages.\r"
 			return 1
