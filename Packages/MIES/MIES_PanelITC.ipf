@@ -1156,7 +1156,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Cp!!#Bm!!#B%!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=1,popvalue=" - none - ",value= #"\" - none - ;\""
+	PopupMenu popup_Settings_Amplifier,mode=1, value=DAP_GetNiceAmplifierChannelList()
 	PopupMenu Popup_Settings_IC_DA,pos={226.00,411.00},size={47.00,19.00},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
@@ -3100,7 +3100,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_SealAtm,value= 0
-	CheckBox Check_DataAcq1_DistribDaq,pos={180.00,644.00},size={97.00,15.00},disable=1,proc=DAP_CheckProc_RepeatedAcq,title="Distributed Acq"
+	CheckBox Check_DataAcq1_DistribDaq,pos={180.00,644.00},size={97.00,15.00},disable=1,proc=DAP_CheckProc_DistributedAcq,title="Distributed Acq"
 	CheckBox Check_DataAcq1_DistribDaq,help={"Determines if distributed acquisition is used."}
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabcontrol)=  "ADC"
@@ -3384,7 +3384,6 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	PopupMenu Popup_Settings_VC_AD WIN = $panelTitle, mode=1
 	PopupMenu Popup_Settings_IC_AD WIN = $panelTitle, mode=1
 	PopupMenu Popup_Settings_HeadStage WIN = $panelTitle, mode=1
-	PopupMenu popup_Settings_Amplifier WIN = $panelTitle, mode=1, value= #"\" - none - ;\""
 	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 	PopupMenu Popup_Settings_IC_DA WIN = $panelTitle, mode=1
 
@@ -4229,28 +4228,6 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_CheckProc_SaveData(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	string panelTitle, buttonText
-
-	switch(cba.eventCode)
-		case 2:
-			panelTitle = cba.win
-
-			if(cba.checked)
-				Button DataAcquireButton fColor = (52224,0,0), win = $panelTitle
-				buttonText = "\\Z12\\f01Acquire Data\r * DATA WILL NOT BE SAVED *"
-				buttonText += "\r\\Z08\\f00 (autosave state is in settings tab)"
-				Button DataAcquireButton title=buttonText
-			else
-				Button DataAcquireButton fColor = (0,0,0), win = $panelTitle
-				Button DataAcquireButton title = "\\Z14\\f01Acquire\rData"
-			endif
-		break
-	endswitch
-End
-
 Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
@@ -4274,19 +4251,6 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	endswitch
 
 	return 0
-End
-
-Function DAP_ChangePopUpState(BaseName, state, panelTitle)
-	string BaseName, panelTitle// IndexEnd_DA_0
-	variable state
-	variable i = 0
-	string CompleteName
-	
-	do
-		CompleteName = Basename + num2str(i)
-		PopupMenu $CompleteName disable = state, win = $panelTitle
-		i += 1
-	while(i < NUM_DA_TTL_CHANNELS)
 End
 
 Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
@@ -4314,11 +4278,11 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
 
 	variable i
-	string TTLCheckBoxName
+	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		TTLCheckBoxName = "Check_TTL_0" + num2str(i)
-		CheckBox $TTLCheckBoxName win = $panelTitle, value = 0
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
+		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	endfor
 End
 
@@ -4608,7 +4572,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
-			DAP_FindConnectedAmps(ba.win)
+			AI_FindConnectedAmps(ba.win)
 			break
 	endswitch
 End
@@ -4632,20 +4596,21 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 	return 0
 End
 
-static Function/S DAP_FormatAmplifierChannelList(panelTitle)
-	string panelTitle
+/// @brief Return a nicely layouted list of amplifier channels
+Function/S DAP_GetNiceAmplifierChannelList()
 
-	variable numRows
-	variable i
+	variable i, numRows
 	string str
-	string list = ""
+	string list = NONE
+	string panelTitle = GetCurrentWindow()
 
-	Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
+	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 
-	numRows = DimSize(W_TelegraphServers, ROWS)
+	numRows = WaveExists(W_TelegraphServers) ? DimSize(W_TelegraphServers, ROWS) : 0
 	if(!numRows)
 		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		return "MC not available;"
+		list = AddListItem("\\M1(MC not available;", list, ";", inf)
+		return list
 	endif
 
 	for(i=0; i < numRows; i+=1)
@@ -4654,36 +4619,6 @@ static Function/S DAP_FormatAmplifierChannelList(panelTitle)
 	endfor
 
 	return list
-End
-
-Function DAP_FindConnectedAmps(panelTitle)
-	string panelTitle
-
-	// compatibility fix
-	// Old panels, created before this change, use
-	// this function as button control and send the
-	// name of the control instead of panelTitle
-	if(!windowExists(panelTitle))
-		GetWindow kwTopWin, activeSW
-		panelTitle = S_value
-	endif
-
-	DFREF saveDFR = GetDataFolderDFR()
-	SetDataFolder GetAmplifierFolder()
-
-	// old axon interface settings wave
-	Make/O/N=0 W_TelegraphServers
-	AxonTelegraphFindServers
-
-	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
-
-	// new mcc interface settings wave
-	Make/O/N=(0,0)/I W_MultiClamps
-	MCC_FindServers/Z=1
-
-	SetDataFolder saveDFR
-
-	PopupMenu  popup_Settings_Amplifier win = $panelTitle, value = #("\"" + NONE + ";" + DAP_FormatAmplifierChannelList(panelTitle) + "\"")
 End
 
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl

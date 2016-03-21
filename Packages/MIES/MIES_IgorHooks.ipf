@@ -31,6 +31,14 @@ static Function IH_KillTemporaries()
 	IH_KillStimSets()
 End
 
+/// @brief Remove the amplifier connection waves
+Function IH_RemoveAmplifierConnWaves()
+
+	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers, W_MultiClamps
+	KillOrMoveToTrash(wv=W_TelegraphServers)
+	KillOrMoveToTrash(wv=W_MultiClamps)
+End
+
 /// @brief Delete all wavebuilder stim sets to save memory
 Function IH_KillStimSets()
 
@@ -85,6 +93,7 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 	variable unsavedExp, unsavedNotebooks, unsavedProcedures
 
 	IH_UnlockAllDevicesWrapper()
+	IH_RemoveAmplifierConnWaves()
 	IH_KillTemporaries()
 
 	// save the experiment silently if it was saved before
@@ -99,6 +108,7 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	IH_UnlockAllDevicesWrapper()
+	IH_RemoveAmplifierConnWaves()
 	IH_KillTemporaries()
 	return 0
 End
