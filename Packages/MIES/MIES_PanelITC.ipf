@@ -15,6 +15,8 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static Constant DA_EPHYS_PANEL_VERSION    = 2
 
+static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
+
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(9,53,501,889)
@@ -4649,11 +4651,37 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	endif
 
 	for(i=0; i < numRows; i+=1)
-		sprintf str, "AmpNo %d Chan %d", W_TelegraphServers[i][0], W_TelegraphServers[i][1]
+		str  = DAP_GetAmplifierDef(W_TelegraphServers[i][0], W_TelegraphServers[i][1])
 		list = AddListItem(str, list, ";", inf)
 	endfor
 
 	return list
+End
+
+Function/S DAP_GetAmplifierDef(ampSerial, ampChannel)
+	variable ampSerial, ampChannel
+
+	string str
+
+	sprintf str, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannel
+
+	return str
+End
+
+/// @brief Parse the entries which DAP_GetAmplifierDef() created
+Function DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
+	string amplifierDef
+	variable &ampSerial, &ampChannelID
+
+	ampSerial    = NaN
+	ampChannelID = NaN
+
+	if(!cmpstr(amplifierDef, NONE))
+		return NaN
+	endif
+
+	sscanf amplifierDef, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannelID
+	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
 End
 
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
