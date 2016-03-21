@@ -78,6 +78,7 @@ Function HSU_LockDevice(panelTitle)
 	HSU_UpdateListOfITCPanels()
 	HSU_OpenITCDevice(panelTitleLocked)
 	DAP_UpdateListOfPressureDevices()
+	HSU_UpdateChanAmpAssignPanel(panelTitleLocked)
 
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
@@ -328,7 +329,8 @@ End
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	string panelTitle
 
-	variable HeadStageNo, amplifierIdx
+	variable HeadStageNo, ampSerial, ampChannelID
+	string amplifierDef
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
@@ -353,13 +355,15 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
 	// but now you are telling the software what it is
-	amplifierIdx = GetPopupMenuIndex(panelTitle, "popup_Settings_Amplifier")
+	amplifierDef = GetPopupMenuString(panelTitle, "popup_Settings_Amplifier")
+	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 
 	WAVE/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
-	if(WaveExists(W_TelegraphServers) && amplifierIdx >= 1)
-		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = W_TelegraphServers[amplifierIdx - 1][0] // serial number
-		ChanAmpAssign[%AmpChannelID][HeadStageNo] = W_TelegraphServers[amplifierIdx - 1][1] // channel ID
-		ChanAmpAssign[%AmpIndex][HeadStageNo]     = amplifierIdx
+	// the check for W_TelegraphServers existence ensures that the user queried
+	// the amplifiers from the MCC panel
+	if(WaveExists(W_TelegraphServers) && IsFinite(ampSerial) && IsFinite(ampChannelID))
+		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
+		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
 	else
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = nan
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = nan
@@ -369,7 +373,8 @@ End
 Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 
-	variable HeadStageNo, channel, amp
+	variable HeadStageNo, channel
+	string entry
 
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
@@ -400,8 +405,10 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
 
-	amp = ChanAmpAssign[10][HeadStageNo]
-	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode = (IsFinite(channel) ? amp : 0) + 1
+	// choose None before trying to match the amplifier
+	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode=1
+	entry = DAP_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][HeadStageNo], ChanAmpAssign[%AmpChannelID][HeadStageNo])
+	Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
 End
 
 /// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
