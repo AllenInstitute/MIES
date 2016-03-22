@@ -4,7 +4,6 @@
 /// @brief Definition of the menu items
 
 static StrConstant optionalTangoInclude = "MIES_TangoInteract"
-static StrConstant optionalHDF5Include = "MIES_HDF5Ops"
 
 Menu "Mies Panels", dynamic
 		"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
@@ -29,22 +28,11 @@ Menu "Mies Panels", dynamic
 	End
 End
 
-Menu "HDF5 Tools", dynamic
-	GetOptHDF5IncludeMenuTitle(), /Q, HandleHDF5OptionalInclude()	
-End
 
 ///@returns 1 if the optional include is loaded, 0 otherwise
 static Function OptTangoIncludeLoaded()
 
 	string procList = WinList(optionalTangoInclude + ".ipf",";","")
-
-	return !isEmpty(procList)
-End
-
-///@returns 1 if the optional include is loaded, 0 otherwise
-static Function OptHDF5IncludeLoaded()
-
-	string procList = WinList(optionalHDF5Include + ".ipf",";","")
 
 	return !isEmpty(procList)
 End
@@ -59,16 +47,6 @@ Function/S GetOptTangoIncludeMenuTitle()
 	endif
 End
 
-///@brief Returns the title of the HDF5 load/unload menu entry
-Function/S GetOptHDF5IncludeMenuTitle()
-
-	if(OptHDF5IncludeLoaded())
-		return "Unload HDF5 Tools"
-	else
-		return "Load HDF5 Tools"
-	endif
-End
-
 ///@brief Load/Unload the optional tango include
 Function HandleTangoOptionalInclude()
 
@@ -76,18 +54,6 @@ Function HandleTangoOptionalInclude()
 		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalTangoInclude + "\""
 	else
 		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalTangoInclude + "\""
-	endif
-
-	Execute/P/Q/Z "COMPILEPROCEDURES "
-End
-
-///@brief Load/Unload the optional hdf5 include
-Function HandleHDF5OptionalInclude()
-
-	if(!OptHDF5IncludeLoaded())
-		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalHDF5Include + "\""
-	else
-		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalHDF5Include + "\""
 	endif
 
 	Execute/P/Q/Z "COMPILEPROCEDURES "
