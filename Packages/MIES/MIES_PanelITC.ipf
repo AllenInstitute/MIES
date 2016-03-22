@@ -2792,14 +2792,14 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(ResizeControlsInfo)= A"!!,FE!!#ChJ,ho,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_Pressure_DAgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:0.5
+	SetVariable setvar_Settings_Pressure_DAgain,value= _NUM:2
 	SetVariable setvar_Settings_Pressure_ADgain,pos={112.00,551.00},size={50.00,18.00},proc=DAP_SetVarProc_CAA
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabnum)=  "6"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(ResizeControlsInfo)= A"!!,FE!!#Cn^]6\\l!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_Pressure_ADgain,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:2
+	SetVariable setvar_Settings_Pressure_ADgain,value= _NUM:0.5
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,pos={170.00,526.00},size={30.00,18.00},proc=DAP_SetVarProc_CAA
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabnum)=  "6"
 	SetVariable SetVar_Hardware_Pressur_DA_Unit,userdata(tabcontrol)=  "ADC"
@@ -3583,6 +3583,14 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
 	CheckBox check_Settings_DisablePressure WIN = $panelTitle, value = 0
+
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA", 0)
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD", 0)
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL", 0)
+	SetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain", 2)
+	SetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain", 0.5)
+	SetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit", "psi")
+	SetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit", "psi")
 
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")

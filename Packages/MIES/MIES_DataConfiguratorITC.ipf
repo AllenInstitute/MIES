@@ -787,7 +787,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
-		DAGain = 3200 / val // 3200 = 1V, 3200/gain = bits per unit
+		DAGain = HARDWARE_ITC_BITS_PER_VOLT / val
 
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
 
@@ -865,7 +865,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		// Place TTL waves into ITCDataWave
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-			DC_MakeITCTTLWave(RACK_ZERO, panelTitle)
+			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 			WAVE/SDFR=deviceDFR TTLwave
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
 			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
@@ -873,7 +873,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-			DC_MakeITCTTLWave(RACK_ONE, panelTitle)
+			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 			WAVE/SDFR=deviceDFR TTLwave
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
 			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
@@ -994,9 +994,9 @@ End
 ///
 /// @param rackNo Front TTL rack aka number of ITC devices. Only the ITC1600 has two racks, see @ref RackConstants. Rack number for all other devices is #RACK_ZERO.
 /// @param panelTitle  panel title
-static Function DC_MakeITCTTLWave(rackNo, panelTitle)
-	variable rackNo
+static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	string panelTitle
+	variable rackNo
 
 	variable first, last, i, col, maxRows, lastIdx, bit, bits
 	string set

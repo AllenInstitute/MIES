@@ -250,7 +250,7 @@ static Function DM_ADScaling(WaveToScale, panelTitle)
 
 		// w' = w  / (g * s)
 		gain  = DA_EphysGuiState[adc][%ADGain]
-		gain *= 3200
+		gain *= HARDWARE_ITC_BITS_PER_VOLT
 		MultiThread WaveToScale[][(startOfADColumns + i)] /= gain
 	endfor
 end
@@ -271,7 +271,7 @@ static Function DM_DAScaling(WaveToScale, panelTitle)
 
 		// w' = w * g / s
 		gain  = DA_EphysGuiState[dac][%DAGain]
-		gain /= 3200
+		gain /= HARDWARE_ITC_BITS_PER_VOLT
 		MultiThread WaveToScale[][i] *= gain
 	endfor
 end

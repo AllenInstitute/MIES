@@ -100,7 +100,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, setti
 
 		numRows = DimSize(currentSetting, ROWS)
 		for(i = 0; i < numRows; i += 1)
-			if(currentSetting[i] == lastSetting[i] || (NumType(currentSetting[i]) == 2 && NumType(lastSetting[i]) == 2))
+			if(currentSetting[i] == lastSetting[i] || (!IsFinite(currentSetting[i]) && !IsFinite(lastSetting[i])))
 				continue
 			endif
 

@@ -119,7 +119,7 @@ Function/s HSU_GetDeviceType(panelTitle)
 End
 
 /// @brief Returns the device type as index into the popup menu in the Hardware tab
-Function HSU_GetDeviceTypeIndex(panelTitle)
+static Function HSU_GetDeviceTypeIndex(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
@@ -128,21 +128,12 @@ Function HSU_GetDeviceTypeIndex(panelTitle)
 End
 
 /// @brief Returns the selected ITC device number from a DA_Ephys panel (locked or unlocked)
-Function/s HSU_GetDeviceNumber(panelTitle)
+static Function/s HSU_GetDeviceNumber(panelTitle)
 	string panelTitle
 
 	ControlInfo /w = $panelTitle popup_moreSettings_DeviceNo
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	return S_value
-End
-
-/// @brief Returns the device number as index into the popup menu in the Hardware tab
-Function HSU_GetDeviceNumberIndex(panelTitle)
-	string panelTitle
-
-	ControlInfo /w = $panelTitle popup_moreSettings_DeviceNo
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	return V_value - 1
 End
 
 Function HSU_ButProc_Hrdwr_UnlckDev(s) : ButtonControl

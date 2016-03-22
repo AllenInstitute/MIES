@@ -6,29 +6,29 @@
 
 /// @name Constants static Used by pressure control
 /// @{
-static StrConstant 	PRESSURE_CONTROLS_BUTTON_LIST  	= "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
-static StrConstant 	PRESSURE_CONTROL_TITLE_LIST    		= "Approach;Seal;Break In;Clear;Apply"
-static StrConstant 	PRESSURE_CONTROL_CHECKBOX_LIST 	= "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
-static StrConstant 	PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
-static Constant 		P_METHOD_neg1_ATM            			= -1
-static Constant 		P_METHOD_0_APPROACH         			= 0
-static Constant 		P_METHOD_1_SEAL              			= 1
-static Constant 		P_METHOD_2_BREAKIN           			= 2
-static Constant 		P_METHOD_3_CLEAR             			= 3
-static Constant 		P_METHOD_4_MANUAL            			= 4
-static Constant 		RACK_ZERO                    				= 0
-static Constant 		RACK_ONE                     					= 3 // 3 is defined by the ITCWriteDigital command instructions.
-static Constant 		BITS_PER_VOLT                				= 3200
-static Constant 		NEG_PRESSURE_PULSE_INCREMENT 	= 0.2 // psi
-static Constant 		POS_PRESSURE_PULSE_INCREMENT 	= 0.1 // psi
-static Constant 		PRESSURE_PULSE_STARTpt       		= 1 // 12000
-static Constant 		PRESSURE_PULSE_ENDpt         			= 70000
-static Constant 		SAMPLE_INT_MILLI             				= 0.005
-static Constant 		GIGA_SEAL                    					= 1000
-static Constant 		PRESSURE_OFFSET              			= 5
-static Constant 		MIN_NEG_PRESSURE_PULSE       		= -2
-static Constant		ATMOSPHERIC_PRESSURE				= 0
-static Constant		PRESSURE_CHANGE					= 1
+static StrConstant  PRESSURE_CONTROLS_BUTTON_LIST  = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
+static StrConstant  PRESSURE_CONTROL_TITLE_LIST    = "Approach;Seal;Break In;Clear;Apply"
+static StrConstant  PRESSURE_CONTROL_CHECKBOX_LIST = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
+static StrConstant  PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
+static Constant     P_METHOD_neg1_ATM              = -1
+static Constant     P_METHOD_0_APPROACH            = 0
+static Constant     P_METHOD_1_SEAL                = 1
+static Constant     P_METHOD_2_BREAKIN             = 2
+static Constant     P_METHOD_3_CLEAR               = 3
+static Constant     P_METHOD_4_MANUAL              = 4
+static Constant     RACK_ZERO                      = 0
+static Constant     RACK_ONE                       = 3 // 3 is defined by the ITCWriteDigital command instructions.
+static Constant     NEG_PRESSURE_PULSE_INCREMENT   = 0.2 // psi
+static Constant     POS_PRESSURE_PULSE_INCREMENT   = 0.1 // psi
+static Constant     PRESSURE_PULSE_STARTpt         = 1 // 12000
+static Constant     PRESSURE_PULSE_ENDpt           = 70000
+static Constant     GIGA_SEAL                      = 1000
+static Constant     PRESSURE_OFFSET                = 5
+static Constant     MIN_NEG_PRESSURE_PULSE         = -2
+static Constant     MAX_REGULATOR_PRESSURE         = 10
+static Constant     MIN_REGULATOR_PRESSURE         = -10
+static Constant     ATMOSPHERIC_PRESSURE           = 0
+static Constant     PRESSURE_CHANGE                = 1
 /// @}
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -36,7 +36,7 @@ static Constant		PRESSURE_CHANGE					= 1
 /// This function gets called by TP_RecordTP. It also gets called when the approach button is pushed.
 /// A key point is that data acquisition used to run pressure pulses cannot be active if the TP is inactive.
 Function P_PressureControl(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable headStage
@@ -68,7 +68,7 @@ Function P_PressureControl(panelTitle)
 				case P_METHOD_4_MANUAL:
 					P_ManSetPressure(panelTitle, headStage)
 					break
-				default: 
+				default:
 					PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = -1
 					P_MethodAtmospheric(panelTitle, headstage)
 					break
@@ -108,10 +108,10 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 End
 
 /// @brief Sets the pressure to atmospheric
-Function P_MethodAtmospheric(panelTitle, headstage)
-	string 	panelTitle
-	variable 	headStage
-	
+static Function P_MethodAtmospheric(panelTitle, headstage)
+	string panelTitle
+	variable headStage
+
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	P_UpdateTTLstate(panelTitle, headStage, 0)
 	PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, 0)
@@ -119,21 +119,21 @@ Function P_MethodAtmospheric(panelTitle, headstage)
 End
 
 /// @brief Applies approach pressures
-Function P_MethodApproach(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
-	
+static Function P_MethodApproach(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
-	variable 	targetP = PressureDataWv[headStage][%PSI_solution] // Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
-	
+	variable targetP = PressureDataWv[headStage][%PSI_solution] // Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
+
 	P_UpdateTTLstate(panelTitle, headStage, 1) // Open the TTL - outside of if statement below because TTL will only update if the state does not match.
 
 	// if Near cell checkbox is checked then all headstages, except the active headstage, go to in slice pressure. The active headstage goes to nearCell pressure
 	if(PressureDataWv[headStage][%ApproachNear] && headStage != PressureDataWv[headStage][%UserSelectedHeadStage])
 		targetP = PressureDataWv[headStage][%PSI_slice]
 	endif
-	
+
 	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
@@ -148,18 +148,18 @@ Function P_MethodApproach(panelTitle, headStage)
 End
 
 /// @brief Applies seal methods
-Function P_MethodSeal(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
-	
+static Function P_MethodSeal(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
 	WAVE 	PressureDataWv 			= P_GetPressureDataWaveRef(panelTitle)
-	variable 	RSlope
-	variable 	RSlopeThreshold 			= 4 // with a slope of 8 Mohm/s it will take two minutes for a seal to form.
-	variable 	lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
-	variable 	timeInSec 				= ticks / 60
-	variable 	ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
-	
-	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2 || !ElapsedTimeInSeconds) // checks for first time thru.
+	variable RSlope
+	variable RSlopeThreshold 			= 4 // with a slope of 8 Mohm/s it will take two minutes for a seal to form.
+	variable lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
+	variable timeInSec 				= ticks / 60
+	variable ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
+
+	if(!lastRSlopeCheck || !IsFinite(lastRSlopeCheck) || !ElapsedTimeInSeconds) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 	endif
@@ -175,8 +175,8 @@ Function P_MethodSeal(panelTitle, headStage)
  			P_UpdatePressureMode(panelTitle, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
  		else
  			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM // remove the seal mode
- 		endif	
-		
+		endif
+
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 	= 0 // reset the time of last slope R check
 
 		// apply holding potential of -70 mV
@@ -229,16 +229,16 @@ Function P_MethodSeal(panelTitle, headStage)
 End
 
 /// @brief Applies break-in method
-Function P_MethodBreakIn(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
-	
-	WAVE 	PressureDataWv 			= P_GetPressureDataWaveRef(panelTitle)
-	variable 	lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
-	variable 	timeInSec 				= ticks / 60
-	variable 	ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
+static Function P_MethodBreakIn(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
-	if(!lastRSlopeCheck || numType(lastRSlopeCheck) == 2) // checks for first time thru.
+	WAVE 	PressureDataWv 			= P_GetPressureDataWaveRef(panelTitle)
+	variable lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
+	variable timeInSec 				= ticks / 60
+	variable ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
+
+	if(!lastRSlopeCheck || !IsFinite(lastRSlopeCheck)) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 	endif
@@ -249,13 +249,13 @@ Function P_MethodBreakIn(panelTitle, headStage)
 	// if the seal resistance is less that 1 giga ohm set pressure to atmospheric AND break in process
 	if(Resistance <= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
-		
+
 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
  			P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state and sets to atmospheric
  		else
  			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
- 		endif			
-		
+		endif
+
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 		print "Break in on head stage:", headstage,"of", panelTitle
@@ -270,18 +270,18 @@ Function P_MethodBreakIn(panelTitle, headStage)
 End
 
 /// @brief Applies pipette clearing method
-Function P_MethodClear(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
+static Function P_MethodClear(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
 	WAVE 	PressureDataWv 			= P_GetPressureDataWaveRef(panelTitle)
-	variable 	lastRpeakCheck 			= PressureDataWv[headStage][%TimePeakRcheck] / 60
-	variable 	timeInSec 				= ticks / 60
-	variable 	ElapsedTimeInSeconds 	= timeInSec - lastRpeakCheck
+	variable lastRpeakCheck 			= PressureDataWv[headStage][%TimePeakRcheck] / 60
+	variable timeInSec 				= ticks / 60
+	variable ElapsedTimeInSeconds 	= timeInSec - lastRpeakCheck
 
 	P_UpdateSSRSlopeAndSSR(panelTitle)
 
-	if(!lastRpeakCheck || numType(lastRpeakCheck) == 2) // checks for first time thru.
+	if(!lastRpeakCheck || !IsFinite((lastRpeakCheck))) // checks for first time thru.
 		ElapsedTimeInSeconds = 0
 		PressureDataWv[headStage][%TimePeakRcheck] = ticks
 		PressureDataWv[headStage][%LastPeakR] = PressureDataWv[headStage][%PeakR] // sets the last peak R = to the current peak R
@@ -309,13 +309,13 @@ Function P_MethodClear(panelTitle, headStage)
 End
 
 /// @brief Applies updates the command Voltage so that -100 pA current is applied up to the target voltage
-Function P_ApplyNegV(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
+static Function P_ApplyNegV(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
-	variable 	resistance 		=  PressureDataWv[headStage][%LastResistanceValue]
-	variable 	vCom 			= floor(-0.100 * resistance)
+	variable resistance 		=  PressureDataWv[headStage][%LastResistanceValue]
+	variable vCom 			= floor(-0.100 * resistance)
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
 	if(getCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
@@ -327,7 +327,7 @@ Function P_ApplyNegV(panelTitle, headStage)
  	if(!isFinite(lastVcom))
 		lastVcom = 0
 	endif
-	
+
 	if(vCom > -70 && (vCom > (lastVcom + 2) || vCom < (lastVcom - 2)) && resistance >= 50)
 		print "vcom=",vcom
 		P_UpdateVcom(panelTitle, vCom, headStage)
@@ -336,26 +336,24 @@ Function P_ApplyNegV(panelTitle, headStage)
 End
 
 /// @brief Updates the command voltage
-Function P_UpdateVcom(panelTitle, vCom, headStage)
-	string 	panelTitle
-	variable 	vCom
-	variable 	headStage
-
-	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+static Function P_UpdateVcom(panelTitle, vCom, headStage)
+	string panelTitle
+	variable vCom
+	variable headStage
 
 	// apply holding
 	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_VC", headStage, value=vCom)
-	
+
 	// make sure holding is enabled
 	AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=1)
 End
 
 /// @brief Opens ITC devices used for pressure regulation
 Function P_OpenITCDevForP_Reg(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
-	string 	ListOfITCDevToOpen = P_ITCDevToOpen()
-	variable 	i = 0
+	string ListOfITCDevToOpen = P_ITCDevToOpen()
+	variable i = 0
 	for(i = 0; i < ItemsInList(ListOfITCDevToOpen); i += 1)
 		P_OpenITCDevice(panelTitle, StringFromList(i, ListOfITCDevToOpen))
 	endfor
@@ -363,14 +361,14 @@ End
 
 // @brief Determines which ITC devices to close. Ensures all DA_Ephys panels using a particular ITC device for pressure regulation are updated correctly.
 Function P_CloseITCDevForP_Reg(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
-	string 	ListOfITCDevToClose = P_ITCDevToOpen()
-	string 	ListOfLockedDA_Ephys = GetListOfLockedDevices()
-	string 	DeviceToClose
-	string 	ListOfHeadstagesUsingITCDev
-	variable 	headStage
-	variable 	i, j
+	string ListOfITCDevToClose = P_ITCDevToOpen()
+	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
+	string DeviceToClose
+	string ListOfHeadstagesUsingITCDev
+	variable headStage
+	variable i, j
 
 	for(i = 0; i < ItemsInList(ListOfITCDevToClose); i += 1) // for all the ITC devices used for pressure regulation
 		// find device ID
@@ -394,24 +392,24 @@ End
 
 /// @brief Used to open ITCdevice used for pressure regulation.
 Function P_OpenITCDevice(panelTitle, ITCDeviceToOpen)
-	String 	panelTitle, ITCDeviceToOpen
+	string panelTitle, ITCDeviceToOpen
 
-	string 	deviceType, deviceNumber, cmd
+	string deviceType, deviceNumber, cmd
 	DFREF 	dfr 								= P_DeviceSpecificPressureDFRef(panelTitle)
 
 	ParseDeviceString(ITCDeviceToOpen, deviceType, deviceNumber)
 
 	Make/o/I/U/N=1 dfr:DevID/WAVE = DevID
-	string 	DevIDWaveNameString 			= GetWavesDataFolder(DevID,2)
+	string DevIDWaveNameString 			= GetWavesDataFolder(DevID,2)
 
 	sprintf 	cmd, "ITCOpenDevice \"%s\", %s, %s", DeviceType, DeviceNumber, DevIDWaveNameString
 	Execute	cmd
 	print 	"ITC Device used for pressure regulation ID #",DevID[0],"is locked."
 
-	variable 	headStage
-	string 	ListOfLockedDA_Ephys 			= GetListOfLockedDevices()
-	variable 	i, j
-	string 	ListOfHeadstageUsingITCDevice	= ""
+	variable headStage
+	string ListOfLockedDA_Ephys 			= GetListOfLockedDevices()
+	variable i, j
+	string ListOfHeadstageUsingITCDevice	= ""
 
 	// update pressure data wave with locked device info
 	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
@@ -430,19 +428,19 @@ Function P_OpenITCDevice(panelTitle, ITCDeviceToOpen)
 End
 
 /// @brief Used to close ITC device used for pressure regulation
-Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
-	string 	panelTitle, ITCDevToClose
-	variable 	DevID
+static Function P_CloseITCDevice(panelTitle, ITCDevToClose, DevID)
+	string panelTitle, ITCDevToClose
+	variable DevID
 
-	string 	cmd
-	variable 	headStage
-	variable 	i, j
-	string 	ListOfHeadstageUsingITCDevice = ""
-	string 	ListOfLockedDA_Ephys = GetListOfLockedDevices()
-			
+	string cmd
+	variable headStage
+	variable i, j
+	string ListOfHeadstageUsingITCDevice = ""
+	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
+
 	if(!isInteger(devID) || devID < 0 || devID > 10)
-   		 DEBUGPRINT("Trying to close invalid deviceID", var=devID)
-    	else	
+		DEBUGPRINT("Trying to close invalid deviceID", var=devID)
+	else
 		sprintf cmd, "ITCSelectDevice/Z %d" DevID
 		if(!ExecuteITCOperation(cmd))
 			sprintf cmd, "ITCCloseDevice"
@@ -467,12 +465,12 @@ End
 
 /// @brief Returns a list of rows that contain a particular string
 Function/S P_HeadstageUsingITCDevice(panelTitle, ITCDevice)
-	string 		panelTitle
-	string 		ITCDevice
-	
+	string 	panelTitle
+	string 	ITCDevice
+
 	WAVE/T 	PressureDataTxtWv 	= P_PressureDataTxtWaveRef(panelTitle)
 	variable i
-	string 		ListString 			= ""
+	string 	ListString 			= ""
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(cmpstr(ITCDevice, PressureDataTxtWv[i][0]) == 0)
 			ListString = AddListItem(num2str(i), ListString)
@@ -485,10 +483,10 @@ End
 /// @brief Returns a list of ITC devices to open
 /// pulls a non repeating list of ITC devices to open from the device specific pressure data wave.
 Function/S P_ITCDevToOpen()
-	string 	ListOfLockedDevices = GetListOfLockedDevices()
-	string 	deviceList = ""
-	variable 	i, j
-	variable 	alreadyInList
+	string ListOfLockedDevices = GetListOfLockedDevices()
+	string deviceList = ""
+	variable i, j
+	variable alreadyInList
 
 	for(j = 0; j < ItemsInList(ListOfLockedDevices); j += 1)
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -505,9 +503,9 @@ Function/S P_ITCDevToOpen()
 End
 
 /// @brief Sets the pressure on a headStage
-Function P_SetPressure(panelTitle, headStage, psi)
-	string 	panelTitle
-	variable 	headStage, psi
+static Function P_SetPressure(panelTitle, headStage, psi)
+	string panelTitle
+	variable headStage, psi
 
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable calibratedCommand
@@ -519,26 +517,26 @@ Function P_SetPressure(panelTitle, headStage, psi)
 	else
 		calibratedCommand = psi
 	endif
-//	print calibratedcommand, "on headstage:", headStage	
+//	print calibratedcommand, "on headstage:", headStage
 	P_PressureCommand(panelTitle, PressureDataWv[headStage][%DAC_DevID], PressureDataWv[headStage][%DAC], PressureDataWv[headStage][%ADC], calibratedCommand, PressureDataWv[headStage][%DAC_Gain])
 	SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f")
 	return 	psi
 End
 
 /// @brief Sets the pressure using a single DA channel on a ITC device
-Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_ScaleFactor)
-	string 	panelTitle
-	variable 	ITCDeviceIDGlobal 	// ITC device used for pressure control
-	variable 	DAC, ADC 				// the DA channel that the pressure regulator recieves its command voltage from
-	variable 	psi 					// the command pressure in pounds per square inch
-	variable 	DA_scaleFactor		// number of volts per psi for the command
-	
+static Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_ScaleFactor)
+	string panelTitle
+	variable ITCDeviceIDGlobal 	// ITC device used for pressure control
+	variable DAC, ADC 				// the DA channel that the pressure regulator recieves its command voltage from
+	variable psi 					// the command pressure in pounds per square inch
+	variable DA_scaleFactor		// number of volts per psi for the command
+
 	psi /= DA_scaleFactor
 	// psi offset: 0V = -10 psi, 5V = 0 psi, 10V = 10 psi
 	psi += 5
 
 	// check assumption that device is open
-	string 	ITCCommand
+	string ITCCommand
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(ITCCommand)
 	// set pressure
@@ -547,22 +545,22 @@ Function P_PressureCommand(panelTitle, ITCDeviceIDGlobal, DAC, ADC, psi, DA_Scal
 End
 
 /// @brief Gets the pressure on a headStage
-Function P_GetPressure(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
+static Function P_GetPressure(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
 	WAVE 	pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	return P_ReadADC(panelTitle, pressureDataWv[headStage][%DAC_DevID], pressureDataWv[headStage][%ADC], pressureDataWv[headStage][%ADC_Gain])
 End
 
 /// @brief Gets the pressure using a single AD channel on a ITC device
-Function P_ReadADC(panelTitle, ITCDeviceIDGlobal, ADC, AD_ScaleFactor)
-	string 	panelTitle
-	variable 	ITCDeviceIDGlobal, ADC, AD_ScaleFactor
+static Function P_ReadADC(panelTitle, ITCDeviceIDGlobal, ADC, AD_ScaleFactor)
+	string panelTitle
+	variable ITCDeviceIDGlobal, ADC, AD_ScaleFactor
 
 	DFREF 	dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Make/N=1/D/O dfr:ADC/WAVE=ADV
-	string 	ITCCommand
+	string ITCCommand
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(ITCCommand)
 
@@ -579,23 +577,23 @@ End
 ///
 /// 	When setting TTLs, all channels are set at once. To keep existing TTL state on some channels, active state must be known.
 /// 	This funcition queries the hardware to determine the active state.*****This requires the TTL out to be looped back to the TTL in on the ITC DAC.*****
-Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
-	string 	panelTitle
-	variable 	headStage
-	variable 	ONorOFF
+static Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
+	string panelTitle
+	variable headStage
+	variable ONorOFF
 
-	variable 	OutPutDecimal
+	variable OutPutDecimal
 	WAVE 	PressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-	variable 	ITCDeviceIDGlobal 	= PressureDataWv[headStage][%DAC_DevID] // ITC device used for pressure control
-	variable 	Channel 				= PressureDataWv[headStage][%TTL]
-	variable 	rack 				= 0
+	variable ITCDeviceIDGlobal 	= PressureDataWv[headStage][%DAC_DevID] // ITC device used for pressure control
+	variable Channel 			= PressureDataWv[headStage][%TTL]
+	variable rack 				= 0
 
 	If(Channel >= 4) // channel is on rack 1 of two racks (rack 0 and rack 1).
 		rack = 3 // rack 1 TTLs front = 3 in the ITC XOP
 		Channel -=4 // channels on each rack are numbered 0 through 3
 	endif
 
-	string 	ITCCommand
+	string ITCCommand
 	sprintf 	ITCCommand, "ITCSelectDevice %d" ITCDeviceIDGlobal
 	ExecuteITCOperationAbortOnError(ITCCommand)
 
@@ -603,10 +601,10 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 	sprintf 	ITCCommand, "ITCReadDigital %d, %s" Rack, GetWavesDataFolder(DIO, 2)
 	ExecuteITCOperation(ITCCommand)
 
-	string 	BinaryList = P_DecToBinary(DIO[0])
+	string BinaryList = P_DecToBinary(DIO[0])
 
 	// check if desired channel is already in correct state
-	variable 	channelStatus = str2num(StringFromList(Channel, BinaryList))
+	variable channelStatus = str2num(StringFromList(Channel, BinaryList))
 
 	if(ONorOFF != channelStatus) // update tll associated with headStage only if the desired TTL channel state is different from the actual/current channel state.
 		if(ONorOFF)
@@ -623,8 +621,8 @@ End
 
 /// @brief Updates resistance slope and the resistance in PressureDataWv from TPStorageWave
 /// param
-Function P_UpdateSSRSlopeAndSSR(panelTitle)
-	string 	panelTitle
+static Function P_UpdateSSRSlopeAndSSR(panelTitle)
+	string panelTitle
 
 	WAVE TPStorageWave     = GetTPStorage(panelTitle)
 	WAVE PressureDataWv    = P_GetPressureDataWaveRef(panelTitle)
@@ -651,67 +649,66 @@ End
 
 /// @brief Updates the pressure state (approach, seal, break in, or clear) from DA_Ephys panel to the pressureData wave
 Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter
-	string 	panelTitle
-	
-	variable 	headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
-	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
-	string 	deviceType, deviceNum
+	string panelTitle
+
+	variable headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
+	WAVE PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
+	string deviceType, deviceNum
 
 	string SelectedITCDevice = getPopupMenuString(panelTitle, "popup_Settings_Pressure_ITCdev")
 	parseDeviceString(SelectedITCDevice, deviceType, DeviceNum)
 //	PressureDataWv[headStageNo][0] STORES THE ACTIVE PRESSURE METHOD OR -1 IF NO ACTIVE METHOD. IT IS UPDATED BY THE PRESSURE CONTROL BUTTONS IN THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
-	PressureDataWv[headStageNo][%DAC_List_Index] 	= GetPopupMenuIndex	(panelTitle, "popup_Settings_Pressure_ITCdev")
-	PressureDataWv[headStageNo][%DAC_Type] 		= str2num(DeviceNum)
-//	PressureDataWv[headStageNo][3] STORES THE DEVICE ID WHICH IS DETERMINED WHEN THE DEVICE IS OPENED
-	PressureDataWv[headStageNo][%DAC] 			= GetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_DA")
-	PressureDataWv[headStageNo][%DAC_Gain] 		= GetSetVariable			(panelTitle, "setvar_Settings_Pressure_DAgain")
-	PressureDataWv[headStageNo][%ADC] 			= GetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_AD")
-	PressureDataWv[headStageNo][%ADC_Gain]  		= GetSetVariable			(panelTitle, "setvar_Settings_Pressure_ADgain")
-	PressureDataWv[headStageNo][%TTL]  				= GetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_TTL")
-	PressureDataWv[][%PSI_air]   						= GetSetVariable			(panelTitle, "setvar_Settings_InAirP")
-	PressureDataWv[][%PSI_solution] 					= GetSetVariable			(panelTitle, "setvar_Settings_InBathP")
-	PressureDataWv[][%PSI_slice] 					= GetSetVariable			(panelTitle, "setvar_Settings_InSliceP")
-	PressureDataWv[][%PSI_nearCell] 					= GetSetVariable			(panelTitle, "setvar_Settings_NearCellP")
-	PressureDataWv[][%PSI_SealInitial] 				= GetSetVariable			(panelTitle, "setvar_Settings_SealStartP")
-	PressureDataWv[][%PSI_SealMax] 				= GetSetVariable			(panelTitle, "setvar_Settings_SealMaxP")
-	PressureDataWv[][%solutionZaxis] 					= GetSetVariable			(panelTitle, "setvar_Settings_SurfaceHeight")
-	PressureDataWv[][%sliceZaxis] 					= GetSetVariable			(panelTitle, "setvar_Settings_SliceSurfHeight")
-	PressureDataWv[][%ManSSPressure]				= GetSetVariable			(panelTitle, "setvar_DataAcq_SSPressure")
-	PressureDataWv[][%ManPPPressure]				= GetSetVariable			(panelTitle, "setvar_DataAcq_PPPressure")
-	PressureDataWv[][%ManPPDuration]				= GetSetVariable			(panelTitle, "setvar_DataAcq_PPDuration")
-	PressureDataWv[][%ApproachNear]					= GetCheckBoxState		(panelTitle, "check_DatAcq_ApproachNear")
-	PressureDataWv[][%SealAtm]						= GetCheckBoxState		(panelTitle, "check_DatAcq_SealAtm")
-	
+	PressureDataWv[headStageNo][%DAC_List_Index] = GetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_ITCdev")
+	PressureDataWv[headStageNo][%DAC_Type]       = str2num(DeviceNum)
+//  PressureDataWv[headStageNo][3] STORES THE DEVICE ID WHICH IS DETERMINED WHEN THE DEVICE IS OPENED
+	PressureDataWv[headStageNo][%DAC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA")
+	PressureDataWv[headStageNo][%DAC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain")
+	PressureDataWv[headStageNo][%ADC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD")
+	PressureDataWv[headStageNo][%ADC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain")
+	PressureDataWv[headStageNo][%TTL]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL")
+	PressureDataWv[][%PSI_air]                   = GetSetVariable(panelTitle, "setvar_Settings_InAirP")
+	PressureDataWv[][%PSI_solution]              = GetSetVariable(panelTitle, "setvar_Settings_InBathP")
+	PressureDataWv[][%PSI_slice]                 = GetSetVariable(panelTitle, "setvar_Settings_InSliceP")
+	PressureDataWv[][%PSI_nearCell]              = GetSetVariable(panelTitle, "setvar_Settings_NearCellP")
+	PressureDataWv[][%PSI_SealInitial]           = GetSetVariable(panelTitle, "setvar_Settings_SealStartP")
+	PressureDataWv[][%PSI_SealMax]               = GetSetVariable(panelTitle, "setvar_Settings_SealMaxP")
+	PressureDataWv[][%solutionZaxis]             = GetSetVariable(panelTitle, "setvar_Settings_SurfaceHeight")
+	PressureDataWv[][%sliceZaxis]                = GetSetVariable(panelTitle, "setvar_Settings_SliceSurfHeight")
+	PressureDataWv[][%ManSSPressure]             = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
+	PressureDataWv[][%ManPPPressure]             = GetSetVariable(panelTitle, "setvar_DataAcq_PPPressure")
+	PressureDataWv[][%ManPPDuration]             = GetSetVariable(panelTitle, "setvar_DataAcq_PPDuration")
+	PressureDataWv[][%ApproachNear]              = GetCheckBoxState(panelTitle, "check_DatAcq_ApproachNear")
+	PressureDataWv[][%SealAtm]                   = GetCheckBoxState(panelTitle, "check_DatAcq_SealAtm")
+
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
 	PressureDataTxtWv[headStageNo][%ITC_Device] = SelectedITCDevice
 	PressureDataTxtWv[headStageNo][%DA_Unit] = GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit")
 	PressureDataTxtWv[headStageNo][%AD_Unit] = GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit")
-
 End
 
 /// @brief Retrieves the parameters stored in the PressureData wave and passes them to the GUI controls
 // based on the headStage selected in the device associations of the Hardware tab on the DA_Ephys panel
 Function P_UpdatePressureControls(panelTitle, headStageNo)
-	string 	panelTitle
-	variable 	headStageNo
-	
-	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	string panelTitle
+	variable headStageNo
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	P_UpdatePopupITCdev(panelTitle, headStageNo)
-	SetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_DA", 	PressureDataWv[headStageNo][%DAC])
-	SetSetVariable		(panelTitle, "setvar_Settings_Pressure_DAgain", 	PressureDataWv[headStageNo][%DAC_Gain])
-	SetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_AD", 	PressureDataWv[headStageNo][%ADC])
-	SetSetVariable		(panelTitle, "setvar_Settings_Pressure_ADgain", 	PressureDataWv[headStageNo][%ADC_Gain])
-	SetPopupMenuIndex	(panelTitle, "Popup_Settings_Pressure_TTL", 	PressureDataWv[headStageNo][%TTL])
-	SetSetVariable		(panelTitle, "setvar_Settings_InAirP", 			PressureDataWv[headStageNo][%PSI_Air])
-	SetSetVariable		(panelTitle, "setvar_Settings_InBathP", 			PressureDataWv[headStageNo][%PSI_Solution])
-	SetSetVariable		(panelTitle, "setvar_Settings_InSliceP", 			PressureDataWv[headStageNo][%PSI_Slice])
-	SetSetVariable		(panelTitle, "setvar_Settings_NearCellP", 		PressureDataWv[headStageNo][%PSI_NearCell])
-	SetSetVariable		(panelTitle, "setvar_Settings_SealStartP", 		PressureDataWv[headStageNo][%PSI_SealInitial])
-	SetSetVariable		(panelTitle, "setvar_Settings_SealMaxP", 		PressureDataWv[headStageNo][%PSI_SealMax])
-	SetSetVariable		(panelTitle, "setvar_Settings_SurfaceHeight", 	PressureDataWv[headStageNo][%solutionZaxis])
-	SetSetVariable		(panelTitle, "setvar_Settings_SliceSurfHeight", 	PressureDataWv[headStageNo][%sliceZaxis])
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA"     , PressureDataWv[headStageNo][%DAC])
+	SetSetVariable(panelTitle   , "setvar_Settings_Pressure_DAgain", PressureDataWv[headStageNo][%DAC_Gain])
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD"     , PressureDataWv[headStageNo][%ADC])
+	SetSetVariable(panelTitle   , "setvar_Settings_Pressure_ADgain", PressureDataWv[headStageNo][%ADC_Gain])
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL"    , PressureDataWv[headStageNo][%TTL])
+	SetSetVariable(panelTitle   , "setvar_Settings_InAirP"         , PressureDataWv[headStageNo][%PSI_Air])
+	SetSetVariable(panelTitle   , "setvar_Settings_InBathP"        , PressureDataWv[headStageNo][%PSI_Solution])
+	SetSetVariable(panelTitle   , "setvar_Settings_InSliceP"       , PressureDataWv[headStageNo][%PSI_Slice])
+	SetSetVariable(panelTitle   , "setvar_Settings_NearCellP"      , PressureDataWv[headStageNo][%PSI_NearCell])
+	SetSetVariable(panelTitle   , "setvar_Settings_SealStartP"     , PressureDataWv[headStageNo][%PSI_SealInitial])
+	SetSetVariable(panelTitle   , "setvar_Settings_SealMaxP"       , PressureDataWv[headStageNo][%PSI_SealMax])
+	SetSetVariable(panelTitle   , "setvar_Settings_SurfaceHeight"  , PressureDataWv[headStageNo][%solutionZaxis])
+	SetSetVariable(panelTitle   , "setvar_Settings_SliceSurfHeight", PressureDataWv[headStageNo][%sliceZaxis])
 
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
@@ -720,19 +717,19 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 End
 
 /// @brief Updates the popupmenu popup_Settings_Pressure_ITCdev
-Function P_UpdatePopupITCdev(panelTitle, headStageNo)
-	string 		panelTitle
-	variable 		headStageNo
-	
-	WAVE 		PressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-	WAVE/T 	PressureDataTxtWv 	= P_PressureDataTxtWaveRef(panelTitle)
-	string 		control 				= "popup_Settings_Pressure_ITCdev"
+static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
+	string panelTitle
+	variable headStageNo
+
+	WAVE PressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
+	WAVE/T PressureDataTxtWv 	= P_PressureDataTxtWaveRef(panelTitle)
+	string control 				= "popup_Settings_Pressure_ITCdev"
 
 	SetPopupMenuIndex(panelTitle, control, PressureDataWv[headStageNo][%DAC_List_Index])
 
 	if(isFinite(PressureDataWv[headStageNo][%DAC_List_Index])) // only compare saved and selected device if a device was saved
-		string 	SavedITCdev = PressureDataTxtWv[headStageNo][0]
-		string 	PopUpMenuString = GetPopupMenuString(panelTitle, control)
+		string SavedITCdev = PressureDataTxtWv[headStageNo][0]
+		string PopUpMenuString = GetPopupMenuString(panelTitle, control)
 		if(PressureDataWv[headStageNo][%DAC_List_Index] != 1) // compare saved and selected device to verify that they match. Non match could occur if data was saved prior to a popup menu update and ITC hardware change.
 			if(cmpstr(SavedITCdev, PopUpMenuString) != 0)
 				print "Saved ITC device for headStage", headStageNo, "is no longer at same list position."
@@ -743,9 +740,9 @@ Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 End
 
 /// @brief Sends a negative pressure pulse to the pressure regulator. Gates the TTLs apropriately to maintain the exisiting TTL state while opening the TTL on the channel with the pressure pulse
-Function P_NegPressurePulse(panelTitle, headStage)
-	string 	panelTitle
-	variable	headStage
+static Function P_NegPressurePulse(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
 	P_DAforNegPpulse(panelTitle, Headstage) 	// update DA data
 	P_ADforPpulse(panelTitle, Headstage) 	// update AD data
@@ -754,9 +751,9 @@ Function P_NegPressurePulse(panelTitle, headStage)
 End
 
 /// @brief Initiates a positive pressure pulse to the pressure regulator. Gates the TTLs apropriately to maintain the exisiting TTL state while opening the TTL on the channel with the pressure pulse
-Function P_PosPressurePulse(panelTitle, headStage)
-	string 	panelTitle
-	variable	headStage
+static Function P_PosPressurePulse(panelTitle, headStage)
+	string panelTitle
+	variable headStage
 
 	P_DAforPosPpulse(panelTitle, Headstage) 	// update DA data
 	P_ADforPpulse(panelTitle, Headstage) 	// update AD data
@@ -765,15 +762,15 @@ Function P_PosPressurePulse(panelTitle, headStage)
 End
 
 /// @brief Runs acquisition cycle on ITC devices for pressure control.
-Function P_ITCDataAcq(panelTitle, headStage)
-	string 	panelTitle
-	variable	headstage
-	
-	Wave 	ITCData				= P_GetITCData(panelTitle)
-	Wave 	ITCConfig			= P_GetITCChanConfig(panelTitle)
-	Wave 	FIFOConfig			= P_GetITCFIFOConfig(panelTitle)
-	Wave	FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
-	Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
+static Function P_ITCDataAcq(panelTitle, headStage)
+	string panelTitle
+	variable headstage
+
+	Wave ITCData        = P_GetITCData(panelTitle)
+	Wave ITCConfig      = P_GetITCChanConfig(panelTitle)
+	Wave FIFOConfig     = P_GetITCFIFOConfig(panelTitle)
+	Wave FIFOAvail      = P_GetITCFIFOAvail(panelTitle)
+	Wave pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	string	cmd
 
 	// select the ITC device
@@ -806,18 +803,18 @@ End
 
 // @brief Background function that monitors the device FIFO and terminates acquisition when sufficient data has been collected
 Function P_FIFOMonitorProc(s)
-	STRUCT 	WMBackgroundStruct &s
-	string 		panelTitle
-	variable 		DevID
-	variable		headStage
+	STRUCT WMBackgroundStruct &s
+	string panelTitle
+	variable DevID
+	variable headStage
 
 	if(!P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage))
 		print "No device can be found that is executing a pressure pulse"
 		return 1
 	endif
 
-	Wave		FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
-	Wave 		pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
+	Wave FIFOAvail      = P_GetITCFIFOAvail(panelTitle)
+	Wave pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	string		cmd
 
 	sprintf cmd, "ITCSelectDevice %d" DevID
@@ -826,7 +823,7 @@ Function P_FIFOMonitorProc(s)
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(FIFOAvail, 2)
 	ExecuteITCOperation(cmd)
 
-	if(FIFOAvail[1][2] > 350 / SAMPLE_INT_MILLI)
+	if(FIFOAvail[1][2] > 350 / MINIMUM_SAMPLING_INTERVAL)
 		sprintf cmd, "ITCStopAcq"
 		ExecuteITCOperation(cmd)
 		pressureDataWv[][%OngoingPessurePulse]	= 0
@@ -837,26 +834,13 @@ Function P_FIFOMonitorProc(s)
 	return 0
 End
 
-Function P_ScaleP_ITCDataAD(panelTitle, headStage)
-	string 	panelTitle
-	variable 	headStage
-	
-	Wave 	ITCData			= P_GetITCData(panelTitle)
-	Wave 	pressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
-	Redimension /d ITCData
-	ITCData[][%AD] /= BITS_PER_VOLT
-	ITCData[][%AD] -= PRESSURE_OFFSET
-	ITCData[][%AD] *= pressureDataWv[headStage][%ADC_Gain]
-	redimension /w ITCData
-End
-
 /// @brief Returns the panelTitle of the ITC device associated with ITC device conducting a pressure pulse
-Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
-	string 	&panelTitle
-	variable 	&DevID, &headStage
-	
-	string 	ListOfLockedDevices = GetListOfLockedDevices()
-	variable 	i
+static Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
+	string &panelTitle
+	variable &DevID, &headStage
+
+	string ListOfLockedDevices = GetListOfLockedDevices()
+	variable i
 	for(i = 0; i < ItemsInList(ListOfLockedDevices); i += 1)
 		panelTitle = StringFromList(i, ListOfLockedDevices)
 		Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
@@ -872,34 +856,34 @@ Function P_FindPanelTitleExecutingPP(panelTitle, DevID, headStage)
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a negative pressure pulse
-Function P_DAforNegPpulse(panelTitle, Headstage)
-	string 	panelTitle
-	variable 	Headstage
-	
-	Wave 	ITCData				= P_GetITCData(panelTitle)
-	Wave 	ITCConfig			= P_GetITCChanConfig(panelTitle)
-	Wave 	FIFOConfig			= P_GetITCFIFOConfig(panelTitle)
-	Wave	FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
-	Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-	variable 	lastPressureCom		= pressureDataWv[Headstage][%LastPressureCommand]
-	variable 	DAGain				= pressureDataWv[Headstage][%DAC_Gain]
-	variable 	PressureCom
-	variable 	CalibratedPressureCom
+static Function P_DAforNegPpulse(panelTitle, Headstage)
+	string panelTitle
+	variable Headstage
+
+	Wave ITCData             = P_GetITCData(panelTitle)
+	Wave ITCConfig           = P_GetITCChanConfig(panelTitle)
+	Wave FIFOConfig          = P_GetITCFIFOConfig(panelTitle)
+	Wave FIFOAvail           = P_GetITCFIFOAvail(panelTitle)
+	Wave pressureDataWv      = P_GetPressureDataWaveRef(panelTitle)
+	variable lastPressureCom = pressureDataWv[Headstage][%LastPressureCommand]
+	variable DAGain          = pressureDataWv[Headstage][%DAC_Gain]
+	variable PressureCom
+	variable CalibratedPressureCom
 
 	if(lastPressureCom > MIN_NEG_PRESSURE_PULSE)
 		PressureCom = MIN_NEG_PRESSURE_PULSE
 	else
 		PressureCom = max(MIN_REGULATOR_PRESSURE, P_GetPulseAmp(panelTitle, headStage))
 	endif
-	
+
 	// apply calibration constants
 	if(isFinite(PressureDataWv[headStage][%NegCalConst]))
 		CalibratedPressureCom = PressureCom + PressureDataWv[headStage][%NegCalConst]
 	endif
 
 	if((CalibratedPressureCom) > MIN_REGULATOR_PRESSURE)
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (CalibratedPressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (CalibratedPressureCom / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 	= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]	= pressureDataWv[headStage][%DAC]
@@ -907,11 +891,11 @@ Function P_DAforNegPpulse(panelTitle, Headstage)
 		pressureDataWv[Headstage][%LastPressureCommand] =  PressureCom
 		print "pulse amp",(PressureCom)
 	else
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
 		if(isFinite(PressureDataWv[headStage][%NegCalConst]))
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((MIN_NEG_PRESSURE_PULSE + PressureDataWv[headStage][%NegCalConst]) / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		else
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (MIN_NEG_PRESSURE_PULSE / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (MIN_NEG_PRESSURE_PULSE / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		endif
 		pressureDataWv[Headstage][%RealTimePressure] = MIN_NEG_PRESSURE_PULSE
 		pressureDataWv[Headstage][%LastPressureCommand] =  MIN_NEG_PRESSURE_PULSE
@@ -938,20 +922,20 @@ static Function P_LastPulseCount(pulseAmp)
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a positive pressure pulse
-Function P_DAforPosPpulse(panelTitle, Headstage)
-	string 	panelTitle
-	variable 	Headstage
-	
-	Wave 	ITCData				= P_GetITCData(panelTitle)
-	Wave 	ITCConfig			= P_GetITCChanConfig(panelTitle)
-	Wave 	FIFOConfig			= P_GetITCFIFOConfig(panelTitle)
-	Wave	FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
-	Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-	variable 	lastPressureCom		= pressureDataWv[Headstage][%LastPressureCommand]
-	variable 	DAGain				= pressureDataWv[Headstage][%DAC_Gain]
-	variable 	PressureCom
-	variable 	CalibratedPressureCom
-	
+static Function P_DAforPosPpulse(panelTitle, Headstage)
+	string panelTitle
+	variable Headstage
+
+	Wave ITCData             = P_GetITCData(panelTitle)
+	Wave ITCConfig           = P_GetITCChanConfig(panelTitle)
+	Wave FIFOConfig          = P_GetITCFIFOConfig(panelTitle)
+	Wave FIFOAvail           = P_GetITCFIFOAvail(panelTitle)
+	Wave pressureDataWv      = P_GetPressureDataWaveRef(panelTitle)
+	variable lastPressureCom = pressureDataWv[Headstage][%LastPressureCommand]
+	variable DAGain          = pressureDataWv[Headstage][%DAC_Gain]
+	variable PressureCom
+	variable CalibratedPressureCom
+
 	PressureCom = lastPressureCom + POS_PRESSURE_PULSE_INCREMENT
 	// apply calibration constants
 	if(isFinite(PressureDataWv[headStage][%PosCalConst]))
@@ -959,23 +943,23 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 	else
 		CalibratedPressureCom = PressureCom
 	endif
-	
-	if((CalibratedPressureCom) < MAX_REGULATOR_PRESSURE && CalibratedPressureCom > 0) 
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * BITS_PER_VOLT)
+
+	if((CalibratedPressureCom) < MAX_REGULATOR_PRESSURE && CalibratedPressureCom > 0)
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (((CalibratedPressureCom) / DAGain) + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
 		FIFOConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC]
 		FIFOAvail	[%DA][%Chan_num]											= pressureDataWv[headStage][%DAC]
-		
+
 		pressureDataWv[Headstage][%RealTimePressure] = PressureCom
 		pressureDataWv[Headstage][%LastPressureCommand] =  PressureCom
 		print "pulse amp",(PressureCom)
 	else
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
+		ITCData[][%DA] = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
 		if(isFinite(PressureDataWv[headStage][%PosCalConst]))
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= ((0.1 + PressureDataWv[headStage][%PosCalConst]) / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		else
-			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (0.1 / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
+			ITCData[PRESSURE_PULSE_STARTpt, PRESSURE_PULSE_ENDpt][%DA] 	= (0.1 / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
 		endif
 		pressureDataWv[Headstage][%LastPressureCommand] =  0.1
 		pressureDataWv[Headstage][%RealTimePressure] = 0.1
@@ -984,63 +968,62 @@ Function P_DAforPosPpulse(panelTitle, Headstage)
 End
 
 /// @brief Updates the DA data used for ITC controlled pressure devices for a manual pressure pulse
-Function P_DAforManPpulse(panelTitle, Headstage)
-	string 	panelTitle
-	variable 	Headstage
-	
-	Wave 	ITCData				= P_GetITCData(panelTitle)
-	Wave 	ITCConfig			= P_GetITCChanConfig(panelTitle)
-	Wave 	FIFOConfig			= P_GetITCFIFOConfig(panelTitle)
-	Wave	FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
-	Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-	variable 	lastPressureCom		= pressureDataWv[Headstage][%LastPressureCommand]
-	variable 	DAGain				= pressureDataWv[Headstage][%DAC_Gain]
-	variable 	PressureCom		= pressureDataWv[headStage][%ManPPPressure]
-	variable 	PPEndPoint			= PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / MINIMUM_SAMPLING_INTERVAL)
+static Function P_DAforManPpulse(panelTitle, Headstage)
+	string panelTitle
+	variable Headstage
+
+	 Wave ITCData             = P_GetITCData(panelTitle)
+	 Wave ITCConfig           = P_GetITCChanConfig(panelTitle)
+	 Wave FIFOConfig          = P_GetITCFIFOConfig(panelTitle)
+	 Wave FIFOAvail           = P_GetITCFIFOAvail(panelTitle)
+	 Wave pressureDataWv      = P_GetPressureDataWaveRef(panelTitle)
+	 variable lastPressureCom = pressureDataWv[Headstage][%LastPressureCommand]
+	 variable DAGain          = pressureDataWv[Headstage][%DAC_Gain]
+	 variable PressureCom     = pressureDataWv[headStage][%ManPPPressure]
+	 variable PPEndPoint      = PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / MINIMUM_SAMPLING_INTERVAL)
 
 	if((PressureCom) < MAX_REGULATOR_PRESSURE && PressureCom > MIN_REGULATOR_PRESSURE)
-		ITCData[][%DA] = (PRESSURE_OFFSET * BITS_PER_VOLT)
-		ITCData[PRESSURE_PULSE_STARTpt, PPEndPoint][%DA] 	= (PressureCom / DAGain + PRESSURE_OFFSET) * BITS_PER_VOLT
-		ITCConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
-		FIFOConfig	[%DA][%Chan_num] 											= pressureDataWv[headStage][%DAC]
-		FIFOAvail	[%DA][%Chan_num]											= pressureDataWv[headStage][%DAC]
-
-		pressureDataWv[Headstage][%LastPressureCommand] =  (PressureCom)
-		print "pulse amp",(PressureCom)
+		ITCData[][%DA]                                   = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT
+		ITCData[PRESSURE_PULSE_STARTpt, PPEndPoint][%DA] = (PressureCom / DAGain + PRESSURE_OFFSET) * HARDWARE_ITC_BITS_PER_VOLT
+		ITCConfig[%DA][%Chan_num]                        = pressureDataWv[headStage][%DAC] // set the DAC channel for the headstage
+		FIFOConfig[%DA][%Chan_num]                       = pressureDataWv[headStage][%DAC]
+		FIFOAvail[%DA][%Chan_num]                        = pressureDataWv[headStage][%DAC]
+		pressureDataWv[Headstage][%LastPressureCommand]  = PressureCom
+		print "pulse amp", PressureCom
 	else
 		print "pressure command is out of range"
 	endif
 End
 
 /// @brief Update the AD data used for ITC controlled pressure devices
-Function P_ADforPpulse(panelTitle, Headstage)
-	string 	panelTitle
-	variable 	Headstage
-	
-	Wave 	ITCData				= P_GetITCData(panelTitle)
-	Wave 	ITCConfig			= P_GetITCChanConfig(panelTitle)
-	Wave 	FIFOConfig			= P_GetITCFIFOConfig(panelTitle)
-	Wave	FIFOAvail			= P_GetITCFIFOAvail(panelTitle)
-	Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
+static Function P_ADforPpulse(panelTitle, Headstage)
+	string panelTitle
+	variable Headstage
 
-	ITCData		[][%AD] 				= 0
-	ITCConfig	[%AD][%Chan_num] 	= pressureDataWv[headStage][%ADC]
-	FIFOConfig	[%AD][%Chan_num] 	= pressureDataWv[headStage][%ADC]
-	FIFOAvail	[%AD][%Chan_num]	= pressureDataWv[headStage][%ADC]
+	Wave ITCData        = P_GetITCData(panelTitle)
+	Wave ITCConfig      = P_GetITCChanConfig(panelTitle)
+	Wave FIFOConfig     = P_GetITCFIFOConfig(panelTitle)
+	Wave FIFOAvail      = P_GetITCFIFOAvail(panelTitle)
+	Wave pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	ITCData[][%AD]			 = 0
+	ITCConfig[%AD][%Chan_num]  = pressureDataWv[headStage][%ADC]
+	FIFOConfig[%AD][%Chan_num] = pressureDataWv[headStage][%ADC]
+	FIFOAvail[%AD][%Chan_num]  = pressureDataWv[headStage][%ADC]
 End
 
 /// @brief Updates the rack 0 and rack 1 TTL waves used for ITC controlled pressure devices.
-Function P_TTLforPpulse(panelTitle, Headstage)
-	string 	panelTitle
-	variable 	Headstage
-	
-	Wave 	ITCData				= P_GetITCData(panelTitle)
-	Wave 	DIO 				= P_DIO(panelTitle)
-	Wave 	pressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
-	variable 	TTL					= pressureDataWv[headStage][%TTL]
-	variable 	Rack0state
-	variable 	Rack1state
-	string 	ITCcom
+static Function P_TTLforPpulse(panelTitle, Headstage)
+	string panelTitle
+	variable Headstage
+
+	Wave ITCData        = P_GetITCData(panelTitle)
+	Wave DIO            = P_DIO(panelTitle)
+	Wave pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable TTL        = pressureDataWv[headStage][%TTL]
+	variable Rack0state
+	variable Rack1state
+	string ITCcom
 
 	sprintf ITCcom, "ITCSelectDevice %d" pressureDataWv[headStage][%DAC_DevID]
 	ExecuteITCOperationAbortOnError(ITCcom)
@@ -1069,14 +1052,14 @@ Function P_TTLforPpulse(panelTitle, Headstage)
 End
 
 /// @brief returns the new TTL state based on the starting TTL state.
-Function UpdateTTLdecimal(startDecimal, TTL, ONorOFF)
-	variable 	startDecimal
+static Function UpdateTTLdecimal(startDecimal, TTL, ONorOFF)
+	variable startDecimal
 	variable	TTL
-	variable 	ONorOFF
-	
-	variable 	endDecimal
-	string 	BinaryList = P_DecToBinary(startDecimal)
-	variable 	channelStatus = str2num(StringFromList(TTL, BinaryList))
+	variable ONorOFF
+
+	variable endDecimal
+	string BinaryList = P_DecToBinary(startDecimal)
+	variable channelStatus = str2num(StringFromList(TTL, BinaryList))
 
 	if(TTL >= 4)
 		TTL -= 4
@@ -1125,7 +1108,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 			elseif(PressureMode == P_METHOD_4_MANUAL) // Manual pressure set, apply the mode
 				SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
-				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode			
+				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
 			elseif(PressureMode) // all other modes, only apply if TP is running
 				if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
 					SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
@@ -1142,11 +1125,11 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 End
 
 /// @brief Applies pressure mode to all headstages with valid pressure settings
-Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
-	string 	panelTitle
-	variable 	pressureMode, SavedPressureMode
-	
-	variable 	headStage
+static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
+	string panelTitle
+	variable pressureMode, SavedPressureMode
+
+	variable headStage
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	if(pressureMode == savedPressureMode) // un clicking button
 		if(getCheckboxState(panelTitle, StringFromList(savedPressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
@@ -1200,10 +1183,10 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 End
 
 /// @brief Checks if the Approach button can be enabled or all pressure mode buttons can be enabled. Enables buttons that pass checks.
-Function P_EnableButtonsIfValid(panelTitle, headStageNo)
+static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
-	
+
 	string PRESSURE_CONTROLS_BUTTON_subset = RemoveListItem(0, PRESSURE_CONTROLS_BUTTON_LIST)
 
 	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
@@ -1226,10 +1209,10 @@ End
 /// @brief Checks if all the pressure settings for a headStage are valid
 ///
 /// @returns 1 if all settings are valid, 0 otherwise
-Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
+static Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
-	
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 	string msg
@@ -1300,7 +1283,7 @@ End
 /// @brief Determines if ITC device is active (i.e. collecting data)
 ///
 /// used to determine if pressure pulse has completed.
-Function IsITCCollectingData(panelTitle, headStage)
+static Function IsITCCollectingData(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1318,7 +1301,7 @@ Function IsITCCollectingData(panelTitle, headStage)
 End
 
 /// @brief Determines headStage is on and in V-Clamp mode
-Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
+static Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1330,7 +1313,7 @@ Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 End
 
 /// @brief Returns the four pressure buttons to the base state (gray color; removes "Stop" string from button title)
-Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
+static Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
 	string panelTitle
 
 	variable i = 0
@@ -1341,10 +1324,10 @@ Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
 End
 
 /// @brief Highlite pressure display
-Function P_PressureDisplayHighlite(panelTitle, headStageNo)
+static Function P_PressureDisplayHighlite(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
-	
+
 	string ControlName
 	sprintf ControlName, "valdisp_DataAcq_P_%d" headStageNo
 	ChangeControlValueColor(panelTitle, controlName, 65535, 65535, 65535) // black
@@ -1408,7 +1391,7 @@ End
 ///
 /// List is always 4 items long so that each TTL channel on the front of the ITC DAC gets "encoded"
 /// use commented out code for arbitrary decimal numbers
-Function/S P_DecToBinary(dec)
+static Function/S P_DecToBinary(dec)
 	variable dec
 
 	variable bit
@@ -1429,10 +1412,10 @@ End
 // MANUAL PRESSURE CONTROL
 
 /// @brief Sets the pressure on the active headstage or all headstages.
-Function P_ManSetPressure(panelTitle, headStage)
+static Function P_ManSetPressure(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable psi = PressureDataWv[0][%ManSSPressure]
 	variable ONorOFF = 1
@@ -1455,7 +1438,7 @@ Function P_ManSetPressure(panelTitle, headStage)
 End
 
 /// @brief Initiates a pressure pulse who's settings are are controlled in the manual tab of the pressure regulation controls
-Function P_ManPressurePulse(panelTitle, headStage)
+static Function P_ManPressurePulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -1500,8 +1483,6 @@ Function ButtonProc_Approach(ba) : ButtonControl
 		case 2: // mouse up
 			P_SetApproach(ba.win, ba.ctrlName)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1527,8 +1508,6 @@ Function ButtonProc_Seal(ba) : ButtonControl
 			variable PressureMode = 1
 			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1542,8 +1521,6 @@ Function ButtonProc_BreakIn(ba) : ButtonControl
 		case 2: // mouse up
 			variable PressureMode = 2
 			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1559,15 +1536,13 @@ Function ButtonProc_Clear(ba) : ButtonControl
 			variable PressureMode = 3
 			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 0)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
 End
 
 /// @brief Handles the TP depency of the Manual pressure application
-Function P_SetManual(panelTitle, cntrlName)
+static Function P_SetManual(panelTitle, cntrlName)
 	string panelTitle, cntrlName
 	P_UpdatePressureMode(panelTitle, P_METHOD_4_MANUAL, cntrlName, 1)
 	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
@@ -1590,8 +1565,6 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1603,10 +1576,8 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			string DeviceList = "- none -;" + HSU_ListDevices()
+			string DeviceList = NONE + HSU_ListDevices()
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_ITCdev", DeviceList)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1620,8 +1591,7 @@ Function P_ButtonProc_Enable(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_Enable()
-			break
-		case -1: // control being killed
+			P_UpdatePressureDataStorageWv(ba.win)
 			break
 	endswitch
 
@@ -1636,8 +1606,6 @@ Function P_ButtonProc_Disable(ba) : ButtonControl
 		case 2: // mouse up
 			P_Disable()
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1650,8 +1618,6 @@ Function ButtonProc_DataAcq_ManPressSet(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_SetManual(ba.win, ba.ctrlname)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1667,8 +1633,6 @@ Function ButtonProc_ManPP(ba) : ButtonControl
 			variable headStage = GetSliderPositionIndex(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1677,14 +1641,12 @@ End
 Function P_Check_ApproachNear(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			P_UpdatePressureDataStorageWv(cba.win)
 			if(!TP_CheckIfTestpulseIsRunning(cba.win)) // P_PressureControl will be called from TP functions when the TP is running
 				P_PressureControl(cba.win)
 			endif
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1694,11 +1656,9 @@ End
 Function P_Check_SealAtm(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			P_UpdatePressureDataStorageWv(cba.win)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 

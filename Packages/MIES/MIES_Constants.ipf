@@ -40,8 +40,6 @@ Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 
 /// @name Pressure Control constants
 /// @{
-Constant SAMPLE_INT_MICRO       = 5
-
 /// Max and min pressure regulator pressure in psi
 Constant MAX_REGULATOR_PRESSURE =  9.95
 Constant MIN_REGULATOR_PRESSURE = -9.95
@@ -389,4 +387,15 @@ StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 /// @{
 Constant MIN_SAMPLING_INTERVAL_TYPE  = 0x1
 Constant REAL_SAMPLING_INTERVAL_TYPE = 0x2
+/// @}
+
+/// Conversion factor between volts and bits for the AD/DA channels
+Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
+
+/// @name Trigger modes
+/// External trigger is used for yoking multiple ITC 1600 devices
+/// @anchor TriggerModeStartAcq
+/// @{
+Constant HARDWARE_DAC_DEFAULT_TRIGGER  = 0x0
+Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}

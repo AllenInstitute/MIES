@@ -2713,102 +2713,6 @@ Function/DF P_PressureFolderReference(panelTitle)
 	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
 End
 
-/// @brief Returns a wave reference to a DA data wave used for pressure pulses
-///
-/// Rows:
-/// - data points (@ 5 microsecond intervals)
-///
-/// Columns:
-/// - 0: DA data
-Function/WAVE P_ITCDataDA(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr ITCDataDA
-
-	if(WaveExists(ITCDataDA))
-		return ITCDataDA
-	endif
-
-	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataDA/WAVE=wv
-
-	wv = 0
-	return wv
-End
-
-/// @brief Returns a wave reference to a AD data wave used for pressure pulses
-///
-/// Rows:
-/// - data points (@ 5 microsecond intervals)
-///
-/// Columns:
-/// - 0: AD data
-Function/WAVE P_ITCDataAD(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr ITCDataAD
-
-	if(WaveExists(ITCDataAD))
-		return ITCDataAD
-	endif
-
-	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataAD/WAVE=wv
-
-	wv = 0
-	return wv
-End
-
-/// @brief Returns a wave reference to a TTL data wave used for pressure pulses on rack 0
-///
-/// Rows:
-/// - data points (@ 5 microsecond intervals)
-///
-/// Columns:
-/// - 0: TTL data
-Function/WAVE P_ITCDataTTLRz(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr ITCDataTTLRz
-
-	if(WaveExists(ITCDataTTLRz))
-		return ITCDataTTLRz
-	endif
-
-	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRz/WAVE=wv
-
-	wv = 0
-	return wv
-End
-
-/// @brief Returns a wave reference to a TTL data wave used for pressure pulses on rack 1
-///
-/// Rows:
-/// - data points (@ 5 microsecond intervals)
-///
-/// Columns:
-/// - 0: TTL data
-Function/WAVE P_ITCDataTTLRo(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr ITCDataTTLRo
-
-	if(WaveExists(ITCDataTTLRo))
-		return ITCDataTTLRo
-	endif
-
-	Make/W/N=(PRESSURE_WAVE_DATA_SIZE) dfr:ITCDataTTLRo/WAVE=wv
-
-	wv = 0
-	return wv
-End
-
 /// @brief Returns a wave reference to the data wave for the ITC TTL state
 ///
 /// Rows:
@@ -2861,7 +2765,7 @@ End
 /// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
 ///
 /// Rows:
-/// - data points (@ 50 microsecond intervals)
+/// - data points, see P_GetITCChanConfig() for the sampling interval
 ///
 /// Columns:
 /// - 0: DA data
@@ -2900,7 +2804,7 @@ End
 ///
 /// Columns:
 /// - 0: Channel Type
-/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 1: Channel number
 /// - 2: Sampling interval
 /// - 3: Decimation
 Function/WAVE P_GetITCChanConfig(panelTitle)
@@ -2925,7 +2829,7 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	wv[2][1] = 0 // TTL rack 0
 	wv[3][1] = 3 // TTL rack 1
 
-	wv[][2] = SAMPLE_INT_MICRO // 5 micro second sampling interval
+	wv[][2] = MINIMUM_SAMPLING_INTERVAL * 1000
 
 	SetDimLabel ROWS, 0, DA, 		wv
 	SetDimLabel ROWS, 1, AD, 		wv
@@ -2948,7 +2852,7 @@ End
 /// - 3: TTL rack 1 specifications
 /// Columns:
 /// - 0: Channel Type
-/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 1: Channel number
 /// - 2: FIFO advance
 /// - 3: Reserved
 Function/WAVE P_GetITCFIFOConfig(panelTitle)
@@ -2995,7 +2899,7 @@ End
 /// - 3: TTL rack 1 specifications
 /// Columns:
 /// - 0: Channel Type
-/// - 1: Channel number (for DA or AD) or Rack (for TTL)
+/// - 1: Channel number
 /// - 2: FIFO available
 /// - 3: Reserved
 Function/WAVE P_GetITCFIFOAvail(panelTitle)
@@ -3158,8 +3062,6 @@ End
 
 /// @brief Returns wave reference for wave used to store text used in pressure control.
 ///
-/// creates the text storage wave if it doesn't already exist.
-///
 /// Rows:
 /// - 0 - 7: Headstage 0 through 7
 ///
@@ -3193,7 +3095,7 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	SetDimLabel ROWS, 6, Headstage_6, PressureDataTextWv
 	SetDimLabel ROWS, 7, Headstage_7, PressureDataTextWv
 
-	PressureDataTextWv[][0] = "- none -"
+	PressureDataTextWv[][0] = NONE
 
 	return PressureDataTextWv
 End

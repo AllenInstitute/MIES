@@ -927,11 +927,7 @@ static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
 
 	SetDataFolder dfr
 
-	// convert a persistent wave to a free wave
-	DFREF dfr = NewFreeDataFolder()
-	MoveWave d, dfr
-
-	return d
+	return MakeWaveFree(d)
 End
 /// @}
 

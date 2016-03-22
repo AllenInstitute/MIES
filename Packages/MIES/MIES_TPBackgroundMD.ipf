@@ -23,7 +23,7 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 
 	if(!DAP_DeviceHasFollower(panelTitle))
 		TP_Setup(panelTitle, runMode)
-		ITC_BkrdTPMD(0, panelTitle)
+		ITC_BkrdTPMD(panelTitle)
 		return NaN
 	endif
 
@@ -38,23 +38,27 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 
 	// Sets lead board in wait for trigger
 	TP_Setup(panelTitle, runMode)
-	ITC_BkrdTPMD(256, panelTitle)
+	ITC_BkrdTPMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 
 	// set followers in wait for trigger
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		ITC_BkrdTPMD(256, followerPanelTitle)
+		ITC_BkrdTPMD(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
 	// trigger
 	ARDStartSequence()
 End
 
-static Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the variable is ignored
-	variable TriggerMode
+static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	string panelTitle
+	variable triggerMode
 
 	string cmd
+
+	if(ParamIsDefault(triggerMode))
+		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
+	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
@@ -70,12 +74,14 @@ static Function ITC_BkrdTPMD(TriggerMode, panelTitle) // if start time = 0 the v
 		CtrlNamedBackground TestPulseMD, start
 	endif
 
-	if(TriggerMode == 0) // Start data acquisition triggered on immediate - triggered is used for syncronizing/yoking multiple DACs
+	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER) // Start data acquisition triggered on immediate - triggered is used for syncronizing/yoking multiple DACs
 		sprintf cmd, "ITCStartAcq"
 		ExecuteITCOperationAbortOnError(cmd)
-	elseif(TriggerMode > 0)
-		sprintf cmd, "ITCStartAcq 1, %d" TriggerMode  // Trigger mode 256 = use external trigger
+	elseif(triggerMode == HARDWARE_DAC_EXTERNAL_TRIGGER)
+		sprintf cmd, "ITCStartAcq 1, %d", 256
 		ExecuteITCOperationAbortOnError(cmd)
+	else
+		ASSERT(0, "Unknown triggerMode")
 	endif
 End
 

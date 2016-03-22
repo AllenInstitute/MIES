@@ -114,7 +114,7 @@ Function M_SetManipulatorAssociation(panelTitle)
 	WAVE ManipulatorDataWave = GetHSManipulatorAssignments(panelTitle)
 	WAVE/T ManipulatorTextWave = GetHSManipulatorName(panelTitle)
 	string ManipulatorName = GetPopupMenuString(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-	if(cmpstr("- none -", ManipulatorName) == 0)
+	if(cmpstr(NONE, ManipulatorName) == 0)
 		ManipulatorDataWave[headStage][%ManipulatorNumber] = NaN
 		ManipulatorTextWave[headStage][%ManipulatorName] = ""
 	else
