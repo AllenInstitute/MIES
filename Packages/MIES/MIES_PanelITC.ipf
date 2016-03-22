@@ -2641,7 +2641,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_AlarmAutoRepeat,fColor=(65280,43520,0),value= 0
-	GroupBox group_Settings_Amplifier,pos={21.00,574.00},size={445.00,80.00},disable=1,title="Amplifier"
+	GroupBox group_Settings_Amplifier,pos={21.00,574.00},size={444.00,100.00},disable=1,title="Amplifier"
 	GroupBox group_Settings_Amplifier,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Ba!!#CtJ,hsnJ,hp/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2706,7 +2706,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TPBuffer,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_TPBuffer,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_TPBuffer,limits={1,inf,1},value= _NUM:1
-	CheckBox check_Settings_SaveAmpSettings,pos={306.00,597.00},size={113.00,15.00},disable=1,title="Save Amp Settings"
+	CheckBox check_Settings_SaveAmpSettings,pos={326.00,597.00},size={113.00,15.00},disable=1,title="Save Amp Settings"
 	CheckBox check_Settings_SaveAmpSettings,help={"Adds amplifier settings to lab note book for Multiclamp 700Bs ONLY!"}
 	CheckBox check_Settings_SaveAmpSettings,userdata(tabnum)=  "5"
 	CheckBox check_Settings_SaveAmpSettings,userdata(tabcontrol)=  "ADC"
@@ -2882,13 +2882,13 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_Pressure_TTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu Popup_Settings_Pressure_TTL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_Pressure_TTL,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
-	GroupBox group_Settings_Pressure,pos={23.00,658.00},size={445.00,130.00},disable=1,title="Pressure"
+	GroupBox group_Settings_Pressure,pos={23.00,677.00},size={445.00,130.00},disable=1,title="Pressure"
 	GroupBox group_Settings_Pressure,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Pressure,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_Pressure,userdata(ResizeControlsInfo)= A"!!,Bq!!#D4J,hsnJ,hpWz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Settings_Pressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Settings_Pressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_InAirP,pos={48.00,678.00},size={116.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="In air P (psi)"
+	SetVariable setvar_Settings_InAirP,pos={48.00,697.00},size={116.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="In air P (psi)"
 	SetVariable setvar_Settings_InAirP,help={"Set the (positive) pressure applied to the pipette when the pipette is out of the bath."}
 	SetVariable setvar_Settings_InAirP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InAirP,userdata(tabcontrol)=  "ADC"
@@ -2896,7 +2896,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_InAirP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_InAirP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_InAirP,limits={-10,10,0.1},value= _NUM:3.8
-	SetVariable setvar_Settings_InBathP,pos={172.00,678.00},size={127.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="In bath P (psi)"
+	SetVariable setvar_Settings_InBathP,pos={172.00,698.00},size={127.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="In bath P (psi)"
 	SetVariable setvar_Settings_InBathP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the bath."}
 	SetVariable setvar_Settings_InBathP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InBathP,userdata(tabcontrol)=  "ADC"
@@ -2904,7 +2904,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_InBathP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_InBathP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_InBathP,limits={-10,10,0.1},value= _NUM:0.55
-	SetVariable setvar_Settings_InSliceP,pos={326.00,678.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="In slice P (psi)"
+	SetVariable setvar_Settings_InSliceP,pos={326.00,698.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="In slice P (psi)"
 	SetVariable setvar_Settings_InSliceP,help={"Set the (positive) pressure applied to the pipette when the pipette is in the tissue specimen."}
 	SetVariable setvar_Settings_InSliceP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_InSliceP,userdata(tabcontrol)=  "ADC"
@@ -2912,7 +2912,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_InSliceP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_InSliceP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_InSliceP,limits={-10,10,0.1},value= _NUM:0.2
-	SetVariable setvar_Settings_NearCellP,pos={28.00,705.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Near cell P (psi)"
+	SetVariable setvar_Settings_NearCellP,pos={28.00,724.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Near cell P (psi)"
 	SetVariable setvar_Settings_NearCellP,help={"Set the (positive) pressure applied to the pipette when the pipette is close to the target neuron."}
 	SetVariable setvar_Settings_NearCellP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_NearCellP,userdata(tabcontrol)=  "ADC"
@@ -2920,7 +2920,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_NearCellP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_NearCellP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_NearCellP,limits={-1,1,0.1},value= _NUM:0.6
-	SetVariable setvar_Settings_SealStartP,pos={168.00,705.00},size={131.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Seal Init P (psi)"
+	SetVariable setvar_Settings_SealStartP,pos={168.00,725.00},size={131.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Seal Init P (psi)"
 	SetVariable setvar_Settings_SealStartP,help={"Set the starting negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealStartP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealStartP,userdata(tabcontrol)=  "ADC"
@@ -2928,7 +2928,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SealStartP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SealStartP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_SealStartP,limits={-10,0,0.1},value= _NUM:-0.6
-	SetVariable setvar_Settings_SealMaxP,pos={316.00,705.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Seal max P (psi)"
+	SetVariable setvar_Settings_SealMaxP,pos={316.00,725.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Seal max P (psi)"
 	SetVariable setvar_Settings_SealMaxP,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealMaxP,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SealMaxP,userdata(tabcontrol)=  "ADC"
@@ -2936,7 +2936,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SealMaxP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SealMaxP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_SealMaxP,limits={-10,0,0.1},value= _NUM:-1.4
-	SetVariable setvar_Settings_SurfaceHeight,pos={28.00,732.00},size={172.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SurfaceHeight,pos={28.00,751.00},size={172.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface height\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SurfaceHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabcontrol)=  "ADC"
@@ -2944,7 +2944,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SurfaceHeight,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SurfaceHeight,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_SurfaceHeight,limits={0,inf,100},value= _NUM:3500
-	SetVariable setvar_Settings_SliceSurfHeight,pos={272.00,732.00},size={180.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface height\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SliceSurfHeight,pos={272.00,752.00},size={180.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface height\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SliceSurfHeight,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabcontrol)=  "ADC"
@@ -3218,9 +3218,17 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_ClearChanConn,help={"Clear the channel/amplifier association of the current headstage."}
 	Button button_Hardware_ClearChanConn,userdata(tabnum)=  "6"
 	Button button_Hardware_ClearChanConn,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_DisablePressure,pos={150.00,760.00},size={190.00,15.00},disable=1,title="Stop pressure on data acquisition"
+	CheckBox check_Settings_DisablePressure,pos={150.00,780.00},size={190.00,15.00},disable=1,title="Stop pressure on data acquisition"
 	CheckBox check_Settings_DisablePressure,userdata(tabnum)=  "5"
 	CheckBox check_Settings_DisablePressure,userdata(tabcontrol)=  "ADC",value= 0
+	CheckBox check_Settings_AmpIEQZstep,pos={326.00,641.00},size={121.00,15.00},disable=1,title="Mode switch via I=0"
+	CheckBox check_Settings_AmpIEQZstep,help={"Always switch from V-Clamp to I-Clamp and vice versa via I=0"}
+	CheckBox check_Settings_AmpIEQZstep,value= 0
+	CheckBox check_Settings_AmpIEQZstep,userdata(tabnum)=  "5"
+	CheckBox check_Settings_AmpIEQZstep,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo)= A"!!,HT!!#D%5QF.1!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C[!!#Da!!!!\"zzzzzzzzzzzzzzzzzzzz"
@@ -5452,6 +5460,10 @@ static Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 		oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
 		DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
+		if(GetCheckBoxState(panelTitle, "check_Settings_AmpIEQZstep") && (clampMode == I_CLAMP_MODE || clampMode == V_CLAMP_MODE))
+			AI_SetClampMode(panelTitle, headStage, I_EQUAL_ZERO_MODE)
+			Sleep/Q/T/C=-1 6
+		endif
 		AI_SetClampMode(panelTitle, headStage, clampMode)
 	endif
 
