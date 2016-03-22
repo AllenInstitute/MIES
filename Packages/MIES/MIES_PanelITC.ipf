@@ -3245,16 +3245,24 @@ EndMacro
 /// @brief Restores the base state of the DA_Ephys panel.
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. 
 /// Useful when template experiment file has been overwritten.
-Function DAP_EphysPanelStartUpSettings(panelTitle)
+Function DAP_EphysPanelStartUpSettings()
 	string panelTitle
 
+	panelTitle = GetMainWindow(GetCurrentWindow())
+
 	if(!windowExists(panelTitle))
-		print "Panel has to exist"
+		print "The top panel does not exist"
 		return NaN
 	endif
 
 	if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-		print "The Panel has to be unlocked"
+		HSU_UnlockDevice(panelTitle)
+	endif
+
+	panelTitle = GetMainWindow(GetCurrentWindow())
+
+	if(cmpstr(panelTitle, BASE_WINDOW_TITLE))
+		printf "The top window is not named \"%s\"\r", BASE_WINDOW_TITLE
 		return NaN
 	endif
 
@@ -3514,8 +3522,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	CheckBox check_Settings_ScalingZero WIN = $panelTitle,value= 0
 	CheckBox check_Settings_SetOption_04 WIN = $panelTitle,fColor=(65280,43520,0),value= 0
 
-	PopupMenu popup_MoreSettings_DeviceType WIN = $panelTitle,mode=1 // ,popvalue="ITC1600",value= #"\"ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB;\""
-	PopupMenu popup_moreSettings_DeviceNo WIN = $panelTitle,mode=1 // ,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
+	PGC_SetAndActivateControl(panelTitle, "popup_MoreSettings_DeviceType", val=0)
+	PGC_SetAndActivateControl(panelTitle, "popup_MoreSettings_DeviceNo", val=0)
 
 	SetVariable SetVar_Sweep WIN = $panelTitle, limits={0,0,1}, value= _NUM:0
 
@@ -3572,7 +3580,7 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	SetVariable Unit_AD_14 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_15 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 
-	PopupMenu popup_Hardware_AvailITC1600s WIN = $panelTitle,mode=0 // ,value= #"DAP_ListOfITCDevices()"
+	PopupMenu popup_Hardware_AvailITC1600s WIN = $panelTitle,mode=0
 
 	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Independent",noedit= 1
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
@@ -3626,7 +3634,8 @@ Function DAP_EphysPanelStartUpSettings(panelTitle)
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
 
-	return 0
+	Execute/P/Q/Z "DoWindow/R " + BASE_WINDOW_TITLE
+	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
 
 Function DAP_WindowHook(s)
