@@ -7,8 +7,22 @@ then
   exit 1
 fi
 
-version=$(git describe --always --tags)
 top_level=$(git rev-parse --show-toplevel)
+
+if [ -z "$top_level" ]
+then
+  echo "This is not a git repository"
+  exit 1
+fi
+
+if [ -z "$(git tag)" ]
+then
+  echo "Could not find any tags!"
+  echo "This looks like a shallow clone."
+  exit 1
+fi
+
+version=$(git describe --always --tags)
 git_dir=$(git rev-parse --git-dir)
 
 case $MSYSTEM in
