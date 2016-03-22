@@ -20,14 +20,19 @@
 *.tex eol=lf
 *.awk eol=lf
 
-*.sh         export-ignore
-tools        export-ignore
-Packages/ITC export-ignore
-Packages/doc export-ignore
-Guidelines   export-ignore
-NIDAQmx.XOP  export-ignore
+*.sh                  export-ignore
+tools                 export-ignore
+Packages/ITC          export-ignore
+Packages/doc          export-ignore
+Guidelines            export-ignore
+NIDAQmx.XOP           export-ignore
+Packages/Arduino/*zip export-ignore
+Packages/Arduino/*exe export-ignore
 
 .git* export-ignore
+
+*.exe binary
+*.zip binary
 
 *.ipf whitespace=indent-with-non-tab,tabwidth=4
 *.ibw binary
