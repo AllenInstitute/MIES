@@ -1321,7 +1321,7 @@ End
 Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	DFREF dfr = GetAmpSettingsFolder()
 
@@ -1345,7 +1345,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 5 , Correction            , wv
 	SetDimLabel ROWS  , 6 , Prediction            , wv
 	SetDimLabel ROWS  , 7 , RsCompEnable          , wv
-	SetDimLabel ROWS  , 8 , PipetteOffset         , wv
+	SetDimLabel ROWS  , 8 , PipetteOffsetVC       , wv
 	SetDimLabel ROWS  , 9 , FastCapacitanceComp   , wv
 	SetDimLabel ROWS  , 10, SlowCapacitanceComp   , wv
 	SetDimLabel ROWS  , 11, RSCompChaining        , wv
@@ -1363,7 +1363,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 23, AutoBiasVcomVariance  , wv
 	SetDimLabel ROWS  , 24, AutoBiasIbiasmax      , wv
 	SetDimLabel ROWS  , 25, AutoBiasEnable        , wv
-	SetDimLabel ROWS  , 26, IclampPlaceHolder     , wv
+	SetDimLabel ROWS  , 26, PipetteOffsetIC       , wv
 	SetDimLabel ROWS  , 27, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 28, IclampPlaceHolder     , wv
 	SetDimLabel ROWS  , 29, IclampPlaceHolder     , wv

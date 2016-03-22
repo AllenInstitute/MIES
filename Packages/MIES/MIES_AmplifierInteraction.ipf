@@ -574,12 +574,12 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, value)
 				break
 			case "setvar_DataAcq_PipetteOffset_VC":
-				AmpStorageWave[8][0][i] = value
+				AmpStorageWave[%PipetteOffsetVC][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value * 1e-3)
 				break
 			case "button_DataAcq_AutoPipOffset_VC":
 				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
-				AmpStorageWave[%PipetteOffset][0][i] = value
+				AmpStorageWave[%PipetteOffsetVC][0][i] = value
 				AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_PipetteOffset_VC")
 				break
 			case "button_DataAcq_FastComp_VC":
@@ -636,6 +636,15 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_BB", i, value=value)
 				AI_UpdateAmpModel(panelTitle, "check_DatAcq_BBEnable", i, value=1)
 				break
+			case "setvar_DataAcq_PipetteOffset_IC":
+				AmpStorageWave[%PipetteOffsetIC][0][i] = value
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value * 1e-3)
+				break
+			case "button_DataAcq_AutoPipOffset_IC":
+				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN)
+				AmpStorageWave[%PipetteOffsetIC][0][i] = value
+				AI_UpdateAmpView(panelTitle, i, cntrlName ="setvar_DataAcq_PipetteOffset_IC")
+				break
 			default:
 				ASSERT(0, "Unknown control " + ctrl)
 				break
@@ -688,7 +697,7 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			setSetVariable(panelTitle, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][MIESHeadStageNo])
 			SetCheckboxstate(panelTitle, "check_DataAcq_Amp_Chain", AmpStorageWave[%RSCompChaining][0][MIESHeadStageNo])
 			setCheckBoxState(panelTitle, "check_DatAcq_RsCompEnable", AmpStorageWave[%RsCompEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffset][0][MIESHeadStageNo])			
+			setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffsetVC][0][MIESHeadStageNo])
 	
 			setSetVariable(panelTitle, "setvar_DataAcq_Hold_IC", AmpStorageWave[%BiasCurrent][0][MIESHeadStageNo])
 			setCheckBoxState(panelTitle, "check_DatAcq_HoldEnable", AmpStorageWave[%BiasCurrentEnable][0][MIESHeadStageNo])
@@ -700,6 +709,7 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 			setSetVariable(panelTitle, "setvar_DataAcq_AutoBiasVrange", AmpStorageWave[%AutoBiasVcomVariance][0][MIESHeadStageNo])
 			setSetVariable(panelTitle, "setvar_DataAcq_IbiasMax", AmpStorageWave[%AutoBiasIbiasmax][0][MIESHeadStageNo])
 			setCheckBoxState(panelTitle, "check_DataAcq_AutoBias", AmpStorageWave[%AutoBiasEnable][0][MIESHeadStageNo])
+			setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_IC", AmpStorageWave[%PipetteOffsetIC][0][MIESHeadStageNo])
 			return 1
 		endif
 	
@@ -730,7 +740,7 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 				setCheckBoxState(panelTitle, "check_DatAcq_RsCompEnable", AmpStorageWave[%RsCompEnable][0][MIESHeadStageNo])
 				break
 			case "setvar_DataAcq_PipetteOffset_VC":
-				setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffset][0][MIESHeadStageNo])
+				setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffsetVC][0][MIESHeadStageNo])
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
@@ -762,6 +772,9 @@ static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
 				break
 			case "check_DataAcq_AutoBias":
 				setCheckBoxState(panelTitle, "check_DataAcq_AutoBias", AmpStorageWave[%AutoBiasEnable][0][MIESHeadStageNo])
+				break
+			case "setvar_DataAcq_PipetteOffset_IC":
+				setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_IC", AmpStorageWave[%PipetteOffsetIC][0][MIESHeadStageNo])
 				break
 			case "button_DataAcq_AutoBridgeBal_IC":
 			case "button_DataAcq_FastComp_VC":
@@ -1206,7 +1219,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 		if(!ParamIsDefault(headstage))
 			col = TP_GetTPResultsColOfHS(panelTitle, headstage)
 			if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
-				AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+				AI_MIESAutoPipetteOffset(panelTitle, headStage)
 			endif
 		else
 			WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
@@ -1217,36 +1230,49 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 				endif
 				col = TP_GetTPResultsColOfHS(panelTitle, i)
 				if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
-					AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+					AI_MIESAutoPipetteOffset(panelTitle, headStage)
 				endif
 			endfor
 		endif
 	endif
 End
 
-/// @brief Auto pipette zeroing in Voltage clamp
+/// @brief Auto pipette zeroing
 /// Quicker than MCC auto pipette offset
 ///
 /// @param panelTitle device
 /// @param headStage
-Function AI_MIESAutoVCPipetteOffset(panelTitle, headStage)
+Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
+
+	variable clampMode, column, vDelta, offset, value
+
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/SDFR=dfr baselineSSAvg
-	WAVE/SDFR=dfr SSResistance 
-	ASSERT(DAP_MIESHeadstageMode(panelTitle, headStage) == V_CLAMP_MODE, "Headstage must be in VC mode to use this function") // headstage must be in VC
-	variable column =TP_GetTPResultsColOfHS(panelTitle, headstage)
+	WAVE/Z/SDFR=dfr baselineSSAvg
+	WAVE/Z/SDFR=dfr SSResistance
+
+	if(!WaveExists(baselineSSAvg) || !WaveExists(SSResistance))
+		return NaN
+	endif
+
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+
+	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
+	column =TP_GetTPResultsColOfHS(panelTitle, headstage)
 	ASSERT(column >= 0, "Invalid column number")
 	//calculate delta current to reach zero
-	variable Vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
+	vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
 	// get current DC V offset
-	variable Offset = AI_SendToAmp(panelTitle, headStage, 0, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
+	offset = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
 	// add delta to current DC V offset
-	variable value = Offset - Vdelta
-	// send new V offset to amp
-	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
+	value = offset - vDelta
+
+	if(clampMode == V_CLAMP_MODE)
+		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
+	elseif(clampMode == I_CLAMP_MODE)
+		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_IC", headStage, value = value)
+	endif
 End
 
 /// @brief Auto fills the units and gains in the hardware tab of the DA_Ephys
