@@ -2483,7 +2483,25 @@ End
 /// @brief Detects duplicate values in a 1d wave.
 ///
 /// @return one if duplicates could be found, zero otherwise
-Function SearchForDuplicates(Wv)
+Function SearchForDuplicates(wv)
+	WAVE wv
+
+	switch(WaveType(wv, 1))
+		case 1:
+			return SearchForDuplicatesNumeric(wv)
+			break
+		case 2:
+			return SearchForDuplicatesText(wv)
+			break
+		default:
+			ASSERT(0, "Can not work with this wave type")
+	endswitch
+End
+
+/// @brief Detects duplicate values in a 1d numeric wave
+///
+/// @return one if duplicates could be found, zero otherwise
+static Function SearchForDuplicatesNumeric(Wv)
 	WAVE Wv
 	ASSERT(WaveType(wv), "Expected numeric wave")
 	ASSERT(dimsize(Wv,1) <= 1, (nameofwave(Wv) + " is not a 1D wave")) // make sure wave passed in is 1d
@@ -2495,6 +2513,26 @@ Function SearchForDuplicates(Wv)
 	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
 	WvCopyOne[0, Rows - 2] = WvCopyTwo[p] != WvCopyTwo[p + 1] ? 0 : 1 // could multithread but, MIES use case will be with short 1d waves.
 	FindValue/V=1 WvCopyOne
+	return V_value != -1
+End
+
+/// @brief Detects duplicate values in a 1d text wave
+///
+/// @return one if duplicates could be found, zero otherwise
+static Function SearchForDuplicatesText(Wv)
+	WAVE Wv
+
+	ASSERT(WaveType(wv, 1) == 2, "Expected text wave")
+	ASSERT(dimsize(Wv,1) <= 1, (nameofwave(Wv) + " is not a 1D wave")) // make sure wave passed in is 1d
+	ASSERT(dimSize(Wv,0) >= 2, (nameofwave(Wv) + " has less than two rows")) // make sure wave has at least two rows.
+
+	Duplicate/FREE/T Wv, WvCopyTwo
+	variable Rows = dimSize(Wv,0) // create a variable so dimSize is only called once instead of twice.
+	Make/FREE/N=(rows) hits = 0
+
+	Sort WvCopyTwo, WvCopyTwo // sort so that duplicates will be in adjacent rows
+	hits[0, Rows - 2] = !cmpstr(WvCopyTwo[p], WvCopyTwo[p + 1])
+	FindValue/V=1 hits
 	return V_value != -1
 End
 

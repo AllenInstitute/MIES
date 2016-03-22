@@ -23,8 +23,6 @@ static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 ///      E.g.: "00000123" vs 123
 ///      E.g.: "Demo"     vs 0
 /// - 9: Amplifier Channel ID
-/// - 10: Index into popup_Settings_Amplifier in the DA_Ephys panel
-/// - 11: Unused
 ///
 /// Columns:
 /// - Head stage number
@@ -33,16 +31,16 @@ Function/Wave GetChanAmpAssign(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	Wave/Z/SDFR=dfr wv = ChanAmpAssign
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(12, NUM_HEADSTAGES, -1, -1) wv
+		Redimension/N=(10, NUM_HEADSTAGES, -1, -1) wv
 	else
-		Make/N=(12, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
+		Make/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
 		wv = NaN
 	endif
 
@@ -58,7 +56,6 @@ Function/Wave GetChanAmpAssign(panelTitle)
 
 	SetDimLabel ROWS,  8, AmpSerialNo,  wv
 	SetDimLabel ROWS,  9, AmpChannelID, wv
-	SetDimLabel ROWS, 10, AmpIndex,     wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
