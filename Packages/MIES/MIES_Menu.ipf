@@ -3,7 +3,7 @@
 /// @file MIES_Menu.ipf
 /// @brief Definition of the menu items
 
-static StrConstant optionalTangoInclude = "MIES_TangoInteract"
+static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
 	"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
@@ -44,7 +44,7 @@ End
 ///@returns 1 if the optional include is loaded, 0 otherwise
 static Function OptTangoIncludeLoaded()
 
-	string procList = WinList(optionalTangoInclude + ".ipf",";","")
+	string procList = WinList(OPTIONAL_TANGO_INCLUDE + ".ipf",";","")
 
 	return !isEmpty(procList)
 End
@@ -63,9 +63,9 @@ End
 Function HandleTangoOptionalInclude()
 
 	if(!OptTangoIncludeLoaded())
-		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalTangoInclude + "\""
+		Execute/P/Q/Z "INSERTINCLUDE \"" + OPTIONAL_TANGO_INCLUDE + "\""
 	else
-		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalTangoInclude + "\""
+		Execute/P/Q/Z "DELETEINCLUDE \"" + OPTIONAL_TANGO_INCLUDE + "\""
 	endif
 
 	Execute/P/Q/Z "COMPILEPROCEDURES "
