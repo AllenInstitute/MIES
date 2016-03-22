@@ -6,24 +6,24 @@
 static StrConstant optionalTangoInclude = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
-		"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
-		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
-		"Data Browser"               , /Q, DB_OpenDataBrowser()
-		"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
-		"Close Mies"                 , /Q, CloseMies()
-		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
-		"Open AnalysisMaster Panel"  , /Q, analysisMaster()
-		"Export all data into NWB"   , /Q, NWB_ExportAllData()
-		"-"
-		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
-		"-"
-		"About MIES"                 , /Q, OpenAboutDialog()
-		"-"
+	"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
+	"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
+	"Data Browser"               , /Q, DB_OpenDataBrowser()
+	"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
+	"Close Mies"                 , /Q, CloseMies()
+	"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
+	"Open AnalysisMaster Panel"  , /Q, analysisMaster()
+	"Export all data into NWB"   , /Q, NWB_ExportAllData()
+	"-"
+	GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
+	"-"
+	"About MIES"                 , /Q, OpenAboutDialog()
+	"-"
 	SubMenu "Advanced"
-		"Enable debug mode", /Q, EnableDebugMode()
-		"Disable debug mode", /Q, DisableDebugMode()
-		"Check Installation", /q, CHI_CheckInstallation()
-		"Start Background Task watcher panel", /Q, BkgWatcher#BW_StartPanel()
+		"Enable debug mode"                         , /Q, EnableDebugMode()
+		"Disable debug mode"                        , /Q, DisableDebugMode()
+		"Check Installation"                        , /Q, CHI_CheckInstallation()
+		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
 		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1
 	End
 End
