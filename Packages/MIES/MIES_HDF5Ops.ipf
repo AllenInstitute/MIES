@@ -3,19 +3,6 @@
 /// @file MIES_HDF5Ops.ipf
 /// @brief __HD__ Loading and saving into/from HDF5 files
 
-Menu "HDF5 Tools"
-		"-"
-		"Open HDF5 Browser", IPNWB#CreateNewHDF5Browser()
-		"Save HDF5 File", HD_Convert_To_HDF5("menuSaveFile.h5")
-		"Save Stim Set", HD_SaveStimSet()
-		"Load and Replace Stim Set", HD_LoadReplaceStimSet()
-		"Load Additional Stim Set", HD_LoadAdditionalStimSet()	
-		"Save Sweep Data", HD_SaveSweepData()
-		"Save Configuration", HD_SaveConfiguration()
-		"Load Configuration", HD_LoadConfigSet()
-		"Load Sweep Data", HD_LoadDataSet()
-End
-
 /// @brief Save all data as HDF5 file...must be passed a saveFilename with full path...with double \'s...ie "c:\\test.h5"
 Function HD_TangoHDF5Save(saveFilename)
 	string saveFilename
