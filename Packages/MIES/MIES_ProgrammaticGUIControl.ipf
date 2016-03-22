@@ -64,6 +64,8 @@ End
 /// of the given control (if it exists)
 ///
 /// `val` and `string` are ignored for unappropriate controls.
+///
+/// For PopupMenus `val` is mandatory and 0-based.
 Function PGC_SetAndActivateControl(win, control, [val, str])
 	string win, control
 	variable val
@@ -110,7 +112,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			pa.ctrlName  = control
 			pa.win       = win
 			pa.eventCode = 2
-			pa.popNum    = val
+			pa.popNum    = val + 1
 
 			if(!ParamIsDefault(str))
 				pa.popStr = str

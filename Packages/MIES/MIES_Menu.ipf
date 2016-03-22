@@ -26,6 +26,7 @@ Menu "Mies Panels", dynamic
 		"Check Installation", /q, CHI_CheckInstallation()
 		"Start Background Task watcher panel", /Q, BkgWatcher#BW_StartPanel()
 		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1
+		"Reset and store current DA_EPHYS panel", /Q, DAP_EphysPanelStartUpSettings()
 	End
 End
 
