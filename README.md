@@ -46,7 +46,7 @@
 		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
 	* In "Igor Extensions" a shortcut pointing to XOPs-IP7-64bit
-	* Tango XOP is not yet available in 64bit
+	* In "Igor Extensions" a shortcut pointing to XOP-tango-IP7-64bit
 	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 * Please note that data acquisition is currently not possible with the 64bit version.
