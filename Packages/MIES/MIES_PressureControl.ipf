@@ -824,7 +824,7 @@ Function P_FIFOMonitorProc(s)
 	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(FIFOAvail, 2)
 	ExecuteITCOperation(cmd)
 
-	if(FIFOAvail[1][2] > 350 / MINIMUM_SAMPLING_INTERVAL)
+	if(FIFOAvail[1][2] > 350 / HARDWARE_ITC_MIN_SAMPINT)
 		sprintf cmd, "ITCStopAcq"
 		ExecuteITCOperation(cmd)
 		pressureDataWv[][%OngoingPessurePulse]	= 0
@@ -981,7 +981,7 @@ static Function P_DAforManPpulse(panelTitle, Headstage)
 	 variable lastPressureCom = pressureDataWv[Headstage][%LastPressureCommand]
 	 variable DAGain          = pressureDataWv[Headstage][%DAC_Gain]
 	 variable PressureCom     = pressureDataWv[headStage][%ManPPPressure]
-	 variable PPEndPoint      = PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / MINIMUM_SAMPLING_INTERVAL)
+	 variable PPEndPoint      = PRESSURE_PULSE_STARTpt + (pressureDataWv[headStage][%ManPPDuration] / HARDWARE_ITC_MIN_SAMPINT)
 
 	if((PressureCom) < MAX_REGULATOR_PRESSURE && PressureCom > MIN_REGULATOR_PRESSURE)
 		ITCData[][%DA]                                   = PRESSURE_OFFSET * HARDWARE_ITC_BITS_PER_VOLT

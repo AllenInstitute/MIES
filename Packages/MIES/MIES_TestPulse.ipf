@@ -31,7 +31,7 @@ Function TP_GetTestPulseLengthInPoints(panelTitle, sampIntType)
 	switch(sampIntType)
 		case MIN_SAMPLING_INTERVAL_TYPE:
 			NVAR/SDFR=GetDeviceTestPulse(panelTitle) duration = pulseDuration
-			scale = MINIMUM_SAMPLING_INTERVAL
+			scale = HARDWARE_ITC_MIN_SAMPINT
 			break
 		case REAL_SAMPLING_INTERVAL_TYPE:
 			NVAR duration = $GetTestpulseDuration(panelTitle)

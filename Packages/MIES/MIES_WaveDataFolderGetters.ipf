@@ -1835,7 +1835,7 @@ Function/WAVE GetTestPulse()
 
 	/// create dummy wave
 	Make/N=(0) dfr:TestPulse/Wave=wv
-	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", wv
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", wv
 
 	return wv
 End
@@ -2866,7 +2866,7 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	wv[2][1] = 0 // TTL rack 0
 	wv[3][1] = 3 // TTL rack 1
 
-	wv[][2] = MINIMUM_SAMPLING_INTERVAL * 1000
+	wv[][2]  = HARDWARE_ITC_MIN_SAMPINT * 1000
 
 	SetDimLabel ROWS, 0, DA, 		wv
 	SetDimLabel ROWS, 1, AD, 		wv

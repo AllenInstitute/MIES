@@ -645,7 +645,7 @@ static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	return DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / (MINIMUM_SAMPLING_INTERVAL * 1000)
+	return DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
 End
 
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.

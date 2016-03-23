@@ -129,7 +129,7 @@ static Function SI_TestSampInt(panelTitle)
 
 	for(i=1; i < numTries; i += 1)
 		if(numConsecutive == -1)
-			sampInt  = MINIMUM_SAMPLING_INTERVAL * i * 1000
+			sampInt  = HARDWARE_ITC_MIN_SAMPINT * i * 1000
 		else
 			sampInt *= 2
 		endif
@@ -504,7 +504,7 @@ Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	endif
 
 	if(numActiveChannels == 0)
-		return MINIMUM_SAMPLING_INTERVAL * 1000
+		return HARDWARE_ITC_MIN_SAMPINT * 1000
 	endif
 
 	return SI_FindMatchingTableEntry(lut, ac)

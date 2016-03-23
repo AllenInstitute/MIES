@@ -566,7 +566,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				Duplicate/O combinedWave, segmentWave
 
-				params.Duration = DimSize(segmentWave, ROWS) * MINIMUM_SAMPLING_INTERVAL
+				params.Duration = DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"           , var=i)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"            , str="Combine")
@@ -615,7 +615,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][99])
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
 
-	SetScale /P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", WaveBuilderWave
+	SetScale /P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", WaveBuilderWave
 	// although we are not creating these globals anymore, we still try to kill them
 	KillVariables/Z ParameterHolder
 	KillStrings/Z StringHolder
@@ -629,7 +629,7 @@ static Function/Wave WB_GetSegmentWave(duration)
 	variable duration
 
 	DFREF dfr = GetWaveBuilderDataPath()
-	variable numPoints = duration / MINIMUM_SAMPLING_INTERVAL
+	variable numPoints = duration / HARDWARE_ITC_MIN_SAMPINT
 	Wave/Z/SDFR=dfr SegmentWave
 
 	if(duration > MAX_SWEEP_DURATION_IN_MS)
@@ -643,7 +643,7 @@ static Function/Wave WB_GetSegmentWave(duration)
 		Redimension/N=(numPoints) SegmentWave
 	endif
 
-	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", SegmentWave
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", SegmentWave
 
 	return SegmentWave
 End
@@ -660,7 +660,7 @@ End
 static Function WB_RampSegment(pa)
 	struct SegmentParameters &pa
 
-	variable amplitudeIncrement = pa.amplitude * MINIMUM_SAMPLING_INTERVAL / pa.duration
+	variable amplitudeIncrement = pa.amplitude * HARDWARE_ITC_MIN_SAMPINT / pa.duration
 
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 	MultiThread SegmentWave = amplitudeIncrement * p
@@ -777,26 +777,26 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 
 	if(!pa.poisson)
 		for(;;)
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / MINIMUM_SAMPLING_INTERVAL)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / MINIMUM_SAMPLING_INTERVAL)
+			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
 			segmentWave[startIndex, endIndex] = pa.amplitude
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	else
 		for(;;)
 			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / MINIMUM_SAMPLING_INTERVAL)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / MINIMUM_SAMPLING_INTERVAL)
+			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
 			segmentWave[startIndex, endIndex] = pa.amplitude
 		endfor
 	endif
@@ -806,7 +806,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	if(V_Value != -1)
 		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
 		Redimension/N=(V_Value) segmentWave
-		pa.duration = V_Value * MINIMUM_SAMPLING_INTERVAL
+		pa.duration = V_Value * HARDWARE_ITC_MIN_SAMPINT
 	else
 		DEBUGPRINT("No removal of points")
 	endif
@@ -815,7 +815,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 
 	DEBUGPRINT("interPulseInterval", var=interPulseInterval)
 	DEBUGPRINT("numberOfPulses", var=pa.numberOfPulses)
-	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * MINIMUM_SAMPLING_INTERVAL, format="%.6f")
+	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT, format="%.6f")
 End
 
 static Function WB_PSCSegment(pa)
@@ -826,11 +826,11 @@ static Function WB_PSCSegment(pa)
 	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
 
 	pa.TauRise = 1 / pa.TauRise
-	pa.TauRise *= MINIMUM_SAMPLING_INTERVAL
+	pa.TauRise *= HARDWARE_ITC_MIN_SAMPINT
 	pa.TauDecay1 = 1 / pa.TauDecay1
-	pa.TauDecay1 *= MINIMUM_SAMPLING_INTERVAL
+	pa.TauDecay1 *= HARDWARE_ITC_MIN_SAMPINT
 	pa.TauDecay2 = 1 / pa.TauDecay2
-	pa.TauDecay2 *= MINIMUM_SAMPLING_INTERVAL
+	pa.TauDecay2 *= HARDWARE_ITC_MIN_SAMPINT
 
 	MultiThread SegmentWave[] = pa.amplitude * ((1 - exp(-pa.TauRise * p)) + exp(-pa.TauDecay1 * p) * (1 - pa.TauDecay2Weight) + exp(-pa.TauDecay2 * p) * pa.TauDecay2Weight)
 
@@ -872,8 +872,8 @@ static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 		return NaN
 	endif
 
-	Make/FREE/n=(pa.duration / MINIMUM_SAMPLING_INTERVAL, NumberOfBuildWaves) BuildWave
-	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", BuildWave
+	Make/FREE/n=(pa.duration / HARDWARE_ITC_MIN_SAMPINT, NumberOfBuildWaves) BuildWave
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", BuildWave
 
 	for(i = 0; i < numberOfBuildWaves; i += 1)
 		phase = abs(enoise(2)) * Pi // random phase generator
@@ -889,7 +889,7 @@ static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
 	endfor
 
 	MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)
-	SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", SegmentWave
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", SegmentWave
 
 	WaveStats/Q SegmentWave
 	SegmentWave *= pa.amplitude / V_sdev
