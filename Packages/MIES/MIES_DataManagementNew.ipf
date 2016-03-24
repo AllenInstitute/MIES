@@ -352,7 +352,7 @@ static Function GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, f
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	setNameFromCtrl = GetPopupMenuString(panelTitle, ctrl)
 
-	if(!cmpstr(setNameFromCtrl, NONE) || IsTestPulseSet(setNameFromCtrl))
+	if(!cmpstr(setNameFromCtrl, NONE))
 		return NaN
 	endif
 

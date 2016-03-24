@@ -13,7 +13,7 @@ static StrConstant LEADER                 = "Leader"
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-static Constant DA_EPHYS_PANEL_VERSION    = 2
+static Constant DA_EPHYS_PANEL_VERSION    = 3
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
@@ -338,56 +338,56 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_00,fSize=10
-	PopupMenu Wave_DA_00,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_01,pos={140.00,121.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo)= A"!!,Fq!!#@V!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_01,fSize=10
-	PopupMenu Wave_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_02,pos={140.00,167.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo)= A"!!,Fq!!#A6!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_02,fSize=10
-	PopupMenu Wave_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_03,pos={140.00,214.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo)= A"!!,Fq!!#Ae!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_03,fSize=10
-	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_04,pos={140.00,260.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo)= A"!!,Fq!!#B<!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_04,fSize=10
-	PopupMenu Wave_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_05,pos={140.00,307.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo)= A"!!,Fq!!#BSJ,hqD!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_05,fSize=10
-	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_06,pos={140.00,353.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo)= A"!!,Fq!!#BjJ,hqD!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_06,fSize=10
-	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	PopupMenu Wave_DA_07,pos={140.00,400.00},size={138.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList,title="/V"
 	PopupMenu Wave_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo)= A"!!,Fq!!#C-!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_07,fSize=10
-	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;TestPulse;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
 	SetVariable Scale_DA_00,pos={290.00,75.00},size={50.00,18.00},disable=1
 	SetVariable Scale_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo)= A"!!,HL!!#?O!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3616,6 +3616,18 @@ Function DAP_WindowHook(s)
 	return 0
 End
 
+/// @brief Return a popValue string suitable for stimsets
+/// @todo rework the code to have a fixed popValue
+static Function/S DAP_FormatStimSetPopupValue(channelType, searchString)
+	variable channelType
+	string searchString
+
+	string str
+	sprintf str, "\"%s;\"+%s%s%s", NONE, "ReturnListOfAllStimSets(" + num2str(channelType) + ",\"", searchString,"\")"
+
+	return str
+End
+
 Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 	struct WMCheckboxAction &cba
 
@@ -3625,7 +3637,6 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 	string SearchString
 	string DAPopUpMenuName
 	string IndexEndPopUpMenuName
-	string FirstTwoMenuItems = "\"- none -;TestPulse;\""
 	string SearchSetVarName
 	string ListOfWaves
 
@@ -3637,7 +3648,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 
 			if(!cba.checked)
 				SearchString = "*da*"
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 				ListOfWaves = wavelist(searchstring,";","")
 
 				do
@@ -3652,7 +3663,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 				do
 					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3667,7 +3678,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 					SearchString = s_value
 				endif
 
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 				ListOfWaves = wavelist(searchstring,";","")
 				do
 					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
@@ -3681,7 +3692,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 				do
 					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3702,7 +3713,6 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 	string TTLPopUpMenuName
 	string panelTitle, ctrlName, varstr
 	string IndexEndPopUpMenuName
-	string FirstMenuItem = "\"- none -;\""
 	string SearchString
 	string popupValue, ListOfWaves
 	variable i
@@ -3732,12 +3742,11 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 
 				do
 					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
+					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
 					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 					i += 1
@@ -3745,18 +3754,17 @@ Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
 			else
 				if(strlen(varstr) == 0)
 					sprintf SearchString, "*TTL*"
-					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
+					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				else
-					sprintf popupValue, "%s+%s%s%s" FirstMenuItem, "ReturnListOfAllStimSets(1,\"", varstr,"\")"
+					searchString = varstr
+					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
 					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(1,\"", varStr,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				endif
@@ -3774,7 +3782,6 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 	string SearchString
 	string TTLPopUpMenuName
 	string IndexEndPopUpMenuName
-	string FirstTwoMenuItems = "\"- none -;\""
 	string SearchSetVarName
 	string ListOfWaves, popupValue
 	variable i
@@ -3788,7 +3795,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 
 			if(!cba.checked)
 				SearchString = "*TTL*"
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 				ListOfWaves = wavelist(searchstring,";","")
 
 				do
@@ -3803,7 +3810,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 				do
 					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3818,7 +3825,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 					SearchString = s_value
 				endif
 
-				sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 				ListOfWaves = wavelist(searchstring,";","")
 				do
 					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
@@ -3831,7 +3838,7 @@ Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
 				while(i < NUM_DA_TTL_CHANNELS)
 
 				i = 0
-				sprintf popupValue, "\"- none -;\"+%s%s%s"  "ReturnListOfAllStimSets(1,\"", SearchString,"\")"
+				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
 				do
 					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
@@ -3986,7 +3993,6 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 	variable DA_No
 	string DAPopUpMenuName
 	string IndexEndPopUpMenuName
-	string FirstTwoMenuItems = "\"- none -;TestPulse;\""
 	string SearchString
 	string popupValue, ListOfWaves
 	string panelTitle, ctrlName, varstr
@@ -4019,12 +4025,11 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 
 				do
 					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
-					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
+					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
 					IndexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 					i += 1
@@ -4033,20 +4038,18 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 			else // apply search string to associated channel
 				if(strlen(varstr) == 0)
 					sprintf SearchString, "*DA*"
-					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
+					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", SearchString,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				else
-					sprintf popupValue, "%s+%s%s%s" FirstTwoMenuItems, "ReturnListOfAllStimSets(0,\"", varstr,"\")"
 					searchString = varStr
+					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = listOfWaves
 					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					sprintf popupValue, "%s+%s%s%s" "\"- none -;\"", "ReturnListOfAllStimSets(0,\"", varStr,"\")"
 					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
 					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
 				endif
@@ -5152,7 +5155,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	if(mode == DATA_ACQUISITION_MODE)
 		ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		dacWave = GetPopupMenuString(panelTitle, ctrl)
-		if(!CmpStr(dacWave, NONE) || IsTestPulseSet(dacWave))
+		if(!CmpStr(dacWave, NONE))
 			printf "(%s) Please select a stimulus set for DA channel %d referenced by Headstage %d\r", panelTitle, DACchannel, headStage
 			return 1
 		endif
