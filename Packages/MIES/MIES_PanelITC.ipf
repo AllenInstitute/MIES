@@ -3656,7 +3656,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 						sprintf SearchSetVarName, "Search_DA_%.2d" i
 						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
 
-						sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+						DAPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 						PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set
 					endif
 					i += 1
@@ -3681,7 +3681,7 @@ Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
 				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 				ListOfWaves = wavelist(searchstring,";","")
 				do
-					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+					DAPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 					PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
 
 					if(i > 0) // disables search inputs except for Search_DA_00
@@ -4024,7 +4024,7 @@ Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
 				endif
 
 				do
-					sprintf DAPopUpMenuName, "Wave_DA_%.2d" i
+					DAPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
 					listOfWaves = wavelist(searchstring,";","")
 					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
