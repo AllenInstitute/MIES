@@ -62,6 +62,28 @@
 	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s) 
 	* Restart Igor Pro
 
+## Arduino
+
+### Setup
+Advanced measurement modes like Yoking require an Arduino for triggering the DAC hardware. The following steps have to be performed in order to get a working setup:
+
+* Get an [Arduino UNO](https://www.arduino.cc/en/Main/ArduinoBoardUno), for easier PIN access a [screw shield](http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html) comes in handy too
+* Connect the device to the PC via USB
+* Install the Arduino studio from "Packages\Arduino\arduino-1.6.8-windows.exe"
+* Extract "Packages\Arduino\Arduino-libraries-and-sequencer.zip" into "C:\Users\<username>\Documents\Arduino"
+* Start Arduino studio and try connecting to the device
+* Load and compile the installed sequence "Igor_Sequencer3.ino"
+* Connect Pin 12 and GND to the trigger input of the DAC hardware
+
+### Usage
+* Connect Arduino
+* Start Arduino studio and upload "Igor_Sequencer3.ino"
+* Start Igor Pro
+* Open the panel from the Arduino menu
+* Connect
+* Upload Sequence
+* The start of DAQ is done by MIES itself
+
 ## Doxygen documentation
 
 Within the Allen Institute, the latest documentation builds can be found [here](http://10.128.24.29/master/index.html) for the master branch and [here](http://10.128.24.29/release/index.html) for the release branch.
