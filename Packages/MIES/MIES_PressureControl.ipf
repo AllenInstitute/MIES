@@ -666,6 +666,7 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[headStageNo][%ADC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD")
 	PressureDataWv[headStageNo][%ADC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain")
 	PressureDataWv[headStageNo][%TTL]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL")
+	PressureDataWv[headStageNo][%ManSSPressure]  = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                   = GetSetVariable(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]              = GetSetVariable(panelTitle, "setvar_Settings_InBathP")
 	PressureDataWv[][%PSI_slice]                 = GetSetVariable(panelTitle, "setvar_Settings_InSliceP")
@@ -674,7 +675,6 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[][%PSI_SealMax]               = GetSetVariable(panelTitle, "setvar_Settings_SealMaxP")
 	PressureDataWv[][%solutionZaxis]             = GetSetVariable(panelTitle, "setvar_Settings_SurfaceHeight")
 	PressureDataWv[][%sliceZaxis]                = GetSetVariable(panelTitle, "setvar_Settings_SliceSurfHeight")
-	PressureDataWv[][%ManSSPressure]             = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%ManPPPressure]             = GetSetVariable(panelTitle, "setvar_DataAcq_PPPressure")
 	PressureDataWv[][%ManPPDuration]             = GetSetVariable(panelTitle, "setvar_DataAcq_PPDuration")
 	PressureDataWv[][%ApproachNear]              = GetCheckBoxState(panelTitle, "check_DatAcq_ApproachNear")
@@ -1417,7 +1417,7 @@ static Function P_ManSetPressure(panelTitle, headStage)
 	variable headStage
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable psi = PressureDataWv[0][%ManSSPressure]
+	variable psi = PressureDataWv[headStage][%ManSSPressure]
 	variable ONorOFF = 1
 
 	PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_4_MANUAL
