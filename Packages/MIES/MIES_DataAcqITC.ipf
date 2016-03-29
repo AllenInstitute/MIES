@@ -171,6 +171,7 @@ Function ITC_FIFOMonitor(s)
 	AM_analysisMasterMidSweep(panelTitleG)
 
 	if(fifoPos >= StopCollectionPoint)
+		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()
 		return 1
 	endif

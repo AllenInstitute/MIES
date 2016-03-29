@@ -2201,7 +2201,7 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 			break
 	endswitch
 
-	if(!WaveExists(deviceIDList) || DimSize(deviceIDList, ROWS) == 0)
+	if(!WaveExists(deviceIDList))
 		DEBUGPRINT("Inconsistent state encountered in IsDeviceActiveWithBGTask")
 		return 1
 	endif
