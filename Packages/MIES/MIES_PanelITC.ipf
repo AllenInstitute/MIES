@@ -4402,7 +4402,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
 		ControlInfo/W=$panelTitle Check_DataAcq_Get_Set_ITI
 		if(V_flag != 0)
-			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", CHECKBOX_SELECTED)
+			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", CHECKBOX_UNSELECTED)
 		endif
 	endif
 
