@@ -2606,14 +2606,14 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_AmpMCCdefault,fColor=(65280,43520,0),value= 0
-	CheckBox check_Settings_AmpMIESdefault,pos={34.00,619.00},size={274.00,15.00},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default amplifier parameter values stored in MIES"
-	CheckBox check_Settings_AmpMIESdefault,help={"Enable the scope window to view ongoing acquistion"}
-	CheckBox check_Settings_AmpMIESdefault,userdata(tabnum)=  "5"
-	CheckBox check_Settings_AmpMIESdefault,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_AmpMIESdefault,userdata(ResizeControlsInfo)= A"!!,Cl!!#D*^]6`Y!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Settings_AmpMIESdefault,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_Settings_AmpMIESdefault,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_AmpMIESdefault,fColor=(65280,43520,0),value= 0
+	CheckBox check_Settings_SyncMiesToMCC,pos={34.00,619.00},size={152.00,15.00},disable=1,title="Synchronize MIES to MCC"
+	CheckBox check_Settings_SyncMiesToMCC,help={"Send the GUI values to the MCC on mode switch/headstage activation"}
+	CheckBox check_Settings_SyncMiesToMCC,userdata(tabnum)=  "5"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(ResizeControlsInfo)= A"!!,Cl!!#D*^]6`Y!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_Settings_SyncMiesToMCC,value= 0
 	CheckBox check_DataAcq_Amp_Chain,pos={337.00,230.00},size={46.00,15.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Chain"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -3566,7 +3566,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_Settings_AlarmPauseAcq WIN = $panelTitle,value= 0
 	CheckBox Check_Settings_AlarmAutoRepeat WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpMCCdefault WIN = $panelTitle,value= 0
-	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
+	CheckBox check_Settings_SyncMiesToMCC WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
 	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
@@ -5497,6 +5497,10 @@ static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
 	AI_SyncAmpStorageToGUI(panelTitle, headStage)
 	ChangeTab(panelTitle, "tab_DataAcq_Amp", clampMode)
 
+	if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+		AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
+	endif
+
 	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(V_CLAMP_MODE)      = SelectString(clampMode == V_CLAMP_MODE,      "", highlightSpec) + "V-Clamp"
 	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(I_CLAMP_MODE)      = SelectString(clampMode == I_CLAMP_MODE,      "", highlightSpec) + "I-Clamp"
 	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(I_EQUAL_ZERO_MODE) = SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
@@ -5540,6 +5544,9 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
 	else
 		if(enabled)
+			if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+				PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, headstage), val=CHECKBOX_SELECTED)
+			endif
 			TP_RestartTestPulse(panelTitle, TPState)
 		endif
 	endif

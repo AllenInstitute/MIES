@@ -749,6 +749,43 @@ Function AI_SyncAmpStorageToGUI(panelTitle, headstage)
 	return AI_UpdateAmpView(panelTitle, headstage)
 End
 
+/// @brief Sync the settings from the GUI to the amp storage wave and the MCC application
+Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
+	string panelTitle
+	variable headStage, clampMode
+
+	string ctrl, list
+	variable i, numEntries
+
+	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+		print "Associate the panel with a DAC prior to using panel"
+		return NaN
+	elseif(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+		return NaN
+	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
+		return NaN
+	endif
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	if(clampMode == V_CLAMP_MODE)
+		list = AMPLIFIER_CONTROLS_VC
+	else
+		list = AMPLIFIER_CONTROLS_IC
+	endif
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+
+		if(StringMatch(ctrl, "button_*"))
+			continue
+		endif
+
+		AI_UpdateAmpModel(panelTitle, ctrl, headStage, checkBeforeWrite=1)
+	endfor
+End
+
 /// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
 ///
 /// @param panelTitle  device
