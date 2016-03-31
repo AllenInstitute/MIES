@@ -3540,6 +3540,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable SetVar_DataAcq_BB WIN = $panelTitle,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_DataAcq_CN WIN = $panelTitle,limits={-8,16,1},value= _NUM:0
 
@@ -3567,6 +3568,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_AmpMCCdefault WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
+	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
 
 	DAP_SwitchSingleMultiMode(panelTitle, 0)
