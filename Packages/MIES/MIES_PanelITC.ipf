@@ -5475,11 +5475,11 @@ static Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 		AI_SetClampMode(panelTitle, headStage, clampMode)
 	endif
 
-	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
-	DAP_UpdateITCSampIntDisplay(panelTitle)
-
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	GuiState[headStage][%HSmode] = clampMode
+
+	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	if(activeHS)
 		TP_RestartTestPulse(panelTitle, testPulseMode)
