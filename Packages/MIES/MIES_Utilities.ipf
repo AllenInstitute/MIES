@@ -2141,3 +2141,48 @@ Function SetWaveDimLabel(wv, list, dim, [startPos])
 		setDimLabel dim, i + startPos, $labelName, Wv
 	endfor
 End
+
+/// @brief Compare two variables and determines if they are close.
+///
+/// Based on the implementation of "Floating-point comparison algorithms" in the C++ Boost unit testing framework.
+///
+/// Literature:<br>
+/// The art of computer programming (Vol II). Donald. E. Knuth. 0-201-89684-2. Addison-Wesley Professional;
+/// 3 edition, page 234 equation (34) and (35).
+///
+/// @param var1            first variable
+/// @param var2            second variable
+/// @param tol             [optional, defaults to 1e-8] tolerance
+/// @param strong_or_weak  [optional, defaults to strong] type of condition, can be zero for weak or 1 for strong
+Function CheckIfClose(var1, var2, [tol, strong_or_weak])
+	variable var1, var2, tol, strong_or_weak
+
+	if(ParamIsDefault(tol))
+		tol = 1e-8
+	endif
+
+	if(ParamIsDefault(strong_or_weak))
+		strong_or_weak = 1
+	endif
+
+	variable diff = abs(var1 - var2)
+	variable d1   = diff / var1
+	variable d2   = diff / var2
+
+	if(strong_or_weak)
+		return d1 <= tol && d2 <= tol
+	else
+		return d1 <= tol || d2 <= tol
+	endif
+End
+
+/// @brief Test if a variable is small using the inequality @f$  | var | < | tol |  @f$
+///
+/// @param var  variable
+/// @param tol  [optional, defaults to 1e-8] tolerance
+Function CheckIfSmall(var, tol)
+	variable var
+	variable tol
+
+	return abs(var) < abs(tol)
+End
