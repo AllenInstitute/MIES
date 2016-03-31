@@ -301,8 +301,8 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder)
 		
 		// and now set the wave popup menu to that index
-		// have to add 2 since the pulldown always has -none- and TestPulse as options
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!IsDeviceActiveWithBGTask(currentPanel, "TestPulse"))
@@ -418,8 +418,8 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
-		// have to add 2 since the pulldown always has -none- and TestPulse as options
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 				
 		// look at the instResistance already saved in the lab notebook.  This should be the InstResistance from the start of the experiment.
 		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
@@ -574,8 +574,8 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
-		// have to add 2 since the pulldown always has -none- and TestPulse as options
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)  
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 	
 		// push the PSA_waveName into the right place
 		// find the index for for the psa routine 
@@ -678,8 +678,8 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
-		// have to add 2 since the pulldown always has -none- and TestPulse as options
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
@@ -820,8 +820,8 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
-		// have to add 2 since the pulldown always has -none- and TestPulse as options
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)  
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 	
 		// push the PSA_waveName into the right place
 		// find the index for for the psa routine 
@@ -917,7 +917,8 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		variable incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)  // have to add 2 since the pulldown always has -none- and TestPulse as options
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 		
 		// put the scale in the right place 
 		SetSetVariable(currentPanel, scaleWidgetName, scaleFactor)

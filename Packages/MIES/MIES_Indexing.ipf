@@ -47,7 +47,7 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 		ControlInfo/W=$panelTitle $ctrl
-		DACIndexingStorageWave[1][i] = V_Value + 1 // added " +1 " because indexing end no longer has test pulse listed
+		DACIndexingStorageWave[1][i] = V_Value
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		ControlInfo/W=$panelTitle $ctrl
@@ -74,7 +74,7 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[0][i] - 1)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[1][i] - 2)
+		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[1][i] - 1)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[0][i] - 1)
@@ -227,7 +227,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			ListStartNo = v_value
 			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ListEndNo = v_value + 1 // " +1 " added to compensate for test pulse not being listed in index end popup menu ************************
+			ListEndNo = v_value
 			ListLength = abs(ListStartNo - ListEndNo) + 1
 			index = indexNo
 			if(listLength <= IndexNo)
@@ -245,7 +245,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 		i += 1
 	while(i < (itemsinlist(DAChannelStatusList, ";")))
 	
-	ListOffset = 2
+	ListOffset = 1
 	i = 0
 	
 	do // for TTLs
@@ -293,8 +293,8 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 			ChannelSets = v_value
 			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ChannelSets -= (v_value + 1) // added " +1 " to compensate for test pulse not being listed in indexing end wave *******************
-			ChannelSets = abs(ChannelSets)
+			ChannelSets -= v_value
+			ChannelSets  = abs(ChannelSets)
 			MaxSets = max(MaxSets,ChannelSets)
 		endif	
 		i += 1
@@ -441,16 +441,9 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	variable listOffset, first, last, indexStart, indexEnd
 	string waveCtrl, lastCtrl, list
 
-	if(channelType == CHANNEL_TYPE_DAC)
-		// Additional entries not in menuExp: None, TestPulse
-		listOffset = 2
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		// Additional entries not in menuExp: None
-		listOffset = 1
-	else
-		ASSERT(0, "Invalid channelType")
-	endif
-	
+	// Additional entries not in menuExp: None
+	listOffset = 1
+
 	waveCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
 	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
 	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
