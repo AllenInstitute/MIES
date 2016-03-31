@@ -414,6 +414,8 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 
 			WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(mainDevice)
 			PressureDataTxtWv[headStage][%Device] = pressureDevice
+
+			HW_WriteDAC(hwType, deviceID, PressureDataWv[headStage][%DAC], PRESSURE_OFFSET)
 		endfor
 	endfor
 End
