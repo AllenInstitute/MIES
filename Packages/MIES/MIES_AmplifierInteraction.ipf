@@ -5,6 +5,9 @@
 
 static Constant ZERO_TOLERANCE = 100 // pA
 
+static StrConstant AMPLIFIER_CONTROLS_VC = "setvar_DataAcq_Hold_VC;check_DataAcq_Amp_Chain;check_DatAcq_HoldEnableVC;setvar_DataAcq_WCC;setvar_DataAcq_WCR;check_DatAcq_WholeCellEnable;setvar_DataAcq_RsCorr;setvar_DataAcq_RsPred;check_DataAcq_Amp_Chain;check_DatAcq_RsCompEnable;setvar_DataAcq_PipetteOffset_VC;button_DataAcq_FastComp_VC;button_DataAcq_SlowComp_VC;button_DataAcq_AutoPipOffset_VC"
+static StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_HoldEnable;setvar_DataAcq_BB;check_DatAcq_BBEnable;setvar_DataAcq_CN;check_DatAcq_CNEnable;setvar_DataAcq_AutoBiasV;setvar_DataAcq_AutoBiasVrange;setvar_DataAcq_IbiasMax;check_DataAcq_AutoBias;setvar_DataAcq_PipetteOffset_IC;button_DataAcq_AutoBridgeBal_IC"
+
 /// @brief Stringified version of the clamp mode
 Function/S AI_ConvertAmplifierModeToString(mode)
 	variable mode
@@ -651,7 +654,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll])
 		endswitch
 
 		if(!ParamIsDefault(value))
-			AI_UpdateAmpView(panelTitle, i, cntrlName=ctrl)
+			AI_UpdateAmpView(panelTitle, i, ctrl = ctrl)
 		endif
 	endfor
 
@@ -670,123 +673,135 @@ End
 
 /// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
 ///
-/// @param panelTitle      locked device to work on
-/// @param MIESHeadStageNo headstage on which the MIES DA_Ephys amplifer controls will be updated
-/// @param cntrlName       Name of the control being updated. cntrlName is an optional parameter (see displayHelpTopic "Using Optional Parameters").
-static Function AI_UpdateAmpView(panelTitle, MIESHeadStageNo, [cntrlName])
+/// @param panelTitle  device
+/// @param headStage   headstage
+/// @param ctrl        [optional, defaults to all controls] name of the control being updated
+static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	string panelTitle
-	variable MIESHeadStageNo
-	string cntrlName
-	variable Param
-	
+	variable headStage
+	string ctrl
+
+	string lbl, list
+	variable i, numEntries
+
 	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
-	
-	Wave AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
-	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == MIESHeadStageNo) // only update view if headstage is selected. 
-		if(ParamIsDefault(cntrlName)) // update all amplifier controls
-			cntrlName = ""
-			setSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", AmpStorageWave[%holdingPotential][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", AmpStorageWave[%HoldingPotentialEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_WCC", AmpStorageWave[%WholeCellCap][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_WCR", AmpStorageWave[%WholeCellRes][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DatAcq_WholeCellEnable", AmpStorageWave[%WholeCellEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][MIESHeadStageNo])
-			SetCheckboxstate(panelTitle, "check_DataAcq_Amp_Chain", AmpStorageWave[%RSCompChaining][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DatAcq_RsCompEnable", AmpStorageWave[%RsCompEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffsetVC][0][MIESHeadStageNo])
-	
-			setSetVariable(panelTitle, "setvar_DataAcq_Hold_IC", AmpStorageWave[%BiasCurrent][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DatAcq_HoldEnable", AmpStorageWave[%BiasCurrentEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_BB", AmpStorageWave[%BridgeBalance][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DatAcq_BBEnable", AmpStorageWave[%BridgeBalanceEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_CN", AmpStorageWave[%CapNeut][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DatAcq_CNEnable", AmpStorageWave[%CapNeutEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV", AmpStorageWave[%AutoBiasVcom][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_AutoBiasVrange", AmpStorageWave[%AutoBiasVcomVariance][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_IbiasMax", AmpStorageWave[%AutoBiasIbiasmax][0][MIESHeadStageNo])
-			setCheckBoxState(panelTitle, "check_DataAcq_AutoBias", AmpStorageWave[%AutoBiasEnable][0][MIESHeadStageNo])
-			setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_IC", AmpStorageWave[%PipetteOffsetIC][0][MIESHeadStageNo])
-			return 1
+
+	// only update view if headstage is selected
+	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+		return NaN
+	endif
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
+
+	if(!ParamIsDefault(ctrl))
+		list = ctrl
+	else
+		list = AMPLIFIER_CONTROLS_VC + ";" + AMPLIFIER_CONTROLS_IC
+	endif
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+		lbl  = AI_AmpStorageControlToRowLabel(ctrl)
+
+		if(IsEmpty(lbl))
+			continue
 		endif
-	
-		strSwitch(cntrlName) // update specific controls
+
+		if(StringMatch(ctrl, "setvar_*"))
+			SetSetVariable(panelTitle, ctrl, AmpStorageWave[%$lbl][0][headStage])
+		elseif(StringMatch(ctrl, "check_*"))
+			SetCheckBoxState(panelTitle, ctrl, AmpStorageWave[%$lbl][0][headStage])
+		else
+			ASSERT(0, "Unhandled control")
+		endif
+	endfor
+End
+
+/// @brief Convert amplifier controls to row labels for `AmpStorageWave`
+static Function/S AI_AmpStorageControlToRowLabel(ctrl)
+	string ctrl
+
+	strswitch(ctrl)
 		// V-Clamp controls
-			case "setvar_DataAcq_Hold_VC":
-				setSetVariable(panelTitle, "setvar_DataAcq_Hold_VC", AmpStorageWave[%holdingPotential][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_HoldEnableVC":
-				setCheckBoxState(panelTitle, "check_DatAcq_HoldEnableVC", AmpStorageWave[%HoldingPotentialEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_WCC":
-				setSetVariable(panelTitle, "setvar_DataAcq_WCC", AmpStorageWave[%WholeCellCap][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_WCR":
-				setSetVariable(panelTitle, "setvar_DataAcq_WCR", AmpStorageWave[%WholeCellRes][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_WholeCellEnable":
-				setCheckBoxState(panelTitle, "check_DatAcq_WholeCellEnable", AmpStorageWave[%WholeCellEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_RsCorr":
-				setSetVariable(panelTitle, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_RsPred":
-				setSetVariable(panelTitle, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_RsCompEnable":
-				setCheckBoxState(panelTitle, "check_DatAcq_RsCompEnable", AmpStorageWave[%RsCompEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_PipetteOffset_VC":
-				setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_VC", AmpStorageWave[%PipetteOffsetVC][0][MIESHeadStageNo])
-				break
-			// I-Clamp controls
-			case "setvar_DataAcq_Hold_IC":
-				setSetVariable(panelTitle, "setvar_DataAcq_Hold_IC", AmpStorageWave[%BiasCurrent][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_HoldEnable":
-				setCheckBoxState(panelTitle, "check_DatAcq_HoldEnable", AmpStorageWave[%BiasCurrentEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_BB":
-				setSetVariable(panelTitle, "setvar_DataAcq_BB", AmpStorageWave[%BridgeBalance][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_BBEnable":
-				setCheckBoxState(panelTitle, "check_DatAcq_BBEnable", AmpStorageWave[%BridgeBalanceEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_CN":
-				setSetVariable(panelTitle, "setvar_DataAcq_CN", AmpStorageWave[%CapNeut][0][MIESHeadStageNo])
-				break
-			case "check_DatAcq_CNEnable":
-				setCheckBoxState(panelTitle, "check_DatAcq_CNEnable", AmpStorageWave[%CapNeutEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_AutoBiasV":
-				setSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV", AmpStorageWave[%AutoBiasVcom][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_AutoBiasVrange":
-				setSetVariable(panelTitle, "setvar_DataAcq_AutoBiasVrange", AmpStorageWave[%AutoBiasVcomVariance][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_IbiasMax":
-				setSetVariable(panelTitle, "setvar_DataAcq_IbiasMax", AmpStorageWave[%AutoBiasIbiasmax][0][MIESHeadStageNo])
-				break
-			case "check_DataAcq_AutoBias":
-				setCheckBoxState(panelTitle, "check_DataAcq_AutoBias", AmpStorageWave[%AutoBiasEnable][0][MIESHeadStageNo])
-				break
-			case "setvar_DataAcq_PipetteOffset_IC":
-				setSetVariable(panelTitle, "setvar_DataAcq_PipetteOffset_IC", AmpStorageWave[%PipetteOffsetIC][0][MIESHeadStageNo])
-				break
-			case "button_DataAcq_AutoBridgeBal_IC":
-			case "button_DataAcq_FastComp_VC":
-			case "button_DataAcq_SlowComp_VC":
-			case "button_DataAcq_AutoPipOffset_VC":
-				// do nothing
-				break
-			default:
-				ASSERT(0, "Unknown control " + cntrlName)
-				break
-		endSwitch
-	endIf
+		case "setvar_DataAcq_Hold_VC":
+			return "holdingPotential"
+			break
+		case "check_DatAcq_HoldEnableVC":
+			return "HoldingPotentialEnable"
+			break
+		case "setvar_DataAcq_WCC":
+			return "WholeCellCap"
+			break
+		case "setvar_DataAcq_WCR":
+			return "WholeCellRes"
+			break
+		case "check_DatAcq_WholeCellEnable":
+			return "WholeCellEnable"
+			break
+		case "setvar_DataAcq_RsCorr":
+			return "Correction"
+			break
+		case "setvar_DataAcq_RsPred":
+			return "Prediction"
+			break
+		case "check_DatAcq_RsCompEnable":
+			return "RsCompEnable"
+			break
+		case "setvar_DataAcq_PipetteOffset_VC":
+			return "PipetteOffsetVC"
+			break
+		// I-Clamp controls
+		case "setvar_DataAcq_Hold_IC":
+			return "BiasCurrent"
+			break
+		case "check_DatAcq_HoldEnable":
+			return "BiasCurrentEnable"
+			break
+		case "setvar_DataAcq_BB":
+			return "BridgeBalance"
+			break
+		case "check_DatAcq_BBEnable":
+			return "BridgeBalanceEnable"
+			break
+		case "setvar_DataAcq_CN":
+			return "CapNeut"
+			break
+		case "check_DatAcq_CNEnable":
+			return "CapNeutEnable"
+			break
+		case "setvar_DataAcq_AutoBiasV":
+			return "AutoBiasVcom"
+			break
+		case "setvar_DataAcq_AutoBiasVrange":
+			return "AutoBiasVcomVariance"
+			break
+		case "setvar_DataAcq_IbiasMax":
+			return "AutoBiasIbiasmax"
+			break
+		case "check_DataAcq_AutoBias":
+			return "AutoBiasEnable"
+			break
+		case "setvar_DataAcq_PipetteOffset_IC":
+			return "PipetteOffsetIC"
+			break
+		case "check_DataAcq_Amp_Chain":
+			return "RSCompChaining"
+			break
+		case "button_DataAcq_AutoBridgeBal_IC":
+		case "button_DataAcq_FastComp_VC":
+		case "button_DataAcq_SlowComp_VC":
+		case "button_DataAcq_AutoPipOffset_VC":
+			// no row exists
+			return ""
+			break
+		default:
+			ASSERT(0, "Unknown control " + ctrl)
+			break
+	endswitch
 End
 
 /// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_createWaveNotes
