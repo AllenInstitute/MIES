@@ -2599,9 +2599,8 @@ Window DA_Ephys() : Panel
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Ba!!#CtJ,hsnJ,hp/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_AmpMCCdefault,pos={34.00,598.00},size={190.00,15.00},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default to MCC parameter values"
-	CheckBox check_Settings_AmpMCCdefault,help={"Enable the scope window to view ongoing acquistion"}
-	CheckBox check_Settings_AmpMCCdefault,userdata(tabnum)=  "5"
+	CheckBox check_Settings_AmpMCCdefault,pos={34.00,598.00},size={190.00,15.00},disable=1,title="Default to MCC parameter values"
+	CheckBox check_Settings_AmpMCCdefault,help={"FIXME"},userdata(tabnum)=  "5"
 	CheckBox check_Settings_AmpMCCdefault,userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo)= A"!!,Cl!!#D%J,hr#!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
