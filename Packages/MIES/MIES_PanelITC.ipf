@@ -5539,7 +5539,9 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
 	else
-		TP_RestartTestPulse(panelTitle, TPState)
+		if(enabled)
+			TP_RestartTestPulse(panelTitle, TPState)
+		endif
 	endif
 End
 
