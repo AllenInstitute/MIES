@@ -3,49 +3,49 @@
 /// @file MIES_Menu.ipf
 /// @brief Definition of the menu items
 
-static StrConstant optionalTangoInclude = "MIES_TangoInteract"
-static StrConstant optionalHDF5Include = "MIES_HDF5Ops"
+static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
-		"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
-		"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
-		"Data Browser"               , /Q, DB_OpenDataBrowser()
-		"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
-		"Close Mies"                 , /Q, CloseMies()
-		"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
-		"Open AnalysisMaster Panel"  , /Q, analysisMaster()
-		"Export all data into NWB"   , /Q, NWB_ExportAllData()
-		"-"
-		GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
-		"-"
-		"About MIES"                 , /Q, OpenAboutDialog()
-		"-"
+	"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
+	"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
+	"Data Browser"               , /Q, DB_OpenDataBrowser()
+	"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
+	"Close Mies"                 , /Q, CloseMies()
+	"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
+	"Open AnalysisMaster Panel"  , /Q, analysisMaster()
+	"Export all data into NWB"   , /Q, NWB_ExportAllData()
+	"-"
+	GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
+	"-"
+	"About MIES"                 , /Q, OpenAboutDialog()
+	"-"
 	SubMenu "Advanced"
-		"Enable debug mode", /Q, EnableDebugMode()
-		"Disable debug mode", /Q, DisableDebugMode()
-		"Check Installation", /q, CHI_CheckInstallation()
-		"Start Background Task watcher panel", /Q, BkgWatcher#BW_StartPanel()
+		"Enable debug mode"                         , /Q, EnableDebugMode()
+		"Disable debug mode"                        , /Q, DisableDebugMode()
+		"Check Installation"                        , /Q, CHI_CheckInstallation()
+		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
 		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1
 		"Reset and store current DA_EPHYS panel", /Q, DAP_EphysPanelStartUpSettings()
 	End
 End
 
-Menu "HDF5 Tools", dynamic
-	GetOptHDF5IncludeMenuTitle(), /Q, HandleHDF5OptionalInclude()	
+Menu "HDF5 Tools"
+	"-"
+	"Open HDF5 Browser"        , /Q, IPNWB#CreateNewHDF5Browser()
+	"Save HDF5 File"           , /Q, HD_Convert_To_HDF5("menuSaveFile.h5")
+	"Save Stim Set"            , /Q, HD_SaveStimSet()
+	"Load and Replace Stim Set", /Q, HD_LoadReplaceStimSet()
+	"Load Additional Stim Set" , /Q, HD_LoadAdditionalStimSet()
+	"Save Sweep Data"          , /Q, HD_SaveSweepData()
+	"Save Configuration"       , /Q, HD_SaveConfiguration()
+	"Load Configuration"       , /Q, HD_LoadConfigSet()
+	"Load Sweep Data"          , /Q, HD_LoadDataSet()
 End
 
 ///@returns 1 if the optional include is loaded, 0 otherwise
 static Function OptTangoIncludeLoaded()
 
-	string procList = WinList(optionalTangoInclude + ".ipf",";","")
-
-	return !isEmpty(procList)
-End
-
-///@returns 1 if the optional include is loaded, 0 otherwise
-static Function OptHDF5IncludeLoaded()
-
-	string procList = WinList(optionalHDF5Include + ".ipf",";","")
+	string procList = WinList(OPTIONAL_TANGO_INCLUDE + ".ipf",";","")
 
 	return !isEmpty(procList)
 End
@@ -60,35 +60,13 @@ Function/S GetOptTangoIncludeMenuTitle()
 	endif
 End
 
-///@brief Returns the title of the HDF5 load/unload menu entry
-Function/S GetOptHDF5IncludeMenuTitle()
-
-	if(OptHDF5IncludeLoaded())
-		return "Unload HDF5 Tools"
-	else
-		return "Load HDF5 Tools"
-	endif
-End
-
 ///@brief Load/Unload the optional tango include
 Function HandleTangoOptionalInclude()
 
 	if(!OptTangoIncludeLoaded())
-		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalTangoInclude + "\""
+		Execute/P/Q/Z "INSERTINCLUDE \"" + OPTIONAL_TANGO_INCLUDE + "\""
 	else
-		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalTangoInclude + "\""
-	endif
-
-	Execute/P/Q/Z "COMPILEPROCEDURES "
-End
-
-///@brief Load/Unload the optional hdf5 include
-Function HandleHDF5OptionalInclude()
-
-	if(!OptHDF5IncludeLoaded())
-		Execute/P/Q/Z "INSERTINCLUDE \"" + optionalHDF5Include + "\""
-	else
-		Execute/P/Q/Z "DELETEINCLUDE \"" + optionalHDF5Include + "\""
+		Execute/P/Q/Z "DELETEINCLUDE \"" + OPTIONAL_TANGO_INCLUDE + "\""
 	endif
 
 	Execute/P/Q/Z "COMPILEPROCEDURES "

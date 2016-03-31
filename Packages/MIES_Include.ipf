@@ -39,6 +39,7 @@
 #include "MIES_GlobalStringAndVariableAccess"
 #include "MIES_GuiUtilities"
 #include "MIES_HardwareSetUp"
+#include "MIES_HDF5Ops"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
 #include "MIES_Manipulator"
