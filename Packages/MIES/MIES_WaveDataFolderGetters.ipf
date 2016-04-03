@@ -962,17 +962,24 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
 	variable versionOfNewWave = 6
+	string newName = "sweepSettingsNumericValues"
+	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
-	Wave/Z/SDFR=dfr wv = sweepSettingsWave
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":settingsHistory")
+	p.newDFR  = newDFR
+	p.name    = "sweepSettingsWave"
+	p.newName = newName
+
+	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 26, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 26, LABNOTEBOOK_LAYER_COUNT) dfr:sweepSettingsWave/Wave=wv
+		Make/N=(1, 26, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1048,17 +1055,24 @@ End
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
 	variable versionOfNewWave = 7
+	string newName = "sweepSettingsNumericKeys"
+	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
-	Wave/Z/T/SDFR=dfr wv = sweepSettingsKeyWave
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":KeyWave")
+	p.newDFR  = newDFR
+	p.name    = "sweepSettingsKeyWave"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 26) wv
 	else
-		Make/T/N=(3, 26) dfr:sweepSettingsKeyWave/Wave=wv
+		Make/T/N=(3, 26) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1219,17 +1233,24 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
 	variable versionOfNewWave = 7
+	string newName = "sweepSettingsTextValues"
+	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
-	Wave/Z/T/SDFR=dfr wv = SweepSettingsTxtData
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation")
+	p.newDFR  = newDFR
+	p.name    = "SweepSettingsTxtData"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 10, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 10, LABNOTEBOOK_LAYER_COUNT) dfr:SweepSettingsTxtData/Wave=wv
+		Make/T/N=(1, 10, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1271,17 +1292,24 @@ End
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 	variable versionOfNewWave = 7
+	string newName = "sweepSettingsTextKeys"
+	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
-	Wave/Z/T/SDFR=dfr wv = SweepSettingsKeyTxtData
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocKeyWave")
+	p.newDFR  = newDFR
+	p.name    = "SweepSettingsKeyTxtData"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 10, 0) wv
 	else
-		Make/T/N=(1, 10) dfr:SweepSettingsKeyTxtData/Wave=wv
+		Make/T/N=(1, 10) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
