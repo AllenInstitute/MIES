@@ -282,6 +282,18 @@ static Function/WAVE DB_GetSettingsHistoryText(panelTitle)
 	return GetTextDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
+static Function/WAVE DB_GetSettingsHistoryKeys(panelTitle)
+	string panelTitle
+
+	return GetNumDocKeyWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+End
+
+static Function/WAVE DB_GetSettingsHistoryTextKeys(panelTitle)
+	string panelTitle
+
+	return GetTextDocKeyWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+End
+
 Function DB_UpdateToLastSweep(panel)
 	string panel
 
@@ -728,8 +740,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			endif
 
 			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
-			device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-			Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
+			WAVE keyWave = DB_GetSettingsHistoryKeys(panelTitle)
 
 			AddTraceToLBGraph(graph, keyWave, settingsHistory, popStr)
 		break
@@ -812,7 +823,7 @@ Function/S DB_GetLabNotebookViewAbleCols(panelTitle)
 		return NONE
 	endif
 
-	WAVE/T/Z/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
+	WAVE/T keyWave = DB_GetSettingsHistoryKeys(panelTitle)
 
 	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
 End
