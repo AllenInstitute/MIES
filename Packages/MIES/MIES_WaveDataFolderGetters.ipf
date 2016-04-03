@@ -1521,7 +1521,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns wave reference for the amplifier settings
+/// @brief Return a free wave reference for the amplifier settings, data wave
 ///
 /// Rows:
 /// - Only one
@@ -1532,28 +1532,14 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/WAVE GetAmplifierSettingsWave(panelTitle)
-	string panelTitle
+Function/WAVE GetAmplifierSettingsWave()
 
-	variable versionOfNewWave = 5
-	dfref dfr = GetAmpSettingsFolder()
-
-	Wave/Z/SDFR=dfr wv = ampSettings
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 43, LABNOTEBOOK_LAYER_COUNT) wv
-	else
-		Make/N=(1, 43, LABNOTEBOOK_LAYER_COUNT) dfr:ampsettings/Wave=wv
-	endif
-
-	SetWaveVersion(wv, versionOfNewWave)
+	Make/FREE/N=(1, 43, LABNOTEBOOK_LAYER_COUNT) wv
 
 	return wv
 End
 
-/// @brief Returns wave reference for the amplifier settings keys
+/// @brief Return a free wave reference for the amplifier settings, key wave
 ///
 /// Rows:
 /// - 0: Parameter
@@ -1562,21 +1548,9 @@ End
 ///
 /// Columns:
 /// - Various settings
-Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
-	string panelTitle
+Function/WAVE GetAmplifierSettingsKeyWave()
 
-	variable versionOfNewWave = 3
-	dfref dfr = GetAmpSettingsFolder()
-
-	Wave/T/Z/SDFR=dfr wv = ampSettingsKey
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 43) wv
-	else
-		Make/T/N=(3, 43) dfr:ampSettingsKey/Wave=wv
-	endif
+	Make/FREE/T/N=(3, 43) wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -1756,12 +1730,10 @@ Function/WAVE GetAmplifierSettingsKeyWave(panelTitle)
 	wv[1][42] =  "s"
 	wv[2][42] =  ""
 
-	SetWaveVersion(wv, versionOfNewWave)
-
 	return wv
 End
 
-/// @brief Returns wave reference for the amplifier settings (text version)
+/// @brief Return a *free* wave for the amplifier text settings, data wave
 ///
 /// Rows:
 /// - Only one
@@ -1772,28 +1744,14 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/WAVE GetAmplifierSettingsTextWave(panelTitle)
-	string panelTitle
+Function/WAVE GetAmplifierSettingsTextWave()
 
-	dfref dfr = GetAmpSettingsFolder()
-	variable versionOfNewWave = 2
-
-	Wave/T/Z/SDFR=dfr wv = ampSettingsText
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 6, LABNOTEBOOK_LAYER_COUNT) wv
-	else
-		Make/T/N=(1, 6, LABNOTEBOOK_LAYER_COUNT) dfr:ampSettingsText/Wave=wv
-	endif
-
-	SetWaveVersion(wv, versionOfNewWave)
+	Make/FREE/T/N=(1, 6, LABNOTEBOOK_LAYER_COUNT) wv
 
 	return wv
 End
 
-/// @brief Returns wave reference for the amplifier settings keys (text version)
+/// @brief Return a *free* wave for the amplifier text settings, key wave
 ///
 /// Rows:
 /// - 0: Parameter
@@ -1802,21 +1760,9 @@ End
 ///
 /// Columns:
 /// - Various settings
-Function/WAVE GetAmplifierSettingsTextKeyWave(panelTitle)
-	string panelTitle
+Function/WAVE GetAmplifierSettingsTextKeyWave()
 
-	dfref dfr = GetAmpSettingsFolder()
-	variable versionOfNewWave = 1
-
-	Wave/T/Z/SDFR=dfr wv = ampSettingsTextKey
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 6) wv
-	else
-		Make/T/N=(3, 6) dfr:ampSettingsTextKey/Wave=wv
-	endif
+	Make/FREE/T/N=(3, 6) wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -1845,8 +1791,6 @@ Function/WAVE GetAmplifierSettingsTextKeyWave(panelTitle)
 	wv[0][5] = "HardwareTypeString"
 	wv[1][5] = ""
 	wv[2][5] = "-"
-
-	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End

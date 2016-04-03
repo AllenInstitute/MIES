@@ -1095,10 +1095,10 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 
 	WAVE channelClampMode      = GetChannelClampMode(panelTitle)
 	WAVE statusHS              = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	WAVE ampSettingsWave       = GetAmplifierSettingsWave(panelTitle)
-	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave(panelTitle)
-	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave(panelTitle)
-	WAVE/T ampSettingsTextKey  = GetAmplifierSettingsTextKeyWave(panelTitle)
+	WAVE ampSettingsWave       = GetAmplifierSettingsWave()
+	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave()
+	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave()
+	WAVE/T ampSettingsTextKey  = GetAmplifierSettingsTextKeyWave()
 
 	ampSettingsWave = NaN
 
