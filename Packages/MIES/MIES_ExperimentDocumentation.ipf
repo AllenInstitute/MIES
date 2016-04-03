@@ -421,23 +421,15 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string ctrl
 	variable minSettingValue, maxSettingValue
 
-	// Create the numerical wave for saving the numerical settings
-	Wave asyncSettingsWave = GetAsyncSettingsWave(panelTitle)
-	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave(panelTitle)
+	Wave asyncSettingsWave = GetAsyncSettingsWave()
+	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
 
-	// Create the txt wave to be used for saving the txt settings
-	Wave/T asyncSettingsTxtWave = GetAsyncSettingsTextWave(panelTitle)
-	Wave/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave(panelTitle)
-	
-	// Create the measurement wave that will hold the measurement values
-	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
-	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave(panelTitle)
-	
-	// fill the settings wave with NAN's...the asyncMeasurementWave will be filled with NAN's in another function
-	asyncSettingsWave[0][] = NAN
+	Wave/T asyncSettingsTxtWave = GetAsyncSettingsTextWave()
+	Wave/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave()
 
-	// Now populate the aync Settings and measurement Waves
-	// first...determine if the head stage is being controlled
+	Wave asyncMeasurementWave = GetAsyncMeasurementWave()
+	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave()
+
 	variable asyncVariablesCounter
 	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
 		ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
@@ -483,15 +475,11 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 		endif
 	endfor
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_Append"))
-		// call the function that will create the numerical wave notes
-		ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle)
-	
-		// call the function that will create the measurement wave notes
-		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle)
+	ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle)
+	ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle)
 
-		ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle)
-	endif
+	ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+	ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle)
 End
 
 /// @brief Stores test pulse related data in the labnotebook

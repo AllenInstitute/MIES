@@ -377,8 +377,8 @@ Function ITC_StartTestPulse(panelTitle)
 	TP_Teardown(panelTitle)
 END
 
-Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
-	WAVE dataWave
+Function ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+	WAVE asyncMeasurementWave
 	string panelTitle
 
 	// This function takes about 0.9 seconds to run
@@ -387,10 +387,6 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	string setvarTitle, setvarGain, title
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-
-	// Create the measurement wave that will hold the measurement values
-	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
-	asyncMeasurementWave[0][] = NaN
 
 	WAVE asyncChannelState = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
@@ -410,8 +406,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 
 		title = GetSetVariableString(panelTitle, setvarTitle)
 		gain  = GetSetVariable(panelTitle, setvarGain)
-		print "raw async", rawChannelValue
-		// put the measurement value into the async settings wave for creation of wave notes
+
 		asyncMeasurementWave[0][i] = rawChannelValue / gain // put the measurement value into the async settings wave for creation of wave notes
 		ITC_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
 	endfor

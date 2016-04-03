@@ -2305,10 +2305,10 @@ End
 /// @name Asynchronous Measurements
 /// @}
 
-/// @brief Returns a wave reference to the asyncMeasurementWave
+/// @brief Return a *free* wave for the async settings, data wave
 ///
 /// asyncMeasurementWave is used to save the actual async measurement data
-/// for each data sweep 
+/// for each data sweep
 ///
 /// Rows:
 /// - One row
@@ -2322,22 +2322,10 @@ End
 /// - 5: Async Measurement 5
 /// - 6: Async Measurement 6
 /// - 7: Async Measurement 7
-///
-/// Layers:
-/// - Only one...all async measurements apply across all headstages, so no need to create multiple layers
-Function/Wave GetAsyncMeasurementWave(panelTitle)
-	string panelTitle
+Function/Wave GetAsyncMeasurementWave()
 
-	DFREF dfr =GetDevSpecLabNBSettHistFolder(panelTitle)
-
-	Wave/Z/SDFR=dfr wv = asyncMeasurementWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/N=(1,8) dfr:asyncMeasurementWave/Wave=wv
-	wv = Nan
+	Make/FREE/N=(1,8) wv
+	wv = NaN
 
 	SetDimLabel 1, 0, MeasVal0, wv
 	SetDimLabel 1, 1, MeasVal1, wv
@@ -2347,11 +2335,11 @@ Function/Wave GetAsyncMeasurementWave(panelTitle)
 	SetDimLabel 1, 5, MeasVal5, wv
 	SetDimLabel 1, 6, MeasVal6, wv
 	SetDimLabel 1, 7, MeasVal7, wv
-	
+
 	return wv
 End
 
-/// @brief Returns a wave reference to the asyncMeasurementKeyWave
+/// @brief Return a *free* wave for the async settings, key wave
 ///
 /// asyncMeasurementKeyWave is used to index async measurements for
 /// each data sweep and create waveNotes for tagging data sweeps
@@ -2370,27 +2358,15 @@ End
 /// - 5: Async Measurement 5
 /// - 6: Async Measurement 6
 /// - 7: Async Measurement 7
-///
-/// Layers:
-/// - Just one
-Function/Wave GetAsyncMeasurementKeyWave(panelTitle)
-	string panelTitle
+Function/Wave GetAsyncMeasurementKeyWave()
 
-	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = asyncMeasurementKeyWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/T/N=(3,8) dfr:asyncMeasurementKeyWave/Wave=wv
+	Make/FREE/T/N=(3,8) wv
 	wv = ""
 
 	SetDimLabel 0, 0, Parameter, wv
 	SetDimLabel 0, 1, Units, wv
 	SetDimLabel 0, 2, Tolerance, wv
-	
+
 	wv[%Parameter][0] = "Async AD 0"
 	wv[%Units][0]     = ""
 	wv[%Tolerance][0] = ".0001"
@@ -2414,19 +2390,19 @@ Function/Wave GetAsyncMeasurementKeyWave(panelTitle)
 	wv[%Parameter][5] = "Async AD 5"
 	wv[%Units][5]     = ""
 	wv[%Tolerance][5] = ".0001"
-	
+
 	wv[%Parameter][6] = "Async AD 6"
 	wv[%Units][6]     = ""
 	wv[%Tolerance][6] = ".0001"
-	
+
 	wv[%Parameter][7] = "Async AD 7"
 	wv[%Units][7]     = ""
 	wv[%Tolerance][7] = ".0001"
-	
+
 	return wv
 End
 
-/// @brief Returns a wave reference to the asyncSettingsWave
+/// @brief Return a *free* wave for the asyncSettingsWave, data wave
 ///
 /// asyncSettingsWave is used to save async settings for each
 /// data sweep and create waveNotes for tagging data sweeps
@@ -2475,20 +2451,11 @@ End
 /// - 37: Async Alarm 5 Max
 /// - 38: Async Alarm 6 Max
 /// - 39: Async Alarm 7 Max
-Function/Wave GetAsyncSettingsWave(panelTitle)
-	string panelTitle
+Function/Wave GetAsyncSettingsWave()
 
-	DFREF dfr =GetDevSpecLabNBSettHistFolder(panelTitle)
-
-	Wave/Z/SDFR=dfr wv = asyncSettingsWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/N=(1,40) dfr:asyncSettingsWave/Wave=wv
+	Make/N=(1,40) wv
 	wv = Nan
-	
+
 	SetDimLabel 1, 0, ADOnOff0, wv
 	SetDimLabel 1, 1, ADOnOff1, wv
 	SetDimLabel 1, 2, ADOnOff2, wv
@@ -2533,7 +2500,7 @@ Function/Wave GetAsyncSettingsWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the asyncSettingsKeyWave
+/// @brief Return a *free* wave for the asyncSettingsKeyWave
 ///
 /// asyncSettingsKeyWave is used to index async settings for
 /// each data sweep and create waveNotes for tagging data sweeps
@@ -2584,18 +2551,9 @@ End
 /// - 37: Async Alarm 5 Max
 /// - 38: Async Alarm 6 Max
 /// - 39: Async Alarm 7 Max
-Function/Wave GetAsyncSettingsKeyWave(panelTitle)
-	string panelTitle
+Function/Wave GetAsyncSettingsKeyWave()
 
-	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = asyncSettingsKeyWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/T/N=(3,40) dfr:asyncSettingsKeyWave/Wave=wv
+	Make/T/N=(3,40) wv
 	wv = ""
 
 	SetDimLabel 0, 0, Parameter, wv
@@ -2765,7 +2723,7 @@ Function/Wave GetAsyncSettingsKeyWave(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the AsyncSettingsTxtWave
+/// @brief Return a free wave for the AsyncSettingsTxtWave
 ///
 /// AsyncSettingsTxtData is used to store the async text settings used on a particular
 /// headstage and then create waveNotes for the sweep data
@@ -2790,24 +2748,15 @@ End
 /// - 13: Async 5 Units
 /// - 14: Async 6 Units
 /// - 15: Async 7 Units
-Function/Wave GetAsyncSettingsTextWave(panelTitle)
-	string panelTitle
+Function/Wave GetAsyncSettingsTextWave()
 
-	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = asyncSettingsTxtData
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/T/N=(1,16) dfr:asyncSettingsTxtData/Wave=wv
+	Make/T/N=(1,16) wv
 	wv = ""
 
 	return wv
 End
 
-/// @brief Returns a wave reference to the AsyncSettingsKeyTxtData
+/// @brief Return a *free* wave for the AsyncSettingsKeyTxtData
 ///
 /// AsyncSettingsKeyTxtData is used to index Txt Key Wave
 ///
@@ -2831,20 +2780,11 @@ End
 /// - 13: Async 5 Unit
 /// - 14: Async 6 Unit
 /// - 15: Async 7 Unit
-Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
-	string panelTitle
+Function/Wave GetAsyncSettingsTextKeyWave()
 
-	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = asyncSettingsKeyTxtData
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/T/N=(1,16) dfr:asyncSettingsKeyTxtData/Wave=wv
+	Make/T/N=(1,16) wv
 	wv = ""
-	
+
 	wv[0][0] = "Async AD0 Title"
 	wv[0][1] = "Async AD1 Title"
 	wv[0][2] = "Async AD2 Title"
@@ -2861,7 +2801,7 @@ Function/Wave GetAsyncSettingsTextKeyWave(panelTitle)
 	wv[0][13] = "Async AD5 Unit"
 	wv[0][14] = "Async AD6 Unit"
 	wv[0][15] = "Async AD7 Unit"
-	
+
 	return wv
 End
 

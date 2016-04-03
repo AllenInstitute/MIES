@@ -45,16 +45,12 @@ Function DM_SaveAndScaleITCData(panelTitle)
 		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 
-	// if option is checked, wave note containing single readings from (async) ADs is made
 	if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
-		ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
+		ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
 	endif
 
 	// Add wave notes for the stim wave name and scale factor
 	ED_createWaveNoteTags(panelTitle, sweepNo)
-
-	// Add wave notes for the factors on the Asyn tab
-	ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
 
 	// TP settings, especially useful if "global TP insertion" is active
 	ED_TPSettingsDocumentation(panelTitle)
