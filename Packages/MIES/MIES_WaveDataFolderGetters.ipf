@@ -10,7 +10,6 @@
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
 static Constant NUM_COLUMNS_LIST_WAVE   = 11
-static Constant PRESSURE_WAVE_DATA_SIZE = 131072 // equals 2^17
 static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
@@ -2815,7 +2814,7 @@ Function/WAVE P_GetITCData(panelTitle)
 		return P_ITCData
 	endif
 
-	Make/W/N=(PRESSURE_WAVE_DATA_SIZE, 4) dfr:P_ITCData/WAVE=wv
+	Make/W/N=(2^MINIMUM_ITCDATAWAVE_EXPONENT, 4) dfr:P_ITCData/WAVE=wv
 
 	SetDimLabel COLS, 0, DA, 		wv
 	SetDimLabel COLS, 1, AD, 		wv
