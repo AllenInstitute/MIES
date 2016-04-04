@@ -1442,16 +1442,6 @@ Function/S GetAmplifierFolderAsString()
 	return GetMiesPathAsString() + ":Amplifiers"
 End
 
-/// @brief Return the datafolder reference to the amplifier settings
-Function/DF GetAmpSettingsFolder()
-	return createDFWithAllParents(GetAmpSettingsFolderAsString())
-End
-
-/// @brief Return the path to the amplifier settings, e.g. root:MIES:Amplifiers:Settings
-Function/S GetAmpSettingsFolderAsString()
-	return GetAmplifierFolderAsString() + ":Settings"
-End
-
 /// @brief Return a wave reference to the amplifier parameter storage wave
 ///
 /// Rows:
@@ -1469,18 +1459,22 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	string panelTitle
 
 	variable versionOfNewWave = 4
+	STRUCT WaveLocationMod p
 
-	DFREF dfr = GetAmpSettingsFolder()
-
+	DFREF newDFR = GetAmplifierFolder()
+	p.dfr = $(GetAmplifierFolderAsString() + ":Settings")
+	p.newDFR = newDFR
 	// wave's name is like ITC18USB_Dev_0
-	Wave/Z/SDFR=dfr wv = $panelTitle
+	p.name = panelTitle
+
+	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// nothing to do
 	else
-		Make/N=(31, 1, NUM_HEADSTAGES) dfr:$panelTitle/Wave=wv
+		Make/N=(31, 1, NUM_HEADSTAGES) newDFR:$panelTitle/Wave=wv
 	endif
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
