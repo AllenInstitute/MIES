@@ -206,6 +206,10 @@ End
 /// - Wave data type
 /// - Prefilled wave content
 ///
+/// This also means that the name and location of the wave does *not* influence the
+/// wave version. Use UpgradeWaveLocationAndGetIt() for that. The main reason is that
+/// for being able to query the wave version you already need to know where it is.
+///
 /// In order to enable smooth upgrades between old and new wave layouts
 /// the following code pattern can be used:
 /// @code
@@ -262,6 +266,97 @@ static Function SetWaveVersion(wv, val)
 
 	ASSERT(val > 0 && IsInteger(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
+End
+
+/// @brief Rename/Move a wave to a new location
+///
+/// Valid transformations (and all combinations of them):
+/// - Moving into a new datafolder
+/// - Renaming to a new name
+/// - Nothing
+///
+/// The function is idempotent (i.e. it can be called also on already relocated
+/// waves). Cases where new == old are also handled gracefully.
+///
+/// Example
+/// @code
+/// Function/WAVE GetMyWave(panelTitle)
+///     string panelTitle
+///
+///     variable versionOfNewWave = 1
+///     string newName = "newAndNiceName"
+///     DFREF newDFR = GetNewAndFancyFolder(panelTitle)
+///
+///     STRUCT WaveLocationMod p
+///     p.dfr     = $(GetSomeFolder(panelTitle) + ":oldSubFolder")
+///     p.newDFR  = newDFR
+///     p.name    = "oldAndUglyName"
+///     p.newName = newName
+///
+///     WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+///
+/// 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+/// 		return wv
+/// 	elseif(WaveExists(wv))
+/// 	    // handle upgrade
+/// 	else
+/// 		Make/N=(10, 2) newDFR:newName/Wave=wv
+/// 	end
+///
+/// 	SetWaveVersion(wv, versionOfNewWave)
+///
+/// 	return wv
+/// End
+/// @endcode
+///
+/// @returns wave reference to the wave in the new location, an invalid one if the wave does
+/// not exist at the specified former location
+Function/WAVE UpgradeWaveLocationAndGetIt(p)
+	STRUCT WaveLocationMod &p
+
+	ASSERT(strlen(p.name) > 0, "Invalid name")
+
+	if(!DataFolderExistsDFR(p.newDFR))
+		ASSERT(DataFolderExistsDFR(p.dfr), "Invalid dfr")
+		p.newDFR = p.dfr
+	endif
+
+	if(!(strlen(p.newName) > 0))
+		p.newName = p.name
+	endif
+
+	WAVE/SDFR=p.newDFR/Z dest = $p.newName
+
+	if(DataFolderExistsDFR(p.dfr))
+		WAVE/SDFR=p.dfr/Z src = $p.name
+	endif
+
+	if(WaveExists(dest))
+		if(!WaveExists(src))
+			// wave already relocated
+			return dest
+		elseif(WaveRefsEqual(src, dest))
+			// nothing to rename/move
+			return dest
+		else
+			// both waves exists but are *not* equal
+			printf "WARNING! The wave %s was supposed to be renamed/moved but the old wave still exists\r", p.name
+			printf "Returning dest wave and ignoring src\r"
+			return dest
+		endif
+	else // dest does not exist
+		if(!WaveExists(src))
+			// and src also not, the wave was not yet created
+			return $""
+		else
+			ASSERT(IsValidWaveName(p.newName), "Invalid/Liberal wave name for newName")
+			MoveWave src, p.newDFR:$p.newName
+			RemoveEmptyDataFolder(p.dfr)
+			return src
+		endif
+	endif
+
+	ASSERT(0, "impossible case")
 End
 
 /// @}
