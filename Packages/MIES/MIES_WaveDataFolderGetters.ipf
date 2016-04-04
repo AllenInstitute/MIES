@@ -679,9 +679,7 @@ Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation"
 End
 
-/// @brief Returns a wave reference to the txtDocWave
-///
-/// Labnotebook with text settings
+/// @brief Returns a wave reference to the text labnotebook
 ///
 /// Rows:
 /// - Filled at runtime
@@ -802,10 +800,7 @@ static Function UpgradeLabNotebook(panelTitle)
 	endfor
 End
 
-/// @brief Return a wave reference to the textDocKeyWave
-///
-/// textDocKeyWave is used to index save settings for each data sweep
-/// and create waveNotes for tagging data sweeps
+/// @brief Return a wave reference to the text labnotebook keys
 ///
 /// Rows:
 /// - 0: Parameter Name
@@ -851,10 +846,7 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 	return wv
 End
 
-/// @brief Return a wave reference to keyWave
-///
-/// keyWave is used to index save settings for each data sweep
-/// and create waveNotes for tagging data sweeps
+/// @brief Return a wave reference to the numeric labnotebook keys
 ///
 /// Rows:
 /// - 0: Parameter Name
@@ -899,9 +891,7 @@ Function/Wave GetNumDocKeyWave(panelTitle)
 	return wv
 End
 
-/// @brief Return a wave reference to settingsHistory
-///
-/// Labnotebook with numerical settings
+/// @brief Return a wave reference to the numeric labnotebook keys
 ///
 /// Rows:
 /// - Filled at runtime
