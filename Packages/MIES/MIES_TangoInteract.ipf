@@ -262,7 +262,9 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	variable n
 	string currentPanel
 	string waveSelect 
-	string StimWaveName = "EXTPINBATH"
+	string StimWaveName = "EXTPINBATH*"
+	string foundStimWave
+	string bathStimWave
 	variable baselineValue
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
@@ -288,9 +290,13 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
 		
-		// make sure that the incoming EXTPINBATH is a valid wave name
-		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
-			print "EXTINBATH wave not loaded...please load and try again..."
+		// find the stim wave that matches EXTPINBATH...can have date and DA number attached to the end
+		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
+		bathStimWave = ReplaceString(";", foundStimWave, "")
+		
+		// make sure that the EXTPBREAKN is a valid wave name
+		if(FindListItem(bathStimWave, ListOfWavesInFolder) == -1)
+			print "EXTPINBATH* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
 				TI_WriteAck(cmdID, qcResult)
 			endif
@@ -298,7 +304,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		endif
 		
 		// now find the index of the selected incoming wave in that list
-		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder)
+		incomingWaveIndex = WhichListItem(bathStimWave, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
@@ -351,7 +357,9 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 	variable n
 	string currentPanel
 	string waveSelect 
-	string StimWaveName = "EXTPBLWOUT141203"
+	string StimWaveName = "EXTPBLWOUT*"
+	string foundStimWave
+	string blowoutStimWave
 	variable baselineValue
 	string psaMenu
 	string paaMenu
@@ -405,9 +413,13 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
 		
-		// make sure that the incoming EXTPBREAKN is a valid wave name
-		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
-			print "EXTPBLWOUT141203 wave not loaded...please load and try again..."
+		// find the stim wave that matches EXTPINBATH...can have date and DA number attached to the end
+		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
+		blowoutStimWave = ReplaceString(";", foundStimWave, "")
+		
+		// make sure that the EXTPBREAKN is a valid wave name
+		if(FindListItem(blowoutStimWave, ListOfWavesInFolder) == -1)
+			print "EXTPBLWOUT* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
 				TI_WriteAck(cmdID, qcResult)
 			endif
@@ -415,7 +427,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		endif
 		
 		// now find the index of the selected incoming wave in that list
-		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
+		incomingWaveIndex = WhichListItem(blowoutStimWave, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
@@ -488,6 +500,114 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		ITC_StartDAQSingleDevice(currentPanel)
 	endfor
 	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, qcResult)
+	endif
+End
+
+/// @brief run the initial access resistance check from the WSE.  This will check must be < 20MOhm or 15% of the R input.
+/// The EXTPBREAKN wave will also be run as a way of making sure the reading is recorded into the data set for post-experiment analysis
+Function TI_runInitAccessResisQC(headstage, [cmdID])
+	variable headstage
+
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+	string waveSelect
+	string StimWaveName = "EXTPBREAKN*"
+	string foundStimWave
+	string breakinStimWave
+	variable baselineValue
+	string ListOfWavesInFolder
+	variable incomingWaveIndex
+	variable instResistanceVal
+	variable ssResistanceVal
+	variable qcResult
+	variable adChannel
+	variable tpBufferSetting
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	for(n = 0; n<noLockedDevs; n+= 1)
+		currentPanel = StringFromList(n, lockedDevList)
+		DFREF dfr = GetDeviceTestPulse(currentPanel)
+
+		// pop the itc panel window to the front
+		DoWindow /F $currentPanel
+
+		// push the waveSet to the ephys panel
+		// first, build up the control name by using the headstage value
+		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+		// build up the list of available wave sets
+		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA")
+		
+		// find the stim wave that matches EXTPBREAKN...can have date and DA number attached to the end
+		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
+		breakinStimWave = ReplaceString(";", foundStimWave, "")
+		
+		// make sure that the EXTPBREAKN is a valid wave name
+		if(FindListItem(breakinStimWave, ListOfWavesInFolder) == -1)
+			print "EXTPBREAKN* wave not loaded...please load and try again..."
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, qcResult)
+			endif
+			return 0
+		endif
+
+		// now find the index of the selected incoming wave in that list
+		incomingWaveIndex = WhichListItem(breakinStimWave, ListOfWavesInFolder, ";")
+
+		// and now set the wave popup menu to that index
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+
+		// save the current test pulse buffer setting
+		tpBufferSetting = GetSetVariable(currentPanel,"setvar_Settings_TPBuffer")
+
+		// set the test pulse buffer up to a higher value to account for noise...using 5 for now
+		SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", 5)
+
+		// Check to see if Test Pulse is already running...if not running, turn it on...
+		if(!(IsBackgroundTaskRunning("TestPulse")))
+			TP_StartTestPulseSingleDevice(currentPanel)
+		endif
+
+		// and grab the initial resistance avg value
+		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+
+		// and get the steady state resistance
+		WAVE/SDFR=dfr SSResistance
+
+		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+		ASSERT(adChannel >= 0, "Could not query AD channel")
+		instResistanceVal = InstResistance[0][adChannel]
+		ssResistanceVal = SSResistance[0][adChannel]
+
+		print "Initial Access Resistance: ", instResistanceVal
+		print "SS Resistance: ", ssResistanceVal
+
+		// See if we pass the baseline QC
+		if ((instResistanceVal<20.0) && (instResistanceVal < (.15*ssResistanceVal)))
+			// and now run the EXTPBREAKN wave so that things are saved into the data record
+			print "pushing the start button..."
+			PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
+			qcResult = instResistanceVal
+		else // since the check failed, have to turn off the test pulse
+			ITC_StopTestPulseSingleDevice(currentPanel)
+		endif
+	endfor
+
+	print "qcResult: ", qcResult
+
+	// set the test pulse buffer back to 1
+	SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", tpBufferSetting)
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, qcResult)
@@ -639,7 +759,9 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 	variable n
 	string currentPanel
 	string waveSelect 
-	string StimWaveName = "EXTPCIIATT"
+	string StimWaveName = "EXTPCllATT*"		//NOTE!  The l character found in this wave name is a lower case l
+	string foundStimWave
+	string attStimWave
 	variable baselineValue
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
@@ -665,17 +787,22 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
 		
-		// make sure that the incoming EXTPCIIATT is a valid wave name
-		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
-			print "EXTPCIIATT wave not loaded...please load and try again..."
+		// find the stim wave that matches EXTPCIIATT...can have date and DA number attached to the end
+		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
+		print "foundStimWave: ", foundStimWave
+		attStimWave = ReplaceString(";", foundStimWave, "")
+		
+		// make sure that the  EXTPCllATT is a valid wave name
+		if(FindListItem(attStimWave, ListOfWavesInFolder) == -1)
+			print " EXTPCllATT* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
 				TI_WriteAck(cmdID, qcResult)
 			endif
 			return 0
 		endif
-		
+
 		// now find the index of the selected incoming wave in that list
-		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
+		incomingWaveIndex = WhichListItem(attStimWave, ListOfWavesInFolder, ";")
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
