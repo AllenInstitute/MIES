@@ -429,9 +429,6 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		// now find the index of the selected incoming wave in that list
 		incomingWaveIndex = WhichListItem(blowoutStimWave, ListOfWavesInFolder, ";")
 		
-		// now find the index of the selected incoming wave in that list
-		incomingWaveIndex = WhichListItem(StimWaveName, ListOfWavesInFolder, ";")
-		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
 		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
@@ -567,8 +564,8 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 		incomingWaveIndex = WhichListItem(breakinStimWave, ListOfWavesInFolder, ";")
 
 		// and now set the wave popup menu to that index
-		// have to add 2 since the pulldown always has -none- and TestPulse as options
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 2)
+		// have to add 1 since the pulldown always has -none- as option
+		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
 
 		// save the current test pulse buffer setting
 		tpBufferSetting = GetSetVariable(currentPanel,"setvar_Settings_TPBuffer")
@@ -577,7 +574,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 		SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", 5)
 
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsBackgroundTaskRunning("TestPulse")))
+		if(!(IsBackgroundTaskRunning("TestPulse")))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 
