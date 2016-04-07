@@ -131,6 +131,11 @@ and provides the following services for MIES.
 * The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
   This is ensured by a platform requirement for the job.
 
+### Documentation building
+The documentation for the master and the latest release branch, `release/$number`, are automatically built by:
+* http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD
+* http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE
+
 ## Cutting a new release
 * Check that main MIES and all separate modules compile (IP6 and IP7)
 * Check that doxygen returns neither errors nor warnings
