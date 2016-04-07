@@ -3652,7 +3652,7 @@ Function/S GetUniqueCtrlList(panelTitle)
 	string panelTitle
 
 	string list = controlNameList(panelTitle)
-	string relatedSetVar   = "Gain_*;Scale_*;Unit_*;Min_*;Max_*;Search_DA_*;Search_TTL_*"
+	string relatedSetVar   = "Gain_*;Scale_*;Unit_*;Min_*;Max_*;Search_DA_*;Search_TTL_*;"
 	string relatedCheckBox = "Check_AD_*;Check_DA_*;Check_TTL_*;Check_AsyncAlarm_*;Check_AsyncAD_*;Check_DataAcqHS_*;Radio_ClampMode_*;"
 	string relatedPopUp    = "IndexEnd_*;Wave_*;"
 	string relatedValDisp  = "ValDisp_DataAcq_P_*;"
