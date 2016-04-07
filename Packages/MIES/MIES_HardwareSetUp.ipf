@@ -396,10 +396,10 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	Setvariable setvar_Settings_IC_ADgain win = $panelTitle, value = _num:ChanAmpAssign[7][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
 
-	// choose None before trying to match the amplifier
-	Popupmenu popup_Settings_Amplifier win = $panelTitle, mode=1
-	entry = DAP_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][HeadStageNo], ChanAmpAssign[%AmpChannelID][HeadStageNo])
-	Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
+	if(cmpstr(DAP_GetNiceAmplifierChannelList(), NONE))
+		entry = DAP_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][HeadStageNo], ChanAmpAssign[%AmpChannelID][HeadStageNo])
+		Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
+	endif
 End
 
 /// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
