@@ -60,6 +60,8 @@ StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
+/// @name Wave dimension constants
+/// @anchor WaveDimensions
 /// Convenience definition to nicify expressions like DimSize(wv, ROWS)
 /// easier to read than DimSize(wv, 0).
 /// @{
@@ -371,6 +373,9 @@ Constant INDEP_HEADSTAGE = 8
 
 StrConstant UNKNOWN_MIES_VERSION = "unknown version"
 
+/// Number of common control groups in the DA_EPHYS panel
+Constant COMMON_CONTROL_GROUP_COUNT = 17
+
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
 
@@ -399,3 +404,6 @@ Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
 Constant HARDWARE_DAC_DEFAULT_TRIGGER  = 0x0
 Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
+
+/// Used to upgrade the GuiStateWave as well as the DA Ephys panel
+Constant DA_EPHYS_PANEL_VERSION = 4

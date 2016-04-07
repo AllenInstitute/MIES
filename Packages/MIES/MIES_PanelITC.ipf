@@ -13,8 +13,6 @@ static StrConstant LEADER                 = "Leader"
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-static Constant DA_EPHYS_PANEL_VERSION    = 3
-
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
@@ -6418,9 +6416,13 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 End
 
 /// @brief Records the state of the DA_ephys panel into the GUI state wave
-Function DAP_RecordDA_EphysGuiState(panelTitle)
+Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	string panelTitle
-	Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE GUIState
+
+	if(ParamIsDefault(GuiState))
+		Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	endif
 
 	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
 	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = DAP_GetAllHSMode(panelTitle)[p]
@@ -6444,6 +6446,25 @@ Function DAP_RecordDA_EphysGuiState(panelTitle)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)[p]
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)[p]
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)[p]
+
+	DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GUIState)
+End
+
+/// @brief Records the state of unique controls in the DA_ephys panel into the GUI state wave
+Static Function DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GuiState)
+	string panelTitle
+	WAVE GUIState
+
+	string ctrlName
+	variable col
+	variable lastCol = dimSize(GuiState, COLS)
+	for(col = COMMON_CONTROL_GROUP_COUNT; col < lastCol; col+=1)
+		ctrlName = getDimLabel(GUIState, COLS, col)
+		controlInfo/w=$panelTitle $ctrlName
+		ASSERT(V_flag != 0, "invalid or non existing control")
+		GUIState[0][col] = V_Value
+	endfor
+
 End
 
 /// @brief Return the mode of all DA_Ephys panel headstages

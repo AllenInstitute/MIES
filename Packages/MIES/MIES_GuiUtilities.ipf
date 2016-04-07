@@ -1040,3 +1040,149 @@ Function EqualizeCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
 	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
 	SetCheckBoxState(win, checkBoxPartner, checkBoxInState)
 End
+
+///@brief Return the control type as string
+///
+/// @param win     window name
+/// @param control name of control
+/// @return type of control as string or empty string
+Function/S GetControlTypeAsString(win, control)
+	string win
+	string control
+
+	controlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	variable controlType = abs(V_flag)
+	variable checkBoxMode
+	switch(controlType)
+		case 1:
+			return "Button"
+			break
+		case 2:
+			checkBoxMode = GetCheckBoxMode(win, control)
+			if(!checkBoxMode)
+				return "Check"
+			elseif(checkBoxMode == 1)
+				return "Radio"
+			elseif(checkBoxMode == 2)
+				return "Triangle"
+			else
+				ASSERT(0, "Impossible case")
+			endif
+			break
+		case 3:
+			return "PopUp"
+			break
+		case 4:
+			return "ValDisp"
+			break
+		case 5:
+			return "SetVar"
+			break
+		case 6:
+			return "Chart"
+			break
+		case 7:
+			return "Slider"
+			break
+		case 8:
+			return "TabCtrl"
+			break
+		case 9:
+			return "Group"
+			break
+		case 10:
+			return "Title"
+			break
+		case 11:
+			return "List"
+			break
+		case 12:
+			return "Custom"
+			break
+		default:
+			ASSERT(0, "Impossible case")
+			break
+	endswitch
+End
+
+/// @brief Determines if control stores numeric or text data
+Function DoesControlHaveInternalString(win, control)
+	string win, control
+
+	variable internalString
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "invalid or non existing control")
+	return strsearch(S_recreation, "_STR:", 0) != -1
+End
+
+/// @brief Returns checkbox mode
+Function GetCheckBoxMode(win, checkBoxName)
+	string win, checkBoxName
+
+	variable first, mode
+	string modeString
+	ControlInfo/W=$win $checkBoxName
+	ASSERT(V_flag == 2, "not a checkBox control")
+	first = strsearch(S_recreation, "mode=", 0,2)
+	if(first == -1)
+		return 0
+	else
+		sscanf S_recreation[first, first + 5], "mode=%d", mode
+	endif
+	ASSERT(IsFinite(mode), "Unexpected checkbox mode")
+	return mode
+End
+
+#if (IgorVersion() >= 7.0)
+
+///@brief Returns formatted control name
+	Function/S GetFormattedControlName(win, control)
+		string win, control
+
+		string savedCtrlName = control
+		string newPrefix = GetControlTypeAsString(Win, control)
+		control = trimstring(control)
+		variable stringLocation = strsearch(control,newPrefix,0,2)
+		if(stringLocation == 0)
+			control = replacestring(newPrefix, control, newPrefix) // returns case correct formatting
+		elseif(stringLocation > 0)
+			control = replacestring(newPrefix, control, "") // removes incorrectly placed ctrl type string
+			control = newPrefix + control
+			control = replacestring("__", control, "_") // remove double underscores
+		elseif(stringLocation == -1)
+			control = newPrefix + "_" + control // adds ctrl type string prefix to ctrl name with missing ctrl type string
+		endif
+
+		if(DoesControlHaveInternalString(win, savedCtrlName)) // adds txt suffix string to string setting ctrl
+			control = control + "_txt"
+		endif
+		return control
+	End
+
+
+///@ brief Returns a wave of formatted control names
+Function/WAVE GetFormattedCtrlNames(win)
+	string win
+
+	string listOfControlNames = sortList(controlNameList(win),";",8)
+	variable ctrlCount = itemsInList(listOfControlNames)
+	variable i
+	string ctrl, ctrlFormatted
+
+	make/T/O/N=(ctrlCount,3) controlNames
+	setDimLabel COLS, 0, unformatted, controlNames
+	setDimLabel COLS, 1, formatted,   controlNames
+	setDimLabel COLS, 2, maxLdiff,    controlNames
+
+	for(i = 0; i < ctrlCount; i +=1)
+		ctrl = stringFromList(i, listOfControlNames)
+		ctrlFormatted = GetFormattedControlName(win, ctrl)
+		controlNames[i][0] = ctrl
+		controlNames[i][1] = ctrlFormatted
+		controlNames[i][2] = num2str(31 - strlen(ctrlFormatted))
+	endfor
+	return controlNames
+End
+
+#endif
