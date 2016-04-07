@@ -130,6 +130,7 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "tango_binding-64.xop", "Tango XOP", state)
 #else
 	CHI_CheckXOP(listOfXOPs, "tango_binding.xop", "Tango XOP", state)
+	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", state)
 #endif
 
 	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings
