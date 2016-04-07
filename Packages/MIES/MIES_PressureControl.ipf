@@ -651,22 +651,23 @@ End
 Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter
 	string panelTitle
 
-	variable headStageNo 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
+	variable settingHS 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
+	variable userHS = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	WAVE PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	string deviceType, deviceNum
 
 	string SelectedITCDevice = getPopupMenuString(panelTitle, "popup_Settings_Pressure_ITCdev")
 	parseDeviceString(SelectedITCDevice, deviceType, DeviceNum)
-//	PressureDataWv[headStageNo][0] STORES THE ACTIVE PRESSURE METHOD OR -1 IF NO ACTIVE METHOD. IT IS UPDATED BY THE PRESSURE CONTROL BUTTONS IN THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
-	PressureDataWv[headStageNo][%DAC_List_Index] = GetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_ITCdev")
-	PressureDataWv[headStageNo][%DAC_Type]       = str2num(DeviceNum)
-//  PressureDataWv[headStageNo][3] STORES THE DEVICE ID WHICH IS DETERMINED WHEN THE DEVICE IS OPENED
-	PressureDataWv[headStageNo][%DAC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA")
-	PressureDataWv[headStageNo][%DAC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain")
-	PressureDataWv[headStageNo][%ADC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD")
-	PressureDataWv[headStageNo][%ADC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain")
-	PressureDataWv[headStageNo][%TTL]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL")
-	PressureDataWv[headStageNo][%ManSSPressure]  = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
+//	PressureDataWv[settingHS][0] STORES THE ACTIVE PRESSURE METHOD OR -1 IF NO ACTIVE METHOD. IT IS UPDATED BY THE PRESSURE CONTROL BUTTONS IN THE DATA ACQUISITION TAB OF THE DA_EPHYS PANEL
+	PressureDataWv[settingHS][%DAC_List_Index] = GetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_ITCdev")
+	PressureDataWv[settingHS][%DAC_Type]       = str2num(DeviceNum)
+//  PressureDataWv[settingHS][3] STORES THE DEVICE ID WHICH IS DETERMINED WHEN THE DEVICE IS OPENED
+	PressureDataWv[settingHS][%DAC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA")
+	PressureDataWv[settingHS][%DAC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain")
+	PressureDataWv[settingHS][%ADC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD")
+	PressureDataWv[settingHS][%ADC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain")
+	PressureDataWv[settingHS][%TTL]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL")
+	PressureDataWv[userHS][%ManSSPressure]     = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                   = GetSetVariable(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]              = GetSetVariable(panelTitle, "setvar_Settings_InBathP")
 	PressureDataWv[][%PSI_slice]                 = GetSetVariable(panelTitle, "setvar_Settings_InSliceP")
@@ -682,9 +683,9 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
-	PressureDataTxtWv[headStageNo][%ITC_Device] = SelectedITCDevice
-	PressureDataTxtWv[headStageNo][%DA_Unit] = GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit")
-	PressureDataTxtWv[headStageNo][%AD_Unit] = GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit")
+	PressureDataTxtWv[settingHS][%ITC_Device] = SelectedITCDevice
+	PressureDataTxtWv[settingHS][%DA_Unit] = GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit")
+	PressureDataTxtWv[settingHS][%AD_Unit] = GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit")
 End
 
 /// @brief Retrieves the parameters stored in the PressureData wave and passes them to the GUI controls
@@ -1163,7 +1164,7 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 		variable SavedPressureMode = PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear]
 
 		if(SavedPressureMode != P_METHOD_neg1_ATM) // there is an active pressure mode
-			if(SavedPressureMode == P_METHOD_0_APPROACH) // On approach, apply the mode
+			if(SavedPressureMode == P_METHOD_0_APPROACH || savedPressureMode == P_METHOD_4_MANUAL) // On approach, apply the mode
 				SetControlTitle(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), ("Stop " + StringFromList(SavedPressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 			elseif(SavedPressureMode) // other pressure modes
@@ -1172,14 +1173,26 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 					SetControlTitleColor(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 				endif
 			endif
+		elseif(SavedPressureMode == P_METHOD_neg1_ATM)
+			SetControlTitle(panelTitle, stringFromList(4,PRESSURE_CONTROLS_BUTTON_LIST), StringFromList(4, PRESSURE_CONTROL_TITLE_LIST))
+			SetControlTitleColor(panelTitle, stringFromList(4,PRESSURE_CONTROLS_BUTTON_LIST), 0, 0, 0)
 		endif
 	else
-		DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
+		SetPressureButtonsToBaseState(panelTitle)
 		print "An ITC device used for pressure regulation is not enabled for this MIES headstage"
 	endif
 
 	P_PressureDisplayUnhighlite(panelTitle) // remove highlite from val displays that show pressure for each headStage
 	P_PressureDisplayHighlite(panelTitle, headStageNo) // highlites specific headStage
+End
+
+/// @brief Sets the pressure toggle buttons to disabled, default color, default title
+Static Function SetPressureButtonsToBaseState(panelTitle)
+	string panelTitle
+
+	DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
+	SetControlTitles(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, PRESSURE_CONTROL_TITLE_LIST)
+	SetControlTitleColors(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, 0, 0, 0)
 End
 
 /// @brief Checks if the Approach button can be enabled or all pressure mode buttons can be enabled. Enables buttons that pass checks.
@@ -1188,6 +1201,10 @@ static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	variable headStageNo
 
 	string PRESSURE_CONTROLS_BUTTON_subset = RemoveListItem(0, PRESSURE_CONTROLS_BUTTON_LIST)
+
+	// set the pressure button controls to their base color and titles
+	SetControlTitles(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, PRESSURE_CONTROL_TITLE_LIST)
+	SetControlTitleColors(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, 0, 0, 0)
 
 	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
 		if(getCheckBoxState(panelTitle, StringFromList(P_METHOD_3_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
@@ -1205,6 +1222,32 @@ static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 		EnableControl(panelTitle, StringFromList(4, PRESSURE_CONTROLS_BUTTON_LIST))
 	endif
 End
+
+///@brief updates the tablabels for the pressure tabControl according to the pressure mode
+Function P_UpdatePressureModeTabs(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	WAVE pressureWave = P_GetPressureDataWaveRef(panelTitle)
+	variable pressureMode = PressureWave[headStage][%Approach_Seal_BrkIn_Clear]
+	string highlightSpec = "\\f01\\Z11"
+
+	if(pressureMode == P_METHOD_neg1_ATM)
+		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(0) = "Auto"
+		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = "Manual"
+	elseif(pressureMode == P_METHOD_4_MANUAL)
+		ChangeTab(panelTitle, "tab_DataAcq_Pressure", 1)
+		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(0) = "Auto"
+		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = highlightSpec + "Manual"
+	else
+		ChangeTab(panelTitle, "tab_DataAcq_Pressure", 0)
+		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(0) = highlightSpec + "Auto"
+		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = "Manual"
+	endif
+
+	SetSetVariable(panelTitle, "setvar_DataAcq_SSPressure", pressureWave[headStage][%ManSSPressure])
+End
+
 
 /// @brief Checks if all the pressure settings for a headStage are valid
 ///

@@ -3093,6 +3093,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	PressureData[][%TTL]				= 0
 	PressureData[][%ApproachNear]	= 0
 	PressureData[][%SealAtm]		= 0
+	PressureData[][%ManSSPressure]= 0
 	
 	return PressureData
 End
