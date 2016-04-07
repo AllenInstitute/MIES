@@ -84,6 +84,60 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+///@brief Return a list of all ITC devices which can be opened
+///
+///**Warning! This heavily interacts with the ITC* controllers, don't call
+///during data/test pulse/whatever acquisition.**
+///
+///@returns A list of panelTitles with ITC devices which can be opened.
+///         Does not include devices which are already open.
+Function/S HW_ITC_ListDevices()
+
+	variable i, j
+	string type, number, cmd, msg, device
+	string list = ""
+
+	Make/O/I/N=1 dev = -1
+
+	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
+		type = StringFromList(i, DEVICE_TYPES)
+
+		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
+			continue
+		endif
+
+		dev[0] = -1
+		sprintf cmd, "ITCGetDevices/Z=DisplayErrors \"%s\", dev", type
+		ExecuteITCOperation(cmd)
+
+		NVAR itcerror, itcxoperror
+		if(dev[0] > 0)
+			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(type,number)
+
+				itcerror    = 0
+				itcxoperror = 0
+				dev = -1
+				sprintf cmd, "ITCOpenDevice/Z=1 \"%s\", %s, dev", type, number
+				Execute/Z cmd
+				if(itcerror == 0 && itcxoperror == 0 && dev[0] >= 0)
+					sprintf msg, "Found device type %s with number %s", type, number
+					DEBUGPRINT(msg)
+					HW_ITC_SelectDevice(dev[0])
+					HW_ITC_CloseDevice()
+					list = AddListItem(device, list, ";", inf)
+				endif
+			endfor
+		endif
+	endfor
+
+	KillVariables/Z itcerror, itcxoperror
+	KillOrMoveToTrash(wv=dev)
+
+	return list
+End
+
 /// @brief Write a value to a DA/AO channel
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants

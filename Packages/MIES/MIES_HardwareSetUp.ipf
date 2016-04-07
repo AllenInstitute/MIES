@@ -288,7 +288,7 @@ Function HSU_IsDeviceTypeConnected(panelTitle)
 
 	variable numDevices
 
-	numDevices = ItemsInList(ListMatch(HSU_ListDevices(), HSU_GetDeviceType(panelTitle) + "_DEV_*"))
+	numDevices = ItemsInList(ListMatch(HW_ITC_ListDevices(), HSU_GetDeviceType(panelTitle) + "_DEV_*"))
 
 	if(!numDevices)
 		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
@@ -446,51 +446,6 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	// set the internal clock of the device
 End
 
-///@brief Return a list of all ITC devices which can be opened
-///
-///**Warning! This heavily interacts with the ITC* controllers, don't call
-///during data/test pulse/whatever acquisition.**
-///
-///@returns A list of panelTitles with ITC devices which can be opened
-Function/S HSU_ListDevices()
-
-	variable i, j
-	string type, number, cmd, msg
-	string result = ""
-	
-	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
-		type = StringFromList(i, DEVICE_TYPES)
-		
-		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
-			continue
-		endif
-
-		Make/O/I/N=1 dev = -1
-		sprintf cmd, "ITCGetDevices/Z=DisplayErrors \"%s\", dev", type
-		Execute cmd
-
-		NVAR itcerror, itcxoperror
-		if(dev[0] > 0)
-			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
-				number = StringFromList(j, DEVICE_NUMBERS)
-				itcerror    = 0
-				itcxoperror = 0
-				sprintf cmd, "ITCOpenDevice/Z=DisplayErrors \"%s\", %s", type, number
-				Execute/Z cmd
-				if(itcerror == 0 && itcxoperror == 0)
-					sprintf msg, "Found device type %s with number %s", type, number
-					DEBUGPRINT(msg)
-					Execute "ITCCloseDevice"
-					result = AddListItem(BuildDeviceString(type,number), result, ";", inf)
-				endif
-			endfor
-		endif
-	endfor
-
-	KillVariables/Z itcerror, itcxoperror
-	KillOrMoveToTrash(wv=dev)
-
-	return result
 End
 
 /// @brief Try to select the ITC device

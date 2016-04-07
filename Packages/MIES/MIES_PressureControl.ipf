@@ -1619,7 +1619,7 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			string DeviceList = AddListItem(HSU_ListDevices(), NONE, ";", Inf)
+			string DeviceList = AddListItem(HW_ITC_ListDevices(), NONE, ";", Inf)
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_ITCdev", DeviceList)
 			break
 	endswitch
