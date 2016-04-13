@@ -21,7 +21,7 @@ echo "Start building the documentation"
 
 cd "$top_level/Packages/doc"
 
-output=$( (cat Doxyfile; echo "PROJECT_NUMBER = \"($branch) $version\""; echo $FILTER_PATTERNS ) | doxygen - 1 2>&1)
+output=$( (cat Doxyfile; echo "PROJECT_NUMBER = \"($branch) $version\""; echo $FILTER_PATTERNS ) | doxygen - 2>&1 >/dev/null)
 
 if [ ! -z  "$output" ]
 then
