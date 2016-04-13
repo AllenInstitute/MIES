@@ -149,14 +149,14 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 End
 
 /// @brief Returns the numerical index for the sweep number column
-/// in the settings history wave
-Function GetSweepColumn(settingsHistory)
-	Wave settingsHistory
+/// in the settings history waves (numeric and text)
+Function GetSweepColumn(labnotebookValues)
+	Wave labnotebookValues
 
 	variable sweepCol
 
 	// new label
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNum")
+	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNum")
 
 	if(sweepCol >= 0)
 		return sweepCol
@@ -165,14 +165,14 @@ Function GetSweepColumn(settingsHistory)
 	// Old label prior to 276b5cf6
 	// was normally overwritten by SweepNum later in the code
 	// but not always as it turned out
-	sweepCol = FindDimLabel(settingsHistory, COLS, "SweepNumber")
+	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNumber")
 
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
 
 	// text documentation waves
-	sweepCol = FindDimLabel(settingsHistory, COLS, "Sweep #")
+	sweepCol = FindDimLabel(labnotebookValues, COLS, "Sweep #")
 
 	if(sweepCol >= 0)
 		return sweepCol
@@ -233,25 +233,25 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSetting(history, sweepNo, setting)
-	Wave history
+Function/WAVE GetLastSetting(numericalValues, sweepNo, setting)
+	Wave numericalValues
 	variable sweepNo
 	string setting
 
 	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable first, last
 
-	ASSERT(WaveType(history), "Can only work with numeric waves")
-	numLayers = DimSize(history, LAYERS)
-	settingCol = FindDimLabel(history, COLS, setting)
+	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
+	numLayers = DimSize(numericalValues, LAYERS)
+	settingCol = FindDimLabel(numericalValues, COLS, setting)
 
 	if(settingCol <= 0)
 		DEBUGPRINT("Could not find the setting", str=setting)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(history)
-	FindRange(history, sweepCol, sweepNo, 0, first, last)
+	sweepCol = GetSweepColumn(numericalValues)
+	FindRange(numericalValues, sweepCol, sweepNo, 0, first, last)
 
 	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
 		return $""
@@ -261,7 +261,7 @@ Function/WAVE GetLastSetting(history, sweepNo, setting)
 
 	for(i = last; i >= first; i -= 1)
 
-		status[] = history[i][settingCol][p]
+		status[] = numericalValues[i][settingCol][p]
 		WaveStats/Q/M=1 status
 
 		// return if at least one entry is not NaN
@@ -273,32 +273,32 @@ Function/WAVE GetLastSetting(history, sweepNo, setting)
 	return $""
 End
 
-/// @brief Returns a wave with latest value of a setting from the history wave
+/// @brief Returns a wave with latest value of a setting from the textualValues wave
 /// for a given sweep number.
 ///
 /// Text wave version of GetLastSetting().
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSettingText(history, sweepNo, setting)
-	Wave/T history
+Function/WAVE GetLastSettingText(textualValues, sweepNo, setting)
+	Wave/T textualValues
 	variable sweepNo
 	string setting
 
 	variable settingCol, numLayers, i, sweepCol
 	variable first, last
 
-	ASSERT(!WaveType(history), "Can only work with text waves")
-	numLayers = DimSize(history, LAYERS)
-	settingCol = FindDimLabel(history, COLS, setting)
+	ASSERT(!WaveType(textualValues), "Can only work with text waves")
+	numLayers = DimSize(textualValues, LAYERS)
+	settingCol = FindDimLabel(textualValues, COLS, setting)
 
 	if(settingCol <= 0)
 		DEBUGPRINT("Could not find the setting", str=setting)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(history)
-	FindRange(history, sweepCol, sweepNo, 0, first, last)
+	sweepCol = GetSweepColumn(textualValues)
+	FindRange(textualValues, sweepCol, sweepNo, 0, first, last)
 
 	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
 		return $""
@@ -309,7 +309,7 @@ Function/WAVE GetLastSettingText(history, sweepNo, setting)
 
 	for(i = last; i >= first; i -= 1)
 
-		status[] = history[i][settingCol][p]
+		status[] = textualValues[i][settingCol][p]
 		lengths[] = strlen(status[p])
 
 		// return if we have at least one non-empty entry
@@ -324,30 +324,30 @@ End
 /// @brief Return the last numerical value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
-/// @param[in]  history  numerical labnotebook
+/// @param[in]  numericalValues  numerical labnotebook
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSweepWithSetting(history, setting, sweepNo)
-	WAVE history
+Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
+	WAVE numericalValues
 	string setting
 	variable &sweepNo
 
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(WaveType(history), "Can only work with numeric waves")
+	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 
-	WAVE/Z indizes = FindIndizes(wv=history, colLabel=setting, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(wv=numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/N=(DimSize(history, LAYERS)) data = history[idx][%$setting][p]
-	sweepNo = history[idx][GetSweepColumn(history)][0]
+	Make/FREE/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][%$setting][p]
+	sweepNo = numericalValues[idx][GetSweepColumn(numericalValues)][0]
 
 	return data
 End
@@ -355,30 +355,30 @@ End
 /// @brief Return the last textual value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
-/// @param[in]  history  numerical labnotebook
+/// @param[in]  numericalValues  numerical labnotebook
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSweepWithSettingText(history, setting, sweepNo)
-	WAVE/T history
+Function/WAVE GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
+	WAVE/T numericalValues
 	string setting
 	variable &sweepNo
 
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(!WaveType(history), "Can only work with text waves")
+	ASSERT(!WaveType(numericalValues), "Can only work with text waves")
 
-	WAVE/Z indizes = FindIndizes(wvText=history, colLabel=setting, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(wvText=numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/T/N=(DimSize(history, LAYERS)) data = history[idx][%$setting][p]
-	sweepNo = str2num(history[idx][GetSweepColumn(history)][0])
+	Make/FREE/T/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][%$setting][p]
+	sweepNo = str2num(numericalValues[idx][GetSweepColumn(numericalValues)][0])
 
 	return data
 End
@@ -620,18 +620,18 @@ End
 /// @param graph                window
 /// @param config               ITC config wave
 /// @param sweepNo              number of the sweep
-/// @param settingsHistory      numerical labnotebook wave
-/// @param settingsHistoryText  textual labnotebook wave
+/// @param numericalValues      numerical labnotebook wave
+/// @param textualValues        textual labnotebook wave
 /// @param tgs                  settings for tuning the display, see @ref TiledGraphSettings
 /// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
 /// @param sweepWave [optional] sweep wave with multiple columns
 /// @param channelSelWave [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  settingsHistoryText, tgs, [sweepDFR, sweepWave, channelSelWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, [sweepDFR, sweepWave, channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
-	WAVE settingsHistory
-	WAVE/T settingsHistoryText
+	WAVE numericalValues
+	WAVE/T textualValues
 	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
 	WAVE/Z sweepWave
@@ -679,8 +679,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 		RemoveTracesFromGraph(graph)
 	endif
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(settingsHistory, sweepNo, "TTL rack zero bits")
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(settingsHistory, sweepNo, "TTL rack one bits")
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits")
 
 	if(tgs.splitTTLBits && numTTLs > 0)
 		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
@@ -695,7 +695,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 		endif
 
 		if(tgs.splitTTLBits)
-			idx = GetIndexForHeadstageIndepData(settingsHistory)
+			idx = GetIndexForHeadstageIndepData(numericalValues)
 			if(WaveExists(ttlRackZeroChannel))
 				numTTLBits += PopCount(ttlRackZeroChannel[idx])
 			 endif
@@ -758,7 +758,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 
 	high = 1.0
 
-	dDAQEnabled = GetLastSettingIndep(settingsHistory, sweepNo, "Distributed DAQ")
+	dDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ")
 
 	if(tgs.dDAQDisplayMode && !dDAQEnabled)
 		printf "Distributed DAQ display mode turned off as no dDAQ data could be found.\r"
@@ -767,7 +767,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	tgs.dDAQDisplayMode = tgs.dDAQDisplayMode && dDAQEnabled
 
 	if(tgs.dDAQDisplayMode)
-		stimSetLength = GetLastSettingIndep(settingsHistory, sweepNo, "Stim set length")
+		stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length")
 		DEBUGPRINT("Stim set length (labnotebook)", var=stimSetLength)
 
 		samplingInt = GetSamplingInterval(config) * 1e-3
@@ -775,17 +775,17 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 		// dDAQ data taken with versions prior to
 		// 125a5407 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 		// does not have the delays stored in the labnotebook
-		delayOnsetUser   = GetLastSettingIndep(settingsHistory, sweepNo, "Delay onset user", defValue=0) / samplingInt
-		delayOnsetAuto   = GetLastSettingIndep(settingsHistory, sweepNo, "Delay onset auto", defValue=0) / samplingInt
-		delayTermination = GetLastSettingIndep(settingsHistory, sweepNo, "Delay termination", defValue=0) / samplingInt
-		delaydDAQ        = GetLastSettingIndep(settingsHistory, sweepNo, "Delay distributed DAQ", defValue=0) / samplingInt
+		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", defValue=0) / samplingInt
+		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", defValue=0) / samplingInt
+		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", defValue=0) / samplingInt
+		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", defValue=0) / samplingInt
 
 		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
 		DEBUGPRINT(str)
 	endif
 
-	WAVE/Z statusDAC = GetLastSetting(settingsHistory, sweepNo, "DAC")
-	WAVE/Z statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
+	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC")
+	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC")
 
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) channelTypes
 	channelTypes[0] = ITC_XOP_CHANNEL_TYPE_DAC
@@ -1179,13 +1179,13 @@ End
 /// @brief Add a trace to the labnotebook graph
 ///
 /// @param graph name of the graph
-/// @param settingsKey labnotebook numerical key wave
-/// @param settingsHistory labnotebook numerical wave
+/// @param numericalKeys labnotebook numerical key wave
+/// @param numericalValues labnotebook numerical wave
 /// @param key name of the key to add
-Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
+Function AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
 	string graph
-	WAVE/T settingsKey
-	WAVE settingsHistory
+	WAVE/T numericalKeys
+	WAVE numericalValues
 	string key
 
 	string unit, lbl, axis, trace, panelTitle, device
@@ -1193,28 +1193,28 @@ Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
 	variable sweepNo, i, numEntries, row, col
 	variable red, green, blue, isTimeAxis, sweepCol
 
-	if(GetKeyWaveParameterAndUnit(settingsKey, key, lbl, unit, col))
+	if(GetKeyWaveParameterAndUnit(numericalKeys, key, lbl, unit, col))
 		return NaN
 	endif
 
 	lbl = LineBreakingIntoParWithMinWidth(lbl)
 
-	WAVE settingsHistoryDat = GetLBNumericalValuesDat(settingsHistory)
+	WAVE numericalValuesDat = GetLBNumericalValuesDat(numericalValues)
 	isTimeAxis = CheckIfXAxisIsTime(graph)
-	sweepCol   = GetSweepColumn(settingsHistory)
+	sweepCol   = GetSweepColumn(numericalValues)
 
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
-	numEntries = DimSize(settingsHistory, LAYERS)
+	numEntries = DimSize(numericalValues, LAYERS)
 	for(i = 0; i < numEntries; i += 1)
 
 		trace = CleanupName(lbl + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
 		traceList = AddListItem(trace, traceList, ";", inf)
 
 		if(isTimeAxis)
-			AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistoryDat
+			AppendToGraph/W=$graph/L=$axis numericalValues[][col][i]/TN=$trace vs numericalValuesDat
 		else
-			AppendToGraph/W=$graph/L=$axis settingsHistory[][col][i]/TN=$trace vs settingsHistory[][sweepCol][0]
+			AppendToGraph/W=$graph/L=$axis numericalValues[][col][i]/TN=$trace vs numericalValues[][sweepCol][0]
 		endif
 
 		ModifyGraph/W=$graph userData($trace)={key, 0, key}
@@ -1239,9 +1239,9 @@ Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
 End
 
 /// @brief Switch the labnotebook graph x axis type (time <-> sweep numbers)
-Function SwitchLBGraphXAxis(graph, settingsHistory)
+Function SwitchLBGraphXAxis(graph, numericalValues)
 	string graph
-	WAVE settingsHistory
+	WAVE numericalValues
 
 	string trace, dataUnits, list
 	variable i, numEntries, isTimeAxis, sweepCol
@@ -1253,7 +1253,7 @@ Function SwitchLBGraphXAxis(graph, settingsHistory)
 	endif
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
-	sweepCol   = GetSweepColumn(settingsHistory)
+	sweepCol   = GetSweepColumn(numericalValues)
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
@@ -1261,9 +1261,9 @@ Function SwitchLBGraphXAxis(graph, settingsHistory)
 
 		// change from timestamps to sweepNums
 		if(isTimeAxis)
-			ReplaceWave/W=$graph/X trace=$trace, settingsHistory[][sweepCol][0]
+			ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
 		else // other direction
-			Wave xWave = GetLBNumericalValuesDat(settingsHistory)
+			Wave xWave = GetLBNumericalValuesDat(numericalValues)
 			ReplaceWave/W=$graph/X trace=$trace, xWave
 		endif
 	endfor
@@ -2130,22 +2130,22 @@ Function/S GetSearchStringForChannelType(channelType)
 End
 
 /// @brief Get the TTL bit mask from the labnotebook
-/// @param numericValues   Numerical labnotebook values
+/// @param numericalValues Numerical labnotebook values
 /// @param sweep           Sweep number
 /// @param channel         TTL channel
-Function GetTTLBits(numericValues, sweep, channel)
-	WAVE numericValues
+Function GetTTLBits(numericalValues, sweep, channel)
+	WAVE numericalValues
 	variable sweep, channel
 
-	variable index = GetIndexForHeadstageIndepData(numericValues)
+	variable index = GetIndexForHeadstageIndepData(numericalValues)
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel")
 
 	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
-		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack zero bits")
+		WAVE ttlBits = GetLastSetting(numericalValues, sweep, "TTL rack zero bits")
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
-		WAVE ttlBits = GetLastSetting(numericValues, sweep, "TTL rack one bits")
+		WAVE ttlBits = GetLastSetting(numericalValues, sweep, "TTL rack one bits")
 	else
 		return NaN
 	endif
@@ -2165,26 +2165,26 @@ Function GetIndexForHeadstageIndepData(numericalValues)
 End
 
 /// @brief Get the TTL stim sets from the labnotebook
-/// @param numericValues   Numerical labnotebook values
-/// @param textValues      Text labnotebook values
+/// @param numericalValues Numerical labnotebook values
+/// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
 /// @param channel         TTL channel
 ///
 /// @return list of stim sets, empty entries for non active TTL bits
-Function/S GetTTLStimSets(numericValues, textValues, sweep, channel)
-	WAVE numericValues
-	WAVE/T textValues
+Function/S GetTTLStimSets(numericalValues, textualValues, sweep, channel)
+	WAVE numericalValues
+	WAVE/T textualValues
 	variable sweep, channel
 
-	variable index = GetIndexForHeadstageIndepData(numericValues)
+	variable index = GetIndexForHeadstageIndepData(numericalValues)
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericValues, sweep, "TTL rack zero channel")
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericValues, sweep, "TTL rack one channel")
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel")
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel")
 
 	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack zero stim sets")
+		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack zero stim sets")
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSettingText(textValues, sweep, "TTL rack one stim sets")
+		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack one stim sets")
 	else
 		return ""
 	endif

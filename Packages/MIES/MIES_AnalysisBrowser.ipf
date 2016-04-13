@@ -157,9 +157,9 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 	string str, name, listOfSweepConfigWaves
 
-	DFREF expDataDFR   = GetAnalysisDeviceConfigFolder(expFolder, device)
-	WAVE numericValues = GetAnalysLBNumericalValues(expFolder, device)
-	WAVE textValues    = GetAnalysLBTextualValues(expFolder, device)
+	DFREF expDataDFR      = GetAnalysisDeviceConfigFolder(expFolder, device)
+	WAVE numericalValues  = GetAnalysLBNumericalValues(expFolder, device)
+	WAVE textualValues    = GetAnalysLBTextualValues(expFolder, device)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
@@ -185,13 +185,13 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 		list[index][%sweep][0] = num2str(sweepNo)
 
-		str = AB_GetSettingNumFiniteVals(numericValues, device, sweepNo, "DAC")
+		str = AB_GetSettingNumFiniteVals(numericalValues, device, sweepNo, "DAC")
 		list[index][%'#DAC'][0] = str
 
-		str = AB_GetSettingNumFiniteVals(numericValues, device, sweepNo, "ADC")
+		str = AB_GetSettingNumFiniteVals(numericalValues, device, sweepNo, "ADC")
 		list[index][%'#ADC'][0] = str
 
-		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Headstage Active")
+		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Headstage Active")
 		numRows = WaveExists(settings) ? NUM_HEADSTAGES : 0
 		if(numRows > 0)
 			list[index][%'#headstages'][0] = num2str(Sum(settings, 0, NUM_HEADSTAGES - 1))
@@ -199,10 +199,10 @@ static Function AB_FillListWave(expFolder, expName, device)
 			list[index][%'#headstages'][0] = "unknown"
 		endif
 
-		WAVE/T/Z settingsText = GetLastSettingText(textValues, sweepNo, "Stim Wave Name")
+		WAVE/T/Z settingsText = GetLastSettingText(textualValues, sweepNo, "Stim Wave Name")
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
-		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
+		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count")
 
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
@@ -311,11 +311,11 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(numericValues)
-	WAVE numericValues
+static Function AB_GetHighestPossibleSweepNum(numericalValues)
+	WAVE numericalValues
 
-	variable sweepCol = GetSweepColumn(numericValues)
-	MatrixOP/FREE sweepNums = col(numericValues, sweepCol)
+	variable sweepCol = GetSweepColumn(numericalValues)
+	MatrixOP/FREE sweepNums = col(numericalValues, sweepCol)
 	WaveStats/M=1/Q sweepNums
 
 	return V_max
@@ -848,7 +848,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/T/SDFR=dfr numericValues
+	WAVE/T/SDFR=dfr numericalValues
 
 	numRows = DimSize(config, ROWS)
 	for(i = 0; i < numRows; i += 1)
@@ -861,7 +861,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
-			SplitTTLWaveIntoComponents(data, GetTTLBits(numericValues, sweep, channelNumber), sweepFolder, str + "_")
+			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), sweepFolder, str + "_")
 		endif
 
 		MoveWave data, sweepFolder:$str
