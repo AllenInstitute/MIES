@@ -273,25 +273,25 @@ End
 static Function/WAVE DB_GetSettingsHistory(panelTitle)
 	string panelTitle
 
-	return GetNumDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+	return GetLBNumericalValues(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 static Function/WAVE DB_GetSettingsHistoryText(panelTitle)
 	string panelTitle
 
-	return GetTextDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+	return GetLBTextualValues(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 static Function/WAVE DB_GetSettingsHistoryKeys(panelTitle)
 	string panelTitle
 
-	return GetNumDocKeyWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+	return GetLBNumericalKeys(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 static Function/WAVE DB_GetSettingsHistoryTextKeys(panelTitle)
 	string panelTitle
 
-	return GetTextDocKeyWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+	return GetLBTextualKeys(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 Function DB_UpdateToLastSweep(panel)

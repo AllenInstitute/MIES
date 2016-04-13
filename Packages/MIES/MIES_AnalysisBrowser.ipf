@@ -157,9 +157,10 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 	string str, name, listOfSweepConfigWaves
 
-	DFREF expDataDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
-	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/SDFR=dfr numericValues, textValues
+	DFREF expDataDFR   = GetAnalysisDeviceConfigFolder(expFolder, device)
+	WAVE numericValues = GetAnalysLBNumericalValues(expFolder, device)
+	WAVE textValues    = GetAnalysLBTextualValues(expFolder, device)
+
 	WAVE/T list = GetExperimentBrowserGUIList()
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
@@ -377,8 +378,9 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	expName   = experimentMap[V_Value][%ExperimentName]
 	expFolder = experimentMap[V_Value][%ExperimentFolder]
 
-	labNotebookWaves = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave"
-	labNotebookPath  = GetLabNotebookFolderAsString()
+	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
+	labNotebookWaves += "numericalKeys;textualKeys;numericalValues;textualValues"
+	labNotebookPath = GetLabNotebookFolderAsString()
 	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, labNotebookPath, labNotebookWaves)
@@ -410,21 +412,42 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 				continue
 			endif
 
-			basepath = path + ":KeyWave"
-			Wave/Z/SDFR=$basepath keyWave
+			// first try the new wave names and then as fallback
+			// the old ones
+			// Supports old/new wavename mixes although these should not
+			// exist in the wild.
 
-			basepath = path + ":settingsHistory"
-			Wave/Z/SDFR=$basepath settingsHistory
+			Wave/Z/SDFR=$path numericalKeys
 
-			basepath = path + ":TextDocKeyWave"
-			Wave/Z/SDFR=$basepath txtDocKeyWave
+			if(!WaveExists(numericalKeys))
+				basepath = path + ":KeyWave"
+				Wave/Z/SDFR=$basepath numericalKeys = keyWave
+			endif
 
-			basepath = path + ":textDocumentation"
-			Wave/Z/SDFR=$basepath txtDocWave
+			Wave/Z/SDFR=$path numericalValues
+
+			if(!WaveExists(numericalValues))
+				basepath = path + ":settingsHistory"
+				Wave/Z/SDFR=$basepath numericalValues = settingsHistory
+			endif
+
+			Wave/Z/SDFR=$path textualKeys
+
+			if(!WaveExists(textualKeys))
+				basepath = path + ":TextDocKeyWave"
+				Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
+			endif
+
+			Wave/Z/SDFR=$path textualValues
+
+			if(!WaveExists(textualValues))
+				basepath = path + ":textDocumentation"
+				Wave/Z/SDFR=$basepath textualValues = txtDocWave
+			endif
 
 			device = BuildDeviceString(type, number)
 
-			if(!WaveExists(keyWave) || !WaveExists(settingsHistory) || !WaveExists(txtDocKeyWave) || !WaveExists(txtDocWave))
+			if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
 				printf "Could not find all four labnotebook waves, dropping all data from device %s\r", device
 				continue
 			endif
@@ -435,24 +458,24 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 
-			Duplicate/O keyWave, dfr:numericKeys/Wave=numericKeys
-			Duplicate/O settingsHistory, dfr:numericValues/Wave=numericValues
-			Duplicate/O txtDocKeyWave, dfr:textKeys/Wave=textKeys
-			Duplicate/O txtDocWave, dfr:textValues/Wave=textValues
+			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
+			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
+			Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
+			Duplicate/O textualValues, dfr:textualValues/Wave=textualValues
 
 			// add some forgotten dimension labels in older versions of MIES
 			// and overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
-			str = GetDimLabel(textValues, COLS, 0)
+			str = GetDimLabel(textualValues, COLS, 0)
 			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(textKeys, textValues)
+				SetDimensionLabels(textualKeys, textualValues)
 			endif
 
-			str = GetDimLabel(numericKeys, COLS, 0)
+			str = GetDimLabel(numericalKeys, COLS, 0)
 			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(numericKeys, numericValues)
+				SetDimensionLabels(numericalKeys, textualValues)
 			endif
 
-			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericValues)
+			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericalValues)
 
 			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
 			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)

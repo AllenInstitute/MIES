@@ -266,11 +266,10 @@ Function LBN_PopMenuProc_LBNViewableCols(pa) : PopupMenuControl
 				break
 			endif
 
-			DFREF dfr = $folder
-			WAVE/T/SDFR=dfr numericKeys
-			WAVE/T/SDFR=dfr numericValues
+			WAVE/T numericalKeys = GetAnalysLBNumericalKeys(expFolder, device)
+			WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
-			AddTraceToLBGraph(graph, numericKeys, numericValues, popStr)
+			AddTraceToLBGraph(graph, numericalKeys, numericalValues, popStr)
 			break
 	endswitch
 
@@ -322,10 +321,9 @@ Function LBN_ButtonProc_SwitchXaxisType(ba) : ButtonControl
 			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
 
-			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-			WAVE/T/SDFR=dfr numericValues
+			WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
-			SwitchLBGraphXAxis(graph, numericValues)
+			SwitchLBGraphXAxis(graph, numericalValues)
 			break
 	endswitch
 
@@ -347,15 +345,8 @@ Function LBN_PopMenuProc_ExpDevSelector(pa) : PopupMenuControl
 			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
 
-			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-
-			WAVE/Z/T/SDFR=dfr numericKeys
-			WAVE/Z/T/SDFR=dfr numericValues
-
-			if(!WaveExists(numericKeys) || !WaveExists(numericValues))
-				print "BUG: missing labnotebook, handle that earlier"
-				break
-			endif
+			WAVE/T numericalKeys = GetAnalysLBNumericalKeys(expFolder, device)
+			WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
 			traceList = TraceNameList(graph, ";", 0 + 1)
 			numTraces = ItemsInList(traceList)
@@ -376,7 +367,7 @@ Function LBN_PopMenuProc_ExpDevSelector(pa) : PopupMenuControl
 			numKeys = ItemsInList(keyList)
 			for(i = 0; i < numKeys; i += 1)
 				key = StringFromList(i, keyList)
-				AddTraceToLBGraph(graph, numericKeys, numericValues, key)
+				AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
 			endfor
 			break
 	endswitch
@@ -498,10 +489,9 @@ Function/S LBN_GetLabNotebookViewAbleCols(graph)
 		return NONE
 	endif
 
-	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/T/Z/SDFR=dfr numericKeys
+	WAVE/T numericalKeys = GetAnalysLBNumericalKeys(expFolder, device)
 
-	return GetLabNotebookSortedKeys(numericKeys)
+	return GetLabNotebookSortedKeys(numericalKeys)
 End
 
 Function/S LBN_TPStorageViewAbleCols(graph)

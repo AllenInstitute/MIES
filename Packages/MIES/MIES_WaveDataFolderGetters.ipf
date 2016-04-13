@@ -646,6 +646,7 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific settings key
+/// @deprecated, don't use for new code
 Function/DF GetDevSpecLabNBSettKeyFolder(panelTitle)
 	string panelTitle
 
@@ -653,6 +654,7 @@ Function/DF GetDevSpecLabNBSettKeyFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific settings key, e.g. root:mies:LabNoteBook:ITC18USB:Device0:KeyWave
+/// @deprecated, don't use for new code
 Function/S GetDevSpecLabNBSettKeyFolderAS(panelTitle)
 	string panelTitle
 
@@ -660,6 +662,7 @@ Function/S GetDevSpecLabNBSettKeyFolderAS(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific settings history
+/// @deprecated, don't use for new code
 Function/DF GetDevSpecLabNBSettHistFolder(panelTitle)
 	string panelTitle
 
@@ -667,6 +670,7 @@ Function/DF GetDevSpecLabNBSettHistFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific settings history, e.g. root:mies:LabNoteBook:ITC18USB:Device0:settingsHistory
+/// @deprecated, don't use for new code
 Function/S GetDevSpecLabNBSettHistFolderAS(panelTitle)
 	string panelTitle
 
@@ -674,6 +678,7 @@ Function/S GetDevSpecLabNBSettHistFolderAS(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific text doc key
+/// @deprecated, don't use for new code
 Function/DF GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 	string panelTitle
 
@@ -681,6 +686,7 @@ Function/DF GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific text doc key, e.g. root:mies:LabNoteBook:ITC18USB:Device0:textDocKeyWave
+/// @deprecated, don't use for new code
 Function/S GetDevSpecLabNBTextDocKeyFoldAS(panelTitle)
 	string panelTitle
 
@@ -688,6 +694,7 @@ Function/S GetDevSpecLabNBTextDocKeyFoldAS(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific text documentation
+/// @deprecated, don't use for new code
 Function/DF GetDevSpecLabNBTextDocFolder(panelTitle)
 	string panelTitle
 
@@ -695,6 +702,7 @@ Function/DF GetDevSpecLabNBTextDocFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:textDocumentation
+/// @deprecated, don't use for new code
 Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	string panelTitle
 
@@ -712,24 +720,31 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetTextDocWave(panelTitle)
+Function/Wave GetLBTextualValues(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBTextDocFolder(panelTitle)
+	string newName = "textualValues"
+	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
 
-	Wave/Z/T/SDFR=dfr wv = txtDocWave
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation")
+	p.newDFR  = newDFR
+	p.name    = "txtDocWave"
+	p.newName = newName
+
+	Wave/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) dfr:txtDocWave/Wave=wv
+	Make/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	wv = ""
 
 	return wv
 End
 
-/// @brief Handle upgrades of the numerical/text labnotebooks in one step
+/// @brief Handle upgrades of the numerical/textual labnotebooks in one step
 ///
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
@@ -742,67 +757,71 @@ static Function UpgradeLabNotebook(panelTitle)
 	variable numCols, i, col, numEntries
 	string list, key
 
-	WAVE  settingsHistory = GetNumDocWave(panelTitle)
-	WAVE/T txtDocWave     = GetTextDocWave(panelTitle)
+	WAVE  numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T textualValues  = GetLBTextualValues(panelTitle)
 
-	Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(panelTitle)   keyWave
-	Wave/Z/T/SDFR=GetDevSpecLabNBTxtDocKeyFolder(panelTitle) txtDocKeyWave
+	// we only have to check the new place and name as we are called
+	// later than UpgradeWaveLocationAndGetIt from both key wave getters
+	//
+	// avoid recursion by checking the wave location first
+	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(panelTitle) numericalKeys
+	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(panelTitle) textualKeys
 
-	if(!WaveExists(keyWave))
-		WAVE/T keyWave = GetNumDocKeyWave(panelTitle)
+	if(!WaveExists(numericalKeys))
+		WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	endif
 
-	if(!WaveExists(txtDocKeyWave))
-		WAVE/T txtDocKeyWave = GetTextDocKeyWave(panelTitle)
+	if(!WaveExists(textualKeys))
+		WAVE/T textualKeys = GetLBTextualKeys(panelTitle)
 	endif
 
-	ASSERT(DimSize(keyWave, COLS) == DimSize(settingsHistory, COLS), "Non matching number of rows for numeric labnotebook")
-	ASSERT(DimSize(txtDocKeyWave, COLS) == DimSize(txtDocWave, COLS), "Non matching number of rows for textual labnotebook")
+	ASSERT(DimSize(numericalKeys, COLS) == DimSize(numericalValues, COLS), "Non matching number of rows for numeric labnotebook")
+	ASSERT(DimSize(textualKeys, COLS) == DimSize(textualValues, COLS), "Non matching number of rows for textual labnotebook")
 
-	if(cmpstr(keyWave[0][2], "TimeStampSinceIgorEpochUTC"))
+	if(cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
-		numCols = DimSize(keyWave, COLS)
+		numCols = DimSize(numericalKeys, COLS)
 
-		Redimension/N=(-1, numCols + 1, -1) keyWave, settingsHistory
+		Redimension/N=(-1, numCols + 1, -1) numericalKeys, numericalValues
 
-		keyWave[][numCols]           = keyWave[p][2]
-		settingsHistory[][numCols][] = settingsHistory[p][2][r]
+		numericalKeys[][numCols]           = numericalKeys[p][2]
+		numericalValues[][numCols][] = numericalValues[p][2][r]
 
-		settingsHistory[][2][] = NaN
-		keyWave[][2]           = ""
-		keyWave[0][2]          = "TimeStampSinceIgorEpochUTC"
-		SetDimensionLabels(keyWave, settingsHistory)
+		numericalValues[][2][] = NaN
+		numericalKeys[][2]           = ""
+		numericalKeys[0][2]          = "TimeStampSinceIgorEpochUTC"
+		SetDimensionLabels(numericalKeys, numericalValues)
 
 		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
 	endif
 
-	if(cmpstr(txtDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"))
+	if(cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
-		numCols = DimSize(txtDocKeyWave, COLS)
+		numCols = DimSize(textualKeys, COLS)
 
-		Redimension/N=(-1, numCols + 1, -1) txtDocKeyWave, txtDocWave
+		Redimension/N=(-1, numCols + 1, -1) textualKeys, textualValues
 
-		txtDocKeyWave[][numCols] = txtDocKeyWave[p][2]
-		txtDocWave[][numCols][]  = txtDocWave[p][2][r]
+		textualKeys[][numCols]   = textualKeys[p][2]
+		textualValues[][numCols][] = textualValues[p][2][r]
 
-		txtDocWave[][2][]   = ""
-		txtDocKeyWave[][2]  = ""
-		txtDocKeyWave[0][2] = "TimeStampSinceIgorEpochUTC"
-		SetDimensionLabels(txtDocKeyWave, txtDocWave)
+		textualValues[][2][]   = ""
+		textualKeys[][2]  = ""
+		textualKeys[0][2] = "TimeStampSinceIgorEpochUTC"
+		SetDimensionLabels(textualKeys, textualValues)
 
 		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
 	endif
 
-	if(DimSize(txtDocWave, LAYERS) == NUM_HEADSTAGES && DimSize(settingsHistory, LAYERS) == NUM_HEADSTAGES)
-		Redimension/N=(-1, -1, LABNOTEBOOK_LAYER_COUNT, -1) txtDocWave, settingsHistory
-		txtDocWave[][][8]      = ""
-		settingsHistory[][][8] = NaN
+	if(DimSize(textualValues, LAYERS) == NUM_HEADSTAGES && DimSize(numericalValues, LAYERS) == NUM_HEADSTAGES)
+		Redimension/N=(-1, -1, LABNOTEBOOK_LAYER_COUNT, -1) textualValues, numericalValues
+		textualValues[][][8]   = ""
+		numericalValues[][][8] = NaN
 
 		DEBUGPRINT("Upgraded labnotebooks to handle headstage independent data")
 	endif
 
-	if(WaveType(settingsHistory) == IGOR_TYPE_32BIT_FLOAT)
-		Redimension/Y=(IGOR_TYPE_64BIT_FLOAT) settingsHistory
+	if(WaveType(numericalValues) == IGOR_TYPE_32BIT_FLOAT)
+		Redimension/Y=(IGOR_TYPE_64BIT_FLOAT) numericalValues
 
 		DEBUGPRINT("Upgraded numeric labnotebook to 64bit floats")
 	endif
@@ -812,9 +831,9 @@ static Function UpgradeLabNotebook(panelTitle)
 
 	for(i = 0; i < numEntries; i += 1)
 		key = StringFromList(i, list)
-		col = FindDimLabel(keyWave, COLS, key)
-		if(col >= 0 && cmpstr(keyWave[%Units][col], ""))
-			keyWave[%Units][col] = ""
+		col = FindDimLabel(numericalKeys, COLS, key)
+		if(col >= 0 && cmpstr(numericalKeys[%Units][col], ""))
+			numericalKeys[%Units][col] = ""
 			if(i == 0)
 				DEBUGPRINT("Upgraded numeric labnotebook key wave to remove invalid units")
 			endif
@@ -834,14 +853,20 @@ End
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
 /// - other columns are filled at runtime
-Function/Wave GetTextDocKeyWave(panelTitle)
+Function/Wave GetLBTextualKeys(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
-
 	variable versionOfNewWave = 4
+	string newName = "textualKeys"
+	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
 
-	Wave/Z/T/SDFR=dfr wv = txtDocKeyWave
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":TextDocKeyWave")
+	p.newDFR  = newDFR
+	p.name    = "txtDocKeyWave"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -850,7 +875,7 @@ Function/Wave GetTextDocKeyWave(panelTitle)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:txtDocKeyWave/Wave=wv
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -880,13 +905,21 @@ End
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
 /// - other columns are filled at runtime
-Function/Wave GetNumDocKeyWave(panelTitle)
+Function/Wave GetLBNumericalKeys(panelTitle)
 	string panelTitle
 
 	variable versionOfNewWave = 4
+	/// @todo move the renaming stuff into one function for all four labnotebook waves
+	string newName = "numericalKeys"
+	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
 
-	DFREF dfr = GetDevSpecLabNBSettKeyFolder(panelTitle)
-	Wave/T/Z/SDFR=dfr wv = keyWave
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":KeyWave")
+	p.newDFR  = newDFR
+	p.name    = "keyWave"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -895,7 +928,7 @@ Function/Wave GetNumDocKeyWave(panelTitle)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:keyWave/Wave=wv
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -924,14 +957,22 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetNumDocWave(panelTitle)
+Function/Wave GetLBNumericalValues(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevSpecLabNBSettHistFolder(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = settingsHistory
+	string newName = "numericalValues"
+	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
+
+	STRUCT WaveLocationMod p
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":settingsHistory")
+	p.newDFR  = newDFR
+	p.name    = "settingsHistory"
+	p.newName = newName
+
+	WAVE/D/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(!WaveExists(wv))
-		Make/D/N=(MINIMUM_WAVE_SIZE, 3, LABNOTEBOOK_LAYER_COUNT) dfr:settingsHistory/Wave=wv = NaN
+		Make/D/N=(MINIMUM_WAVE_SIZE, 3, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv = NaN
 
 		SetDimLabel COLS, 0, SweepNum                  , wv
 		SetDimLabel COLS, 1, TimeStamp                 , wv
@@ -3546,6 +3587,86 @@ Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
 	Wave/SDFR=GetAnalysisSweepDataPath(expFolder, device, sweep) wv = $("Sweep_" + num2str(sweep))
 
 	return wv
+End
+
+/// @brief Return the numerical labnotebook values in the analysis browser of a device and experiment pair
+Function/WAVE GetAnalysLBNumericalValues(expFolder, device)
+	string expFolder, device
+
+	string newName = "numericalValues"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
+	p.name    = "numericValues"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	ASSERT(0, "Trying to access non existing numerical values labnotebook")
+End
+
+/// @brief Return the textual labnotebook keys in the analysis browser of a device and experiment pair
+Function/WAVE GetAnalysLBTextualValues(expFolder, device)
+	string expFolder, device
+
+	string newName = "textualValues"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
+	p.name    = "textValues"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	ASSERT(0, "Trying to access non existing textual values labnotebook")
+End
+
+/// @brief Return the numerical labnotebook keys in the analysis browser of a device and experiment pair
+Function/WAVE GetAnalysLBNumericalKeys(expFolder, device)
+	string expFolder, device
+
+	string newName = "numericalKeys"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
+	p.name    = "numericKeys"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	ASSERT(0, "Trying to access non existing numerical keys labnotebook")
+End
+
+/// @brief Return the textual labnotebook keys in the analysis browser of a device and experiment pair
+Function/WAVE GetAnalysLBTextualKeys(expFolder, device)
+	string expFolder, device
+
+	string newName = "textualKeys"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
+	p.name    = "textKeys"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	ASSERT(0, "Trying to access non existing textual keys labnotebook")
 End
 
 /// @}

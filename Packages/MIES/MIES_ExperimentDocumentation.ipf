@@ -19,8 +19,8 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 
 	variable rowIndex, numCols, lastValidIncomingLayer, i
 
-	WAVE/T keyWave       = GetNumDocKeyWave(panelTitle)
-	WAVE settingsHistory = GetNumDocWave(panelTitle)
+	WAVE/T keyWave = GetLBNumericalKeys(panelTitle)
+	WAVE settingsHistory = GetLBNumericalValues(panelTitle)
 
 	ASSERT(!cmpstr(keyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
 	ASSERT(DimSize(incomingSettingsWave, LAYERS) <= DimSize(settingsHistory, LAYERS), "Unexpected large layer count in the incoming settings wave")
@@ -31,7 +31,7 @@ Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, pane
 	settingsHistory[rowIndex][1] = DateTime
 	settingsHistory[rowIndex][2] = DateTimeInUTC()
 
-	WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
+	WAVE settingsHistoryDat = GetLBNumericalValuesDat(settingsHistory)
 	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
 	settingsHistoryDat[rowIndex] = settingsHistory[rowIndex][1]
 
@@ -295,8 +295,8 @@ Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo
 
 	variable rowIndex, numCols, i
 
-	WAVE/T textDocWave = GetTextDocWave(panelTitle)
-	WAVE/T textDocKeyWave = GetTextDocKeyWave(panelTitle)
+	WAVE/T textDocWave = GetLBTextualValues(panelTitle)
+	WAVE/T textDocKeyWave = GetLBTextualKeys(panelTitle)
 
 	ASSERT(!cmpstr(textDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
 	ASSERT(DimSize(incomingTextDocWave, ROWS)   == 1, "Mismatched row counts")

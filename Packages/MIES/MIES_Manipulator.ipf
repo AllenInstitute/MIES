@@ -275,7 +275,7 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	variable sweep
 
 	DFREF ManipulatorDF = GetManipulatorPath()
-	WAVE settingsHistory = GetNumDocWave(panelTitle)
+	WAVE settingsHistory = GetLBNumericalValues(panelTitle)
 	WAVE WaveForGizmo = GetManipulatorPos(panelTitle)
 	if(paramIsDefault(sweep))
 		sweep = AFH_GetLastSweepAcquired(panelTitle)

@@ -221,10 +221,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	IPNWB#AddDevice(locationID, panelTitle, NWB_GenerateDeviceDescription(panelTitle))
 
-	WAVE settingsHistory           = GetNumDocWave(panelTitle)
-	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
-	WAVE/T settingsHistoryText     = GetTextDocWave(panelTitle)
-	WAVE/T settingsHistoryTextKeys = GetTextDocKeyWave(panelTitle)
+	WAVE settingsHistory = GetLBNumericalValues(panelTitle)
+	WAVE/T settingsHistoryKeys = GetLBNumericalKeys(panelTitle)
+	WAVE/T settingsHistoryText = GetLBTextualValues(panelTitle)
+	WAVE/T settingsHistoryTextKeys = GetLBTextualKeys(panelTitle)
 
 	path = "/general/labnotebook/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
@@ -401,10 +401,10 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	NVAR session_start_time = $GetSessionStartTimeReadBack()
 
-	WAVE settingsHistory           = GetNumDocWave(panelTitle)
-	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
-	WAVE/T settingsHistoryText     = GetTextDocWave(panelTitle)
-	WAVE/T settingsHistoryTextKeys = GetTextDocKeyWave(panelTitle)
+	WAVE settingsHistory           = GetLBNumericalValues(panelTitle)
+	WAVE/T settingsHistoryKeys     = GetLBNumericalKeys(panelTitle)
+	WAVE/T settingsHistoryText     = GetLBTextualValues(panelTitle)
+	WAVE/T settingsHistoryTextKeys = GetLBTextualKeys(panelTitle)
 
 	// comment denotes the introducing comment of the labnotebook entry
 	// 9b35fdad (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
@@ -600,7 +600,7 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	STRUCT IPNWB#WriteChannelParams &p
 	STRUCT IPNWB#TimeSeriesProperties &tsp
 
-	WAVE settingsHistory = GetNumDocWave(p.device)
+	WAVE settingsHistory = GetLBNumericalValues(p.device)
 
 	IPNWB#InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
 

@@ -84,6 +84,12 @@ Function HSU_LockDevice(panelTitle)
 	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
 	P_SaveUserSelectedHeadstage(panelTitleLocked, headstage)
 
+	// upgrade all four labnotebook waves in wanna-be atomic way
+	GetLBNumericalKeys(panelTitleLocked)
+	GetLBNumericalValues(panelTitleLocked)
+	GetLBTextualKeys(panelTitleLocked)
+	GetLBTextualValues(panelTitleLocked)
+
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
 

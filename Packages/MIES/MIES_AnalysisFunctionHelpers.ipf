@@ -9,8 +9,8 @@
 /// ------------------------------|------------------------------------------------------
 /// GetADCListFromConfig()        | Free wave with all active AD channels as entries
 /// GetDACListFromConfig()        | Free wave with all active DA channels as entries
-/// GetNumDocWave()               | Wave reference to the labnotebook (numerical version)
-/// GetTextDocWave()              | Wave reference to the labnotebook (textual version)
+/// GetLBNumericalValues()        | Wave reference to the labnotebook (numerical version)
+/// GetLBTextualValues()          | Wave reference to the labnotebook (textual version)
 /// GetLastSetting()              | Last documented numerical value for headstages of a specific setting in the labnotebook for a given sweep number.
 /// GetLastSettingText()          | Last documented textual value for headstages of a specific setting in the labnotebook for a given sweep number.
 /// GetLastSweepWithSetting()     | Last documented numerical value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
