@@ -748,8 +748,6 @@ Function SetGuiControlValue(win, control, value)
 		endif
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		SetPopupMenuIndex(win, control, str2num(value))
-	elseif(controlType == CONTROL_TYPE_POPUPMENU)
-		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SLIDER)
 		Slider $control, value = str2num(value)		
 	else

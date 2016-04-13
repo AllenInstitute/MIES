@@ -2599,22 +2599,21 @@ Window DA_Ephys() : Panel
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Ba!!#CtJ,hsnJ,hp/z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_AmpMCCdefault,pos={34.00,598.00},size={190.00,15.00},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default to MCC parameter values"
-	CheckBox check_Settings_AmpMCCdefault,help={"Enable the scope window to view ongoing acquistion"}
-	CheckBox check_Settings_AmpMCCdefault,userdata(tabnum)=  "5"
+	CheckBox check_Settings_AmpMCCdefault,pos={34.00,598.00},size={190.00,15.00},disable=1,title="Default to MCC parameter values"
+	CheckBox check_Settings_AmpMCCdefault,help={"FIXME"},userdata(tabnum)=  "5"
 	CheckBox check_Settings_AmpMCCdefault,userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo)= A"!!,Cl!!#D%J,hr#!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_AmpMCCdefault,fColor=(65280,43520,0),value= 0
-	CheckBox check_Settings_AmpMIESdefault,pos={34.00,619.00},size={274.00,15.00},disable=1,proc=DAP_CheckProc_ShowScopeWin,title="Default amplifier parameter values stored in MIES"
-	CheckBox check_Settings_AmpMIESdefault,help={"Enable the scope window to view ongoing acquistion"}
-	CheckBox check_Settings_AmpMIESdefault,userdata(tabnum)=  "5"
-	CheckBox check_Settings_AmpMIESdefault,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_AmpMIESdefault,userdata(ResizeControlsInfo)= A"!!,Cl!!#D*^]6`Y!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Settings_AmpMIESdefault,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_Settings_AmpMIESdefault,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_AmpMIESdefault,fColor=(65280,43520,0),value= 0
+	CheckBox check_Settings_SyncMiesToMCC,pos={34.00,619.00},size={152.00,15.00},disable=1,title="Synchronize MIES to MCC"
+	CheckBox check_Settings_SyncMiesToMCC,help={"Send the GUI values to the MCC on mode switch/headstage activation"}
+	CheckBox check_Settings_SyncMiesToMCC,userdata(tabnum)=  "5"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(ResizeControlsInfo)= A"!!,Cl!!#D*^]6`Y!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_Settings_SyncMiesToMCC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_Settings_SyncMiesToMCC,value= 0
 	CheckBox check_DataAcq_Amp_Chain,pos={337.00,230.00},size={46.00,15.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Chain"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_Amp_Chain,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -3541,6 +3540,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable SetVar_DataAcq_BB WIN = $panelTitle,limits={0,inf,1},value= _NUM:0
 	SetVariable SetVar_DataAcq_CN WIN = $panelTitle,limits={-8,16,1},value= _NUM:0
 
@@ -3566,8 +3566,9 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_Settings_AlarmPauseAcq WIN = $panelTitle,value= 0
 	CheckBox Check_Settings_AlarmAutoRepeat WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpMCCdefault WIN = $panelTitle,value= 0
-	CheckBox check_Settings_AmpMIESdefault WIN = $panelTitle,value= 0
+	CheckBox check_Settings_SyncMiesToMCC WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
+	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
 
 	DAP_SwitchSingleMultiMode(panelTitle, 0)
@@ -5474,11 +5475,11 @@ static Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 		AI_SetClampMode(panelTitle, headStage, clampMode)
 	endif
 
-	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
-	DAP_UpdateITCSampIntDisplay(panelTitle)
-
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	GuiState[headStage][%HSmode] = clampMode
+
+	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
+	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	if(activeHS)
 		TP_RestartTestPulse(panelTitle, testPulseMode)
@@ -5495,6 +5496,10 @@ static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
 
 	AI_SyncAmpStorageToGUI(panelTitle, headStage)
 	ChangeTab(panelTitle, "tab_DataAcq_Amp", clampMode)
+
+	if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+		AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
+	endif
 
 	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(V_CLAMP_MODE)      = SelectString(clampMode == V_CLAMP_MODE,      "", highlightSpec) + "V-Clamp"
 	TabControl tab_DataAcq_Amp win=$panelTitle, tabLabel(I_CLAMP_MODE)      = SelectString(clampMode == I_CLAMP_MODE,      "", highlightSpec) + "I-Clamp"
@@ -5538,7 +5543,12 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
 	else
-		TP_RestartTestPulse(panelTitle, TPState)
+		if(enabled)
+			if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+				PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, headstage), val=CHECKBOX_SELECTED)
+			endif
+			TP_RestartTestPulse(panelTitle, TPState)
+		endif
 	endif
 End
 
