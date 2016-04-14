@@ -556,7 +556,7 @@ Function AM_configAnalysis(ba) : ButtonControl
 		case 2: // mouse up
 			// get the am panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(itcPanel))
 				print "Please lock a device...."
 				return NAN
 			endif
@@ -624,7 +624,7 @@ Function AM_PostSweepCheckBox(ctrlName, checked)
 	
 	// get the am panel name
 	itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-	if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(itcPanel))
 		print "Please lock a device...."
 		return NAN
 	endif
@@ -706,7 +706,7 @@ Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 			Variable checked = cba.checked	
 			// get the da_ephys panel name
 			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(itcPanel))
 				print "Please lock a device...."
 				return NAN
 			endif
@@ -798,7 +798,7 @@ Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 			checked = cba.checked
 			
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(itcPanel))
 				print "Please lock a device...."
 				return NAN
 			endif
@@ -869,7 +869,7 @@ Function AM_PS_PopMenuChk(pa) : PopupMenuControl
 				
 			// get the da_ephys panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(itcPanel))
 				print "Please lock a device...."
 				return NAN
 			endif
@@ -908,7 +908,7 @@ Function AM_PA_PopMenuChk(pa) : PopupMenuControl
 		
 			// get the da_ephys panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(itcPanel))
 				print "Please lock a device...."
 				return NAN
 			endif
@@ -947,7 +947,7 @@ Function AM_MS_PopMenuChk(pa) : PopupMenuControl
 		
 			// get the da_ephys panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(itcPanel))
 				print "Please lock a device...."
 				return NAN
 			endif

@@ -3204,7 +3204,7 @@ Function DAP_EphysPanelStartUpSettings()
 		return NaN
 	endif
 
-	if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+	if(!DAP_DeviceIsUnlocked(panelTitle))
 		HSU_UnlockDevice(panelTitle)
 	endif
 
@@ -3605,7 +3605,7 @@ Function DAP_WindowHook(s)
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
 			panelTitle = s.winName
-			if(!HSU_DeviceIsUnlocked(panelTitle,silentCheck=1))
+			if(!DAP_DeviceIsUnlocked(panelTitle))
 				HSU_UnlockDevice(panelTitle)
 			endif
 			return 1
@@ -3970,7 +3970,7 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	if(HSU_DeviceIsUnLocked(tca.win,silentCheck=1))
+	if(DAP_DeviceIsUnLocked(tca.win))
 		print "Please lock the panel to a DAC in the Hardware tab"
 		return 0
 	endif
@@ -4223,7 +4223,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
-			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			AbortOnValue DAP_DeviceIsUnlocked(panelTitle), 1
 
 			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				ITC_StartDAQMultiDevice(panelTitle)
@@ -4360,7 +4360,7 @@ static Function DAP_TurnOffAllHeadstages(panelTitle)
 	variable i
 	string ctrl
 
-	if(HSU_DeviceIsUnLocked(panelTitle, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(panelTitle))
 		return NaN
 	endif
 
@@ -4662,7 +4662,7 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			panelTitle = pa.win
-			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(panelTitle))
 				break
 			endif
 
@@ -4686,7 +4686,7 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			panelTitle = pa.win
-			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(panelTitle))
 				break
 			endif
 
@@ -4711,7 +4711,7 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 			panelTitle = sva.win
-			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+			if(DAP_DeviceIsUnlocked(panelTitle))
 				break
 			endif
 
@@ -4885,7 +4885,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		panelTitle = StringFromList(i, list)
 
-		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+		AbortOnValue DAP_DeviceIsUnlocked(panelTitle),1
 
 		if(HSU_CanSelectDevice(panelTitle))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
@@ -5055,7 +5055,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
 	variable gain, scale, clampMode, i, valid_f1, valid_f2
 
-	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(panelTitle))
 		return 1
 	endif
 
@@ -6182,7 +6182,7 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 		case 2:
 			panelTitle = ba.win
 
-			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			AbortOnValue DAP_DeviceIsUnlocked(panelTitle), 1
 
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
@@ -6222,7 +6222,7 @@ static Function DAP_OpenCommentPanel(panelTitle)
 
 	string commentPanel, commentNotebook
 
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+	AbortOnValue DAP_DeviceIsUnlocked(panelTitle), 1
 
 	commentPanel = DAP_GetCommentPanel(panelTitle)
 	if(windowExists(commentPanel))
@@ -6248,7 +6248,7 @@ Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
-			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			AbortOnValue DAP_DeviceIsUnlocked(panelTitle), 1
 			DAP_AddUserComment(panelTitle)
 			break
 	endswitch
@@ -6409,7 +6409,7 @@ Function DAP_CommentPanelHook(s)
 			hookResult = 1
 			panelTitle = GetMainWindow(s.winName)
 
-			if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+			if(!DAP_DeviceIsUnlocked(panelTitle))
 				DAP_SerializeCommentNotebook(panelTitle)
 			endif
 			break
@@ -6684,3 +6684,21 @@ Function DAP_PanelIsUpToDate(panelTitle)
 
 	return version == DA_EPHYS_PANEL_VERSION
 end
+
+/// @brief Query the device lock status
+///
+/// @returns device lock status, 1 if unlocked, 0 if locked
+Function DAP_DeviceIsUnlocked(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+End
+
+Function DAP_AbortIfUnlocked(panelTitle)
+	string panelTitle
+
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		Abort "A ITC device must be locked (see Hardware tab) to proceed"
+	endif
+End

@@ -533,7 +533,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	string ctrl
 	variable headStage, value, sendToAll, checkBeforeWrite
 
-	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(panelTitle))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
@@ -757,7 +757,7 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	string ctrl, list
 	variable i, numEntries
 
-	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(panelTitle))
 		print "Associate the panel with a DAC prior to using panel"
 		return NaN
 	elseif(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
@@ -799,7 +799,7 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	string lbl, list
 	variable i, numEntries
 
-	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(panelTitle))
 		print "Associate the panel with a DAC prior to using panel"
 		return 0
 	endif
