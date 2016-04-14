@@ -1487,8 +1487,8 @@ Function AI_FindConnectedAmps()
 	SetDataFolder GetAmplifierFolder()
 
 	AxonTelegraphFindServers
-	WAVE W_TelegraphServers
-	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
+	MDSort(telegraphServers, 0, keyColSecondary=1)
 
 	MCC_FindServers/Z=1
 

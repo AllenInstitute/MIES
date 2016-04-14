@@ -4611,9 +4611,9 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	string str
 	string list = NONE
 
-	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
-	numRows = WaveExists(W_TelegraphServers) ? DimSize(W_TelegraphServers, ROWS) : 0
+	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
 		print "Activate Multiclamp Commander software to populate list of available amplifiers"
 		list = AddListItem("\\M1(MC not available;", list, ";", inf)
@@ -4621,7 +4621,7 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	endif
 
 	for(i=0; i < numRows; i+=1)
-		str  = DAP_GetAmplifierDef(W_TelegraphServers[i][0], W_TelegraphServers[i][1])
+		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
 		list = AddListItem(str, list, ";", inf)
 	endfor
 
@@ -5901,7 +5901,6 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 			Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-			Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
 
 			// Is an amp associated with the headstage?
 			headStage  = GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
@@ -5913,7 +5912,8 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 			endif
 
 			// Is the amp still connected?
-			FindValue/I=(axonSerial)/T=0 W_TelegraphServers
+			WAVE telegraphServers = GetAmplifierTelegraphServers()
+			FindValue/I=(axonSerial)/T=0 telegraphServers
 			if(V_Value != -1)
 				AI_AutoFillGain(panelTitle)
 				HSU_UpdateChanAmpAssignStorWv(panelTitle)
