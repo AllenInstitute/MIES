@@ -4610,7 +4610,6 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	variable i, numRows
 	string str
 	string list = NONE
-	string panelTitle = GetCurrentWindow()
 
 	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
 
