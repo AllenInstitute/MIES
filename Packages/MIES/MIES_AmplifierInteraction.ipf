@@ -1479,8 +1479,8 @@ Function AI_AssertOnInvalidClampMode(clampMode)
 End
 
 /// @brief Create the amplifier connection waves
-Function AI_FindConnectedAmps(panelTitle)
-	string panelTitle
+Function AI_FindConnectedAmps()
+
 
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder GetAmplifierFolder()

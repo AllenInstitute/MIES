@@ -4580,7 +4580,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
-			AI_FindConnectedAmps(ba.win)
+			AI_FindConnectedAmps()
 			break
 	endswitch
 End

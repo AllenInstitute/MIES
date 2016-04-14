@@ -74,7 +74,7 @@ Function HSU_LockDevice(panelTitle)
 	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
 	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
-	AI_FindConnectedAmps(panelTitleLocked)
+	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
 	HSU_OpenITCDevice(panelTitleLocked)
 	DAP_UpdateListOfPressureDevices()
