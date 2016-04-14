@@ -5235,6 +5235,25 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	return 0
 End
 
+/// @brief Synchronizes the contents of `ChanAmpAssign` and
+/// `ChanAmpAssignUnit` to all active headstages
+static Function DAP_SyncChanAmpAssignToActiveHS(panelTitle)
+	string panelTitle
+
+	variable i, clampMode
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		clampMode = DAP_MIESHeadstageMode(panelTitle, i)
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, i, clampMode)
+	endfor
+End
+
 /// @brief Reads the channel amp waves and inserts that info into the DA_EPHYS panel
 static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	string panelTitle
@@ -5905,6 +5924,7 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 
 			if(numConnAmplifiers)
 				HSU_UpdateChanAmpAssignPanel(panelTitle)
+				DAP_SyncChanAmpAssignToActiveHS(panelTitle)
 			else
 				printf "(%s) Could not find any amplifiers connected with headstages.\r", panelTitle
 			endif
