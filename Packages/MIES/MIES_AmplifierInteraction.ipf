@@ -188,7 +188,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 
 	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, axonSerial=axonSerial, channel=channel))
 		if(verbose)
-			print "No Amp is linked with this headstage"
+			printf "(%s) No amplifier is linked with headstage %d\r", panelTitle, headStage
 		endif
 		return 1
 	endif
@@ -200,7 +200,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	catch
 		errorCode = GetRTError(1)
 		if(verbose)
-			printf "The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", mccSerial, headStage
+			printf "(%s) The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", panelTitle, mccSerial, headStage
 		endif
 		ResetDebugOnError(debugOnError)
 		return 2
