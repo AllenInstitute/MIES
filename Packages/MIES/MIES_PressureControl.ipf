@@ -1631,10 +1631,14 @@ End
 Function P_ButtonProc_Enable(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
+	string panelTitle
+
 	switch(ba.eventCode)
 		case 2: // mouse up
+			panelTitle = ba.win
+			DAP_AbortIfUnlocked(panelTitle)
 			P_Enable()
-			P_UpdatePressureDataStorageWv(ba.win)
+			P_UpdatePressureDataStorageWv(panelTitle)
 			break
 	endswitch
 

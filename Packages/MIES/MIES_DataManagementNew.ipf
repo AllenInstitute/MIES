@@ -330,10 +330,6 @@ static Function GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, f
 	func    = ""
 	setName = ""
 
-	if(DAP_DeviceIsUnlocked(panelTitle))
-		return NaN
-	endif
-
 	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
 
 	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)

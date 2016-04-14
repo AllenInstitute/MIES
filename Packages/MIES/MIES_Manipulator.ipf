@@ -239,7 +239,10 @@ Function M_CheckSettings(panelTitle)
 
 		panelTitle = StringFromList(i, list)
 
-		AbortOnValue DAP_DeviceIsUnlocked(panelTitle),1
+		if(DAP_DeviceIsUnlocked(panelTitle))
+			printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
+			return 1
+		endif
 
 		if(HSU_CanSelectDevice(panelTitle))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
