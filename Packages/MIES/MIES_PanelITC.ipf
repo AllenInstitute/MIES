@@ -4739,7 +4739,7 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 
 			// set all DA/AD channels for both clamp modes to an invalid channel number
 			ChanAmpAssign[0, 6;2][headStage] = NaN
-			ChanAmpAssign[8, 10][headStage]  = NaN
+			ChanAmpAssign[8, 9][headStage]   = NaN
 
 			HSU_UpdateChanAmpAssignPanel(panelTitle)
 			break
