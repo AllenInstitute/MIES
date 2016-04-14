@@ -1481,18 +1481,15 @@ End
 /// @brief Create the amplifier connection waves
 Function AI_FindConnectedAmps()
 
+	IH_RemoveAmplifierConnWaves()
 
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder GetAmplifierFolder()
 
-	// old axon interface settings wave
-	Make/O/N=0 W_TelegraphServers
 	AxonTelegraphFindServers
-
+	WAVE W_TelegraphServers
 	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
 
-	// new mcc interface settings wave
-	Make/O/N=(0,0)/I W_MultiClamps
 	MCC_FindServers/Z=1
 
 	SetDataFolder saveDFR
