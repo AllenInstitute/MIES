@@ -6467,7 +6467,10 @@ Static Function DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GuiState)
 End
 
 /// @brief Return the mode of all DA_Ephys panel headstages
-Function/Wave DAP_GetAllHSMode(panelTitle)
+///
+/// All callers, except the ones updating the GUIState wave,
+/// should prefer DAP_MIESHeadstageMode() instead.
+static Function/Wave DAP_GetAllHSMode(panelTitle)
 	string panelTitle
 
 	variable i, headStage, clampMode
