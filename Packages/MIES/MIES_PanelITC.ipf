@@ -4282,7 +4282,7 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_TurnOffAllTTLs(panelTitle)
+static Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
 
 	variable i
@@ -4290,7 +4290,7 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
@@ -4306,7 +4306,7 @@ Function DAP_ButtonProc_TTLOff(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_TurnOffAllDACs(panelTitle)
+static Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 
 	variable i
@@ -4314,7 +4314,7 @@ Function DAP_TurnOffAllDACs(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
@@ -4330,7 +4330,7 @@ Function DAP_ButtonProc_DAOff(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_TurnOffAllADCs(panelTitle)
+static Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 
 	variable i
@@ -4338,7 +4338,7 @@ Function DAP_TurnOffAllADCs(panelTitle)
 
 	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
