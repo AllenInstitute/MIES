@@ -4564,15 +4564,15 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_PopMenuProc_DevTypeChk(s) : PopupMenuControl
-	struct WMPopupAction& s
+Function DAP_PopMenuProc_DevTypeChk(pa) : PopupMenuControl
+	struct WMPopupAction& pa
 
-	if(s.eventCode != EVENT_MOUSE_UP)
-		return 0
-	endif
-
-	HSU_IsDeviceTypeConnected(s.win)
-	DAP_UpdateYokeControls(s.win)
+	switch(pa.eventCode)
+		case 2: // mouse up
+			HSU_IsDeviceTypeConnected(pa.win)
+			DAP_UpdateYokeControls(pa.win)
+			break
+	endswitch
 End
 
 Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
