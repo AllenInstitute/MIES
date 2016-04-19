@@ -115,6 +115,21 @@ Function DisableListOfControls(win, controlList)
 	endfor
 End
 
+/// @brief Set the title of a list of controls
+Function SetControlTitles(win, controlList, controlTitleList)
+	string win, controlList, controlTitleList
+
+	variable i
+	variable numItems = ItemsInList(controlList)
+	ASSERT(numItems <= ItemsInList(controlTitleList), "List of control titles is too short")
+	string controlName, newTitle
+	for(i=0; i < numItems; i+=1)
+		controlName = StringFromList(i,controlList)
+		newTitle = StringFromList(i,controlTitleList)
+		SetControlTitle(win, controlName, newTitle)
+	endfor
+End
+
 /// @brief Set the title of a control
 Function SetControlTitle(win, controlName, newTitle)
 	string win, controlName, newTitle
@@ -123,6 +138,20 @@ Function SetControlTitle(win, controlName, newTitle)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	ModifyControl $ControlName WIN = $win, title = newTitle
+End
+
+/// @brief Change color of the title of mulitple controls
+Function SetControlTitleColors(win, controlList, R, G, B)
+	string win, controlList
+	variable R, G, B
+
+	variable i
+	variable numItems = ItemsInList(controlList)
+	string controlName
+	for(i=0; i < numItems; i+=1)
+		controlName = StringFromList(i,controlList)
+		SetControlTitleColor(win, controlName, R, G, B)
+	endfor
 End
 
 /// @brief Change color of a control
