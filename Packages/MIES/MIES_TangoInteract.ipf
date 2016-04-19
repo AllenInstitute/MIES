@@ -129,8 +129,7 @@ Function TI_queryAmps(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
 
-	//Call the query amp command
-	AI_FindConnectedAmps("ITC18USB_Dev_0")
+	AI_FindConnectedAmps()
 
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))

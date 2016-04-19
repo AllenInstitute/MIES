@@ -2571,7 +2571,7 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_FastComp_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_FastComp_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	Button button_Hardware_AutoGainAndUnit,pos={399.00,409.00},size={40.00,47.00},proc=DAP_ButtonProc_AutoFillGain,title="Auto\rFill"
-	Button button_Hardware_AutoGainAndUnit,help={"A amplifier channel needs to be selected from the popup menu prior to auto filling gain and units."}
+	Button button_Hardware_AutoGainAndUnit,help={"Queries the MultiClamp Commander for the gains of all connected amplifiers of this device."}
 	Button button_Hardware_AutoGainAndUnit,userdata(tabnum)=  "6"
 	Button button_Hardware_AutoGainAndUnit,userdata(tabcontrol)=  "ADC"
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo)= A"!!,I-J,hs\\J,hnY!!#>Jz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -4580,7 +4580,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case EVENT_MOUSE_UP:
-			AI_FindConnectedAmps(ba.win)
+			AI_FindConnectedAmps()
 			break
 	endswitch
 End
@@ -4610,11 +4610,10 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	variable i, numRows
 	string str
 	string list = NONE
-	string panelTitle = GetCurrentWindow()
 
-	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
-	numRows = WaveExists(W_TelegraphServers) ? DimSize(W_TelegraphServers, ROWS) : 0
+	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
 		print "Activate Multiclamp Commander software to populate list of available amplifiers"
 		list = AddListItem("\\M1(MC not available;", list, ";", inf)
@@ -4622,7 +4621,7 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	endif
 
 	for(i=0; i < numRows; i+=1)
-		str  = DAP_GetAmplifierDef(W_TelegraphServers[i][0], W_TelegraphServers[i][1])
+		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
 		list = AddListItem(str, list, ";", inf)
 	endfor
 
@@ -4739,7 +4738,7 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 
 			// set all DA/AD channels for both clamp modes to an invalid channel number
 			ChanAmpAssign[0, 6;2][headStage] = NaN
-			ChanAmpAssign[8, 10][headStage]  = NaN
+			ChanAmpAssign[8, 9][headStage]   = NaN
 
 			HSU_UpdateChanAmpAssignPanel(panelTitle)
 			break
@@ -5234,6 +5233,25 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	return 0
+End
+
+/// @brief Synchronizes the contents of `ChanAmpAssign` and
+/// `ChanAmpAssignUnit` to all active headstages
+static Function DAP_SyncChanAmpAssignToActiveHS(panelTitle)
+	string panelTitle
+
+	variable i, clampMode
+	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		clampMode = DAP_MIESHeadstageMode(panelTitle, i)
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, i, clampMode)
+	endfor
 End
 
 /// @brief Reads the channel amp waves and inserts that info into the DA_EPHYS panel
@@ -5896,28 +5914,19 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 	struct WMButtonAction &ba
 
 	string panelTitle
-	variable headStage, axonSerial
+	variable numConnAmplifiers
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2: // mouse up
 			panelTitle = ba.win
-			Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
-			Wave/SDFR=GetAmplifierFolder() W_TelegraphServers
 
-			// Is an amp associated with the headstage?
-			headStage  = GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage")
-			axonSerial = ChanAmpAssign[8][headStage]
+			numConnAmplifiers = AI_QueryGainsFromMCC(panelTitle)
 
-			if(!IsFinite(axonSerial))
-				print "An amp channel has not been assigned to this headstage therefore gains cannot be imported"
-				break
-			endif
-
-			// Is the amp still connected?
-			FindValue/I=(axonSerial)/T=0 W_TelegraphServers
-			if(V_Value != -1)
-				AI_AutoFillGain(panelTitle)
-				HSU_UpdateChanAmpAssignStorWv(panelTitle)
+			if(numConnAmplifiers)
+				HSU_UpdateChanAmpAssignPanel(panelTitle)
+				DAP_SyncChanAmpAssignToActiveHS(panelTitle)
+			else
+				printf "(%s) Could not find any amplifiers connected with headstages.\r", panelTitle
 			endif
 			break
 	endswitch
@@ -6478,7 +6487,10 @@ Static Function DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GuiState)
 End
 
 /// @brief Return the mode of all DA_Ephys panel headstages
-Function/Wave DAP_GetAllHSMode(panelTitle)
+///
+/// All callers, except the ones updating the GUIState wave,
+/// should prefer DAP_MIESHeadstageMode() instead.
+static Function/Wave DAP_GetAllHSMode(panelTitle)
 	string panelTitle
 
 	variable i, headStage, clampMode

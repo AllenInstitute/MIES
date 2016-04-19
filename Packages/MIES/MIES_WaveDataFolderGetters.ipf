@@ -1701,6 +1701,43 @@ Function/WAVE GetAmplifierSettingsTextKeyWave(panelTitle)
 	return wv
 End
 
+/// @brief Return wave reference to the `W_TelegraphServers` wave
+///
+/// Call AI_FindConnectedAmps() to create that wave, otherwise an empty wave is
+/// returned.
+Function/Wave GetAmplifierTelegraphServers()
+
+	DFREF dfr = GetAmplifierFolder()
+
+	WAVE/I/Z/SDFR=dfr wv = W_TelegraphServers
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/I/N=(0) dfr:W_TelegraphServers/Wave=wv
+	endif
+
+	return wv
+End
+
+/// @brief Return wave reference to the `W_MultiClamps` wave
+///
+/// Call AI_FindConnectedAmps() to create that wave, if that was not done an
+/// empty wave is returned.
+Function/Wave GetAmplifierMultiClamps()
+
+	DFREF dfr = GetAmplifierFolder()
+
+	WAVE/I/Z/SDFR=dfr wv = W_MultiClamps
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/I/N=(0) dfr:W_MultiClamps/Wave=wv
+	endif
+
+	return wv
+End
 /// @}
 
 /// @name Wavebuilder

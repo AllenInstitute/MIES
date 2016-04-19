@@ -74,7 +74,7 @@ Function HSU_LockDevice(panelTitle)
 	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
 	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
-	AI_FindConnectedAmps(panelTitleLocked)
+	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
 	HSU_OpenITCDevice(panelTitleLocked)
 	DAP_UpdateListOfPressureDevices()
@@ -349,10 +349,8 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	amplifierDef = GetPopupMenuString(panelTitle, "popup_Settings_Amplifier")
 	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 
-	WAVE/Z/SDFR=GetAmplifierFolder() W_TelegraphServers
-	// the check for W_TelegraphServers existence ensures that the user queried
-	// the amplifiers from the MCC panel
-	if(WaveExists(W_TelegraphServers) && IsFinite(ampSerial) && IsFinite(ampChannelID))
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
+	if(DimSize(telegraphServers, ROWS) > 0 && IsFinite(ampSerial) && IsFinite(ampChannelID))
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
 	else

@@ -34,9 +34,8 @@ End
 /// @brief Remove the amplifier connection waves
 Function IH_RemoveAmplifierConnWaves()
 
-	Wave/Z/SDFR=GetAmplifierFolder() W_TelegraphServers, W_MultiClamps
-	KillOrMoveToTrash(wv=W_TelegraphServers)
-	KillOrMoveToTrash(wv=W_MultiClamps)
+	KillOrMoveToTrash(wv=GetAmplifierTelegraphServers())
+	KillOrMoveToTrash(wv=GetAmplifierMultiClamps())
 End
 
 /// @brief Delete all wavebuilder stim sets to save memory

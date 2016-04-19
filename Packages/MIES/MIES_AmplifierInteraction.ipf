@@ -188,7 +188,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 
 	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, axonSerial=axonSerial, channel=channel))
 		if(verbose)
-			print "No Amp is linked with this headstage"
+			printf "(%s) No amplifier is linked with headstage %d\r", panelTitle, headStage
 		endif
 		return 1
 	endif
@@ -200,7 +200,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	catch
 		errorCode = GetRTError(1)
 		if(verbose)
-			printf "The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", mccSerial, headStage
+			printf "(%s) The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", panelTitle, mccSerial, headStage
 		endif
 		ResetDebugOnError(debugOnError)
 		return 2
@@ -1405,70 +1405,89 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	endif
 End
 
-/// @brief Auto fills the units and gains in the hardware tab of the DA_Ephys
-/// panel - has some limitations that are due to the MCC API limitations
-Function AI_AutoFillGain(panelTitle)
+/// @brief Auto fills the units and gains for all headstages connected to amplifiers
+/// by querying the MCC application
+///
+/// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
+///
+/// @return number of connected amplifiers
+Function AI_QueryGainsFromMCC(panelTitle, [verbose])
 	string panelTitle
+	variable verbose
 
-	variable mode, resetFromIEqualZero, headstage
+	variable mode, resetFromIEqualZero, i, numConnAmplifiers
 
-	headstage = GetPopupMenuIndex(panelTitle,  "Popup_Settings_HeadStage")
-
-	if(AI_SelectMultiClamp(panelTitle, headstage, verbose=1))
-		return NaN
+	if(ParamIsDefault(verbose))
+		verbose = 0
 	endif
 
-	// sets the units
-	SetSetVariableString(panelTitle, "SetVar_Hardware_VC_DA_Unit", "mV")
-	SetSetVariableString(panelTitle, "SetVar_Hardware_VC_AD_Unit", "pA")
-	SetSetVariableString(panelTitle, "SetVar_Hardware_IC_DA_Unit", "pA")
-	SetSetVariableString(panelTitle, "SetVar_Hardware_IC_AD_Unit", "mV")
+	WAVE ChanAmpAssign       = GetChanAmpAssign(panelTitle)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
+	WAVE statusHS            = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	mode = MCC_GetMode()
-	AI_AssertOnInvalidClampMode(mode)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-	if(mode == V_CLAMP_MODE)
-		SetSetVariable(panelTitle, "setvar_Settings_VC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
-		SetSetVariable(panelTitle, "setvar_Settings_VC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
-	elseif(mode == I_CLAMP_MODE)
-		SetSetVariable(panelTitle, "setvar_Settings_IC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
-		SetSetVariable(panelTitle, "setvar_Settings_IC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
-	elseif(mode == I_EQUAL_ZERO_MODE)
-		// checks to see if a holding current or bias current is being
-		// applied, if yes, the mode switch required to pull in the gains
-		// for all modes is prevented.
-		if(!MCC_GetHoldingEnable())
-			AI_SetClampMode(panelTitle, headstage, I_CLAMP_MODE)
-			resetFromIEqualZero = 1
-			SetSetVariable(panelTitle, "setvar_Settings_IC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
-			SetSetVariable(panelTitle, "setvar_Settings_IC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
-		else
-			print "It appears that a bias current or holding potential is being applied by the MC Commader suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported"
+		if(AI_SelectMultiClamp(panelTitle, i, verbose=verbose))
+			continue
 		endif
-	endif
 
-	if(!MCC_GetHoldingEnable())
-		AI_SwitchAxonAmpMode(panelTitle, headstage)
+		numConnAmplifiers += 1
 
 		mode = MCC_GetMode()
+		AI_AssertOnInvalidClampMode(mode)
+
+		ChanAmpAssignUnit[0][i] = "mV"
+		ChanAmpAssignUnit[1][i] = "pA"
+		ChanAmpAssignUnit[2][i] = "pA"
+		ChanAmpAssignUnit[3][i] = "mV"
 
 		if(mode == V_CLAMP_MODE)
-			SetSetVariable(panelTitle, "setvar_Settings_VC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
-			SetSetVariable(panelTitle, "setvar_Settings_VC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+			ChanAmpAssign[%VC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
+			ChanAmpAssign[%VC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
 		elseif(mode == I_CLAMP_MODE)
-			SetSetVariable(panelTitle, "setvar_Settings_IC_DAgain", AI_RetrieveDAGain(panelTitle, headstage))
-			SetSetVariable(panelTitle, "setvar_Settings_IC_ADgain", AI_RetrieveADGain(panelTitle, headstage))
+			ChanAmpAssign[%IC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
+			ChanAmpAssign[%IC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
+		elseif(mode == I_EQUAL_ZERO_MODE)
+			// checks to see if a holding current or bias current is being
+			// applied, if yes, the mode switch required to pull in the gains
+			// for all modes is prevented.
+			if(!MCC_GetHoldingEnable())
+				AI_SetClampMode(panelTitle, i, I_CLAMP_MODE)
+				resetFromIEqualZero = 1
+				ChanAmpAssign[%IC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
+				ChanAmpAssign[%IC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
+			else
+				printf "It appears that a bias current or holding potential is being applied by the MC Commader "
+				printf "suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported\r"
+			endif
 		endif
 
-		if(resetFromIEqualZero)
-			AI_SetClampMode(panelTitle, headstage, I_EQUAL_ZERO_MODE)
+		if(!MCC_GetHoldingEnable())
+			AI_SwitchAxonAmpMode(panelTitle, i)
+
+			mode = MCC_GetMode()
+
+			if(mode == V_CLAMP_MODE)
+				ChanAmpAssign[%VC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
+				ChanAmpAssign[%VC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
+			elseif(mode == I_CLAMP_MODE)
+				ChanAmpAssign[%IC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
+				ChanAmpAssign[%IC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
+			endif
+
+			if(resetFromIEqualZero)
+				AI_SetClampMode(panelTitle, i, I_EQUAL_ZERO_MODE)
+			else
+				AI_SwitchAxonAmpMode(panelTitle, i)
+			endif
 		else
-			AI_SwitchAxonAmpMode(panelTitle, headstage)
+			printf "It appears that a holding potential is being applied, therefore as a precaution, "
+			printf "the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
+			printf "The gains were successfully imported for the %s on i: %d\r", AI_ConvertAmplifierModeToString(mode), i
 		endif
-	else
-		printf "It appears that a holding potential is being applied, therefore as a precaution, the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
-		printf "The gains were successfully imported for the %s on headstage: %d\r", AI_ConvertAmplifierModeToString(mode), headstage
-	endif
+	endfor
+
+	return numConnAmplifiers
 End
 
 /// @brief Assert on invalid clamp modes, does nothing otherwise
@@ -1479,20 +1498,17 @@ Function AI_AssertOnInvalidClampMode(clampMode)
 End
 
 /// @brief Create the amplifier connection waves
-Function AI_FindConnectedAmps(panelTitle)
-	string panelTitle
+Function AI_FindConnectedAmps()
+
+	IH_RemoveAmplifierConnWaves()
 
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder GetAmplifierFolder()
 
-	// old axon interface settings wave
-	Make/O/N=0 W_TelegraphServers
 	AxonTelegraphFindServers
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
+	MDSort(telegraphServers, 0, keyColSecondary=1)
 
-	MDSort(W_TelegraphServers, 0, keyColSecondary=1)
-
-	// new mcc interface settings wave
-	Make/O/N=(0,0)/I W_MultiClamps
 	MCC_FindServers/Z=1
 
 	SetDataFolder saveDFR
