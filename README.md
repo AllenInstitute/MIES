@@ -131,6 +131,22 @@ and provides the following services for MIES.
 * The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
   This is ensured by a platform requirement for the job.
 
+### Compilation testing (Igor Pro 7.x 32bit only)
+The full MIES installation and the partial installations are IGOR Pro compiled
+using a bamboo job. This allows to catch compile time errors early on.<br>
+For testing compilation manually perform the following steps:
+
+* Create in "User Procedures" a shortcut pointing to Packages\MIES_Include.ipf
+* Remove the shortcut Packages\MIES_Include.ipf in "Igor Procedures"
+* Close all Igor Pro instances
+* Execute tools\compilation-testing\check_mies_compilation.bat
+* Watch the output
+
+### Documentation building
+The documentation for the master and the latest release branch, `release/$number`, are automatically built by:
+* http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD
+* http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE
+
 ## Cutting a new release
 * Check that main MIES and all separate modules compile (IP6 and IP7)
 * Check that doxygen returns neither errors nor warnings
