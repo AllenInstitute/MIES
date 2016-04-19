@@ -4116,6 +4116,12 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 	endif
 
 	headStageCheckBox = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+
+	if(GetCheckBoxState(panelTitle, checkboxCtrl) == GetCheckBoxState(panelTitle, headStageCheckBox))
+		// nothing to do
+		return NaN
+	endif
+
 	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=!GetCheckBoxState(panelTitle, headStageCheckBox))
 End
 
