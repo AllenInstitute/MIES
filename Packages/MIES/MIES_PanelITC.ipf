@@ -4156,7 +4156,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 	
 	// turn off active pressure control modes
-	if(getCheckboxState(panelTitle, "check_Settings_DisablePressure", allowMissingControl = 1))
+	if(GetCheckboxState(panelTitle, "check_Settings_DisablePressure"))
 		P_SetAllHStoAtmospheric(panelTitle)
 	endif
 End
@@ -4199,7 +4199,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	DAP_UpdateSweepSetVariables(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", allowMissingControl=1))
+	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ"))
 		return NaN
 	endif
 
@@ -4399,7 +4399,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", allowMissingControl=1))
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI"))
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
 		ControlInfo/W=$panelTitle Check_DataAcq_Get_Set_ITI
@@ -5777,7 +5777,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
 	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
-	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", allowMissingControl=1)
+	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI")
 	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
 	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
 	leaderdDAQDelay    = GetSetVariable(leadPanel, "SetVar_DataAcq_dDAQDelay")

@@ -246,29 +246,15 @@ Function GetControlDisable(win, control)
 	return V_disable
 End
 
-/// @brief Returns one if the checkbox is selected, zero if it is unselected
-/// and, if allowMissingControl is true, NaN for non existing controls.
-///
-/// Checking non existing controls is useful to support old panels
-/// stored in experiments which don't have the control.
-Function GetCheckBoxState(win, control, [allowMissingControl])
+/// @brief Returns one if the checkbox is selected or zero if it is unselected
+Function GetCheckBoxState(win, control)
 	string win, control
 	variable allowMissingControl
 
 	ControlInfo/W=$win $control
-	if(ParamIsDefault(allowMissingControl) || allowMissingControl == 0)
-		ASSERT(V_flag != 0, "Non-existing control or window")
-		ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-		return V_Value
-	else
-		if(V_flag == 0) // control/window is missing
-			ASSERT(windowExists(win), "missing window")
-			return NaN
-		else
-			ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-			return V_Value
-		endif
-	endif
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+	return V_Value
 End
 
 /// @brief Set the internal number in a setvariable control
