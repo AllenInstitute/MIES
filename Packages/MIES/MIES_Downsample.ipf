@@ -515,7 +515,7 @@ Function CheckBoxInterpolation(cba) : CheckBoxControl
 
 	string win
 	switch( cba.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			win = cba.win
 			ControlUpdate/W=$win $popup_targetrate
 			UpdateEstimatedSizeAfterwards(win)
@@ -549,7 +549,7 @@ Function ButtonRestoreBackup(ba) : ButtonControl
 	variable numWaves, i, success
 
 	switch( ba.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			win     = ba.win
 			success = 1
 			Wave/Wave dataRef = GetDownsampleDataRefWave()
@@ -580,7 +580,7 @@ Function ButtonDoIt(ba) : ButtonControl
 	dfref dfr
 
 	switch( ba.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			win              = ba.win
 			backupWaves      = GetCheckBoxState(win, checkbox_backupwaves)
 			decimationMethod = GetDecimationMethod(win)
@@ -674,7 +674,7 @@ Function PopupMenuDeviceSelection(pa) : PopupMenuControl
 
 	string popStr, win
 	switch( pa.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			win    = pa.win
 			popStr = pa.popStr
 			UpdatePanel(win, deviceSelectionString=popStr)
@@ -689,7 +689,7 @@ Function PopupMenuDecimationMethod(pa) : PopupMenuControl
 
 	string win
 	switch( pa.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			win = pa.win
 			UpdatePopupMenuWindowFunction(win, decimationMethod = 2^(pa.popNum - 1))
 			break
@@ -707,7 +707,7 @@ Function CheckBoxEqualizeDown(cba) : CheckBoxControl
 	Variable low, high, inc
 
 	switch( cba.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			cba.blockreentry = 1
 			checked = cba.checked
 			win     = cba.win

@@ -4220,7 +4220,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 	string panelTitle
 
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = ba.win
 
 			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
@@ -4242,7 +4242,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	string panelTitle
 
 	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 
 		panelTitle = cba.win
 		// makes sure user data for controls is up to date
@@ -4376,7 +4376,7 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 	string panelTitle
 
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = ba.win
 			DAP_TurnOffAllHeadstages(panelTitle)
 			DAP_TurnOffAllDACs(panelTitle)
@@ -4579,7 +4579,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			AI_FindConnectedAmps()
 			break
 	endswitch
@@ -4589,7 +4589,7 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			if(cba.checked)
 				DAP_UpdateITIAcrossSets(cba.win)
 			else
@@ -5430,7 +5430,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	string panelTitle
 
 	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = cba.win
 			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, mode, headStage)
 			DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
@@ -5444,7 +5444,7 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch( cba.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			DAP_ChangeHeadstageState(cba.win, cba.ctrlName, cba.checked)
 			break
 	endswitch
@@ -5721,7 +5721,7 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 	string leadPanel, panelToYoke
 
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 
 			leadPanel = ba.win
 
@@ -6005,7 +6005,7 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 	variable headStage
 
 	switch( cba.eventCode )
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = cba.win
 			ctrl       = cba.ctrlName
 
@@ -6022,7 +6022,7 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			DAP_SwitchSingleMultiMode(cba.win, cba.checked)
 			break
 	endswitch
