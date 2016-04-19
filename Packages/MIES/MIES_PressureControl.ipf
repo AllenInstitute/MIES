@@ -1190,7 +1190,7 @@ End
 Static Function SetPressureButtonsToBaseState(panelTitle)
 	string panelTitle
 
-	DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
+	DisableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
 	SetControlTitles(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, PRESSURE_CONTROL_TITLE_LIST)
 	SetControlTitleColors(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, 0, 0, 0)
 End
@@ -1208,16 +1208,16 @@ static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 
 	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
 		if(getCheckBoxState(panelTitle, StringFromList(P_METHOD_3_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
-			EnableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
+			EnableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
 		else
-			DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
+			DisableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
 			EnableControl(panelTitle, StringFromList(0, PRESSURE_CONTROLS_BUTTON_LIST)) // approach button
 			EnableControl(panelTitle, StringFromList(1, PRESSURE_CONTROLS_BUTTON_LIST))
 			EnableControl(panelTitle, StringFromList(2, PRESSURE_CONTROLS_BUTTON_LIST))
 			EnableControl(panelTitle, StringFromList(4, PRESSURE_CONTROLS_BUTTON_LIST))
 		endif
 	else
-		DisableListOfControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
+		DisableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
 		EnableControl(panelTitle, StringFromList(0, PRESSURE_CONTROLS_BUTTON_LIST)) // approach button
 		EnableControl(panelTitle, StringFromList(4, PRESSURE_CONTROLS_BUTTON_LIST))
 	endif
@@ -1380,8 +1380,8 @@ End
 /// @brief unHighlites pressure display
 Function P_PressureDisplayUnhighlite(panelTitle)
 	string panelTitle
-	ChangeListOfControlValueColor(panelTitle, PRESSURE_CONTROL_PRESSURE_DISP, 0, 0, 0) // white
-	ChangeListOfControlBckgColor(panelTitle, PRESSURE_CONTROL_PRESSURE_DISP,65535, 65535, 65535) // black
+	ChangeControlValueColors(panelTitle, PRESSURE_CONTROL_PRESSURE_DISP, 0, 0, 0) // white
+	ChangeControlBckgColors(panelTitle, PRESSURE_CONTROL_PRESSURE_DISP,65535, 65535, 65535) // black
 End
 
 /// @brief Enables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
@@ -1399,7 +1399,7 @@ Function P_Enable()
 				P_OpenITCDevForP_Reg(LockedDevice) // 	open ITC devices used for pressure regulation
 			endif
 			EnableControl(LockedDevice, "button_Hardware_P_Disable") // enable the ITC device pressure regulation disable button
-			EnableListOfControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST) // enable the pressure regulation check box controls
+			EnableControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST) // enable the pressure regulation check box controls
 			variable headStage = GetSliderPositionIndex(LockedDevice, "slider_DataAcq_ActiveHeadstage") // determine the selected MIES headstage
 			P_LoadPressureButtonState(LockedDevice, headStage) // apply the pressure button settings for the active MIES headStage (prevent pressure buttons from being activated if an ITC device isn't assigned and enabled to the headStage for pressure regulation)
 			j+=1
@@ -1419,9 +1419,9 @@ Function P_Disable()
 		if(ItemsInList(P_ITCDevToOpen())) // check to ensure there are ITC devices assigned by the user for pressure regulation
 			DisableControl(LockedDevice, "button_Hardware_P_Disable") // disable this button
 			EnableControl(LockedDevice, "button_Hardware_P_Enable") // enable the ITC device pressure regulation disable button
-			EnableListOfControls(LockedDevice,PRESSURE_CONTROL_CHECKBOX_LIST)		// enable the pressure regulation check box controls
-			DisableListOfControls(LockedDevice, PRESSURE_CONTROLS_BUTTON_LIST) 		// disable the buttons used for pressure regulation
-			DisableListOfControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)	// disable the checkboxes used for pressure regulation
+			EnableControls(LockedDevice,PRESSURE_CONTROL_CHECKBOX_LIST)		// enable the pressure regulation check box controls
+			DisableControls(LockedDevice, PRESSURE_CONTROLS_BUTTON_LIST) 		// disable the buttons used for pressure regulation
+			DisableControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)	// disable the checkboxes used for pressure regulation
 			if(j == 0)
 				P_CloseITCDevForP_Reg(LockedDevice) // 	close ITC devices used for pressure regulation
 			endif

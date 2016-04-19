@@ -22,7 +22,7 @@ Function ShowControl(win, control)
 End
 
 /// @brief Show a list of GUI controls in the given window
-Function ShowListOfControls(win, controlList)
+Function ShowControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -49,7 +49,7 @@ Function HideControl(win, control)
 End
 
 /// @brief Hide a list of GUI controls in the given window
-Function HideListOfControls(win, controlList)
+Function HideControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -76,7 +76,7 @@ Function EnableControl(win, control)
 End
 
 /// @brief Enable a list of GUI controls in the given window
-Function EnableListOfControls(win, controlList)
+Function EnableControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -103,7 +103,7 @@ Function DisableControl(win, control)
 End
 
 /// @brief Disable a list of GUI controls in the given window
-Function DisableListOfControls(win, controlList)
+Function DisableControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -190,7 +190,7 @@ Function ChangeControlValueColor(win, controlName, R, G, B)
 End
 
 /// @brief Change the font color of a list of controls
-Function ChangeListOfControlValueColor(win, controlList, R, G, B)
+Function ChangeControlValueColors(win, controlList, R, G, B)
 	string win, controlList
 	variable R, G, B
 	variable i
@@ -220,7 +220,7 @@ Function ChangeControlBckgColor(win, controlName, R, G, B)
 End
 
 /// @brief Change the background color of a list of controls
-Function ChangeListOfControlBckgColor(win, controlList, R, G, B)
+Function ChangeControlBckgColors(win, controlList, R, G, B)
 	string win, controlList
 	variable R, G, B
 	variable i

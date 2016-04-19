@@ -102,7 +102,7 @@ static Function SB_PanelUpdate(graphOrPanel)
 	panel = SB_GetSweepBrowserLeftPanel(graph)
 
 	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
-		EnableListOfControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+		EnableControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
 
 		alignMode = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
 		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
@@ -111,7 +111,7 @@ static Function SB_PanelUpdate(graphOrPanel)
 			DisableControl(panel, "setvar_sweepBrowser_tAlignLevel")
 		endif
 	else
-		DisableListOfControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+		DisableControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
 	endif
 
 	SB_HandleCursorDisplay(graph)
@@ -798,9 +798,9 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
 				if(checked)
-					DisableListOfControls(win, SWEEP_OVERLAY_DEP_CTRLS)
+					DisableControls(win, SWEEP_OVERLAY_DEP_CTRLS)
 				else
-					EnableListOfControls(win, SWEEP_OVERLAY_DEP_CTRLS)
+					EnableControls(win, SWEEP_OVERLAY_DEP_CTRLS)
 				endif
 			elseif(StringMatch(ctrl, "check_SB_channelSel_*"))
 				WAVE channelSel = SB_GetChannelSelWave(graph)

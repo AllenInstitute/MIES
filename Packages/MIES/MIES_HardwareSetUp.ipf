@@ -67,7 +67,7 @@ Function HSU_LockDevice(panelTitle)
 		Abort "Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one."
 	endif
 
-	DisableListOfControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
+	DisableControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
 
@@ -177,9 +177,9 @@ Function HSU_UnlockDevice(panelTitle)
 		DAP_RemoveYokedDAC(panelTitle)
 	endif
 
-	EnableListOfControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
+	EnableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	DisableControl(panelTitle,"button_SettingsPlus_unLockDevic")
-	EnableListOfControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+	EnableControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 	DAP_ResetGUIAfterDAQ(panelTitle)
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
