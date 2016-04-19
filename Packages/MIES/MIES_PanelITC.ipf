@@ -4063,14 +4063,20 @@ End
 Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 	struct WMCheckboxAction &cba
 
-	string panelTitle
+	string panelTitle, control
 
 	switch(cba.eventCode)
 		case 2:
-			paneltitle = cba.win
-			DAP_AdaptAssocHeadstageState(panelTitle, cba.ctrlName)
-			DAP_UpdateITIAcrossSets(panelTitle)
-			DAP_UpdateSweepSetVariables(panelTitle)
+			try
+				paneltitle = cba.win
+				control    = cba.ctrlName
+				DAP_AdaptAssocHeadstageState(panelTitle, control)
+				DAP_UpdateITIAcrossSets(panelTitle)
+				DAP_UpdateSweepSetVariables(panelTitle)
+			catch
+				SetCheckBoxState(panelTitle, control, !cba.checked)
+				Abort
+			endtry
 			break
 	endswitch
 End
@@ -4078,9 +4084,18 @@ End
 Function DAP_CheckProc_AD(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
+	string panelTitle, control
+
 	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_AdaptAssocHeadstageState(cba.win, cba.ctrlName)
+			try
+				paneltitle = cba.win
+				control    = cba.ctrlName
+				DAP_AdaptAssocHeadstageState(panelTitle, control)
+			catch
+				SetCheckBoxState(panelTitle, control, !cba.checked)
+				Abort
+			endtry
 			break
 	endswitch
 
@@ -5432,13 +5447,19 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable mode, headStage
-	string panelTitle
+	string panelTitle, control
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			panelTitle = cba.win
-			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, mode, headStage)
-			DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
+			try
+				panelTitle = cba.win
+				control    = cba.ctrlName
+				DAP_GetInfoFromControl(panelTitle, control, mode, headStage)
+				DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
+			catch
+				SetCheckBoxState(panelTitle, control, !cba.checked)
+				Abort
+			endtry
 		break
 	endswitch
 
@@ -5448,9 +5469,20 @@ End
 Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	string panelTitle, control
+	variable checked
+
+	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_ChangeHeadstageState(cba.win, cba.ctrlName, cba.checked)
+			try
+				panelTitle = cba.win
+				control    = cba.ctrlName
+				checked    = cba.checked
+				DAP_ChangeHeadstageState(panelTitle, control, checked)
+			catch
+				SetCheckBoxState(panelTitle, control, !checked)
+				Abort
+			endtry
 			break
 	endswitch
 
