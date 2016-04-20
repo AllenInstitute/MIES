@@ -3913,7 +3913,7 @@ Function DAP_UpdateAllYokeControls()
 			continue
 		endif
 
-		DisableListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		DisableControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 		DAP_UpdateYokeControls(panelTitle)
 
 		if(ListOfLockedITC1600Num >= 2 && DAP_DeviceCanLead(panelTitle))
@@ -3928,7 +3928,7 @@ Function DAP_UpdateAllYokeControls()
 
 	for(i=0; i<ListOfUnLockedITCNum; i+=1)
 		panelTitle = StringFromList(i,ListOfUnLockedITC)
-		DisableListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		DisableControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 	endfor
 End
 
@@ -3950,12 +3950,12 @@ Function DAP_UpdateYokeControls(panelTitle)
 	endif
 
 	if(!DAP_DeviceIsYokeable(panelTitle))
-		HideListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		HideControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:"Device is not yokeable"
 	elseif(DAP_DeviceIsFollower(panelTitle))
-		HideListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		HideControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 	else
-		ShowListOfControls(panelTitle,YOKE_LIST_OF_CONTROLS)
+		ShowControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 		if(DAP_DeviceCanLead(panelTitle))
 			TitleBox title_hardware_1600inst win = $panelTitle, title = "Designate the status of the ITC1600 assigned to this device"
 		else
@@ -4156,7 +4156,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 	
 	// turn off active pressure control modes
-	if(getCheckboxState(panelTitle, "check_Settings_DisablePressure", allowMissingControl = 1))
+	if(GetCheckboxState(panelTitle, "check_Settings_DisablePressure"))
 		P_SetAllHStoAtmospheric(panelTitle)
 	endif
 End
@@ -4199,7 +4199,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	DAP_UpdateSweepSetVariables(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", allowMissingControl=1))
+	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ"))
 		return NaN
 	endif
 
@@ -4399,7 +4399,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", allowMissingControl=1))
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI"))
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
 		ControlInfo/W=$panelTitle Check_DataAcq_Get_Set_ITI
@@ -5684,7 +5684,7 @@ Function DAP_ButtonProc_Lead(ba) : ButtonControl
 			panelTitle = ba.win
 			ASSERT(DAP_DeviceCanLead(panelTitle),"This device can not lead")
 
-			EnableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
+			EnableControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
 			DisableControl(panelTitle,"button_Hardware_Lead1600")
 			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
 			createDFWithAllParents("root:ImageHardware:Arduino")
@@ -5703,7 +5703,7 @@ Function DAP_ButtonProc_Independent(ba) : ButtonControl
 		case 2:
 			panelTitle = ba.win
 
-			DisableListOfControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
+			DisableControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
 			EnableControl(panelTitle,"button_Hardware_Lead1600")
 			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 
@@ -5743,7 +5743,7 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 			DAP_SwitchSingleMultiMode(panelToYoke, 1)
 
 			DAP_UpdateITIAcrossSets(leadPanel)
-			DisableListOfControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+			DisableControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
 			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
 			EnableControl(leadPanel, "title_hardware_Release")
@@ -5777,7 +5777,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
 	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
-	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", allowMissingControl=1)
+	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI")
 	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
 	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
 	leaderdDAQDelay    = GetSetVariable(leadPanel, "SetVar_DataAcq_dDAQDelay")
@@ -5863,7 +5863,7 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
-	EnableListOfControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+	EnableControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
@@ -6042,7 +6042,7 @@ static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 	variable checkedState
 
 	if(useMultiDevice)
-		DisableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BkgTP")
 		SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
 		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
@@ -6051,7 +6051,7 @@ static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", CHECKBOX_SELECTED)
 		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", CHECKBOX_SELECTED)
 	else
-		EnableListOfControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
+		EnableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
 		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", checkedState)
 		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))

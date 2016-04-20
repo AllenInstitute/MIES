@@ -22,7 +22,7 @@ Function ShowControl(win, control)
 End
 
 /// @brief Show a list of GUI controls in the given window
-Function ShowListOfControls(win, controlList)
+Function ShowControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -49,7 +49,7 @@ Function HideControl(win, control)
 End
 
 /// @brief Hide a list of GUI controls in the given window
-Function HideListOfControls(win, controlList)
+Function HideControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -76,7 +76,7 @@ Function EnableControl(win, control)
 End
 
 /// @brief Enable a list of GUI controls in the given window
-Function EnableListOfControls(win, controlList)
+Function EnableControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -103,7 +103,7 @@ Function DisableControl(win, control)
 End
 
 /// @brief Disable a list of GUI controls in the given window
-Function DisableListOfControls(win, controlList)
+Function DisableControls(win, controlList)
 	string win, controlList
 
 	variable i
@@ -190,7 +190,7 @@ Function ChangeControlValueColor(win, controlName, R, G, B)
 End
 
 /// @brief Change the font color of a list of controls
-Function ChangeListOfControlValueColor(win, controlList, R, G, B)
+Function ChangeControlValueColors(win, controlList, R, G, B)
 	string win, controlList
 	variable R, G, B
 	variable i
@@ -220,7 +220,7 @@ Function ChangeControlBckgColor(win, controlName, R, G, B)
 End
 
 /// @brief Change the background color of a list of controls
-Function ChangeListOfControlBckgColor(win, controlList, R, G, B)
+Function ChangeControlBckgColors(win, controlList, R, G, B)
 	string win, controlList
 	variable R, G, B
 	variable i
@@ -246,29 +246,15 @@ Function GetControlDisable(win, control)
 	return V_disable
 End
 
-/// @brief Returns one if the checkbox is selected, zero if it is unselected
-/// and, if allowMissingControl is true, NaN for non existing controls.
-///
-/// Checking non existing controls is useful to support old panels
-/// stored in experiments which don't have the control.
-Function GetCheckBoxState(win, control, [allowMissingControl])
+/// @brief Returns one if the checkbox is selected or zero if it is unselected
+Function GetCheckBoxState(win, control)
 	string win, control
 	variable allowMissingControl
 
 	ControlInfo/W=$win $control
-	if(ParamIsDefault(allowMissingControl) || allowMissingControl == 0)
-		ASSERT(V_flag != 0, "Non-existing control or window")
-		ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-		return V_Value
-	else
-		if(V_flag == 0) // control/window is missing
-			ASSERT(windowExists(win), "missing window")
-			return NaN
-		else
-			ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-			return V_Value
-		endif
-	endif
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(V_flag == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
+	return V_Value
 End
 
 /// @brief Set the internal number in a setvariable control

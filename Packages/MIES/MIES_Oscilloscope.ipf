@@ -174,15 +174,8 @@ static Function SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResista
 	string panelTitle
 	variable &showSteadyStateResistance, &showPeakResistance
 
-	variable showResistanceCurve = GetCheckboxState(panelTitle, "check_settings_TP_show_resist", allowMissingControl=1)
-
-	if(IsFinite(showResistanceCurve)) // control from old panel
-		showPeakResistance        = showResistanceCurve
-		showSteadyStateResistance = showResistanceCurve
-	else // old control does not exist ->  new panel
-		showPeakResistance        = GetCheckboxState(panelTitle, "check_settings_TP_show_peak")
-		showSteadyStateResistance = GetCheckboxState(panelTitle, "check_settings_TP_show_steady")
-	endif
+	showPeakResistance        = GetCheckboxState(panelTitle, "check_settings_TP_show_peak")
+	showSteadyStateResistance = GetCheckboxState(panelTitle, "check_settings_TP_show_steady")
 End
 
 Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)

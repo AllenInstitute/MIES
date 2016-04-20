@@ -945,39 +945,39 @@ static Function WBP_UpdatePanelIfAllowed()
 			if(GetCheckBoxState(panel,"check_Noise_Pink_P41"))
 				SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
 				DisableControl(panel, "Check_Noise_Brown_P42")
-				DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				DisableControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 				EnableControl(panel, "SetVar_WaveBuilder_P30")
 			else
 				EnableControl(panel, "Check_Noise_Brown_P42")
-				EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				EnableControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 				DisableControl(panel, "SetVar_WaveBuilder_P30")
 			endif
 
 			if(GetCheckBoxState(panel,"Check_Noise_Brown_P42"))
 				SetCheckBoxState(panel,"check_Noise_Pink_P41", 0)
 				DisableControl(panel, "check_Noise_Pink_P41")
-				DisableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				DisableControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 				EnableControl(panel, "SetVar_WaveBuilder_P30")
 			else
 				EnableControl(panel, "check_Noise_Pink_P41")
-				EnableListOfControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
+				EnableControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 				DisableControl(panel, "SetVar_WaveBuilder_P30")
 			endif
 			break
 		case 3:
 			if(GetCheckBoxState(panel,"check_Sin_Chirp_P43"))
-				EnableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+				EnableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			else
-				DisableListOfControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
+				DisableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			endif
 			break
 		case 5:
 			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
 				DisableControl(panel, "SetVar_WaveBuilder_P0")
-				EnableListOfControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
+				EnableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
 			else
 				EnableControl(panel, "SetVar_WaveBuilder_P0")
-				DisableListOfControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
+				DisableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
 			endif
 			break
 		case 8:
@@ -992,9 +992,9 @@ static Function WBP_UpdatePanelIfAllowed()
 
 	deltaMode = GetPopupMenuString(panel,"popup_WaveBuilder_exp_P40")
 	if(!cmpstr(deltaMode, "Power") || !cmpstr(deltaMode, "Multiplier"))
-		EnableListOfControls(panel, controls)
+		EnableControls(panel, controls)
 	else
-		DisableListOfControls(panel, controls)
+		DisableControls(panel, controls)
 	endif
 End
 
@@ -1191,7 +1191,7 @@ Function WBP_FinalTabHook(tca)
 	endif
 
 	if(tabID == 7 || tabID == 8)
-		HideListOfControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_exp_P40")
+		HideControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_exp_P40")
 	endif
 
 	return 0
@@ -1388,7 +1388,7 @@ static Function WBP_ChangeWaveType(stimulusType)
 		WP[1,6][][] = 0
 
 		SetVariable SetVar_WaveBuilder_P2 win = $panel, limits = {0,1,1}
-		DisableListOfControls(panel, list)
+		DisableControls(panel, list)
 
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P2", 0)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P3", 0)
@@ -1399,7 +1399,7 @@ static Function WBP_ChangeWaveType(stimulusType)
 		WBP_ExecuteAdamsTabcontrol(0)
 	elseif(stimulusType == STIMULUS_TYPE_DA)
 		SetVariable SetVar_WaveBuilder_P2 win =$panel, limits = {-inf,inf,1}
-		EnableListOfControls(panel, list)
+		EnableControls(panel, list)
 	else
 		ASSERT(0, "Unknown stimulus type")
 	endif
