@@ -355,8 +355,10 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 				break
 		endswitch
 
-		// Don't send the value if it is equal to the current value, tolerance is 1%
-		if(CheckIfClose(ret, value, tol=1e-2, strong_or_weak=1))
+		// Don't send the value if it is equal to the current value, with tolerance
+		// being 1% of the reference value, or if it is zero and the current value is
+		// smaller than 1e-12.
+		if(CheckIfClose(ret, value, tol=1e-2 * abs(ret), strong_or_weak=1) || (value == 0 && CheckIfSmall(ret, tol=1e-12)))
 			DEBUGPRINT("The value to be set is equal to the current value, skip setting it: " + num2str(func))
 			return 0
 		endif
