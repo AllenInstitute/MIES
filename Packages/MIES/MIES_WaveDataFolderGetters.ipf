@@ -3672,8 +3672,25 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	DAP_RecordDA_EphysGuiState(panelTitle, GUISTATE=wv)
+	RecordDA_EphysGuiStateWrapper(panelTitle, wv)
 	return wv
+End
+
+/// @brief Calls `DAP_RecordDA_EphysGuiState` if it can be found,
+/// otherwise calls `RecordDA_EphysGuiStateProto` which aborts.
+static Function RecordDA_EphysGuiStateWrapper(str, wv)
+	string str
+	WAVE wv
+
+	FUNCREF RecordDA_EphysGuiStateProto f = $"DAP_RecordDA_EphysGuiState"
+	f(str, GUISTATE=wv)
+End
+
+Function RecordDA_EphysGuiStateProto(str, [GUISTATE])
+	string str
+	WAVE GUISTATE
+
+	Abort "Prototype function can not be called"
 End
 
 /// @brief Returns a list of unique and type specific controls
