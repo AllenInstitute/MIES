@@ -108,11 +108,6 @@ Constant CONTROL_TYPE_SLIDER      = 7
 Constant CONTROL_TYPE_TAB         = 8
 /// @}
 
-/// See "Control Structure eventMod Field"
-/// @deprecated as the numerical values are dependent on the
-/// control type this approach here will give a huge mess of constants
-Constant EVENT_MOUSE_UP = 2
-
 // Conversion factor from ticks to seconds, exact value is 1/60
 Constant TICKS_TO_SECONDS = 0.0166666666666667
 

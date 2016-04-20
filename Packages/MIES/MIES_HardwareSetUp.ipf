@@ -19,26 +19,29 @@ Function HSU_QueryITCDevice(panelTitle)
 	ExecuteITCOperation(cmd)
 End
 
-Function HSU_ButtonProc_Settings_OpenDev(s) : ButtonControl
-	struct WMButtonAction& s
+Function HSU_ButtonProc_Settings_OpenDev(ba) : ButtonControl
+	struct WMButtonAction& ba
 
-	if(s.eventCode != EVENT_MOUSE_UP)
-		return 0
-	endif
+	switch(ba.eventCode)
+		case 2: // mouse up
+			HSU_QueryITCDevice(ba.win)
+			break
+	endswitch
 
-	HSU_QueryITCDevice(s.win)
+	return 0
 End
 
-Function HSU_ButtonProc_LockDev(s) : ButtonControl
-	struct WMButtonAction& s
+Function HSU_ButtonProc_LockDev(ba) : ButtonControl
+	struct WMButtonAction& ba
 
-	if(s.eventCode != EVENT_MOUSE_UP)
-		return 0
-	endif
+	switch(ba.eventCode)
+		case 2: // mouse up
+			ba.blockReentry = 1
+			HSU_LockDevice(ba.win)
+			break
+	endswitch
 
-	s.blockReentry = 1
-
-	HSU_LockDevice(s.win)
+	return 0
 End
 
 Function HSU_LockDevice(panelTitle)
@@ -136,16 +139,17 @@ static Function/s HSU_GetDeviceNumber(panelTitle)
 	return S_value
 End
 
-Function HSU_ButProc_Hrdwr_UnlckDev(s) : ButtonControl
-	struct WMButtonAction& s
+Function HSU_ButProc_Hrdwr_UnlckDev(ba) : ButtonControl
+	struct WMButtonAction& ba
 
-	if(s.eventCode != EVENT_MOUSE_UP)
-		return 0
-	endif
+	switch(ba.eventCode)
+		case 2: // mouse up
+			ba.blockReentry = 1
+			HSU_UnlockDevice(ba.win)
+			break
+	endswitch
 
-	s.blockReentry = 1
-
-	HSU_UnlockDevice(s.win)
+	return 0
 End
 
 static Function HSU_ClearWaveIfExists(wv)

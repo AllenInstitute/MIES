@@ -1144,7 +1144,7 @@ Function WBP_CheckProc(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			WBP_UpdateControlAndWP(cba.ctrlName, cba.checked)
 			WBP_UpdatePanelIfAllowed()
 			break

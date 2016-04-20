@@ -664,7 +664,7 @@ Function DB_ButtonProc_Sweep(ba) : ButtonControl
 	string panelTitle, ctrl
 	variable currentSweep, direction
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = ba.win
 			ctrl       = ba.ctrlName
 
@@ -687,7 +687,7 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 
 	string panelTitle
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = ba.win
 			SetAxis/A/W=$DB_GetMainGraph(panelTitle)
 			SetAxis/A/W=$DB_GetLabNotebookGraph(panelTitle)
@@ -701,7 +701,7 @@ Function DB_ButtonProc_LockDBtoDevice(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			DB_LockDBPanel(ba.win)
 			break
 	endswitch
@@ -844,7 +844,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	string panelTitle, ctrl
 
 	switch(cba.eventCode)
-		case EVENT_MOUSE_UP:
+		case 2: // mouse up
 			panelTitle = cba.win
 			ctrl       = cba.ctrlName
 			checked    = cba.checked

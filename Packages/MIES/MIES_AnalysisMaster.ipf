@@ -553,7 +553,7 @@ Function AM_configAnalysis(ba) : ButtonControl
 	variable headstageNumber
 	
 	switch(ba.eventcode)
-		case EVENT_MOUSE_UP:		
+		case 2: // mouse up
 			// get the am panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
 			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
