@@ -2180,9 +2180,13 @@ End
 ///
 /// @param var  variable
 /// @param tol  [optional, defaults to 1e-8] tolerance
-Function CheckIfSmall(var, tol)
+Function CheckIfSmall(var, [tol])
 	variable var
 	variable tol
+
+	if(ParamIsDefault(tol))
+		tol = 1e-8
+	endif
 
 	return abs(var) < abs(tol)
 End
