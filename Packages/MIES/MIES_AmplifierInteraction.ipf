@@ -323,6 +323,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			case MCC_SETRSCOMPPREDICTION_FUNC:
 				ret = MCC_GetRsCompPrediction()
 				break
+			case MCC_SETRSCOMPBANDWIDTH_FUNC:
+				ret = MCC_GetRsCompBandwidth()
+				break
 			case MCC_SETRSCOMPENABLE_FUNC:
 				ret = MCC_GetRsCompEnable()
 				break
@@ -389,6 +392,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_SETRSCOMPPREDICTION_FUNC:
 			ret = MCC_SetRsCompPrediction(value)
 			break
+		case MCC_SETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_SetRsCompBandwidth(value)
+			break
 		case MCC_SETRSCOMPENABLE_FUNC:
 			ret = MCC_SetRsCompEnable(value)
 			break
@@ -399,6 +405,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
 			break
+		case MCC_GETBRIDGEBALRESIST_FUNC:
+			ret = MCC_GetBridgeBalResist()
+			break
 		case MCC_SETBRIDGEBALENABLE_FUNC:
 			ret = MCC_SetBridgeBalEnable(value)
 			break
@@ -407,6 +416,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
+			break
+		case MCC_GETNEUTRALIZATIONCAP_FUNC:
+			ret = MCC_GetNeutralizationCap()
 			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			MCC_AutoPipetteOffset()
@@ -471,6 +483,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
 			ret = MCC_GetWholeCellCompResist()
+			break
+		case MCC_GETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_GetRsCompBandwidth()
 			break
 		default:
 			ASSERT(0, "Unknown function")
