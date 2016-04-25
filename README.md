@@ -144,6 +144,7 @@ For testing compilation manually perform the following steps:
 
 ### Documentation building
 The documentation for the master and the latest release branch, `release/$number`, are automatically built by:
+
 * http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD
 * http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE
 
