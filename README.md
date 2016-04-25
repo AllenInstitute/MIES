@@ -107,16 +107,16 @@ You can test that by executing the following statements in a cmd window:
 If guidelines are not followed, the MIES version will be unknown, and data acquisition is blocked.
 
 ### Creating a release package
-- Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
-- Checkout the release branch `git checkout release/$myVersion`
-- If none exists create one with `git checkout -b release/$myVersion`
-- Change to the `tools` directory in the worktree root folder
-- Execute `./create-release.sh`
-- The release package including the version information is then available as zip file
+* Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
+* Checkout the release branch `git checkout release/$myVersion`
+* If none exists create one with `git checkout -b release/$myVersion`
+* Change to the `tools` directory in the worktree root folder
+* Execute `./create-release.sh`
+* The release package including the version information is then available as zip file
 
 ### Installing it
-- Extract the zip archive into a folder on the target machine
-- Follow the steps outlined in the section "Full Installation"
+* Extract the zip archive into a folder on the target machine
+* Follow the steps outlined in the section "Full Installation"
 
 ## Continuous integration server
 Our CI server, called bamboo, can be reached [here](http://bamboo.corp.alleninstitute.org/browse/MIES)
