@@ -268,9 +268,9 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ChanAmpAssign[%VC_DAGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_VC_DAgain")
 	ChanAmpAssignUnit[0][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_VC_DA_Unit")
 	ChanAmpAssign[%VC_AD][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_AD"))
-	ChanAmpAssign[%VC_ADGain][HeadStageNo]  = GetSetVariable(panelTitle, "setvar_Settings_VC_ADgain")
+	ChanAmpAssign[%VC_ADGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_VC_ADgain")
 	ChanAmpAssignUnit[1][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_VC_AD_Unit")
-	
+
 	//Assigns I-clamp settings for a particular headstage
 	ChanAmpAssign[%IC_DA][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_DA"))
 	ChanAmpAssign[%IC_DAGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_IC_DAgain")
@@ -368,6 +368,4 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	endif
 	// TB: what does this comment mean?
 	// set the internal clock of the device
-End
-
 End
