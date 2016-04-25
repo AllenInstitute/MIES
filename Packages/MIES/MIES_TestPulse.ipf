@@ -31,7 +31,7 @@ Function TP_GetTestPulseLengthInPoints(panelTitle, sampIntType)
 	switch(sampIntType)
 		case MIN_SAMPLING_INTERVAL_TYPE:
 			NVAR/SDFR=GetDeviceTestPulse(panelTitle) duration = pulseDuration
-			scale = MINIMUM_SAMPLING_INTERVAL
+			scale = HARDWARE_ITC_MIN_SAMPINT
 			break
 		case REAL_SAMPLING_INTERVAL_TYPE:
 			NVAR duration = $GetTestpulseDuration(panelTitle)
@@ -528,10 +528,9 @@ Function TP_Setup(panelTitle, runMode)
 
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
-	/// @todo use also for single device
-	if(multiDevice)
-		ITC_ConfigUploadDAC(panelTitle)
-	endif
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 End
 
 /// @brief Perform common actions after the testpulse

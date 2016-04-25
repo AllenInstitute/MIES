@@ -254,9 +254,6 @@ StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 /// Generic axis name for graphs using split axis
 StrConstant AXIS_BASE_NAME = "col"
 
-/// Minimum possible sampling interval for our ITC DACs in milliseconds (1e-3s)
-Constant MINIMUM_SAMPLING_INTERVAL = 0.005
-
 /// Fallback value for  the sampling interval in milliseconds (1e-3) used by
 /// #SI_CalculateMinSampInterval if the lookup table could not be found on disk.
 Constant SAMPLING_INTERVAL_FALLBACK = 0.050
@@ -402,3 +399,34 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION = 5
+/// @name The channel numbers for the different ITC devices used for accesssing
+///       the TTLs
+/// @{
+Constant HARDWARE_ITC_TTL_DEF_RACK_ZERO  = 1
+Constant HARDWARE_ITC_TTL_1600_RACK_ZERO = 0
+Constant HARDWARE_ITC_TTL_1600_RACK_ONE  = 3
+/// @}
+
+/// @name Flags for all hardware interaction functions from MIES_DAC-Hardware.ipf
+/// @anchor HardwareInteractionFlags
+/// @{
+Constant HARDWARE_ABORT_ON_ERROR = 0x01
+/// @}
+
+/// List of different DAC hardware types
+StrConstant HARDWARE_DAC_TYPES = "ITC;NI"
+
+/// @name Indizes into HARDWARE_DAC_TYPES
+/// @anchor HardwareDACTypeConstants
+/// @{
+Constant HARDWARE_ITC_DAC = 0
+Constant HARDWARE_NI_DAC  = 1
+/// @}
+
+Constant HARDWARE_MAX_DEVICES = 32
+
+/// @name Minimum possible sampling intervals in milliseconds (1e-3s)
+/// @{
+Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
+Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
+/// @}

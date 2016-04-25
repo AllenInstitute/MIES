@@ -27,6 +27,7 @@
 #include "MIES_BackgroundWatchdog"
 #include "MIES_CheckInstallation"
 #include "MIES_Constants"
+#include "MIES_DAC-Hardware"
 #include "MIES_DataAcqITC"
 #include "MIES_DataBrowser" menus=0
 #include "MIES_DataConfiguratorITC"

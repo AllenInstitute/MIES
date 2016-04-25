@@ -218,6 +218,8 @@ Function M_CheckSettings(panelTitle)
 	variable i, numEntries, numHS
 	string list
 
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
 	if(isEmpty(panelTitle))
 		print "Invalid empty string for panelTitle, can not proceed"
 		return 1
@@ -241,7 +243,7 @@ Function M_CheckSettings(panelTitle)
 
 		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 
-		if(HSU_CanSelectDevice(panelTitle))
+		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			return 1
 		endif

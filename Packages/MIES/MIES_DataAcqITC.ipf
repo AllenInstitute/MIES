@@ -6,124 +6,56 @@
 Function ITC_DataAcq(panelTitle)
 	string panelTitle
 
-	string cmd
 	variable fifoPos
-
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
-	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ResultsWave = GetITCResultsWave(panelTitle)
 
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
-	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
-	ResultsWave = 0
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	ExecuteITCOperation(cmd)// this also seems necessary to update the DA channel data to the board!!
-
-	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
-	sprintf cmd, "ITCStartAcq"
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do
-		sprintf cmd, "ITCFIFOAvailableALL/z=0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
-		ExecuteITCOperation(cmd)
-		fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
-	while(fifoPos < StopCollectionPoint)
+	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
 
-	//Check Status
-	sprintf cmd, "ITCGetState /R /O /C /E %s" GetWavesDataFolder(ResultsWave, 2)
-	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0" //as long as this command is within the do-while loop the number of cycles can be repeated
-	ExecuteITCOperation(cmd)
+	HW_ITC_GetState(ResultsWave)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitle)
-End
-
-/// @brief Returns the device channel offset for the given device
-///
-/// @returns 16 for ITC1600 and 0 for all other types
-Function ITC_CalculateDevChannelOffset(panelTitle)
-	string panelTitle
-
-	variable ret
-	string deviceType, deviceNum
-
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
-	ASSERT(ret, "Could not parse device string")
-	
-	if(!cmpstr(deviceType, "ITC1600"))
-		return 16
-	endif
-
-	return 0
 End
 
 Function ITC_BkrdDataAcq(panelTitle)
 	string panelTitle
 
-	string cmd
-
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
-	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
-
-	// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	// this also seems necessary to update the DA channel data to the board!!
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2)
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
 	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
-	sprintf cmd, "ITCStartAcq" 
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	ITC_StartBckgrdFIFOMonitor()
 End
 
 Function ITC_StopDataAcq()
-	string cmd
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitleG)
 
@@ -147,30 +79,23 @@ End
 Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
-	string cmd, oscilloscopeSubwindow
-	variable fifoPos
+	string oscilloscopeSubwindow
+	variable fifoPos, moreData
 
-	SVAR panelTitleG         = $GetPanelTitleGlobal()
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitleG)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitleG)
-	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitleG)
-	oscilloscopeSubwindow    = SCOPE_GetGraph(panelTitleG)
+	SVAR panelTitleG       = $GetPanelTitleGlobal()
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	oscilloscopeSubwindow  = SCOPE_GetGraph(panelTitleG)
 
-	WAVE ITCFIFOAvailAllConfigWave = GetITCFIFOAvailAllConfigWave(panelTitleG)
-	WAVE ITCDataWave = GetITCDataWave(panelTitleG)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-	sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s" GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
-	ExecuteITCOperation(cmd)
+	moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos)
 
-	fifoPos = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 	DM_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
 	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
 	AM_analysisMasterMidSweep(panelTitleG)
 
-	if(fifoPos >= StopCollectionPoint)
+	if(!moreData)
 		ITC_STOPFifoMonitor()
 		ITC_StopDataAcq()
 		return 1
@@ -237,20 +162,6 @@ End
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	string cmd
-
-	SVAR panelTitleG       = $GetPanelTitleGlobal()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-
-	WAVE ITCDataWave       = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
-
 	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 End
@@ -259,14 +170,13 @@ End
 Function ITC_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 
-	SVAR panelTitleG         = $GetPanelTitleGlobal()
+	SVAR panelTitleG = $GetPanelTitleGlobal()
 	// create a copy as panelTitleG is killed in ITC_StopTestPulseSingleDevice
 	// but we still need it afterwards
 	string panelTitle = panelTitleG
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
-	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ResultsWave       = GetITCResultsWave(panelTitle)
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -275,31 +185,16 @@ Function ITC_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	String cmd
-	WAVE ResultsWave                  = GetITCResultsWave(panelTitle)
-	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-
-	NVAR DeviceID = $GetITCDeviceIDGlobal(panelTitle)
-	sprintf cmd, "ITCSelectDevice %d" DeviceID
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	ExecuteITCOperation(cmd) // this also seems necessary to update the DA channel data to the board!!
-	sprintf cmd, "ITCStartAcq"
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do
-		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
-		ExecuteITCOperation(cmd)
-	while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)// 5000 IS CHOSEN AS A POINT THAT IS A BIT LARGER THAN THE OUTPUT DATA
+		// nothing
+	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-	sprintf cmd, "ITCGetState /R /O /C /E %s", GetWavesDataFolder(ResultsWave, 2)
-	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCStopAcq /z = 0"
-	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated
-	ExecuteITCOperation(cmd)
+	HW_ITC_GetState(ResultsWave)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 	TP_Delta(panelTitle)
 
@@ -451,45 +346,26 @@ End
 Function ITC_StartTestPulse(panelTitle)
 	string panelTitle
 
-	string cmd
 	variable i
+	string oscilloscopeSubwindow
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ResultsWave = GetITCResultsWave(paneltitle)
 
-	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
-	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-	WAVE ResultsWave                  = GetITCResultsWave(paneltitle)
-	ResultsWave = 0
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
 	do
-		// I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-		// this also seems necessary to update the DA channel data to the board!!
-		sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2)
-		ExecuteITCOperation(cmd)
-		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperationAbortOnError(cmd)
+		HW_ITC_ResetFifo(ITCDeviceIDGlobal)
+		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 		do
-			sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
-			ExecuteITCOperation(cmd)
-		while (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] < StopCollectionPoint)
+			// nothing
+		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-		sprintf cmd, "ITCGetState /R /O /C /E %s", GetWavesDataFolder(ResultsWave, 2)
-		ExecuteITCOperation(cmd)
-		sprintf cmd, "ITCStopAcq /z = 0"
-		ExecuteITCOperation(cmd)
+		HW_ITC_GetState(ResultsWave)
+		HW_ITC_StopAcq(prepareForDAQ=1)
 		DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
 		DoUpdate/W=$oscilloscopeSubwindow
-		sprintf cmd, "ITCConfigChannelUpload /f /z = 0"//AS Long as this command is within the do-while loop the number of cycles can be repeated		
-		ExecuteITCOperation(cmd)
 
 		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
@@ -501,23 +377,6 @@ Function ITC_StartTestPulse(panelTitle)
 	TP_Teardown(panelTitle)
 END
 
-Function ITC_SingleADReading(Channel, panelTitle)//channels 16-23 are asynch channels on ITC1600
-	variable Channel
-	string panelTitle
-
-	variable channelValue
-	string cmd
-	DFREF deviceDFR = GetDevicePath(panelTitle)
-
-	Make/O/N=1 deviceDFR:AsyncChannelData/Wave=AsyncChannelData
-	sprintf cmd, "ITCReadADC /V = 1 %d, %s" Channel, GetWavesDataFolder(AsyncChannelData, 2)
-	ExecuteITCOperation(cmd)
-
-	channelValue = AsyncChannelData[0]
-	KillOrMoveToTrash(wv=AsyncChannelData)
-	return channelValue
-End 
-
 Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	WAVE dataWave
 	string panelTitle
@@ -527,12 +386,14 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
 	string setvarTitle, setvarGain, title
 
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
 	// Create the measurement wave that will hold the measurement values
 	WAVE asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
 	asyncMeasurementWave[0][] = NaN
 
 	WAVE asyncChannelState = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
-	deviceChannelOffset = ITC_CalculateDevChannelOffset(panelTitle)
+	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
 
 	numEntries = DimSize(asyncChannelState, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -542,7 +403,7 @@ Function ITC_ADDataBasedWaveNotes(dataWave, panelTitle)
 		endif
 
 		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
-		rawChannelValue = ITC_SingleADReading(i + deviceChannelOffset, panelTitle)
+		rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i + deviceChannelOffset)
 
 		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
 		setvarGain= GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
@@ -579,16 +440,15 @@ End
 
 /// @brief Sets active DA channels to Zero - used after TP MD
 Function ITC_ZeroITCOnActiveChan(panelTitle)
-	string panelTitle // function operates on active device - does not check to see if a device is open.
+	string panelTitle
 
-	string cmd
 	variable i
 	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(statusDA[i])
-			sprintf cmd, "ITCSetDAC /z = 0 %d, 0" i
-			ExecuteITCOperation(cmd)
+			HW_WriteDAC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i, 0)
 		endif
 	endfor
 End
@@ -652,23 +512,4 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 	endif
-End
-
-Function ITC_ConfigUploadDAC(panelTitle)
-	string panelTitle
-
-	NVAR ITCDeviceIDGlobal            = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave            = GetITCChanConfigWave(panelTitle)
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-
-	string cmd
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
-
-	sprintf cmd, "ITCconfigAllchannels, %s, %s" GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-	ExecuteITCOperation(cmd)
-
-	sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-	ExecuteITCOperation(cmd)
 End

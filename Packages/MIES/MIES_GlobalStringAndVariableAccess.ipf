@@ -206,7 +206,7 @@ End
 /// The duration is for a single pulse only without baseline.
 ///
 /// The duration is *not* in units of time but in number of points for
-/// the real (compared to #MINIMUM_SAMPLING_INTERVAL) sampling interval
+/// the real (compared to #HARDWARE_ITC_MIN_SAMPINT) sampling interval
 Function/S GetTestpulseDuration(panelTitle)
 	string panelTitle
 
@@ -247,6 +247,7 @@ Function/S GetADChannelToMonitor(panelTitle)
 End
 
 /// @brief Return global panelTitle for background tasks
+/// @todo remove and use background struct members for the deviceID and GetDeviceMapping instead
 Function/S GetPanelTitleGlobal()
 
 	return GetSVARAsString(GetITCDevicesFolder(), "panelTitleG")

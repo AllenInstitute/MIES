@@ -2754,14 +2754,14 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_ApproachAll,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_ApproachAll,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_ApproachAll,value= 0
-	PopupMenu popup_Settings_Pressure_ITCdev,pos={51.00,495.00},size={213.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="ITC devices"
-	PopupMenu popup_Settings_Pressure_ITCdev,help={"List of available ITC devices for pressure control"}
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabnum)=  "6"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_Settings_Pressure_ITCdev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Pressure_ITCdev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
+	PopupMenu popup_Settings_Pressure_dev,pos={51.00,495.00},size={213.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="DAC devices"
+	PopupMenu popup_Settings_Pressure_dev,help={"List of available DAC devices for pressure control"}
+	PopupMenu popup_Settings_Pressure_dev,userdata(tabnum)=  "6"
+	PopupMenu popup_Settings_Pressure_dev,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
 	TitleBox Title_settings_Hardware_Pressur,pos={45.00,475.00},size={44.00,15.00},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC"
@@ -4887,7 +4887,9 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
 
-		if(HSU_CanSelectDevice(panelTitle))
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			return 1
 		endif
@@ -5170,11 +5172,11 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		endif
 
 		// non fatal errors which we fix ourselves
-		if(DimDelta(stimSet, ROWS) != MINIMUM_SAMPLING_INTERVAL || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
-			sprintf str, "(%s) The stim set %s of headstage %d must have a row dimension delta of %g, row dimension offset of zero and row unit \"ms\".\r", panelTitle, dacWave, headstage, MINIMUM_SAMPLING_INTERVAL
+		if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
+			sprintf str, "(%s) The stim set %s of headstage %d must have a row dimension delta of %g, row dimension offset of zero and row unit \"ms\".\r", panelTitle, dacWave, headstage, HARDWARE_ITC_MIN_SAMPINT
 			DEBUGPRINT(str)
 			DEBUGPRINT("The stim set is now automatically fixed")
-			SetScale/P x 0, MINIMUM_SAMPLING_INTERVAL, "ms", stimSet
+			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
 		endif
 
 		if(!GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
@@ -5576,7 +5578,6 @@ End
 Function DAP_StopOngoingDataAcquisition(panelTitle)
 	string panelTitle
 
-	string cmd
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 
@@ -5597,8 +5598,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		ITC_STOPFifoMonitor()
 
-		sprintf cmd, "ITCStopAcq /z = 0"
-		ExecuteITCOperation(cmd)
+		HW_ITC_StopAcq()
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
 
@@ -5868,12 +5868,9 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
 
-	string cmd
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
-	sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCInitialize /M = 0"
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
+	HW_DisableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 End
 
 Function DAP_RemoveAllYokedDACs(panelTitle)

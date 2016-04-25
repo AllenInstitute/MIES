@@ -54,8 +54,6 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
-	string cmd
-
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
@@ -66,31 +64,22 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperationAbortOnError(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
 		CtrlNamedBackground TestPulseMD, start
 	endif
 
-	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER) // Start data acquisition triggered on immediate - triggered is used for syncronizing/yoking multiple DACs
-		sprintf cmd, "ITCStartAcq"
-		ExecuteITCOperationAbortOnError(cmd)
-	elseif(triggerMode == HARDWARE_DAC_EXTERNAL_TRIGGER)
-		sprintf cmd, "ITCStartAcq 1, %d", 256
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ASSERT(0, "Unknown triggerMode")
-	endif
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable ADChannelToMonitor, i
+	variable ADChannelToMonitor, i, deviceID
 	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
-	String cmd, panelTitle
+	string panelTitle
 
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
 	WAVE/SDFR=dfr ActiveDeviceList
@@ -116,15 +105,13 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCFIFOAvailAllConfigWave = ActiveDevWavePathWave[i][1]
 		WAVE ITCFIFOPositionAllConfigWave = ActiveDevWavePathWave[i][2]
 
-		ADChannelToMonitor = ActiveDeviceList[i][1]
+		deviceID            = ActiveDeviceList[i][0]
+		ADChannelToMonitor  = ActiveDeviceList[i][1]
 		stopCollectionPoint = ActiveDeviceList[i][2]
 
-		sprintf cmd, "ITCSelectDevice %d" ActiveDeviceList[i][0]
-		ExecuteITCOperationAbortOnError(cmd)
-
-		sprintf cmd, "ITCFIFOAvailableALL /z = 0 , %s", GetWavesDataFolder(ITCFIFOAvailAllConfigWave, 2)
-		ExecuteITCOperation(cmd)
-		pointsCompletedInITCDataWave = mod(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2], DimSize(ITCDataWave, ROWS))
+		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_ITC_MoreData(deviceID, fifoAvail=ActiveDevWavePathWave[i][1], ADChannelToMonitor=ADChannelToMonitor, stopCollectionPoint=stopCollectionPoint, fifoPos=pointsCompletedInITCDataWave)
+		pointsCompletedInITCDataWave = mod(pointsCompletedInITCDataWave, DimSize(ITCDataWave, ROWS))
 
 		if(pointsCompletedInITCDataWave >= stopCollectionPoint * 0.05)
 			// advances the FIFO is the TP sweep has reached point that gives time for command to be recieved
@@ -133,8 +120,7 @@ Function ITC_BkrdTPFuncMD(s)
 			// this is probably more generally true as well - need to work this into the code
 			Duplicate/O/R=[0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, deviceDFR:FIFOAdvance/Wave=FIFOAdvance
 			FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]
-			sprintf cmd, "ITCUpdateFIFOPositionAll , %s", GetWavesDataFolder(FIFOAdvance, 2) // goal is to move the DA FIFO pointers back to the start
-			ExecuteITCOperation(cmd)
+			HW_ITC_ResetFifo(deviceID, fifoPos=FIFOAdvance)
 			ActiveDeviceList[i][3] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
 		endif
 
@@ -154,19 +140,12 @@ Function ITC_BkrdTPFuncMD(s)
 		if(!DAP_DeviceCanLead(panelTitle))
 			WAVE/Z/SDFR=deviceDFR FIFOAdvance
 			if((WaveExists(FIFOAdvance) && FIFOAdvance[0][2] <= 0) || (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] > 0 && abs(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][5]) <= 1)) // checks to see if the hardware buffer is at max capacity
-				sprintf cmd, "ITCStopAcq" // stop and restart acquisition
-				ExecuteITCOperation(cmd)
+				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
 				ITCFIFOAvailAllConfigWave[][2] = 0
 				FIFOAdvance[0][2] = NaN
-				WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-				WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
-				sprintf cmd, "ITCconfigAllchannels, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-				ExecuteITCOperation(cmd)
-				sprintf cmd, "ITCUpdateFIFOPositionAll , %s" GetWavesDataFolder(ITCFIFOPositionAllConfigWave, 2) // I have found it necessary to reset the fifo here, using the /r=1 with start acq doesn't seem to work
-				ExecuteITCOperation(cmd)
-				sprintf cmd, "ITCStartAcq"
-				ExecuteITCOperationAbortOnError(cmd)
+				HW_ITC_PrepareAcq(deviceID, dataFunc=GetITCDataWave, configFunc=GetITCChanConfigWave, fifoPos=ITCFIFOPositionAllConfigWave)
+				HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 				printf "Device %s restarted\r", panelTitle
 			endif
 		endif
@@ -205,25 +184,14 @@ End
 static Function ITC_StopTPMD(panelTitle)
 	string panelTitle
 
-	string cmd
-	variable headstage
 	DFREF dfr = GetActITCDevicesTestPulseFolder()
 	WAVE/T/SDFR=dfr ActiveDeviceTextList
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DFREF deviceDFR = GetDevicePath(panelTitle)
 
-	sprintf cmd, "ITCSelectDevice %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
-	///@todo rename to ResultsWave if possible
-	Make/I/O/N=4 deviceDFR:StateWave/Wave=StateWave
-	// code section below is used to get the state of the DAC
-	sprintf cmd, "ITCGetState /R=1 %s", GetWavesDataFolder(StateWave, 2)
-	ExecuteITCOperation(cmd)
-
-	if(StateWave[0] != 0) // makes sure the device being stopped is actually running
-		sprintf cmd, "ITCStopAcq"
-		ExecuteITCOperation(cmd)
+	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)) // makes sure the device being stopped is actually running
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.

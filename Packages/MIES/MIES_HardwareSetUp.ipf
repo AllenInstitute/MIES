@@ -3,28 +3,18 @@
 /// @file MIES_HardwareSetUp.ipf
 /// @brief __HSU__ ITC Hardware Configuration Functions
 
-Function HSU_QueryITCDevice(panelTitle)
-	string panelTitle
-
-	variable DeviceType, DeviceNumber
-	string cmd
-	DeviceType   = HSU_GetDeviceTypeIndex(panelTitle)
-	DeviceNumber = str2num(HSU_GetDeviceNumber(panelTitle))
-	
-	sprintf cmd, "ITCOpenDevice %d, %d", DeviceType, DeviceNumber
-	ExecuteITCOperation(cmd)
-	DoAlert /t = "Ready light check"  0, "Click \"OK\" when finished checking device"
-
-	sprintf cmd, "ITCCloseDevice"
-	ExecuteITCOperation(cmd)
-End
-
 Function HSU_ButtonProc_Settings_OpenDev(ba) : ButtonControl
 	struct WMButtonAction& ba
 
+	string panelTitle, deviceToOpen
+	variable hwType, deviceID
+
 	switch(ba.eventCode)
 		case 2: // mouse up
-			HSU_QueryITCDevice(ba.win)
+			deviceToOpen = BuildDeviceString(HSU_GetDeviceType(ba.win), HSU_GetDeviceNumber(ba.win))
+			deviceID = HW_OpenDevice(deviceToOpen, hwType)
+			DoAlert/T="Ready light check" 0, "Click \"OK\" when finished checking device"
+			HW_CloseDevice(hwType, deviceID)
 			break
 	endswitch
 
@@ -47,10 +37,8 @@ End
 Function HSU_LockDevice(panelTitle)
 	string panelTitle
 
-	string deviceType
-	variable deviceNo
+	variable locked, hardwareType
 	string panelTitleLocked
-	variable locked
 
 	SVAR miesVersion = $GetMiesVersion()
 
@@ -79,7 +67,8 @@ Function HSU_LockDevice(panelTitle)
 	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
 	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
-	HSU_OpenITCDevice(panelTitleLocked)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
+	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
 	DAP_UpdateListOfPressureDevices()
 	HSU_UpdateChanAmpAssignPanel(panelTitleLocked)
 
@@ -96,6 +85,8 @@ Function HSU_LockDevice(panelTitle)
 	sessionStartTime = DateTimeInUTC()
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
+
+	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 End
 
 Function HSU_UpdateDataFolderDisplay(panelTitle, locked)
@@ -194,11 +185,9 @@ Function HSU_UnlockDevice(panelTitle)
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
-	string cmd
-	sprintf cmd, "ITCSelectDevice/Z %d" ITCDeviceIDGlobal
-	ExecuteITCOperation(cmd)
-	sprintf cmd, "ITCCloseDevice"
-	ExecuteITCOperation(cmd)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	HSU_UpdateListOfITCPanels()
@@ -237,6 +226,8 @@ Function HSU_UnlockDevice(panelTitle)
 		if(SVAR_Exists(listOfFollowers))
 			listOfFollowers = ""
 		endif
+
+		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
 End
 
@@ -280,45 +271,23 @@ End
 Function HSU_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
-	string cmd
-	variable deviceType = HSU_GetDeviceTypeIndex(panelTitle)
+	variable numDevices
 
-	Make/O/I/N=1 localwave
-	sprintf cmd, "ITCGetDevices /Z=0 %d, localWave" deviceType
-	ExecuteITCOperation(cmd)
-	if(LocalWave[0] == 0)
-		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 2
+	numDevices = ItemsInList(ListMatch(HW_ITC_ListDevices(), HSU_GetDeviceType(panelTitle) + "_DEV_*"))
+
+	if(!numDevices)
+		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
 	else
-		button button_SettingsPlus_PingDevice win = $panelTitle, disable = 0
+		EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
 	endif
-	print "Available number of specified ITC devices =", LocalWave[0]
-	KillOrMoveToTrash(wv=localwave)
+
+	printf "Available number of specified ITC devices = %d\r" numDevices
 End
 
 /// @brief Update the list of locked devices
 Function HSU_UpdateListOfITCPanels()
 	DFREF dfr = GetITCDevicesFolder()
 	string/G dfr:ITCPanelTitleList = WinList("ITC*", ";", "WIN:64")
-End
-
-Function HSU_OpenITCDevice(panelTitle)
-	String panelTitle
-
-	variable deviceType, deviceNumber
-	string cmd
-
-	deviceType = HSU_GetDeviceTypeIndex(panelTitle)
-	deviceNumber = str2num(HSU_GetDeviceNumber(panelTitle))
-
-	Make/O/I/U/N=1 DevID = 50
-	sprintf cmd, "ITCOpenDevice %d, %d, DevID", deviceType, deviceNumber
-	ExecuteITCOperation(cmd)
-
-	print "ITC Device ID = ",DevID[0], "is locked."
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	ITCDeviceIDGlobal = DevID[0]
-
-	KillOrMoveToTrash(wv=DevID)
 End
 
 Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
@@ -425,78 +394,17 @@ End
 Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	string leadDAC, followerDAC
 
-	string cmd
-
 	SVAR listOfFollowerDevices = $HSU_CreateITCFollowerList(leadDAC)
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerDAC)
 	
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
-		sprintf cmd, "ITCSelectDevice %d" followerITCDeviceIDGlobal
-		ExecuteITCOperation(cmd)
-		sprintf cmd, "ITCInitialize /M = 1"
-		ExecuteITCOperation(cmd)
+		HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
+		HW_EnableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
 	// TB: what does this comment mean?
 	// set the internal clock of the device
 End
 
-///@brief Return a list of all ITC devices which can be opened
-///
-///**Warning! This heavily interacts with the ITC* controllers, don't call
-///during data/test pulse/whatever acquisition.**
-///
-///@returns A list of panelTitles with ITC devices which can be opened
-Function/S HSU_ListDevices()
-
-	variable i, j
-	string type, number, cmd, msg
-	string result = ""
-	
-	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
-		type = StringFromList(i, DEVICE_TYPES)
-		
-		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
-			continue
-		endif
-
-		Make/O/I/N=1 dev = -1
-		sprintf cmd, "ITCGetDevices/Z=DisplayErrors \"%s\", dev", type
-		Execute cmd
-
-		NVAR itcerror, itcxoperror
-		if(dev[0] > 0)
-			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
-				number = StringFromList(j, DEVICE_NUMBERS)
-				itcerror    = 0
-				itcxoperror = 0
-				sprintf cmd, "ITCOpenDevice/Z=DisplayErrors \"%s\", %s", type, number
-				Execute/Z cmd
-				if(itcerror == 0 && itcxoperror == 0)
-					sprintf msg, "Found device type %s with number %s", type, number
-					DEBUGPRINT(msg)
-					Execute "ITCCloseDevice"
-					result = AddListItem(BuildDeviceString(type,number), result, ";", inf)
-				endif
-			endfor
-		endif
-	endfor
-
-	KillVariables/Z itcerror, itcxoperror
-	KillOrMoveToTrash(wv=dev)
-
-	return result
-End
-
-/// @brief Try to select the ITC device
-/// @return 0 if sucessfull, 1 on error
-Function HSU_CanSelectDevice(panelTitle)
-	string panelTitle
-
-	string cmd
-
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	sprintf cmd, "ITCSelectDevice/Z %d", ITCDeviceIDGlobal
-	return ExecuteITCOperation(cmd)
 End
