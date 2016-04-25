@@ -285,8 +285,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	amplifierDef = GetPopupMenuString(panelTitle, "popup_Settings_Amplifier")
 	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 
-	WAVE telegraphServers = GetAmplifierTelegraphServers()
-	if(DimSize(telegraphServers, ROWS) > 0 && IsFinite(ampSerial) && IsFinite(ampChannelID))
+	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
 	else
