@@ -533,13 +533,10 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	string ctrl
 	variable headStage, value, sendToAll, checkBeforeWrite
 
-	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-		print "Associate the panel with a DAC prior to using panel"
-		return 0
-	endif
-
 	variable i, diff, selectedHeadstage
 	string str
+
+	DAP_AbortIfUnlocked(panelTitle)
 
 	selectedHeadstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
@@ -757,10 +754,9 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	string ctrl, list
 	variable i, numEntries
 
-	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-		print "Associate the panel with a DAC prior to using panel"
-		return NaN
-	elseif(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	DAP_AbortIfUnlocked(panelTitle)
+
+	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
 		return NaN
@@ -799,10 +795,7 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	string lbl, list
 	variable i, numEntries
 
-	if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-		print "Associate the panel with a DAC prior to using panel"
-		return 0
-	endif
+	DAP_AbortIfUnlocked(panelTitle)
 
 	// only update view if headstage is selected
 	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)

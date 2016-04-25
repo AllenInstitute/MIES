@@ -554,12 +554,9 @@ Function AM_configAnalysis(ba) : ButtonControl
 	
 	switch(ba.eventcode)
 		case 2: // mouse up
-			// get the am panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-				print "Please lock a device...."
-				return NAN
-			endif
+			DAP_AbortIfUnlocked(itcPanel)
+
 			// decipher which headstage we are dealing with
 			controlName = ba.ctrlName
 			sscanf controlName, "PAA_headStage%d", headStageNumber
@@ -622,12 +619,8 @@ Function AM_PostSweepCheckBox(ctrlName, checked)
 	string midSweepAnalysisCheck
 	string midSweepMenu
 	
-	// get the am panel name
 	itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-	if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-		print "Please lock a device...."
-		return NAN
-	endif
+	DAP_AbortIfUnlocked(itcPanel)
 	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 		
@@ -706,10 +699,7 @@ Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 			Variable checked = cba.checked	
 			// get the da_ephys panel name
 			string itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-				print "Please lock a device...."
-				return NAN
-			endif
+			DAP_AbortIfUnlocked(itcPanel)
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
@@ -798,11 +788,8 @@ Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 			checked = cba.checked
 			
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-				print "Please lock a device...."
-				return NAN
-			endif
-			
+			DAP_AbortIfUnlocked(itcPanel)
+
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
 			sscanf ctrlName, "headStage%d_midSweepAnalysisOn", headStageClicked 
@@ -867,12 +854,8 @@ Function AM_PS_PopMenuChk(pa) : PopupMenuControl
 			popStr = pa.popStr
 			ctrlName = pa.ctrlName
 				
-			// get the da_ephys panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-				print "Please lock a device...."
-				return NAN
-			endif
+			DAP_AbortIfUnlocked(itcPanel)
 				
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
@@ -906,12 +889,8 @@ Function AM_PA_PopMenuChk(pa) : PopupMenuControl
 			popStr = pa.popStr
 			ctrlName = pa.ctrlName
 		
-			// get the da_ephys panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-				print "Please lock a device...."
-				return NAN
-			endif
+			DAP_AbortIfUnlocked(itcPanel)
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			
@@ -945,12 +924,8 @@ Function AM_MS_PopMenuChk(pa) : PopupMenuControl
 			popStr = pa.popStr
 			ctrlName = pa.ctrlName
 		
-			// get the da_ephys panel name
 			itcPanel = GetPopupMenuString(amPanel, "lockedDeviceMenu")
-			if(HSU_DeviceIsUnlocked(itcPanel, silentCheck=1))
-				print "Please lock a device...."
-				return NAN
-			endif
+			DAP_AbortIfUnlocked(itcPanel)
 			
 			Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(itcPanel)
 			

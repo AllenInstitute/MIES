@@ -3211,7 +3211,7 @@ Function DAP_EphysPanelStartUpSettings()
 		return NaN
 	endif
 
-	if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+	if(!DAP_DeviceIsUnlocked(panelTitle))
 		HSU_UnlockDevice(panelTitle)
 	endif
 
@@ -3613,7 +3613,7 @@ Function DAP_WindowHook(s)
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
 			panelTitle = s.winName
-			if(!HSU_DeviceIsUnlocked(panelTitle,silentCheck=1))
+			if(!DAP_DeviceIsUnlocked(panelTitle))
 				HSU_UnlockDevice(panelTitle)
 			endif
 			return 1
@@ -3978,7 +3978,7 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	if(HSU_DeviceIsUnLocked(tca.win,silentCheck=1))
+	if(DAP_DeviceIsUnLocked(tca.win))
 		print "Please lock the panel to a DAC in the Hardware tab"
 		return 0
 	endif
@@ -4071,14 +4071,20 @@ End
 Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 	struct WMCheckboxAction &cba
 
-	string panelTitle
+	string panelTitle, control
 
 	switch(cba.eventCode)
 		case 2:
-			paneltitle = cba.win
-			DAP_AdaptAssocHeadstageState(panelTitle, cba.ctrlName)
-			DAP_UpdateITIAcrossSets(panelTitle)
-			DAP_UpdateSweepSetVariables(panelTitle)
+			try
+				paneltitle = cba.win
+				control    = cba.ctrlName
+				DAP_AdaptAssocHeadstageState(panelTitle, control)
+				DAP_UpdateITIAcrossSets(panelTitle)
+				DAP_UpdateSweepSetVariables(panelTitle)
+			catch
+				SetCheckBoxState(panelTitle, control, !cba.checked)
+				Abort
+			endtry
 			break
 	endswitch
 End
@@ -4086,9 +4092,18 @@ End
 Function DAP_CheckProc_AD(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
+	string panelTitle, control
+
 	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_AdaptAssocHeadstageState(cba.win, cba.ctrlName)
+			try
+				paneltitle = cba.win
+				control    = cba.ctrlName
+				DAP_AdaptAssocHeadstageState(panelTitle, control)
+			catch
+				SetCheckBoxState(panelTitle, control, !cba.checked)
+				Abort
+			endtry
 			break
 	endswitch
 
@@ -4103,6 +4118,8 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	string headStageCheckBox
 	variable headstage, idx, channelType, controlType
+
+	DAP_AbortIfUnlocked(panelTitle)
 
 	DAP_ParsePanelControl(checkboxCtrl, idx, channelType, controlType)
 	ASSERT(CHANNEL_CONTROL_CHECK == controlType, "Not a valid control type")
@@ -4122,6 +4139,12 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 	endif
 
 	headStageCheckBox = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+
+	if(GetCheckBoxState(panelTitle, checkboxCtrl) == GetCheckBoxState(panelTitle, headStageCheckBox))
+		// nothing to do
+		return NaN
+	endif
+
 	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=!GetCheckBoxState(panelTitle, headStageCheckBox))
 End
 
@@ -4231,7 +4254,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
-			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			DAP_AbortIfUnlocked(panelTitle)
 
 			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				ITC_StartDAQMultiDevice(panelTitle)
@@ -4290,7 +4313,7 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_TurnOffAllTTLs(panelTitle)
+static Function DAP_TurnOffAllTTLs(panelTitle)
 	string panelTitle
 
 	variable i
@@ -4298,7 +4321,7 @@ Function DAP_TurnOffAllTTLs(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
@@ -4314,7 +4337,7 @@ Function DAP_ButtonProc_TTLOff(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_TurnOffAllDACs(panelTitle)
+static Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 
 	variable i
@@ -4322,7 +4345,7 @@ Function DAP_TurnOffAllDACs(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
@@ -4338,7 +4361,7 @@ Function DAP_ButtonProc_DAOff(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_TurnOffAllADCs(panelTitle)
+static Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 
 	variable i
@@ -4346,7 +4369,7 @@ Function DAP_TurnOffAllADCs(panelTitle)
 
 	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
 End
 
@@ -4367,10 +4390,6 @@ static Function DAP_TurnOffAllHeadstages(panelTitle)
 
 	variable i
 	string ctrl
-
-	if(HSU_DeviceIsUnLocked(panelTitle, silentCheck=1))
-		return NaN
-	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
@@ -4441,6 +4460,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				WBP_UpdateITCPanelPopUps()
 			endif
 
+			DAP_AbortIfUnlocked(panelTitle)
 			DAP_UpdateITIAcrossSets(panelTitle)
 			DAP_UpdateSweepSetVariables(panelTitle)
 			break
@@ -4670,9 +4690,7 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			panelTitle = pa.win
-			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-				break
-			endif
+			DAP_AbortIfUnlocked(panelTitle)
 
 			HSU_UpdateChanAmpAssignPanel(panelTitle)
 			P_UpdatePressureControls(panelTitle, pa.popNum - 1)
@@ -4694,9 +4712,7 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			panelTitle = pa.win
-			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-				break
-			endif
+			DAP_AbortIfUnlocked(panelTitle)
 
 			HSU_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
@@ -4719,9 +4735,7 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 			panelTitle = sva.win
-			if(HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
-				break
-			endif
+			DAP_AbortIfUnlocked(panelTitle)
 
 			HSU_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
@@ -4740,6 +4754,8 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			panelTitle = ba.win
+			DAP_AbortIfUnlocked(panelTitle)
+
 			WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
 
 			headStage = str2num(GetPopupMenuString(panelTitle,"Popup_Settings_HeadStage"))
@@ -4842,12 +4858,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list, msg
 
-	if(isEmpty(panelTitle))
-		print "Invalid empty string for panelTitle, can not proceed"
+	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
+
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
 		return 1
 	endif
-
-	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
 	if(mode == DATA_ACQUISITION_MODE && DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
@@ -4893,7 +4909,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		panelTitle = StringFromList(i, list)
 
-		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+		if(DAP_DeviceIsUnlocked(panelTitle))
+			printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
+			return 1
+		endif
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
@@ -5065,7 +5084,8 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
 	variable gain, scale, clampMode, i, valid_f1, valid_f2, ampConnState
 
-	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
 		return 1
 	endif
 
@@ -5438,13 +5458,19 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable mode, headStage
-	string panelTitle
+	string panelTitle, control
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			panelTitle = cba.win
-			DAP_GetInfoFromControl(panelTitle, cba.ctrlName, mode, headStage)
-			DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
+			try
+				panelTitle = cba.win
+				control    = cba.ctrlName
+				DAP_GetInfoFromControl(panelTitle, control, mode, headStage)
+				DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
+			catch
+				SetCheckBoxState(panelTitle, control, !cba.checked)
+				Abort
+			endtry
 		break
 	endswitch
 
@@ -5454,9 +5480,20 @@ End
 Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	string panelTitle, control
+	variable checked
+
+	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_ChangeHeadstageState(cba.win, cba.ctrlName, cba.checked)
+			try
+				panelTitle = cba.win
+				control    = cba.ctrlName
+				checked    = cba.checked
+				DAP_ChangeHeadstageState(panelTitle, control, checked)
+			catch
+				SetCheckBoxState(panelTitle, control, !checked)
+				Abort
+			endtry
 			break
 	endswitch
 
@@ -5475,6 +5512,7 @@ static Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 	variable activeHS, testPulseMode, oppositeMode
 
 	AI_AssertOnInvalidClampMode(clampMode)
+	DAP_AbortIfUnlocked(panelTitle)
 
 	headStageCtrl = GetPanelControl(headStage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 	activeHS = GetCheckBoxState(panelTitle, headStageCtrl)
@@ -5539,10 +5577,13 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	string panelTitle, headStageCtrl
 	variable enabled
 
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	variable clampMode, headStage, TPState, ICstate, VCstate, IZeroState
 	variable channelType, controlType
 	string VCctrl, ICctrl, IZeroCtrl
+
+	DAP_AbortIfUnlocked(panelTitle)
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 
 	DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType)
 	ASSERT(channelType == CHANNEL_TYPE_HEADSTAGE && controlType == CHANNEL_CONTROL_CHECK, "Expected headstage checkbox control")
@@ -5926,6 +5967,8 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
+			DAP_AbortIfUnlocked(panelTitle)
+
 			numConnAmplifiers = AI_QueryGainsFromMCC(panelTitle)
 
 			if(numConnAmplifiers)
@@ -5951,6 +5994,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	if(sc.eventCode > 0 && sc.eventCode & 0x1)
 		panelTitle = sc.win
 		headStage  = sc.curVal
+		DAP_AbortIfUnlocked(panelTitle)
 		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle, headStage)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
@@ -6104,14 +6148,17 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	struct WMSetVariableAction &sva
 	
 	variable TPState
+	string panelTitle
 	
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			TPState = TP_StopTestPulse(sva.win)
-			DAP_UpdateOnsetDelay(sva.win)
-			TP_RestartTestPulse(sva.win, TPState)
+			panelTitle = sva.win
+			DAP_AbortIfUnlocked(panelTitle)
+			TPState = TP_StopTestPulse(panelTitle)
+			DAP_UpdateOnsetDelay(panelTitle)
+			TP_RestartTestPulse(panelTitle, TPState)
 			break
 	endswitch
 
@@ -6188,7 +6235,7 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 		case 2:
 			panelTitle = ba.win
 
-			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			DAP_AbortIfUnlocked(panelTitle)
 
 			NVAR DataAcqState = $GetDataAcqState(panelTitle)
 
@@ -6228,7 +6275,7 @@ static Function DAP_OpenCommentPanel(panelTitle)
 
 	string commentPanel, commentNotebook
 
-	AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+	DAP_AbortIfUnlocked(panelTitle)
 
 	commentPanel = DAP_GetCommentPanel(panelTitle)
 	if(windowExists(commentPanel))
@@ -6254,7 +6301,7 @@ Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
-			AbortOnValue HSU_DeviceIsUnlocked(panelTitle), 1
+			DAP_AbortIfUnlocked(panelTitle)
 			DAP_AddUserComment(panelTitle)
 			break
 	endswitch
@@ -6415,7 +6462,7 @@ Function DAP_CommentPanelHook(s)
 			hookResult = 1
 			panelTitle = GetMainWindow(s.winName)
 
-			if(!HSU_DeviceIsUnlocked(panelTitle, silentCheck=1))
+			if(!DAP_DeviceIsUnlocked(panelTitle))
 				DAP_SerializeCommentNotebook(panelTitle)
 			endif
 			break
@@ -6690,3 +6737,21 @@ Function DAP_PanelIsUpToDate(panelTitle)
 
 	return version == DA_EPHYS_PANEL_VERSION
 end
+
+/// @brief Query the device lock status
+///
+/// @returns device lock status, 1 if unlocked, 0 if locked
+Function DAP_DeviceIsUnlocked(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+End
+
+Function DAP_AbortIfUnlocked(panelTitle)
+	string panelTitle
+
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		Abort "A ITC device must be locked (see Hardware tab) to proceed"
+	endif
+End

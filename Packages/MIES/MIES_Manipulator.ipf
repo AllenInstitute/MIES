@@ -241,7 +241,10 @@ Function M_CheckSettings(panelTitle)
 
 		panelTitle = StringFromList(i, list)
 
-		AbortOnValue HSU_DeviceIsUnlocked(panelTitle),1
+		if(DAP_DeviceIsUnlocked(panelTitle))
+			printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
+			return 1
+		endif
 
 		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
