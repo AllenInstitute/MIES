@@ -297,7 +297,7 @@ End
 Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 
-	variable HeadStageNo, channel
+	variable HeadStageNo, channel, ampSerial, ampChannelID
 	string entry
 
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
@@ -330,8 +330,14 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
 
 	if(cmpstr(DAP_GetNiceAmplifierChannelList(), NONE))
-		entry = DAP_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][HeadStageNo], ChanAmpAssign[%AmpChannelID][HeadStageNo])
-		Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
+		ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
+		ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
+		if(isFinite(ampSerial) && isFinite(ampChannelID))
+			entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+			Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
+		else
+			Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=NONE
+		endif
 	endif
 End
 
