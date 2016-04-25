@@ -3180,6 +3180,13 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_AmpIEQZstep,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_AmpIEQZstep,value= 0
+	CheckBox check_Settings_RequireAmpConn,pos={325.00,619.00},size={107.00,15.00},disable=1,title="Require Amplifier"
+	CheckBox check_Settings_RequireAmpConn,help={"Require that every active headstage is connected to an amplifier for TP/DAQ."}
+	CheckBox check_Settings_RequireAmpConn,userdata(tabnum)=  "5"
+	CheckBox check_Settings_RequireAmpConn,userdata(tabcontrol)=  "ADC",value= 1
+	CheckBox check_Settings_RequireAmpConn,userdata(ResizeControlsInfo)= A"!!,HT!!#D%5QF.1!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Settings_RequireAmpConn,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_Settings_RequireAmpConn,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C[!!#Da!!!!\"zzzzzzzzzzzzzzzzzzzz"
@@ -3581,6 +3588,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
 	CheckBox check_Settings_DisablePressure WIN = $panelTitle, value = 0
+	CheckBox check_Settings_RequireAmpConn WIN = $panelTitle, value = 1
 
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD", 0)
@@ -5055,7 +5063,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	string ctrl, dacWave, endWave, unit, func, info, str
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale, clampMode, i, valid_f1, valid_f2
+	variable gain, scale, clampMode, i, valid_f1, valid_f2, ampConnState
 
 	if(HSU_DeviceisUnlocked(panelTitle, silentCheck=1))
 		return 1
@@ -5224,7 +5232,8 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		endif
 	endif
 
-	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=0) == 2)
+	ampConnState = AI_SelectMultiClamp(panelTitle, headStage, verbose=0)
+	if(GetCheckBoxState(panelTitle, "check_Settings_RequireAmpConn") && ampConnState != 0 || ampConnState == 2)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", panelTitle, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
 		return 1
