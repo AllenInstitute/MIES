@@ -64,7 +64,6 @@ Function HSU_LockDevice(panelTitle)
 	locked = 1
 	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
-	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
 	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
