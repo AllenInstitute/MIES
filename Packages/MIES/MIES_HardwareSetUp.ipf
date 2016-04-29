@@ -64,7 +64,6 @@ Function HSU_LockDevice(panelTitle)
 	locked = 1
 	HSU_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
-	HSU_UpdateChanAmpAssignStorWv(panelTitleLocked)
 	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
@@ -268,9 +267,9 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	ChanAmpAssign[%VC_DAGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_VC_DAgain")
 	ChanAmpAssignUnit[0][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_VC_DA_Unit")
 	ChanAmpAssign[%VC_AD][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_AD"))
-	ChanAmpAssign[%VC_ADGain][HeadStageNo]  = GetSetVariable(panelTitle, "setvar_Settings_VC_ADgain")
+	ChanAmpAssign[%VC_ADGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_VC_ADgain")
 	ChanAmpAssignUnit[1][HeadStageNo]      = GetSetVariableString(panelTitle, "SetVar_Hardware_VC_AD_Unit")
-	
+
 	//Assigns I-clamp settings for a particular headstage
 	ChanAmpAssign[%IC_DA][HeadStageNo]     = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_DA"))
 	ChanAmpAssign[%IC_DAGain][HeadStageNo] = GetSetVariable(panelTitle, "setvar_Settings_IC_DAgain")
@@ -285,8 +284,7 @@ Function HSU_UpdateChanAmpAssignStorWv(panelTitle)
 	amplifierDef = GetPopupMenuString(panelTitle, "popup_Settings_Amplifier")
 	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 
-	WAVE telegraphServers = GetAmplifierTelegraphServers()
-	if(DimSize(telegraphServers, ROWS) > 0 && IsFinite(ampSerial) && IsFinite(ampChannelID))
+	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
 	else
@@ -298,7 +296,7 @@ End
 Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	string panelTitle
 
-	variable HeadStageNo, channel
+	variable HeadStageNo, channel, ampSerial, ampChannelID
 	string entry
 
 	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
@@ -331,8 +329,14 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	Setvariable SetVar_Hardware_IC_AD_Unit win = $panelTitle, value = _str:ChanAmpAssignUnit[3][HeadStageNo]
 
 	if(cmpstr(DAP_GetNiceAmplifierChannelList(), NONE))
-		entry = DAP_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][HeadStageNo], ChanAmpAssign[%AmpChannelID][HeadStageNo])
-		Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
+		ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
+		ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
+		if(isFinite(ampSerial) && isFinite(ampChannelID))
+			entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+			Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=entry
+		else
+			Popupmenu popup_Settings_Amplifier win = $panelTitle, popmatch=NONE
+		endif
 	endif
 End
 
@@ -368,6 +372,4 @@ Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	endif
 	// TB: what does this comment mean?
 	// set the internal clock of the device
-End
-
 End
