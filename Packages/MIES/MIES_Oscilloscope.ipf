@@ -182,15 +182,15 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	string graph, tagName, color
+	string graph, tagName, color, style
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
 	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue
 	string leftAxis, rightAxis, tagAxis, str
 	string tagPeakTrace, tagSteadyStateTrace
-	string unitWaveNote, unit, steadyStateTrace, peakTrace, adcStr, anchor
+	string steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
 	variable testPulseLength, cutOff, sampInt
-	variable headStage
+	variable headStage, activeHeadStage
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
@@ -207,7 +207,6 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
 	numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
-	unitWaveNote = note(ITCChanConfigWave)
 	graph = SCOPE_GetGraph(panelTitle)
 	Yoffset = 40 / numADChannels
 	YaxisSpacing = 1 / numADChannels
@@ -215,6 +214,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	YaxisLow = YaxisHigh - YaxisSpacing + 0.025
 	peakColor.green = SCOPE_GREEN
 	steadyColor.blue = SCOPE_BLUE
+	activeHeadStage = GetDA_EphysGuiStateNum(panelTitle)[0][%slider_DataAcq_ActiveHeadstage]
 
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
@@ -227,22 +227,12 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		leftAxis = "AD" + adcStr
 		
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
-		if(isFinite(headStage))
-			GetTraceColor(headStage, red, green, blue)
-		else
-			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-		endif
-		
-		sprintf color, "\K(%d,%d,%d)" red, green, blue
 		
 		AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
 
 		ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
 		SetAxis/W=$graph/A=2/N=2 $leftAxis
 
-		// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
-		unit = StringFromList(numActiveDACs + i, unitWaveNote)
-		Label/W=$graph $leftAxis, color + leftAxis + " (" + unit + ")"
 		ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
@@ -337,6 +327,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		YaxisLow -= YaxisSpacing
 	endfor
 
+	SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	Label/W=$graph bottom "Time (\\U)"
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
@@ -350,5 +341,49 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 		sampInt = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
 		SetAxis/W=$graph bottom 0, stopCollectionPoint * sampInt
+	endif
+End
+
+Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
+	string panelTitle
+	variable activeHeadStage
+
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	variable adc, i, headStage, red, green, blue
+	variable numADChannels = DimSize(ADCs, ROWS)
+	variable numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+	string adcStr, leftAxis, style, color, unit
+	string graph = SCOPE_GetGraph(panelTitle)
+	string unitWaveNote = note(ITCChanConfigWave)
+	if(windowExists(graph))
+		string axList = AxisList(graph)
+
+		for(i = 0; i < numADChannels; i += 1)
+			adc    = ADCs[i]
+			adcStr = num2str(adc)
+			leftAxis = "AD" + adcStr
+
+			if(WhichListItem(leftAxis, axList) == -1)
+				continue
+			endif
+
+			headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
+			if(isFinite(headStage))
+				GetTraceColor(headStage, red, green, blue)
+			else
+				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+			endif
+
+			sprintf color, "\K(%d,%d,%d)" red, green, blue
+			if(activeHeadStage == headStage)
+				style = "\f05"
+			else
+				style = ""
+			endif
+			// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+			unit = StringFromList(numActiveDACs + i, unitWaveNote)
+			Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
+		endfor
 	endif
 End

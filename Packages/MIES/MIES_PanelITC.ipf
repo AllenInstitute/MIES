@@ -6000,6 +6000,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_UpdatePressureModeTabs(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode)
+		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
 	endif
 
 	return 0
