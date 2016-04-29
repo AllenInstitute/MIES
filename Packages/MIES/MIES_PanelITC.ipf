@@ -5504,7 +5504,7 @@ End
 /// @param panelTitle device
 /// @param clampMode  clamp mode to activate
 /// @param headStage  Headstage [0, 8[
-static Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
+Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 	string panelTitle
 	variable headStage, clampMode
 
