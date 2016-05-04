@@ -323,6 +323,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			case MCC_SETRSCOMPPREDICTION_FUNC:
 				ret = MCC_GetRsCompPrediction()
 				break
+			case MCC_SETRSCOMPBANDWIDTH_FUNC:
+				ret = MCC_GetRsCompBandwidth()
+				break
 			case MCC_SETRSCOMPENABLE_FUNC:
 				ret = MCC_GetRsCompEnable()
 				break
@@ -355,8 +358,10 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 				break
 		endswitch
 
-		// Don't send the value if it is equal to the current value, tolerance is 1%
-		if(CheckIfClose(ret, value, tol=1e-2, strong_or_weak=1))
+		// Don't send the value if it is equal to the current value, with tolerance
+		// being 1% of the reference value, or if it is zero and the current value is
+		// smaller than 1e-12.
+		if(CheckIfClose(ret, value, tol=1e-2 * abs(ret), strong_or_weak=1) || (value == 0 && CheckIfSmall(ret, tol=1e-12)))
 			DEBUGPRINT("The value to be set is equal to the current value, skip setting it: " + num2str(func))
 			return 0
 		endif
@@ -387,6 +392,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_SETRSCOMPPREDICTION_FUNC:
 			ret = MCC_SetRsCompPrediction(value)
 			break
+		case MCC_SETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_SetRsCompBandwidth(value)
+			break
 		case MCC_SETRSCOMPENABLE_FUNC:
 			ret = MCC_SetRsCompEnable(value)
 			break
@@ -397,6 +405,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
 			break
+		case MCC_GETBRIDGEBALRESIST_FUNC:
+			ret = MCC_GetBridgeBalResist()
+			break
 		case MCC_SETBRIDGEBALENABLE_FUNC:
 			ret = MCC_SetBridgeBalEnable(value)
 			break
@@ -405,6 +416,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
+			break
+		case MCC_GETNEUTRALIZATIONCAP_FUNC:
+			ret = MCC_GetNeutralizationCap()
 			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			MCC_AutoPipetteOffset()
@@ -469,6 +483,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
 			ret = MCC_GetWholeCellCompResist()
+			break
+		case MCC_GETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_GetRsCompBandwidth()
 			break
 		default:
 			ASSERT(0, "Unknown function")
@@ -1050,77 +1067,6 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 
 	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle)
 	ED_createTextNotes(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle)
-End
-
-// This is a testing function to make sure the experiment documentation function is working correctly
-Function AI_createDummySettingsWave(panelTitle, SweepCount)
-	string panelTitle
-	Variable SweepCount
-
-	// Location for the settings wave
-	dfref ampdfr = GetAmpSettingsFolder()
-
-	Wave/Z/SDFR=ampdfr dummySettingsWave = dummySettings
-	if (!WaveExists(dummySettingsWave))
-		// create the 3 dimensional wave
-		make /o /n = (1, 6, 8) ampdfr:dummySettings/Wave=dummySettingsWave
-	endif
-
-	Wave/T/SDFR=ampdfr dummySettingsKey
-	if (!WaveExists(dummySettingsKey))
-		make /T /o  /n = (3, 6) ampdfr:dummySettingsKey/Wave=dummySettingsKey
-	
-		// Row 0: Parameter
-		// Row 1: Units	
-		// Row 2: Tolerance factor
-			
-		// Add dimension labels to the dummySettingsKey wave
-		SetDimLabel 0, 0, Parameter, dummySettingsKey
-		SetDimLabel 0, 1, Units, dummySettingsKey
-		SetDimLabel 0, 2, Tolerance, dummySettingsKey
-		
-		// And now populate the wave
-		dummySettingsKey[0][0] =  "Dummy Setting 1"
-		dummySettingsKey[1][0] =  "V"
-		dummySettingsKey[2][0] =  "0.5"
-		
-		dummySettingsKey[0][1] =   "Dummy Setting 2"
-		dummySettingsKey[1][1] =  "V"
-		dummySettingsKey[2][1] =  "0.5"
-		
-		dummySettingsKey[0][2] =   "Dummy Setting 3"
-		dummySettingsKey[1][2] =   "V"
-		dummySettingsKey[2][2] =   "0.5"
-		
-		dummySettingsKey[0][3] =   "Dummy Setting 4"
-		dummySettingsKey[1][3] =   "V"
-		dummySettingsKey[2][3] =   "0.5"
-		
-		dummySettingsKey[0][4] =   "Dummy Setting 5"
-		dummySettingsKey[1][4] =   "V"
-		dummySettingsKey[2][4] =   "0.05"
-		
-		dummySettingsKey[0][5] =   "Dummy Setting 6"
-		dummySettingsKey[1][5] =   "V"
-		dummySettingsKey[2][5] =   "0.05"		
-	endif
-
-	// Now populate the Settings Wave
-	// the wave is 1 row, 15 columns, and headstage number layers
-	// first...determine if the head stage is being controlled
-	variable headStageControlledCounter
-	for(headStageControlledCounter = 0;headStageControlledCounter < NUM_HEADSTAGES ;headStageControlledCounter += 1)
-		dummySettingsWave[0][0][headStageControlledCounter] = sweepCount*.1 
-		dummySettingsWave[0][1][headStageControlledCounter] = sweepCount*.2
-		dummySettingsWave[0][2][headStageControlledCounter] = sweepCount*.3 
-		dummySettingsWave[0][3][headStageControlledCounter] = sweepCount*.4
-		dummySettingsWave[0][4][headStageControlledCounter] = sweepCount*.5 
-		dummySettingsWave[0][5][headStageControlledCounter] = sweepCount*.6
-	endfor
-	
-	// now call the function that will create the wave notes	
-	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle)
-	
 End
 
 // Below is code to open the MCC and manipulate the MCC windows. It is hard coded from TimJs 700Bs. Needs to be adapted for MIES
