@@ -532,6 +532,26 @@ Function HD_SaveSweepData([cmdID])
 	endif
 End
 
+/// @brief Parses list of controls from the DA_Ephys panel and removes the variables associated with Amp settings and should not be saved or loaded with other config settings
+///
+Static Function/S HD_GetConfigList(panelTitle)
+	string panelTitle
+
+	string list = controlNameList(panelTitle)
+	string ampSettings = "Gain_DA_*;Unit_DA_*;Scale_DA_*;Gain_AD_*;Unit_AD_*;SetVar_Settings_*;SetVar_Hardware_*;setvar_Settings_*;setvar_DataAcq_Hold_*;setvar_DataAcq_WC*;setvar_DataAcq_Rs*;setvar_DataAcq_PipetteOffset*;setvar_DataAcq_BB*"
+	string trimmedList
+	variable i
+
+	for(i=0;i<itemsinlist(ampSettings);i+=1)
+		trimmedList = ListMatch(list, stringfromlist(i, ampSettings))
+		list = removefromlist(trimmedList, list)
+	endfor
+
+	//Need to add these to the list, per Jim's request
+	list = AddListItem("setVar_AsyncAD_Title07;Unit_AsyncAD_07",list)
+	return list
+End
+
 ///@brief Routine for saving all gui settings/switches/check boxes 
 Function HD_SaveConfiguration([cmdID])
 	string cmdID
@@ -614,7 +634,7 @@ Function HD_SaveConfiguration([cmdID])
 			configWave[1][0] = versionString
 			
 			// Now get the list of the control names for the current panel
-			panelControlsList = ControlNameList(currentPanel)
+			panelControlsList = HD_GetConfigList(currentPanel)
 			numControls = ItemsInList(panelControlsList)
 			for (controlCounter = 0; controlCounter<numControls;controlCounter+=1)
 				currentControl = StringFromList(controlCounter, panelControlsList)			
@@ -729,8 +749,8 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 			for (n = 0; n<noLockedDevs; n+= 1)
 				currentPanel = StringFromList(n, lockedDevList)
 				
-				// Now get the list of the control names for the current panel
-				panelControlsList = ControlNameList(currentPanel)
+				// Now get the list of the control names for the current panel...Now doing a trimmed list of controls...will not restore MCC amp settings
+				panelControlsList = HD_GetConfigList(currentPanel)
 				
 				// load into the DA folder
 				SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
