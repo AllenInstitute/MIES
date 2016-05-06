@@ -250,6 +250,174 @@ Function TI_TangoSave(saveFileName, [cmdID])
 	endif
 End
 
+/// @brief load initial settings into the MCC for use with the pipeline rigs
+/// @param headstage 		headstage to be configured
+/// @param cmdID	optional parameter...if being called from WSE, this will be present.
+Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
+	string cmdID
+	variable headstage
+
+	variable initResult
+	variable numErrors
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	// make sure the MCC is valid
+	for(n = 0; n<noLockedDevs; n+= 1)
+		currentPanel = StringFromList(n, lockedDevList)
+		initResult = AI_SelectMultiClamp(currentPanel, headstage)
+		if(!initResult)
+			print "MCC not valid...cannot initialize Amplifier Settings"
+			numErrors += 1
+		else
+			// Do Current Clamp stuff
+			// switch to IC
+			PGC_SetAndActivateControl(currentPanel, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting Bridge Balance Enable to off"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE,  MCC_SETNEUTRALIZATIONCAP_FUNC, 0.0)
+			if(!IsFinite(initResult))
+				print "Error setting Neutralization Cap to 0.0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting Neutralization Enable to off"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJENABL_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting  SlowCurrentInjEnable to off"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJLEVEL_FUNC, 0.0)
+			if(!IsFinite(initResult))
+				print "Error setting SlowCurrentInjLevel to 0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJSETLT_FUNC, 1)
+			if(!IsFinite(initResult))
+				print "Error setting SlowCurrentInjSetlTime to 1 second"
+				numErrors += 1
+			endif
+
+			// these commands work for both IC and VC...here's the IC part
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
+			if(!IsFinite(initResult))
+				print "Error setting Holding Voltage to 0.0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting Holding Enable to off"
+				numErrors += 1
+			endif
+
+			// This doesn't seem to have a  corresponding command in the AI_SendToAmp() function
+			initResult = MCC_SetOscKillerEnable(1)
+			if(!IsFinite(initResult))
+				print "Error setting OscKillerEnable to on"
+				numErrors += 1
+			endif
+
+			// switch to VC
+			PGC_SetAndActivateControl(currentPanel, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
+
+			// These commands work with both current clamp and voltage clamp...so now do the voltage clamp mode
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
+			if(!IsFinite(initResult))
+				print "Error setting Holding Voltage to 0.0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting Holding Enable to off"
+				numErrors += 1
+			endif
+
+			initResult = MCC_SetOscKillerEnable(1)
+			if(!IsFinite(initResult))
+				print "Error setting OscKillerEnable to on"
+				numErrors += 1
+			endif
+
+			// Voltage Clamp Mode only settings
+			initResult =  AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, 0.0)
+			if(!IsFinite(initResult))
+				print "Error setting RsCompCorrection to 0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting RsCompEnable to off"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting RsCompPrediction to off"
+				numErrors += 1
+			endif
+
+			// doesn't seem to have a corresponding option in the AI_SendToAmp() function
+			initResult = MCC_SetSlowCompTauX20Enable(0)
+			if(!IsFinite(initResult))
+				print "Error setting SlowCompTauX20Enable to off"
+				numErrors += 1
+			endif
+
+			// Also, doesn't have a corresponding option in the AI_SendToAmp() function
+			initResult = MCC_SetRsCompBandwidth(0)
+			if(!IsFinite(initResult))
+				print "Error setting RsCompBandwidth to 0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, 0.0)
+			if(!IsFinite(initResult))
+				print "Error setting WholeCellCompCap to 0"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting  WholeCellCompEnable to off"
+				numErrors += 1
+			endif
+
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, 0)
+			if(!IsFinite(initResult))
+				print "Error setting WholeCellCompResist to 0"
+				numErrors += 1
+			endif
+		endif
+	endfor
+
+	// determine if the cmdID was provided
+	// initResult = 0 <-success
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, numErrors)
+	endif
+End
+
 /// @brief run the baseline QC check from the WSE.  This will zero the amp using the pipette offset function call, and look at the baselineSSAvg, already calculated during the TestPulse.  
 /// The EXTPINBATH wave will also be run as a way of making sure the baseline is recorded into the data set for post-experiment analysis
 Function TI_runBaselineCheckQC(headstage, [cmdID])
