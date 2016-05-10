@@ -66,8 +66,8 @@ End
 /// Rows:
 /// - 0: DA unit (V-Clamp mode)
 /// - 1: AD unit (V-Clamp mode)
-/// - 3: DA unit (I-Clamp mode)
-/// - 4: AD unit (I-Clamp mode)
+/// - 2: DA unit (I-Clamp mode)
+/// - 3: AD unit (I-Clamp mode)
 ///
 /// Columns:
 /// - Head stage number
