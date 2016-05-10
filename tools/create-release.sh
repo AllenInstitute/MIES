@@ -45,6 +45,8 @@ echo $version > "$version_file"
 # (bamboo does them by default so we delete the unwanted folders manually here
 "$zip_exe" -qd $version.zip "Packages/doc/*"  > /dev/null
 "$zip_exe" -qd $version.zip "Packages/ITC/*" > /dev/null
+"$zip_exe" -qd $version.zip "Packages/Testing-MIES/*" > /dev/null
+"$zip_exe" -qd $version.zip "Packages/unit-testing/*" > /dev/null
 "$zip_exe" -qd $version.zip "Packages/Arduino/*.zip" > /dev/null
 "$zip_exe" -qd $version.zip "Packages/Arduino/*.exe" > /dev/null
 "$zip_exe" -qd $version.zip "tools/*" > /dev/null
