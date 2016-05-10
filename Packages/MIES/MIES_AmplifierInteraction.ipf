@@ -290,7 +290,6 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 	headstageMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
-		printf "Headstage %d is in %s but the required one is %s\r", headstage, AI_ConvertAmplifierModeToString(headstageMode), AI_ConvertAmplifierModeToString(mode)
 		return NaN
 	elseif(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
 		return NaN
@@ -1351,11 +1350,8 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	// add delta to current DC V offset
 	value = offset - vDelta
 
-	if(clampMode == V_CLAMP_MODE)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value)
-	elseif(clampMode == I_CLAMP_MODE)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_IC", headStage, value = value)
-	endif
+	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value, checkBeforeWrite = 1)
+	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_IC", headStage, value = value, checkBeforeWrite = 1)
 End
 
 /// @brief Auto fills the units and gains for all headstages connected to amplifiers

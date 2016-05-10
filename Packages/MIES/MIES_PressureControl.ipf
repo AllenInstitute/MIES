@@ -1368,7 +1368,6 @@ Function P_LoadPressureButtonState(panelTitle, headStageNo)
 		endif
 	else
 		SetPressureButtonsToBaseState(panelTitle)
-		print "An DAC device used for pressure regulation is not enabled for this MIES headstage"
 	endif
 
 	P_PressureDisplayUnhighlite(panelTitle) // remove highlite from val displays that show pressure for each headStage
