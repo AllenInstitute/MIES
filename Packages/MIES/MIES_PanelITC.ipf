@@ -4970,11 +4970,11 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	clampMode = DAP_MIESHeadstageMode(panelTitle, headstage)
 
 	if(clampMode == V_CLAMP_MODE)
-		DACchannel = ChanAmpAssign[0][headStage]
-		ADCchannel = ChanAmpAssign[2][headStage]
+		DACchannel = ChanAmpAssign[%VC_DA][headStage]
+		ADCchannel = ChanAmpAssign[%VC_AD][headStage]
 	elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
-		DACchannel = ChanAmpAssign[4][headStage]
-		ADCchannel = ChanAmpAssign[6][headStage]
+		DACchannel = ChanAmpAssign[%IC_DA][headStage]
+		ADCchannel = ChanAmpAssign[%IC_AD][headStage]
 	else
 		printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
 		return 1
