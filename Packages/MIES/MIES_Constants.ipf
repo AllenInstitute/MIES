@@ -142,6 +142,8 @@ Constant CHANNEL_TYPE_ASYNC        = 0x100
 Constant CHANNEL_TYPE_ALARM        = 0x110
 Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
 Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
+Constant CHANNEL_CONTROL_SEARCH    = 0x140
+Constant CHANNEL_INDEX_ALL         = -1    ///< Controls which control groups have this special channel index
 /// @}
 
 /// @name Constants for the selection wave of a ListBox

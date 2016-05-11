@@ -6633,29 +6633,27 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 	return 0
 End
 
-/// @brief Extracts `channelType`, `controlType` and the control index from `ctrl`
+/// @brief Extracts `channelType`, `controlType` and `channelIndex` from `ctrl`
 ///
 /// Counterpart to GetPanelControl()
-Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
+Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	string ctrl
-	variable &idx, &channelType, &controlType
+	variable &channelIndex, &channelType, &controlType
 
-	string elem0, elem1
+	string elem0, elem1, elem2
 	variable numUnderlines
 
-	idx         = NaN
-	channelType = NaN
-	controlType = NaN
+	channelIndex = NaN
+	channelType  = NaN
+	controlType  = NaN
 
 	ASSERT(!isEmpty(ctrl), "Empty control")
 	numUnderlines = ItemsInList(ctrl, "_")
 	ASSERT(numUnderlines >= 2, "Unexpected control naming scheme")
 
-	idx = str2num(StringFromList(numUnderlines - 1, ctrl, "_"))
-	ASSERT(IsFinite(idx), "Non-finite control index")
-
 	elem0 = StringFromList(0, ctrl, "_")
 	elem1 = StringFromList(1, ctrl, "_")
+	elem2 = StringFromList(numUnderlines - 1, ctrl, "_")
 
 	strswitch(elem0)
 		case "Wave":
@@ -6681,6 +6679,9 @@ Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
 			break
 		case "Max":
 			controlType = CHANNEL_CONTROL_ALARM_MAX
+			break
+		case "Search":
+			controlType = CHANNEL_CONTROL_SEARCH
 			break
 		default:
 			ASSERT(0, "Invalid controlType")
@@ -6708,6 +6709,16 @@ Function DAP_ParsePanelControl(ctrl, idx, channelType, controlType)
 			break
 		default:
 			ASSERT(0, "Invalid channelType")
+			break
+	endswitch
+
+	strswitch(elem2)
+		case "All":
+			channelIndex = CHANNEL_INDEX_ALL
+			break
+		default:
+			channelIndex = str2num(elem2)
+			ASSERT(IsFinite(channelIndex), "Invalid channelIndex")
 			break
 	endswitch
 End
