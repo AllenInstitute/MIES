@@ -71,7 +71,7 @@ static Function AI_SwitchAxonAmpMode(panelTitle, headStage)
 
 	variable mode
 
-	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=1))
+	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=1) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NAN
 	endif
 
@@ -165,9 +165,7 @@ End
 /// @param headStage	                       headstage number
 /// @param verbose [optional: default is true] print an error message
 ///
-/// @returns 0: success
-/// @returns 1: stored amplifier serials are invalid
-/// @returns 2: calling MCC_SelectMultiClamp700B failed
+/// @returns one of @ref AISelectMultiClampReturnValues
 Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	string panelTitle
 	variable headStage, verbose
@@ -190,7 +188,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 		if(verbose)
 			printf "(%s) No amplifier is linked with headstage %d\r", panelTitle, headStage
 		endif
-		return 1
+		return AMPLIFIER_CONNECTION_INVAL_SER
 	endif
 
 	debugOnError = DisableDebugOnError()
@@ -203,11 +201,11 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 			printf "(%s) The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", panelTitle, mccSerial, headStage
 		endif
 		ResetDebugOnError(debugOnError)
-		return 2
+		return AMPLIFIER_CONNECTION_MCC_FAILED
 	endtry
 
 	ResetDebugOnError(debugOnError)
-	return 0
+	return AMPLIFIER_CONNECTION_SUCCESS
 end
 
 /// @brief Set the clamp mode of user linked MCC based on the headstage number
@@ -218,7 +216,7 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 
 	AI_AssertOnInvalidClampMode(mode)
 
-	if(AI_SelectMultiClamp(panelTitle, headStage))
+	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
 	endif
 
@@ -283,7 +281,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		checkBeforeWrite = !!checkBeforeWrite
 	endif
 
-	if(AI_SelectMultiClamp(panelTitle, headstage))
+	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
 	endif
 
@@ -972,7 +970,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		axonSerial = AI_GetAmpAxonSerial(panelTitle, i)
 		channel    = AI_GetAmpChannel(panelTitle, i)
 
-		if(AI_SelectMultiClamp(panelTitle, i))
+		if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
 			continue
 		endif
 
@@ -1376,7 +1374,7 @@ Function AI_QueryGainsFromMCC(panelTitle, [verbose])
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		if(AI_SelectMultiClamp(panelTitle, i, verbose=verbose))
+		if(AI_SelectMultiClamp(panelTitle, i, verbose=verbose) != AMPLIFIER_CONNECTION_SUCCESS)
 			continue
 		endif
 

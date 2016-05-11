@@ -440,3 +440,11 @@ Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 
 StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
 StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
+
+/// @name Constants for the return value of AI_SelectMultiClamp()
+/// @anchor AISelectMultiClampReturnValues
+/// @{
+Constant AMPLIFIER_CONNECTION_SUCCESS    = 0 ///< success
+Constant AMPLIFIER_CONNECTION_INVAL_SER  = 1 ///< stored amplifier serials are invalid
+Constant AMPLIFIER_CONNECTION_MCC_FAILED = 2 ///< calling MCC_SelectMultiClamp700B failed
+/// @}
