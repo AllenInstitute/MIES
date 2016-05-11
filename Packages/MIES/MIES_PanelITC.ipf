@@ -4201,52 +4201,25 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 	return 0
 End
 
-static Function DAP_TurnOffAllTTLs(panelTitle)
+static Function DAP_TurnOffAllChannels(panelTitle, channelType)
 	string panelTitle
+	variable channelType
 
-	variable i
+	variable i, numEntries
 	string ctrl
 
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
+	numEntries = GetNumberFromType(var=channelType)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
 		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
-End
 
-static Function DAP_TurnOffAllDACs(panelTitle)
-	string panelTitle
-
-	variable i
-	string ctrl
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
-	endfor
-End
-
-static Function DAP_TurnOffAllADCs(panelTitle)
-	string panelTitle
-
-	variable i
-	string ctrl
-
-	for(i = 0; i < NUM_AD_CHANNELS;i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
-	endfor
-End
-
-static Function DAP_TurnOffAllHeadstages(panelTitle)
-	string panelTitle
-
-	variable i
-	string ctrl
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
-	endfor
+	// we just called the control procedure for each channel, so we just have to set
+	// the checkbox to unselected here
+	if(channelType == CHANNEL_TYPE_ADC || channelType == CHANNEL_TYPE_DAC || channelType == CHANNEL_TYPE_TTL)
+		ctrl = GetPanelControl(CHANNEL_INDEX_ALL, channelType, CHANNEL_CONTROL_CHECK)
+		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+	endif
 End
 
 Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
@@ -4257,10 +4230,10 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2: // mouse up
 			panelTitle = ba.win
-			DAP_TurnOffAllHeadstages(panelTitle)
-			DAP_TurnOffAllDACs(panelTitle)
-			DAP_TurnOffAllADCs(panelTitle)
-			DAP_TurnOffAllTTLs(panelTitle)
+			DAP_TurnOffAllChannels(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			DAP_TurnOffAllChannels(panelTitle, CHANNEL_TYPE_ADC)
+			DAP_TurnOffAllChannels(panelTitle, CHANNEL_TYPE_DAC)
+			DAP_TurnOffAllChannels(panelTitle, CHANNEL_TYPE_TTL)
 			break
 	endswitch
 End
