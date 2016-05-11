@@ -4950,17 +4950,20 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
 
-	string ctrl, dacWave, endWave, unit, func, info, str
-	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, realMode
-	variable gain, scale, clampMode, i, valid_f1, valid_f2, ampConnState
+	string ctrl, dacWave, endWave, unit, func, info, str, ADUnit, DAUnit
+	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
+	variable gain, scale, clampMode, i, valid_f1, valid_f2, ampConnState, needResetting
+	variable DAGainMCC, ADGainMCC
+	string DAUnitMCC, ADUnitMCC
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
 		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
 		return 1
 	endif
 
-	Wave ChanAmpAssign    = GetChanAmpAssign(panelTitle)
-	Wave channelClampMode = GetChannelClampMode(panelTitle)
+	Wave ChanAmpAssign       = GetChanAmpAssign(panelTitle)
+	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
+	Wave channelClampMode    = GetChannelClampMode(panelTitle)
 
 	if(headstage < 0 || headStage >= DimSize(ChanAmpAssign, COLS))
 		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
@@ -4972,12 +4975,55 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[%VC_DA][headStage]
 		ADCchannel = ChanAmpAssign[%VC_AD][headStage]
+		DAGain     = ChanAmpAssign[%VC_DAGain][headStage]
+		ADGain     = ChanAmpAssign[%VC_ADGain][headStage]
+		DAUnit     = ChanAmpAssignUnit[%VC_DAUnit][headStage]
+		ADUnit     = ChanAmpAssignUnit[%VC_ADUnit][headStage]
 	elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 		DACchannel = ChanAmpAssign[%IC_DA][headStage]
 		ADCchannel = ChanAmpAssign[%IC_AD][headStage]
+		DAGain     = ChanAmpAssign[%IC_DAGain][headStage]
+		ADGain     = ChanAmpAssign[%IC_ADGain][headStage]
+		DAUnit     = ChanAmpAssignUnit[%IC_DAUnit][headStage]
+		ADUnit     = ChanAmpAssignUnit[%IC_ADUnit][headStage]
 	else
 		printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
 		return 1
+	endif
+
+	ampConnState = AI_SelectMultiClamp(panelTitle, headStage, verbose=0)
+
+	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
+
+		AI_QueryGainsUnitsForClampMode(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
+
+		if(cmpstr(DAUnit, DAUnitMCC))
+			printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", panelTitle, DACchannel, DAUnit, DAUnitMCC
+			needResetting = 1
+		endif
+
+		if(!CheckIfClose(DAGain, DAGainMCC, tol=1e-4) || (clampMode == I_EQUAL_ZERO_MODE && DAGainMCC == 0.0))
+			printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", panelTitle, DACchannel, DAGain, DAGainMCC
+			needResetting = 1
+		endif
+
+	   if(cmpstr(ADUnit, ADUnitMCC))
+			printf "(%s) The configured unit for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", panelTitle, ADCchannel, ADUnit, ADUnitMCC
+			needResetting = 1
+	   endif
+
+		if(!CheckIfClose(ADGain, ADGainMCC, tol=1e-4))
+			printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", panelTitle, ADCchannel, ADGain, ADGainMCC
+			needResetting = 1
+	   endif
+
+		if(needResetting)
+			AI_UpdateChanAmpAssign(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
+			printf "(%s) Please restart DAQ or TP to use the automatically imported gains from MCC.\r", panelTitle
+			HSU_UpdateChanAmpAssignPanel(panelTitle)
+			DAP_SyncChanAmpAssignToActiveHS(panelTitle)
+			return 1
+		endif
 	endif
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
@@ -5122,7 +5168,6 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		endif
 	endif
 
-	ampConnState = AI_SelectMultiClamp(panelTitle, headStage, verbose=0)
 	if(GetCheckBoxState(panelTitle, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", panelTitle, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
