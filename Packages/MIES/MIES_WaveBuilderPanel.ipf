@@ -32,8 +32,6 @@ End
 
 static StrConstant panel                     = "WaveBuilder"
 static StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
-static StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
-static StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 
 // Equal to the indizes of the Wave Type popup menu
 static Constant  STIMULUS_TYPE_DA            = 1
@@ -1090,7 +1088,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				numPanels = ItemsInList(ITCPanelTitleList)
 				for(i = 0; i < numPanels; i += 1)
 					panelTitle = StringFromList(i, ITCPanelTitleList)
-					if(StringMatch(SetWaveToDelete, "*DA*"))
+					if(StringMatch(SetWaveToDelete, CHANNEL_DA_SEARCH_STRING))
 						channelType = CHANNEL_TYPE_DAC
 					else
 						channelType = CHANNEL_TYPE_TTL
@@ -1580,7 +1578,7 @@ static Function WBP_LoadSet()
 		return NaN
 	endif
 
-	if(StringMatch(SetName, "*TTL*"))
+	if(StringMatch(SetName, CHANNEL_TTL_SEARCH_STRING))
 		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 2
 		WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
 		dfref dfr = GetWBSvdStimSetParamTTLPath()
@@ -1662,7 +1660,7 @@ static Function WBP_DeleteSet()
 		return NaN
 	endif
 
-	if(StringMatch(setName, "*TTL*"))
+	if(StringMatch(setName, CHANNEL_TTL_SEARCH_STRING))
 		dfref paramDFR = GetWBSvdStimSetParamTTLPath()
 		dfref dfr      = GetWBSvdStimSetTTLPath()
 	else
