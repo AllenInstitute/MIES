@@ -76,16 +76,24 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/T/Z/SDFR=dfr wv = ChanAmpAssignUnit
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		// do nothing
+	else
+		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
+		wv = ""
 	endif
 
-	Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
-	wv = ""
-	
+	SetDimLabel ROWS, 0, VC_DAUnit, wv
+	SetDimLabel ROWS, 1, VC_ADUnit, wv
+	SetDimLabel ROWS, 2, IC_DAUnit, wv
+	SetDimLabel ROWS, 3, IC_ADUnit, wv
+
 	return wv
 End
 

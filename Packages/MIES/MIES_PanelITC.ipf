@@ -5173,15 +5173,15 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 		ADCchannel = ChanAmpAssign[2][headStage]
 		DAGain     = ChanAmpAssign[1][headStage]
 		ADGain     = ChanAmpAssign[3][headStage]
-		DAUnit     = ChanAmpAssignUnit[0][headStage]
-		ADUnit     = ChanAmpAssignUnit[1][headStage]
+		DAUnit     = ChanAmpAssignUnit[%VC_DAUnit][headStage]
+		ADUnit     = ChanAmpAssignUnit[%VC_ADUnit][headStage]
 	elseif(ClampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 		DACchannel = ChanAmpAssign[4][headStage]
 		ADCchannel = ChanAmpAssign[6][headStage]
 		DAGain     = ChanAmpAssign[5][headStage]
 		ADGain     = ChanAmpAssign[7][headStage]
-		DAUnit     = ChanAmpAssignUnit[2][headStage]
-		ADUnit     = ChanAmpAssignUnit[3][headStage]
+		DAUnit     = ChanAmpAssignUnit[%IC_DAUnit][headStage]
+		ADUnit     = ChanAmpAssignUnit[%IC_ADUnit][headStage]
 	endif
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))

@@ -1383,10 +1383,10 @@ Function AI_QueryGainsFromMCC(panelTitle, [verbose])
 		mode = MCC_GetMode()
 		AI_AssertOnInvalidClampMode(mode)
 
-		ChanAmpAssignUnit[0][i] = "mV"
-		ChanAmpAssignUnit[1][i] = "pA"
-		ChanAmpAssignUnit[2][i] = "pA"
-		ChanAmpAssignUnit[3][i] = "mV"
+		ChanAmpAssignUnit[%VC_DAUnit][i] = "mV"
+		ChanAmpAssignUnit[%VC_ADUnit][i] = "pA"
+		ChanAmpAssignUnit[%IC_DAUnit][i] = "pA"
+		ChanAmpAssignUnit[%IC_ADUnit][i] = "mV"
 
 		if(mode == V_CLAMP_MODE)
 			ChanAmpAssign[%VC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
