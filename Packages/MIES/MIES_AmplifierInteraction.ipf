@@ -1352,85 +1352,109 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_IC", headStage, value = value, checkBeforeWrite = 1)
 End
 
+/// @brief Query the MCC application for the gains and units of the given clamp mode
+Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+	string panelTitle
+	variable headstage, clampMode
+	variable &DAGain, &ADGain
+	string &DAUnit, &ADUnit
+
+	DAGain = NaN
+	ADGain = NaN
+	DAUnit = ""
+	ADUnit = ""
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=0) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	ASSERT(clampMode == MCC_GetMode(), "Non matching clamp mode from MCC application")
+
+	DAGain = AI_RetrieveDAGain(panelTitle, headStage)
+	ADGain = AI_RetrieveADGain(panelTitle, headStage)
+
+	if(clampMode == V_CLAMP_MODE)
+		DAUnit = "mV"
+		ADUnit = "pA"
+	else
+		DAUnit = "pA"
+		ADUnit = "mV"
+	endif
+End
+
+/// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
+/// clamp mode with the gains and units.
+Function AI_UpdateChanAmpAssign(panelTitle, headStage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+	string panelTitle
+	variable headStage, clampMode, DAGain, ADGain
+	string DAUnit, ADUnit
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	WAVE ChanAmpAssign       = GetChanAmpAssign(panelTitle)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
+
+	if(clampMode == V_CLAMP_MODE)
+		ChanAmpAssign[%VC_DAGain][headStage]     = DAGain
+		ChanAmpAssign[%VC_ADGain][headStage]     = ADGain
+		ChanAmpAssignUnit[%VC_DAUnit][headStage] = DAUnit
+		ChanAmpAssignUnit[%VC_ADUnit][headStage] = ADUnit
+	elseif(clampMode == I_CLAMP_MODE)
+		ChanAmpAssign[%IC_DAGain][headStage]     = DAGain
+		ChanAmpAssign[%IC_ADGain][headStage]     = ADGain
+		ChanAmpAssignUnit[%IC_DAUnit][headStage] = DAUnit
+		ChanAmpAssignUnit[%IC_ADUnit][headStage] = ADUnit
+	elseif(clampMode == I_EQUAL_ZERO_MODE)
+		// don't update DAGain as that will be always zero for I=0
+		ChanAmpAssign[%IC_ADGain][headStage]     = ADGain
+		ChanAmpAssignUnit[%IC_DAUnit][headStage] = DAUnit
+		ChanAmpAssignUnit[%IC_ADUnit][headStage] = ADUnit
+	endif
+End
+
 /// @brief Auto fills the units and gains for all headstages connected to amplifiers
 /// by querying the MCC application
 ///
 /// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
 ///
 /// @return number of connected amplifiers
-Function AI_QueryGainsFromMCC(panelTitle, [verbose])
+Function AI_QueryGainsFromMCC(panelTitle)
 	string panelTitle
-	variable verbose
 
-	variable mode, resetFromIEqualZero, i, numConnAmplifiers
-
-	if(ParamIsDefault(verbose))
-		verbose = 0
-	endif
-
-	WAVE ChanAmpAssign       = GetChanAmpAssign(panelTitle)
-	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
-	WAVE statusHS            = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	variable clampMode, old_ClampMode, i, numConnAmplifiers
+	variable DAGain, ADGain
+	string DAUnit, ADUnit
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		if(AI_SelectMultiClamp(panelTitle, i, verbose=verbose) != AMPLIFIER_CONNECTION_SUCCESS)
+		if(AI_SelectMultiClamp(panelTitle, i, verbose=0) != AMPLIFIER_CONNECTION_SUCCESS)
 			continue
 		endif
 
 		numConnAmplifiers += 1
 
-		mode = MCC_GetMode()
-		AI_AssertOnInvalidClampMode(mode)
+		clampMode = MCC_GetMode()
+		AI_AssertOnInvalidClampMode(clampMode)
 
-		ChanAmpAssignUnit[%VC_DAUnit][i] = "mV"
-		ChanAmpAssignUnit[%VC_ADUnit][i] = "pA"
-		ChanAmpAssignUnit[%IC_DAUnit][i] = "pA"
-		ChanAmpAssignUnit[%IC_ADUnit][i] = "mV"
-
-		if(mode == V_CLAMP_MODE)
-			ChanAmpAssign[%VC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
-			ChanAmpAssign[%VC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
-		elseif(mode == I_CLAMP_MODE)
-			ChanAmpAssign[%IC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
-			ChanAmpAssign[%IC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
-		elseif(mode == I_EQUAL_ZERO_MODE)
-			// checks to see if a holding current or bias current is being
-			// applied, if yes, the mode switch required to pull in the gains
-			// for all modes is prevented.
-			if(!MCC_GetHoldingEnable())
-				AI_SetClampMode(panelTitle, i, I_CLAMP_MODE)
-				resetFromIEqualZero = 1
-				ChanAmpAssign[%IC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
-				ChanAmpAssign[%IC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
-			else
-				printf "It appears that a bias current or holding potential is being applied by the MC Commader "
-				printf "suggesting that a recording is ongoing, therefore as a precaution, the gain settings cannot be imported\r"
-			endif
-		endif
+		AI_QueryGainsUnitsForClampMode(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		AI_UpdateChanAmpAssign(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
 		if(!MCC_GetHoldingEnable())
+			old_clampMode = clampMode
 			AI_SwitchAxonAmpMode(panelTitle, i)
 
-			mode = MCC_GetMode()
+			clampMode = MCC_GetMode()
 
-			if(mode == V_CLAMP_MODE)
-				ChanAmpAssign[%VC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
-				ChanAmpAssign[%VC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
-			elseif(mode == I_CLAMP_MODE)
-				ChanAmpAssign[%IC_DAGain][i] = AI_RetrieveDAGain(panelTitle, i)
-				ChanAmpAssign[%IC_ADGain][i] = AI_RetrieveADGain(panelTitle, i)
-			endif
+			AI_QueryGainsUnitsForClampMode(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+			AI_UpdateChanAmpAssign(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-			if(resetFromIEqualZero)
-				AI_SetClampMode(panelTitle, i, I_EQUAL_ZERO_MODE)
-			else
-				AI_SwitchAxonAmpMode(panelTitle, i)
-			endif
+			AI_SetClampMode(panelTitle, i, old_clampMode)
 		else
 			printf "It appears that a holding potential is being applied, therefore as a precaution, "
-			printf "the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(mode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
-			printf "The gains were successfully imported for the %s on i: %d\r", AI_ConvertAmplifierModeToString(mode), i
+			printf "the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(clampMode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
+			printf "The gains were successfully imported for the %s on i: %d\r", AI_ConvertAmplifierModeToString(clampMode), i
 		endif
 	endfor
 
