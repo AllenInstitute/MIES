@@ -3227,13 +3227,50 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetWindow $panelTitle, userData(panelVersion) = ""
 
-	DAP_TurnOffAllHeadstages(panelTitle)
-	DAP_TurnOffAllDACs(panelTitle)
-	DAP_TurnOffAllADCs(panelTitle)
-	DAP_TurnOffAllTTLs(panelTitle)
+	CheckBox Check_AD_00 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_01 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_02 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_03 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_04 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_05 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_06 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_07 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_08 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_09 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_10 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_11 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_12 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_13 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_14 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_15 WIN = $panelTitle,value= 0
 
-	ChangeTab(panelTitle, "ADC", 0)
-	DAP_UpdateClampmodeTabs(panelTitle, 0, V_CLAMP_MODE)
+	CheckBox Check_DA_00 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_01 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_02 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_03 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_04 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_05 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_06 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_07 WIN = $panelTitle,value= 0
+
+	CheckBox Check_TTL_00 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_01 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_02 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_03 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_04 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_05 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_06 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_07 WIN = $panelTitle,value= 0
+
+	CheckBox Check_DataAcqHS_00 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_01 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_02 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_03 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_04 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_05 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_06 WIN = $panelTitle,value= 0
+	CheckBox Check_DataAcqHS_07 WIN = $panelTitle,value= 0
+
 	ChangeTab(panelTitle, "ADC", 6)
 	DoUpdate/W=$panelTitle
 
