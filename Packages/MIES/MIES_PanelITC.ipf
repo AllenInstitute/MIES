@@ -17,7 +17,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(345,417,837,1253)
+	NewPanel /K=1 /W=(186,439,678,1275)
 	GroupBox group_DataAcq_WholeCell,pos={47.00,200.00},size={150.00,62.00},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -1148,7 +1148,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Cp!!#Bm!!#B%!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=1,popvalue="- none -",value= #"DAP_GetNiceAmplifierChannelList()"
+	PopupMenu popup_Settings_Amplifier,mode=2,popvalue="AmpNo 0 Chan 1",value= #"DAP_GetNiceAmplifierChannelList()"
 	PopupMenu Popup_Settings_IC_DA,pos={226.00,411.00},size={47.00,19.00},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
@@ -1183,7 +1183,7 @@ Window DA_Ephys() : Panel
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo)= A"!!,HE!!#Bm!!#A%!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_Settings_UpdateAmpStatus,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable Search_DA_00,pos={153.00,97.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_DASearch,title="Search string"
+	SetVariable Search_DA_00,pos={153.00,97.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo)= A"!!,G)!!#@&!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1231,68 +1231,54 @@ Window DA_Ephys() : Panel
 	SetVariable Search_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_07,value= _STR:""
-	CheckBox SearchUniversal_DA_00,pos={281.00,98.00},size={75.00,15.00},disable=1,proc=DAP_CheckProc_UnivrslSrchStr,title="Apply to all"
-	CheckBox SearchUniversal_DA_00,userdata(tabnum)=  "1"
-	CheckBox SearchUniversal_DA_00,userdata(tabcontrol)=  "ADC"
-	CheckBox SearchUniversal_DA_00,userdata(ResizeControlsInfo)= A"!!,HGJ,hpS!!#?O!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox SearchUniversal_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox SearchUniversal_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox SearchUniversal_DA_00,value= 0
-	SetVariable Search_TTL_00,pos={102.00,97.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_00,pos={102.00,97.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_00,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_00,userdata(ResizeControlsInfo)= A"!!,F1!!#@&!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_00,value= _STR:""
-	SetVariable Search_TTL_01,pos={102.00,143.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_01,pos={102.00,143.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_01,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_01,userdata(ResizeControlsInfo)= A"!!,F1!!#@s!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_01,value= _STR:""
-	SetVariable Search_TTL_02,pos={102.00,190.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_02,pos={102.00,190.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_02,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_02,userdata(ResizeControlsInfo)= A"!!,F1!!#AM!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_02,value= _STR:""
-	SetVariable Search_TTL_03,pos={102.00,237.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_03,pos={102.00,237.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_03,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_03,userdata(ResizeControlsInfo)= A"!!,F1!!#B'!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_03,value= _STR:""
-	SetVariable Search_TTL_04,pos={102.00,284.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_04,pos={102.00,284.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_04,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_04,userdata(ResizeControlsInfo)= A"!!,F1!!#BH!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_04,value= _STR:""
-	SetVariable Search_TTL_05,pos={102.00,331.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_05,pos={102.00,331.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_05,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_05,userdata(ResizeControlsInfo)= A"!!,F1!!#B_J,hq2!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_05,value= _STR:""
-	SetVariable Search_TTL_06,pos={102.00,378.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_06,pos={102.00,378.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_06,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_06,userdata(ResizeControlsInfo)= A"!!,F1!!#C\"!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_06,value= _STR:""
-	SetVariable Search_TTL_07,pos={102.00,425.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_TTLSearch,title="Search string"
+	SetVariable Search_TTL_07,pos={102.00,425.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_TTL_07,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo)= A"!!,F1!!#C9J,hq2!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_07,value= _STR:""
-	CheckBox SearchUniversal_TTL_00,pos={234.00,98.00},size={75.00,15.00},disable=1,proc=DAP_CheckProc_UnivrslSrchTTL,title="Apply to all"
-	CheckBox SearchUniversal_TTL_00,userdata(tabnum)=  "3"
-	CheckBox SearchUniversal_TTL_00,userdata(tabcontrol)=  "ADC"
-	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo)= A"!!,H%!!#@(!!#?O!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox SearchUniversal_TTL_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox SearchUniversal_TTL_00,value= 0
 	CheckBox Check_DataAcq_Indexing,pos={190.00,660.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
 	CheckBox Check_DataAcq_Indexing,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq_Indexing,userdata(tabnum)=  "0"
@@ -1334,49 +1320,49 @@ Window DA_Ephys() : Panel
 	TitleBox Title_DA_Channel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_DA_Channel,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_DA_Channel,frame=0,fStyle=1
-	PopupMenu IndexEnd_DA_00,pos={350.00,75.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_00,pos={353.00,75.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_00,userdata(ResizeControlsInfo)= A"!!,Hj!!#?O!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_00,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_01,pos={350.00,121.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_01,pos={353.00,121.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_01,userdata(ResizeControlsInfo)= A"!!,Hj!!#@V!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_01,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_02,pos={350.00,167.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_02,pos={353.00,167.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_02,userdata(ResizeControlsInfo)= A"!!,Hj!!#A6!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_02,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_03,pos={350.00,214.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_03,pos={353.00,214.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_03,userdata(ResizeControlsInfo)= A"!!,Hj!!#Ae!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_03,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_04,pos={350.00,260.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_04,pos={353.00,260.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_04,userdata(ResizeControlsInfo)= A"!!,Hj!!#B<!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_04,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_05,pos={350.00,307.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_05,pos={353.00,307.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_05,userdata(ResizeControlsInfo)= A"!!,Hj!!#BSJ,hq:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_05,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_06,pos={350.00,353.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_06,pos={353.00,353.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_06,userdata(ResizeControlsInfo)= A"!!,Hj!!#BjJ,hq:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_06,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	PopupMenu IndexEnd_DA_07,pos={350.00,400.00},size={128.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_07,pos={353.00,400.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_07,userdata(ResizeControlsInfo)= A"!!,Hj!!#C-!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu IndexEnd_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1438,24 +1424,6 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ShowScopeWindow,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_ShowScopeWindow,value= 1
-	Button Button_TTL_TurnOffAllTTLs,pos={21.00,422.00},size={67.00,40.00},disable=1,proc=DAP_ButtonProc_TTLOff,title="Turn off\rall TTLs"
-	Button Button_TTL_TurnOffAllTTLs,userdata(tabnum)=  "3"
-	Button Button_TTL_TurnOffAllTTLs,userdata(tabcontrol)=  "ADC"
-	Button Button_TTL_TurnOffAllTTLs,userdata(ResizeControlsInfo)= A"!!,Ba!!#C8!!#??!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button Button_TTL_TurnOffAllTTLs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button Button_TTL_TurnOffAllTTLs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button Button_DAC_TurnOFFDACs,pos={19.00,423.00},size={115.00,20.00},disable=1,proc=DAP_ButtonProc_DAOff,title="Turn Off alll DAs"
-	Button Button_DAC_TurnOFFDACs,userdata(tabnum)=  "1"
-	Button Button_DAC_TurnOFFDACs,userdata(tabcontrol)=  "ADC"
-	Button Button_DAC_TurnOFFDACs,userdata(ResizeControlsInfo)= A"!!,BQ!!#C8J,hpu!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button Button_DAC_TurnOFFDACs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button Button_DAC_TurnOFFDACs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button Button_ADC_TurnOffAllADCs,pos={20.00,425.00},size={115.00,20.00},disable=1,proc=DAP_ButtonProc_ADOff,title="Turn off alll ADs"
-	Button Button_ADC_TurnOffAllADCs,userdata(tabnum)=  "2"
-	Button Button_ADC_TurnOffAllADCs,userdata(tabcontrol)=  "ADC"
-	Button Button_ADC_TurnOffAllADCs,userdata(ResizeControlsInfo)= A"!!,BY!!#C9J,hpu!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button Button_ADC_TurnOffAllADCs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button Button_ADC_TurnOffAllADCs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Button button_DataAcq_TurnOffAllChan,pos={417.00,73.00},size={35.00,40.00},disable=1,proc=DAP_ButtonProc_AllChanOff,title="OFF"
 	Button button_DataAcq_TurnOffAllChan,userdata(tabnum)=  "0"
 	Button button_DataAcq_TurnOffAllChan,userdata(tabcontrol)=  "ADC"
@@ -2754,14 +2722,14 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_ApproachAll,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_ApproachAll,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_ApproachAll,value= 0
-	PopupMenu popup_Settings_Pressure_dev,pos={51.00,495.00},size={213.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="DAC devices"
+	PopupMenu popup_Settings_Pressure_dev,pos={45.00,495.00},size={219.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_CAA,title="DAC devices"
 	PopupMenu popup_Settings_Pressure_dev,help={"List of available DAC devices for pressure control"}
 	PopupMenu popup_Settings_Pressure_dev,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_Pressure_dev,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;\""
+	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -;\""
 	TitleBox Title_settings_Hardware_Pressur,pos={45.00,475.00},size={44.00,15.00},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC"
@@ -3183,10 +3151,89 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_RequireAmpConn,pos={325.00,619.00},size={107.00,15.00},disable=1,title="Require Amplifier"
 	CheckBox check_Settings_RequireAmpConn,help={"Require that every active headstage is connected to an amplifier for TP/DAQ."}
 	CheckBox check_Settings_RequireAmpConn,userdata(tabnum)=  "5"
-	CheckBox check_Settings_RequireAmpConn,userdata(tabcontrol)=  "ADC",value= 1
+	CheckBox check_Settings_RequireAmpConn,userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_RequireAmpConn,userdata(ResizeControlsInfo)= A"!!,HT!!#D%5QF.1!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_RequireAmpConn,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_RequireAmpConn,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_Settings_RequireAmpConn,value= 1
+	CheckBox Check_AD_All,pos={19.00,437.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_AD_All,help={"Set the active state of all AD channels"}
+	CheckBox Check_AD_All,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_AD_All,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_AD_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_AD_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_AD_All,value= 0,side= 1
+	GroupBox Group_AD_all,pos={20.00,428.00},size={310.00,4.00},disable=1
+	GroupBox Group_AD_all,userdata(tabnum)=  "2",userdata(tabcontrol)=  "ADC"
+	GroupBox Group_AD_all,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	GroupBox Group_AD_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox Group_AD_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	GroupBox Group_DA_all,pos={20.00,447.00},size={459.00,4.00},disable=1
+	GroupBox Group_DA_all,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	GroupBox Group_DA_all,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	GroupBox Group_DA_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox Group_DA_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_DA_ALL,pos={19.00,456.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_DA_ALL,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DA_ALL,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_DA_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_DA_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_DA_ALL,value= 0,side= 1
+	PopupMenu Wave_DA_All,pos={153.00,458.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu Wave_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	PopupMenu Wave_DA_All,userdata(ResizeControlsInfo)= A"!!,Fq!!#C-!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu Wave_DA_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu Wave_DA_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu Wave_DA_All,fSize=10
+	PopupMenu Wave_DA_All,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	SetVariable Search_DA_All,pos={153.00,482.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
+	SetVariable Search_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Search_DA_All,userdata(ResizeControlsInfo)= A"!!,G)!!#C8!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Search_DA_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Search_DA_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Search_DA_All,value= _STR:""
+	SetVariable Scale_DA_All,pos={290.00,458.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_DA_Scale
+	SetVariable Scale_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	SetVariable Scale_DA_All,userdata(ResizeControlsInfo)= A"!!,HL!!#C-!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Scale_DA_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Scale_DA_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Scale_DA_All,limits={-inf,inf,10},value= _NUM:1
+	PopupMenu IndexEnd_DA_All,pos={353.00,458.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	PopupMenu IndexEnd_DA_All,userdata(ResizeControlsInfo)= A"!!,Hj!!#C-!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu IndexEnd_DA_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu IndexEnd_DA_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu IndexEnd_DA_All,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	GroupBox Group_TTL_all,pos={20.00,447.00},size={345.00,5.00},disable=1
+	GroupBox Group_TTL_all,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
+	GroupBox Group_TTL_all,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	GroupBox Group_TTL_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox Group_TTL_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu Wave_TTL_All,pos={103.00,460.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu Wave_TTL_All,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
+	PopupMenu Wave_TTL_All,userdata(ResizeControlsInfo)= A"!!,Fq!!#C-!!#@n!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu Wave_TTL_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu Wave_TTL_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu Wave_TTL_All,fSize=10
+	PopupMenu Wave_TTL_All,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
+	SetVariable Search_TTL_All,pos={103.00,482.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
+	SetVariable Search_TTL_All,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
+	SetVariable Search_TTL_All,userdata(ResizeControlsInfo)= A"!!,G)!!#C8!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Search_TTL_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Search_TTL_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Search_TTL_All,value= _STR:""
+	PopupMenu IndexEnd_TTL_All,pos={243.00,460.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_TTL_All,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
+	PopupMenu IndexEnd_TTL_All,userdata(ResizeControlsInfo)= A"!!,Hj!!#C-!!#@d!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu IndexEnd_TTL_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu IndexEnd_TTL_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu IndexEnd_TTL_All,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
+	CheckBox Check_TTL_ALL,pos={20.00,461.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_TTL_ALL,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_TTL_ALL,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C[!!#Da!!!!\"zzzzzzzzzzzzzzzzzzzz"
@@ -3243,6 +3290,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_AD_13 WIN = $panelTitle,value= 0
 	CheckBox Check_AD_14 WIN = $panelTitle,value= 0
 	CheckBox Check_AD_15 WIN = $panelTitle,value= 0
+	CheckBox Check_AD_All WIN = $panelTitle,value= 0
 
 	CheckBox Check_DA_00 WIN = $panelTitle,value= 0
 	CheckBox Check_DA_01 WIN = $panelTitle,value= 0
@@ -3252,6 +3300,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_DA_05 WIN = $panelTitle,value= 0
 	CheckBox Check_DA_06 WIN = $panelTitle,value= 0
 	CheckBox Check_DA_07 WIN = $panelTitle,value= 0
+	CheckBox Check_DA_All WIN = $panelTitle,value= 0
 
 	CheckBox Check_TTL_00 WIN = $panelTitle,value= 0
 	CheckBox Check_TTL_01 WIN = $panelTitle,value= 0
@@ -3261,6 +3310,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_TTL_05 WIN = $panelTitle,value= 0
 	CheckBox Check_TTL_06 WIN = $panelTitle,value= 0
 	CheckBox Check_TTL_07 WIN = $panelTitle,value= 0
+	CheckBox Check_TTL_All WIN = $panelTitle,value= 0
 
 	CheckBox Check_DataAcqHS_00 WIN = $panelTitle,value= 0
 	CheckBox Check_DataAcqHS_01 WIN = $panelTitle,value= 0
@@ -3308,6 +3358,7 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu Wave_DA_05 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_All WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 
 	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1
@@ -3317,6 +3368,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Scale_DA_05 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_06 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_07 WIN = $panelTitle, value = _NUM:1
+	SetVariable Scale_DA_All WIN = $panelTitle, value = _NUM:1
 
 	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,fSize=8,value= _STR:""
 
@@ -3337,6 +3389,7 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu Wave_TTL_05 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_TTL_06 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_TTL_07 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_TTL_All Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
 	
 	CheckBox Check_Settings_TrigOut Win = $panelTitle, value = 0
 	CheckBox Check_Settings_TrigIn Win = $panelTitle, value = 0
@@ -3435,8 +3488,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Search_DA_05 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_DA_06 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_DA_07 WIN = $panelTitle, value= _STR:""
-
-	CheckBox SearchUniversal_DA_00 WIN = $panelTitle, value= 0
+	SetVariable Search_DA_All WIN = $panelTitle, value= _STR:""
 
 	SetVariable Search_TTL_00 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_TTL_01 WIN = $panelTitle, value= _STR:""
@@ -3446,8 +3498,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Search_TTL_05 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_TTL_06 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_TTL_07 WIN = $panelTitle, value= _STR:""
-
-	CheckBox SearchUniversal_TTL_00 WIN = $panelTitle, value= 0
+	SetVariable Search_TTL_All WIN = $panelTitle, value= _STR:""
 
 	PopupMenu IndexEnd_DA_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_DA_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
@@ -3457,6 +3508,7 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu IndexEnd_DA_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_DA_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_DA_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu IndexEnd_DA_All WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 
 	PopupMenu IndexEnd_TTL_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_TTL_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
@@ -3466,6 +3518,7 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu IndexEnd_TTL_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_TTL_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_TTL_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu IndexEnd_TTL_All WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 
 	// don't make the scope subwindow part of the recreation macro
 	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle, value= 0
@@ -3672,230 +3725,6 @@ static Function/S DAP_FormatStimSetPopupValue(channelType, searchString)
 	return str
 End
 
-Function DAP_CheckProc_UnivrslSrchStr(cba) : CheckBoxControl
-	struct WMCheckboxAction &cba
-
-	string panelTitle
-	variable i
-	string popupValue
-	string SearchString
-	string DAPopUpMenuName
-	string IndexEndPopUpMenuName
-	string SearchSetVarName
-	string ListOfWaves
-
-	switch(cba.eventCode)
-		case 2:
-			panelTitle = cba.win
-			DFREF saveDFR = GetDataFolderDFR()
-			SetDataFolder GetWBSvdStimSetDAPath()
-
-			if(!cba.checked)
-				SearchString = "*da*"
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-				ListOfWaves = wavelist(searchstring,";","")
-
-				do
-					if(i > 0) // disables search inputs except for Search_DA_00
-						sprintf SearchSetVarName, "Search_DA_%.2d" i
-						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
-
-						DAPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-						PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves		// user data is accessed during indexing to determine next set
-					endif
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-
-				i = 0
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-				do
-					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-			else
-				controlinfo /w = $panelTitle Search_DA_00
-				if(strlen(s_value) == 0)
-					SearchString = "*da*"
-				else
-					SearchString = s_value
-				endif
-
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-				ListOfWaves = wavelist(searchstring,";","")
-				do
-					DAPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-					PopupMenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
-
-					if(i > 0) // disables search inputs except for Search_DA_00
-						sprintf SearchSetVarName, "Search_DA_%.2d" i
-						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
-					endif
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-
-				i = 0
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-				do
-					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-			endif
-			Setdatafolder saveDFR
-			break
-	endswitch
-
-	return 0
-End
-
-Function DAP_SetVarProc_TTLSearch(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-
-	variable TTL_No
-	string TTLPopUpMenuName
-	string panelTitle, ctrlName, varstr
-	string IndexEndPopUpMenuName
-	string SearchString
-	string popupValue, ListOfWaves
-	variable i
-
-	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-			panelTitle = sva.win
-			ctrlName   = sva.ctrlName
-			varstr     = sva.sval
-			sscanf ctrlName, "Search_TTL_%d", TTL_No
-			TTLPopUpMenuName      = GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			indexEndPopUpMenuName = GetPanelControl(TTL_No, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-
-			DFREF saveDFR = GetDataFolderDFR()
-			SetDataFolder GetWBSvdStimSetTTLPath()
-			controlinfo /w = $panelTitle SearchUniversal_TTL_00
-
-			if(v_value == 1)
-				controlinfo /w = $panelTitle Search_TTL_00
-				If(strlen(s_value) == 0)
-					sprintf SearchString, "*TTL*"
-				else
-					sprintf SearchString, "%s" s_value
-				endif
-
-				do
-					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-					listOfWaves = wavelist(searchstring,";","")
-					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-			else
-				if(strlen(varstr) == 0)
-					sprintf SearchString, "*TTL*"
-					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-					listOfWaves = wavelist(searchstring,";","")
-					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-				else
-					searchString = varstr
-					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-					popupmenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = popupValue
-					controlupdate /w =  $panelTitle $TTLPopUpMenuName
-					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-				endif
-			endif
-			SetDataFolder saveDFR
-			break
-		endswitch
-	return 0
-End
-
-Function DAP_CheckProc_UnivrslSrchTTL(cba) : CheckBoxControl
-	struct WMCheckboxAction &cba
-
-	string panelTitle
-	string SearchString
-	string TTLPopUpMenuName
-	string IndexEndPopUpMenuName
-	string SearchSetVarName
-	string ListOfWaves, popupValue
-	variable i
-
-	switch(cba.eventCode)
-		case 2:
-			panelTitle = cba.win
-
-			DFREF saveDFR = GetDataFolderDFR()// creates a data folder reference that is later used to access the folder
-			SetDataFolder GetWBSvdStimSetTTLPath()
-
-			if(!cba.checked)
-				SearchString = "*TTL*"
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-				ListOfWaves = wavelist(searchstring,";","")
-
-				do
-					if(i > 0) // disables search inputs except for Search_TTL_00
-						sprintf SearchSetVarName, "Search_TTL_%.2d" i
-						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 0
-
-						TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-						PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
-					endif
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-
-				i = 0
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-				do
-					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-			else
-				controlinfo /w = $panelTitle Search_TTL_00
-				if(strlen(s_value) == 0)
-					SearchString = "*TTL*"
-				else
-					SearchString = s_value
-				endif
-
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-				ListOfWaves = wavelist(searchstring,";","")
-				do
-					TTLPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-					PopupMenu $TTLPopUpMenuName win = $panelTitle, value = #popupValue, userData(menuExp) = ListOfWaves
-					if(i > 0) // disables search inputs except for Search_TTL_00
-						sprintf SearchSetVarName, "Search_TTL_%.2d" i
-						SetVariable $SearchSetVarName WIN = $panelTitle, disable = 2, value =_STR:""
-					endif
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-
-				i = 0
-				popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, searchString)
-				do
-					indexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-					PopupMenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-			endif
-			SetDatafolder saveDFR
-			break
-	endswitch
-
-	return 0
-End
-
 /// @returns 1 if the device is a "ITC1600"
 Function DAP_DeviceIsYokeable(panelTitle)
   string panelTitle
@@ -4031,74 +3860,64 @@ Function DAP_TabControlFinalHook(tca)
 	return 0
 End
 
-Function DAP_SetVarProc_DASearch(sva) : SetVariableControl
+Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	variable DA_No
-	string DAPopUpMenuName
-	string IndexEndPopUpMenuName
-	string SearchString
-	string popupValue, ListOfWaves
-	string panelTitle, ctrlName, varstr
-	variable i
+	variable channelIndex, channelType, channelControl
+	variable i, isCustomSearchString, first, last
+	string ctrl, searchString
+	string popupValue, listOfWaves
+	string panelTitle, varstr
 
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-
 			panelTitle = sva.win
-			ctrlName   = sva.ctrlName
+			ctrl       = sva.ctrlName
 			varstr     = sva.sval
 
-			sscanf ctrlName, "Search_DA_%d", DA_No
-			DAPopUpMenuName       = GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			IndexEndPopUpMenuName = GetPanelControl(DA_No, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
 
 			DFREF saveDFR = GetDataFolderDFR()
-			SetDataFolder GetWBSvdStimSetDAPath()
-			controlinfo /w = $panelTitle SearchUniversal_DA_00
+			SetDataFolder GetSetFolder(channelType)
 
-			if(v_value == 1) // apply search string to all channels
-				controlinfo /w = $panelTitle Search_DA_00
-				If(strlen(s_value) == 0)
-					sprintf SearchString, "*DA*"
+			if(isEmpty(varstr))
+				if(channelType == CHANNEL_TYPE_DAC)
+					searchString = CHANNEL_DA_SEARCH_STRING
+				elseif(channelType == CHANNEL_TYPE_TTL)
+					searchString = CHANNEL_TTL_SEARCH_STRING
 				else
-					sprintf SearchString, "%s" s_value
+					ASSERT(0, "Unexpected channel type")
 				endif
-
-				do
-					DAPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-					listOfWaves = wavelist(searchstring,";","")
-					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					IndexEndPopUpMenuName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-					i += 1
-				while(i < NUM_DA_TTL_CHANNELS)
-
-			else // apply search string to associated channel
-				if(strlen(varstr) == 0)
-					sprintf SearchString, "*DA*"
-					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-					listOfWaves = wavelist(searchstring,";","")
-					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = ListOfWaves
-					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-				else
-					searchString = varStr
-					popupValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, searchString)
-					listOfWaves = wavelist(searchstring,";","")
-					popupmenu $DAPopUpMenuName win = $panelTitle, value = #popupValue, userdata(MenuExp) = listOfWaves
-					controlupdate /w =  $panelTitle $DAPopUpMenuName
-					popupmenu $IndexEndPopUpMenuName win = $panelTitle, value = #popupValue
-					controlupdate /w =  $panelTitle $IndexEndPopUpMenuName
-				endif
+			else
+				isCustomSearchString = 1
+				searchString = varStr
 			endif
+
+			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString)
+			listOfWaves = WaveList(searchString, ";", "")
 			SetDataFolder saveDFR
+
+			if(channelIndex == CHANNEL_INDEX_ALL)
+				first = CHANNEL_INDEX_ALL
+				last  = GetNumberFromType(var=channelType)
+			else
+				first = channelIndex
+				last  = channelIndex
+			endif
+
+			for(i = first; i < last; i+= 1)
+
+				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
+				PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
+
+				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
+				PopupMenu $ctrl win=$panelTitle, value=#popupValue
+
+				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
+				SetSetVariableString(panelTitle, ctrl, SelectString(isCustomSearchString, "", searchString))
+			endfor
 			break
 	endswitch
 
@@ -4124,6 +3943,38 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 			endtry
 			break
 	endswitch
+End
+
+Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle, control
+	variable i, checked, allChecked, channelIndex, channelType, controlType, numEntries
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+				paneltitle = cba.win
+				allChecked = cba.checked
+				DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
+				ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
+				ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Invalid channel index")
+
+				numEntries = GetNumberFromType(var=channelType)
+
+				for(i = 0; i < numEntries; i += 1)
+					control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
+					checked = GetCheckBoxState(panelTitle, control)
+
+					if(checked == allChecked)
+						continue
+					endif
+
+					PGC_SetAndActivateControl(panelTitle, control, val=allChecked)
+				endfor
+				break
+	endswitch
+
+	return 0
 End
 
 Function DAP_CheckProc_AD(cba) : CheckBoxControl
@@ -4362,18 +4213,6 @@ static Function DAP_TurnOffAllTTLs(panelTitle)
 	endfor
 End
 
-Function DAP_ButtonProc_TTLOff(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventcode)
-		case 2:
-			DAP_TurnOffAllTTLs(ba.win)
-			break
-	endswitch
-
-	return 0
-End
-
 static Function DAP_TurnOffAllDACs(panelTitle)
 	string panelTitle
 
@@ -4386,18 +4225,6 @@ static Function DAP_TurnOffAllDACs(panelTitle)
 	endfor
 End
 
-Function DAP_ButtonProc_DAOff(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventcode)
-		case 2:
-			DAP_TurnOffAllDACs(ba.win)
-			break
-	endswitch
-
-	return 0
-End
-
 static Function DAP_TurnOffAllADCs(panelTitle)
 	string panelTitle
 
@@ -4408,18 +4235,6 @@ static Function DAP_TurnOffAllADCs(panelTitle)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endfor
-End
-
-Function DAP_ButtonProc_ADOff(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventcode)
-		case 2:
-			DAP_TurnOffAllADCs(ba.win)
-			break
-	endswitch
-
-	return 0
 End
 
 static Function DAP_TurnOffAllHeadstages(panelTitle)
@@ -4481,27 +4296,72 @@ End
 Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
-	string stimSetCtrl, list
+	string ctrl, list
 	string panelTitle, stimSet
+	variable channelIndex, channelType, channelControl
+	variable i, numEntries, idx
 
 	switch(pa.eventCode)
 		case 2:
-			stimSetCtrl = pa.ctrlName
-			panelTitle  = pa.win
-			stimSet     = pa.popStr
+			panelTitle = pa.win
+			ctrl       = pa.ctrlName
+			stimSet    = pa.popStr
+			idx        = pa.popNum
 
 			// check if this is a third party stim set which
 			// is not yet reflected in the "MenuExp" user data
-			list = GetUserData(panelTitle, stimSetCtrl, "MenuExp")
+			list = GetUserData(panelTitle, ctrl, "MenuExp")
 			if(FindListItem(stimSet, list) == -1)
 				WBP_UpdateITCPanelPopUps()
 			endif
 
 			DAP_AbortIfUnlocked(panelTitle)
+			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+
+			if(channelIndex == CHANNEL_INDEX_ALL)
+
+				numEntries = GetNumberFromType(var=channelType)
+				for(i = 0; i < numEntries; i += 1)
+					ctrl = GetPanelControl(i, channelType, channelControl)
+					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
+				endfor
+			endif
+
 			DAP_UpdateITIAcrossSets(panelTitle)
 			DAP_UpdateSweepSetVariables(panelTitle)
+
 			break
 		endswitch
+	return 0
+End
+
+Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	variable val, channelIndex, channelType, controlType, first, last, i
+	string panelTitle, ctrl
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			val        = sva.dval
+			ctrl       = sva.ctrlName
+			panelTitle = sva.win
+
+			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
+			ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Unexpected channel index")
+
+			first = CHANNEL_INDEX_ALL
+			last  = GetNumberFromType(var=channelType)
+
+			for(i = first; i < last; i+= 1)
+				ctrl = GetPanelControl(i, channelType, controlType)
+				SetSetVariable(panelTitle, ctrl, val)
+			endfor
+			break
+	endswitch
+
 	return 0
 End
 
