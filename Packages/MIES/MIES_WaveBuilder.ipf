@@ -952,7 +952,7 @@ Function WB_UpdateEpochCombineList(channelType)
 
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list)
-		WAVE/SDFR=dfr/Z stimset = entry
+		WAVE/SDFR=dfr/Z stimset = $entry
 		WAVE/Z WP = WB_GetWaveParamForSet(entry)
 
 		if(WaveExists(WP))
