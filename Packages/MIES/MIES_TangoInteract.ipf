@@ -272,7 +272,7 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
 		initResult = AI_SelectMultiClamp(currentPanel, headstage)
-		if(!initResult)
+		if(initResult != AMPLIFIER_CONNECTION_SUCCESS)
 			print "MCC not valid...cannot initialize Amplifier Settings"
 			numErrors += 1
 		else

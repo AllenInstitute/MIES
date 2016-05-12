@@ -66,8 +66,8 @@ End
 /// Rows:
 /// - 0: DA unit (V-Clamp mode)
 /// - 1: AD unit (V-Clamp mode)
-/// - 3: DA unit (I-Clamp mode)
-/// - 4: AD unit (I-Clamp mode)
+/// - 2: DA unit (I-Clamp mode)
+/// - 3: AD unit (I-Clamp mode)
 ///
 /// Columns:
 /// - Head stage number
@@ -76,16 +76,24 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/T/Z/SDFR=dfr wv = ChanAmpAssignUnit
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		// do nothing
+	else
+		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
+		wv = ""
 	endif
 
-	Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
-	wv = ""
-	
+	SetDimLabel ROWS, 0, VC_DAUnit, wv
+	SetDimLabel ROWS, 1, VC_ADUnit, wv
+	SetDimLabel ROWS, 2, IC_DAUnit, wv
+	SetDimLabel ROWS, 3, IC_ADUnit, wv
+
 	return wv
 End
 
