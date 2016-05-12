@@ -814,6 +814,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		itcDataColumn += 1
 	endfor
 
+	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
+	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * 1e-3)
+
 	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
 	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
 	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
