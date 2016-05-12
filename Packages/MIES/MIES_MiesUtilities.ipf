@@ -1950,6 +1950,20 @@ Function/DF GetSetParamFolder(channelType)
 	endif
 End
 
+/// @brief Return a search string, suitable for `WaveList`, for
+/// the given channelType
+Function/S GetSearchStringForChannelType(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return CHANNEL_DA_SEARCH_STRING
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return CHANNEL_TTL_SEARCH_STRING
+	else
+		ASSERT(0, "Unexpected channel type")
+	endif
+End
+
 /// @brief Get the TTL bit mask from the labnotebook
 /// @param numericValues   Numerical labnotebook values
 /// @param sweep           Sweep number
