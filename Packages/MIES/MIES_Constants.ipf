@@ -142,6 +142,8 @@ Constant CHANNEL_TYPE_ASYNC        = 0x100
 Constant CHANNEL_TYPE_ALARM        = 0x110
 Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
 Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
+Constant CHANNEL_CONTROL_SEARCH    = 0x140
+Constant CHANNEL_INDEX_ALL         = -1    ///< Controls which control groups have this special channel index
 /// @}
 
 /// @name Constants for the selection wave of a ListBox
@@ -402,7 +404,8 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION = 6
+Constant DA_EPHYS_PANEL_VERSION = 7
+
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
 /// @{
@@ -434,3 +437,6 @@ Constant HARDWARE_MAX_DEVICES = 32
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 /// @}
+
+StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
+StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"

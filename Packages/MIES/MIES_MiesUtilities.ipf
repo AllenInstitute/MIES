@@ -95,8 +95,8 @@ End
 /// @brief Returns the name of a control from the DA_EPHYS panel
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S GetPanelControl(idx, channelType, controlType)
-	variable idx, channelType, controlType
+Function/S GetPanelControl(channelIndex, channelType, controlType)
+	variable channelIndex, channelType, controlType
 
 	string ctrl
 
@@ -132,12 +132,18 @@ Function/S GetPanelControl(idx, channelType, controlType)
 		ctrl = "Min_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_ALARM_MAX)
 		ctrl = "Max_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_SEARCH)
+		ctrl = "Search_" + ctrl
 	else
 		ASSERT(0, "Invalid controlType")
 	endif
 
-	ASSERT(idx >= 0 && idx < 100, "invalid idx")
-	sprintf ctrl, "%s_%02d", ctrl, idx
+	if(channelIndex == CHANNEL_INDEX_ALL)
+		ctrl += "_All"
+	else
+		ASSERT(channelIndex >= 0 && channelIndex < 100, "invalid channelIndex")
+		sprintf ctrl, "%s_%02d", ctrl, channelIndex
+	endif
 
 	return ctrl
 End
