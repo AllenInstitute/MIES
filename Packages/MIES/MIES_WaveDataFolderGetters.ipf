@@ -864,9 +864,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 25, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 26, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 25, LABNOTEBOOK_LAYER_COUNT) dfr:sweepSettingsWave/Wave=wv
+		Make/N=(1, 26, LABNOTEBOOK_LAYER_COUNT) dfr:sweepSettingsWave/Wave=wv
 	endif
 
 	wv = NaN
@@ -896,6 +896,7 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
 	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
 	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
+	SetDimLabel COLS, 25, $"Stim set length"             , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -949,9 +950,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 25) wv
+		Redimension/N=(-1, 26) wv
 	else
-		Make/T/N=(3, 25) dfr:sweepSettingsKeyWave/Wave=wv
+		Make/T/N=(3, 26) dfr:sweepSettingsKeyWave/Wave=wv
 	endif
 
 	wv = ""
@@ -1060,6 +1061,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][24]     = ""
 	wv[%Tolerance][24] = "0.1"
 
+	wv[%Parameter][25] = "Stim set length"
+	wv[%Units][25]     = "a. u." // points not time
+	wv[%Tolerance][25] = "1"
+
 	SetDimLabel COLS, 0 , $"Stim Scale Factor"           , wv
 	SetDimLabel COLS, 1 , $"DAC"                         , wv
 	SetDimLabel COLS, 2 , $"ADC"                         , wv
@@ -1085,6 +1090,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
 	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
 	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
+	SetDimLabel COLS, 25, $"Stim set length"             , wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
