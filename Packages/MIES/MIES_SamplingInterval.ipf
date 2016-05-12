@@ -479,7 +479,7 @@ End
 /// @param panelTitle  device
 /// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
 ///
-/// @returns sampling interval in milliseconds (1e-3)
+/// @returns sampling interval in microseconds (1e-6)
 Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
