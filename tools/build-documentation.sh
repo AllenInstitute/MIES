@@ -33,7 +33,12 @@ fi
 
 if hash mogrify 2>/dev/null; then
   echo "Start shrinking the PNGs"
-  mogrify -quality 0 +dither -colors 32 html/*png
+
+  if hash parallel 2>/dev/null; then
+    find html -iname "*.png" | parallel mogrify -quality 0 +dither -colors 32 {}
+  else
+    mogrify -quality 0 +dither -colors 32 html/*png
+  fi
 fi
 
 echo "Start zipping the results"
