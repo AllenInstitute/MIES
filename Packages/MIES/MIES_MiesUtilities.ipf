@@ -1519,7 +1519,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column
-	string info, axis, trace, axList, baseName
+	string axis, trace, axList, baseName
 	string channelType, channelNumber, fullPath, panel
 
 	if(!averagingEnabled)
@@ -1538,6 +1538,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	axList = RemoveFromList("bottom", axList)
 	numAxes = ItemsInList(axList)
 	numTraces = ItemsInList(traceList)
+
+	// precompute traceInfo data
+	Make/FREE/T/N=(numTraces) allTraceInfo = TraceInfo(graph, StringFromList(p, traceList), 0)
+
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, axList)
 		listOfWaves          = ""
@@ -1545,8 +1549,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		listOfChannelNumbers = ""
 		for(j = 0; j < numTraces; j += 1)
 			trace = StringFromList(j, traceList)
-			info = TraceInfo(graph, trace, 0)
-			if(!cmpstr(axis, StringByKey("YAXIS", info)))
+			if(!cmpstr(axis, StringByKey("YAXIS", allTraceInfo[j])))
 				fullPath             = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
 				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
 				channelType          = GetUserData(graph, trace, "channelType")
