@@ -1894,7 +1894,7 @@ Function/S GetListOfLockedITC1600Devices()
 	return ListMatch(GetListOfLockedDevices(), "ITC1600*")
 End
 
-/// @brief Return the type, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL, of the stimset
+/// @brief Return the type, #CHANNEL_TYPE_DAC, #CHANNEL_TYPE_TTL or #CHANNEL_TYPE_UNKNOWN, of the stimset
 Function GetStimSetType(setName)
 	string setName
 
@@ -1907,7 +1907,7 @@ Function GetStimSetType(setName)
 	elseif(!cmpstr(type, "TTL"))
 		return CHANNEL_TYPE_TTL
 	else
-		ASSERT(0, "unknown stim set type")
+		return CHANNEL_TYPE_UNKNOWN
 	endif
 End
 
@@ -1947,6 +1947,20 @@ Function/DF GetSetParamFolder(channelType)
 		return GetWBSvdStimSetParamTTLPath()
 	else
 		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Return a search string, suitable for `WaveList`, for
+/// the given channelType
+Function/S GetSearchStringForChannelType(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return CHANNEL_DA_SEARCH_STRING
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return CHANNEL_TTL_SEARCH_STRING
+	else
+		ASSERT(0, "Unexpected channel type")
 	endif
 End
 

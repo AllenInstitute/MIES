@@ -21,6 +21,11 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 	endif
 
 	type = GetStimSetType(setName)
+
+	if(type == CHANNEL_TYPE_UNKNOWN)
+		return $""
+	endif
+
 	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 
@@ -59,6 +64,11 @@ Function/Wave WB_GetWaveParamForSet(setName)
 	variable type
 
 	type = GetStimSetType(setName)
+
+	if(type == CHANNEL_TYPE_UNKNOWN)
+		return $""
+	endif
+
 	DFREF dfr = GetSetParamFolder(type)
 
 	WAVE/Z/SDFR=dfr wv = $("WP" + "_" + setName)
@@ -75,6 +85,11 @@ Function/Wave WB_GetWaveTextParamForSet(setName)
 	variable type
 
 	type = GetStimSetType(setName)
+
+	if(type == CHANNEL_TYPE_UNKNOWN)
+		return $""
+	endif
+
 	DFREF dfr = GetSetParamFolder(type)
 
 	WAVE/Z/T/SDFR=dfr wv = $("WPT" + "_" + setName)
@@ -91,6 +106,11 @@ Function/Wave WB_GetSegWvTypeForSet(setName)
 	variable type
 
 	type = GetStimSetType(setName)
+
+	if(type == CHANNEL_TYPE_UNKNOWN)
+		return $""
+	endif
+
 	DFREF dfr = GetSetParamFolder(type)
 
 	WAVE/Z/SDFR=dfr wv = $("SegWvType" + "_" + setName)
@@ -952,7 +972,7 @@ Function WB_UpdateEpochCombineList(channelType)
 
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list)
-		WAVE/SDFR=dfr/Z stimset = entry
+		WAVE/SDFR=dfr/Z stimset = $entry
 		WAVE/Z WP = WB_GetWaveParamForSet(entry)
 
 		if(WaveExists(WP))

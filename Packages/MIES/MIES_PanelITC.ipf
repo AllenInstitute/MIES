@@ -3883,13 +3883,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			SetDataFolder GetSetFolder(channelType)
 
 			if(isEmpty(varstr))
-				if(channelType == CHANNEL_TYPE_DAC)
-					searchString = CHANNEL_DA_SEARCH_STRING
-				elseif(channelType == CHANNEL_TYPE_TTL)
-					searchString = CHANNEL_TTL_SEARCH_STRING
-				else
-					ASSERT(0, "Unexpected channel type")
-				endif
+				searchString = GetSearchStringForChannelType(channelType)
 			else
 				isCustomSearchString = 1
 				searchString = varStr
