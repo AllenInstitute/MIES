@@ -1515,12 +1515,15 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	variable averagingEnabled
 	DFREF averageDataFolder
 
+	variable referenceTime
 	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column
 	string axis, trace, axList, baseName
 	string channelType, channelNumber, fullPath, panel
+
+	referenceTime = DEBUG_TIMER_START()
 
 	if(!averagingEnabled)
 		listOfWaves = GetListOfWaves(averageDataFolder, "average.*", fullPath=1)
@@ -1621,6 +1624,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
 		KillOrMoveToTrash(dfr=tmpDFR)
 	endfor
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 /// @brief Zero all given traces
