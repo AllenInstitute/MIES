@@ -2260,3 +2260,81 @@ Function ListHasOnlyOneUniqueEntry(list, [sep])
 
 	return 1
 End
+
+/// @brief Extract the values of a list of subrange specifications
+/// See also DisplayHelpTopic "Subrange Display"
+///
+/// Example invocations:
+/// @code
+/// Wave ranges = ExtractFromSubrange("[3,4]_[*]_[1, *;4]_[]_[5][]", 0)
+/// @endcode
+///
+/// @param listOfRanges list of subrange specifications separated by **_**
+/// @param dim          dimension to extract
+///
+/// @returns 2-dim wave with the start, stop, step as columns and rows as
+///          number of elements. Returns -1 instead of `*` or ``.
+Function/WAVE ExtractFromSubrange(listOfRanges, dim)
+	string listOfRanges
+	variable dim
+
+	variable numElements, i, start, stop, step
+	string str, rdSpec, stopStr
+
+	numElements = ItemsInList(listOfRanges, "_")
+
+	Make/FREE/I/N=(numElements, 3) ranges
+
+	for(i = 0; i < numElements; i += 1)
+		str = StringFromList(i, listOfRanges, "_")
+		str = ReplaceString(" ", str, "")
+		str = ReplaceString("\t", str, "")
+		str = ReplaceString("][", str, "#")
+		str = ReplaceString("[", str, "#")
+		str = ReplaceString("]", str, "#")
+
+		rdSpec = StringFromList(dim + 1, str, "#")
+
+		// possible options:
+		// 1: "" (empty)
+		// 2: *
+		// 3: $index
+		// 4: $start, *
+		// 5: $start, $stop
+		// 6: $start, $stop;$step
+
+		if(isEmpty(rdSpec) || !cmpstr(rdSpec, "*")) // case 1 & 2
+			ranges[i][0] = -1
+			ranges[i][1] = -1
+		else
+			sscanf rdSpec, "%d,%[*0-9];%d ", start, stopStr, step
+
+			if(V_Flag == 1) // case 3
+				ranges[i][0] = start
+				ranges[i][1] = start
+				ranges[i][2] = 1
+			elseif(V_Flag == 2)
+				if(!cmpstr(stopstr, "*")) // case 4
+					ranges[i][0] = start
+					ranges[i][1] = -1
+					ranges[i][2] = 1
+				else
+					stop = str2num(stopStr) // case 5
+					ASSERT(IsFinite(stop), "stop is not finite")
+					ranges[i][0] = start
+					ranges[i][1] = stop
+					ranges[i][2] = 1
+				endif
+			elseif(V_Flag == 3) // case 6
+				stop = str2num(stopStr) // case 5
+				ranges[i][0] = start
+				ranges[i][1] = IsFinite(stop) ? stop : -1
+				ranges[i][2] = step
+			else
+				ASSERT(0, "Unexpected state")
+			endif
+		endif
+	endfor
+
+	return ranges
+End
