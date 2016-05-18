@@ -183,6 +183,51 @@ Function GetSweepColumn(settingsHistory)
 	return 0
 End
 
+/// @brief Return a headstage independent setting from the numerical labnotebook
+///
+/// @return the headstage independent setting or `defValue`
+Function GetLastSettingIndep(numericalValues, sweepNo, setting, [defValue])
+	Wave numericalValues
+	variable sweepNo
+	string setting
+	variable defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, setting)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
+/// @brief Return a headstage independent setting from the textual labnotebook
+///
+/// @return the headstage independent setting or `defValue`
+Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, [defValue])
+	Wave/T textualValues
+	variable sweepNo
+	string setting, defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	WAVE/T/Z settings = GetLastSettingText(textualValues, sweepNo, setting)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(textualValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
 /// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
