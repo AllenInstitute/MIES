@@ -1123,6 +1123,43 @@ Function/DF UniqueDataFolder(dfr, baseName)
 	return $""
 End
 
+/// @brief Returns a wave name not used in the given datafolder
+///
+/// Basically a datafolder aware version of UniqueName for datafolders
+///
+/// @param dfr 	    datafolder reference where the new datafolder should be created
+/// @param baseName first part of the wave name, might be shorted due to Igor Pro limitations
+Function/S UniqueWaveName(dfr, baseName)
+	dfref dfr
+	string baseName
+
+	variable index
+	string name
+	string path
+
+	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
+
+	// shorten basename so that we can attach some numbers
+	baseName = CleanupName(baseName[0, 26], 0)
+	path = GetDataFolder(1, dfr)
+	name = baseName
+
+	do
+		if(!WaveExists($(path + name)))
+			return name
+		endif
+
+		name = baseName + "_" + num2istr(index)
+
+		index += 1
+	while(index < 10000)
+
+	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+
+	return ""
+End
+
 /// @brief Remove str with the first character removed, or
 /// if given with startStr removed
 ///

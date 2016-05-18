@@ -1577,7 +1577,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		endif
 
 		if(WhichListItem(averageWaveName, averageWaves) != -1)
-			averageWaveName = UniqueName(GetDataFolder(1, averageDataFolder) + averageWaveName, 1, 0)
+			averageWaveName = UniqueWaveName(averageDataFolder,averageWaveName)
 		endif
 
 		ASSERT(numWaves == ItemsInList(listOfChannelTypes) && numWaves == ItemsInList(listOfChannelNumbers), "Non matching list sizes")
