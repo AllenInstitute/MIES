@@ -1781,9 +1781,9 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		RemoveTracesFromGraph(graph, wv=averageWave)
 
 		if(IsFinite(first) && IsFinite(last))
-			AppendToGraph/W=$graph/L=$axis averageWave[first, last]
+			AppendToGraph/Q/W=$graph/L=$axis averageWave[first, last]
 		else
-			AppendToGraph/W=$graph/L=$axis averageWave
+			AppendToGraph/Q/W=$graph/L=$axis averageWave
 		endif
 
 		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
