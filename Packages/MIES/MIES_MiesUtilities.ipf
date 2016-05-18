@@ -824,10 +824,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 				trace = UniqueTraceName(graph, name)
 
 				if(tgs.overlayChannels)
-					axis      = AXIS_BASE_NAME + "_" + channelID
+					axis      = VERT_AXIS_BASE_NAME + "_" + channelID
 					traceType = channelID
 				else
-					axis      = AXIS_BASE_NAME + num2str(axisIndex)
+					axis      = VERT_AXIS_BASE_NAME + num2str(axisIndex)
 					traceType = name
 					axisIndex += 1
 				endif
@@ -1104,7 +1104,7 @@ Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(settingsHistory)
 
-	axis = GetNextFreeAxisName(graph, AXIS_BASE_NAME)
+	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
 	numEntries = DimSize(settingsHistory, LAYERS)
 	for(i = 0; i < numEntries; i += 1)
@@ -1135,7 +1135,7 @@ Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
 	ModifyGraph/W=$graph nticks(bottom) = 10
 
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
-	EquallySpaceAxis(graph, AXIS_BASE_NAME)
+	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
 	UpdateLBGraphLegend(graph, traceList=traceList)
 End
 
@@ -1620,8 +1620,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 				sprintf averageWaveName, "average_%s_%d", baseName, k
 				k += 1
 			endif
-		elseif(StringMatch(axis, AXIS_BASE_NAME + "*"))
-			averageWaveName = "average" + RemovePrefix(axis, startStr=AXIS_BASE_NAME)
+		elseif(StringMatch(axis, VERT_AXIS_BASE_NAME + "*"))
+			averageWaveName = "average" + RemovePrefix(axis, startStr=VERT_AXIS_BASE_NAME)
 		else
 			sprintf averageWaveName, "average_%d", k
 			k += 1
