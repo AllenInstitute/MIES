@@ -154,7 +154,6 @@ static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-	variable sweepCountExists
 
 	string str, name, listOfSweepConfigWaves
 
@@ -203,7 +202,6 @@ static Function AB_FillListWave(expFolder, expName, device)
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
 		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
-		sweepCountExists = WaveExists(settings)
 
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
@@ -219,7 +217,12 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 				EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 				list[index][%'stim sets'][0] = str
-				list[index][%'set count'][0] = SelectString(sweepCountExists, "-", num2istr(settings[j]))
+
+				if(WaveExists(settings))
+					list[index][%'set count'][0] = num2istr(settings[j])
+				else
+					list[index][%'set count'][0] = "-"
+				endif
 
 				index += 1
 			endfor
