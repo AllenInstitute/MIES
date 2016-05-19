@@ -249,7 +249,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	string expFilePath, datafolderPath, listOfNames
 	variable typeFlags
 
-	variable err, numEntries, i
+	variable err, numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
 	string str
 
@@ -277,6 +277,9 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	dataFolderPath = RemovePrefix(dataFolderPath, startStr = "root:")
 	SetDataFolder tmpDFR
 
+	// work around LoadData not respecting AbortOnRTE properly
+	debugOnError = DisableDebugOnError()
+
 	// also with "/Q" LoadData still complains if the subfolder path does not exist
 	try
 		GetFileFolderInfo/Q/Z expFileOrFolder
@@ -291,8 +294,11 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		endif
 	catch
 		err = GetRTError(1)
+		ResetDebugOnError(debugOnError)
 		return 0
 	endtry
+
+	ResetDebugOnError(debugOnError)
 
 	// LoadData may have created empty datafolders
 	numEntries = CountObjectsDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER)
