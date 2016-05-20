@@ -2227,3 +2227,36 @@ Function CheckIfSmall(var, [tol])
 
 	return abs(var) < abs(tol)
 End
+
+/// @brief Check if all elements of the string list are the same
+///
+/// Returns true for lists with less than one element
+Function ListHasOnlyOneUniqueEntry(list, [sep])
+	string list, sep
+
+	variable numElements, i
+	string element, refElement
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	else
+		ASSERT(strlen(sep) == 1, "sep must be only one character")
+	endif
+
+	numElements = ItemsInList(list, sep)
+
+	if(numElements <= 1)
+		return	1
+	endif
+
+	refElement = StringFromList(0, list, sep)
+
+	for(i = 1; i < numElements; i += 1)
+		element = StringFromList(i, list, sep)
+		if(cmpstr(refElement, element))
+			return 0
+		endif
+	endfor
+
+	return 1
+End
