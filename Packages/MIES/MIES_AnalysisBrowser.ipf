@@ -154,7 +154,6 @@ static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-	variable sweepCountExists
 
 	string str, name, listOfSweepConfigWaves
 
@@ -203,7 +202,6 @@ static Function AB_FillListWave(expFolder, expName, device)
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
 		WAVE/Z settings = GetLastSetting(numericValues, sweepNo, "Set Sweep Count")
-		sweepCountExists = WaveExists(settings)
 
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
@@ -219,7 +217,12 @@ static Function AB_FillListWave(expFolder, expName, device)
 
 				EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 				list[index][%'stim sets'][0] = str
-				list[index][%'set count'][0] = SelectString(sweepCountExists, "-", num2istr(settings[j]))
+
+				if(WaveExists(settings))
+					list[index][%'set count'][0] = num2istr(settings[j])
+				else
+					list[index][%'set count'][0] = "-"
+				endif
 
 				index += 1
 			endfor
@@ -246,7 +249,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	string expFilePath, datafolderPath, listOfNames
 	variable typeFlags
 
-	variable err, numEntries, i
+	variable err, numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
 	string str
 
@@ -274,6 +277,9 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	dataFolderPath = RemovePrefix(dataFolderPath, startStr = "root:")
 	SetDataFolder tmpDFR
 
+	// work around LoadData not respecting AbortOnRTE properly
+	debugOnError = DisableDebugOnError()
+
 	// also with "/Q" LoadData still complains if the subfolder path does not exist
 	try
 		GetFileFolderInfo/Q/Z expFileOrFolder
@@ -288,8 +294,11 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		endif
 	catch
 		err = GetRTError(1)
+		ResetDebugOnError(debugOnError)
 		return 0
 	endtry
+
+	ResetDebugOnError(debugOnError)
 
 	// LoadData may have created empty datafolders
 	numEntries = CountObjectsDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER)

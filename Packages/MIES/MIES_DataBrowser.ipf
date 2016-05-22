@@ -257,6 +257,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.displayADC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan")
 	tgs.overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
 	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
+	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
 
 	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, settingsHistoryText, tgs, sweepWave=sweep)
 End
@@ -319,12 +320,18 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayDAchan,value= 0
 	CheckBox check_DataBrowser_DisplayDAchan help={"Display DA (digital to analog) channel data"}
-	CheckBox check_databrowser_OverlayChan,pos={429,5},size={101,14},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
-	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,I<J,hjM!!#@.!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_OverlayChan,pos={205.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G]!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_databrowser_OverlayChan,value= 1
+	CheckBox check_databrowser_OverlayChan,value= 0
 	CheckBox check_databrowser_OverlayChan help={"Displays all channels using a single  vertical axis"}
+	CheckBox check_databrowser_dDAQMode,pos={205.00,47.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
+	CheckBox check_databrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_databrowser_dDAQMode,value= 0
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G]!!#>J!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1759,75},size={197,39}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LBhuH*0!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -487,6 +494,12 @@ Window DataBrowser_IP7() : Panel
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_databrowser_OverlayChan,value= 0
 	CheckBox check_databrowser_OverlayChan help={"Displays all channels using a single  vertical axis"}
+	CheckBox check_databrowser_dDAQMode,pos={205.00,47.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
+	CheckBox check_databrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_databrowser_dDAQMode,value= 0
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G]!!#>J!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1759.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LBhuH*0!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -851,9 +864,9 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 
 			if(!cmpstr(ctrl, "check_DataBrowser_SweepOverlay"))
 				if(checked)
-					DisableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
+					DisableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL;check_databrowser_dDAQMode")
 				else
-					EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
+					EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL;check_databrowser_dDAQMode")
 				endif
 			endif
 

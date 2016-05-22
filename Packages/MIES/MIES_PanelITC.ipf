@@ -4398,6 +4398,8 @@ End
 
 /// @brief Return the ITC sampling interval with taking the mode and
 /// the multiplier into account
+///
+/// @see SI_CalculateMinSampInterval()
 Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP

@@ -286,7 +286,7 @@ static Function SB_DuplicateSweepBrowser(graph)
 			endXPerWave   = rightx(wv)
 		endif
 
-		Duplicate/R=(beginXPerWave, endXPerWave) wv, dfr:$NameOfWave(wv)/WAVE=dup
+		Duplicate/R=(beginXPerWave, endXPerWave) wv, dfr:$UniqueWaveName(dfr, NameOfWave(wv))/WAVE=dup
 		WaveClear wv
 		if(clipXRange)
 			AddEntryIntoWaveNoteAsList(dup, "CursorA", var=beginX)
@@ -544,6 +544,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	tgs.displayTTL      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayTTL")
 	tgs.overlayChannels = GetCheckBoxState(panel, "check_sweepbrowser_OverlayChan")
 	tgs.splitTTLBits    = GetCheckBoxState(panel, "check_SweepBrowser_SplitTTL")
+	tgs.dDAQDisplayMode = GetCheckBoxState(panel, "check_sweepbrowser_dDAQ")
 	WAVE channelSelWave = SB_GetChannelSelWave(graph)
 
 	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, textValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
@@ -682,72 +683,81 @@ Function/DF SB_CreateNewSweepBrowser()
 
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
-	CheckBox check_SweepBrowser_DisplayDAC,pos={17,7},size={33,14},proc=SB_CheckboxChangedSettings,title="DA"
-	CheckBox check_SweepBrowser_DisplayDAC,value= 0,help={"Display the DA channel data"}
-	CheckBox check_SweepBrowser_DisplayADC,pos={61,7},size={33,14},proc=SB_CheckboxChangedSettings,title="AD"
-	CheckBox check_SweepBrowser_DisplayADC,value= 1, help={"Display the AD channels"}
-	CheckBox check_SweepBrowser_DisplayTTL,pos={102,7},size={38,14},proc=SB_CheckboxChangedSettings,title="TTL"
-	CheckBox check_SweepBrowser_DisplayTTL,value= 0, help={"Display the TTL channels"}
-	CheckBox check_SweepBrowser_splitTTL,pos={142,6},size={16,14},proc=SB_CheckboxChangedSettings,title=""
+	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckboxChangedSettings,title="DA"
+	CheckBox check_SweepBrowser_DisplayDAC,help={"Display the DA channel data"}
+	CheckBox check_SweepBrowser_DisplayDAC,value= 0
+	CheckBox check_SweepBrowser_DisplayADC,pos={57.00,6.00},size={31.00,15.00},proc=SB_CheckboxChangedSettings,title="AD"
+	CheckBox check_SweepBrowser_DisplayADC,help={"Display the AD channels"},value= 1
+	CheckBox check_SweepBrowser_DisplayTTL,pos={98.00,6.00},size={35.00,15.00},proc=SB_CheckboxChangedSettings,title="TTL"
+	CheckBox check_SweepBrowser_DisplayTTL,help={"Display the TTL channels"}
+	CheckBox check_SweepBrowser_DisplayTTL,value= 0
+	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckboxChangedSettings,title=""
 	CheckBox check_SweepBrowser_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_SweepBrowser_splitTTL,value= 0
-	CheckBox check_SweepBrowser_AveragTraces,pos={17,265},size={94,14},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,265.00},size={95.00,15.00},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
-	CheckBox check_SweepBrowser_ZeroTraces,pos={17,285},size={76,14},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,285.00},size={76.00,15.00},proc=SB_CheckboxChangedSettings,title="Zero Traces"
 	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
-	SetVariable setvar_SweepBrowser_SweepStep,pos={46,141},size={64,16},title="Step"
-	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
+	SetVariable setvar_SweepBrowser_SweepStep,pos={46.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
-	CheckBox check_sweepbrowser_OverlayChan,pos={17,50},size={101,14},proc=SB_CheckboxChangedSettings,title="Overlay Channels"
-	CheckBox check_sweepbrowser_OverlayChan,value= 1,help={"Overlay the data from multiple channels in one graph"}
-	CheckBox check_SweepBrowser_SweepOverlay,pos={17,30},size={95,14},proc=SB_CheckboxChangedSettings,title="Overlay Sweeps"
-	CheckBox check_SweepBrowser_SweepOverlay,value= 0,help={"Add the data from all visited sweeps instead of clearing the graph every time"}
-	GroupBox group_sweep,pos={6,71},size={139,98},title="Sweep"
-	Button button_SweepBrowser_NextSweep,pos={81,117},size={60,20},proc=SB_ButtonProc_ChangeSweep,title="Next"
+	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
+	CheckBox check_sweepbrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckboxChangedSettings,title="Channels"
+	CheckBox check_sweepbrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
+	CheckBox check_sweepbrowser_OverlayChan,value= 0
+	CheckBox check_SweepBrowser_SweepOverlay,pos={13.00,30.00},size={54.00,15.00},proc=SB_CheckboxChangedSettings,title="Sweeps"
+	CheckBox check_SweepBrowser_SweepOverlay,help={"Add the data from all visited sweeps instead of clearing the graph every time"}
+	CheckBox check_SweepBrowser_SweepOverlay,value= 0
+	Button button_SweepBrowser_NextSweep,pos={81.00,117.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Next"
 	Button button_SweepBrowser_NextSweep,help={"Select the previous sweep"}
-	Button button_SweepBrowser_PrevSweep,pos={11,117},size={60,20},proc=SB_ButtonProc_ChangeSweep,title="Previous"
+	Button button_SweepBrowser_PrevSweep,pos={11.00,117.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Previous"
 	Button button_SweepBrowser_PrevSweep,help={"Select the next sweep"}
-	CheckBox check_SweepBrowser_TimeAlign,pos={17,176},size={90,14},proc=SB_TimeAlignmentProc,title="Time Alignment"
-	CheckBox check_SweepBrowser_TimeAlign,value= 0
-	CheckBox check_SweepBrowser_TimeAlign,help={"Activate time alignment"}
-	PopupMenu popup_sweepBrowser_tAlignMode,pos={13,195},size={129,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
-	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	CheckBox check_SweepBrowser_TimeAlign,pos={12.00,176.00},size={101.00,15.00},proc=SB_TimeAlignmentProc,title="Time Alignment"
+	CheckBox check_SweepBrowser_TimeAlign,help={"Activate time alignment"},value= 0
+	PopupMenu popup_sweepBrowser_tAlignMode,pos={0.00,195.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_sweepBrowser_tAlignMode,help={"Select the alignment mode"}
-	SetVariable setvar_sweepBrowser_tAlignLevel,pos={61,219},size={80,16},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
-	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
+	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_sweepBrowser_tAlignLevel,pos={61.00,219.00},size={80.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_sweepBrowser_tAlignLevel,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
-	PopupMenu popup_sweepBrowser_tAlignMaster,pos={11,239},size={130,21},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
-	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="",value= #("SB_GetAllTraces(\"" + graph + "\")")
+	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
+	PopupMenu popup_sweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_sweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
-	Button button_SweepBrowser_DoTimeAlign,pos={113,174},size={30,20},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0",value= #"SB_GetAllTraces(\"SweepBrowser1\")"
+	Button button_SweepBrowser_DoTimeAlign,pos={117.00,174.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
-	PopupMenu popup_sweep_selector,pos={13,91},size={127,21},bodyWidth=127,proc=SB_PopupMenuSelectSweep
-	PopupMenu popup_sweep_selector,mode=12,popvalue="",value= #("SB_GetSweepList(\"" + graph + "\")")
+	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
-	Button button_SweepBrowser_OpenChanSel,pos={118,29},size={33,17},proc=SB_OpenChannelSelectionPanel,title="Chan"
+	PopupMenu popup_sweep_selector,userdata(lastSweep)=  "0"
+	PopupMenu popup_sweep_selector,mode=1,popvalue="Sweep 8 [Experiment-TPStorage]",value= #"SB_GetSweepList(\"SweepBrowser1\")"
+	Button button_SweepBrowser_OpenChanSel,pos={96.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
 	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels"}
-	GroupBox group_SB_axes_scaling,pos={11,310},size={133,60},title="Axes Scaling"
-	CheckBox check_SB_visibleXRange,pos={19,329},size={42,14},proc=SB_AxisScaling,title="Vis X"
+	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
+	CheckBox check_SB_visibleXRange,pos={19.00,329.00},size={40.00,15.00},proc=SB_AxisScaling,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
 	CheckBox check_SB_visibleXRange,value= 0
-	CheckBox check_SB_equalYRanges,pos={69,329},size={55,14},proc=SB_AxisScaling,title="Equal Y"
-	CheckBox check_SB_equalYRanges,help={"Equalize the vertical axes ranges"},value= 0
-	CheckBox check_SB_equalYIgnLevelCross,pos={19,348},size={75,14},proc=SB_AxisScaling,title="Equal Y ign."
+	CheckBox check_SB_equalYRanges,pos={69.00,329.00},size={54.00,15.00},proc=SB_AxisScaling,title="Equal Y"
+	CheckBox check_SB_equalYRanges,help={"Equalize the vertical axes ranges"}
+	CheckBox check_SB_equalYRanges,value= 0
+	CheckBox check_SB_equalYIgnLevelCross,pos={19.00,348.00},size={77.00,15.00},proc=SB_AxisScaling,title="Equal Y ign."
 	CheckBox check_SB_equalYIgnLevelCross,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
 	CheckBox check_SB_equalYIgnLevelCross,value= 0
-	SetVariable setvar_SB_equalYLevel,pos={98,348},size={25,16},proc=SB_AxisScalingLevelCross
+	SetVariable setvar_SB_equalYLevel,pos={98.00,348.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
 	SetVariable setvar_SB_equalYLevel,help={"Crossing level value for 'Equal Y ign.\""}
-	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0,disable=2
-	Button button_SweepBrowser_DupGraph,pos={32,376},size={88,25},proc=SB_ButtonProc_DupGraph,title="Duplicate Graph"
+	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0
+	Button button_SweepBrowser_DupGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_DupGraph,title="Duplicate Graph"
 	Button button_SweepBrowser_DupGraph,help={"Duplicate the graph and its trace for further processing"}
+	GroupBox group_sweep,pos={6.00,71.00},size={139.00,98.00},title="Sweep"
+	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckboxChangedSettings,title="dDAQ"
+	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_sweepbrowser_dDAQ,value= 0
+	RenameWindow #,P0
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
 	ModifyPanel fixedSize=0
-	Button button_SB_FindMinis,pos={18,3},size={60,23},proc=SB_ButtonProc_FindMinis,title="Find Minis"
+	Button button_SB_FindMinis,pos={18.00,3.00},size={60.00,23.00},proc=SB_ButtonProc_FindMinis,title="Find Minis"
 	NewNotebook /F=0 /N=NB0 /W=(16,29,196,362) /HOST=#
-	Notebook kwTopWin, defaultTab=20, statusWidth=0, autoSave=1
+	Notebook kwTopWin, defaultTab=20, autoSave= 1
 	Notebook kwTopWin font="Arial", fSize=10, fStyle=0, textRGB=(0,0,0)
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
 	Notebook kwTopWin, zdataEnd= 1

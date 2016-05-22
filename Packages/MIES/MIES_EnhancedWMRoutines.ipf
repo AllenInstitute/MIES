@@ -20,6 +20,10 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 		ErrorType= 0	// don't generate any errors when "averaging" one wave.
 	endif
 
+	// our tweaks might have broken some unusual setups, don't allow these
+	ASSERT(ErrorType == 0 , "ErrorTypes are not properly tested")
+	ASSERT(isEmpty(ListOfXWaves), "X waves are not properly tested")
+
 	if ( ErrorType == 2)
 		if ( (ErrorInterval>100) || (ErrorInterval < 0) )
 			DoAlert 0, "Confidence interval must be between 0 and 100"

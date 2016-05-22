@@ -69,7 +69,7 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
 
 	lbl = LineBreakingIntoParWithMinWidth(key)
 
-	axis = GetNextFreeAxisName(graph, AXIS_BASE_NAME)
+	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 	trace = CleanupName(lbl + "_" + num2str(activeADC), 1)
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
@@ -89,7 +89,7 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
 	ModifyGraph/W=$graph mode = 3
 	ModifyGraph/W=$graph nticks(bottom) = 10
 
-	EquallySpaceAxis(graph, AXIS_BASE_NAME)
+	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
 
 	traceList = AddListItem(trace, traceList, ";", inf)
 	LBN_UpdateTPSGraphLegend(graph, traceList=traceList)

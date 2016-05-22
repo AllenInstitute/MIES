@@ -183,6 +183,51 @@ Function GetSweepColumn(settingsHistory)
 	return 0
 End
 
+/// @brief Return a headstage independent setting from the numerical labnotebook
+///
+/// @return the headstage independent setting or `defValue`
+Function GetLastSettingIndep(numericalValues, sweepNo, setting, [defValue])
+	Wave numericalValues
+	variable sweepNo
+	string setting
+	variable defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, setting)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
+/// @brief Return a headstage independent setting from the textual labnotebook
+///
+/// @return the headstage independent setting or `defValue`
+Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, [defValue])
+	Wave/T textualValues
+	variable sweepNo
+	string setting, defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	WAVE/T/Z settings = GetLastSettingText(textualValues, sweepNo, setting)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(textualValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
 /// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
@@ -593,12 +638,15 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	WAVE/Z channelSelWave
 
 	variable headstage, red, green, blue, splitSweepMode, axisIndex, numChannels
-	variable numDACs, numADCs, numTTLs, i, j, channelOffset, hasPhysUnit, slotMult
-	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numWaves, idx
-	variable numTTLBits, colorIndex
+	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
+	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
+	variable numTTLBits, colorIndex, totalVertBlocks
+	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, left
+	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal
 
-	string axis, trace, traceType, channelID, axisLabel, existingLabel
-	string unit, configNote, name, wvName
+	string trace, traceType, channelID, axisLabel, existingLabel
+	string unit, configNote, name, wvName, str, vertAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -608,6 +656,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	WAVE DACs = GetDACListFromConfig(config)
 	WAVE TTLs = GetTTLListFromConfig(config)
 	configNote = note(config)
+
+	Duplicate/FREE ADCs, ADCsOriginal
+	Duplicate/FREE DACs, DACsOriginal
+	Duplicate/FREE TTLs, TTLsOriginal
+	numDACsOriginal = DimSize(DACs, ROWS)
+	numADCsOriginal = DimSize(ADCs, ROWS)
+	numTTLsOriginal = DimSize(TTLs, ROWS)
+
 	RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
@@ -657,48 +713,76 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	// - AD axes should occupy four times the space of DA/TTL channels.
 	// - So DA/TTL occupy one slot, AD occupy four slots
 	// - between each axes we want GRAPH_DIV_SPACING clear space
-	// - Count the number of channels and slots to be used
+	// - Count the number of vertical blocks (= number of vertical axis in the first column) and slots to be used
 	// - Derive the space per slot
 	// - For overlay channels we reserve only one slot times slot multiplier
 	//   per channel
 	if(tgs.displayDAC && numDACs > 0)
-		numChannels += numDACs
-
 		if(tgs.overlayChannels)
-			numSlots += 1
+			numSlots        += 1
+			totalVertBlocks += 1
 		else
-			numSlots += numDACs
+			numSlots        += numDACs
+			totalVertBlocks += numDACs
 		endif
 	endif
 	if(tgs.displayADC && numADCs > 0)
-		numChannels += numADCs
 
 		if(tgs.overlayChannels)
-			numSlots += ADC_SLOT_MULTIPLIER
+			numSlots        += ADC_SLOT_MULTIPLIER
+			totalVertBlocks += 1
 		else
-			numSlots += ADC_SLOT_MULTIPLIER * numADCs
+			numSlots        += ADC_SLOT_MULTIPLIER * numADCs
+			totalVertBlocks += numADCs
 		endif
 	endif
 	if(tgs.displayTTL && numTTLs > 0)
-		numChannels += numTTLs
-
 		if(tgs.overlayChannels)
-			numSlots += 1
+			numSlots        += 1
+			totalVertBlocks += 1
 		else
 			if(tgs.splitTTLBits)
 				numSlots += numTTLBits
+				totalVertBlocks += numTTLBits
 			else
 				numSlots += numTTLs
+				totalVertBlocks += numTTLs
 			endif
 		endif
 	endif
 
-	spacePerSlot = (1.0 - (numChannels - 1) * GRAPH_DIV_SPACING) / numSlots
-	DEBUGPRINT("numSlots", var=numSlots)
-	DEBUGPRINT("numChannels", var=numChannels)
-	DEBUGPRINT("spacePerSlot", var=spacePerSlot)
+	spacePerSlot = (1.0 - (totalVertBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
+
+	sprintf str, "numSlots=%d, totalVertBlocks=%d, spacePerSlot=%g", numSlots, totalVertBlocks, spacePerSlot
+	DEBUGPRINT(str)
 
 	high = 1.0
+
+	dDAQEnabled = GetLastSettingIndep(settingsHistory, sweepNo, "Distributed DAQ")
+
+	if(tgs.dDAQDisplayMode && !dDAQEnabled)
+		printf "Distributed DAQ display mode turned off as no dDAQ data could be found.\r"
+	endif
+
+	tgs.dDAQDisplayMode = tgs.dDAQDisplayMode && dDAQEnabled
+
+	if(tgs.dDAQDisplayMode)
+		stimSetLength = GetLastSettingIndep(settingsHistory, sweepNo, "Stim set length")
+		DEBUGPRINT("Stim set length (labnotebook)", var=stimSetLength)
+
+		samplingInt = GetSamplingInterval(config) * 1e-3
+
+		// dDAQ data taken with versions prior to
+		// 125a5407 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
+		// does not have the delays stored in the labnotebook
+		delayOnsetUser   = GetLastSettingIndep(settingsHistory, sweepNo, "Delay onset user", defValue=0) / samplingInt
+		delayOnsetAuto   = GetLastSettingIndep(settingsHistory, sweepNo, "Delay onset auto", defValue=0) / samplingInt
+		delayTermination = GetLastSettingIndep(settingsHistory, sweepNo, "Delay termination", defValue=0) / samplingInt
+		delaydDAQ        = GetLastSettingIndep(settingsHistory, sweepNo, "Delay distributed DAQ", defValue=0) / samplingInt
+
+		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
+		DEBUGPRINT(str)
+	endif
 
 	WAVE/Z statusDAC = GetLastSetting(settingsHistory, sweepNo, "DAC")
 	WAVE/Z statusADC = GetLastSetting(settingsHistory, sweepNo, "ADC")
@@ -708,11 +792,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 	channelTypes[1] = ITC_XOP_CHANNEL_TYPE_ADC
 	channelTypes[2] = ITC_XOP_CHANNEL_TYPE_TTL
 
-	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) firstCall = 1
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) activeChanCount = 0
 
 	do
 		moreData = 0
+		// iterate over all channel types in order DA, AD, TTL
+		// and take the first active channel from the list of channels per type
 		for(i = 0; i < NUM_CHANNEL_TYPES; i += 1)
 			switch(channelTypes[i])
 				case ITC_XOP_CHANNEL_TYPE_DAC:
@@ -726,7 +811,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 					channelOffset    = 0
 					hasPhysUnit      = 1
 					slotMult         = 1
-					numWaves         = 1
+					numHorizWaves    = tgs.dDAQDisplayMode ? numDACsOriginal : 1
+					numVertWaves     = 1
+					numChannels      = numDACs
 					break
 				case ITC_XOP_CHANNEL_TYPE_ADC:
 					if(!tgs.displayADC)
@@ -739,7 +826,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 					channelOffset    = numDACs
 					hasPhysUnit      = 1
 					slotMult         = ADC_SLOT_MULTIPLIER
-					numWaves         = 1
+					numHorizWaves    = tgs.dDAQDisplayMode ? numADCsOriginal : 1
+					numVertWaves     = 1
+					numChannels      = numADCs
 					break
 				case ITC_XOP_CHANNEL_TYPE_TTL:
 					if(!tgs.displayTTL)
@@ -752,7 +841,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 					channelOffset    = numDACs + numADCs
 					hasPhysUnit      = 0
 					slotMult         = 1
-					numWaves         = tgs.splitTTLBits ? NUM_TTL_BITS_PER_RACK : 1
+					numHorizWaves    = 1
+					numVertWaves     = tgs.splitTTLBits ? NUM_TTL_BITS_PER_RACK : 1
+					numChannels      = numTTLs
 					break
 			endswitch
 
@@ -764,9 +855,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 			chan = channelList[0]
 			DeletePoints/M=(ROWS) 0, 1, channelList
 
-			idx = activeChanCount[i] + channelOffset
-
-			for(j = 0; j < numWaves; j += 1)
+			// number of vertically distributed
+			// waves per channel type
+			for(j = 0; j < numVertWaves; j += 1)
 
 				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
 					name   = channelID + num2str(chan) + "_" + num2str(j)
@@ -776,81 +867,134 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory,  setti
 					wvName = channelID + "_" + num2str(chan)
 				endif
 
-				trace = UniqueTraceName(graph, name)
-
-				if(tgs.overlayChannels)
-					axis      = AXIS_BASE_NAME + "_" + channelID
-					traceType = channelID
-				else
-					axis      = AXIS_BASE_NAME + num2str(axisIndex)
-					traceType = name
-					axisIndex += 1
-				endif
-
 				if(splitSweepMode)
 					WAVE/Z/SDFR=sweepDFR wv = $wvName
 					if(!WaveExists(wv))
 						continue
 					endif
-
-					AppendToGraph/W=$graph/L=$axis wv/TN=$trace
+					idx = 0
 				else
-					AppendToGraph/W=$graph/L=$axis sweepWave[][idx]/TN=$trace
+					idx = activeChanCount[i] + channelOffset
+					WAVE wv = sweepWave
 				endif
 
-				if(firstCall[i] || !tgs.overlayChannels)
-					low = max(high - slotMult * spacePerSlot, 0)
-					ModifyGraph/W=$graph axisEnab($axis) = {low, high}
+				if(!tgs.overlayChannels)
+					axisIndex += 1
+				endif
 
-					if(hasPhysUnit)
-						unit = StringFromList(idx, configNote)
+				// number of horizontally distributed
+				// waves per channel type
+				for(k = 0; k < numHorizWaves; k += 1)
+
+					vertAxis = VERT_AXIS_BASE_NAME + num2str(j) + "_" + HORIZ_AXIS_BASE_NAME + num2str(k)
+
+					if(tgs.overlayChannels)
+						vertAxis   +=  "_" + channelID
+						traceType   = channelID
 					else
-						unit = "a.u."
+						vertAxis   += "_" + num2str(axisIndex)
+						traceType   = name
 					endif
 
-					axisLabel = traceType + "\r(" + unit + ")"
+					if(tgs.dDAQDisplayMode && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
 
-					existingLabel = AxisLabelText(graph, axis, SuppressEscaping=1)
-					// AxisLabelText's SuppressEscaping does only work for Igor commands
-					// and not for standard escape sequences
-					existingLabel = ReplaceString("\\r", existingLabel, "\r")
+						// fallback to manual calculation
+						// for versions prior to 17b49b63 (DC_PlaceDataInITCDataWave: Document stim set length, 2016-05-12)
+						if(!IsFinite(stimSetLength))
+							stimSetLength = (DimSize(wv, ROWS) - (delayOnsetUser + delayOnsetAuto + delayTermination + delaydDAQ * (numADCs - 1))) /  numADCs
+							DEBUGPRINT("Stim set length (manually calculated)", var=stimSetLength)
+						endif
 
-					if(!isEmpty(existingLabel) && cmpstr(existingLabel, axisLabel))
-						axisLabel =  channelID + "?\r(a. u.)"
+						xRangeStart = delayOnsetUser + delayOnsetAuto + k * (stimSetLength + delaydDAQ)
+						xRangeEnd   = xRangeStart + stimSetLength
+					else
+						xRangeStart = NaN
+						xRangeEnd   = NaN
 					endif
 
-					Label/W=$graph $axis, axisLabel
-					ModifyGraph/W=$graph lblPosMode = 1
-					ModifyGraph/W=$graph standoff($axis) = 0, freePos($axis) = 0
-					firstCall[i] = 0
+					trace = UniqueTraceName(graph, name)
 
+					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
+					DEBUGPRINT(str)
+
+					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
+						AppendToGraph/W=$graph/L=$vertAxis wv[][idx]/TN=$trace
+					else
+						AppendToGraph/W=$graph/L=$vertAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+
+						left  = 1/numHorizWaves * k
+
+						if(left != 0.0)
+							left += GRAPH_DIV_SPACING
+						endif
+
+						ModifyGraph/W=$graph freePos($vertAxis)={left,kwFraction}, axisOnTop($vertAxis) = 1
+						sprintf str, "horiz axis offset=[%g], stimset=[%d, %d]", left, xRangeStart, xRangeEnd
+						DEBUGPRINT(str)
+					endif
+
+					ModifyGraph/W=$graph tickUnit($vertAxis)=1
+
+					if(activeChanCount[i] == 0 || !tgs.OverlayChannels)
+						low = max(high - slotMult * spacePerSlot, 0)
+						sprintf str, "vert axis=[%g, %g]", low, high
+						DEBUGPRINT(str)
+						ModifyGraph/W=$graph axisEnab($vertAxis) = {low, high}
+					endif
+
+					if(k == 0) // first column, add labels
+						if(hasPhysUnit)
+							unit = StringFromList(idx, configNote)
+						else
+							unit = "a.u."
+						endif
+
+						axisLabel = traceType + "\r(" + unit + ")"
+
+						existingLabel = AxisLabelText(graph, vertAxis, SuppressEscaping=1)
+						// AxisLabelText's SuppressEscaping does only work for Igor commands
+						// and not for standard escape sequences
+						existingLabel = ReplaceString("\\r", existingLabel, "\r")
+
+						if(!isEmpty(existingLabel) && cmpstr(existingLabel, axisLabel))
+							axisLabel =  channelID + "?\r(a. u.)"
+						endif
+
+						Label/W=$graph $vertAxis, axisLabel
+						ModifyGraph/W=$graph lblPosMode = 1, standoff($vertAxis) = 0, freePos($vertAxis) = 0
+					else
+						Label/W=$graph $vertAxis, "\\u#2"
+					endif
+
+					// Color scheme:
+					// 0-7:   Different headstages
+					// 8:     Unknown headstage
+					// 9:     Averaged trace
+					// 10:    TTL bits (sum) rack zero
+					// 11-14: TTL bits (single) rack zero
+					// 15:    TTL bits (sum) rack one
+					// 16-19: TTL bits (single) rack one
+					if(WaveExists(status))
+						colorIndex = GetRowIndex(status, val=chan)
+					elseif(!cmpstr(channelID, "TTL"))
+						colorIndex = 10 + activeChanCount[i] * 5 + j
+					else
+						colorIndex = NUM_HEADSTAGES
+					endif
+
+					GetTraceColor(colorIndex, red, green, blue)
+					ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+					ModifyGraph/W=$graph userData($trace)={channelType, 0, channelID}
+					ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(chan)}
+					ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
+
+					sprintf str, "colorIndex=%d", colorIndex
+					DEBUGPRINT(str)
+				endfor
+
+				if(!tgs.OverlayChannels || activeChanCount[i] == 0)
 					high -= slotMult * spacePerSlot + GRAPH_DIV_SPACING
 				endif
-
-				// Color scheme:
-				// 0-7:   Different headstages
-				// 8:     Unknown headstage
-				// 9:     Averaged trace
-				// 10:    TTL bits (sum) rack zero
-				// 11-14: TTL bits (single) rack zero
-				// 15:    TTL bits (sum) rack one
-				// 16-19: TTL bits (single) rack one
-				if(WaveExists(status))
-					colorIndex = GetRowIndex(status, val=chan)
-				elseif(!cmpstr(channelID, "TTL"))
-					colorIndex = 10 + activeChanCount[i] * 5 + j
-				else
-					colorIndex = NUM_HEADSTAGES
-				endif
-				
-				GetTraceColor(colorIndex, red, green, blue)
-				ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
-				ModifyGraph/W=$graph userData($trace)={channelType, 0, channelID}
-				ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(chan)}
-				ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
-
-				DEBUGPRINT("high", var=high)
-				DEBUGPRINT("low", var=low)
 			endfor
 
 			activeChanCount[i] += 1
@@ -1059,7 +1203,7 @@ Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(settingsHistory)
 
-	axis = GetNextFreeAxisName(graph, AXIS_BASE_NAME)
+	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
 	numEntries = DimSize(settingsHistory, LAYERS)
 	for(i = 0; i < numEntries; i += 1)
@@ -1090,7 +1234,7 @@ Function AddTraceToLBGraph(graph, settingsKey, settingsHistory, key)
 	ModifyGraph/W=$graph nticks(bottom) = 10
 
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
-	EquallySpaceAxis(graph, AXIS_BASE_NAME)
+	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
 	UpdateLBGraphLegend(graph, traceList=traceList)
 End
 
@@ -1515,12 +1659,16 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	variable averagingEnabled
 	DFREF averageDataFolder
 
+	variable referenceTime
 	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
+	string xRange, listOfXRanges
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
-	variable red, green, blue, column
-	string info, axis, trace, axList, baseName
+	variable red, green, blue, column, first, last
+	string axis, trace, axList, baseName
 	string channelType, channelNumber, fullPath, panel
+
+	referenceTime = DEBUG_TIMER_START()
 
 	if(!averagingEnabled)
 		listOfWaves = GetListOfWaves(averageDataFolder, "average.*", fullPath=1)
@@ -1538,21 +1686,28 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	axList = RemoveFromList("bottom", axList)
 	numAxes = ItemsInList(axList)
 	numTraces = ItemsInList(traceList)
+
+	// precompute traceInfo data
+	Make/FREE/T/N=(numTraces) allTraceInfo = TraceInfo(graph, StringFromList(p, traceList), 0)
+
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, axList)
 		listOfWaves          = ""
 		listOfChannelTypes   = ""
 		listOfChannelNumbers = ""
+		listOfXRanges        = ""
 		for(j = 0; j < numTraces; j += 1)
 			trace = StringFromList(j, traceList)
-			info = TraceInfo(graph, trace, 0)
-			if(!cmpstr(axis, StringByKey("YAXIS", info)))
-				fullPath             = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
+			if(!cmpstr(axis, StringByKey("YAXIS", allTraceInfo[j])))
+				fullPath      = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
+				channelType   = GetUserData(graph, trace, "channelType")
+				channelNumber = GetUserData(graph, trace, "channelNumber")
+				xRange        = StringByKey("YRANGE", allTraceInfo[j])
+
 				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
-				channelType          = GetUserData(graph, trace, "channelType")
 				listOfChannelTypes   = AddListItem(channelType, listOfChannelTypes, ";", Inf)
-				channelNumber        = GetUserData(graph, trace, "channelNumber")
 				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
+				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
 			endif
 		endfor
 
@@ -1561,23 +1716,37 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			continue
 		endif
 
+		/// @todo Use WaveStats/RMD once IP7 is mandatory
+		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
+		MatrixOP/FREE rangeStart = col(ranges, 0)
+		MatrixOP/FREE rangeStop  = col(ranges, 1)
+
+		if(WaveMin(rangeStart) != -1 && WaveMin(rangeStop) != -1)
+			first = WaveMin(rangeStart)
+			last  = WaveMax(rangeStop)
+		else
+			first = NaN
+			last  = Nan
+		endif
+		WaveClear rangeStart, rangeStop
+
 		if(WaveListHasSameWaveNames(listOfWaves, baseName))
 			// add channel type suffix if they are all equal
-			if(ItemsInList(ListMatch(listOfChannelTypes, channelType)) == ItemsInList(listOfChannelTypes))
+			if(ListHasOnlyOneUniqueEntry(listOfChannelTypes))
 				sprintf averageWaveName, "average_%s_%s", baseName, channelType
 			else
 				sprintf averageWaveName, "average_%s_%d", baseName, k
 				k += 1
 			endif
-		elseif(StringMatch(axis, AXIS_BASE_NAME + "*"))
-			averageWaveName = "average" + RemovePrefix(axis, startStr=AXIS_BASE_NAME)
+		elseif(StringMatch(axis, VERT_AXIS_BASE_NAME + "*"))
+			averageWaveName = "average" + RemovePrefix(axis, startStr=VERT_AXIS_BASE_NAME)
 		else
 			sprintf averageWaveName, "average_%d", k
 			k += 1
 		endif
 
 		if(WhichListItem(averageWaveName, averageWaves) != -1)
-			averageWaveName = UniqueName(GetDataFolder(1, averageDataFolder) + averageWaveName, 1, 0)
+			averageWaveName = UniqueWaveName(averageDataFolder,averageWaveName)
 		endif
 
 		ASSERT(numWaves == ItemsInList(listOfChannelTypes) && numWaves == ItemsInList(listOfChannelNumbers), "Non matching list sizes")
@@ -1602,13 +1771,20 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			endif
 		endfor
 
+		/// @todo for dDaQ mode we could cache the result of the first column
 		/// @todo change to fWaveAverage as soon as IP 6.37 is released
 		/// as this will solve the need for our own copy.
 		ret = MIES_fWaveAverage(listOfWaves1D, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
 		ASSERT(ret != -1, "Wave averaging failed")
+
 		WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
 		RemoveTracesFromGraph(graph, wv=averageWave)
-		AppendToGraph/W=$graph/L=$axis averageWave
+
+		if(IsFinite(first) && IsFinite(last))
+			AppendToGraph/Q/W=$graph/L=$axis averageWave[first, last]
+		else
+			AppendToGraph/Q/W=$graph/L=$axis averageWave
+		endif
 
 		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
 
@@ -1618,6 +1794,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
 		KillOrMoveToTrash(dfr=tmpDFR)
 	endfor
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 /// @brief Zero all given traces
