@@ -40,3 +40,7 @@ MIES has two primary modes: The Test Pulse (TP) and Data Acquisition.
 
 Data acquisition modes are visualized in the following image:
 @image html acquisition-repeated-indexing-explained.svg
+
+Delays are visualized in the following images:
+@image html normal-delays.svg
+@image html ddaq-delay.svg
