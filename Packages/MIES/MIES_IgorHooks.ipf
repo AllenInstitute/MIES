@@ -89,9 +89,20 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 End
 
 static Function IH_Cleanup()
-	IH_UnlockAllDevicesWrapper()
-	IH_RemoveAmplifierConnWaves()
-	IH_KillTemporaries()
+
+	variable error
+	variable debuggerState = DisableDebugger()
+
+	try
+		IH_UnlockAllDevicesWrapper(); AbortOnRTE
+		IH_RemoveAmplifierConnWaves(); AbortOnRTE
+		IH_KillTemporaries(); AbortOnRTE
+	catch
+		error = GetRTError(1)
+		DEBUGPRINT("Caught runtime error or assertion")
+	endtry
+
+	ResetDebuggerState(debuggerState)
 End
 
 static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
