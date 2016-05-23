@@ -1284,15 +1284,9 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	if(!ParamIsDefault(increment))
 		headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
-	
+
 	if(headstage >= 0 && headstage < NUM_HEADSTAGES)	
-		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
-		variable mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-		AI_UpdateAmpView(panelTitle, headStage)
-		P_LoadPressureButtonState(panelTitle, headStage)
-		P_SaveUserSelectedHeadstage(panelTitle, headStage)
-		// chooses the amp tab according to the MIES headstage clamp mode
-		ChangeTab(panelTitle, "tab_DataAcq_Amp", mode)
+		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val=headstage)
 	endif
 End
 
