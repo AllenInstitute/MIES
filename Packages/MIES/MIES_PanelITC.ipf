@@ -4548,22 +4548,32 @@ Function DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
 End
 
+Function DAP_SyncDeviceAssocSettToGUI(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	DAP_AbortIfUnlocked(panelTitle)
+
+	HSU_UpdateChanAmpAssignPanel(panelTitle)
+	P_UpdatePressureControls(panelTitle, headStage)
+
+	if(GetCheckBoxState(panelTitle, "Check_Hardware_UseManip"))
+		M_SetManipulatorAssocControls(panelTitle, headStage)
+	endif
+End
+
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string panelTitle
+	variable headStage
 
 	switch(pa.eventCode)
 		case 2: // mouse up
 			panelTitle = pa.win
-			DAP_AbortIfUnlocked(panelTitle)
+			headStage  = str2num(pa.popStr)
 
-			HSU_UpdateChanAmpAssignPanel(panelTitle)
-			P_UpdatePressureControls(panelTitle, pa.popNum - 1)
-
-			if(GetCheckBoxState(panelTitle, "Check_Hardware_UseManip"))
-				M_SetManipulatorAssocControls(panelTitle, pa.popNum - 1)
-			endif
+			DAP_SyncDeviceAssocSettToGUI(panelTitle, headStage)
 			break
 	endswitch
 
