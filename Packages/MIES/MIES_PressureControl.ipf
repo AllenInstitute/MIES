@@ -1343,12 +1343,16 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 End
 
 /// @brief Colors and changes the title of the pressure buttons based on the saved pressure mode.
-Function P_LoadPressureButtonState(panelTitle, headStageNo)
+Function P_LoadPressureButtonState(panelTitle)
 	string panelTitle
+
 	variable headStageNo
 
-	P_ResetAll_P_ButtonsToBaseState(panelTitle)
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	// value is equal for all rows
+	headStageNo = PressureDataWv[0][%UserSelectedHeadStage]
+
+	P_ResetAll_P_ButtonsToBaseState(panelTitle)
 	if(P_ValidatePressureSetHeadstage(panelTitle, headStageNo)) // check if headStage pressure settings are valid
 
 		P_EnableButtonsIfValid(panelTitle, headStageNo)
@@ -1597,8 +1601,10 @@ static Function P_Enable()
 			EnableControl(lockedDevice, "button_Hardware_P_Disable")
 			EnableControls(lockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)
 
-			headStage = GetSliderPositionIndex(LockedDevice, "slider_DataAcq_ActiveHeadstage")
-			P_LoadPressureButtonState(LockedDevice, headStage)
+			headstage = GetSliderPositionIndex(lockedDevice, "slider_DataAcq_ActiveHeadstage")
+			P_SaveUserSelectedHeadstage(lockedDevice, headstage)
+
+			P_LoadPressureButtonState(lockedDevice)
 		else
 			printf "No devices are presently assigned for pressure regulation on: %s\r" LockedDevice
 		endif
