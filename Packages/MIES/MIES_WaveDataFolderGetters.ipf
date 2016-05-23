@@ -3119,6 +3119,11 @@ End
 /// - 32: Peak resistance on previous method cycle.
 /// - 33: Peak resistance on active method cycle.
 /// - 34: Time of last peak resistance check.
+/// - 35: Calibration constant for positive pulse.
+/// - 36: Calibration constant for negative pulse.
+/// - 37: Checkbox state of "Approach Near".
+/// - 38: Checkbox state of "Seal Atmosphere".
+/// - 39: Selected headstage by the slider.
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
