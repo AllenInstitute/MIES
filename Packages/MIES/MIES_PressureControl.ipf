@@ -148,6 +148,10 @@ static Function P_MethodApproach(panelTitle, headStage)
 		targetP = PressureDataWv[headStage][%PSI_slice]
 	endif
 
+	if(IsFinite(PressureDataWv[headstage][%UserPressureOffsetTotal]))
+		targetP += PressureDataWv[headstage][%UserPressureOffsetTotal]
+	endif
+
 	if(targetP != PressureDataWv[headStage][%LastPressureCommand]) // only update pressure if the pressure is incorrect
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure] = PressureDataWv[headStage][%LastPressureCommand]
@@ -996,17 +1000,22 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 				endif
 			endif
 
-			p.calPressure  = p.calPressureOffset + p.calPressure / DAGain
+			p.pressure    += pressureDataWv[headStage][%UserPressureOffsetPeriod]
+			p.calPressure  = p.calPressureOffset + (p.calPressure + pressureDataWv[headStage][%UserPressureOffsetPeriod]) / DAGain
 
 			break
 		case P_NEGATIVE_PULSE:
 			p.last     = PRESSURE_PULSE_ENDpt * HARDWARE_ITC_MIN_SAMPINT
 			p.pressure = pressureDataWv[Headstage][%LastPressureCommand]
 
-			if(p.pressure > MIN_NEG_PRESSURE_PULSE)
-				p.pressure = MIN_NEG_PRESSURE_PULSE
+			if(IsFinite(pressureDataWv[headStage][%UserPressureOffsetTotal]))
+				p.pressure += pressureDataWv[headStage][%UserPressureOffsetPeriod]
 			else
-				p.pressure = max(MIN_REGULATOR_PRESSURE, P_GetPulseAmp(panelTitle, headStage))
+				if(p.pressure > MIN_NEG_PRESSURE_PULSE)
+					p.pressure = MIN_NEG_PRESSURE_PULSE
+				else
+					p.pressure = max(MIN_REGULATOR_PRESSURE, P_GetPulseAmp(panelTitle, headStage))
+				endif
 			endif
 
 			p.calPressure = p.pressure
@@ -1023,7 +1032,6 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 					p.calPressure += PressureDataWv[headStage][%NegCalConst]
 				endif
 			endif
-
 			p.calPressure  = p.calPressureOffset + p.calPressure / DAGain
 
 			break
@@ -1031,6 +1039,8 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 			ASSERT(0, "Invalid pressure mode")
 			break
 	endswitch
+
+	pressureDataWv[headStage][%UserPressureOffsetPeriod] = 0.0
 
 	if(hwType == HARDWARE_ITC_DAC)
 		p.first             /= HARDWARE_ITC_MIN_SAMPINT
@@ -1287,6 +1297,9 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 			SetControlTitleColor(panelTitle, pressureControlName, 0, 0, 0)
 			PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
 			PressureDataWv[headStageNo][%TimeOfLastRSlopeCheck]     = 0.0
+			PressureDataWv[headStageNo][%UserPressureOffset]        = 0.0
+			PressureDataWv[headStageNo][%UserPressureOffsetTotal]   = NaN
+			PressureDataWv[headStageNo][%UserPressureOffsetPeriod]  = 0.0
 		else // saved and new pressure mode don't match
 			if(SavedPressureMode != P_METHOD_neg1_ATM) // saved pressure mode isn't pressure OFF (-1)
 				// reset the button for the saved pressure mode
@@ -1341,6 +1354,85 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 			endfor
 		endif
 	endif
+End
+
+Function P_SetPressureOffset(panelTitle, headstage, userOffset)
+	string panelTitle
+	variable headstage
+	variable userOffset
+
+	variable method, val
+
+	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	if(headstage < 0 || headstage >= NUM_headstageS)
+		DEBUGPRINT("headstage is out of range", var=headstage)
+		return NaN
+	endif
+
+	method = pressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]
+
+	if(method == P_METHOD_neg1_ATM)
+		return NaN
+	endif
+
+	pressureDataWv[headstage][%UserPressureOffset]        = userOffset
+	pressureDataWv[headstage][%UserPressureOffsetPeriod] += userOffset
+
+	if(!IsFinite(PressureDataWv[headstage][%UserPressureOffsetTotal]))
+		pressureDataWv[headstage][%UserPressureOffsetTotal] = userOffset
+	else
+		pressureDataWv[headstage][%UserPressureOffsetTotal] += userOffset
+	endif
+
+	switch(method)
+		// pulse based methods
+		case P_METHOD_2_BREAKIN:
+		case P_METHOD_3_CLEAR:
+		case P_METHOD_4_MANUAL:
+			// wait till next time point or ignore
+			break
+		// steady state methods
+		case P_METHOD_neg1_ATM:
+			ASSERT(0, "Offset must be ignored for ATM method")
+			break
+		case P_METHOD_1_SEAL:
+			val = pressureDataWv[headstage][%LastPressureCommand] + pressureDataWv[headstage][%UserPressureOffset]
+			val = P_SetAndGetPressure(panelTitle, headstage, val)
+			pressureDataWv[headstage][%RealTimePressure]    = val
+			pressureDataWv[headstage][%LastPressureCommand] = val
+			break
+		case P_METHOD_0_APPROACH:
+			// wait till next time point or do now if no TP is running
+			if(!TP_CheckIfTestpulseIsRunning(panelTitle))
+				val = pressureDataWv[headstage][%LastPressureCommand] + pressureDataWv[headstage][%UserPressureOffset]
+				val = P_SetAndGetPressure(panelTitle, headstage, val)
+				pressureDataWv[headstage][%LastPressureCommand] = val
+				pressureDataWv[headstage][%RealTimePressure]    = val
+			endif
+			break
+		default:
+			ASSERT(0, "unhandled pressure method")
+			break
+	endswitch
+End
+
+Function P_InitBeforeTP(panelTitle)
+	string panelTitle
+
+	variable headstage
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	// reset the user defineable pressure offset to their intial values
+	PressureDataWv[][%UserPressureOffset]       = 0.0
+	PressureDataWv[][%UserPressureOffsetTotal]  = NaN
+	PressureDataWv[][%UserPressureOffsetPeriod] = 0.0
+
+	headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	P_SaveUserSelectedHeadstage(panelTitle, headstage)
+
+	P_LoadPressureButtonState(panelTitle)
 End
 
 /// @brief Colors and changes the title of the pressure buttons based on the saved pressure mode.

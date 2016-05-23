@@ -61,7 +61,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StartBackgroundTestPulse(panelTitle)
 
-		P_LoadPressureButtonState(panelTitle)
+		P_InitBeforeTP(panelTitle)
 	else
 		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
 		ITC_StartTestPulse(panelTitle)
@@ -80,7 +80,7 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	ITC_StartTestPulseMultiDevice(panelTitle)
 
-	P_LoadPressureButtonState(panelTitle)
+	P_InitBeforeTP(panelTitle)
 End
 
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
