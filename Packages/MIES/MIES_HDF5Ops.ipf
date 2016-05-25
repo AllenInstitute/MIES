@@ -547,8 +547,6 @@ Static Function/S HD_GetConfigList(panelTitle)
 		list = removefromlist(trimmedList, list)
 	endfor
 
-	//Need to add these to the list, per Jim's request
-	list = AddListItem("setVar_AsyncAD_Title07;Unit_AsyncAD_07",list)
 	return list
 End
 
