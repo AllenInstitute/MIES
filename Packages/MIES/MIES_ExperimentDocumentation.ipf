@@ -503,9 +503,13 @@ Function ED_TPDocumentation(panelTitle)
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	SVAR clampModeString = $GetClampModeString(panelTitle)
 
-	WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
-	WAVE/SDFR=dfr InstResistance // wave that contains the peak resistance calculation result from the TP
-	WAVE/SDFR=dfr SSResistance // wave that contains the steady state resistance calculation result from the TP
+	WAVE/Z/SDFR=dfr BaselineSSAvg
+	WAVE/Z/SDFR=dfr InstResistance
+	WAVE/Z/SDFR=dfr SSResistance
+
+	if(!WaveExists(BaselineSSAvg) || !WaveExists(InstResistance) || !WaveExists(SSResistance))
+		return NaN
+	endif
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
 	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
