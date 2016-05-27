@@ -37,7 +37,7 @@ End
 Function HSU_LockDevice(panelTitle)
 	string panelTitle
 
-	variable locked, hardwareType
+	variable locked, hardwareType, headstage
 	string panelTitleLocked
 
 	SVAR miesVersion = $GetMiesVersion()
@@ -69,7 +69,8 @@ Function HSU_LockDevice(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
 	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
 	DAP_UpdateListOfPressureDevices()
-	HSU_UpdateChanAmpAssignPanel(panelTitleLocked)
+	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
+	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)
 
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
