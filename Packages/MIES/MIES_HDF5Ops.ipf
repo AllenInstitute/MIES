@@ -668,7 +668,7 @@ Function HD_SaveConfiguration([cmdID])
 		endfor	
 		
 		HDF5CloseFile h5_id
-		print "HDF5 file save complete..."
+		print "HDF5 configuration saved to: ", filename
 	endif
     	
 	// restore the data folder
