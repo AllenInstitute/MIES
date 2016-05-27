@@ -2338,3 +2338,12 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 
 	return ranges
 End
+
+/// @brief Check if a name for a wave adheres to the strict naming rules
+///
+/// @see `DisplayHelpTopic "ObjectName"`
+Function IsValidWaveName(wvName)
+	string wvName
+
+	return !cmpstr(wvName, CleanupName(wvName, 0))
+End

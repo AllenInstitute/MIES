@@ -60,3 +60,11 @@ Function InitFormulaProperties(fp)
 	fp.numRows = NaN
 	fp.numCols = NaN
 End
+
+/// @brief Helper structure for UpgradeWaveLocationAndGetIt()
+Structure WaveLocationMod
+	DFREF dfr      ///< former location of the wave
+	DFREF newDFR   ///< new location of the wave (can be invalid)
+	string name    ///< former name of the wave
+	string newName ///< new name of the wave (can be null/empty)
+EndStructure

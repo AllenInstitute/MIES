@@ -489,6 +489,8 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	
 		// call the function that will create the measurement wave notes
 		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle)
+
+		ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle)
 	endif
 End
 
