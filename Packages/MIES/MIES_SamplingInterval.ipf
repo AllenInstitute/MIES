@@ -113,7 +113,6 @@ End
 static Function SI_TestSampInt(panelTitle)
 	string panelTitle
 
-	string cmd
 	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
 	variable numConsecutive = -1
 	variable numTries = 1001
@@ -122,11 +121,10 @@ static Function SI_TestSampInt(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numChannels = DimSize(ITCChanConfigWave, ROWS)
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(2, numChannels) dfr:ReqWave/Wave=ReqWave
+	Make/I/FREE/N=(2, numChannels) ReqWave
 	ReqWave[0][] = ITCChanConfigWave[q][0]
 	ReqWave[1][] = ITCChanConfigWave[q][1]
-	Make/D/O/N=(20, numChannels) dfr:ResultWave/Wave=ResultWave
+	Make/D/FREE/N=(20, numChannels) ResultWave
 
 	for(i=1; i < numTries; i += 1)
 		if(numConsecutive == -1)
@@ -136,21 +134,20 @@ static Function SI_TestSampInt(panelTitle)
 		endif
 
 		ITCChanConfigWave[][2] = sampInt
-		sprintf cmd, "ITCConfigAllChannels/Z, %s, %s", GetWavesDataFolder(ITCChanConfigWave, 2), GetWavesDataFolder(ITCDataWave, 2)
-		ret = ExecuteITCOperation(cmd)
+		ITCConfigAllChannels2/Z ITCChanConfigWave, ITCDataWave
 
 		if(!ret)
 			// we could set the sampling interval
 			// so we try to read it back and check if it is the same
-			sprintf cmd, "ITCConfigChannelUpload"
-			ExecuteITCOperationAbortOnError(cmd)
+			ITCConfigChannelUpload2
+			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
-			sprintf cmd, "ITCGetAllChannelsConfig, %s, %s", GetWavesDataFolder(ReqWave, 2), GetWavesDataFolder(ResultWave, 2)
-			ExecuteITCOperationAbortOnError(cmd)
+			ITCGetAllChannelsConfig2/O ReqWave, ResultWave
+			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
 			WaveStats/Q/R=[12,12] ResultWave
 			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
-			// ITCGetAllChannelsConfig returns the sampling interval in Hz
+			// ITCGetAllChannelsConfig2 returns the sampling interval in Hz
 			// but we want it in microseconds
 			sampIntRead = 1/V_min * 1e6
 
@@ -322,7 +319,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	variable totalNumDA, totalNumAD, totalNumTTL, totalNumRacks, calcSampInt
 	variable numDA, numAD, numTTL, DA, AD, TTL
 	variable DAMask, ADMask, TTLMask
-	string cmd, deviceType, deviceNumber
+	string deviceType, deviceNumber
 
 	if(ParamIsDefault(ignoreChannelOrder))
 		ignoreChannelOrder = 0
@@ -467,10 +464,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 		endfor
 	endif
 
-	// does not use KillOrMoveToTrash as it is not part of the end user MIES package
-	KillWaves/Z ReqWave, ResultWave
-	sprintf cmd, "ITCConfigChannelReset"
-	ExecuteITCOperation(cmd)
+	ITCConfigChannelReset2
 
 	SI_CompressWave(results)
 End
