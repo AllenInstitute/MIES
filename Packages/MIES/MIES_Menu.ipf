@@ -27,6 +27,8 @@ Menu "Mies Panels", dynamic
 	SubMenu "Advanced"
 		"Enable debug mode"                         , /Q, EnableDebugMode()
 		"Disable debug mode"                        , /Q, DisableDebugMode()
+		"Enable ITC XOP debug mode"                 , /Q, HW_ITC_DebugMode(1)
+		"Disable ITC XOP debug mode"                , /Q, HW_ITC_DebugMode(0)
 		"Check Installation"                        , /Q, CHI_CheckInstallation()
 		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
 		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1

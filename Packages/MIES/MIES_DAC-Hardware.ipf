@@ -939,6 +939,15 @@ Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
+/// @brief Set the debug flag of the ITC XOP to ON/OFF
+Function HW_ITC_DebugMode(state, [flags])
+	variable state, flags
+
+	DEBUGPRINTSTACKINFO()
+
+	ITCSetGlobals2/D=(state)
+End
+
 Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
 	string str
 end
