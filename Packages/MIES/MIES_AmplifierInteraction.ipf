@@ -272,6 +272,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 	variable ret, headstageMode, scale
 	string str
 
+	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
 	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
 	AI_AssertOnInvalidClampMode(mode)
 
@@ -312,14 +313,32 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			case MCC_SETHOLDINGENABLE_FUNC:
 				ret = MCC_GetholdingEnable()
 				break
+			case MCC_SETBRIDGEBALENABLE_FUNC:
+				ret = MCC_GetBridgeBalEnable()
+				break
+			case MCC_SETBRIDGEBALRESIST_FUNC:
+				ret = MCC_GetBridgeBalResist()
+				break
+			case MCC_SETNEUTRALIZATIONENABL_FUNC:
+				ret = MCC_GetNeutralizationEnable()
+				break
+			case MCC_SETNEUTRALIZATIONCAP_FUNC:
+				ret = MCC_GetNeutralizationCap()
+				break
+			case MCC_SETWHOLECELLCOMPENABLE_FUNC:
+				ret = MCC_GetWholeCellCompEnable()
+				break
 			case MCC_SETWHOLECELLCOMPCAP_FUNC:
 				ret = MCC_GetWholeCellCompCap()
 				break
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
 				ret = MCC_GetWholeCellCompResist()
 				break
-			case MCC_SETWHOLECELLCOMPENABLE_FUNC:
-				ret = MCC_GetWholeCellCompEnable()
+			case MCC_SETRSCOMPENABLE_FUNC:
+				ret = MCC_GetRsCompEnable()
+				break
+			case MCC_SETRSCOMPBANDWIDTH_FUNC:
+				ret = MCC_GetRsCompBandwidth()
 				break
 			case MCC_SETRSCOMPCORRECTION_FUNC:
 				ret = MCC_GetRsCompCorrection()
@@ -327,26 +346,26 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			case MCC_SETRSCOMPPREDICTION_FUNC:
 				ret = MCC_GetRsCompPrediction()
 				break
-			case MCC_SETRSCOMPBANDWIDTH_FUNC:
-				ret = MCC_GetRsCompBandwidth()
-				break
-			case MCC_SETRSCOMPENABLE_FUNC:
-				ret = MCC_GetRsCompEnable()
-				break
-			case MCC_SETBRIDGEBALRESIST_FUNC:
-				ret = MCC_GetBridgeBalResist()
-				break
-			case MCC_SETBRIDGEBALENABLE_FUNC:
-				ret = MCC_GetBridgeBalEnable()
-				break
-			case MCC_SETNEUTRALIZATIONCAP_FUNC:
-				ret = MCC_GetNeutralizationCap()
-				break
-			case MCC_SETNEUTRALIZATIONENABL_FUNC:
-				ret = MCC_GetNeutralizationEnable()
+			case MCC_SETOSCKILLERENABLE_FUNC:
+				ret = MCC_GetOscKillerEnable()
 				break
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				ret = MCC_GetPipetteOffset()
+				break
+			case MCC_SETFASTCOMPCAP_FUNC:
+				ret = MCC_GetFastCompCap()
+				break
+			case MCC_SETSLOWCOMPCAP_FUNC:
+				ret = MCC_GetSlowCompCap()
+				break
+			case MCC_SETFASTCOMPTAU_FUNC:
+				ret = MCC_GetFastCompTau()
+				break
+			case MCC_SETSLOWCOMPTAU_FUNC:
+				ret = MCC_GetSlowCompTau()
+				break
+			case MCC_SETSLOWCOMPTAUX20ENAB_FUNC:
+				ret = MCC_GetSlowCompTauX20Enable()
 				break
 			case MCC_SETSLOWCURRENTINJENABL_FUNC:
 				ret = MCC_GetSlowCurrentInjEnable()
@@ -381,30 +400,14 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_SETHOLDINGENABLE_FUNC:
 			ret = MCC_SetholdingEnable(value)
 			break
-		case MCC_SETWHOLECELLCOMPCAP_FUNC:
-			ret = MCC_SetWholeCellCompCap(value)
+		case MCC_GETHOLDINGENABLE_FUNC:
+			ret = MCC_GetHoldingEnable()
 			break
-		case MCC_SETWHOLECELLCOMPRESIST_FUNC:
-			ret = MCC_SetWholeCellCompResist(value)
+		case MCC_SETBRIDGEBALENABLE_FUNC:
+			ret = MCC_SetBridgeBalEnable(value)
 			break
-		case MCC_SETWHOLECELLCOMPENABLE_FUNC:
-			ret = MCC_SetWholeCellCompEnable(value)
-			break
-		case MCC_SETRSCOMPCORRECTION_FUNC:
-			ret = MCC_SetRsCompCorrection(value)
-			break
-		case MCC_SETRSCOMPPREDICTION_FUNC:
-			ret = MCC_SetRsCompPrediction(value)
-			break
-		case MCC_SETRSCOMPBANDWIDTH_FUNC:
-			ret = MCC_SetRsCompBandwidth(value)
-			break
-		case MCC_SETRSCOMPENABLE_FUNC:
-			ret = MCC_SetRsCompEnable(value)
-			break
-		case MCC_AUTOBRIDGEBALANCE_FUNC:
-			MCC_AutoBridgeBal()
-			ret = AI_SendToAmp(panelTitle, headstage, mode, MCC_GETBRIDGEBALRESIST_FUNC, NaN, usePrefixes=usePrefixes)
+		case MCC_GETBRIDGEBALENABLE_FUNC:
+			ret = MCC_GetBridgeBalEnable()
 			break
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
@@ -412,17 +415,75 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_GETBRIDGEBALRESIST_FUNC:
 			ret = MCC_GetBridgeBalResist()
 			break
-		case MCC_SETBRIDGEBALENABLE_FUNC:
-			ret = MCC_SetBridgeBalEnable(value)
-			break
-		case MCC_SETNEUTRALIZATIONCAP_FUNC:
-			ret = MCC_SetNeutralizationCap(value)
+		case MCC_AUTOBRIDGEBALANCE_FUNC:
+			MCC_AutoBridgeBal()
+			ret = AI_SendToAmp(panelTitle, headstage, mode, MCC_GETBRIDGEBALRESIST_FUNC, NaN, usePrefixes=usePrefixes)
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
 			break
+		case MCC_GETNEUTRALIZATIONENABL_FUNC:
+			ret = MCC_GetNeutralizationEnable()
+			break
+		case MCC_SETNEUTRALIZATIONCAP_FUNC:
+			ret = MCC_SetNeutralizationCap(value)
+			break
 		case MCC_GETNEUTRALIZATIONCAP_FUNC:
 			ret = MCC_GetNeutralizationCap()
+			break
+		case MCC_SETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_SetWholeCellCompEnable(value)
+			break
+		case MCC_GETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_GetWholeCellCompEnable()
+			break
+		case MCC_SETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_SetWholeCellCompCap(value)
+			break
+		case MCC_GETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_GetWholeCellCompCap()
+			break
+		case MCC_SETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_SetWholeCellCompResist(value)
+			break
+		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_GetWholeCellCompResist()
+			break
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			MCC_AutoWholeCellComp()
+			// as we would have to return two values (resistance and capacitance)
+			// we return just zero
+			ret = 0
+			break
+		case MCC_SETRSCOMPENABLE_FUNC:
+			ret = MCC_SetRsCompEnable(value)
+			break
+		case MCC_GETRSCOMPENABLE_FUNC:
+			ret = MCC_GetRsCompEnable()
+			break
+		case MCC_SETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_SetRsCompBandwidth(value)
+			break
+		case MCC_GETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_GetRsCompBandwidth()
+			break
+		case MCC_SETRSCOMPCORRECTION_FUNC:
+			ret = MCC_SetRsCompCorrection(value)
+			break
+		case MCC_GETRSCOMPCORRECTION_FUNC:
+			ret = MCC_GetRsCompCorrection()
+			break
+		case MCC_SETRSCOMPPREDICTION_FUNC:
+			ret = MCC_SetRsCompPrediction(value)
+			break
+		case MCC_GETRSCOMPPREDICTION_FUNC:
+			ret = MCC_SetRsCompPrediction(value)
+			break
+		case MCC_SETOSCKILLERENABLE_FUNC:
+			ret = MCC_SetOscKillerEnable(value)
+			break
+		case MCC_GETOSCKILLERENABLE_FUNC:
+			ret = MCC_GetOscKillerEnable()
 			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			MCC_AutoPipetteOffset()
@@ -433,6 +494,42 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_GETPIPETTEOFFSET_FUNC:
 			ret = MCC_GetPipetteOffset()
+			break
+		case MCC_SETFASTCOMPCAP_FUNC:
+			ret = MCC_SetFastCompCap(value)
+			break
+		case MCC_GETFASTCOMPCAP_FUNC:
+			ret = MCC_GetFastCompCap()
+			break
+		case MCC_SETSLOWCOMPCAP_FUNC:
+			ret = MCC_SetSlowCompCap(value)
+			break
+		case MCC_GETSLOWCOMPCAP_FUNC:
+			ret = MCC_GetSlowCompCap()
+			break
+		case MCC_SETFASTCOMPTAU_FUNC:
+			ret = MCC_SetFastCompTau(value)
+			break
+		case MCC_GETFASTCOMPTAU_FUNC:
+			ret = MCC_GetFastCompTau()
+			break
+		case MCC_SETSLOWCOMPTAU_FUNC:
+			ret = MCC_SetSlowCompTau(value)
+			break
+		case MCC_GETSLOWCOMPTAU_FUNC:
+			ret = MCC_GetSlowCompTau()
+			break
+		case MCC_SETSLOWCOMPTAUX20ENAB_FUNC:
+			ret = MCC_SetSlowCompTauX20Enable(value)
+			break
+		case MCC_GETSLOWCOMPTAUX20ENAB_FUNC:
+			ret = MCC_GetSlowCompTauX20Enable()
+			break
+		case MCC_AUTOFASTCOMP_FUNC:
+			ret = MCC_AutoFastComp()
+			break
+		case MCC_AUTOSLOWCOMP_FUNC:
+			ret = MCC_AutoSlowComp()
 			break
 		case MCC_SETSLOWCURRENTINJENABL_FUNC:
 			ret = MCC_SetSlowCurrentInjEnable(value)
@@ -452,47 +549,8 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_GETSLOWCURRENTINJSETLT_FUNC:
 			ret = MCC_GetSlowCurrentInjSetlTime()
 			break
-		case MCC_GETHOLDINGENABLE_FUNC:
-			ret = MCC_GetHoldingEnable()
-			break
-		case MCC_AUTOSLOWCOMP_FUNC:
-			ret = MCC_AutoSlowComp()
-			break
-		case MCC_AUTOFASTCOMP_FUNC:
-			ret = MCC_AutoFastComp()
-			break
-		case MCC_GETFASTCOMPCAP_FUNC:
-			ret = MCC_GetFastCompCap()
-			break
-		case MCC_GETFASTCOMPTAU_FUNC:
-			ret = MCC_GetFastCompTau()
-			break
-		case MCC_GETSLOWCOMPCAP_FUNC:
-			ret = MCC_GetSlowCompCap()
-			break
-		case MCC_GETSLOWCOMPTAU_FUNC:
-			ret = MCC_GetSlowCompTau()
-			break
-		case MCC_AUTOWHOLECELLCOMP_FUNC:
-			MCC_AutoWholeCellComp()
-			// as we would have to return two values (resistance and capacitance)
-			// we return just zero
-			ret = 0
-			break
-		case MCC_GETWHOLECELLCOMPENABLE_FUNC:
-			ret = MCC_GetWholeCellCompEnable()
-			break
-		case MCC_GETWHOLECELLCOMPCAP_FUNC:
-			ret = MCC_GetWholeCellCompCap()
-			break
-		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
-			ret = MCC_GetWholeCellCompResist()
-			break
-		case MCC_GETRSCOMPBANDWIDTH_FUNC:
-			ret = MCC_GetRsCompBandwidth()
-			break
 		default:
-			ASSERT(0, "Unknown function")
+			ASSERT(0, "Unknown function: " + num2str(func))
 			break
 	endswitch
 
