@@ -601,23 +601,6 @@ Function/Wave GetITCFIFOPositionAllConfigWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC result data wave
-Function/Wave GetITCResultsWave(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevicePath(panelTitle)
-
-	WAVE/I/Z/SDFR=dfr wv = ResultsWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/I/N=(4) dfr:ResultsWave/Wave=wv
-
-	return wv
-End
-
 /// @brief Return the intermediate storage wave for the TTL data
 Function/Wave GetTTLWave(panelTitle)
 	string panelTitle
