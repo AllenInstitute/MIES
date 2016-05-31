@@ -93,6 +93,9 @@ Function/S HW_ITC_ListOfOpenDevices()
 	string list = ""
 
 	Make/N=20/I/O DevInfo
+
+	DEBUGPRINTSTACKINFO()
+
 	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
 		if(HW_ITC_SelectDevice(i))
 			continue
@@ -129,6 +132,8 @@ Function/S HW_ITC_ListDevices()
 	string list = ""
 
 	Make/O/I/N=1 dev = -1
+
+	DEBUGPRINTSTACKINFO()
 
 	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
 		type = StringFromList(i, DEVICE_TYPES)
@@ -572,6 +577,8 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	string cmd
 	variable deviceID
 
+	DEBUGPRINTSTACKINFO()
+
 	Make/O/I/U/N=1 DevID = -1
 	sprintf cmd, "ITCOpenDevice %d, %d, DevID", deviceType, deviceNumber
 
@@ -594,6 +601,9 @@ Function HW_ITC_CloseDevice([flags])
 	variable flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCCloseDevice"
 
 	if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -608,6 +618,9 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 	variable deviceID, flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCSelectDevice/Z %d", deviceID
 
 	if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -623,6 +636,8 @@ Function HW_ITC_EnableYoking([flags])
 
 	string cmd
 
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCInitialize/M=1"
 	if(flags & HARDWARE_ABORT_ON_ERROR)
 		ExecuteITCOperationAbortOnError(cmd)
@@ -637,6 +652,8 @@ Function HW_ITC_DisableYoking([flags])
 
 	string cmd
 
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCInitialize/M=0"
 	if(flags & HARDWARE_ABORT_ON_ERROR)
 		ExecuteITCOperationAbortOnError(cmd)
@@ -650,6 +667,8 @@ Function HW_ITC_StopAcq([prepareForDAQ, flags])
 	variable prepareForDAQ, flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
 
 	prepareForDAQ = !!prepareForDAQ
 
@@ -680,6 +699,8 @@ Function HW_ITC_GetCurrentDevice([flags])
 	string cmd
 	variable val
 
+	DEBUGPRINTSTACKINFO()
+
 	Make/O/I/N=1 dev
 	sprintf cmd "ITCGetCurrentDevice %s", GetWavesDataFolder(dev, 2)
 
@@ -707,6 +728,8 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 
 	string cmd, panelTitle
 
+	DEBUGPRINTSTACKINFO()
+
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 	if(ParamIsDefault(fifoPos))
@@ -726,6 +749,8 @@ Function HW_ITC_StartAcq(triggerMode, [flags])
 	variable triggerMode, flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
@@ -754,6 +779,8 @@ Function HW_ITC_IsRunning([flags])
 
 	variable val
 
+	DEBUGPRINTSTACKINFO()
+
 	Make/I/N=(4)/O state
 	HW_ITC_GetState(state, flags=flags)
 	val = state[0]
@@ -772,6 +799,9 @@ Function HW_ITC_GetState(state, [flags])
 	variable flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCGetState/R/O/C/E %s", GetWavesDataFolder(state, 2)
 
 	if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -787,6 +817,8 @@ Function HW_ITC_ReadADC(deviceID, channel, [flags])
 
 	string cmd
 	variable val
+
+	DEBUGPRINTSTACKINFO()
 
 	Make/N=1/D/O data
 	sprintf cmd, "ITCReadADC/C=1/V=1 %d, %s", channel, GetWavesDataFolder(data, 2)
@@ -808,6 +840,9 @@ Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 	variable deviceID, channel, value, flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCSetDAC %d, %g", channel, value
 
 	if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -823,6 +858,8 @@ Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
 
 	string cmd
 	variable val
+
+	DEBUGPRINTSTACKINFO()
 
 	Make/N=1/O/W data
 	sprintf cmd, "ITCReadDigital %d, %s", xopChannel, GetWavesDataFolder(data, 2)
@@ -843,6 +880,9 @@ Function HW_ITC_WriteDigital(deviceID, rack, value, [flags])
 	variable deviceID, rack, value, flags
 
 	string cmd
+
+	DEBUGPRINTSTACKINFO()
+
 	sprintf cmd, "ITCWriteDigital %d, %d", rack, value
 
 	if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -874,6 +914,8 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 
 	variable ret
 	string cmd, panelTitle
+
+	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
@@ -941,6 +983,8 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 
 	variable fifoPosValue
 	string cmd, panelTitle
+
+	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
@@ -1108,6 +1152,8 @@ Function HW_NI_PrintPropertiesOfDevices()
 	string lines = ""
 	variable numDevices, extCalDate, i, j, portWidth
 
+	DEBUGPRINTSTACKINFO()
+
 	devices    = fDAQmx_DeviceNames()
 	numDevices = ItemsInList(devices)
 	for(i = 0; i < numDevices; i += 1)
@@ -1149,6 +1195,8 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 
 	variable taskID, ret, result, lineGrouping
 	string line
+
+	DEBUGPRINTSTACKINFO()
 
 	if(ParamIsDefault(DIOPort))
 		DIOPort = 0
@@ -1203,6 +1251,8 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 
 	variable taskID, ret, lineGrouping
 	string line
+
+	DEBUGPRINTSTACKINFO()
 
 	if(ParamIsDefault(DIOPort))
 		DIOPort = 0
@@ -1266,6 +1316,8 @@ Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
 
 	variable ret
 
+	DEBUGPRINTSTACKINFO()
+
 	ASSERT(value < HW_NI_MAX_VOLTAGE && value > HW_NI_MIN_VOLTAGE, "Value to set is out of range")
 	ret = fDAQmx_WriteChan(device, channel, value, HW_NI_MIN_VOLTAGE, HW_NI_MAX_VOLTAGE)
 
@@ -1295,6 +1347,8 @@ Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 
 	variable value
 
+	DEBUGPRINTSTACKINFO()
+
 	value = fDAQmx_ReadChan(device, channel, HW_NI_MIN_VOLTAGE, HW_NI_MAX_VOLTAGE, HW_NI_DIFFERENTIAL_SETUP)
 
 	if(!IsFinite(value))
@@ -1314,6 +1368,8 @@ End
 Function/S HW_NI_ListDevices([flags])
 	variable flags
 
+	DEBUGPRINTSTACKINFO()
+
 	return fDAQmx_DeviceNames()
 End
 
@@ -1324,6 +1380,8 @@ End
 Function HW_NI_StopAcq(device, [flags])
 	string device
 	variable flags
+
+	DEBUGPRINTSTACKINFO()
 
 	fDAQmx_ScanStop(device)
 	return fDAQmx_WaveformStop(device) == 0
@@ -1337,6 +1395,8 @@ Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
+	DEBUGPRINTSTACKINFO()
+
 	fDAQmx_resetDevice(device)
 End
 
@@ -1347,6 +1407,8 @@ End
 Function HW_NI_IsRunning(device, [flags])
 	string device
 	variable flags
+
+	DEBUGPRINTSTACKINFO()
 
 	return !fDAQmx_WF_IsFinished(device)
 End
