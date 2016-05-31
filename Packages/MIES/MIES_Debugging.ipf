@@ -153,6 +153,63 @@ Function DEBUGPRINT(msg, [var, str, format])
 	endif
 End
 
+/// @brief Print a nicely formatted stack trace to the history
+Function DEBUGPRINTSTACKINFO()
+
+	string stacktrace, entry, func, line, file
+	variable numCallers, i
+
+	stacktrace = GetRTStackInfo(3)
+	numCallers = ItemsInList(stacktrace)
+
+	if(numCallers < 2)
+		// we were called directly
+		return NaN
+	endif
+
+	printf "DEBUG\r"
+
+	for(i = 0; i < numCallers - 1; i += 1)
+		entry = StringFromList(i, stacktrace)
+		func  = StringFromList(0, entry, ",")
+		file  = StringFromList(1, entry, ",")
+		line  = StringFromList(2, entry, ",")
+		printf "DEBUG %s(...)#L%s [%s]\r", func, line, file
+	endfor
+
+	printf "DEBUG\r"
+
+	if(!windowExists("HistoryCarbonCopy"))
+		ASSERT(cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT), "Untitled experiments do not work")
+		CreateHistoryLog()
+	endif
+
+	SaveHistoryLog()
+End
+
+/// Creates a notebook with the special name "HistoryCarbonCopy"
+/// which will hold a copy of the history
+Function CreateHistoryLog()
+	DoWindow/K HistoryCarbonCopy
+	NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
+End
+
+/// Save the contents of the history notebook on disk
+/// in the same folder as this experiment as timestamped file "run_*_*.log"
+Function SaveHistoryLog()
+
+	string historyLog
+	sprintf historyLog, "%s.log", IgorInfo(1)//, Secs2Date(DateTime,-2), ReplaceString(":",Secs2Time(DateTime,1),"-")
+
+	DoWindow HistoryCarbonCopy
+	if(V_flag == 0)
+		print "No log notebook found, please call CreateHistoryLog() before."
+		return NaN
+	endif
+
+	SaveNoteBook/O/S=3/P=home HistoryCarbonCopy as historyLog
+End
+
 /// @brief Prints a message to the command history in debug mode,
 ///        aborts with dialog in release mode
 Function DEBUGPRINT_OR_ABORT(msg)
@@ -208,6 +265,10 @@ Function DEBUGPRINT(msg, [var, str, format])
 	variable var
 	string str, format
 
+	// do nothing
+End
+
+Function DEBUGPRINTSTACKINFO()
 	// do nothing
 End
 
