@@ -121,14 +121,10 @@ Function DEBUGPRINT(msg, [var, str, format])
 	endif
 
 	stacktrace = GetRTStackInfo(3)
-
-	idx = strsearch(stacktrace,"DEBUGPRINT",0)
-	ASSERT(idx != -1, "Could not find the name of the current function")
-	stacktrace = stacktrace[0, idx - 1]
 	numCallers = ItemsInList(stacktrace)
 
-	if(numCallers >= 1)
-		caller = StringFromList(numCallers - 1, stacktrace)
+	if(numCallers >= 2)
+		caller = StringFromList(numCallers - 2, stacktrace)
 		func   = StringFromList(0, caller, ",")
 		file   = StringFromList(1, caller, ",")
 		line   = StringFromList(2, caller, ",")
