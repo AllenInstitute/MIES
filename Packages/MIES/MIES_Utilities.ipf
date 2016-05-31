@@ -2594,3 +2594,16 @@ End
 Function ControlWindowToFront()
 	DoWindow/H
 End
+
+/// @brief Return the alignment of the decimal number (usually a 32bit/64bit pointer)
+Function GetAlignment(val)
+	variable val
+
+	variable i
+
+	for(i=1; i < 64; i+= 1)
+		if(mod(val, 2^i) != 0)
+			return 2^(i-1)
+		endif
+	endfor
+End
