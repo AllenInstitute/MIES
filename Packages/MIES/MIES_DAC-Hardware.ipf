@@ -547,15 +547,11 @@ End
 Function/S HW_GetInternalDeviceName(hardwareType, deviceID)
 	variable hardwareType, deviceID
 
-	string internalDeviceName
-
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	WAVE/T devMap = GetDeviceMapping()
 
-	internalDeviceName = devMap[deviceID][hardwareType][%InternalDevice]
-
-	return internalDeviceName
+	return devMap[deviceID][hardwareType][%InternalDevice]
 End
 /// @}
 
