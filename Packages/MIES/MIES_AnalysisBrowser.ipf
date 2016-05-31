@@ -35,9 +35,9 @@ static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
 
 Menu "Mies Panels"
-	"Experiment Browser", AB_OpenExperimentBrowser()
-	"Labnotebook Browser", LBN_OpenLabnotebookBrowser()
-	"TPStorage Browser", LBN_OpenTPStorageBrowser()
+	"Analysis Browser"   , /Q, AB_OpenExperimentBrowser()
+	"Labnotebook Browser", /Q, LBN_OpenLabnotebookBrowser()
+	"TPStorage Browser"  , /Q, LBN_OpenTPStorageBrowser()
 End
 
 static Function AB_ResetSelectionWave()

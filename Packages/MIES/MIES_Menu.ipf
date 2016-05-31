@@ -6,14 +6,17 @@
 static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
-	"DA_Ephys"                   , /Q, DAP_CreateDAEphysPanel()
-	"WaveBuilder"                , /Q, WBP_CreateWaveBuilderPanel()
-	"Data Browser"               , /Q, DB_OpenDataBrowser()
-	"Save and Clear Experiment"  , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
-	"Close Mies"                 , /Q, CloseMies()
-	"Open Downsample Panel"      , /Q, CreateDownsamplePanel()
-	"Open AnalysisMaster Panel"  , /Q, analysisMaster()
-	"Export all data into NWB"   , /Q, NWB_ExportAllData()
+	"DA_Ephys"                 , /Q, DAP_CreateDAEphysPanel()
+	"WaveBuilder"              , /Q, WBP_CreateWaveBuilderPanel()
+	"Data Browser"             , /Q, DB_OpenDataBrowser()
+	"Analysis Browser"         , /Q, AB_OpenExperimentBrowser()
+	"Labnotebook Browser"      , /Q, LBN_OpenLabnotebookBrowser()
+	"TPStorage Browser"        , /Q, LBN_OpenTPStorageBrowser()
+	"Save and Clear Experiment", /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
+	"Close Mies"               , /Q, CloseMies()
+	"Open Downsample Panel"    , /Q, CreateDownsamplePanel()
+	"Open AnalysisMaster Panel", /Q, analysisMaster()
+	"Export all data into NWB" , /Q, NWB_ExportAllData()
 	"-"
 	GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 	"-"
