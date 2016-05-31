@@ -66,13 +66,13 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
+	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, proc = ITC_BkrdTPFuncMD
 		CtrlNamedBackground TestPulseMD, start
 	endif
-
-	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 Function ITC_BkrdTPFuncMD(s)
