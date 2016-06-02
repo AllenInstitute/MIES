@@ -1099,7 +1099,7 @@ static Function P_FillDAQWaves(panelTitle, headStage, p)
 	variable headStage
 	STRUCT P_PressureDA &p
 
-   ASSERT(p.first < p.last && p.last - p.first >= 1, "first/last mismatch")
+	ASSERT(p.first < p.last && p.last - p.first >= 1, "first/last mismatch")
 
 	variable hwType
 
@@ -1141,7 +1141,7 @@ static Function P_DAforNegPpulse(panelTitle, headStage)
 	STRUCT P_PressureDA p
 	P_GetPressureForDA(panelTitle, headStage, P_NEGATIVE_PULSE, p)
 
-   P_FillDAQWaves(panelTitle, headStage, p)
+	P_FillDAQWaves(panelTitle, headStage, p)
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	pressureDataWv[headstage][%RealTimePressure]    = p.pressure
@@ -1176,7 +1176,7 @@ static Function P_DAforPosPpulse(panelTitle, headstage)
 	STRUCT P_PressureDA p
 	P_GetPressureForDA(panelTitle, headstage, P_POSITIVE_PULSE, p)
 
-   P_FillDAQWaves(panelTitle, headStage, p)
+	P_FillDAQWaves(panelTitle, headStage, p)
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	pressureDataWv[Headstage][%LastPressureCommand] = p.pressure
