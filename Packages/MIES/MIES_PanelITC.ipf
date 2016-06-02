@@ -3689,6 +3689,15 @@ Function DAP_EphysPanelStartUpSettings()
 	SetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain", 0.5)
 	SetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit", "psi")
 	SetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit", "psi")
+	SetVariable setvar_Settings_InAirP         , win=$panelTitle, value= _NUM:3.8
+	SetVariable setvar_Settings_InBathP        , win=$panelTitle, value= _NUM:0.55
+	SetVariable setvar_Settings_InSliceP       , win=$panelTitle, value= _NUM:0.2
+	SetVariable setvar_Settings_NearCellP      , win=$panelTitle, value= _NUM:0.6
+	SetVariable setvar_Settings_SealStartP     , win=$panelTitle, value= _NUM:-0.2
+	SetVariable setvar_Settings_SealMaxP       , win=$panelTitle, value= _NUM:-1.4
+	SetVariable setvar_Settings_SurfaceHeight  , win=$panelTitle, value= _NUM:3500
+	SetVariable setvar_Settings_SliceSurfHeight, win=$panelTitle, value= _NUM:350
+	CheckBox check_Settings_DisablePressure    , win=$panelTitle, value= 0
 
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
