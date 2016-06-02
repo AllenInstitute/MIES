@@ -1286,6 +1286,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 			SetControlTitle(panelTitle, pressureControlName, StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST))
 			SetControlTitleColor(panelTitle, pressureControlName, 0, 0, 0)
 			PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
+			PressureDataWv[headStageNo][%TimeOfLastRSlopeCheck]     = 0.0
 		else // saved and new pressure mode don't match
 			if(SavedPressureMode != P_METHOD_neg1_ATM) // saved pressure mode isn't pressure OFF (-1)
 				// reset the button for the saved pressure mode
