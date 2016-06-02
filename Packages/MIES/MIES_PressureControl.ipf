@@ -1661,16 +1661,12 @@ static Function P_ManSetPressure(panelTitle, headStage)
 
 	if(GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll"))
 		for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
-			P_SetAndGetPressure(panelTitle, headStage, psi)
+			PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, psi)
 			P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
-			SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f") // update the pressure display
-			PressureDataWv[headStage][%LastPressureCommand] = psi // save the pressure command
 		endfor
 	else
-		P_SetAndGetPressure(panelTitle, headStage, psi)
+		PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, psi)
 		P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
-		SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP) , psi, format = "%2.2f") // update the pressure display
-		PressureDataWv[headStage][%LastPressureCommand] = psi // save the pressure command
 	endif
 End
 
