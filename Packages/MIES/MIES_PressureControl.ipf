@@ -34,7 +34,9 @@ static Constant     P_MANUAL_PULSE                 = 0x2
 
 /// @brief Filled by P_GetPressureForDA()
 static Structure P_PressureDA
-   variable calPressure, calPressureOffset, pressure, first, last
+   variable calPressure, calPressureOffset ///< preconditioned for the DAC hardware
+   variable pressure ///< [psi]
+   variable first, last
 EndStructure
 
 static Structure PressureBackgroundStruct
