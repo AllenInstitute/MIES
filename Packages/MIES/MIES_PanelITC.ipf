@@ -3680,6 +3680,8 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_DisablePressure WIN = $panelTitle, value = 0
 	CheckBox check_Settings_RequireAmpConn WIN = $panelTitle, value = 1
 
+	// defaults are also hardcoded in P_GetPressureDataWaveRef
+	// and P_PressureDataTxtWaveRef
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTL", 0)

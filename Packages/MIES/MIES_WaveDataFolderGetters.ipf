@@ -3181,6 +3181,17 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	wv[][%ManSSPressure]       = 0
 	wv[][%LastPressureCommand] = 0
 
+	wv[][%DAC_Gain]        = 2
+	wv[][%ADC_Gain]        = 0.5
+	wv[][%PSI_air]         = 3.8
+	wv[][%PSI_solution]    = 0.55
+	wv[][%PSI_slice]       = 0.2
+	wv[][%PSI_nearCell]    = 0.6
+	wv[][%PSI_SealInitial] = -0.2
+	wv[][%PSI_SealMax]     = -1.4
+	wv[][%solutionZAxis]   = 3500
+	wv[][%sliceZAxis]      = 350
+
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -3224,7 +3235,9 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 	SetDimLabel ROWS, 6, Headstage_6, wv
 	SetDimLabel ROWS, 7, Headstage_7, wv
 
-	wv[][0] = NONE
+	wv[][0]        = NONE
+	wv[][%DA_Unit] = "psi"
+	wv[][%AD_Unit] = "psi"
 
 	SetWaveVersion(wv, versionOfNewWave)
 
