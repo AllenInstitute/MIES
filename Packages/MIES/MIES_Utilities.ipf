@@ -2166,8 +2166,8 @@ Function CheckIfClose(var1, var2, [tol, strong_or_weak])
 	endif
 
 	variable diff = abs(var1 - var2)
-	variable d1   = diff / var1
-	variable d2   = diff / var2
+	variable d1   = diff / abs(var1)
+	variable d2   = diff / abs(var2)
 
 	if(strong_or_weak)
 		return d1 <= tol && d2 <= tol
