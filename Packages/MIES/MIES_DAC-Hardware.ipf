@@ -761,6 +761,10 @@ Function HW_ITC_CloseDevice([flags])
 
 	DEBUGPRINTSTACKINFO()
 
+	if(HW_ITC_IsRunning(flags=flags))
+		HW_ITC_StopAcq(flags=flags)
+	endif
+
 	ITCCloseDevice2/Z
 End
 
