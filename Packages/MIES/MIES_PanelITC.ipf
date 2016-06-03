@@ -2846,7 +2846,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SealStartP,userdata(ResizeControlsInfo)= A"!!,G8!!#D@5QF.R!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Settings_SealStartP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SealStartP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Settings_SealStartP,limits={-10,0,0.1},value= _NUM:-0.6
+	SetVariable setvar_Settings_SealStartP,limits={-10,0,0.1},value= _NUM:-0.2
 	SetVariable setvar_Settings_SealMaxP,pos={316.00,725.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Seal max P (psi)"
 	SetVariable setvar_Settings_SealMaxP,help={"Set the maximum negative pressure used to form a seal."}
 	SetVariable setvar_Settings_SealMaxP,userdata(tabnum)=  "5"
