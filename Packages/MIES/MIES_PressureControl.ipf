@@ -128,8 +128,8 @@ static Function P_MethodAtmospheric(panelTitle, headstage)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	P_UpdateTTLstate(panelTitle, headStage, 0)
-	PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, 0)
-	PressureDataWv[headStage][%RealTimePressure] = P_SetAndGetPressure(panelTitle, headStage, 0)
+	PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, ATMOSPHERIC_PRESSURE)
+	PressureDataWv[headStage][%RealTimePressure]    = PressureDataWv[headStage][%LastPressureCommand]
 End
 
 /// @brief Applies approach pressures
