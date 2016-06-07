@@ -23,6 +23,7 @@ static Constant     PRESSURE_TTL_HIGH_START        = 20000
 static Constant     GIGA_SEAL                      = 1000
 static Constant     PRESSURE_OFFSET                = 5
 static Constant     MIN_NEG_PRESSURE_PULSE         = -2
+static Constant     MAX_POS_PRESSURE_PULSE         = 0.1
 static Constant     MAX_REGULATOR_PRESSURE         = 10
 static Constant     MIN_REGULATOR_PRESSURE         = -10
 static Constant     ATMOSPHERIC_PRESSURE           = 0
@@ -987,16 +988,15 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 				p.calPressure += PressureDataWv[headStage][%PosCalConst]
 			endif
 
-			if(p.calPressure < MAX_REGULATOR_PRESSURE && p.calPressure > 0)
-				p.calPressure = p.calPressureOffset + p.calPressure / DAGain
-			else
-				p.pressure    = 0.1
+			if(p.calPressure >= MAX_REGULATOR_PRESSURE || p.calPressure <= 0)
+				p.pressure    = MAX_POS_PRESSURE_PULSE
 				p.calPressure = p.pressure
 				if(isFinite(PressureDataWv[headStage][%NegCalConst]))
 					p.calPressure += PressureDataWv[headStage][%NegCalConst]
 				endif
-				p.calPressure = p.calPressureOffset + p.calPressure / DAGain
 			endif
+
+			p.calPressure  = p.calPressureOffset + p.calPressure / DAGain
 
 			break
 		case P_NEGATIVE_PULSE:
@@ -1015,16 +1015,16 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 				p.calPressure += PressureDataWv[headStage][%NegCalConst]
 			endif
 
-			if(p.calPressure > MIN_REGULATOR_PRESSURE)
-				p.calPressure = p.calPressureOffset + p.calPressure / DAGain
-			else
+			if(p.calPressure <= MIN_REGULATOR_PRESSURE)
 				p.pressure    = MIN_NEG_PRESSURE_PULSE
 				p.calPressure = p.pressure
+
 				if(isFinite(PressureDataWv[headStage][%NegCalConst]))
 					p.calPressure += PressureDataWv[headStage][%NegCalConst]
 				endif
-				p.calPressure = p.calPressureOffset + p.calPressure / DAGain
 			endif
+
+			p.calPressure  = p.calPressureOffset + p.calPressure / DAGain
 
 			break
 		default:
