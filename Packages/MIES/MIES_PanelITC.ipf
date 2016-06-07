@@ -5461,10 +5461,25 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 	variable headStage, clampMode
 
 	string iZeroCtrl, VCctrl, ICctrl, headStageCtrl, ctrl
-	variable activeHS, testPulseMode, oppositeMode
+	variable activeHS, testPulseMode, oppositeMode, DAC, ADC
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(panelTitle)
+
+	WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	if(clampMode == V_CLAMP_MODE)
+		DAC = ChanAmpAssign[%VC_DA][headStage]
+		ADC = ChanAmpAssign[%VC_AD][headStage]
+	elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
+		DAC = ChanAmpAssign[%IC_DA][headStage]
+		ADC = ChanAmpAssign[%IC_AD][headStage]
+	endif
+
+	if(!IsFinite(DAC) || !IsFinite(ADC))
+		printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, AI_ConvertAmplifierModeToString(clampMode), headstage
+		Abort
+	endif
 
 	headStageCtrl = GetPanelControl(headStage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 	activeHS = GetCheckBoxState(panelTitle, headStageCtrl)

@@ -675,11 +675,17 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_VC")
 				// the pipette offset for I_CLAMP has also changed, fetch that too
 				clampMode = DAP_MIESHeadstageMode(panelTitle, i)
-				DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, i)
-				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e3
-				AmpStorageWave[%PipetteOffsetIC][0][i] = value
-				AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_IC")
-				DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
+				try
+					DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, i)
+					value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e3
+					AmpStorageWave[%PipetteOffsetIC][0][i] = value
+					AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_IC")
+					DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
+				catch
+					if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, AI_ConvertAmplifierModeToString(I_CLAMP_MODE), i
+					endif
+				endtry
 				break
 			case "button_DataAcq_FastComp_VC":
 				AmpStorageWave[%FastCapacitanceComp][0][i] = value
@@ -745,11 +751,18 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_IC")
 				// the pipette offset for V_CLAMP has also changed, fetch that too
 				clampMode = DAP_MIESHeadstageMode(panelTitle, i)
-				DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, i)
-				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e3
-				AmpStorageWave[%PipetteOffsetVC][0][i] = value
-				AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_VC")
-				DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
+				try
+					DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, i)
+					value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e3
+					AmpStorageWave[%PipetteOffsetVC][0][i] = value
+					AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_VC")
+					DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
+				catch
+					if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, AI_ConvertAmplifierModeToString(V_CLAMP_MODE), i
+					endif
+					// do nothing
+				endtry
 				break
 			default:
 				ASSERT(0, "Unknown control " + ctrl)
