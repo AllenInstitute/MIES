@@ -334,9 +334,9 @@ static Function GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, f
 
 	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 	if(clampMode == V_CLAMP_MODE)
-		DACchannel = chanAmpAssign[0][headStage]
+		DACchannel = ChanAmpAssign[%VC_DA][headStage]
 	elseif(clampMode == I_CLAMP_MODE)
-		DACchannel = chanAmpAssign[4][headStage]
+		DACchannel = ChanAmpAssign[%IC_DA][headStage]
 	else
 		return NaN
 	endif

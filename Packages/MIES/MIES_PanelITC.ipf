@@ -4905,11 +4905,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 			clampMode  = DAP_MIESHeadstageMode(panelTitle, i)
 
 			if(clampMode == V_CLAMP_MODE)
-				DACs[i] = ChanAmpAssign[0][i]
-				ADCs[i] = ChanAmpAssign[2][i]
+				DACs[i] = ChanAmpAssign[%VC_DA][i]
+				ADCs[i] = ChanAmpAssign[%VC_AD][i]
 			elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
-				DACs[i] = ChanAmpAssign[4][i]
-				ADCs[i] = ChanAmpAssign[6][i]
+				DACs[i] = ChanAmpAssign[%IC_DA][i]
+				ADCs[i] = ChanAmpAssign[%IC_AD][i]
 			else
 				printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
 				return 1
@@ -5251,17 +5251,17 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 
 	if(clampMode == V_CLAMP_MODE)
-		DACchannel = ChanAmpAssign[0][headStage]
-		ADCchannel = ChanAmpAssign[2][headStage]
-		DAGain     = ChanAmpAssign[1][headStage]
-		ADGain     = ChanAmpAssign[3][headStage]
+		DACchannel = ChanAmpAssign[%VC_DA][headStage]
+		ADCchannel = ChanAmpAssign[%VC_AD][headStage]
+		DAGain     = ChanAmpAssign[%VC_DAGain][headStage]
+		ADGain     = ChanAmpAssign[%VC_ADGain][headStage]
 		DAUnit     = ChanAmpAssignUnit[%VC_DAUnit][headStage]
 		ADUnit     = ChanAmpAssignUnit[%VC_ADUnit][headStage]
 	elseif(ClampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
-		DACchannel = ChanAmpAssign[4][headStage]
-		ADCchannel = ChanAmpAssign[6][headStage]
-		DAGain     = ChanAmpAssign[5][headStage]
-		ADGain     = ChanAmpAssign[7][headStage]
+		DACchannel = ChanAmpAssign[%IC_DA][headStage]
+		ADCchannel = ChanAmpAssign[%IC_AD][headStage]
+		DAGain     = ChanAmpAssign[%IC_DAGain][headStage]
+		ADGain     = ChanAmpAssign[%IC_ADGain][headStage]
 		DAUnit     = ChanAmpAssignUnit[%IC_DAUnit][headStage]
 		ADUnit     = ChanAmpAssignUnit[%IC_ADUnit][headStage]
 	endif
@@ -5300,11 +5300,11 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	Wave ChannelClampMode = GetChannelClampMode(panelTitle)
 
 	if(ClampMode == V_CLAMP_MODE)
-		DACchannel = ChanAmpAssign[0][headStage]
-		ADCchannel = ChanAmpAssign[2][headStage]
+		DACchannel = ChanAmpAssign[%VC_DA][headStage]
+		ADCchannel = ChanAmpAssign[%VC_AD][headStage]
 	elseif(ClampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
-		DACchannel = ChanAmpAssign[4][headStage]
-		ADCchannel = ChanAmpAssign[6][headStage]
+		DACchannel = ChanAmpAssign[%IC_DA][headStage]
+		ADCchannel = ChanAmpAssign[%IC_AD][headStage]
 	endIf
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
