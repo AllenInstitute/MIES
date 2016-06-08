@@ -17,21 +17,21 @@ static Function CDF_EMPTY_WRAPPER(flags)
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
 	string folder = ":"
-	variable result = ( CountObjects(folder,1) + CountObjects(folder,2) + CountObjects(folder,3) + CountObjects(folder,4)  == 0 )
+	variable result = (CountObjects(folder, 1) + CountObjects(folder, 2) + CountObjects(folder, 3) + CountObjects(folder, 4)  == 0)
 
-	if( !result )
-		if( flags & OUTPUT_MESSAGE )
+	if(!result)
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -48,21 +48,21 @@ static Function TRUE_WRAPPER(var, flags)
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
-	variable result = ( var == 1 )
+	variable result = (var == 1)
 	DebugOutput(num2istr(var), result)
 
-	if( !result )
-		if( flags & OUTPUT_MESSAGE )
+	if(!result)
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -79,18 +79,18 @@ static Function NULL_STR_WRAPPER(str, flags)
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
-	if( !NULL_STR(str) )
-		if( flags & OUTPUT_MESSAGE )
+	if(!NULL_STR(str))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -107,21 +107,21 @@ static Function EMPTY_STR_WRAPPER(str, flags)
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
-	variable result = ( strlen(str) == 0 )
-	DebugOutput("Assumption that the string is empty is",result)
+	variable result = (strlen(str) == 0)
+	DebugOutput("Assumption that the string is empty is", result)
 
-	if( !result )
-		if( flags & OUTPUT_MESSAGE )
+	if(!result)
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -137,18 +137,18 @@ static Function NEQ_VAR_WRAPPER(var1, var2, flags)
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
-	if( EQUAL_VAR(var1, var2) )
-		if( flags & OUTPUT_MESSAGE )
+	if(EQUAL_VAR(var1, var2))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -166,7 +166,7 @@ static Function NEQ_STR_WRAPPER(str1, str2, flags, [case_sensitive])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
@@ -174,14 +174,14 @@ static Function NEQ_STR_WRAPPER(str1, str2, flags, [case_sensitive])
 		case_sensitive = 0
 	endif
 
-	if( EQUAL_STR(str1, str2, case_sensitive) )
-		if( flags & OUTPUT_MESSAGE )
+	if(EQUAL_STR(str1, str2, case_sensitive))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -208,7 +208,7 @@ static Function CLOSE_VAR_WRAPPER(var1, var2, flags, [tol, strong_or_weak])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
@@ -220,14 +220,14 @@ static Function CLOSE_VAR_WRAPPER(var1, var2, flags, [tol, strong_or_weak])
 		tol = DEFAULT_TOLERANCE
 	endif
 
-	if( !CLOSE_VAR(var1, var2, tol, strong_or_weak) )
-		if( flags & OUTPUT_MESSAGE )
+	if(!CLOSE_VAR(var1, var2, tol, strong_or_weak))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -245,7 +245,7 @@ static Function CLOSE_CMPLX_WRAPPER(var1, var2, flags, [tol, strong_or_weak])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
@@ -257,14 +257,14 @@ static Function CLOSE_CMPLX_WRAPPER(var1, var2, flags, [tol, strong_or_weak])
 		tol = DEFAULT_TOLERANCE
 	endif
 
-	if( !CLOSE_VAR(real(var1), real(var2), tol, strong_or_weak) || !CLOSE_VAR(imag(var1), imag(var2), tol, strong_or_weak))
-		if( flags & OUTPUT_MESSAGE )
+	if(!CLOSE_VAR(real(var1), real(var2), tol, strong_or_weak) || !CLOSE_VAR(imag(var1), imag(var2), tol, strong_or_weak))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -281,7 +281,7 @@ static Function SMALL_VAR_WRAPPER(var, flags, [tol])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
@@ -289,14 +289,14 @@ static Function SMALL_VAR_WRAPPER(var, flags, [tol])
 		tol = DEFAULT_TOLERANCE
 	endif
 
-	if( !SMALL_VAR(var, tol) )
-		if( flags & OUTPUT_MESSAGE )
+	if(!SMALL_VAR(var, tol))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -313,7 +313,7 @@ static Function SMALL_CMPLX_WRAPPER(var, flags, [tol])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
@@ -321,14 +321,14 @@ static Function SMALL_CMPLX_WRAPPER(var, flags, [tol])
 		tol = DEFAULT_TOLERANCE
 	endif
 
-	if( !SMALL_VAR(cabs(var), tol))
-		if( flags & OUTPUT_MESSAGE )
+	if(!SMALL_VAR(cabs(var), tol))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -346,7 +346,7 @@ static Function EQUAL_STR_WRAPPER(str1, str2, flags, [case_sensitive])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
@@ -354,14 +354,14 @@ static Function EQUAL_STR_WRAPPER(str1, str2, flags, [case_sensitive])
 		case_sensitive = 0
 	endif
 
-	if( !EQUAL_STR(str1, str2, case_sensitive) )
-		if( flags & OUTPUT_MESSAGE )
+	if(!EQUAL_STR(str1, str2, case_sensitive))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -380,56 +380,56 @@ static Function TEST_WAVE_WRAPPER(wv, flags, majorType, [minorType])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
 	variable result = WaveExists(wv)
-	DebugOutput("Assumption that the wave exists",result)
+	DebugOutput("Assumption that the wave exists", result)
 
 	if(!result)
-		if( flags & OUTPUT_MESSAGE )
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
 
-	result = ( WaveType(wv,1) != majorType )
+	result = (WaveType(wv, 1) != majorType)
 	string str
 	sprintf str, "Assumption that the wave's main type is %d", majorType
-	DebugOutput(str,result)
+	DebugOutput(str, result)
 
 	if(!result)
-		if( flags & OUTPUT_MESSAGE )
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
 
 	if(!ParamIsDefault(minorType))
-		result = WaveType(wv,0) & minorType
+		result = WaveType(wv, 0) & minorType
 
 		sprintf str, "Assumption that the wave's sub type is %d", minorType
-		DebugOutput(str,result)
+		DebugOutput(str, result)
 
 		if(!result)
-			if( flags & OUTPUT_MESSAGE )
+			if(flags & OUTPUT_MESSAGE)
 				printFailInfo()
 			endif
-			if( flags & INCREASE_ERROR )
+			if(flags & INCREASE_ERROR)
 				incrError()
 			endif
-			if( flags & ABORT_FUNCTION )
+			if(flags & ABORT_FUNCTION)
 				abortNow()
 			endif
 		endif
@@ -448,18 +448,18 @@ static Function EQUAL_VAR_WRAPPER(var1, var2, flags)
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
-	if( !EQUAL_VAR(var1, var2) )
-		if( flags & OUTPUT_MESSAGE )
+	if(!EQUAL_VAR(var1, var2))
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 	endif
@@ -470,7 +470,7 @@ End
 /// @param wv1    first wave
 /// @param wv2    second wave
 /// @param mode   (optional) features of the waves to compare, defaults to all modes, defined at @ref equalWaveFlags
-/// @param tol    (optional) tolerance for comparison, by default 0.0 which does byte-by-byte comparison ( relevant only for mode=WAVE_DATA )
+/// @param tol    (optional) tolerance for comparison, by default 0.0 which does byte-by-byte comparison (relevant only for mode=WAVE_DATA)
 static Function EQUAL_WAVE_WRAPPER(wv1, wv2, flags, [mode, tol])
 	Wave/Z wv1, wv2
 	variable flags
@@ -478,53 +478,53 @@ static Function EQUAL_WAVE_WRAPPER(wv1, wv2, flags, [mode, tol])
 
 	incrAssert()
 
-	if( shouldDoAbort() )
+	if(shouldDoAbort())
 		return NaN
 	endif
 
 	variable result = WaveExists(wv1)
-	DebugOutput("Assumption that the first wave (wv1) exists",result)
+	DebugOutput("Assumption that the first wave (wv1) exists", result)
 
 	if(!result)
-		if( flags & OUTPUT_MESSAGE )
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 		return NaN
 	endif
 
 	result = WaveExists(wv2)
-	DebugOutput("Assumption that the second wave (wv2) exists",result)
+	DebugOutput("Assumption that the second wave (wv2) exists", result)
 
 	if(!result)
-		if( flags & OUTPUT_MESSAGE )
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 		return NaN
 	endif
 
 	result = !WaveRefsEqual(wv1, wv2)
-	DebugOutput("Assumption that both waves are distinct",result)
+	DebugOutput("Assumption that both waves are distinct", result)
 
 	if(!result)
-		if( flags & OUTPUT_MESSAGE )
+		if(flags & OUTPUT_MESSAGE)
 			printFailInfo()
 		endif
-		if( flags & INCREASE_ERROR )
+		if(flags & INCREASE_ERROR)
 			incrError()
 		endif
-		if( flags & ABORT_FUNCTION )
+		if(flags & ABORT_FUNCTION)
 			abortNow()
 		endif
 		return NaN
@@ -541,21 +541,21 @@ static Function EQUAL_WAVE_WRAPPER(wv1, wv2, flags, [mode, tol])
 	endif
 
 	variable i
-	for(i = 0; i < DimSize(modes,0); i+=1)
+	for(i = 0; i < DimSize(modes, 0); i += 1)
 		mode = modes[i]
 		result = EqualWaves(wv1, wv2, mode, tol)
 		string str
 		sprintf str, "Assuming equality using mode %03d for waves %s and %s", mode, NameOfWave(wv1), NameOfWave(wv2)
-		DebugOutput(str,result)
+		DebugOutput(str, result)
 
 		if(!result)
-			if( flags & OUTPUT_MESSAGE )
+			if(flags & OUTPUT_MESSAGE)
 				printFailInfo()
 			endif
-			if( flags & INCREASE_ERROR )
+			if(flags & INCREASE_ERROR)
 				incrError()
 			endif
-			if( flags & ABORT_FUNCTION )
+			if(flags & ABORT_FUNCTION)
 				abortNow()
 			endif
 		endif
@@ -565,7 +565,7 @@ End
 static Function NULL_STR(str)
 	string &str
 
-	variable result = ( numtype(strlen(str)) == 2 )
+	variable result = (numtype(strlen(str)) == 2)
 
 	DebugOutput("Assumption of str being null is ", result)
 	return result
@@ -578,10 +578,10 @@ static Function EQUAL_VAR(var1, var2)
 	variable type1 = numType(var1)
 	variable type2 = numType(var2)
 
-	if( type1 == type2 && type1 == 2 ) // both variables being NaN is also true
+	if(type1 == type2 && type1 == 2) // both variables being NaN is also true
 		result = 1
 	else
-		result = ( var1 == var2 )
+		result = (var1 == var2)
 	endif
 
 	string str
@@ -594,7 +594,7 @@ static Function SMALL_VAR(var, tol)
 	variable var
 	variable tol
 
-	variable result = ( abs(var) < abs(tol) )
+	variable result = (abs(var) < abs(tol))
 
 	string str
 	sprintf str, "%g ~ 0 with tol %g", var, tol
@@ -607,21 +607,21 @@ static Function CLOSE_VAR(var1, var2, tol, strong_or_weak)
 	variable tol
 	variable strong_or_weak
 
-	variable diff  = abs(var1 - var2)
-	variable d1   = diff/var1
-	variable d2   = diff/var2
+	variable diff = abs(var1 - var2)
+	variable d1   = diff / abs(var1)
+	variable d2   = diff / abs(var2)
 
 	variable result
 	if(strong_or_weak == 1)
-		result = ( d1 <= tol && d2 <= tol )
+		result = (d1 <= tol && d2 <= tol)
 	elseif(strong_or_weak == 0)
-		result = ( d1 <= tol || d2 <= tol )
+		result = (d1 <= tol || d2 <= tol)
 	else
 		printf "Unknown mode %d\r", strong_or_weak
 	endif
 
 	string str
-	sprintf str, "%g ~ %g with %s check and tol %g", var1, var2, SelectString(strong_or_weak,"weak","strong"), tol
+	sprintf str, "%g ~ %g with %s check and tol %g", var1, var2, SelectString(strong_or_weak, "weak", "strong"), tol
 	DebugOutput(str, result)
 	return result
 End
@@ -632,16 +632,16 @@ static Function EQUAL_STR(str1, str2, case_sensitive)
 	variable case_sensitive
 
 	variable result
-	if( NULL_STR(str1) && NULL_STR(str2) )
+	if(NULL_STR(str1) && NULL_STR(str2))
 		result = 1
-	elseif( NULL_STR(str1) || NULL_STR(str2) )
+	elseif(NULL_STR(str1) || NULL_STR(str2))
 		result = 0
 	else
-		result = ( cmpstr(str1, str2, case_sensitive) == 0 )
+		result = (cmpstr(str1, str2, case_sensitive) == 0)
 	endif
 
 	string str
-	sprintf str, "\"%s\" == \"%s\" %s case", SelectString(NULL_STR(str1),str1,"(null)"), SelectString(NULL_STR(str2),str2,"(null)"), SelectString(case_sensitive,"not respecting","respecting")
+	sprintf str, "\"%s\" == \"%s\" %s case", SelectString(NULL_STR(str1), str1, "(null)"), SelectString(NULL_STR(str2), str2, "(null)"), SelectString(case_sensitive, "not respecting", "respecting")
 	DebugOutput(str, result)
 
 	return result

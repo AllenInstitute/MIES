@@ -118,10 +118,10 @@ Function TEST_CASE_END(testCase)
 		printf "The test case \"%s\" did not make any assertions!\r", testCase
 	endif
 
-	if( SVAR_Exists(lastFolder) && DataFolderExists(lastFolder) )
+	if(SVAR_Exists(lastFolder) && DataFolderExists(lastFolder))
 		SetDataFolder $lastFolder
 	endif
-	if( SVAR_Exists(workFolder) && DataFolderExists(workFolder) )
+	if(SVAR_Exists(workFolder) && DataFolderExists(workFolder))
 		KillDataFolder $workFolder
 	endif
 
