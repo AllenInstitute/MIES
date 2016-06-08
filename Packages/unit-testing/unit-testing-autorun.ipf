@@ -16,9 +16,9 @@ End
 /// This function calls the user supplied run routine if
 /// - the opened file is an igor experiment
 /// - the file DO_AUTORUN.TXT exists in the igor home path
-static Function AfterFileOpenHook(refNum,file,pathName,type,creator,kind)
-	variable refNum,kind
-	string file,pathName,type,creator
+static Function AfterFileOpenHook(refNum, file, pathName, type, creator, kind)
+	variable refNum, kind
+	string file, pathName, type, creator
 
 	// do nothing if the opened file was not an Igor packed/unpacked experiment
 	if(kind != 1 && kind != 2)
@@ -31,17 +31,17 @@ static Function AfterFileOpenHook(refNum,file,pathName,type,creator,kind)
 		return 0
 	endif
 
-	string funcList = FunctionList("run",";","KIND:2,NPARAMS:0")
+	string funcList = FunctionList("run", ";", "KIND:2,NPARAMS:0")
 	if(ItemsInList(funcList) != 1)
-		print "The requested autorun mode is not possible because the function run() does not exist in ProcGlobal context"
-		Abort
+		Abort "The requested autorun mode is not possible because the function run() does not exist in ProcGlobal context"
 	endif
 
-	FuncRef AUTORUN_MODE_PROTO f = $StringFromList(0,funcList)
+	FuncRef AUTORUN_MODE_PROTO f = $StringFromList(0, funcList)
 
 	// state file exists, call the run routine and quit Igor afterwards
 	CreateHistoryLog()
 	f()
+
 	Execute/P "SaveHistoryLog(); Quit/N"
 End
 
@@ -50,7 +50,7 @@ End
 Function SaveHistoryLog()
 
 	string historyLog
-	sprintf historyLog, "%s_%s_%s.log", IgorInfo(1), Secs2Date(DateTime,-2), ReplaceString(":",Secs2Time(DateTime,1),"-")
+	sprintf historyLog, "%s_%s_%s.log", IgorInfo(1), Secs2Date(DateTime, -2), ReplaceString(":", Secs2Time(DateTime, 1), "-")
 
 	DoWindow HistoryCarbonCopy
 	if(V_flag == 0)
