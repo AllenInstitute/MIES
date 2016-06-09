@@ -490,16 +490,38 @@ End
 
 /// @brief Assert on using an invalid value of `hardwareType` or `deviceID`
 ///
-/// Invalid here means that the values are out-of-range
-///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 Function HW_AssertOnInvalid(hardwareType, deviceID)
 	variable hardwareType, deviceID
 
+	ASSERT(HW_IsValidHardwareType(hardwareType), "Invalid hardwareType")
+	ASSERT(HW_IsValidDeviceID(deviceID), "Invalid deviceID")
+End
+
+/// @brief Check if the given hardware type is valid
+///
+/// Invalid here means that the value is out-of-range.
+static Function HW_IsValidHardwareType(hardwareType)
+	variable hardwareType
+
 #ifndef EVIL_KITTEN_EATING_MODE
-	ASSERT(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC , "Invalid hardwareType")
-	ASSERT(deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES, "Invalid deviceID")
+	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC
+#else
+	return 1
+#endif
+End
+
+/// @brief Check if the given device ID is valid
+///
+/// Invalid here means that the value is out-of-range.
+static Function HW_IsValidDeviceID(deviceID)
+	variable deviceID
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	return deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES
+#else
+	return 1
 #endif
 End
 
