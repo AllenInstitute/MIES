@@ -897,13 +897,18 @@ End
 
 /// @brief Check wether DAQ is still ongoing
 ///
-/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+/// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_ITC_IsRunning([flags])
 	variable flags
 
 	DEBUGPRINTSTACKINFO()
 
-	WAVE state = HW_ITC_GetState(flags=flags)
+	WAVE/Z state = HW_ITC_GetState(flags=flags)
+
+	if(!WaveExists(state))
+		return 0
+	endif
+
 	return state[0]
 End
 
