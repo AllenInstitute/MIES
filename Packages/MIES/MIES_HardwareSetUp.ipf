@@ -174,6 +174,8 @@ End
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
+	variable flags
+
 	if(!windowExists(panelTitle))
 		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
 		return NaN
@@ -205,9 +207,10 @@ Function HSU_UnlockDevice(panelTitle)
 	HSU_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
+	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
+	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	HSU_UpdateListOfITCPanels()

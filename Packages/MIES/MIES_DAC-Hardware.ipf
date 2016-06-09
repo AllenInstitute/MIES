@@ -81,8 +81,6 @@ Constant THREAD_DEVICE_ID_NOT_SET    = 10024
 Function HW_SelectDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	HW_AssertOnInvalid(hardwareType, deviceID)
-
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_SelectDevice(deviceID, flags=flags)
@@ -134,8 +132,6 @@ End
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
-
-	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -558,10 +554,13 @@ End
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
-Function HW_DeRegisterDevice(hardwareType, deviceID)
-	variable hardwareType, deviceID
+/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_DeRegisterDevice(hardwareType, deviceID, [flags])
+	variable deviceID, hardwareType, flags
 
-	HW_AssertOnInvalid(hardwareType, deviceID)
+	if(!HW_IsValidDeviceID(deviceID) || !HW_IsValidHardwareType(hardwareType))
+		return NaN
+	endif
 
 	WAVE/T devMap = GetDeviceMapping()
 
