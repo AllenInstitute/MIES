@@ -441,7 +441,9 @@ Constant HARDWARE_ITC_TTL_1600_RACK_ONE  = 3
 /// @name Flags for all hardware interaction functions from MIES_DAC-Hardware.ipf
 /// @anchor HardwareInteractionFlags
 /// @{
-Constant HARDWARE_ABORT_ON_ERROR = 0x01
+Constant HARDWARE_ABORT_ON_ERROR        = 0x01
+Constant HARDWARE_PREVENT_ERROR_POPUP   = 0x02
+Constant HARDWARE_PREVENT_ERROR_MESSAGE = 0x04
 /// @}
 
 /// List of different DAC hardware types

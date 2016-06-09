@@ -796,7 +796,7 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCSelectDevice2/Z deviceID
+	ITCSelectDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) deviceID
 	return HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -806,7 +806,7 @@ Function HW_ITC_EnableYoking([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCInitialize2/M=1
+	ITCInitialize2/M=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -816,7 +816,7 @@ Function HW_ITC_DisableYoking([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCInitialize2/M=0
+	ITCInitialize2/M=0/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -826,11 +826,11 @@ Function HW_ITC_StopAcq([prepareForDAQ, flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCStopAcq2
+	ITCStopAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	if(prepareForDAQ)
-		ITCConfigChannelUpload2
+		ITCConfigChannelUpload2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	endif
 End
@@ -842,7 +842,7 @@ Function HW_ITC_GetCurrentDevice([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCGetCurrentDevice2
+	ITCGetCurrentDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return V_Value
@@ -870,7 +870,7 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 	endif
 
 	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
-	ITCUpdateFIFOPositionAll2 fifoPos_t
+	ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -882,10 +882,10 @@ Function HW_ITC_StartAcq(triggerMode, [flags])
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
-			ITCStartAcq2/EXT=256
+			ITCStartAcq2/EXT=256/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 			break
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
-			ITCStartAcq2
+			ITCStartAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 			break
 		default:
 			ASSERT(0, "Unknown trigger mode")
@@ -915,7 +915,8 @@ Function/WAVE HW_ITC_GetState([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCGetState2/R/O/C/E/FREE state
+	ITCGetState2/R/O/C/E/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) state
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return state
@@ -927,7 +928,7 @@ Function HW_ITC_ReadADC(deviceID, channel, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCReadADC2/C=1/V=1 channel
+	ITCReadADC2/C=1/V=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return V_Value
@@ -939,7 +940,7 @@ Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCSetDAC2 channel, value
+	ITCSetDAC2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -949,7 +950,7 @@ Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCReadDigital2 xopChannel
+	ITCReadDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return V_Value
@@ -961,7 +962,7 @@ Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCWriteDigital2 xopChannel, value
+	ITCWriteDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel, value
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -971,7 +972,7 @@ Function HW_ITC_DebugMode(state, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCSetGlobals2/D=(state)
+	ITCSetGlobals2/D=(state)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 End
 
 Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
@@ -1051,11 +1052,11 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	endif
 
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
-	ITCconfigAllchannels2 config_t, data
+	ITCconfigAllchannels2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, data
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 #ifdef DEBUGGING_ENABLED
-	ITCGetAllChannelsConfig2/O config_t, settings
+	ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
@@ -1065,7 +1066,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 #endif // DEBUGGING_ENABLED
 
 	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
-	ITCUpdateFIFOPositionAll2 fifoPos_t
+	ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -1115,7 +1116,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 
 	wave config = GetITCChanConfigWave(panelTitle)
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
-	ITCFIFOAvailableALL2/FREE config_t, fifoAvail_t
+	ITCFIFOAvailableALL2/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, fifoAvail_t
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	WAVE fifoAvailNew = HW_ITC_TransposeAndToInt(fifoAvail_t)
 	fifoAvail[][] = fifoAvailNew[p][q]
