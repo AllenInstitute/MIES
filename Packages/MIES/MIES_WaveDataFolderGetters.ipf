@@ -41,6 +41,23 @@ Function/Wave GetChanAmpAssign(panelTitle)
 	else
 		Make/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
 		wv = NaN
+
+		// we don't have dimension labels yet
+		if(DAP_DeviceCanLead(panelTitle))
+			// Use AD channels 0-3 and then 8-11 so that
+			// they are all on the same rack
+			wv[0][0, 7] = q
+			wv[2][0, 7] = q <= 3 ? q : q + 4
+			wv[4][0, 7] = q
+			wv[6][0, 7] = q <= 3 ? q : q + 4
+		else
+			wv[0][0, 3] = q
+			wv[2][0, 3] = q
+			wv[4][0, 3] = q
+			wv[6][0, 3] = q
+		endif
+
+		wv[1, 7;2][] = 1
 	endif
 
 	SetDimLabel ROWS,  0, VC_DA,        wv
@@ -86,6 +103,11 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	else
 		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
 		wv = ""
+
+		wv[0][] = "mV"
+		wv[1][] = "pA"
+		wv[2][] = "pA"
+		wv[3][] = "mV"
 	endif
 
 	SetDimLabel ROWS, 0, VC_DAUnit, wv

@@ -128,7 +128,7 @@ static Function AI_GetAmpAxonSerial(panelTitle, headStage)
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 
-	return ChanAmpAssign[8][headStage]
+	return ChanAmpAssign[%AmpSerialNo][headStage]
 End
 
 /// @brief Returns the serial number of the headstage compatible with MCC* functions, @see GetChanAmpAssign
@@ -156,7 +156,7 @@ static Function AI_GetAmpChannel(panelTitle, headStage)
 
 	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
 
-	return ChanAmpAssign[9][headStage]
+	return ChanAmpAssign[%AmpChannelID][headStage]
 End
 
 /// @brief Wrapper for MCC_SelectMultiClamp700B
