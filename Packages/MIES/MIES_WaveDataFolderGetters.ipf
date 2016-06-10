@@ -56,6 +56,8 @@ Function/Wave GetChanAmpAssign(panelTitle)
 			wv[4][0, 3] = q
 			wv[6][0, 3] = q
 		endif
+
+		wv[1, 7;2][] = 1
 	endif
 
 	SetDimLabel ROWS,  0, VC_DA,        wv
