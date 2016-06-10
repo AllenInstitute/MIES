@@ -103,6 +103,11 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	else
 		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
 		wv = ""
+
+		wv[0][] = "mV"
+		wv[1][] = "pA"
+		wv[2][] = "pA"
+		wv[3][] = "mV"
 	endif
 
 	SetDimLabel ROWS, 0, VC_DAUnit, wv
