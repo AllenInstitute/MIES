@@ -2737,3 +2737,40 @@ static Function SearchForDuplicatesText(Wv)
 End
 
 #endif
+
+/// @brief Check that the device can act as a follower
+Function DeviceCanFollow(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
+		return 0
+	endif
+
+	return !cmpstr(deviceType, "ITC1600")
+End
+
+/// @brief Check that the device is a follower
+Function DeviceIsFollower(panelTitle)
+	string panelTitle
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+
+	return SVAR_Exists(listOfFollowerDevices) && WhichListItem(panelTitle, listOfFollowerDevices) != -1
+End
+
+/// @brief Check that the device can act as a leader
+Function DeviceCanLead(panelTitle)
+	string panelTitle
+
+	return !cmpstr(panelTitle, "ITC1600_Dev_0")
+End
+
+/// @brief Check that the device is a leader and has followers
+Function DeviceHasFollower(panelTitle)
+	string panelTitle
+
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+
+	return DeviceCanLead(panelTitle) && SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0
+End

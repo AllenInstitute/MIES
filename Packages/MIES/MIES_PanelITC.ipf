@@ -3736,32 +3736,9 @@ static Function/S DAP_FormatStimSetPopupValue(channelType, searchString)
 	return str
 End
 
-/// @returns 1 if the device is a "ITC1600"
-Function DAP_DeviceIsYokeable(panelTitle)
-  string panelTitle
-
-  string deviceType, deviceNumber
-  if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
-	  return 0
-  endif
-
-  return !cmpstr(deviceType, "ITC1600")
-End
-
-Function DAP_DeviceIsFollower(panelTitle)
-	string panelTitle
-
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-
-	return SVAR_Exists(listOfFollowerDevices) && WhichListItem(panelTitle, listOfFollowerDevices) != -1
-End
-
-Function DAP_DeviceCanLead(panelTitle)
-	string panelTitle
-
-	return !cmpstr(panelTitle, "ITC1600_Dev_0")
-End
-
+/// @brief Check by querying the GUI if the device is a leader
+///
+/// Outside callers should use DeviceHasFollower() instead.
 static Function DAP_DeviceIsLeader(panelTitle)
 	string panelTitle
 
@@ -3769,14 +3746,6 @@ static Function DAP_DeviceIsLeader(panelTitle)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	return cmpstr(S_value,LEADER) == 0
-End
-
-Function DAP_DeviceHasFollower(panelTitle)
-	string panelTitle
-
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-
-	return DAP_DeviceIsLeader(panelTitle) && SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0
 End
 
 /// @brief Updates the yoking controls on all locked/unlocked panels
@@ -3800,7 +3769,7 @@ Function DAP_UpdateAllYokeControls()
 		DisableControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 		DAP_UpdateYokeControls(panelTitle)
 
-		if(ListOfLockedITC1600Num >= 2 && DAP_DeviceCanLead(panelTitle))
+		if(ListOfLockedITC1600Num >= 2 && DeviceCanLead(panelTitle))
 			// ensures yoking controls are only enabled on the ITC1600_Dev_0
 			// a requirement of the ITC XOP
 			EnableControl(panelTitle,"button_Hardware_Lead1600")
@@ -3833,14 +3802,14 @@ Function DAP_UpdateYokeControls(panelTitle)
 		return NaN
 	endif
 
-	if(!DAP_DeviceIsYokeable(panelTitle))
+	if(!DeviceCanFollow(panelTitle))
 		HideControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:"Device is not yokeable"
-	elseif(DAP_DeviceIsFollower(panelTitle))
+	elseif(DeviceIsFollower(panelTitle))
 		HideControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 	else
 		ShowControls(panelTitle,YOKE_LIST_OF_CONTROLS)
-		if(DAP_DeviceCanLead(panelTitle))
+		if(DeviceCanLead(panelTitle))
 			TitleBox title_hardware_1600inst win = $panelTitle, title = "Designate the status of the ITC1600 assigned to this device"
 		else
 			TitleBox title_hardware_1600inst win = $panelTitle, title = "To yoke devices go to panel: " + ITC1600_FIRST_DEVICE
@@ -4247,7 +4216,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 
 	variable numActiveDAChannels, maxITI
 
-	if(DAP_DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
+	if(DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
 		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
 		return 0
 	endif
@@ -4381,7 +4350,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		if(IsFinite(sweep) && DAP_DeviceIsFollower(panelTitle))
+		if(IsFinite(sweep) && DeviceIsFollower(panelTitle))
 			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
 		endif
 
@@ -4392,7 +4361,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		if(DAP_DeviceIsFollower(panelTitle))
+		if(DeviceIsFollower(panelTitle))
 			SetVariable SetVar_Sweep win = $panelTitle, noEdit=1, limits = {0, maxNextSweep, 0}
 		else
 			SetVariable SetVar_Sweep win = $panelTitle, noEdit=0, limits = {0, maxNextSweep, 1}
@@ -4781,7 +4750,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	list = panelTitle
 
-	if(DAP_DeviceHasFollower(panelTitle))
+	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
 			return 1
@@ -5698,7 +5667,7 @@ Function DAP_ButtonProc_Lead(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2:
 			panelTitle = ba.win
-			ASSERT(DAP_DeviceCanLead(panelTitle),"This device can not lead")
+			ASSERT(DeviceCanLead(panelTitle),"This device can not lead")
 
 			EnableControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
 			DisableControl(panelTitle,"button_Hardware_Lead1600")

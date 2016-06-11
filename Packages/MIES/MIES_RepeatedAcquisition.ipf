@@ -56,7 +56,7 @@ static Function RA_GetTotalNumberOfSets(panelTitle)
 
 	numSets = IDX_MaxNoOfSweeps(panelTitle, 1)
 
-	if(DAP_DeviceHasFollower(panelTitle))
+	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
@@ -91,7 +91,7 @@ static Function RA_GetTotalNumberOfTrials(panelTitle)
 
 	totTrials = RA_GetTotalNumberOfTrialsLowLev(panelTitle)
 
-	if(DAP_DeviceHasFollower(panelTitle))
+	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
@@ -219,7 +219,7 @@ static Function RA_StartMD(panelTitle)
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
-	if(DAP_DeviceHasFollower(panelTitle))
+	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
@@ -279,7 +279,7 @@ Function RA_CounterMD(panelTitle)
 		endif
 	endif
 
-	if(DAP_DeviceHasFollower(panelTitle))
+	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
@@ -327,7 +327,7 @@ static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 
-		if(DAP_DeviceHasFollower(panelTitle))
+		if(DeviceHasFollower(panelTitle))
 			SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
 			for(i = 0; i < numberOfFollowerDevices; i += 1)
@@ -374,7 +374,7 @@ Function RA_YokedRAStartMD(panelTitle)
 	string panelTitle
 
 	// catches independent devices and leader with no follower
-	if(!DAP_DeviceIsYokeable(panelTitle) || !DAP_DeviceHasFollower(ITC1600_FIRST_DEVICE))
+	if(!DeviceCanFollow(panelTitle) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
 		RA_StartMD(panelTitle)
 		return NaN
 	endif
@@ -388,7 +388,7 @@ Function RA_YokedRABckgTPCallRACounter(panelTitle)
 	string panelTitle
 
 	// catches independent devices and leader with no follower
-	if(!DAP_DeviceIsYokeable(panelTitle) || !DAP_DeviceHasFollower(ITC1600_FIRST_DEVICE))
+	if(!DeviceCanFollow(panelTitle) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
 		RA_BckgTPwithCallToRACounterMD(panelTitle)
 		return NaN
 	endif

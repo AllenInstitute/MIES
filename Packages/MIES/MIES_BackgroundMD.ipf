@@ -23,7 +23,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
-	if(!DAP_DeviceHasFollower(panelTitle))
+	if(!DeviceHasFollower(panelTitle))
 		ITC_BkrdDataAcqMD(panelTitle)
 		return NaN
 	endif
@@ -329,7 +329,7 @@ Function ITC_CallFuncForDevicesMDYoked(panelTitle, func)
 	string panelTitle
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE func
 
-	if(!DAP_DeviceHasFollower(panelTitle))
+	if(!DeviceHasFollower(panelTitle))
 		func(panelTitle)
 		return NaN
 	endif
