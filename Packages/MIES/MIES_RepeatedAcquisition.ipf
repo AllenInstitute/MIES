@@ -379,9 +379,6 @@ Function RA_YokedRAStartMD(panelTitle)
 		return NaN
 	endif
 
-	// it is either a leader or a follower
-	ASSERT(DAP_DeviceIsLeader(panelTitle) || DAP_DeviceIsFollower(panelTitle), "Messed up logic in RA_YokedRAStartMD")
-
 	if(RA_AreLeaderAndFollowerFinished())
 		RA_StartMD(ITC1600_FIRST_DEVICE)
 	endif
@@ -395,9 +392,6 @@ Function RA_YokedRABckgTPCallRACounter(panelTitle)
 		RA_BckgTPwithCallToRACounterMD(panelTitle)
 		return NaN
 	endif
-
-	// it is either a leader or a follower
-	ASSERT(DAP_DeviceIsLeader(panelTitle) || DAP_DeviceIsFollower(panelTitle), "Messed up logic in RA_YokedRABckgTPCallRACounter")
 
 	if(RA_AreLeaderAndFollowerFinished())
 		RA_BckgTPwithCallToRACounterMD(ITC1600_FIRST_DEVICE)

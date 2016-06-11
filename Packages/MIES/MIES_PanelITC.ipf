@@ -3762,7 +3762,7 @@ Function DAP_DeviceCanLead(panelTitle)
 	return !cmpstr(panelTitle, "ITC1600_Dev_0")
 End
 
-Function DAP_DeviceIsLeader(panelTitle)
+static Function DAP_DeviceIsLeader(panelTitle)
 	string panelTitle
 
 	ControlInfo/W=$panelTitle setvar_Hardware_Status
