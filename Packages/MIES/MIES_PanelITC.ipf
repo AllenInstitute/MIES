@@ -3742,7 +3742,7 @@ Function DAP_DeviceIsYokeable(panelTitle)
 
   string deviceType, deviceNumber
   if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
-	deviceType = HSU_GetDeviceType(panelTitle)
+	  return 0
   endif
 
   return !cmpstr(deviceType, "ITC1600")
