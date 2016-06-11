@@ -3751,10 +3751,9 @@ End
 Function DAP_DeviceIsFollower(panelTitle)
 	string panelTitle
 
-	ControlInfo/W=$panelTitle setvar_Hardware_Status
-	ASSERT(V_flag != 0, "Non-existing control or window")
+	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 
-	return cmpstr(S_value,FOLLOWER) == 0
+	return SVAR_Exists(listOfFollowerDevices) && WhichListItem(panelTitle, listOfFollowerDevices) != -1
 End
 
 Function DAP_DeviceCanLead(panelTitle)
