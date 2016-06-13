@@ -52,8 +52,6 @@ End
 Function TP_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
-	variable headstage
-
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DAP_StopOngoingDataAcquisition(panelTitle)
@@ -63,8 +61,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 		ITC_StartBackgroundTestPulse(panelTitle)
 
-		headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-		P_LoadPressureButtonState(panelTitle, headStage)
+		P_InitBeforeTP(panelTitle)
 	else
 		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
 		ITC_StartTestPulse(panelTitle)
@@ -76,8 +73,6 @@ End
 Function TP_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
-	variable headstage
-
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	ITC_StopOngoingDAQMultiDevice(panelTitle)
@@ -85,9 +80,7 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	ITC_StartTestPulseMultiDevice(panelTitle)
 
-	// Enable pressure buttons
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
+	P_InitBeforeTP(panelTitle)
 End
 
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
@@ -537,8 +530,6 @@ End
 Function TP_Teardown(panelTitle)
 	string panelTitle
 
-	variable headstage
-
 	DFREF dfr = GetDevicePath(panelTitle)
 
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
@@ -550,8 +541,7 @@ Function TP_Teardown(panelTitle)
 	NVAR runMode= $GetTestpulseRunMode(panelTitle)
 	runMode = TEST_PULSE_NOT_RUNNING
 
-	headStage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-	P_LoadPressureButtonState(panelTitle, headStage)
+	P_LoadPressureButtonState(panelTitle)
 End
 
 /// @brief Check if the testpulse is running

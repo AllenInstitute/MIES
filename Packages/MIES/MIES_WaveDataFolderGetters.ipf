@@ -3119,19 +3119,27 @@ End
 /// - 32: Peak resistance on previous method cycle.
 /// - 33: Peak resistance on active method cycle.
 /// - 34: Time of last peak resistance check.
+/// - 35: Calibration constant for positive pulse.
+/// - 36: Calibration constant for negative pulse.
+/// - 37: Checkbox state of "Approach Near".
+/// - 38: Checkbox state of "Seal Atmosphere".
+/// - 39: Selected headstage by the slider.
+/// - 40: User pressure offset in psi.
+/// - 41: Total sum of user pressure offsets in psi.
+/// - 42: Total sum of user pressure offsets since last pulse in psi.
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(8,40) wv
+		Redimension/N=(8, 43) wv
 	else
-		Make/N=(8,40) dfr:PressureData/Wave=wv
+		Make/N=(8, 43) dfr:PressureData/Wave=wv
 	endif
 
 	wv 	= nan
@@ -3166,21 +3174,24 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
 	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
 	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, wv // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
-	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck, wv
-	SetDimLabel COLS, 26, LastPressureCommand  , wv
-	SetDimLabel COLS, 27, OngoingPessurePulse  , wv
-	SetDimLabel COLS, 28, LastVcom             , wv
-	SetDimLabel COLS, 29, ManSSPressure        , wv
-	SetDimLabel COLS, 30, ManPPPressure        , wv
-	SetDimLabel COLS, 31, ManPPDuration        , wv
-	SetDimLabel COLS, 32, LastPeakR            , wv
-	SetDimLabel COLS, 33, PeakR                , wv
-	SetDimLabel COLS, 34, TimePeakRcheck       , wv
-	SetDimLabel COLS, 35, PosCalConst          , wv
-	SetDimLabel COLS, 36, NegCalConst          , wv
-	SetDimLabel COLS, 37, ApproachNear         , wv
-	SetDimLabel COLS, 38, SealAtm              , wv
-	SetDimLabel COLS, 39, UserSelectedHeadStage, wv
+	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck   , wv
+	SetDimLabel COLS, 26, LastPressureCommand     , wv
+	SetDimLabel COLS, 27, OngoingPessurePulse     , wv
+	SetDimLabel COLS, 28, LastVcom                , wv
+	SetDimLabel COLS, 29, ManSSPressure           , wv
+	SetDimLabel COLS, 30, ManPPPressure           , wv
+	SetDimLabel COLS, 31, ManPPDuration           , wv
+	SetDimLabel COLS, 32, LastPeakR               , wv
+	SetDimLabel COLS, 33, PeakR                   , wv
+	SetDimLabel COLS, 34, TimePeakRcheck          , wv
+	SetDimLabel COLS, 35, PosCalConst             , wv
+	SetDimLabel COLS, 36, NegCalConst             , wv
+	SetDimLabel COLS, 37, ApproachNear            , wv
+	SetDimLabel COLS, 38, SealAtm                 , wv
+	SetDimLabel COLS, 39, UserSelectedHeadStage   , wv
+	SetDimLabel COLS, 40, UserPressureOffset      , wv
+	SetDimLabel COLS, 41, UserPressureOffsetTotal , wv
+	SetDimLabel COLS, 42, UserPressureOffsetPeriod, wv
 
 	SetDimLabel ROWS, 0, Headstage_0, wv
 	SetDimLabel ROWS, 1, Headstage_1, wv
@@ -3193,15 +3204,18 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 
 	// prime the wave to avoid index out of range error for popup menus and to
 	// set all pressure methods to OFF (-1)
-	wv[][0]                    = -1
-	wv[][%DAC_List_Index]      = 0
-	wv[][%DAC]                 = 0
-	wv[][%ADC]                 = 0
-	wv[][%TTL]                 = 0
-	wv[][%ApproachNear]        = 0
-	wv[][%SealAtm]             = 0
-	wv[][%ManSSPressure]       = 0
-	wv[][%LastPressureCommand] = 0
+	wv[][0]                         = -1
+	wv[][%DAC_List_Index]           = 0
+	wv[][%DAC]                      = 0
+	wv[][%ADC]                      = 0
+	wv[][%TTL]                      = 0
+	wv[][%ApproachNear]             = 0
+	wv[][%SealAtm]                  = 0
+	wv[][%ManSSPressure]            = 0
+	wv[][%LastPressureCommand]      = 0
+	wv[][%UserPressureOffset]       = 0
+	wv[][%UserPressureOffsetPeriod] = 0
+	wv[][%UserPressureOffsetTotal]  = NaN
 
 	wv[][%DAC_Gain]        = 2
 	wv[][%ADC_Gain]        = 0.5

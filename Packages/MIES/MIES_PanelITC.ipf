@@ -5963,9 +5963,9 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		headStage  = sc.curVal
 		DAP_AbortIfUnlocked(panelTitle)
 		mode = DAP_MIESHeadstageMode(panelTitle, headStage)
-		P_LoadPressureButtonState(panelTitle, headStage)
-		P_UpdatePressureModeTabs(panelTitle, headStage)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
+		P_LoadPressureButtonState(panelTitle)
+		P_UpdatePressureModeTabs(panelTitle, headStage)
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode)
 		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
 	endif
