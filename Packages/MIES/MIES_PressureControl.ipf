@@ -31,6 +31,8 @@ static Constant     PRESSURE_CHANGE                = 1
 static Constant     P_NEGATIVE_PULSE               = 0x0
 static Constant     P_POSITIVE_PULSE               = 0x1
 static Constant     P_MANUAL_PULSE                 = 0x2
+static Constant     SEAL_POTENTIAL                 = -70 // mV
+static Constant     SEAL_RESISTANCE_THRESHOLD      = 100 // Mohm
 /// @}
 
 /// @brief Filled by P_GetPressureForDA()
@@ -197,8 +199,8 @@ static Function P_MethodSeal(panelTitle, headStage)
 
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 	= 0 // reset the time of last slope R check
 
-		// apply holding potential of -70 mV
-		P_UpdateVcom(panelTitle, -70, headStage)
+		// apply holding potential of SEAL_POTENTIAL
+		P_UpdateVcom(panelTitle, SEAL_POTENTIAL, headStage)
 		print "Seal on head stage:", headstage
 	else // no seal, start, hold, or increment negative pressure
 		// if there is no neg pressure, apply starting pressure.
@@ -324,28 +326,22 @@ static Function P_MethodClear(panelTitle, headStage)
 
 End
 
-/// @brief Applies updates the command Voltage so that -100 pA current is applied up to the target voltage
+/// @brief Applies updates the command voltage to the #SEAL_POTENTIAL when #SEAL_RESISTANCE_THRESHOLD is crossed
 static Function P_ApplyNegV(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
 	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
 	variable resistance 		=  PressureDataWv[headStage][%LastResistanceValue]
-	variable vCom 			= floor(-0.100 * resistance)
+	variable vCom 			= SEAL_POTENTIAL
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
 	if(getCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
 		setCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp",0)
 	endif
-// determine command voltage that will result in a holding pA of -100 pA
-// if V = -100 * resistance is greater than target voltage, apply target voltage, otherwise apply calculated voltage
 
- 	if(!isFinite(lastVcom))
-		lastVcom = 0
-	endif
-
-	if(vCom > -70 && (vCom > (lastVcom + 2) || vCom < (lastVcom - 2)) && resistance >= 50)
-		print "vcom=",vcom
+	if(lastVCom != vCom && resistance >= SEAL_RESISTANCE_THRESHOLD)
+		printf "headstage=%d, vCom=%g\r", headstage, vcom
 		P_UpdateVcom(panelTitle, vCom, headStage)
 		PressureDataWv[headStage][%LastVcom] = vCom
 	endif
