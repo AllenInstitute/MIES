@@ -2089,19 +2089,6 @@ Function GetStimSetType(setName)
 	endif
 End
 
-/// @brief Return the stimset folder from the channelType, `DA` or `TTL`
-Function/DF GetSetFolderFromString(channelType)
-	string channelType
-
-	if(!CmpStr(channelType, "DA"))
-		return GetWBSvdStimSetDAPath()
-	elseif(!CmpStr(channelType, "TTL"))
-		return GetWBSvdStimSetTTLPath()
-	else
-		ASSERT(0, "unknown channelType")
-	endif
-End
-
 /// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
 Function/DF GetSetFolder(channelType)
 	variable channelType
