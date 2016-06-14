@@ -217,9 +217,9 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	string setName
 	string SetList
 	variable i = 0
-	variable ListOffset = 3
+	variable ListOffset = 1
 	string popMenuIndexStartName, popMenuIndexEndName
-	
+
 	do // for DAs
 		if((str2num(stringfromlist(i, DAChannelStatusList,";"))) == 1)
 			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -237,7 +237,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			if((ListStartNo - ListEndNo) > 0)
 				index *= -1
 			endif
-			SetList = getuserdata(panelTitle, "Wave_DA_0" + num2str(i), "menuexp")
+			SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 			SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
 			SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 			MaxSteps = max(MaxSteps, SetSteps)
@@ -245,7 +245,6 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 		i += 1
 	while(i < (itemsinlist(DAChannelStatusList, ";")))
 	
-	ListOffset = 1
 	i = 0
 	
 	do // for TTLs
@@ -267,7 +266,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 				index *= -1
 			endif
 			
-		SetList = getuserdata(panelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
+		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
 		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
@@ -546,26 +545,16 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	variable TotalListSteps
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName, ChannelTypeName
-	variable i, ListOffset
+	string PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName
+	variable i
+	variable ListOffset = 2
 	
-	if(DAorTTL==0)
-		ChannelTypeName="DA"
-		ListOffset=3
-		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
-	endif
-	
-	if(DAorTTL==1)
-		ChannelTypeName="TTL"
-		ListOffset=2
-		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
-	endif
-
 	// ensure that the folder exists
-	DFREF dfr = GetSetFolderFromString(ChannelTypeName)
+	DFREF dfr = GetSetFolder(DAorTTL)
+	DAorTTLWavePath = GetDataFolder(1, dfr)
 
-	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
-	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+	ChannelPopUpMenuName = GetPanelControl(channelNumber, DAorTTL, CHANNEL_CONTROL_WAVE)
+	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none
 	
 	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
@@ -616,27 +605,17 @@ End
 Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	string paneltitle
 	variable channelNo, DAorTTL, count
-	variable column, i, StepsInSummedSets, listOffSet, totalListSteps
-	string ChannelTypeName, DAorTTLWavePath, ChannelPopUpMenuName,PopUpMenuList
+	variable column, i, StepsInSummedSets, totalListSteps
+	string DAorTTLWavePath, PopUpMenuList, ChannelPopUpMenuName
+	variable listOffSet = 2
 
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
-	if(DAorTTL == 0)
-		ChannelTypeName = "DA"
-		ListOffset = 3
-		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
-	endif
-	
-	if(DAorTTL == 1)
-		ChannelTypeName = "TTL"
-		ListOffset = 2
-		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
-	endif
-
 	// ensure that the folder exists
-	DFREF dfr = GetSetFolderFromString(ChannelTypeName)
-	
+	DFREF dfr = GetSetFolder(DAorTTL)
+	DAorTTLWavePath = GetDataFolder(1, dfr)
+
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)// Total List steps is all the columns in all the waves defined by the start index and end index waves
 	do // do loop resets count if the the count has cycled through the total list steps
 		if(count >= TotalListSteps)
@@ -645,7 +624,7 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	while(count >= totalListSteps)
 	//print "totalListSteps = "+num2str(totalListSteps)
 	
-		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(channelNo)
+		ChannelPopUpMenuName = GetPanelControl(channelNo, DAorTTL, CHANNEL_CONTROL_WAVE)
 		PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 		i = 0
 		
@@ -710,22 +689,15 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	variable AtSetBorder=0
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
-	variable i, StepsInSummedSets, ListOffset, TotalListSteps
-	
-	if(DAorTTL==0)
-		ChannelTypeName="DA"
-		ListOffset=3
-		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
-	endif
-	
-	if(DAorTTL==1)
-		ChannelTypeName="TTL"
-		ListOffset=2
-		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
-	endif
-	
-	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName
+	variable i, StepsInSummedSets, TotalListSteps
+	variable listOffset = 2
+
+	// ensure that the folder exists
+	DFREF dfr = GetSetFolder(DAorTTL)
+	DAorTTLWavePath = GetDataFolder(1, dfr)
+
+	ChannelPopUpMenuName = GetPanelControl(channelNumber, DAorTTL, CHANNEL_CONTROL_WAVE)
 	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 	TotalListSteps=IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		

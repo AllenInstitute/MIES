@@ -3662,8 +3662,8 @@ End
 /// @brief Return the TTL indexing storage wave
 ///
 /// Rows:
-/// 0: Popup menu index of TTL wave
-/// 1: Popup menu index of Indexing end wave
+/// 0: Popup menu index of TTL wave (1-based)
+/// 1: Popup menu index of Indexing end wave (1-based)
 /// 2-3: Unused
 ///
 /// Columns:
@@ -3687,8 +3687,8 @@ End
 /// @brief Return the DAC indexing storage wave
 ///
 /// Rows:
-/// 0: Popup menu index of DAC wave
-/// 1: Popup menu index of Indexing end wave
+/// 0: Popup menu index of DAC wave (1-based)
+/// 1: Popup menu index of Indexing end wave (1-based)
 /// 2-3: Unused
 ///
 /// Columns:
