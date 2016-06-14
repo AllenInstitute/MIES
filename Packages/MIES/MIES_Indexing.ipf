@@ -217,9 +217,9 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	string setName
 	string SetList
 	variable i = 0
-	variable ListOffset = 3
+	variable ListOffset = 1
 	string popMenuIndexStartName, popMenuIndexEndName
-	
+
 	do // for DAs
 		if((str2num(stringfromlist(i, DAChannelStatusList,";"))) == 1)
 			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -245,7 +245,6 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 		i += 1
 	while(i < (itemsinlist(DAChannelStatusList, ";")))
 	
-	ListOffset = 1
 	i = 0
 	
 	do // for TTLs
@@ -547,17 +546,16 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName, ChannelTypeName
-	variable i, ListOffset
+	variable i
+	variable ListOffset = 2
 	
 	if(DAorTTL==0)
 		ChannelTypeName="DA"
-		ListOffset=3
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL==1)
 		ChannelTypeName="TTL"
-		ListOffset=2
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 
@@ -565,7 +563,7 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	DFREF dfr = GetSetFolderFromString(ChannelTypeName)
 
 	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
-	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none
 	
 	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
@@ -616,21 +614,20 @@ End
 Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	string paneltitle
 	variable channelNo, DAorTTL, count
-	variable column, i, StepsInSummedSets, listOffSet, totalListSteps
+	variable column, i, StepsInSummedSets, totalListSteps
 	string ChannelTypeName, DAorTTLWavePath, ChannelPopUpMenuName,PopUpMenuList
+	variable listOffSet = 2
 
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
 	if(DAorTTL == 0)
 		ChannelTypeName = "DA"
-		ListOffset = 3
 		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
-	
+
 	if(DAorTTL == 1)
 		ChannelTypeName = "TTL"
-		ListOffset = 2
 		DAorTTLWavePath = "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 
@@ -711,17 +708,16 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName,ChannelTypeName, DAorTTLWavePath, DAorTTLFullWaveName
-	variable i, StepsInSummedSets, ListOffset, TotalListSteps
-	
+	variable i, StepsInSummedSets, TotalListSteps
+	variable listOffset = 2
+
 	if(DAorTTL==0)
 		ChannelTypeName="DA"
-		ListOffset=3
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:DA:"
 	endif
 	
 	if(DAorTTL==1)
 		ChannelTypeName="TTL"
-		ListOffset=2
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
