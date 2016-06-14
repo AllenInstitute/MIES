@@ -81,6 +81,9 @@ Function HSU_LockDevice(panelTitle)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
 	DAP_RecordDA_EphysGuiState(panelTitleLocked)
 
+	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
+	P_SaveUserSelectedHeadstage(panelTitleLocked, headstage)
+
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
 
