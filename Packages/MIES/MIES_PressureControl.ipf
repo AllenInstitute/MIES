@@ -550,7 +550,7 @@ static Function/S P_GetListOfPressureCtrlDevices(panelTitle)
 End
 
 /// @brief Sets the pressure on a headStage
-static Function P_SetAndGetPressure(panelTitle, headStage, psi)
+Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	string panelTitle
 	variable headStage, psi
 
