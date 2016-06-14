@@ -562,7 +562,7 @@ Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	// ensure that the folder exists
 	DFREF dfr = GetSetFolderFromString(ChannelTypeName)
 
-	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+	ChannelPopUpMenuName = GetPanelControl(channelNumber, DAorTTL, CHANNEL_CONTROL_WAVE)
 	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none
 	
 	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
@@ -642,7 +642,7 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	while(count >= totalListSteps)
 	//print "totalListSteps = "+num2str(totalListSteps)
 	
-		ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(channelNo)
+		ChannelPopUpMenuName = GetPanelControl(channelNo, DAorTTL, CHANNEL_CONTROL_WAVE)
 		PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 		i = 0
 		
@@ -721,7 +721,7 @@ Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 		DAorTTLWavePath= "root:MIES:WaveBuilder:SavedStimulusSets:TTL:"
 	endif
 	
-	ChannelPopUpMenuName = "Wave_"+ChannelTypeName+"_0"+num2str(ChannelNumber)
+	ChannelPopUpMenuName = GetPanelControl(channelNumber, DAorTTL, CHANNEL_CONTROL_WAVE)
 	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 	TotalListSteps=IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		
