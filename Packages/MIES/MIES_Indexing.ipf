@@ -237,7 +237,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 			if((ListStartNo - ListEndNo) > 0)
 				index *= -1
 			endif
-			SetList = getuserdata(panelTitle, "Wave_DA_0" + num2str(i), "menuexp")
+			SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 			SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
 			SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 			MaxSteps = max(MaxSteps, SetSteps)
@@ -266,7 +266,7 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 				index *= -1
 			endif
 			
-		SetList = getuserdata(panelTitle, "Wave_TTL_0" + num2str(i), "menuexp")
+		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
 		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
