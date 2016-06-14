@@ -56,16 +56,14 @@ static Function RA_GetTotalNumberOfSets(panelTitle)
 
 	numSets = IDX_MaxNoOfSweeps(panelTitle, 1)
 
-	if(DAP_DeviceIsYokeable(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
-			numFollower = ItemsInList(listOfFollowerDevices)
-			for(i = 0; i < numFollower; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+	if(DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-				numSets = max(numSets, IDX_MaxNoOfSweeps(followerPanelTitle, 1))
-			endfor
-		endif
+			numSets = max(numSets, IDX_MaxNoOfSweeps(followerPanelTitle, 1))
+		endfor
 	endif
 
 	return numSets
@@ -93,16 +91,14 @@ static Function RA_GetTotalNumberOfTrials(panelTitle)
 
 	totTrials = RA_GetTotalNumberOfTrialsLowLev(panelTitle)
 
-	if(DAP_DeviceIsYokeable(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
-			numFollower = ItemsInList(listOfFollowerDevices)
-			for(i = 0; i < numFollower; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+	if(DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-				totTrials = max(totTrials, RA_GetTotalNumberOfTrialsLowLev(followerPanelTitle))
-			endfor
-		endif
+			totTrials = max(totTrials, RA_GetTotalNumberOfTrialsLowLev(followerPanelTitle))
+		endfor
 	endif
 
 	return totTrials
@@ -223,20 +219,18 @@ static Function RA_StartMD(panelTitle)
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
-	if(DAP_DeviceIsYokeable(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
-			numFollower = ItemsInList(listOfFollowerDevices)
-			for(i = 0; i < numFollower; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+	if(DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-				totTrials = max(totTrials, RA_GetTotalNumberOfTrials(followerPanelTitle))
-				SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+			totTrials = max(totTrials, RA_GetTotalNumberOfTrials(followerPanelTitle))
+			SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
-				NVAR followerCount = $GetCount(followerPanelTitle)
-				followerCount = 0
-			endfor
-		endif
+			NVAR followerCount = $GetCount(followerPanelTitle)
+			followerCount = 0
+		endfor
 	endif
 
 	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
@@ -285,35 +279,33 @@ Function RA_CounterMD(panelTitle)
 		endif
 	endif
 
-	if(DAP_DeviceIsYokeable(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
-			numFollower = ItemsInList(listOfFollowerDevices)
-			for(i = 0; i < numFollower; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-				NVAR followerCount = $GetCount(followerPanelTitle)
-				followerCount += 1
+	if(DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			NVAR followerCount = $GetCount(followerPanelTitle)
+			followerCount += 1
 
-				SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
 
-				if(indexing)
-					if(recalcActiveSetCount)
-						if(indexingLocked)
-							IDX_IndexingDoIt(followerPanelTitle)
-						endif
-						SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
-						followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
-						activeSetCount = max(activeSetCount, followerActiveSetCount)
+			if(indexing)
+				if(recalcActiveSetCount)
+					if(indexingLocked)
+						IDX_IndexingDoIt(followerPanelTitle)
 					endif
-
-					if(!indexingLocked)
-						// channel indexes when set has completed all its steps
-						IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 0)
-						IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 1)
-					endif
+					SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
+					activeSetCount = max(activeSetCount, followerActiveSetCount)
 				endif
-			endfor
-		endif
+
+				if(!indexingLocked)
+					// channel indexes when set has completed all its steps
+					IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 0)
+					IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 1)
+				endif
+			endif
+		endfor
 	endif
 
 	if(count < totTrials)
@@ -335,8 +327,8 @@ static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices) && DAP_DeviceIsLeader(panelTitle))
+		if(DeviceHasFollower(panelTitle))
+			SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
 			for(i = 0; i < numberOfFollowerDevices; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -382,13 +374,10 @@ Function RA_YokedRAStartMD(panelTitle)
 	string panelTitle
 
 	// catches independent devices and leader with no follower
-	if(!DAP_DeviceIsYokeable(panelTitle) || !DAP_DeviceHasFollower(ITC1600_FIRST_DEVICE))
+	if(!DeviceCanFollow(panelTitle) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
 		RA_StartMD(panelTitle)
 		return NaN
 	endif
-
-	// it is either a leader or a follower
-	ASSERT(DAP_DeviceIsLeader(panelTitle) || DAP_DeviceIsFollower(panelTitle), "Messed up logic in RA_YokedRAStartMD")
 
 	if(RA_AreLeaderAndFollowerFinished())
 		RA_StartMD(ITC1600_FIRST_DEVICE)
@@ -399,13 +388,10 @@ Function RA_YokedRABckgTPCallRACounter(panelTitle)
 	string panelTitle
 
 	// catches independent devices and leader with no follower
-	if(!DAP_DeviceIsYokeable(panelTitle) || !DAP_DeviceHasFollower(ITC1600_FIRST_DEVICE))
+	if(!DeviceCanFollow(panelTitle) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
 		RA_BckgTPwithCallToRACounterMD(panelTitle)
 		return NaN
 	endif
-
-	// it is either a leader or a follower
-	ASSERT(DAP_DeviceIsLeader(panelTitle) || DAP_DeviceIsFollower(panelTitle), "Messed up logic in RA_YokedRABckgTPCallRACounter")
 
 	if(RA_AreLeaderAndFollowerFinished())
 		RA_BckgTPwithCallToRACounterMD(ITC1600_FIRST_DEVICE)

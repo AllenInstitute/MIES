@@ -21,7 +21,7 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 		runMode = runMode | runModifier
 	endif
 
-	if(!DAP_DeviceHasFollower(panelTitle))
+	if(!DeviceHasFollower(panelTitle))
 		TP_Setup(panelTitle, runMode)
 		ITC_BkrdTPMD(panelTitle)
 		return NaN
@@ -137,7 +137,7 @@ Function ITC_BkrdTPFuncMD(s)
 
 		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
 		// the code stops and starts the data acquisition to correct FIFO error
-		if(!DAP_DeviceCanLead(panelTitle))
+		if(!DeviceCanLead(panelTitle))
 			WAVE/Z/SDFR=deviceDFR FIFOAdvance
 			if((WaveExists(FIFOAdvance) && FIFOAdvance[0][2] <= 0) || (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] > 0 && abs(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][5]) <= 1)) // checks to see if the hardware buffer is at max capacity
 				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)

@@ -381,7 +381,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	Make/FREE/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) values
 	values = ""
 
-	if(DAP_DeviceCanLead(panelTitle))
+	if(DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices))
 			values[0][0][INDEP_HEADSTAGE] = listOfFollowerDevices

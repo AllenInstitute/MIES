@@ -227,7 +227,7 @@ Function M_CheckSettings(panelTitle)
 
 	list = panelTitle
 
-	if(DAP_DeviceCanLead(panelTitle))
+	if(DeviceCanLead(panelTitle))
 		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
 		if(SVAR_Exists(listOfFollowerDevices))
 			list = AddListItem(list, listOfFollowerDevices, ";", inf)
