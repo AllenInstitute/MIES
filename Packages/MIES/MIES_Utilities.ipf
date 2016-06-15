@@ -8,7 +8,7 @@
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function IsFinite(var)
+threadsafe Function IsFinite(var)
 	variable var
 
 	return numType(var) == 0
@@ -19,7 +19,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function isNull(str)
+threadsafe Function IsNull(str)
 	string& str
 
 	variable len = strlen(str)
@@ -31,7 +31,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function isEmpty(str)
+threadsafe Function IsEmpty(str)
 	string& str
 
 	variable len = strlen(str)
