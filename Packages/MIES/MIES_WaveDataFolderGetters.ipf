@@ -3204,18 +3204,18 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 
 	// prime the wave to avoid index out of range error for popup menus and to
 	// set all pressure methods to OFF (-1)
-	wv[][0]                         = -1
-	wv[][%DAC_List_Index]           = 0
-	wv[][%DAC]                      = 0
-	wv[][%ADC]                      = 0
-	wv[][%TTL]                      = 0
-	wv[][%ApproachNear]             = 0
-	wv[][%SealAtm]                  = 0
-	wv[][%ManSSPressure]            = 0
-	wv[][%LastPressureCommand]      = 0
-	wv[][%UserPressureOffset]       = 0
-	wv[][%UserPressureOffsetPeriod] = 0
-	wv[][%UserPressureOffsetTotal]  = NaN
+	wv[][%Approach_Seal_BrkIn_Clear] = -1
+	wv[][%DAC_List_Index]            = 0
+	wv[][%DAC]                       = 0
+	wv[][%ADC]                       = 0
+	wv[][%TTL]                       = 0
+	wv[][%ApproachNear]              = 0
+	wv[][%SealAtm]                   = 0
+	wv[][%ManSSPressure]             = 0
+	wv[][%LastPressureCommand]       = 0
+	wv[][%UserPressureOffset]        = 0
+	wv[][%UserPressureOffsetPeriod]  = 0
+	wv[][%UserPressureOffsetTotal]   = NaN
 
 	wv[][%DAC_Gain]        = 2
 	wv[][%ADC_Gain]        = 0.5
