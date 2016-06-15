@@ -1153,27 +1153,53 @@ End
 /// Basically a datafolder aware version of UniqueName for datafolders
 ///
 /// @param dfr 	    datafolder reference where the new datafolder should be created
-/// @param baseName first part of the datafolder, might be shorted due to Igor Pro limitations
+/// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
 Function/DF UniqueDataFolder(dfr, baseName)
 	dfref dfr
 	string baseName
 
-	variable index
-	string name = ""
-	string basePath, path
+	string path
 
 	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
-	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	// shorten basename so that we can attach some numbers
 	baseName = CleanupName(baseName[0, 26], 0)
+
+	path = UniqueDataFolderName(dfr, basename)
+
+	if(isEmpty(path))
+		return $""
+	endif
+
+	NewDataFolder $path
+	return $path
+End
+
+/// @brief Return a unique data folder name which does not exist in dfr
+///
+/// If you want to have the datafolder created for you and don't need a
+/// threadsafe function, use UniqueDataFolder() instead.
+///
+/// @param dfr      datafolder to search
+/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
+///
+/// @todo use CleanupName for baseName once that is threadsafe
+threadsafe Function/S UniqueDataFolderName(dfr, baseName)
+	DFREF dfr
+	string baseName
+
+	variable index
+	string basePath, path
+
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
+
 	basePath = GetDataFolder(1, dfr)
 	path = basePath + baseName
 
 	do
 		if(!DataFolderExists(path))
-			NewDataFolder $path
-			return $path
+			return path
 		endif
 
 		path = basePath + baseName + "_" + num2istr(index)
@@ -1181,9 +1207,9 @@ Function/DF UniqueDataFolder(dfr, baseName)
 		index += 1
 	while(index < 10000)
 
-	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+	DEBUGPRINT_TS("Could not find a unique folder with 10000 trials")
 
-	return $""
+	return ""
 End
 
 /// @brief Returns a wave name not used in the given datafolder
