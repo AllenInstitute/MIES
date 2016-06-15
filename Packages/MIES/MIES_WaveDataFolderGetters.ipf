@@ -3077,6 +3077,74 @@ Function/WAVE P_GetITCFIFOAvail(panelTitle)
 	return wv
 End
 
+/// @brief Set the dimension labels for the numeric pressure wave
+static Function SetPressureWaveDimLabels(wv)
+	WAVE wv
+
+	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear, wv
+	SetDimLabel COLS, 1 , DAC_List_Index           , wv
+	SetDimLabel COLS, 2 , HW_DAC_Type              , wv
+	SetDimLabel COLS, 3 , DAC_DevID                , wv
+	SetDimLabel COLS, 4 , DAC                      , wv
+	SetDimLabel COLS, 5 , DAC_Gain                 , wv
+	SetDimLabel COLS, 6 , ADC                      , wv
+	SetDimLabel COLS, 7 , ADC_Gain                 , wv
+	SetDimLabel COLS, 8 , TTL                      , wv
+	SetDimLabel COLS, 9 , PSI_air                  , wv
+	SetDimLabel COLS, 10, PSI_solution             , wv
+	SetDimLabel COLS, 11, PSI_slice                , wv
+	SetDimLabel COLS, 12, PSI_nearCell             , wv
+	SetDimLabel COLS, 13, PSI_SealInitial          , wv
+	SetDimLabel COLS, 14, PSI_SealMax              , wv
+	SetDimLabel COLS, 15, solutionZaxis            , wv
+	SetDimLabel COLS, 16, sliceZaxis               , wv
+	SetDimLabel COLS, 17, cellZaxis                , wv
+	SetDimLabel COLS, 18, cellXaxis                , wv
+	SetDimLabel COLS, 19, cellYaxis                , wv
+	SetDimLabel COLS, 20, PlaceHolderZero          , wv
+	SetDimLabel COLS, 21, RealTimePressure         , wv
+	SetDimLabel COLS, 22, LastResistanceValue      , wv
+	SetDimLabel COLS, 23, PeakResistanceSlope      , wv
+	/// @todo Dim label for  col 23 needs to be changed to steadStateResistanceSlope
+	SetDimLabel COLS, 24, ActiveTP				   , wv
+	/// @todo If user switched headStage mode while pressure regulation is
+	/// ongoing, pressure reg either needs to be turned off, or steady state
+	/// slope values need to be used
+	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
+	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
+	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, wv
+	// If the PeakResistance slope is greater than the PeakResistanceSlope
+	// thershold pressure method does not need to update i.e. the pressure is
+	// "good" as it is
+	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck   , wv
+	SetDimLabel COLS, 26, LastPressureCommand     , wv
+	SetDimLabel COLS, 27, OngoingPessurePulse     , wv
+	SetDimLabel COLS, 28, LastVcom                , wv
+	SetDimLabel COLS, 29, ManSSPressure           , wv
+	SetDimLabel COLS, 30, ManPPPressure           , wv
+	SetDimLabel COLS, 31, ManPPDuration           , wv
+	SetDimLabel COLS, 32, LastPeakR               , wv
+	SetDimLabel COLS, 33, PeakR                   , wv
+	SetDimLabel COLS, 34, TimePeakRcheck          , wv
+	SetDimLabel COLS, 35, PosCalConst             , wv
+	SetDimLabel COLS, 36, NegCalConst             , wv
+	SetDimLabel COLS, 37, ApproachNear            , wv
+	SetDimLabel COLS, 38, SealAtm                 , wv
+	SetDimLabel COLS, 39, UserSelectedHeadStage   , wv
+	SetDimLabel COLS, 40, UserPressureOffset      , wv
+	SetDimLabel COLS, 41, UserPressureOffsetTotal , wv
+	SetDimLabel COLS, 42, UserPressureOffsetPeriod, wv
+
+	SetDimLabel ROWS, 0, Headstage_0, wv
+	SetDimLabel ROWS, 1, Headstage_1, wv
+	SetDimLabel ROWS, 2, Headstage_2, wv
+	SetDimLabel ROWS, 3, Headstage_3, wv
+	SetDimLabel ROWS, 4, Headstage_4, wv
+	SetDimLabel ROWS, 5, Headstage_5, wv
+	SetDimLabel ROWS, 6, Headstage_6, wv
+	SetDimLabel ROWS, 7, Headstage_7, wv
+End
+
 /// @brief Returns wave reference of wave used to store data used in functions that run pressure regulators
 /// creates the wave if it does not exist
 ///
@@ -3138,69 +3206,15 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(8, 43) wv
+
+		SetPressureWaveDimLabels(wv)
 	else
 		Make/N=(8, 43) dfr:PressureData/Wave=wv
+
+		SetPressureWaveDimLabels(wv)
 	endif
 
 	wv 	= nan
-
-	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear, wv
-	SetDimLabel COLS, 1 , DAC_List_Index           , wv
-	SetDimLabel COLS, 2 , HW_DAC_Type              , wv
-	SetDimLabel COLS, 3 , DAC_DevID                , wv
-	SetDimLabel COLS, 4 , DAC                      , wv
-	SetDimLabel COLS, 5 , DAC_Gain                 , wv
-	SetDimLabel COLS, 6 , ADC                      , wv
-	SetDimLabel COLS, 7 , ADC_Gain                 , wv
-	SetDimLabel COLS, 8 , TTL                      , wv
-	SetDimLabel COLS, 9 , PSI_air                  , wv
-	SetDimLabel COLS, 10, PSI_solution             , wv
-	SetDimLabel COLS, 11, PSI_slice                , wv
-	SetDimLabel COLS, 12, PSI_nearCell             , wv
-	SetDimLabel COLS, 13, PSI_SealInitial          , wv
-	SetDimLabel COLS, 14, PSI_SealMax              , wv
-	SetDimLabel COLS, 15, solutionZaxis            , wv
-	SetDimLabel COLS, 16, sliceZaxis               , wv
-	SetDimLabel COLS, 17, cellZaxis                , wv
-	SetDimLabel COLS, 18, cellXaxis                , wv
-	SetDimLabel COLS, 19, cellYaxis                , wv
-	SetDimLabel COLS, 20, PlaceHolderZero          , wv
-	SetDimLabel COLS, 21, RealTimePressure         , wv
-	SetDimLabel COLS, 22, LastResistanceValue      , wv
-	SetDimLabel COLS, 23, PeakResistanceSlope      , wv // Slope of the peak TP resistance value over the last 5 seconds
-	/// @todo Dim label for  col 23 needs to be changed to steadStateResistanceSlope
-	SetDimLabel COLS, 24, ActiveTP				   , wv // Indicates if the TP is active on the headStage
-	/// @todo If user switched headStage mode while pressure regulation is ongoing, pressure reg either needs to be turned off, or steady state slope values need to be used
-	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
-	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
-	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, wv // If the PeakResistance slope is greater than the PeakResistanceSlope thershold pressure method does not need to update i.e. the pressure is "good" as it is
-	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck   , wv
-	SetDimLabel COLS, 26, LastPressureCommand     , wv
-	SetDimLabel COLS, 27, OngoingPessurePulse     , wv
-	SetDimLabel COLS, 28, LastVcom                , wv
-	SetDimLabel COLS, 29, ManSSPressure           , wv
-	SetDimLabel COLS, 30, ManPPPressure           , wv
-	SetDimLabel COLS, 31, ManPPDuration           , wv
-	SetDimLabel COLS, 32, LastPeakR               , wv
-	SetDimLabel COLS, 33, PeakR                   , wv
-	SetDimLabel COLS, 34, TimePeakRcheck          , wv
-	SetDimLabel COLS, 35, PosCalConst             , wv
-	SetDimLabel COLS, 36, NegCalConst             , wv
-	SetDimLabel COLS, 37, ApproachNear            , wv
-	SetDimLabel COLS, 38, SealAtm                 , wv
-	SetDimLabel COLS, 39, UserSelectedHeadStage   , wv
-	SetDimLabel COLS, 40, UserPressureOffset      , wv
-	SetDimLabel COLS, 41, UserPressureOffsetTotal , wv
-	SetDimLabel COLS, 42, UserPressureOffsetPeriod, wv
-
-	SetDimLabel ROWS, 0, Headstage_0, wv
-	SetDimLabel ROWS, 1, Headstage_1, wv
-	SetDimLabel ROWS, 2, Headstage_2, wv
-	SetDimLabel ROWS, 3, Headstage_3, wv
-	SetDimLabel ROWS, 4, Headstage_4, wv
-	SetDimLabel ROWS, 5, Headstage_5, wv
-	SetDimLabel ROWS, 6, Headstage_6, wv
-	SetDimLabel ROWS, 7, Headstage_7, wv
 
 	// prime the wave to avoid index out of range error for popup menus and to
 	// set all pressure methods to OFF (-1)
