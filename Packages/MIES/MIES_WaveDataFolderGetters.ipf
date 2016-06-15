@@ -3198,7 +3198,7 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
@@ -3212,35 +3212,36 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		Make/N=(8, 43) dfr:PressureData/Wave=wv
 
 		SetPressureWaveDimLabels(wv)
+
+		wv 	= nan
+
+		// prime the wave to avoid index out of range error for popup menus and to
+		// set all pressure methods to OFF (-1)
+		wv[][%Approach_Seal_BrkIn_Clear] = -1
+		wv[][%DAC_List_Index]            = 0
+		wv[][%DAC]                       = 0
+		wv[][%ADC]                       = 0
+		wv[][%TTL]                       = 0
+		wv[][%ApproachNear]              = 0
+		wv[][%SealAtm]                   = 0
+		wv[][%ManSSPressure]             = 0
+		wv[][%LastPressureCommand]       = 0
+
+		wv[][%DAC_Gain]        = 2
+		wv[][%ADC_Gain]        = 0.5
+		wv[][%PSI_air]         = 3.8
+		wv[][%PSI_solution]    = 0.55
+		wv[][%PSI_slice]       = 0.2
+		wv[][%PSI_nearCell]    = 0.6
+		wv[][%PSI_SealInitial] = -0.2
+		wv[][%PSI_SealMax]     = -1.4
+		wv[][%solutionZAxis]   = 3500
+		wv[][%sliceZAxis]      = 350
 	endif
 
-	wv 	= nan
-
-	// prime the wave to avoid index out of range error for popup menus and to
-	// set all pressure methods to OFF (-1)
-	wv[][%Approach_Seal_BrkIn_Clear] = -1
-	wv[][%DAC_List_Index]            = 0
-	wv[][%DAC]                       = 0
-	wv[][%ADC]                       = 0
-	wv[][%TTL]                       = 0
-	wv[][%ApproachNear]              = 0
-	wv[][%SealAtm]                   = 0
-	wv[][%ManSSPressure]             = 0
-	wv[][%LastPressureCommand]       = 0
 	wv[][%UserPressureOffset]        = 0
 	wv[][%UserPressureOffsetPeriod]  = 0
 	wv[][%UserPressureOffsetTotal]   = NaN
-
-	wv[][%DAC_Gain]        = 2
-	wv[][%ADC_Gain]        = 0.5
-	wv[][%PSI_air]         = 3.8
-	wv[][%PSI_solution]    = 0.55
-	wv[][%PSI_slice]       = 0.2
-	wv[][%PSI_nearCell]    = 0.6
-	wv[][%PSI_SealInitial] = -0.2
-	wv[][%PSI_SealMax]     = -1.4
-	wv[][%solutionZAxis]   = 3500
-	wv[][%sliceZAxis]      = 350
 
 	SetWaveVersion(wv, versionOfNewWave)
 
