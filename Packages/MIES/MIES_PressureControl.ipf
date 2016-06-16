@@ -1790,6 +1790,15 @@ Function P_SetAllHStoAtmospheric(panelTitle)
 	endif
 End
 
+/// @brief Gets the pressure mode for a headstage
+///
+Function P_GetPressureMode(panelTitle, headStage)
+	string panelTitle
+	variable headstage
+	
+	return P_GetPressureDataWaveRef(panelTitle)[headStage][%Approach_Seal_BrkIn_Clear]
+End
+
 // PRESSURE CONTROLS; DA_ePHYS PANEL; DATA ACQUISTION TAB
 
 /// @brief Approach button.
