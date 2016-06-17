@@ -5,6 +5,7 @@
 /// @todo TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
 
 /// @name Constants used by pressure control
+/// @anchor PRESSURE_CONSTANTS
 /// @{
 static StrConstant  PRESSURE_CONTROLS_BUTTON_LIST  = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
 static StrConstant  PRESSURE_CONTROL_TITLE_LIST    = "Approach;Seal;Break In;Clear;Apply"
@@ -85,7 +86,7 @@ Function P_PressureControl(panelTitle)
 					P_ManSetPressure(panelTitle, headStage)
 					break
 				default:
-					PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = -1
+					PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
 					P_MethodAtmospheric(panelTitle, headstage)
 					break
 			endswitch
@@ -191,10 +192,11 @@ static Function P_MethodSeal(panelTitle, headStage)
 	// if the seal resistance is greater that 1 giga ohm set pressure to atmospheric AND stop sealing process
 	if(Resistance >= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
- 		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
+ 		if(PressureDataWv[headStage][%UserSelectedHeadStage] == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
  			P_UpdatePressureMode(panelTitle, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
  		else
  			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM // remove the seal mode
+			P_ResetPressureData(panelTitle, headStageNo = headstage)
 		endif
 
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 	= 0 // reset the time of last slope R check
@@ -268,10 +270,11 @@ static Function P_MethodBreakIn(panelTitle, headStage)
 	if(Resistance <= GIGA_SEAL)
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
 
-		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
+		if(PressureDataWv[headStage][%UserSelectedHeadStage] == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
  			P_UpdatePressureMode(panelTitle, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state and sets to atmospheric
  		else
  			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
+ 			P_ResetPressureData(panelTitle, headStageNo = headStage)
 		endif
 
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
@@ -315,10 +318,11 @@ static Function P_MethodClear(panelTitle, headStage)
 		endif
 	else
 		P_MethodAtmospheric(panelTitle, headstage) // set to atmospheric pressure
-		if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
+		if(PressureDataWv[headStage][%UserSelectedHeadStage] == headstage && !GetTabID(panelTitle, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
 			P_UpdatePressureMode(panelTitle, 3, StringFromList(3,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state
 		else
 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= P_METHOD_neg1_ATM // remove the seal mode
+			P_ResetPressureData(panelTitle, headStageNo = headStage)
 		endif
 		PressureDataWv[headStage][%TimePeakRcheck]			= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
@@ -666,8 +670,8 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	string panelTitle
 
 	variable settingHS 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
-	variable userHS = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable userHS = PressureDataWv[settingHS][%UserSelectedHeadStage]
 
 	PressureDataWv[settingHS][%DAC_List_Index] = GetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_dev")
 	PressureDataWv[settingHS][%DAC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA")
@@ -1281,8 +1285,8 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 	string pressureControlName
 	variable checkAll
 
-	variable headStageNo = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable headStageNo = PressureDataWv[0][%UserSelectedHeadStage]	
 	variable SavedPressureMode = PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear]
 
 	if(P_ValidatePressureSetHeadstage(panelTitle, headStageNo)) // check if headStage pressure settings are valid
@@ -1292,10 +1296,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 			SetControlTitle(panelTitle, pressureControlName, StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST))
 			SetControlTitleColor(panelTitle, pressureControlName, 0, 0, 0)
 			PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
-			PressureDataWv[headStageNo][%TimeOfLastRSlopeCheck]     = 0.0
-			PressureDataWv[headStageNo][%UserPressureOffset]        = 0.0
-			PressureDataWv[headStageNo][%UserPressureOffsetTotal]   = NaN
-			PressureDataWv[headStageNo][%UserPressureOffsetPeriod]  = 0.0
+			P_ResetPressureData(panelTitle, headStageNo = headStageNo)
 		else // saved and new pressure mode don't match
 			if(SavedPressureMode != P_METHOD_neg1_ATM) // saved pressure mode isn't pressure OFF (-1)
 				// reset the button for the saved pressure mode
@@ -1323,6 +1324,26 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 
 	if(checkAll)
 		P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
+	endif
+End
+
+/// @brief Resets pressure data to base state
+///
+static Function P_ResetPressureData(panelTitle, [headStageNo])
+	string panelTitle
+	variable headStageNo
+	
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	if(paramIsDefault(headStageNo))
+		PressureDataWv[][%TimeOfLastRSlopeCheck]     = 0.0
+		PressureDataWv[][%UserPressureOffset]        = 0.0
+		PressureDataWv[][%UserPressureOffsetTotal]   = NaN
+		PressureDataWv[][%UserPressureOffsetPeriod]  = 0.0		
+	else
+		PressureDataWv[headStageNo][%TimeOfLastRSlopeCheck]     = 0.0
+		PressureDataWv[headStageNo][%UserPressureOffset]        = 0.0
+		PressureDataWv[headStageNo][%UserPressureOffsetTotal]   = NaN
+		PressureDataWv[headStageNo][%UserPressureOffsetPeriod]  = 0.0	
 	endif
 End
 
@@ -1417,17 +1438,11 @@ Function P_InitBeforeTP(panelTitle)
 	string panelTitle
 
 	variable headstage
-
+	
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-
-	// reset the user defineable pressure offset to their intial values
-	PressureDataWv[][%UserPressureOffset]       = 0.0
-	PressureDataWv[][%UserPressureOffsetTotal]  = NaN
-	PressureDataWv[][%UserPressureOffsetPeriod] = 0.0
-
-	headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	headstage = PressureDataWv[0][%UserSelectedHeadStage]
+	P_ResetPressureData(panelTitle)
 	P_SaveUserSelectedHeadstage(panelTitle, headstage)
-
 	P_LoadPressureButtonState(panelTitle)
 End
 
@@ -1797,6 +1812,55 @@ Function P_GetPressureMode(panelTitle, headStage)
 	variable headstage
 	
 	return P_GetPressureDataWaveRef(panelTitle)[headStage][%Approach_Seal_BrkIn_Clear]
+End
+
+/// @brief Sets the pressure mode
+///
+/// Intended for use by other processes
+/// @param panelTitle device
+/// @param headStage headstage number
+/// @param pressureMode One of the pressure modes defined in @ref PRESSURE_CONSTANTS
+/// @param pressure [optional, ignored by default. Sets pressure of manual mode]
+Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
+	string panelTitle
+	variable headstage
+	variable pressureMode
+	variable pressure
+	
+	ASSERT(headstage < NUM_HEADSTAGES && headStage >= 0,  "Select headstage number between 0 and 7")
+	ASSERT(pressureMode >= P_METHOD_neg1_ATM && pressureMode <= P_METHOD_4_MANUAL, "Select a pressure mode between -1 and 4")
+	
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable activePressureMode = P_GetPressureMode(panelTitle, headStage)
+	variable UserSelectedHS = PressureDataWv[headStage][%UserSelectedHeadStage]
+	
+	if(!paramIsDefault(pressure) && pressureMode == P_METHOD_4_MANUAL)
+		ASSERT(pressure > MIN_REGULATOR_PRESSURE && pressure < MAX_REGULATOR_PRESSURE, "Use pressure value greater than -10 psi and less than 10 psi")
+		if(UserSelectedHS == headStage)
+			SetSetVariable(panelTitle, "setvar_DataAcq_SSPressure", pressure)
+		endif
+		PressureDataWv[headStage][%ManSSPressure] = pressure
+	endif
+		
+	if(activePressureMode != pressureMode)
+		if(UserSelectedHS == headStage)
+			if(pressureMode == P_METHOD_neg1_ATM)
+				P_UpdatePressureMode(panelTitle, activePressureMode, stringFromList(activePressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)	
+				P_ResetPressureData(panelTitle, headStageNo = headStage)
+			else
+				P_UpdatePressureMode(panelTitle, PressureMode, stringFromList(PressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)	
+			endif
+		else
+				PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
+				if(pressureMode == P_METHOD_neg1_ATM)
+					P_ResetPressureData(panelTitle, headStageNo = headStage)
+				endif
+		endif
+	endif
+	
+	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
+		P_PressureControl(panelTitle)
+	endif
 End
 
 // PRESSURE CONTROLS; DA_ePHYS PANEL; DATA ACQUISTION TAB
