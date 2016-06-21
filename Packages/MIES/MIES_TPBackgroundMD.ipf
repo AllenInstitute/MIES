@@ -67,7 +67,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
-		CtrlNamedBackground TestPulseMD, period = 1, burst = 1, proc = ITC_BkrdTPFuncMD
+		CtrlNamedBackground TestPulseMD, period = 1, proc = ITC_BkrdTPFuncMD
 		CtrlNamedBackground TestPulseMD, start
 	endif
 

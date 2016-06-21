@@ -93,7 +93,7 @@ Function TP_Delta(panelTitle)
 	variable amplitudeIC, amplitudeVC
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-
+	
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
 	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
@@ -143,23 +143,23 @@ Function TP_Delta(panelTitle)
 	AvgDeltaSS = abs(AvgDeltaSS)
 
 	//	create wave that will hold instantaneous average
-	variable 	i = 0
+	variable 	i
 	variable 	columnsInWave = dimsize(Instantaneous, 1)
 	if(columnsInWave == 0)
 		columnsInWave = 1
 	endif
 
 	Make/FREE/N=(1, columnsInWave) InstAvg
-	variable 	OneDInstMax
 	variable 	OndDBaseline
-
+	
+	// store the clamp mode in a free wave
+	Make/FREE/N=(ItemsInList(clampModeString)) clampMode = str2num(StringFromList(p, clampModeString))
+	
 	do
 		matrixOp /Free Instantaneous1d = col(Instantaneous, i + ADChannelToMonitor)
 		WaveStats/Q/M=1 Instantaneous1d
-		OneDInstMax = v_max
 		OndDBaseline = AvgBaselineSS[0][i + ADChannelToMonitor]
-
-		if(OneDInstMax > OndDBaseline) // handles positive or negative TPs
+		if((ClampMode[i] == V_CLAMP_MODE ? sign(amplitudeVCGlobal) : sign(amplitudeICGlobal)) == 1) // handles positive or negative TPs
 			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
 		else
 			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
@@ -178,7 +178,7 @@ Function TP_Delta(panelTitle)
 
 	i = 0
 	do
-		if((str2num(stringfromlist(i, ClampModeString, ";"))) == I_CLAMP_MODE)
+		if(ClampMode[i] == I_CLAMP_MODE)
 			// R = V / I
 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
 			Multithread InstResistance[0][i] =  (InstAvg[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
