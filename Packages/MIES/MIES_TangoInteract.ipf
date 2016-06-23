@@ -61,10 +61,8 @@ Function TI_OpenDAPanel(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
 	
-	string daCommand = "DA_Ephys()"
-	
 	// run the open DA_Ephys panel command
-	Execute/Z daCommand
+	DAP_CreateDAEphysPanel()
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -80,7 +78,7 @@ Function TI_selectDeviceNumber(devNumber, [cmdID])
 	string cmdID
 	
 	// Not the most elegant thing, but we know what the popup menu always is
-	SetPopupMenuIndex(BASE_WINDOW_TITLE, "popup_moreSettings_DeviceNo", devNumber)
+	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, "popup_moreSettings_DeviceNo", val=devNumber)
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -96,7 +94,7 @@ Function TI_selectITCDevice(placeHolder, [cmdID])
 	string cmdID
 	
 	// Not the most elegant thing, but we know what the popup menu always is
-	SetPopupMenuIndex(BASE_WINDOW_TITLE, "popup_MoreSettings_DeviceType", 5)
+	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, "popup_MoreSettings_DeviceType", val=5)
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -146,7 +144,7 @@ Function TI_selectAmpChannel(ampChannel, [cmdID])
 	
 	// Not the most elegant thing, but we know what the popup menu always is
 	// if need be, we can have the WSE pass which amp channel we want, but we'll just always go with the first channel for now
-	SetPopupMenuIndex("ITC18USB_Dev_0", "popup_Settings_Amplifier", ampChannel)
+	PGC_SetAndActivateControl("ITC18USB_Dev_0", "popup_Settings_Amplifier", val=ampChannel)
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -202,7 +200,7 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, 1)
+		TI_WriteAck(cmdID, 0)
 	endif 
 End
 
@@ -263,6 +261,7 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 	variable noLockedDevs
 	variable n
 	string currentPanel
+	string responseString
 
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
@@ -411,10 +410,17 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 		endif
 	endfor
 
-	// determine if the cmdID was provided
-	// initResult = 0 <-success
+	// build up the response string
+	sprintf responseString, "ampConfigErrorCount:%d",  numErrors
+
+	// see if a cmdID was passed
 	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, numErrors)
+		// and now call the async function to return the value
+		TI_WriteAck(cmdID, 1)
+		TI_WriteAsyncResponse(cmdID, responseString)
+	else
+		print "no WSE response required"
+		print responseString
 	endif
 End
 
@@ -438,6 +444,8 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	variable baselineAverage
 	variable qcResult
 	variable adChannel
+	string responseString
+	variable cycleNum
 	
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
@@ -465,7 +473,10 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		if(FindListItem(bathStimWave, ListOfWavesInFolder) == -1)
 			print "EXTPINBATH* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
-				TI_WriteAck(cmdID, qcResult)
+				// build up the response string
+				TI_WriteAck(cmdID, 1)
+				sprintf responseString, "qcResult:%f", qcResult
+				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
 			return 0
 		endif
@@ -475,7 +486,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!IsDeviceActiveWithBGTask(currentPanel, "TestPulse"))
@@ -485,28 +496,95 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		// and now hit the Auto pipette offset
 		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", headStage)
 		
-		// and grab the baseline avg value
-		WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
+		// Set up the QC Wave so the background task can get the information it needs
+		Wave/T QCWave = GetQCWaveRef(currentPanel)
+		QCWave[0][%headstage] = num2str(headstage)
 		
-		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-		ASSERT(adChannel >= 0, "Could not query AD channel")
-		baselineAverage = BaselineSSAvg[0][adChannel]
-		
-		print "baseline Average: ", baselineAverage
-		
-		// See if we pass the baseline QC
-		if (abs(baselineAverage) < 100.0)
-			ITC_StartDAQSingleDevice(currentPanel)
-			qcResult = baselineAverage
+		if(!ParamIsDefault(cmdID))
+			QCWave[0][%cmdID] = cmdID
+		else
+			QCWave[0][%cmdID] = "foobar"
 		endif
+		
+		if(!ParamIsDefault(cmdID))
+			TI_WriteAck(cmdID, 1)
+		endif
+		// start the background task
+		TI_StartBckgrdBaselineQCCheck()
 	endfor
+End
+
+/// @brief Run the Baseline QC check in the background
+///
+/// @param cmdID        optional parameter...if being called from WSE, this will be present.
+Function TI_StartBckgrdBaselineQCCheck()
+	CtrlNamedBackground TI_finishBaselineQCCheck, period=2, proc=TI_finishBaselineQCCheck
+	CtrlNamedBackground TI_finishBaselineQCCheck, start
+End
+
+/// @brief Complete the Baseline QC check in the background
+///
+Function TI_finishBaselineQCCheck(s)
+	STRUCT WMBackgroundStruct &s
+
+	string currentPanel
+
+	variable headstage
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable cycles
+
+	variable baselineAverage
+	variable qcResult
+	variable adChannel
+	string responseString
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	//this is a hack, but we know that for using this QC function we only have one locked device
+	currentPanel = StringFromList(0, lockedDevList)
+
+	Wave/T QCWave = GetQCWaveRef(currentPanel)
+	headstage = str2num(QCWave[0][%headstage])
+	cmdID =  QCWave[0][%cmdID]
+
+	cycles = 5 //define how many cycles the test pulse must run
+	if(TP_TestPulseHasCycled(currentPanel,cycles))
+		print "Enough Cycles passed..."
+	else
+		return 0
+	endif
+
+	// grab the baseline avg value
+	DFREF dfr = GetDeviceTestPulse(currentPanel)
+	WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
+
+	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+
+	ASSERT(adChannel >= 0, "Could not query AD channel")
+	baselineAverage = BaselineSSAvg[0][adChannel]
+
+	print "baseline Average: ", baselineAverage
+
+	// See if we pass the baseline QC
+	if (abs(baselineAverage) < 100.0)
+		ITC_StartDAQSingleDevice(currentPanel)
+		qcResult = baselineAverage
+	endif
 	
 	print "qcResult: ", qcResult
 	
 	// determine if the cmdID was provided
-	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, qcResult)
+	if(cmpstr(cmdID,"foobar") != 0)
+		// build up the response string
+		sprintf responseString, "qcResult:%f", qcResult
+		TI_WriteAsyncResponse(cmdID, responseString)
 	endif
+
+	return 1
 End
 
 /// @brief Run the Electrode Drift QC check
@@ -541,6 +619,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 	variable qcResult = 0
 	variable adChannel
 	variable meanValue
+	string responseString
 	
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
@@ -588,7 +667,10 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		if(FindListItem(blowoutStimWave, ListOfWavesInFolder) == -1)
 			print "EXTPBLWOUT* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
-				TI_WriteAck(cmdID, qcResult)
+				TI_WriteAck(cmdID, 1)
+				// build up the response string
+				sprintf responseString, "qcResult:%d", qcResult
+				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
 			return 0
 		endif
@@ -598,7 +680,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 				
 		// look at the instResistance already saved in the lab notebook.  This should be the InstResistance from the start of the experiment.
 		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
@@ -623,16 +705,15 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		if ((abs(currentInstResistanceVal) >= (1.10*(abs(startInstResistanceVal)))) || (abs(currentInstResistanceVal) >= (1.10*(abs(startInstResistanceVal)))))
 			print "InstResistance Value does not match from beginning of the experiment...please clear the pipette and try again..."
 			if(!ParamIsDefault(cmdID))
-				TI_WriteAck(cmdID, qcResult)
+				TI_WriteAck(cmdID, 1)
+				// build up the response string
+				sprintf responseString, "qcResult:%f", qcResult
+				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
 			return 0
 		endif
 		
 		// switch to IC
-		// turn off the VC mode first
-		PGC_SetAndActivateControl(currentPanel, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val=CHECKBOX_UNSELECTED)
-		
-		// and now turn on the IC
 		PGC_SetAndActivateControl(currentPanel, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
 		
 		// and now disable the holding current
@@ -648,7 +729,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		// find the index for for the psa routine
 		psaFuncList = AM_PS_sortFunctions()
 		psaFuncIndex = WhichListItem("electrodeBaselineQC", psaFuncList, ";")
-		SetPopupMenuIndex("analysisMaster", psaMenu, psaFuncIndex)
+		PGC_SetAndActivateControl("analysisMaster", psaMenu, val=psaFuncIndex)
 	
 		// do the on/off check boxes for consistency
 		SetCheckBoxState("analysisMaster", psaCheck, 1)
@@ -669,7 +750,10 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, qcResult)
+		TI_WriteAck(cmdID, 1)
+		// build up the response string
+		sprintf responseString, "qcResult:%f", qcResult
+		TI_WriteAsyncResponse(cmdID, responseString)
 	endif
 End
 
@@ -695,6 +779,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 	variable qcResult
 	variable adChannel
 	variable tpBufferSetting
+	string responseString
 
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
@@ -713,6 +798,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 
 		// build up the list of available wave sets
 		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA")
+		print "ListOfWaves: ", ListOfWavesInFolder
 		
 		// find the stim wave that matches EXTPBREAKN...can have date and DA number attached to the end
 		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
@@ -722,7 +808,10 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 		if(FindListItem(breakinStimWave, ListOfWavesInFolder) == -1)
 			print "EXTPBREAKN* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
-				TI_WriteAck(cmdID, qcResult)
+				TI_WriteAck(cmdID, 1)
+				// build up the response string
+				sprintf responseString, "qcResult:%f", qcResult
+				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
 			return 0
 		endif
@@ -745,30 +834,96 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 
-		// and grab the initial resistance avg value
-		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+		// Set up the QC Wave so the background task can get the information it needs
+		Wave/T QCWave = GetQCWaveRef(currentPanel)
+		QCWave[0][%headstage] = num2str(headstage)
 
-		// and get the steady state resistance
-		WAVE/SDFR=dfr SSResistance
-
-		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-		ASSERT(adChannel >= 0, "Could not query AD channel")
-		instResistanceVal = InstResistance[0][adChannel]
-		ssResistanceVal = SSResistance[0][adChannel]
-
-		print "Initial Access Resistance: ", instResistanceVal
-		print "SS Resistance: ", ssResistanceVal
-
-		// See if we pass the baseline QC
-		if ((instResistanceVal<20.0) && (instResistanceVal < (.15*ssResistanceVal)))
-			// and now run the EXTPBREAKN wave so that things are saved into the data record
-			print "pushing the start button..."
-			PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
-			qcResult = instResistanceVal
-		else // since the check failed, have to turn off the test pulse
-			ITC_StopTestPulseSingleDevice(currentPanel)
+		if(!ParamIsDefault(cmdID))
+			QCWave[0][%cmdID] = cmdID
+		else
+			QCWave[0][%cmdID] = "foobar"
 		endif
+
+		QCWave[0][%tpBuffer] = num2str(tpBufferSetting)
+
+		if(!ParamIsDefault(cmdID))
+			TI_WriteAck(cmdID, 1)
+		endif
+
+		// start the background task
+		TI_StartBckgrdInitAccessQCCheck()
 	endfor
+End
+
+/// @brief Complete the Init Resistance QC check in the background
+///
+/// @param cmdID        optional parameter...if being called from WSE, this will be present.
+Function TI_StartBckgrdInitAccessQCCheck()
+	CtrlNamedBackground TI_finishInitAccessQCCheck, period=2, proc=TI_finishInitAccessQCCheck
+	CtrlNamedBackground TI_finishInitAccessQCCheck, start
+End
+
+/// @brief Complete the Baseline QC check in the background
+///
+Function TI_finishInitAccessQCCheck(s)
+	STRUCT WMBackgroundStruct &s
+
+	string currentPanel
+
+	variable headstage
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable cycles
+
+	variable instResistanceVal, ssResistanceVal, tpBufferSetting
+	variable qcResult
+	variable adChannel
+	string responseString
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	//this is a hack, but we know that for using this QC function we only have one locked device
+	currentPanel = StringFromList(0, lockedDevList)
+
+	Wave/T QCWave = GetQCWaveRef(currentPanel)
+	headstage = str2num(QCWave[0][%headstage])
+	cmdID =  QCWave[0][%cmdID]
+	tpBufferSetting = str2num(QCWave[0][%tpBuffer])
+
+	cycles = 5 //define how many cycles the test pulse must run
+	if(TP_TestPulseHasCycled(currentPanel,cycles))
+		print "Enough Cycles passed..."
+	else
+		return 0
+	endif
+
+	// and grab the initial resistance avg value
+	DFREF dfr = GetDeviceTestPulse(currentPanel)
+	WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+
+	// and get the steady state resistance
+	WAVE/SDFR=dfr SSResistance
+
+	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+	ASSERT(adChannel >= 0, "Could not query AD channel")
+	instResistanceVal = InstResistance[0][adChannel]
+	ssResistanceVal = SSResistance[0][adChannel]
+
+	print "Initial Access Resistance: ", instResistanceVal
+	print "SS Resistance: ", ssResistanceVal
+
+	// See if we pass the baseline QC
+	if ((instResistanceVal<20.0) && (instResistanceVal < (.15*ssResistanceVal)))
+		// and now run the EXTPBREAKN wave so that things are saved into the data record
+		print "pushing the start button..."
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
+		qcResult = instResistanceVal
+	else // since the check failed, have to turn off the test pulse
+		ITC_StopTestPulseSingleDevice(currentPanel)
+	endif
 
 	print "qcResult: ", qcResult
 
@@ -776,9 +931,13 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 	SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", tpBufferSetting)
 
 	// determine if the cmdID was provided
-	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, qcResult)
+	if(stringmatch(cmdID,"foobar") != 1)
+		// build up the response string
+		sprintf responseString, "qcResult:%f", qcResult
+		TI_WriteAsyncResponse(cmdID, responseString)
 	endif
+
+	return 1
 End
 
 ///@brief routine to be called from the WSE to use a one step scale adjustment to find the scale factor that causes and AP firing
@@ -862,7 +1021,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 	
 		// push the PSA_waveName into the right place
 		// find the index for for the psa routine 
@@ -871,13 +1030,13 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 
 		psaFuncList = AM_PS_sortFunctions()
 		psaFuncIndex	 = WhichListItem("returnActionPotential", psaFuncList)
-		SetPopupMenuIndex("analysisMaster", psaMenu, psaFuncIndex)
+		PGC_SetAndActivateControl("analysisMaster", psaMenu, val=psaFuncIndex)
 		
 		// push the PAA_waveName into the right place
 		// find the index for for the psa routine
 		paaFuncList = AM_PA_sortFunctions()
 		paaFuncIndex = WhichListItem("adjustScaleFactor", paaFuncList, ";")
-		SetPopupMenuIndex("analysisMaster", paaMenu, paaFuncIndex)
+		PGC_SetAndActivateControl("analysisMaster", paaMenu, val=paaFuncIndex)
 	
 		// do the on/off check boxes for consistency
 		SetCheckBoxState("analysisMaster", psaCheck, 1)
@@ -935,6 +1094,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 	variable ssResistanceVal
 	variable qcResult
 	variable adChannel
+	string responseString
 
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
@@ -963,7 +1123,10 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		if(FindListItem(attStimWave, ListOfWavesInFolder) == -1)
 			print " EXTPCllATT* wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
-				TI_WriteAck(cmdID, qcResult)
+				TI_WriteAck(cmdID, 1)
+				// build up the response string
+				sprintf responseString, "qcResult:%f", qcResult
+				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
 			return 0
 		endif
@@ -973,59 +1136,121 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
 			TP_StartTestPulseSingleDevice(currentPanel)
 		endif
 		
-		// and grab the baseline avg value
-		WAVE/SDFR=dfr SSResistance // wave that contains the Steady State Resistance from the TP
+		// Set up the QC Wave so the background task can get the information it needs
+		Wave/T QCWave = GetQCWaveRef(currentPanel)
+		QCWave[0][%headstage] = num2str(headstage)
 		
-		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-		ASSERT(adChannel >= 0, "Could not query AD channel")
-		ssResistanceVal = SSResistance[0][adChannel]
-		
-		print "Steady State Resistance: ", ssResistanceVal
-		
-		// See if we pass the baseline QC
-		//  added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
-		try
-			if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
-				// and now run the EXTPCIIATT wave so that things are saved into the data record
-				// now start the sweep process
-				
-				ITC_StartDAQSingleDevice(currentPanel)
-				qcResult = ssResistanceVal
-			else
-				print "Below QC threshold...will repeat QC test..."
-				abort
-			endif
-		catch
-			ssResistanceVal = SSResistance[0][adChannel]
-			
-			print "Steady State Resistance: ", ssResistanceVal
-			
-			if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
-				// and now run the EXTPCIIATT wave so that things are saved into the data record
-				// now start the sweep process
-				
-				ITC_StartDAQSingleDevice(currentPanel)
-				qcResult = ssResistanceVal
-			else
-				// failed two tries at the QC check, so turn off the test pulse 
-				ITC_StopTestPulseSingleDevice(currentPanel)
-			endif
-		endtry		
+		if(!ParamIsDefault(cmdID))
+			QCWave[0][%cmdID] = cmdID
+		else
+			QCWave[0][%cmdID] = "foobar"
+		endif
+
+		if(!ParamIsDefault(cmdID))
+			TI_WriteAck(cmdID, 1)
+		endif
+		// start the background task
+		TI_StartBckgrdGigOhmSealQCCheck()
 	endfor
+End
+
+/// @brief Complete the Gig Ohm Seal QC check in the background
+Function TI_StartBckgrdGigOhmSealQCCheck()
+	CtrlNamedBackground TI_finishGigOhmSealQCCheck, period=2, proc=TI_finishGigOhmSealQCCheck
+	CtrlNamedBackground TI_finishGigOhmSealQCCheck, start
+End
+
+///@brief finish the Gig Ohm Seal QC in the background
+Function TI_finishGigOhmSealQCCheck(s)
+	STRUCT WMBackgroundStruct &s
+
+	string currentPanel
+	variable headstage
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable cycles
+
+	variable ssResistanceVal
+	variable qcResult
+	variable adChannel
+	string responseString
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	//this is a hack, but we know that for using this QC function we only have one locked device
+	currentPanel = StringFromList(0, lockedDevList)
+
+	Wave/T QCWave = GetQCWaveRef(currentPanel)
+	headstage = str2num(QCWave[0][%headstage])
+	cmdID =  QCWave[0][%cmdID]
+
+	cycles = 10 //define how many times the test pulse must run
+	if(TP_TestPulseHasCycled(currentPanel, cycles))
+		print "Enough Cycles passed..."
+	else
+		return 0
+	endif
+
+	// and grab the Steady State Resistance
+	DFREF dfr = GetDeviceTestPulse(currentPanel)
+	WAVE/Z/SDFR=dfr SSResistance // wave that contains the Steady State Resistance from the TP
+
+	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
+	ASSERT(adChannel >= 0, "Could not query AD channel")
+	ssResistanceVal = SSResistance[0][adChannel]
+		
+	print "Steady State Resistance: ", ssResistanceVal
+		
+	// See if we pass the Steady State Resistance
+	//  added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
+	try
+		if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
+			// and now run the EXTPCIIATT wave so that things are saved into the data record
+			// now start the sweep process
+				
+			ITC_StartDAQSingleDevice(currentPanel)
+			qcResult = ssResistanceVal
+		else
+			print "Below QC threshold...will repeat QC test..."
+			abort
+		endif
+	catch
+		ssResistanceVal = SSResistance[0][adChannel]
+			
+		print "Second Pass: Steady State Resistance: ", ssResistanceVal
+			
+		if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
+			// and now run the EXTPCIIATT wave so that things are saved into the data record
+			// now start the sweep process
+				
+			ITC_StartDAQSingleDevice(currentPanel)
+			qcResult = ssResistanceVal
+		else
+			// failed two tries at the QC check, so turn off the test pulse
+			ITC_StopTestPulseSingleDevice(currentPanel)
+		endif
+	endtry
 	
 	print "qcResult: ", qcResult
 	
 	// determine if the cmdID was provided
-	if(!ParamIsDefault(cmdID))
-		TI_WriteAck(cmdID, qcResult)
+	if(stringmatch(cmdID,"foobar") != 1)
+		// build up the response string
+		sprintf responseString, "qcResult:%f", qcResult
+		TI_WriteAsyncResponse(cmdID, responseString)
 	endif
+
+	return 1
 End
 		
 		
@@ -1115,7 +1340,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 	
 		// push the PSA_waveName into the right place
 		// find the index for for the psa routine 
@@ -1124,13 +1349,13 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 
 		psaFuncList = AM_PS_sortFunctions()
 		psaFuncIndex	 = WhichListItem("returnActionPotential", psaFuncList, ";")
-		SetPopupMenuIndex("analysisMaster", psaMenu, psaFuncIndex)
+		PGC_SetAndActivateControl("analysisMaster", psaMenu, val=psaFuncIndex)
 		
 		// push the PAA_waveName into the right place
 		// find the index for for the psa routine
 		paaFuncList = AM_PA_sortFunctions()
 		paaFuncIndex = WhichListItem("bracketScaleFactor", paaFuncList, ";")
-		SetPopupMenuIndex("analysisMaster", paaMenu, paaFuncIndex)
+		PGC_SetAndActivateControl("analysisMaster", paaMenu, val=paaFuncIndex)
 	
 		// do the on/off check boxes for consistency
 		SetCheckBoxState("analysisMaster", psaCheck, 1)
@@ -1212,7 +1437,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// put the scale in the right place 
 		SetSetVariable(currentPanel, scaleWidgetName, scaleFactor)
@@ -1221,7 +1446,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))	
-		TI_WriteAck(cmdID, 1)
+		TI_WriteAck(cmdID, 0)
 	endif
 End
 

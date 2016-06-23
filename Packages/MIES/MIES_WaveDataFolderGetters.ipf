@@ -3376,6 +3376,47 @@ Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
 	return wv
 End
 
+///@brief Returns a wave reference to the QC Wave.  Used for completing QC functions background tasks
+///
+/// Rows:
+/// - 0: Headstage
+/// - 1: cmdID passed in from WSE
+/// - 2: tpBuffer, used to hold previous tp settings. Setting will be restored upon completion of qc function.
+///
+Function/Wave GetQCWaveRef(panelTitle)
+	string panelTitle
+
+	DFREF dfr =GetDevSpecLabNBTempFolder(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = QCWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(3) dfr:QCWave/Wave=wv
+
+	SetDimLabel 0, 0, headstage, wv
+	SetDimLabel 0, 1, cmdID, wv
+	SetDimLabel 0, 2, tpBuffer, wv
+
+	return wv
+End
+
+/// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
+Function/DF GetDevSpecLabNBTempFolder(panelTitle)
+	   string panelTitle
+
+	   return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(panelTitle))
+End
+
+/// @brief Return the full path to the device specific lab notebook temp folder, e.g. root:MIES:LabNoteBook:ITC18USB:Device0:Temp
+Function/S GetDevSpecLabNBTempFolderAS(panelTitle)
+	   string panelTitle
+
+	   return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
+End
+
 /// @brief Return the datafolder reference to the device specific text documentation
 Function/DF GetDevSpecAnlyssSttngsWavePath(panelTitle)
 	string panelTitle
