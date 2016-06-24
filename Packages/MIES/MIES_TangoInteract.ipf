@@ -515,8 +515,6 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 End
 
 /// @brief Run the Baseline QC check in the background
-///
-/// @param cmdID        optional parameter...if being called from WSE, this will be present.
 Function TI_StartBckgrdBaselineQCCheck()
 	CtrlNamedBackground TI_finishBaselineQCCheck, period=2, proc=TI_finishBaselineQCCheck
 	CtrlNamedBackground TI_finishBaselineQCCheck, start
@@ -856,8 +854,6 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 End
 
 /// @brief Complete the Init Resistance QC check in the background
-///
-/// @param cmdID        optional parameter...if being called from WSE, this will be present.
 Function TI_StartBckgrdInitAccessQCCheck()
 	CtrlNamedBackground TI_finishInitAccessQCCheck, period=2, proc=TI_finishInitAccessQCCheck
 	CtrlNamedBackground TI_finishInitAccessQCCheck, start
