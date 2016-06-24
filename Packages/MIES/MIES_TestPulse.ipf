@@ -554,3 +554,16 @@ Function TP_CheckIfTestpulseIsRunning(panelTitle)
 
 	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 End
+
+/// @brief See if the testpulse has run enough times to create valid measurements
+///
+/// @param panelTitle		DA_Ephys panel name
+/// @param cycles		number of cycles that test pulse must run
+Function TP_TestPulseHasCycled(panelTitle, cycles)
+	string panelTitle
+	variable cycles
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+
+	return GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY) > cycles
+End
