@@ -328,8 +328,7 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 				numErrors += 1
 			endif
 
-			// This doesn't seem to have a  corresponding command in the AI_SendToAmp() function
-			initResult = MCC_SetOscKillerEnable(1)
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
 			if(!IsFinite(initResult))
 				print "Error setting OscKillerEnable to on"
 				numErrors += 1
@@ -351,7 +350,7 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 				numErrors += 1
 			endif
 
-			initResult = MCC_SetOscKillerEnable(1)
+			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
 			if(!IsFinite(initResult))
 				print "Error setting OscKillerEnable to on"
 				numErrors += 1
@@ -376,15 +375,13 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 				numErrors += 1
 			endif
 
-			// doesn't seem to have a corresponding option in the AI_SendToAmp() function
-			initResult = MCC_SetSlowCompTauX20Enable(0)
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETSLOWCOMPTAUX20ENAB_FUNC, 0)
 			if(!IsFinite(initResult))
 				print "Error setting SlowCompTauX20Enable to off"
 				numErrors += 1
 			endif
 
-			// Also, doesn't have a corresponding option in the AI_SendToAmp() function
-			initResult = MCC_SetRsCompBandwidth(0)
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETRSCOMPBANDWIDTH_FUNC, 0.0)
 			if(!IsFinite(initResult))
 				print "Error setting RsCompBandwidth to 0"
 				numErrors += 1

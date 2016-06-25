@@ -257,21 +257,22 @@ End
 /// @param headStage        number of the headStage, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            Numerical value to send, ignored by getter functions (MCC_GETHOLDING_FUNC and MCC_GETPIPETTEOFFSET_FUNC)
+/// @param value            Numerical value to send, ignored by all getter functions
 /// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
 ///                         check the current value and do nothing if it is equal within some tolerance to the one written
+/// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
+///                         `mV` instead of `V`
 ///
 /// @returns return value or error condition. An error is indicated by a return value of NaN.
-///
-/// @todo split function into a getter and setter, make the setter static as outside callers should use AI_UpdateAmpModel
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite])
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes])
 	string panelTitle
 	variable headStage, mode, func, value
-	variable checkBeforeWrite
+	variable checkBeforeWrite, usePrefixes
 
-	variable ret, headstageMode
+	variable ret, headstageMode, scale
 	string str
 
+	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
 	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
 	AI_AssertOnInvalidClampMode(mode)
 
@@ -285,6 +286,12 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		return NaN
 	endif
 
+	if(ParamIsDefault(usePrefixes) || !!usePrefixes)
+		scale = AI_GetMCCScale(mode, func)
+	else
+		scale = 1
+	endif
+
 	headstageMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
@@ -293,11 +300,12 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		return NaN
 	endif
 
-	sprintf str, "headStage=%d, mode=%d, func=%d, value=%g", headStage, mode, func, value
+	sprintf str, "headStage=%d, mode=%d, func=%d, value(passed)=%g, scale=%g\r", headStage, mode, func, value, scale
 	DEBUGPRINT(str)
 
-	if(checkBeforeWrite)
+	value *= scale
 
+	if(checkBeforeWrite)
 		switch(func)
 			case MCC_SETHOLDING_FUNC:
 				ret = MCC_Getholding()
@@ -305,14 +313,32 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			case MCC_SETHOLDINGENABLE_FUNC:
 				ret = MCC_GetholdingEnable()
 				break
+			case MCC_SETBRIDGEBALENABLE_FUNC:
+				ret = MCC_GetBridgeBalEnable()
+				break
+			case MCC_SETBRIDGEBALRESIST_FUNC:
+				ret = MCC_GetBridgeBalResist()
+				break
+			case MCC_SETNEUTRALIZATIONENABL_FUNC:
+				ret = MCC_GetNeutralizationEnable()
+				break
+			case MCC_SETNEUTRALIZATIONCAP_FUNC:
+				ret = MCC_GetNeutralizationCap()
+				break
+			case MCC_SETWHOLECELLCOMPENABLE_FUNC:
+				ret = MCC_GetWholeCellCompEnable()
+				break
 			case MCC_SETWHOLECELLCOMPCAP_FUNC:
 				ret = MCC_GetWholeCellCompCap()
 				break
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
 				ret = MCC_GetWholeCellCompResist()
 				break
-			case MCC_SETWHOLECELLCOMPENABLE_FUNC:
-				ret = MCC_GetWholeCellCompEnable()
+			case MCC_SETRSCOMPENABLE_FUNC:
+				ret = MCC_GetRsCompEnable()
+				break
+			case MCC_SETRSCOMPBANDWIDTH_FUNC:
+				ret = MCC_GetRsCompBandwidth()
 				break
 			case MCC_SETRSCOMPCORRECTION_FUNC:
 				ret = MCC_GetRsCompCorrection()
@@ -320,26 +346,26 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			case MCC_SETRSCOMPPREDICTION_FUNC:
 				ret = MCC_GetRsCompPrediction()
 				break
-			case MCC_SETRSCOMPBANDWIDTH_FUNC:
-				ret = MCC_GetRsCompBandwidth()
-				break
-			case MCC_SETRSCOMPENABLE_FUNC:
-				ret = MCC_GetRsCompEnable()
-				break
-			case MCC_SETBRIDGEBALRESIST_FUNC:
-				ret = MCC_GetBridgeBalResist()
-				break
-			case MCC_SETBRIDGEBALENABLE_FUNC:
-				ret = MCC_GetBridgeBalEnable()
-				break
-			case MCC_SETNEUTRALIZATIONCAP_FUNC:
-				ret = MCC_GetNeutralizationCap()
-				break
-			case MCC_SETNEUTRALIZATIONENABL_FUNC:
-				ret = MCC_GetNeutralizationEnable()
+			case MCC_SETOSCKILLERENABLE_FUNC:
+				ret = MCC_GetOscKillerEnable()
 				break
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				ret = MCC_GetPipetteOffset()
+				break
+			case MCC_SETFASTCOMPCAP_FUNC:
+				ret = MCC_GetFastCompCap()
+				break
+			case MCC_SETSLOWCOMPCAP_FUNC:
+				ret = MCC_GetSlowCompCap()
+				break
+			case MCC_SETFASTCOMPTAU_FUNC:
+				ret = MCC_GetFastCompTau()
+				break
+			case MCC_SETSLOWCOMPTAU_FUNC:
+				ret = MCC_GetSlowCompTau()
+				break
+			case MCC_SETSLOWCOMPTAUX20ENAB_FUNC:
+				ret = MCC_GetSlowCompTauX20Enable()
 				break
 			case MCC_SETSLOWCURRENTINJENABL_FUNC:
 				ret = MCC_GetSlowCurrentInjEnable()
@@ -374,30 +400,14 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_SETHOLDINGENABLE_FUNC:
 			ret = MCC_SetholdingEnable(value)
 			break
-		case MCC_SETWHOLECELLCOMPCAP_FUNC:
-			ret = MCC_SetWholeCellCompCap(value)
+		case MCC_GETHOLDINGENABLE_FUNC:
+			ret = MCC_GetHoldingEnable()
 			break
-		case MCC_SETWHOLECELLCOMPRESIST_FUNC:
-			ret = MCC_SetWholeCellCompResist(value)
+		case MCC_SETBRIDGEBALENABLE_FUNC:
+			ret = MCC_SetBridgeBalEnable(value)
 			break
-		case MCC_SETWHOLECELLCOMPENABLE_FUNC:
-			ret = MCC_SetWholeCellCompEnable(value)
-			break
-		case MCC_SETRSCOMPCORRECTION_FUNC:
-			ret = MCC_SetRsCompCorrection(value)
-			break
-		case MCC_SETRSCOMPPREDICTION_FUNC:
-			ret = MCC_SetRsCompPrediction(value)
-			break
-		case MCC_SETRSCOMPBANDWIDTH_FUNC:
-			ret = MCC_SetRsCompBandwidth(value)
-			break
-		case MCC_SETRSCOMPENABLE_FUNC:
-			ret = MCC_SetRsCompEnable(value)
-			break
-		case MCC_AUTOBRIDGEBALANCE_FUNC:
-			MCC_AutoBridgeBal()
-			ret = MCC_GetBridgeBalResist() * 1e-6
+		case MCC_GETBRIDGEBALENABLE_FUNC:
+			ret = MCC_GetBridgeBalEnable()
 			break
 		case MCC_SETBRIDGEBALRESIST_FUNC:
 			ret = MCC_SetBridgeBalResist(value)
@@ -405,27 +415,121 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_GETBRIDGEBALRESIST_FUNC:
 			ret = MCC_GetBridgeBalResist()
 			break
-		case MCC_SETBRIDGEBALENABLE_FUNC:
-			ret = MCC_SetBridgeBalEnable(value)
-			break
-		case MCC_SETNEUTRALIZATIONCAP_FUNC:
-			ret = MCC_SetNeutralizationCap(value)
+		case MCC_AUTOBRIDGEBALANCE_FUNC:
+			MCC_AutoBridgeBal()
+			ret = AI_SendToAmp(panelTitle, headstage, mode, MCC_GETBRIDGEBALRESIST_FUNC, NaN, usePrefixes=usePrefixes)
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
 			break
+		case MCC_GETNEUTRALIZATIONENABL_FUNC:
+			ret = MCC_GetNeutralizationEnable()
+			break
+		case MCC_SETNEUTRALIZATIONCAP_FUNC:
+			ret = MCC_SetNeutralizationCap(value)
+			break
 		case MCC_GETNEUTRALIZATIONCAP_FUNC:
 			ret = MCC_GetNeutralizationCap()
 			break
+		case MCC_SETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_SetWholeCellCompEnable(value)
+			break
+		case MCC_GETWHOLECELLCOMPENABLE_FUNC:
+			ret = MCC_GetWholeCellCompEnable()
+			break
+		case MCC_SETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_SetWholeCellCompCap(value)
+			break
+		case MCC_GETWHOLECELLCOMPCAP_FUNC:
+			ret = MCC_GetWholeCellCompCap()
+			break
+		case MCC_SETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_SetWholeCellCompResist(value)
+			break
+		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
+			ret = MCC_GetWholeCellCompResist()
+			break
+		case MCC_AUTOWHOLECELLCOMP_FUNC:
+			MCC_AutoWholeCellComp()
+			// as we would have to return two values (resistance and capacitance)
+			// we return just zero
+			ret = 0
+			break
+		case MCC_SETRSCOMPENABLE_FUNC:
+			ret = MCC_SetRsCompEnable(value)
+			break
+		case MCC_GETRSCOMPENABLE_FUNC:
+			ret = MCC_GetRsCompEnable()
+			break
+		case MCC_SETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_SetRsCompBandwidth(value)
+			break
+		case MCC_GETRSCOMPBANDWIDTH_FUNC:
+			ret = MCC_GetRsCompBandwidth()
+			break
+		case MCC_SETRSCOMPCORRECTION_FUNC:
+			ret = MCC_SetRsCompCorrection(value)
+			break
+		case MCC_GETRSCOMPCORRECTION_FUNC:
+			ret = MCC_GetRsCompCorrection()
+			break
+		case MCC_SETRSCOMPPREDICTION_FUNC:
+			ret = MCC_SetRsCompPrediction(value)
+			break
+		case MCC_GETRSCOMPPREDICTION_FUNC:
+			ret = MCC_SetRsCompPrediction(value)
+			break
+		case MCC_SETOSCKILLERENABLE_FUNC:
+			ret = MCC_SetOscKillerEnable(value)
+			break
+		case MCC_GETOSCKILLERENABLE_FUNC:
+			ret = MCC_GetOscKillerEnable()
+			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			MCC_AutoPipetteOffset()
-			ret =  MCC_GetPipetteOffset() * 1e3
+			ret = AI_SendToAmp(panelTitle, headStage, mode, MCC_GETPIPETTEOFFSET_FUNC, NaN, usePrefixes=usePrefixes)
 			break
 		case MCC_SETPIPETTEOFFSET_FUNC:
 			ret = MCC_SetPipetteOffset(value)
 			break
 		case MCC_GETPIPETTEOFFSET_FUNC:
 			ret = MCC_GetPipetteOffset()
+			break
+		case MCC_SETFASTCOMPCAP_FUNC:
+			ret = MCC_SetFastCompCap(value)
+			break
+		case MCC_GETFASTCOMPCAP_FUNC:
+			ret = MCC_GetFastCompCap()
+			break
+		case MCC_SETSLOWCOMPCAP_FUNC:
+			ret = MCC_SetSlowCompCap(value)
+			break
+		case MCC_GETSLOWCOMPCAP_FUNC:
+			ret = MCC_GetSlowCompCap()
+			break
+		case MCC_SETFASTCOMPTAU_FUNC:
+			ret = MCC_SetFastCompTau(value)
+			break
+		case MCC_GETFASTCOMPTAU_FUNC:
+			ret = MCC_GetFastCompTau()
+			break
+		case MCC_SETSLOWCOMPTAU_FUNC:
+			ret = MCC_SetSlowCompTau(value)
+			break
+		case MCC_GETSLOWCOMPTAU_FUNC:
+			ret = MCC_GetSlowCompTau()
+			break
+		case MCC_SETSLOWCOMPTAUX20ENAB_FUNC:
+			ret = MCC_SetSlowCompTauX20Enable(value)
+			break
+		case MCC_GETSLOWCOMPTAUX20ENAB_FUNC:
+			ret = MCC_GetSlowCompTauX20Enable()
+			break
+		case MCC_AUTOFASTCOMP_FUNC:
+			ret = MCC_AutoFastComp()
+			break
+		case MCC_AUTOSLOWCOMP_FUNC:
+			ret = MCC_AutoSlowComp()
 			break
 		case MCC_SETSLOWCURRENTINJENABL_FUNC:
 			ret = MCC_SetSlowCurrentInjEnable(value)
@@ -445,47 +549,8 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		case MCC_GETSLOWCURRENTINJSETLT_FUNC:
 			ret = MCC_GetSlowCurrentInjSetlTime()
 			break
-		case MCC_GETHOLDINGENABLE_FUNC:
-			ret = MCC_GetHoldingEnable()
-			break
-		case MCC_AUTOSLOWCOMP_FUNC:
-			ret = MCC_AutoSlowComp()
-			break
-		case MCC_AUTOFASTCOMP_FUNC:
-			ret = MCC_AutoFastComp()
-			break
-		case MCC_GETFASTCOMPCAP_FUNC:
-			ret = MCC_GetFastCompCap()
-			break
-		case MCC_GETFASTCOMPTAU_FUNC:
-			ret = MCC_GetFastCompTau()
-			break
-		case MCC_GETSLOWCOMPCAP_FUNC:
-			ret = MCC_GetSlowCompCap()
-			break
-		case MCC_GETSLOWCOMPTAU_FUNC:
-			ret = MCC_GetSlowCompTau()
-			break
-		case MCC_AUTOWHOLECELLCOMP_FUNC:
-			MCC_AutoWholeCellComp()
-			// as we would have to return two values (resistance and capacitance)
-			// we return just zero
-			ret = 0
-			break
-		case MCC_GETWHOLECELLCOMPENABLE_FUNC:
-			ret = MCC_GetWholeCellCompEnable()
-			break
-		case MCC_GETWHOLECELLCOMPCAP_FUNC:
-			ret = MCC_GetWholeCellCompCap()
-			break
-		case MCC_GETWHOLECELLCOMPRESIST_FUNC:
-			ret = MCC_GetWholeCellCompResist()
-			break
-		case MCC_GETRSCOMPBANDWIDTH_FUNC:
-			ret = MCC_GetRsCompBandwidth()
-			break
 		default:
-			ASSERT(0, "Unknown function")
+			ASSERT(0, "Unknown function: " + num2str(func))
 			break
 	endswitch
 
@@ -493,7 +558,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 	endif
 
-	return ret
+	return ret * scale
 End
 
 /// @returns 1 if the MIES headstage mode matches the associated MCC mode, zero if not and NaN
@@ -525,6 +590,70 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	endif
 
 	return equalModes
+End
+
+/// @brief Return the unit prefixes used by MIES in comparison to the MCC app
+///
+/// @param clampMode clamp mode (pass `NaN` for doesn't matter)
+/// @param func      MCC function,  one of @ref AI_SendToAmpConstants
+Function AI_GetMCCScale(clampMode, func)
+	variable clampMode, func
+
+	if(IsFinite(clampMode))
+		AI_AssertOnInvalidClampMode(clampMode)
+	endif
+
+	if(clampMode == V_CLAMP_MODE)
+		switch(func)
+			case MCC_SETHOLDING_FUNC:
+				return 1e-3
+			case MCC_GETHOLDING_FUNC:
+				return 1e+3
+			case MCC_SETPIPETTEOFFSET_FUNC:
+				return 1e-3
+			case MCC_GETPIPETTEOFFSET_FUNC:
+				return 1e+3
+			case MCC_SETRSCOMPBANDWIDTH_FUNC:
+				return 1e+3
+			case MCC_GETRSCOMPBANDWIDTH_FUNC:
+				return 1e-3
+			case MCC_GETWHOLECELLCOMPCAP_FUNC:
+				return 1e+12
+			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
+				return 1e+6
+			case MCC_GETWHOLECELLCOMPRESIST_FUNC:
+				return 1e-6
+			case MCC_SETWHOLECELLCOMPCAP_FUNC:
+				return 1e-12
+			case MCC_GETWHOLECELLCOMPCAP_FUNC:
+				return 1e+12
+			default:
+				return 1
+				break
+		endswitch
+	else // IC and I=0
+		switch(func)
+			case MCC_SETBRIDGEBALRESIST_FUNC:
+				return 1e+6
+			case MCC_GETBRIDGEBALRESIST_FUNC:
+				return 1e-6
+			case MCC_SETHOLDING_FUNC:
+				return 1e-12
+			case MCC_GETHOLDING_FUNC:
+				return 1e+12
+			case MCC_SETPIPETTEOFFSET_FUNC:
+				return 1e-3
+			case MCC_GETPIPETTEOFFSET_FUNC:
+				return 1e+3
+			case MCC_SETNEUTRALIZATIONCAP_FUNC:
+				return 1e-12
+			case MCC_GETNEUTRALIZATIONCAP_FUNC:
+				return 1e+12
+			default:
+				return 1
+				break
+		endswitch
+	endif
 End
 
 /// @brief Update the AmpStorageWave entry and send the value to the amplifier
@@ -601,7 +730,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 			//V-clamp controls
 			case "setvar_DataAcq_Hold_VC":
 				AmpStorageWave[0][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value * 1e-3, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "check_DatAcq_HoldEnableVC":
 				AmpStorageWave[1][0][i] = value
@@ -609,18 +738,18 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "setvar_DataAcq_WCC":
 				AmpStorageWave[2][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, value * 1e-12, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "setvar_DataAcq_WCR":
 				AmpStorageWave[3][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value * 1e6, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "button_DataAcq_WCAuto":
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
-				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e12
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
 				AmpStorageWave[%WholeCellCap][0][i] = value
 				AI_UpdateAmpView(panelTitle, i, ctrl =  "setvar_DataAcq_WCC")
-				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e-6
+				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
 				AmpStorageWave[%WholeCellRes][0][i] = value
 				AI_UpdateAmpView(panelTitle, i, ctrl =  "setvar_DataAcq_WCR")
 				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
@@ -667,7 +796,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "setvar_DataAcq_PipetteOffset_VC":
 				AmpStorageWave[%PipetteOffsetVC][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value * 1e-3, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "button_DataAcq_AutoPipOffset_VC":
 				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
@@ -677,7 +806,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				clampMode = DAP_MIESHeadstageMode(panelTitle, i)
 				try
 					DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, i)
-					value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e3
+					value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
 					AmpStorageWave[%PipetteOffsetIC][0][i] = value
 					AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_IC")
 					DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
@@ -702,7 +831,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
 				AmpStorageWave[16][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value * 1e-12, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "check_DatAcq_HoldEnable":
 				AmpStorageWave[17][0][i] = value
@@ -710,7 +839,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "setvar_DataAcq_BB":
 				AmpStorageWave[18][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, value * 1e6, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "check_DatAcq_BBEnable":
 				AmpStorageWave[19][0][i] = value
@@ -718,7 +847,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "setvar_DataAcq_CN":
 				AmpStorageWave[20][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, value * 1e-12, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "check_DatAcq_CNEnable":
 				AmpStorageWave[21][0][i] = value
@@ -743,7 +872,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "setvar_DataAcq_PipetteOffset_IC":
 				AmpStorageWave[%PipetteOffsetIC][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value * 1e-3, checkBeforeWrite=checkBeforeWrite)
+				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite=checkBeforeWrite)
 				break
 			case "button_DataAcq_AutoPipOffset_IC":
 				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
@@ -753,7 +882,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				clampMode = DAP_MIESHeadstageMode(panelTitle, i)
 				try
 					DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, i)
-					value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite) * 1e3
+					value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
 					AmpStorageWave[%PipetteOffsetVC][0][i] = value
 					AI_UpdateAmpView(panelTitle, i, ctrl = "setvar_DataAcq_PipetteOffset_VC")
 					DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
@@ -990,70 +1119,33 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
 		ASSERT(IsFinite(DAC), "Expected finite DAC")
 
-		// now start to query the amp to get the status
 		if(channelClampMode[DAC][%DAC] == V_CLAMP_MODE)
-			// See if the thing is enabled
-			// Save the enabled state in column 0
-			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable() // V-Clamp holding enable
-
-			// Save the level in column 1
-			ampSettingsWave[0][1][i] = (MCC_GetHolding() * 1e+3)	// V-Clamp holding level, converts Volts to mV
-
-			// Save the Osc Killer Enable in column 2
-			ampSettingsWave[0][2][i] = MCC_GetOscKillerEnable() // V-Clamp Osc Killer Enable
-
-			// Save the RsCompBandwidth in column 3
-			ampSettingsWave[0][3][i] = (MCC_GetRsCompBandwidth() * 1e-3) // V-Clamp RsComp Bandwidth, converts Hz to KHz
-
-			// Save the RsCompCorrection in column 4
-			ampSettingsWave[0][4][i] = MCC_GetRsCompCorrection() // V-Clamp RsComp Correction
-
-			// Save the RsCompEnable in column 5
-			ampSettingsWave[0][5][i] =   MCC_GetRsCompEnable() // V-Clamp RsComp Enable
-
-			// Save the RsCompPrediction in column 6
-			ampSettingsWave[0][6][i] = MCC_GetRsCompPrediction() // V-Clamp RsCompPrediction
-
-			// Save the whole celll cap value in column 7
-			ampSettingsWave[0][7][i] =   MCC_GetWholeCellCompEnable() // V-Clamp Whole Cell Comp Enable
-
-			// Save the whole celll cap value in column 8
-			ampSettingsWave[0][8][i] =   (MCC_GetWholeCellCompCap() * 1e+12) // V-Clamp Whole Cell Comp Cap, Converts F to pF
-
-			// Save the whole cell comp resist value in column 9
-			ampSettingsWave[0][9][i] =  (MCC_GetWholeCellCompResist() * 1e-6) // V-Clamp Whole Cell Comp Resist, Converts Ohms to MOhms
-
-			ampSettingsWave[0][39][i] = MCC_GetFastCompCap() // V-Clamp Fast cap compensation
-			ampSettingsWave[0][40][i] = MCC_GetSlowCompCap() // V-Clamp Slow cap compensation
-			ampSettingsWave[0][41][i] = MCC_GetFastCompTau() // V-Clamp Fast compensation tau
-			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau() // V-Clamp Slow compensation tau
-
+			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable()
+			ampSettingsWave[0][1][i]  = MCC_GetHolding() * AI_GetMCCScale(V_CLAMP_MODE, MCC_GETHOLDING_FUNC)
+			ampSettingsWave[0][2][i]  = MCC_GetOscKillerEnable()
+			ampSettingsWave[0][3][i]  = MCC_GetRsCompBandwidth() * AI_GetMCCScale(V_CLAMP_MODE, MCC_GETRSCOMPBANDWIDTH_FUNC)
+			ampSettingsWave[0][4][i]  = MCC_GetRsCompCorrection()
+			ampSettingsWave[0][5][i]  = MCC_GetRsCompEnable()
+			ampSettingsWave[0][6][i]  = MCC_GetRsCompPrediction()
+			ampSettingsWave[0][7][i]  = MCC_GetWholeCellCompEnable()
+			ampSettingsWave[0][8][i]  = MCC_GetWholeCellCompCap() * AI_GetMCCScale(V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC)
+			ampSettingsWave[0][9][i]  = MCC_GetWholeCellCompResist() * AI_GetMCCScale(V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC)
+			ampSettingsWave[0][39][i] = MCC_GetFastCompCap()
+			ampSettingsWave[0][40][i] = MCC_GetSlowCompCap()
+			ampSettingsWave[0][41][i] = MCC_GetFastCompTau()
+			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau()
 		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE || channelClampMode[DAC][%DAC] == I_EQUAL_ZERO_MODE)
-			// Save the i clamp holding enabled in column 10
-			ampSettingsWave[0][10][i] =  MCC_GetHoldingEnable() // I-Clamp holding enable
-
-			// Save the i clamp holding value in column 11
-			ampSettingsWave[0][11][i] = (MCC_GetHolding() * 1e+12)	 // I-Clamp holding level, converts Amps to pAmps
-
-			// Save the neutralization enable in column 12
-			ampSettingsWave[0][12][i] = MCC_GetNeutralizationEnable() // I-Clamp Neut Enable
-
-			// Save neut cap value in column 13
-			ampSettingsWave[0][13][i] =  (MCC_GetNeutralizationCap() * 1e+12) // I-Clamp Neut Cap Value, Conversts Farads to pFarads
-
-			// save bridge balance enabled in column 14
-			ampSettingsWave[0][14][i] =   MCC_GetBridgeBalEnable() // I-Clamp Bridge Balance Enable
-
-			// save bridge balance enabled in column 15
-			ampSettingsWave[0][15][i] =  (MCC_GetBridgeBalResist() * 1e-6)	 // I-Clamp Bridge Balance Resist
-
-			ampSettingsWave[0][36][i] =  MCC_GetSlowCurrentInjEnable()
-			ampSettingsWave[0][37][i] =  MCC_GetSlowCurrentInjLevel()
-			ampSettingsWave[0][38][i] =  MCC_GetSlowCurrentInjSetlTime()
+			ampSettingsWave[0][10][i] = MCC_GetHoldingEnable()
+			ampSettingsWave[0][11][i] = MCC_GetHolding() * AI_GetMCCScale(I_CLAMP_MODE, MCC_GETHOLDING_FUNC)
+			ampSettingsWave[0][12][i] = MCC_GetNeutralizationEnable()
+			ampSettingsWave[0][13][i] = MCC_GetNeutralizationCap() * AI_GetMCCScale(I_CLAMP_MODE, MCC_GETNEUTRALIZATIONCAP_FUNC)
+			ampSettingsWave[0][14][i] = MCC_GetBridgeBalEnable()
+			ampSettingsWave[0][15][i] = MCC_GetBridgeBalResist() * AI_GetMCCScale(I_CLAMP_MODE, MCC_GETBRIDGEBALRESIST_FUNC)
+			ampSettingsWave[0][36][i] = MCC_GetSlowCurrentInjEnable()
+			ampSettingsWave[0][37][i] = MCC_GetSlowCurrentInjLevel()
+			ampSettingsWave[0][38][i] = MCC_GetSlowCurrentInjSetlTime()
 		endif
 
-		// save the axon telegraph settings as well
-		// get the data structure to get axon telegraph information
 		STRUCT AxonTelegraph_DataStruct tds
 		AI_InitAxonTelegraphStruct(tds)
 
@@ -1068,7 +1160,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsWave[0][23][i] = tds.ScaleFactor
 		ampSettingsWave[0][24][i] = tds.ScaleFactorUnits
 		ampSettingsWave[0][25][i] = tds.LPFCutoff
-		ampSettingsWave[0][26][i] = (tds.MembraneCap * 1e+12) // converts F to pF
+		ampSettingsWave[0][26][i] = tds.MembraneCap * 1e+12 // converts F to pF
 		ampSettingsWave[0][27][i] = tds.ExtCmdSens
 		ampSettingsWave[0][28][i] = tds.RawOutSignal
 		ampSettingsWave[0][29][i] = tds.RawScaleFactor
@@ -1076,7 +1168,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsWave[0][31][i] = tds.HardwareType
 		ampSettingsWave[0][32][i] = tds.SecondaryAlpha
 		ampSettingsWave[0][33][i] = tds.SecondaryLPFCutoff
-		ampSettingsWave[0][34][i] = (tds.SeriesResistance * 1e-6) // converts Ohms to MOhms
+		ampSettingsWave[0][34][i] = tds.SeriesResistance * 1e-6 // converts Ohms to MOhms
 
 		ampSettingsTextWave[0][0][i] = tds.OperatingModeString
 		ampSettingsTextWave[0][1][i] = tds.ScaledOutSignalString
@@ -1086,7 +1178,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsTextWave[0][5][i] = tds.HardwareTypeString
 
 		// new parameters
-		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * 1e3 // convert V to mV
+		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * AI_GetMCCScale(NaN, MCC_GETPIPETTEOFFSET_FUNC)
 	endfor
 
 	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle)
@@ -1351,7 +1443,7 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	//calculate delta current to reach zero
 	vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
 	// get current DC V offset
-	offset = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan) * 1000 // set to mV
+	offset = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan)
 	// add delta to current DC V offset
 	value = offset - vDelta
 
