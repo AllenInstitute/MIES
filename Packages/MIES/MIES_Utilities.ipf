@@ -86,6 +86,35 @@ Function ASSERT(var, errorMsg)
 	endtry
 End
 
+/// @brief Low overhead function to check assertions (threadsafe variant)
+///
+/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
+///                 nothing is done otherwise.
+/// @param errorMsg error message to output in failure case
+///
+/// Example usage:
+///@code
+///	ASSERT(DataFolderExistsDFR(dfr), "MyFunc: dfr does not exist")
+///	do something with dfr
+///@endcode
+///
+/// Unlike ASSERT() this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations.
+/// Therefore it is advised to prefix `errorMsg` with the current function name.
+///
+/// @hidecallgraph
+/// @hidecallergraph
+threadsafe Function ASSERT_TS(var, errorMsg)
+	variable var
+	string errorMsg
+
+	try
+		AbortOnValue var==0, 1
+	catch
+		printf "Assertion FAILED with message %s\r", errorMsg
+		AbortOnValue 1, 1
+	endtry
+End
+
 /// @brief Checks if the given name exists as window
 ///
 /// @hidecallgraph
