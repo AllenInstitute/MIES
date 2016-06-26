@@ -159,7 +159,10 @@ Function/S HW_ITC_ListOfOpenDevices()
 
 		// device could be selected
 		// get the device type
-		ITCGetDeviceInfo2/FREE DevInfo
+		do
+			ITCGetDeviceInfo2/FREE DevInfo
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
 
 		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
@@ -195,14 +198,20 @@ Function/S HW_ITC_ListDevices()
 			continue
 		endif
 
-		ITCGetDevices2/Z=1/DTS=type
+		do
+			ITCGetDevices2/Z=1/DTS=type
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 
 		if(V_Value > 0)
 			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
 				number = StringFromList(j, DEVICE_NUMBERS)
 				device = BuildDeviceString(type,number)
 
-				ITCOpenDevice2/Z=1/DTS=type str2num(number)
+				do
+					ITCOpenDevice2/Z=1/DTS=type str2num(number)
+				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 				deviceID = V_Value
 				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
 					sprintf msg, "Found device type %s with number %s", type, number
@@ -644,7 +653,10 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	if(ITCError != 0)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 
-		ITCGetErrorString2/X itcError
+		do
+			ITCGetErrorString2/X itcError
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 		print S_errorMEssage
 		print "Some hints you might want to try!"
 		print "- Is the correct ITC device type selected?"
@@ -767,7 +779,10 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCOpenDevice2/DTN=(deviceType) deviceNumber
+	do
+			ITCOpenDevice2/DTN=(deviceType) deviceNumber
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	deviceID = V_Value
 
@@ -786,7 +801,9 @@ Function HW_ITC_CloseDevice([flags])
 		HW_ITC_StopAcq(flags=flags)
 	endif
 
-	ITCCloseDevice2/Z
+	do
+		ITCCloseDevice2/Z
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 End
 
 /// @see HW_SelectDevice
@@ -795,7 +812,10 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCSelectDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) deviceID
+	do
+		ITCSelectDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) deviceID
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	return HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -805,7 +825,10 @@ Function HW_ITC_EnableYoking([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCInitialize2/M=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	do
+		ITCInitialize2/M=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -815,7 +838,10 @@ Function HW_ITC_DisableYoking([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCInitialize2/M=0/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	do
+		ITCInitialize2/M=0/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -825,11 +851,17 @@ Function HW_ITC_StopAcq([prepareForDAQ, flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCStopAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	do
+		ITCStopAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	if(prepareForDAQ)
-		ITCConfigChannelUpload2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+		do
+			ITCConfigChannelUpload2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	endif
 End
@@ -841,7 +873,10 @@ Function HW_ITC_GetCurrentDevice([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCGetCurrentDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	do
+		ITCGetCurrentDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return V_Value
@@ -869,7 +904,11 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 	endif
 
 	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
-	ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+
+	do
+		ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -881,10 +920,16 @@ Function HW_ITC_StartAcq(triggerMode, [flags])
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
-			ITCStartAcq2/EXT=256/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			do
+				ITCStartAcq2/EXT=256/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 			break
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
-			ITCStartAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			do
+				ITCStartAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 			break
 		default:
 			ASSERT(0, "Unknown trigger mode")
@@ -919,7 +964,10 @@ Function/WAVE HW_ITC_GetState([flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCGetState2/R/O/C/E/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) state
+	do
+		ITCGetState2/R/O/C/E/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) state
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
@@ -932,7 +980,10 @@ Function HW_ITC_ReadADC(deviceID, channel, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCReadADC2/C=1/V=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel
+	do
+		ITCReadADC2/C=1/V=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return V_Value
@@ -944,7 +995,10 @@ Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCSetDAC2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
+	do
+		ITCSetDAC2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -954,7 +1008,10 @@ Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCReadDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel
+	do
+		ITCReadDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	return V_Value
@@ -966,7 +1023,10 @@ Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	ITCWriteDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel, value
+	do
+		ITCWriteDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel, value
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -1056,11 +1116,17 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	endif
 
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
-	ITCconfigAllchannels2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, data
+	do
+		ITCconfigAllchannels2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, data
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 #ifdef DEBUGGING_ENABLED
-	ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
+	do
+		ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
@@ -1070,7 +1136,11 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 #endif // DEBUGGING_ENABLED
 
 	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
-	ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+
+	do
+		ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
@@ -1120,7 +1190,11 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 
 	wave config = GetITCChanConfigWave(panelTitle)
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
-	ITCFIFOAvailableALL2/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, fifoAvail_t
+
+	do
+		ITCFIFOAvailableALL2/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, fifoAvail_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	WAVE fifoAvailNew = HW_ITC_TransposeAndToInt(fifoAvail_t)
 	fifoAvail[][] = fifoAvailNew[p][q]
