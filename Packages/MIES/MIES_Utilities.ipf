@@ -371,7 +371,7 @@ End
 ///
 /// Includes fast handling of the common case that the datafolder exists.
 /// @returns reference to the datafolder
-Function/DF createDFWithAllParents(dataFolder)
+threadsafe Function/DF createDFWithAllParents(dataFolder)
     string dataFolder
 
     variable i, numItems

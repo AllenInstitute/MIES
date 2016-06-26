@@ -422,13 +422,13 @@ Function/Wave GetChannelClampMode(panelTitle)
 End
 
 /// @brief Return the ITC devices folder "root:mies:ITCDevices"
-Function/DF GetITCDevicesFolder()
+threadsafe Function/DF GetITCDevicesFolder()
 
 	return createDFWithAllParents(GetITCDevicesFolderAsString())
 End
 
 /// @brief Return a data folder reference to the ITC devices folder
-Function/S GetITCDevicesFolderAsString()
+threadsafe Function/S GetITCDevicesFolderAsString()
 
 	return GetMiesPathAsString() + ":ITCDevices"
 End
@@ -464,25 +464,25 @@ Function/DF GetDeviceTypePath(deviceType)
 End
 
 /// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
-Function/S GetDeviceTypePathAsString(deviceType)
+threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
 	return GetITCDevicesFolderAsString() + ":" + deviceType
 End
 
 /// @brief Return a datafolder reference to the device folder
-Function/DF GetDevicePath(panelTitle)
+threadsafe Function/DF GetDevicePath(panelTitle)
 	string panelTitle
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
-Function/S GetDevicePathAsString(panelTitle)
+threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
 	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
-		ASSERT(0, "Invalid/Non-locked paneltitle")
+		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
 	endif
 
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
@@ -514,12 +514,12 @@ Function/S GetDeviceDataPathAsString(panelTitle)
 End
 
 /// @brief Returns a data folder reference to the mies base folder
-Function/DF GetMiesPath()
+threadsafe Function/DF GetMiesPath()
 	return createDFWithAllParents(GetMiesPathAsString())
 End
 
 /// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
-Function/S GetMiesPathAsString()
+threadsafe Function/S GetMiesPathAsString()
 	return "root:MIES"
 End
 

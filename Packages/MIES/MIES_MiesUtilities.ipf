@@ -699,7 +699,7 @@ End
 /// @param[out] deviceType   returns the device type X
 /// @param[out] deviceNumber returns the device number Y
 /// @returns one on successfull parsing, zero on error
-Function ParseDeviceString(device, deviceType, deviceNumber)
+threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 	string device
 	string &deviceType, &deviceNumber
 
