@@ -153,6 +153,67 @@ Function DEBUGPRINT(msg, [var, str, format])
 	endif
 End
 
+///@brief Generic debug output function (threadsafe variant)
+///
+/// Outputs variables and strings with optional format argument.
+///
+///Examples:
+///@code
+///DEBUGPRINT("before a possible crash")
+///DEBUGPRINT("some variable", var=myVariable)
+///DEBUGPRINT("my string", str=myString)
+///DEBUGPRINT("Current state", var=state, format="%.5f")
+///@endcode
+///
+/// @hidecallgraph
+/// @hidecallergraph
+///
+/// @param msg    descriptive string for the debug message
+/// @param var    variable
+/// @param str    string
+/// @param format format string overrides the default of "%g" for variables and "%s" for strings
+threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
+	string msg
+	variable var
+	string str, format
+
+	string formatted = ""
+	variable numSuppliedOptParams
+
+	// check parameters
+	// valid combinations:
+	// - var
+	// - str
+	// - var and format
+	// - str and format
+	// - neither var, str, format
+	numSuppliedOptParams = !ParamIsDefault(var) + !ParamIsDefault(str) + !ParamIsDefault(format)
+
+	if(numSuppliedOptParams == 0)
+		// nothing to check
+	elseif(numSuppliedOptParams == 1)
+		ASSERT_TS(ParamIsDefault(format), "Only supplying the \"format\" parameter is not allowed")
+	elseif(numSuppliedOptParams == 2)
+		ASSERT_TS(!ParamIsDefault(format), "You can't supply \"var\" and \"str\" at the same time")
+	else
+		ASSERT_TS(0, "Invalid parameter combination")
+	endif
+
+	if(!ParamIsDefault(var))
+		if(ParamIsDefault(format))
+			format = "%g"
+		endif
+		sprintf formatted, format, var
+	elseif(!ParamIsDefault(str))
+		if(ParamIsDefault(format))
+			format = "%s"
+		endif
+		sprintf formatted, format, str
+	endif
+
+	printf "DEBUG: %s %s\r", msg, formatted
+End
+
 /// @brief Print a nicely formatted stack trace to the history
 Function DEBUGPRINTSTACKINFO()
 
@@ -261,6 +322,14 @@ Function/s DEBUGPRINTs(str, [format])
 End
 
 Function DEBUGPRINT(msg, [var, str, format])
+	string msg
+	variable var
+	string str, format
+
+	// do nothing
+End
+
+threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
 	string msg
 	variable var
 	string str, format
