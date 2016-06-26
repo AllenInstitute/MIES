@@ -30,12 +30,12 @@
 /// @param globalVarName name of the global variable
 /// @param initialValue  initial value of the variable. Will only be used if
 /// 					 it is created. 0 by default.
-static Function/S GetNVARAsString(dfr, globalVarName, [initialValue])
+threadsafe static Function/S GetNVARAsString(dfr, globalVarName, [initialValue])
 	dfref dfr
 	string globalVarName
 	variable initialValue
 
-	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
 
 	NVAR/Z/SDFR=dfr var = $globalVarName
 	if(!NVAR_Exists(var))
@@ -57,12 +57,12 @@ End
 /// @param globalStrName name of the global string
 /// @param initialValue  initial value of the string. Will only be used if
 /// 					 it is created. null by default.
-static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
+threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 	dfref dfr
 	string globalStrName
 	string initialValue
 
-	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
 
 	SVAR/Z/SDFR=dfr str = $globalStrName
 	if(!SVAR_Exists(str))
@@ -312,4 +312,11 @@ End
 Function/S GetSessionStartTimeReadBack()
 
 	return GetNVARAsString(GetNWBFolder(), "sessionStartTimeReadBack", initialValue=NaN)
+End
+
+/// @brief Return the thread group ID for the FIFO monitor/resetting daemon
+threadsafe Function/S GetThreadGroupIDFIFO(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "threadGroupIDFifo", initialValue=NaN)
 End
