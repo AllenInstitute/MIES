@@ -345,7 +345,7 @@ End
 /// Unlike DataFolderExists() a dfref pointing to an empty ("") dataFolder is considered non-existing here.
 /// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
 /// Taken from http://www.igorexchange.com/node/2055
-Function DataFolderExistsDFR(dfr)
+threadsafe Function DataFolderExistsDFR(dfr)
 	dfref dfr
 
 	string dataFolder
@@ -359,7 +359,7 @@ Function DataFolderExistsDFR(dfr)
 		case 3: // free data folders always exist
 			return 1
 		default:
-			Abort "unknown status"
+			ASSERT_TS(0, "impossible case")
 			return 0
 	endswitch
 End
