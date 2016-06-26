@@ -68,6 +68,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+	TFM_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, proc = ITC_BkrdTPFuncMD
@@ -78,12 +79,11 @@ End
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable ADChannelToMonitor, i, deviceID
-	variable StopCollectionPoint, pointsCompletedInITCDataWave, activeChunk
-	string panelTitle, currentWindow
+	variable i, deviceID, fifoPos
+	variable pointsCompletedInITCDataWave, activeChunk
+	string panelTitle
 
-	DFREF dfr = GetActITCDevicesTestPulseFolder()
-	WAVE/SDFR=dfr ActiveDeviceList
+	WAVE/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceList
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -97,32 +97,16 @@ Function ITC_BkrdTPFuncMD(s)
 	// ActiveDeviceList size might change inside the loop so we can
 	// *not* precompute it.
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
-
-		deviceID            = ActiveDeviceList[i][0]
-		ADChannelToMonitor  = ActiveDeviceList[i][1]
-		stopCollectionPoint = ActiveDeviceList[i][2]
-
+		deviceID = ActiveDeviceList[i][0]
 		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
-		DFREF deviceDFR = GetDevicePath(panelTitle)
 
 		WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-		WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-		WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
+		NVAR stopCollectionPoint          = $GetStopCollectionPoint(panelTitle)
+		NVAR ADChannelToMonitor           = $GetADChannelToMonitor(panelTitle)
 
-		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-		HW_ITC_MoreData(deviceID, fifoPos=pointsCompletedInITCDataWave)
-		pointsCompletedInITCDataWave = mod(pointsCompletedInITCDataWave, DimSize(ITCDataWave, ROWS))
-
-		if(pointsCompletedInITCDataWave >= stopCollectionPoint * 0.05)
-			// advances the FIFO is the TP sweep has reached point that gives time for command to be recieved
-			// and processed by the DAC - that's why the multiplier
-			// @todo the above line of code won't handle acquisition with only AD channels
-			// this is probably more generally true as well - need to work this into the code
-			Duplicate/O/R=[0, (ADChannelToMonitor-1)][0,3] ITCFIFOAvailAllConfigWave, deviceDFR:FIFOAdvance/Wave=FIFOAdvance
-			FIFOAdvance[][2] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][3]
-			HW_ITC_ResetFifo(deviceID, fifoPos=FIFOAdvance)
-			ActiveDeviceList[i][3] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
-		endif
+		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+		pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 		// don't extract the last chunk for plotting
 		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)) - 1)
@@ -135,25 +119,29 @@ Function ITC_BkrdTPFuncMD(s)
 			ActiveDeviceList[i][4] = activeChunk
 		endif
 
-		// the IF below is there because the ITC18USB locks up and returns a negative value for the FIFO advance with on screen manipulations. 
-		// the code stops and starts the data acquisition to correct FIFO error
+		// sometimes when moving around panels in Igor the ITC18USB locks up and returns
+		// a negative value for the FIFO advance
 		if(!DeviceCanLead(panelTitle))
-			WAVE/Z/SDFR=deviceDFR FIFOAdvance
 			// checks to see if the hardware buffer is at max capacity
-			if((WaveExists(FIFOAdvance) && FIFOAdvance[0][2] <= 0)      \
-			   || (ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] > 0 \
-				  && abs(ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2] - ActiveDeviceList[i][5]) <= 1))
-				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
-				ITCFIFOAvailAllConfigWave[][2] = 0
-				FIFOAdvance[0][2] = NaN
+			if(fifoPos > 0 && abs(fifoPos - ActiveDeviceList[i][5]) <= 1)
+				if(ActiveDeviceList[i][3] > NUM_CONSEC_FIFO_STILLSTANDS)
+					TFM_StopFifoResetDaemon(HARDWARE_ITC_DAC, deviceID)
+					HW_StopAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
 
-				HW_ITC_PrepareAcq(deviceID, dataFunc=GetITCDataWave, configFunc=GetITCChanConfigWave, fifoPos=ITCFIFOPositionAllConfigWave)
-				HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-				printf "Device %s restarted\r", panelTitle
+					HW_ITC_PrepareAcq(deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
+					HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+					printf "Device %s restarted\r", panelTitle
+					TFM_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
+					ActiveDeviceList[i][3] = 0
+				else
+				ActiveDeviceList[i][3] += 1
+				endif
+			else
+				ActiveDeviceList[i][3] = 0
 			endif
 		endif
 
-		ActiveDeviceList[i][5] = ITCFIFOAvailAllConfigWave[ADChannelToMonitor][2]
+		ActiveDeviceList[i][5] = fifoPos
 
 		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
@@ -162,9 +150,8 @@ Function ITC_BkrdTPFuncMD(s)
 		NVAR count = $GetCount(panelTitle)
 		if(!IsFinite(count))
 			if(GetKeyState(0) & ESCAPE_KEY)
-				currentWindow = GetMainWindow(GetCurrentWindow())
 				// only stop the currently active device
-				if(!cmpstr(panelTitle, currentWindow))
+				if(!cmpstr(panelTitle,GetMainWindow(GetCurrentWindow())))
 					beep 
 					ITC_StopTestPulseMultiDevice(panelTitle)
 				endif
@@ -191,6 +178,7 @@ static Function ITC_StopTPMD(panelTitle)
 	WAVE/T/SDFR=dfr ActiveDeviceList
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
+	TFM_StopFifoResetDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)) // makes sure the device being stopped is actually running
@@ -198,7 +186,7 @@ static Function ITC_StopTPMD(panelTitle)
 
 		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
-		if(DimSize(ActiveDeviceList, ROWS) == 0)
+		if (dimsize(ActiveDeviceList, 0) == 0)
 			CtrlNamedBackground TestPulseMD, stop
 			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
 		endif
@@ -222,7 +210,7 @@ static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADCh
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
-			ActiveDeviceList[0][3] = 0 // FIFO advance from last background cycle
+			ActiveDeviceList[0][3] = 0 // number of consecutive loop iterations with stuck FIFO
 			ActiveDeviceList[0][4] = NaN // Active chunk of the ITCDataWave
 			ActiveDeviceList[0][5] = 0 // FIFO position
 		else
