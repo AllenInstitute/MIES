@@ -16,7 +16,7 @@ Menu "Mies Panels", dynamic
 	"Close Mies"               , /Q, CloseMies()
 	"Open Downsample Panel"    , /Q, CreateDownsamplePanel()
 	"Open AnalysisMaster Panel", /Q, analysisMaster()
-	"Export all data into NWB" , /Q, NWB_ExportAllData()
+	"Export all data into NWB" , /Q, NWB_ExportWithDialog()
 	"-"
 	GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 	"-"
