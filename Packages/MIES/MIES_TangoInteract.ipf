@@ -495,12 +495,12 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// Set up the QC Wave so the background task can get the information it needs
 		Wave/T QCWave = GetQCWaveRef(currentPanel)
-		QCWave[0][%headstage] = num2str(headstage)
+		QCWave[%headstage] = num2str(headstage)
 		
 		if(!ParamIsDefault(cmdID))
-			QCWave[0][%cmdID] = cmdID
+			QCWave[%cmdID] = cmdID
 		else
-			QCWave[0][%cmdID] = "foobar"
+			QCWave[%cmdID] = "foobar"
 		endif
 		
 		if(!ParamIsDefault(cmdID))
@@ -543,8 +543,8 @@ Function TI_finishBaselineQCCheck(s)
 	currentPanel = StringFromList(0, lockedDevList)
 
 	Wave/T QCWave = GetQCWaveRef(currentPanel)
-	headstage = str2num(QCWave[0][%headstage])
-	cmdID =  QCWave[0][%cmdID]
+	headstage = str2num(QCWave[%headstage])
+	cmdID =  QCWave[%cmdID]
 
 	cycles = 5 //define how many cycles the test pulse must run
 	if(TP_TestPulseHasCycled(currentPanel,cycles))
@@ -831,15 +831,15 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 
 		// Set up the QC Wave so the background task can get the information it needs
 		Wave/T QCWave = GetQCWaveRef(currentPanel)
-		QCWave[0][%headstage] = num2str(headstage)
+		QCWave[%headstage] = num2str(headstage)
 
 		if(!ParamIsDefault(cmdID))
-			QCWave[0][%cmdID] = cmdID
+			QCWave[%cmdID] = cmdID
 		else
-			QCWave[0][%cmdID] = "foobar"
+			QCWave[%cmdID] = "foobar"
 		endif
 
-		QCWave[0][%tpBuffer] = num2str(tpBufferSetting)
+		QCWave[%tpBuffer] = num2str(tpBufferSetting)
 
 		if(!ParamIsDefault(cmdID))
 			TI_WriteAck(cmdID, 1)
@@ -882,9 +882,9 @@ Function TI_finishInitAccessQCCheck(s)
 	currentPanel = StringFromList(0, lockedDevList)
 
 	Wave/T QCWave = GetQCWaveRef(currentPanel)
-	headstage = str2num(QCWave[0][%headstage])
-	cmdID =  QCWave[0][%cmdID]
-	tpBufferSetting = str2num(QCWave[0][%tpBuffer])
+	headstage = str2num(QCWave[%headstage])
+	cmdID =  QCWave[%cmdID]
+	tpBufferSetting = str2num(QCWave[%tpBuffer])
 
 	cycles = 5 //define how many cycles the test pulse must run
 	if(TP_TestPulseHasCycled(currentPanel,cycles))
@@ -1138,12 +1138,12 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		
 		// Set up the QC Wave so the background task can get the information it needs
 		Wave/T QCWave = GetQCWaveRef(currentPanel)
-		QCWave[0][%headstage] = num2str(headstage)
+		QCWave[%headstage] = num2str(headstage)
 		
 		if(!ParamIsDefault(cmdID))
-			QCWave[0][%cmdID] = cmdID
+			QCWave[%cmdID] = cmdID
 		else
-			QCWave[0][%cmdID] = "foobar"
+			QCWave[%cmdID] = "foobar"
 		endif
 
 		if(!ParamIsDefault(cmdID))
@@ -1184,8 +1184,8 @@ Function TI_finishGigOhmSealQCCheck(s)
 	currentPanel = StringFromList(0, lockedDevList)
 
 	Wave/T QCWave = GetQCWaveRef(currentPanel)
-	headstage = str2num(QCWave[0][%headstage])
-	cmdID =  QCWave[0][%cmdID]
+	headstage = str2num(QCWave[%headstage])
+	cmdID =  QCWave[%cmdID]
 
 	cycles = 10 //define how many times the test pulse must run
 	if(TP_TestPulseHasCycled(currentPanel, cycles))
