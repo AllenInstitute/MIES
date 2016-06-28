@@ -65,7 +65,9 @@ End
 ///
 /// `val` and `string` are ignored for unappropriate controls.
 ///
-/// For PopupMenus `val` is mandatory and 0-based.
+/// PopupMenus:
+/// - `val` is mandatory and 0-based.
+/// - `str` must be supplied if the GUI control procedure requires it.
 Function PGC_SetAndActivateControl(win, control, [val, str])
 	string win, control
 	variable val
