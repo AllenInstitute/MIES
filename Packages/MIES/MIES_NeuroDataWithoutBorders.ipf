@@ -367,11 +367,35 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE/T settingsHistoryText     = GetTextDocWave(panelTitle)
 	WAVE/T settingsHistoryTextKeys = GetTextDocKeyWave(panelTitle)
 
-	WAVE clampMode   = GetLastSetting(settingsHistory, sweep, "Clamp Mode")
-	WAVE statusHS    = GetLastSetting(settingsHistory, sweep, "Headstage Active")
-	WAVE ADCs        = GetLastSetting(settingsHistory, sweep, "ADC")
-	WAVE DACs        = GetLastSetting(settingsHistory, sweep, "DAC")
-	WAVE/T stimSets  = GetLastSettingText(settingsHistoryText, sweep, STIM_WAVE_NAME_KEY)
+	// comment denotes the introducing comment of the labnotebook entry
+	// 9b35fdad (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
+	WAVE/Z clampMode = GetLastSetting(settingsHistory, sweep, "Clamp Mode")
+
+	if(!WaveExists(clampMode))
+		WAVE/Z clampMode = GetLastSetting(settingsHistory, sweep, "Operating Mode")
+		ASSERT(WaveExists(clampMode), "Labnotebook is too old for NWB export.")
+	endif
+
+	// 3a94d3a4 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+	WAVE/Z ADCs = GetLastSetting(settingsHistory, sweep, "ADC")
+	ASSERT(WaveExists(ADCs), "Labnotebook is too old for NWB export.")
+
+	// dito
+	WAVE DACs = GetLastSetting(settingsHistory, sweep, "DAC")
+	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
+
+	// 9c8e1a94 (Record the active headstage in the settingsHistory, 2014-11-04)
+	WAVE/Z statusHS = GetLastSetting(settingsHistory, sweep, "Headstage Active")
+	if(!WaveExists(statusHS))
+		Duplicate/FREE ADCs, statusHS
+
+		statusHS = (IsFinite(ADCs[p]) && IsFinite(DACs[p]))
+		ASSERT(sum(statusHS) >= 1, "Headstage active workaround failed as there are no active headstages")
+	endif
+
+	// 296097c2 (Changes to Tango Interact, 2014-09-03)
+	WAVE/T stimSets = GetLastSettingText(settingsHistoryText, sweep, STIM_WAVE_NAME_KEY)
+	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
 	STRUCT IPNWB#WriteChannelParams params
 	IPNWB#InitWriteChannelParams(params)
