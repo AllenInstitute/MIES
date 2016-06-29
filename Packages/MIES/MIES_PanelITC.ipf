@@ -3054,7 +3054,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_DistribDaq,value= 0
-	SetVariable setvar_DataAcq_dDAQDelay,pos={322.00,683.00},size={144.00,18.00},bodyWidth=50,disable=1,title="dDAQ delay (ms)"
+	SetVariable setvar_DataAcq_dDAQDelay,pos={322.00,683.00},size={144.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="dDAQ delay (ms)"
 	SetVariable setvar_DataAcq_dDAQDelay,help={"Delay between the sets during distributed DAQ."}
 	SetVariable setvar_DataAcq_dDAQDelay,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_dDAQDelay,userdata(tabcontrol)=  "ADC"
@@ -5773,6 +5773,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 		// for the lead panel again
 		panelTitle = StringFromList(i, panelList)
 
+		SetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq", leaderdDAQ)
 		SetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq", leaderRepeatAcq)
 		SetCheckBoxState(panelTitle, "Check_DataAcq_Indexing", leaderIndexing)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
