@@ -653,7 +653,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
 
-	variable i, itcDataColumn, headstage, numEntries
+	variable i, activeColumn, headstage, numEntries
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
@@ -710,7 +710,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		setLength = round(DimSize(stimSet, ROWS) / decimationFactor)
 
 		if(distributedDAQ)
-			if(itcDataColumn == 0)
+			if(activeColumn == 0)
 				firstSetName = setName
 			else
 				ASSERT(!cmpstr(firstSetName, setName), "Non-equal stim sets")
@@ -788,20 +788,20 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, i, var=setLength)
 
 		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
-			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
+			Multithread ITCDataWave[insertStart, *][activeColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
-			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][itcDataColumn] = 0
+			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][activeColumn] = 0
 		else
-			Multithread ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
+			Multithread ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
 		endif
 
 		// space in ITCDataWave for the testpulse is allocated via an automatic increase
 		// of the onset delay
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
-			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude * DAGain
+			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][activeColumn] = testPulseAmplitude * DAGain
 		endif
 
-		itcDataColumn += 1
+		activeColumn += 1
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
@@ -847,7 +847,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
-		itcDataColumn += 1
+		activeColumn += 1
 	endfor
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -859,15 +859,15 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 			WAVE/SDFR=deviceDFR TTLwave
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
-			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
-			itcDataColumn += 1
+			ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			activeColumn += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 			WAVE/SDFR=deviceDFR TTLwave
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
-			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		endif
 	endif
 End
