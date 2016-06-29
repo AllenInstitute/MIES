@@ -136,27 +136,23 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	string panelTitle
 	WAVE TestPulse
 
-	variable length, numPulses
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
+	variable length, numPulses, singlePulseLength, i
+	variable first, last
 
 	Make/FREE singlePulse
 	DC_UpdateTestPulseWave(panelTitle, singlePulse)
+	singlePulseLength = DimSize(singlePulse, ROWS)
+	numPulses = max(3, ceil(2^MINIMUM_ITCDATAWAVE_EXPONENT / singlePulseLength))
+	length = numPulses * singlePulseLength
 
-	length = 2^MINIMUM_ITCDATAWAVE_EXPONENT
-	Redimension/N=0 TestPulse
+	Redimension/N=(length) TestPulse
+	FastOp TestPulse = 0
 
-	do
-		Concatenate/NP=0 {singlePulse}, TestPulse
-		numPulses += 1
-
-		if(DimSize(TestPulse, ROWS) >= length)
-			if(numPulses < 3) // keep creating more pulses
-				length *= 2
-				continue
-			endif
-			break
-		endif
-	while(1)
+	for(i = 0; i < numPulses; i += 1)
+		first = i * singlePulseLength
+		last  = (i + 1) * singlePulseLength - 1
+		Multithread TestPulse[first, last] = singlePulse[p - first]
+	endfor
 End
 
 /// @brief Updates the global string of clamp modes based on the AD channel associated with the headstage
