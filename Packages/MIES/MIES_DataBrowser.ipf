@@ -350,17 +350,12 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_AutoUpdate,value= 0
 	CheckBox check_DataBrowser_AutoUpdate help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	PopupMenu popup_DB_lockedDevices,pos={639,673},size={266,21},bodyWidth=170,title="Device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={639,673},size={266,21},proc=DB_PopMenuProc_LockDBtoDevice,bodyWidth=170,title="Device assingment:"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0^]6bN5QF0*!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
 	PopupMenu popup_DB_lockedDevices help={"Select a data acquistion device to display data"}
-	Button Button_dataBrowser_lockBrowser,pos={949,673},size={70,20},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
-	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K)5QF2#5QF-0!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button Button_dataBrowser_lockBrowser help={"Assign data browser to a data acquisition device to display data"}
 	CheckBox check_DataBrowser_DisplayTTL,pos={21,30},size={122,14},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
 	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,Ba!!#=S!!#@X!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -518,17 +513,12 @@ Window DataBrowser_IP7() : Panel
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_AutoUpdate,value= 0
 	CheckBox check_DataBrowser_AutoUpdate help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	PopupMenu popup_DB_lockedDevices,pos={639.00,684.00},size={275.00,19.00},bodyWidth=170,title="Device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={639.00,684.00},size={275.00,19.00},proc=DB_PopMenuProc_LockDBtoDevice,bodyWidth=170,title="Device assingment:"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0^]6bQ!!#BCJ,hm&z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
 	PopupMenu popup_DB_lockedDevices help={"Select a data acquistion device to display data"}
-	Button Button_dataBrowser_lockBrowser,pos={983.00,682.00},size={70.00,23.00},proc=DB_ButtonProc_LockDBtoDevice,title="Lock"
-	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo)= A"!!,K1^]6bPJ,hop!!#<pz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
-	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button Button_dataBrowser_lockBrowser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button Button_dataBrowser_lockBrowser help={"Assign data browser to a data acquisition device to display data"} 
 	CheckBox check_DataBrowser_DisplayTTL,pos={20.00,27.00},size={128.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
 	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,BY!!#=;!!#@d!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -710,12 +700,12 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 	return 0
 End
 
-Function DB_ButtonProc_LockDBtoDevice(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
 
-	switch(ba.eventcode)
+	switch(pa.eventcode)
 		case 2: // mouse up
-			DB_LockDBPanel(ba.win)
+			DB_LockDBPanel(pa.win)
 			break
 	endswitch
 
