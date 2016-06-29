@@ -506,8 +506,6 @@ Function TP_Setup(panelTitle, runMode)
 
 	variable multiDevice
 
-	DFREF deviceDFR = GetDevicePath(panelTitle)
-
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
