@@ -688,13 +688,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
-	NVAR count = $GetCount(panelTitle)
-	if(IsFinite(count))
-		setColumn = count - 1
-	else
-		setColumn = 0
-	endif
-
 	numEntries = DimSize(statusDA, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
