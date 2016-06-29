@@ -80,12 +80,12 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
 
-	if(isEmpty(filePath)) // need to derive a new NWB filename
+	if(!ParamIsDefault(overrideFilePath))
+		filePath = overrideFilePath
+	elseif(isEmpty(filePath)) // need to derive a new NWB filename
 		expName = GetExperimentName()
 
-		if(!ParamIsDefault(overrideFilePath))
-			filePath = overrideFilePath
-		elseif(!cmpstr(expName, UNTITLED_EXPERIMENT))
+		if(!cmpstr(expName, UNTITLED_EXPERIMENT))
 			fileName = "_" + GetTimeStamp() + ".nwb"
 			Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
 
