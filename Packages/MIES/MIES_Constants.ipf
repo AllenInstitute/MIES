@@ -255,12 +255,12 @@ Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
 /// @anchor IgorTypes
 /// @{
 Constant IGOR_TYPE_COMPLEX          = 0x001
-CONSTANT IGOR_TYPE_32BIT_FLOAT      = 0x002
-CONSTANT IGOR_TYPE_64BIT_FLOAT      = 0x004
+Constant IGOR_TYPE_32BIT_FLOAT      = 0x002
+Constant IGOR_TYPE_64BIT_FLOAT      = 0x004
 Constant IGOR_TYPE_8BIT_INT         = 0x008
 Constant IGOR_TYPE_16BIT_INT        = 0x010
 Constant IGOR_TYPE_32BIT_INT        = 0x020
-CONSTANT IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
+Constant IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
 Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 /// @}
 
