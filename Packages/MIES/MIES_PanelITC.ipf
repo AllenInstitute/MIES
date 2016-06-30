@@ -4343,8 +4343,10 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
 		endif
 
-		nextSweep = GetSetVariable(panelTitle, "SetVar_Sweep")
-		maxNextSweep = max(maxNextSweep, nextSweep)
+		nextSweep = AFH_GetLastSweepAcquired(panelTitle) + 1
+		if(IsFinite(nextSweep))
+			maxNextSweep = max(maxNextSweep, nextSweep)
+		endif
 	endfor
 
 	for(i = 0; i < numPanels; i += 1)
