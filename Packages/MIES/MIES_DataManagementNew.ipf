@@ -190,9 +190,18 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	variable dataAcqOrTP, chunk, fifoPos
 
 	variable length, first, last
+	variable startOfADColumns, numEntries
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
+	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+	numEntries = DimSize(ADCs, ROWS)
+
+	//do the AD scaling here manually so that is can be as fast as possible
+	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%ADGain] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		if(ParamIsDefault(chunk))
@@ -206,7 +215,7 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
 
-		Multithread OscilloscopeData[][] = ITCDataWave[first + p][q]
+		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
@@ -224,12 +233,10 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
-		Multithread OscilloscopeData[0, fifoPos - 1][] = ITCDataWave[p][q]
+		Multithread OscilloscopeData[0, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
-
-	DM_ADScaling(OscilloscopeData, panelTitle)
 End
 
 static Function DM_ADScaling(WaveToScale, panelTitle)
