@@ -93,7 +93,7 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
-		GetAnalysisFuncFromHeadstage(panelTitle, i, eventType, func, setName)
+		DM_GetAnalysisFuncFromHeadstage(panelTitle, i, eventType, func, setName)
 
 		if(isEmpty(func) || isEmpty(setName))
 			continue
@@ -319,7 +319,7 @@ End
 /// @param[in]  eventType  One of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @param[out] func       Analysis function name
 /// @param[out] setName    Name of the Stim set
-static Function GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, func, setName)
+static Function DM_GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, func, setName)
 	string panelTitle
 	variable headStage, eventType
 	string &func, &setName
