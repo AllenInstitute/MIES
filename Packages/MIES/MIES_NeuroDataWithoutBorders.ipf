@@ -80,12 +80,12 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
 
-	if(isEmpty(filePath)) // need to derive a new NWB filename
+	if(!ParamIsDefault(overrideFilePath))
+		filePath = overrideFilePath
+	elseif(isEmpty(filePath)) // need to derive a new NWB filename
 		expName = GetExperimentName()
 
-		if(!ParamIsDefault(overrideFilePath))
-			filePath = overrideFilePath
-		elseif(!cmpstr(expName, UNTITLED_EXPERIMENT))
+		if(!cmpstr(expName, UNTITLED_EXPERIMENT))
 			fileName = "_" + GetTimeStamp() + ".nwb"
 			Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
 
@@ -313,6 +313,45 @@ Function NWB_ExportAllData([overrideFilePath])
 			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, chunkedLayout=1)
 		endfor
 	endfor
+End
+
+/// @brief Export all data into NWB using compression
+///
+/// Ask the file location from the user
+Function NWB_ExportWithDialog()
+
+	string expName, path, filename
+	variable refNum
+
+	expName = GetExperimentName()
+
+	if(!cmpstr(expName, UNTITLED_EXPERIMENT))
+		PathInfo Desktop
+		if(!V_flag)
+			NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
+		endif
+		path = "Desktop"
+
+		filename = "UntitledExperiment-" + GetTimeStamp()
+	else
+		path     = "home"
+		filename = expName
+	endif
+
+	filename += "-compressed.nwb"
+
+	Open/D/M="Export into NWB"/F="NWB Files:.nwb;"/P=$path refNum as filename
+
+	if(isEmpty(S_filename))
+		return NaN
+	endif
+
+	// user already acknowledged the overwriting
+	CloseNWBFile()
+	DeleteFile/Z S_filename
+
+	NWB_ExportAllData(overrideFilePath=S_filename)
+	CloseNWBFile()
 End
 
 static Function NWB_AddMiesVersion(locationID)
