@@ -456,7 +456,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 1
-	SetVariable SetVar_DataAcq_ITI,pos={66.00,700.00},size={80.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_ITI,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={66.00,700.00},size={80.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,Eb!!#D?!!#?Y!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3054,7 +3054,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_DistribDaq,value= 0
-	SetVariable setvar_DataAcq_dDAQDelay,pos={322.00,683.00},size={144.00,18.00},bodyWidth=50,disable=1,title="dDAQ delay (ms)"
+	SetVariable setvar_DataAcq_dDAQDelay,pos={322.00,683.00},size={144.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="dDAQ delay (ms)"
 	SetVariable setvar_DataAcq_dDAQDelay,help={"Delay between the sets during distributed DAQ."}
 	SetVariable setvar_DataAcq_dDAQDelay,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_dDAQDelay,userdata(tabcontrol)=  "ADC"
@@ -5762,7 +5762,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
 	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
-	leaderOverrrideITI = GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI")
+	leaderOverrrideITI = GetCheckBoxState(leadPanel, "Check_DataAcq_Get_Set_ITI")
 	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
 	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
 	leaderdDAQDelay    = GetSetVariable(leadPanel, "SetVar_DataAcq_dDAQDelay")
@@ -5773,6 +5773,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 		// for the lead panel again
 		panelTitle = StringFromList(i, panelList)
 
+		SetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq", leaderdDAQ)
 		SetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq", leaderRepeatAcq)
 		SetCheckBoxState(panelTitle, "Check_DataAcq_Indexing", leaderIndexing)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
@@ -6146,16 +6147,14 @@ Function DAP_CheckProc_DistributedAcq(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_SetVarProc_ITI(sva) : SetVariableControl
+Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	switch( sva.eventCode )
+	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
 			DAP_SyncGuiFromLeaderToFollower(sva.win)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
