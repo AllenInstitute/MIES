@@ -595,7 +595,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_TTL_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
-	CheckBox Check_Settings_TrigOut,pos={34.00,263.00},size={59.00,15.00},disable=1,title="\\JCTrig Out"
+	CheckBox Check_Settings_TrigOut,pos={34.00,239.00},size={59.00,15.00},disable=1,title="\\JCTrig Out"
 	CheckBox Check_Settings_TrigOut,help={"Turns on TTL pulse at onset of sweep"}
 	CheckBox Check_Settings_TrigOut,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_TrigOut,userdata(tabcontrol)=  "ADC"
@@ -603,7 +603,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_TrigOut,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_TrigOut,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_TrigOut,fColor=(65280,43520,0),value= 0
-	CheckBox Check_Settings_TrigIn,pos={34.00,287.00},size={49.00,15.00},disable=1,title="\\JCTrig In"
+	CheckBox Check_Settings_TrigIn,pos={34.00,262.00},size={49.00,15.00},disable=1,title="\\JCTrig In"
 	CheckBox Check_Settings_TrigIn,help={"Starts Data Aquisition with TTL signal to trig in port on rack"}
 	CheckBox Check_Settings_TrigIn,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_TrigIn,userdata(tabcontrol)=  "ADC"
@@ -1459,14 +1459,6 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_TrialsCountdown,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_TrialsCountdown,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_TrialsCountdown,value= _NUM:1
-	CheckBox check_Settings_Overwrite,pos={34.00,208.00},size={144.00,30.00},disable=1,title="Overwrite data waves on\rNext Sweep roll back"
-	CheckBox check_Settings_Overwrite,help={"Overwrite occurs on next data acquisition cycle"}
-	CheckBox check_Settings_Overwrite,userdata(tabnum)=  "5"
-	CheckBox check_Settings_Overwrite,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo)= A"!!,Cl!!#A_!!#@t!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox check_Settings_Overwrite,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_Overwrite,value= 1
 	SetVariable min_AsyncAD_00,pos={109.00,66.00},size={75.00,18.00},bodyWidth=50,disable=1,title="min"
 	SetVariable min_AsyncAD_00,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	SetVariable min_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,F?!!#?=!!#?O!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3108,7 +3100,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Hardware_UseManip,value= 0
-	CheckBox Check_Settings_NwbExport,pos={34.00,240.00},size={102.00,15.00},disable=1,title="Export into NWB"
+	CheckBox Check_Settings_NwbExport,pos={34.00,216.00},size={102.00,15.00},disable=1,title="Export into NWB"
 	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
 	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_NwbExport,userdata(tabcontrol)=  "ADC"
@@ -3528,7 +3520,6 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_ITITP WIN = $panelTitle, value= 1
 	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
 
-	CheckBox check_Settings_Overwrite WIN = $panelTitle,value= 1
 	CheckBox Check_Settings_NwbExport WIN = $panelTitle,value= 0
 
 	SetVariable min_AsyncAD_00 WIN = $panelTitle,value= _NUM:0
@@ -4024,9 +4015,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif
 
-	if(GetCheckboxState(panelTitle, "check_Settings_Overwrite"))
-		DM_DeleteDataWaves(panelTitle)
-	endif
+	DM_DeleteDataWaves(panelTitle)
 
 	// disable the clamp mode checkboxes of all active headstages
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
