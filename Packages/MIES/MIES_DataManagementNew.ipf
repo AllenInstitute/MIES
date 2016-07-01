@@ -6,36 +6,21 @@
 Function DM_SaveAndScaleITCData(panelTitle)
 	string panelTitle
 
-	variable sweepNo, rowsToCopy
-	string savedDataWaveName, savedSetUpWaveName, oscilloscopeSubwindow
+	variable sweepNo
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	Redimension/Y=(DM_GetRawDataFPType(panelTitle)) ITCDataWave
-	DM_ADScaling(ITCDataWave, panelTitle)
-	DM_DAScaling(ITCDataWave, panelTitle)
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	rowsToCopy = stopCollectionPoint - 1
-
 	DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	DFREf dfr = GetDeviceDataPath(panelTitle)
 
-	GetDeviceDataPath(panelTitle)
-	savedDataWaveName = GetDeviceDataPathAsString(panelTitle)  + ":Sweep_" +  num2str(sweepNo)
-	savedSetUpWaveName = GetDeviceDataPathAsString(panelTitle) + ":Config_Sweep_" + num2str(sweepNo)
-
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	rowsToCopy = stopCollectionPoint - 1
-
-	Duplicate/O/R=[0, rowsToCopy][] ITCDataWave $savedDataWaveName/Wave=dataWave
-	Duplicate/O ITCChanConfigWave $savedSetUpWaveName/Wave=configWave
+	WAVE dataWave = DM_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	note dataWave, Time()
 	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
 	AppendMiesVersionToWaveNote(dataWave)
+
+	Duplicate/O GetITCChanConfigWave(panelTitle), dfr:$("Config_Sweep_" + num2str(sweepNo))/Wave=configWave
 
 	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
@@ -93,7 +78,7 @@ Function DM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
-		GetAnalysisFuncFromHeadstage(panelTitle, i, eventType, func, setName)
+		DM_GetAnalysisFuncFromHeadstage(panelTitle, i, eventType, func, setName)
 
 		if(isEmpty(func) || isEmpty(setName))
 			continue
@@ -190,9 +175,18 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	variable dataAcqOrTP, chunk, fifoPos
 
 	variable length, first, last
+	variable startOfADColumns, numEntries
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
+	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+	numEntries = DimSize(ADCs, ROWS)
+
+	//do the AD scaling here manually so that is can be as fast as possible
+	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%ADGain] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		if(ParamIsDefault(chunk))
@@ -206,7 +200,7 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
 
-		Multithread OscilloscopeData[][] = ITCDataWave[first + p][q]
+		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
@@ -224,57 +218,64 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
-		Multithread OscilloscopeData[0, fifoPos - 1][] = ITCDataWave[p][q]
+		Multithread OscilloscopeData[0, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
-
-	DM_ADScaling(OscilloscopeData, panelTitle)
 End
 
-static Function DM_ADScaling(WaveToScale, panelTitle)
-	wave WaveToScale
+/// @brief Create a sweep wave holding the scaled contents of ITCDataWave
+///
+/// Only the x-range up to `stopCollectionPoint` is stored.
+static Function/WAVE DM_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	string panelTitle
+	DFREF dfr
+	variable sweepNo
 
-	variable startOfADColumns
-	variable gain, i, numEntries, adc
+	variable numEntries, numDACs, numADCs, numTTLs
+	variable numRows, numCols
+	string sweepWaveName
 
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
-	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
-
-	numEntries = DimSize(ADCs, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		adc = ADCs[i]
-
-		// w' = w  / (g * s)
-		gain  = DA_EphysGuiState[adc][%ADGain]
-		gain *= HARDWARE_ITC_BITS_PER_VOLT
-		MultiThread WaveToScale[][(startOfADColumns + i)] /= gain
-	endfor
-end
-
-static Function DM_DAScaling(WaveToScale, panelTitle)
-	wave WaveToScale
-	string panelTitle
-
-	variable gain, i, dac, numEntries
-
-	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
+	WAVE TTLs = GetTTLListFromConfig(ITCChanConfigWave)
 
-	numEntries = DimSize(DACs, ROWS)
-	for(i = 0; i < numEntries ; i += 1)
-		dac  = DACs[i]
+	numRows = stopCollectionPoint
+	numCols = DimSize(ITCDataWave, COLS)
+	ASSERT(numCols > 0, "Expected at least one channel")
 
-		// w' = w * g / s
-		gain  = DA_EphysGuiState[dac][%DAGain]
-		gain /= HARDWARE_ITC_BITS_PER_VOLT
-		MultiThread WaveToScale[][i] *= gain
-	endfor
-end
+	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
+	numTTLs = DimSize(TTLs, ROWS)
+
+	Make/FREE/N=(numCols) gain
+
+	// DA: w' = w * g / s
+	if(numDACs > 0)
+		gain[0, numDACs - 1] = DA_EphysGuiState[DACs[p]][%DAGain] / HARDWARE_ITC_BITS_PER_VOLT
+	endif
+
+	// AD: w' = w  / (g * s)
+	if(numADCs > 0)
+		gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%ADGain] * HARDWARE_ITC_BITS_PER_VOLT
+	endif
+
+	// no scaling done for TTL
+	if(numTTLs > 0)
+		gain[numDACs + numADCs, *] = 1
+	endif
+
+	sweepWaveName = "Sweep_" +  num2str(sweepNo)
+	Make/O/N=(numRows, numCols)/Y=(DM_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
+
+	MultiThread sweepWave[0, stopCollectionPoint - 1][] = ITCDataWave[p][q] / gain[q]
+
+	return sweepWave
+End
 
 /// @brief Delete all sweep and config waves having a sweep number
 /// of `sweepNo` and higher
@@ -319,7 +320,7 @@ End
 /// @param[in]  eventType  One of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @param[out] func       Analysis function name
 /// @param[out] setName    Name of the Stim set
-static Function GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, func, setName)
+static Function DM_GetAnalysisFuncFromHeadstage(panelTitle, headStage, eventType, func, setName)
 	string panelTitle
 	variable headStage, eventType
 	string &func, &setName
