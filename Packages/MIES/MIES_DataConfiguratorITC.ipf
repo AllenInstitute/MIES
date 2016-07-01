@@ -653,14 +653,14 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
 
-	variable i, itcDataColumn, headstage, numEntries
+	variable i, activeColumn, headstage, numEntries
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 	WAVE/SDFR=deviceDFR ITCDataWave
 
-	string setNameList, setName
+	string setNameList
 	string ctrl, firstSetName, str, list, func, colLabel
-	variable DAGain, DAScale, setColumn, insertStart, setLength, oneFullCycle, val
-	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, testPulseAmplitude
+	variable oneFullCycle, val, singleSetLength
+	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
 	variable multiplier, j
@@ -688,14 +688,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
-	NVAR count = $GetCount(panelTitle)
-	if(IsFinite(count))
-		setColumn = count - 1
-	else
-		setColumn = 0
-	endif
-
 	numEntries = DimSize(statusDA, ROWS)
+	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn
+	Make/T/FREE/N=(numEntries) setName
+	Make/WAVE/FREE/N=(numEntries) stimSet
+
 	for(i = 0; i < numEntries; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
@@ -705,68 +702,68 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			setName = StringFromList(i, setNameList)
-			WAVE stimSet = WB_CreateAndGetStimSet(setName)
+			setName[activeColumn] = StringFromList(i, setNameList)
+			stimSet[activeColumn] = WB_CreateAndGetStimSet(setName[activeColumn])
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
-			setName = "testpulse"
-			WAVE stimSet = GetTestPulse()
+			setName[activeColumn] = "testpulse"
+			stimSet[activeColumn] = GetTestPulse()
 		else
 			ASSERT(0, "unknown mode")
 		endif
 
-		setLength = round(DimSize(stimSet, ROWS) / decimationFactor)
+		setLength[activeColumn] = round(DimSize(stimSet[activeColumn], ROWS) / decimationFactor)
 
 		if(distributedDAQ)
-			if(itcDataColumn == 0)
-				firstSetName = setName
+			if(activeColumn == 0)
+				firstSetName = setName[activeColumn]
 			else
-				ASSERT(!cmpstr(firstSetName, setName), "Non-equal stim sets")
+				ASSERT(!cmpstr(firstSetName, setName[activeColumn]), "Non-equal stim sets")
 			endif
 		endif
 
 		if(dataAcqOrTP == TEST_PULSE_MODE)
-			setColumn   = 0
-			insertStart = 0
+			setColumn[activeColumn]   = 0
+			insertStart[activeColumn] = 0
 		else
 			// only call DC_CalculateChannelColumnNo for real data acquisition
-			ret = DC_CalculateChannelColumnNo(panelTitle, setName, i, CHANNEL_TYPE_DAC)
+			ret = DC_CalculateChannelColumnNo(panelTitle, setName[activeColumn], i, CHANNEL_TYPE_DAC)
 			oneFullCycle = imag(ret)
-			setColumn    = real(ret)
+			setColumn[activeColumn] = real(ret)
 			if(distributedDAQ)
 				ASSERT(IsFinite(headstage), "Distributed DAQ is not possible with unassociated DACs")
 				indexActiveHeadStage = sum(statusHS, 0, headstage)
 				ASSERT(indexActiveHeadStage > 0, "Invalid index")
-				insertStart = onsetDelay + (indexActiveHeadStage - 1) * (distributedDAQDelay + setLength)
+				insertStart[activeColumn] = onsetDelay + (indexActiveHeadStage - 1) * (distributedDAQDelay + setLength[activeColumn])
 			else
-				insertStart = onsetDelay
+				insertStart[activeColumn] = onsetDelay
 			endif
 		endif
 
 		channelMode = ChannelClampMode[i][%DAC]
 		if(channelMode == V_CLAMP_MODE)
-			testPulseAmplitude = TPAmpVClamp
+			testPulseAmplitude[activeColumn] = TPAmpVClamp
 		elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
-			testPulseAmplitude = TPAmpIClamp
+			testPulseAmplitude[activeColumn] = TPAmpIClamp
 		else
 			ASSERT(0, "Unknown clamp mode")
 		endif
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DAScale = GetSetVariable(panelTitle, ctrl)
+		DAScale[activeColumn] = GetSetVariable(panelTitle, ctrl)
 
 		// DAScale tuning for special cases
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 			// checks if user wants to set scaling to 0 on sets that have already cycled once
 			if(scalingZero && (indexingLocked || !indexing) && oneFullCycle)
-				DAScale = 0
+				DAScale[activeColumn] = 0
 			endif
 
 			if(channelMode == I_EQUAL_ZERO_MODE)
-				DAScale            = 0.0
-				testPulseAmplitude = 0.0
+				DAScale[activeColumn]            = 0.0
+				testPulseAmplitude[activeColumn] = 0.0
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
-			DAScale = testPulseAmplitude
+			DAScale[activeColumn] = testPulseAmplitude[activeColumn]
 		else
 			ASSERT(0, "unknown mode")
 		endif
@@ -775,14 +772,14 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
-		DAGain = HARDWARE_ITC_BITS_PER_VOLT / val
+		DAGain[activeColumn] = HARDWARE_ITC_BITS_PER_VOLT / val
 
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
 
-		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName)
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName[activeColumn])
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			func     = ExtractAnalysisFuncFromStimSet(stimSet, j)
+			func     = ExtractAnalysisFuncFromStimSet(stimSet[activeColumn], j)
 			colLabel = GetDimLabel(sweepDataTxTLNB, COLS, 5 + j)
 			DC_DocumentChannelProperty(panelTitle, colLabel, headstage, i, str=func)
 		endfor
@@ -790,26 +787,49 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
-		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale)
-		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn)
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, i, var=setLength)
+		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, i, var=setLength[activeColumn])
 
-		if(dataAcqOrTP == TEST_PULSE_MODE && multiDevice)
-			Multithread ITCDataWave[insertStart, *][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * mod(p - insertStart, setLength)][setColumn]
-			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
-			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][itcDataColumn] = 0
-		else
-			Multithread ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = (DAGain * DAScale) * stimSet[decimationFactor * (p - insertStart)][setColumn]
-		endif
-
-		// space in ITCDataWave for the testpulse is allocated via an automatic increase
-		// of the onset delay
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE && globalTPInsert)
-			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][itcDataColumn] = testPulseAmplitude * DAGain
-		endif
-
-		itcDataColumn += 1
+		activeColumn += 1
 	endfor
+
+	numEntries = activeColumn
+	Redimension/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, stimSet, setName
+
+	// varies per DAC:
+	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
+	// setName, setColumn
+	//
+	// constant:
+	// decimationFactor, testPulseLength, baselineFrac
+	//
+	// we only have to fill in the DA channels
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		ASSERT(sum(insertStart) == 0 , "Unexpected insert start value ")
+		ASSERT(sum(setColumn) == 0 , "Unexpected setColumn value ")
+		WAVE singleStimSet = GetTestPulse()
+		singleSetLength = setLength[0]
+		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
+		if(multiDevice)
+			Multithread ITCDataWave[][0, numEntries - 1] = (DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * mod(p, singleSetLength)][0]
+			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
+		else
+			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] = (DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * p][0]
+		endif
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		for(i = 0; i < numEntries; i += 1)
+			WAVE singleStimSet = stimSet[i]
+			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] = (DAGain[i] * DAScale[i]) * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]]
+		endfor
+
+		if(globalTPInsert)
+			// space in ITCDataWave for the testpulse is allocated via an automatic increase
+			// of the onset delay
+			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][0, numEntries - 1] = testPulseAmplitude[q] * DAGain[q]
+		endif
+	endif
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
 	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * 1e-3)
@@ -832,7 +852,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store that the stim set length
 		// also headstage independent
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, var=setLength)
+		ASSERT(WaveMin(setLength) == WaveMax(setLength), "Unexpected varying stim set length")
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, var=setLength[0])
 	endif
 
 	WAVE statusAD = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
@@ -854,7 +875,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
 
-		itcDataColumn += 1
+		activeColumn += 1
 	endfor
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -866,15 +887,15 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 			WAVE/SDFR=deviceDFR TTLwave
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
-			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
-			itcDataColumn += 1
+			ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			activeColumn += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 			WAVE/SDFR=deviceDFR TTLwave
 			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
-			ITCDataWave[insertStart, insertStart + setLength - 1][itcDataColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = TTLWave[decimationFactor * (p - insertStart)]
 		endif
 	endif
 End
