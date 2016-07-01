@@ -2441,3 +2441,74 @@ Function FindNextPower(a, p)
 
 	return ceil(log(a)/log(p))
 End
+
+/// @brief Return a wave with deep copies of all referenced waves
+///
+/// The deep copied waves will be free waves.
+/// Does not allow invalid wave references in `src`.
+///
+/// @param src       wave reference wave
+/// @param dimension [optional] copy only a single dimension, requires `index` or
+///                  `indexWave` as well
+/// @param index     [optional] specifies the index into `dimension`
+/// @param indexWave [optional] specifies the indizes into `dimension`, allows for
+///                  differing indizes per `src` entry
+Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
+	WAVE/WAVE src
+	variable dimension, index
+	WAVE indexWave
+
+	variable i, numEntries
+
+	ASSERT(WaveType(src, 1) == 4, "Expected wave ref wave")
+
+	if(!ParamIsDefault(dimension))
+		ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+		ASSERT(ParamIsDefault(index) + ParamIsDefault(indexWave) == 1, "Need exactly one of parameter of type index or indexWave")
+	endif
+
+	if(!ParamIsDefault(indexWave) || !ParamIsDefault(index))
+		ASSERT(!ParamIsDefault(dimension), "Missing optional parameter dimension")
+	endif
+
+	Duplicate/WAVE/FREE src, dst
+
+	// using numpnts so that a single `for loop` is enough
+	numEntries = numpnts(src)
+
+	if(!ParamIsDefault(indexWave))
+		ASSERT(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z srcWave = dst[i]
+		ASSERT(WaveExists(srcWave), "Missing wave at linear index" + num2str(i))
+
+		if(!ParamIsDefault(indexWave))
+			index = indexWave[i]
+		endif
+
+		if(ParamIsDefault(dimension))
+			Duplicate/FREE srcWave, dstWave
+		else
+			switch(dimension)
+				case ROWS:
+					Duplicate/FREE/R=[index][][][] srcWave, dstWave
+					break
+				case COLS:
+					Duplicate/FREE/R=[][index][][] srcWave, dstWave
+					break
+				case LAYERS:
+					Duplicate/FREE/R=[][][index][] srcWave, dstWave
+					break
+				case CHUNKS:
+					Duplicate/FREE/R=[][][][index] srcWave, dstWave
+					break
+			endswitch
+		endif
+
+		dst[i] = dstWave
+	endfor
+
+	return dst
+End
