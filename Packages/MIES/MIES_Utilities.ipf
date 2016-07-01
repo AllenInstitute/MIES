@@ -658,6 +658,33 @@ Function SetNumberInWaveNote(wv, key, val)
 	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
 End
 
+/// @brief Return the string value of `key` found in the wave note,
+/// returns an empty string if it could not be found
+///
+/// The expected wave note format is: `key1:val1;key2:str2;`
+Function/S GetStringFromWaveNote(wv, key)
+	Wave wv
+	string key
+
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	return StringByKey(key, note(wv))
+End
+
+/// @brief Update the string value of `key` found in the wave note to `str`
+///
+/// The expected wave note format is: `key1:val1;key2:str2;`
+Function SetStringInWaveNote(wv, key, str)
+	Wave wv
+	string key, str
+
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	Note/K wv, ReplaceStringByKey(key, note(wv), str)
+End
+
 /// @brief Remove the single quotes from a liberal wave name if they can be found
 Function/S PossiblyUnquoteName(name)
 	string name
