@@ -613,6 +613,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				return 1e-3
 			case MCC_GETPIPETTEOFFSET_FUNC:
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return 1e+3
 			case MCC_SETRSCOMPBANDWIDTH_FUNC:
 				return 1e+3
@@ -645,6 +646,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETPIPETTEOFFSET_FUNC:
 				return 1e-3
 			case MCC_GETPIPETTEOFFSET_FUNC:
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
 				return 1e+3
 			case MCC_SETNEUTRALIZATIONCAP_FUNC:
 				return 1e-12
