@@ -143,7 +143,7 @@ static Function P_MethodApproach(panelTitle, headStage)
 	WAVE 	PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	WAVE 	AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 	variable targetP = PressureDataWv[headStage][%PSI_solution] // Approach pressure is stored in row 10 (Solution approach pressure). Once manipulators are part of MIES, other approach pressures will be incorporated
-
+	PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = nan
 	P_UpdateTTLstate(panelTitle, headStage, 1) // Open the TTL - outside of if statement below because TTL will only update if the state does not match.
 
 	// if Near cell checkbox is checked then all headstages, except the active headstage, go to in slice pressure. The active headstage goes to nearCell pressure
@@ -259,7 +259,9 @@ static Function P_MethodBreakIn(panelTitle, headStage)
 	variable ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck
 
 	if(!lastRSlopeCheck || !IsFinite(lastRSlopeCheck)) // checks for first time thru.
+		P_MethodAtmospheric(panelTitle, headstage)
 		ElapsedTimeInSeconds = 0
+		P_NegPressurePulse(panelTitle, headStage)
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 	endif
 
@@ -597,7 +599,6 @@ static Function P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 	variable outputDecimal, val, idx, channel
 	variable hwType, deviceID, ttlBit
 	string deviceName
-
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	// force value to 0/1
@@ -1220,7 +1221,8 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	variable state, deviceID, hwType, rack, TTL
+	variable rackZeroState, rackOneState, deviceID, hwType, rack, TTL, ret
+	string deviceType, deviceNumber
 	string pressureDevice
 
 	WAVE ITCData             = P_GetITCData(panelTitle)
@@ -1239,18 +1241,25 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 	rack = HW_ITC_GetRackForTTLBit(pressureDevice, TTL)
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
+	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	if(!cmpstr(deviceType, "ITC1600"))
+		// request TTL bit definitly in rack zero
+		rackZeroState = HW_ReadDigital(hwType, deviceID, 0)
+		ITCData[][%TTL_R0] = rackZeroState
+
+		// request TTL bit definitly in rack one
+		rackOneState = HW_ReadDigital(hwType, deviceID, 4)
+		ITCData[][%TTL_R1] = rackOneState
+	else
+		ASSERT(0, "does currently not work with the ITC18USB as DI/DO channels are different")
+	endif
+
 	if(rack == RACK_ZERO)
-		state = HW_ReadDigital(hwType, deviceID, TTL)
-		ITCData[][%TTL_R0] = state
-		state = P_UpdateTTLdecimal(pressureDevice, state, TTL, 1) // determine the TTL state for the pulse period
-		ITCData[0, PRESSURE_TTL_HIGH_START - 1][%TTL_R0]                = 0
-		ITCData[PRESSURE_TTL_HIGH_START, PRESSURE_PULSE_ENDpt][%TTL_R0] = state // update the pulse period TTL state
+		rackZeroState = P_UpdateTTLdecimal(pressureDevice, rackZeroState, TTL, 1)
+		ITCData[PRESSURE_TTL_HIGH_START, PRESSURE_PULSE_ENDpt][%TTL_R0] = rackZeroState
 	elseif(rack == RACK_ONE)
-		state = HW_ReadDigital(hwType, deviceID, TTL)
-		ITCData[][%TTL_R1] = state
-		state = P_UpdateTTLdecimal(pressureDevice, state, TTL, 1)
-		ITCData[0, PRESSURE_TTL_HIGH_START - 1][%TTL_R1]                = 0
-		ITCData[PRESSURE_TTL_HIGH_START, PRESSURE_PULSE_ENDpt][%TTL_R1] = state
+		rackOneState = P_UpdateTTLdecimal(pressureDevice, rackOneState, TTL, 1)
+		ITCData[PRESSURE_TTL_HIGH_START, PRESSURE_PULSE_ENDpt][%TTL_R1] = rackOneState
 	else
 		ASSERT(0, "Impossible case")
 	endif
