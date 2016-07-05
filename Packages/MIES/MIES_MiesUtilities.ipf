@@ -2750,7 +2750,7 @@ End
 Function DeviceCanLead(panelTitle)
 	string panelTitle
 
-	return !cmpstr(panelTitle, "ITC1600_Dev_0")
+	return !cmpstr(panelTitle, ITC1600_FIRST_DEVICE)
 End
 
 /// @brief Check that the device is a leader and has followers
