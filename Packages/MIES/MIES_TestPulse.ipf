@@ -506,7 +506,7 @@ Function TP_Setup(panelTitle, runMode)
 
 	variable multiDevice
 
-	DFREF deviceDFR = GetDevicePath(panelTitle)
+	DM_DeleteDataWaves(panelTitle)
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
