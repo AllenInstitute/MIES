@@ -144,26 +144,13 @@ Function/S GetDataAcqState(panelTitle)
 	return GetNVARAsString(GetDevicePath(panelTitle), "DataAcqState", initialValue=0)
 End
 
-/// @brief Returns the list of follower devices of a ITC1600 Device 0, aka the Lead Device
+/// @brief Return the list of follower devices of a lead device
 ///
-/// For backward compatibility the string is not created if it does not exist
-/// This is also the reason why callers have to call it as
-/// @code
-/// GetFollowerList(doNotCreateSVAR=1)
-/// @endcode
-/// so that they remember that.
-/// @todo remove the doNotCreateSVAR-hack
-Function/S GetFollowerList([doNotCreateSVAR])
-	variable doNotCreateSVAR
+/// @sa GetListofLeaderAndPossFollower()
+Function/S GetFollowerList(leadPanel)
+	string leadPanel
 
-	ASSERT(!ParamIsDefault(doNotCreateSVAR) && doNotCreateSVAR == 1, "Wrong parameter, read the function documentation")
-	string path = GetDevicePathAsString(ITC1600_FIRST_DEVICE)
-
-	if(!DataFolderExists(path))
-		return ""
-	endif
-
-	return path + ":ListOfFollowerITC1600s"
+	return GetSVARAsString(GetDevicePath(leadPanel), "ListOfFollowerITC1600s", initialValue="")
 End
 
 /// @brief Returns the absolute path to the ITC device ID

@@ -231,10 +231,8 @@ Function HSU_UnlockDevice(panelTitle)
 		HSU_ClearWaveIfExists(ActiveDevTimeParam)
 		HSU_ClearWaveIfExists(TimerFunctionListWave)
 
-		SVAR/Z listOfFollowers = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowers))
-			listOfFollowers = ""
-		endif
+		SVAR listOfFollowers = $GetFollowerList(ITC1600_FIRST_DEVICE)
+		listOfFollowers = ""
 
 		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
@@ -350,28 +348,11 @@ Function HSU_UpdateChanAmpAssignPanel(panelTitle)
 	endif
 End
 
-/// Create, if it does not exist, the global variable ListOfFollowerITC1600s storing the ITC follower list
-/// @todo merge with GetFollowerList once the doNotCreateSVAR-hack is removed
-static Function/S HSU_CreateITCFollowerList(panelTitle)
-	string panelTitle
-
-	// ensure that the device folder exists
-	dfref dfr = GetDevicePath(panelTitle)
-	SVAR/Z/SDFR=dfr list = ListOfFollowerITC1600s
-	if(!SVAR_Exists(list))
-		string/G dfr:ListOfFollowerITC1600s = ""
-	endif
-
-	// now we can return the absolute path to the SVAR
-	// as we know it exists
-	return GetFollowerList(doNotCreateSVAR=1)
-End
-
 /// This function sets a ITC1600 device as a follower, ie. The internal clock is used to synchronize 2 or more PCI-1600
 Function HSU_SetITCDACasFollower(leadDAC, followerDAC)
 	string leadDAC, followerDAC
 
-	SVAR listOfFollowerDevices = $HSU_CreateITCFollowerList(leadDAC)
+	SVAR listOfFollowerDevices = $GetFollowerList(leadDAC)
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerDAC)
 	
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)

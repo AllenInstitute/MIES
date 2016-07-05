@@ -27,7 +27,7 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 		return NaN
 	endif
 
-	SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
 	// configure all followers
