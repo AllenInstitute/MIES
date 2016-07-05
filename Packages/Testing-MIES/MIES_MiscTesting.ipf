@@ -41,65 +41,55 @@ Function createDummySettingsWave(panelTitle, SweepCount)
 	string panelTitle
 	Variable SweepCount
 
-	// Location for the settings wave
-	dfref ampdfr = GetAmpSettingsFolder()
+	Make /FREE /N = (1, 6, 8) dummySettingsWave
 
-	Wave/Z/SDFR=ampdfr dummySettingsWave = dummySettings
-	if (!WaveExists(dummySettingsWave))
-		// create the 3 dimensional wave
-		make /o /n = (1, 6, 8) ampdfr:dummySettings/Wave=dummySettingsWave
-	endif
+	Make /FREE /T /N = (3, 6) dummySettingsKey
 
-	Wave/T/SDFR=ampdfr dummySettingsKey
-	if (!WaveExists(dummySettingsKey))
-		make /T /o  /n = (3, 6) ampdfr:dummySettingsKey/Wave=dummySettingsKey
+	// Row 0: Parameter
+	// Row 1: Units
+	// Row 2: Tolerance factor
 
-		// Row 0: Parameter
-		// Row 1: Units
-		// Row 2: Tolerance factor
+	// Add dimension labels to the dummySettingsKey wave
+	SetDimLabel 0, 0, Parameter, dummySettingsKey
+	SetDimLabel 0, 1, Units, dummySettingsKey
+	SetDimLabel 0, 2, Tolerance, dummySettingsKey
 
-		// Add dimension labels to the dummySettingsKey wave
-		SetDimLabel 0, 0, Parameter, dummySettingsKey
-		SetDimLabel 0, 1, Units, dummySettingsKey
-		SetDimLabel 0, 2, Tolerance, dummySettingsKey
+	// And now populate the wave
+	dummySettingsKey[0][0] =  "Dummy Setting 1"
+	dummySettingsKey[1][0] =  "V"
+	dummySettingsKey[2][0] =  "0.5"
 
-		// And now populate the wave
-		dummySettingsKey[0][0] =  "Dummy Setting 1"
-		dummySettingsKey[1][0] =  "V"
-		dummySettingsKey[2][0] =  "0.5"
+	dummySettingsKey[0][1] =   "Dummy Setting 2"
+	dummySettingsKey[1][1] =  "V"
+	dummySettingsKey[2][1] =  "0.5"
 
-		dummySettingsKey[0][1] =   "Dummy Setting 2"
-		dummySettingsKey[1][1] =  "V"
-		dummySettingsKey[2][1] =  "0.5"
+	dummySettingsKey[0][2] =   "Dummy Setting 3"
+	dummySettingsKey[1][2] =   "V"
+	dummySettingsKey[2][2] =   "0.5"
 
-		dummySettingsKey[0][2] =   "Dummy Setting 3"
-		dummySettingsKey[1][2] =   "V"
-		dummySettingsKey[2][2] =   "0.5"
+	dummySettingsKey[0][3] =   "Dummy Setting 4"
+	dummySettingsKey[1][3] =   "V"
+	dummySettingsKey[2][3] =   "0.5"
 
-		dummySettingsKey[0][3] =   "Dummy Setting 4"
-		dummySettingsKey[1][3] =   "V"
-		dummySettingsKey[2][3] =   "0.5"
+	dummySettingsKey[0][4] =   "Dummy Setting 5"
+	dummySettingsKey[1][4] =   "V"
+	dummySettingsKey[2][4] =   "0.05"
 
-		dummySettingsKey[0][4] =   "Dummy Setting 5"
-		dummySettingsKey[1][4] =   "V"
-		dummySettingsKey[2][4] =   "0.05"
-
-		dummySettingsKey[0][5] =   "Dummy Setting 6"
-		dummySettingsKey[1][5] =   "V"
-		dummySettingsKey[2][5] =   "0.05"
-	endif
+	dummySettingsKey[0][5] =   "Dummy Setting 6"
+	dummySettingsKey[1][5] =   "V"
+	dummySettingsKey[2][5] =   "0.05"
 
 	// Now populate the Settings Wave
 	// the wave is 1 row, 15 columns, and headstage number layers
 	// first...determine if the head stage is being controlled
 	variable headStageControlledCounter
 	for(headStageControlledCounter = 0;headStageControlledCounter < NUM_HEADSTAGES ;headStageControlledCounter += 1)
-		dummySettingsWave[0][0][headStageControlledCounter] = sweepCount*.1
-		dummySettingsWave[0][1][headStageControlledCounter] = sweepCount*.2
-		dummySettingsWave[0][2][headStageControlledCounter] = sweepCount*.3
-		dummySettingsWave[0][3][headStageControlledCounter] = sweepCount*.4
-		dummySettingsWave[0][4][headStageControlledCounter] = sweepCount*.5
-		dummySettingsWave[0][5][headStageControlledCounter] = sweepCount*.6
+		dummySettingsWave[0][0][headStageControlledCounter] = sweepCount * 0.1
+		dummySettingsWave[0][1][headStageControlledCounter] = sweepCount * 0.2
+		dummySettingsWave[0][2][headStageControlledCounter] = sweepCount * 0.3
+		dummySettingsWave[0][3][headStageControlledCounter] = sweepCount * 0.4
+		dummySettingsWave[0][4][headStageControlledCounter] = sweepCount * 0.5
+		dummySettingsWave[0][5][headStageControlledCounter] = sweepCount * 0.6
 	endfor
 
 	// now call the function that will create the wave notes

@@ -275,17 +275,17 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 	variable sweep
 
 	DFREF ManipulatorDF = GetManipulatorPath()
-	WAVE settingsHistory = GetNumDocWave(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE WaveForGizmo = GetManipulatorPos(panelTitle)
 	if(paramIsDefault(sweep))
 		sweep = AFH_GetLastSweepAcquired(panelTitle)
 		// Need to check if there is actually manipulator data stored for the sweep
 	endif
-	
-	WaveForGizmo[][0] = GetLastSetting(Settingshistory, sweep, "ManipX")[p]
-	WaveForGizmo[][1] = GetLastSetting(Settingshistory, sweep, "ManipY")[p]
-	WaveForGizmo[][2] = GetLastSetting(Settingshistory, sweep, "ManipZ")[p]
-	
+
+	WaveForGizmo[][0] = GetLastSetting(numericalValues, sweep, "ManipX")[p]
+	WaveForGizmo[][1] = GetLastSetting(numericalValues, sweep, "ManipY")[p]
+	WaveForGizmo[][2] = GetLastSetting(numericalValues, sweep, "ManipZ")[p]
+
 	string cmd = "NewGizmo/k=1/N=CellPosPlot/T=\"CellPosPlot\""
 	Execute cmd
 	sprintf cmd "AppendToGizmo/N=CellPosPlot defaultScatter= %s" GetWavesDataFolder(WaveForGizmo,2)

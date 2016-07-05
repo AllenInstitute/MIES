@@ -928,6 +928,9 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 		elseif(StringMatch(dataSet, "*savedLabNotebook/textDocumentation/*"))
 			SetDataFolder GetDevSpecLabNBTextDocFolder(panelName)
 			HDF5LoadData /O /IGOR=-1 fileID, dataSet
+		elseif(StringMatch(dataSet, "*savedLabNotebook/*")) // has to be the last in the list
+			SetDataFolder GetDevSpecLabNBFolder(panelName)
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
 		endif
 	endfor	
 

@@ -221,20 +221,20 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	IPNWB#AddDevice(locationID, panelTitle, NWB_GenerateDeviceDescription(panelTitle))
 
-	WAVE settingsHistory           = GetNumDocWave(panelTitle)
-	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
-	WAVE/T settingsHistoryText     = GetTextDocWave(panelTitle)
-	WAVE/T settingsHistoryTextKeys = GetTextDocKeyWave(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
 	path = "/general/labnotebook/" + panelTitle
 	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 
 	IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
 
-	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=settingsHistory, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=settingsHistoryKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=settingsHistoryText, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=settingsHistoryTextKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValues, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValues, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
 
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
@@ -401,30 +401,30 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	NVAR session_start_time = $GetSessionStartTimeReadBack()
 
-	WAVE settingsHistory           = GetNumDocWave(panelTitle)
-	WAVE/T settingsHistoryKeys     = GetNumDocKeyWave(panelTitle)
-	WAVE/T settingsHistoryText     = GetTextDocWave(panelTitle)
-	WAVE/T settingsHistoryTextKeys = GetTextDocKeyWave(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
 	// comment denotes the introducing comment of the labnotebook entry
 	// 9b35fdad (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
-	WAVE/Z clampMode = GetLastSetting(settingsHistory, sweep, "Clamp Mode")
+	WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode")
 
 	if(!WaveExists(clampMode))
-		WAVE/Z clampMode = GetLastSetting(settingsHistory, sweep, "Operating Mode")
+		WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Operating Mode")
 		ASSERT(WaveExists(clampMode), "Labnotebook is too old for NWB export.")
 	endif
 
 	// 3a94d3a4 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
-	WAVE/Z ADCs = GetLastSetting(settingsHistory, sweep, "ADC")
+	WAVE/Z ADCs = GetLastSetting(numericalValues, sweep, "ADC")
 	ASSERT(WaveExists(ADCs), "Labnotebook is too old for NWB export.")
 
 	// dito
-	WAVE DACs = GetLastSetting(settingsHistory, sweep, "DAC")
+	WAVE DACs = GetLastSetting(numericalValues, sweep, "DAC")
 	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
 
 	// 9c8e1a94 (Record the active headstage in the settingsHistory, 2014-11-04)
-	WAVE/Z statusHS = GetLastSetting(settingsHistory, sweep, "Headstage Active")
+	WAVE/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active")
 	if(!WaveExists(statusHS))
 		Duplicate/FREE ADCs, statusHS
 
@@ -433,7 +433,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	endif
 
 	// 296097c2 (Changes to Tango Interact, 2014-09-03)
-	WAVE/T stimSets = GetLastSettingText(settingsHistoryText, sweep, STIM_WAVE_NAME_KEY)
+	WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
 	STRUCT IPNWB#WriteChannelParams params
@@ -502,12 +502,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		ttlBits = GetTTLBits(settingsHistory, sweep, i)
+		ttlBits = GetTTLBits(numericalValues, sweep, i)
 		if(!IsFinite(ttlBits))
 			continue
 		endif
 
-		listOfStimsets = GetTTLstimSets(settingsHistory, settingsHistoryText, sweep, i)
+		listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, i)
 
 		params.clampMode     = NaN
 		params.channelNumber = i
@@ -600,40 +600,40 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	STRUCT IPNWB#WriteChannelParams &p
 	STRUCT IPNWB#TimeSeriesProperties &tsp
 
-	WAVE settingsHistory = GetNumDocWave(p.device)
+	WAVE numericalValues = GetLBNumericalValues(p.device)
 
 	IPNWB#InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
 
 	if(p.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
 		if(p.clampMode == V_CLAMP_MODE)
 			// VoltageClampSeries: datasets
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "Fast compensation capacitance", "capacitance_fast", p.electrodeNumber, tsp)
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "Slow compensation capacitance", "capacitance_slow", p.electrodeNumber, tsp)
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "RsComp Bandwidth", "resistance_comp_bandwidth", p.electrodeNumber, tsp, factor=1e3, enabledProp="RsComp Enable")
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "RsComp Correction", "resistance_comp_correction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "RsComp Prediction", "resistance_comp_prediction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "Whole Cell Comp Cap", "whole_cell_capacitance_comp", p.electrodeNumber, tsp, factor=1e-12, enabledProp="Whole Cell Comp Enable")
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "Whole Cell Comp Resist", "whole_cell_series_resistance_comp", p.electrodeNumber, tsp, factor=1e6, enabledProp="Whole Cell Comp Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "Fast compensation capacitance", "capacitance_fast", p.electrodeNumber, tsp)
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "Slow compensation capacitance", "capacitance_slow", p.electrodeNumber, tsp)
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "RsComp Bandwidth", "resistance_comp_bandwidth", p.electrodeNumber, tsp, factor=1e3, enabledProp="RsComp Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "RsComp Correction", "resistance_comp_correction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "RsComp Prediction", "resistance_comp_prediction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "Whole Cell Comp Cap", "whole_cell_capacitance_comp", p.electrodeNumber, tsp, factor=1e-12, enabledProp="Whole Cell Comp Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "Whole Cell Comp Resist", "whole_cell_series_resistance_comp", p.electrodeNumber, tsp, factor=1e6, enabledProp="Whole Cell Comp Enable")
 		elseif(p.clampMode == I_CLAMP_MODE)
 			// CurrentClampSeries: datasets
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "I-Clamp Holding Level", "bias_current", p.electrodeNumber, tsp, enabledProp="I-Clamp Holding Enable")
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "Bridge Bal Value", "bridge_balance", p.electrodeNumber, tsp, enabledProp="Bridge Bal Enable")
-			NWB_AddSweepDataSets(settingsHistory, p.sweep, "Neut Cap Value", "capacitance_compensation", p.electrodeNumber, tsp, enabledProp="Neut Cap Enabled")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "I-Clamp Holding Level", "bias_current", p.electrodeNumber, tsp, enabledProp="I-Clamp Holding Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "Bridge Bal Value", "bridge_balance", p.electrodeNumber, tsp, enabledProp="Bridge Bal Enable")
+			NWB_AddSweepDataSets(numericalValues, p.sweep, "Neut Cap Value", "capacitance_compensation", p.electrodeNumber, tsp, enabledProp="Neut Cap Enabled")
 		endif
 
-		NWB_AddSweepDataSets(settingsHistory, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
+		NWB_AddSweepDataSets(numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
 	elseif(p.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
-		NWB_AddSweepDataSets(settingsHistory, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
+		NWB_AddSweepDataSets(numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
 
-		WAVE/Z values = GetLastSetting(settingsHistory, p.sweep, "Stim Scale Factor")
+		WAVE/Z values = GetLastSetting(numericalValues, p.sweep, "Stim Scale Factor")
 		if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
 			IPNWB#AddCustomProperty(tsp, "scale", values[p.electrodeNumber])
 		endif
 	endif
 End
 
-static Function NWB_AddSweepDataSets(settingsHistory, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
-	WAVE settingsHistory
+static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
+	WAVE numericalValues
 	variable sweep
 	string settingsProp, nwbProp
 	variable headstage
@@ -646,13 +646,13 @@ static Function NWB_AddSweepDataSets(settingsHistory, sweep, settingsProp, nwbPr
 	endif
 
 	if(!ParamIsDefault(enabledProp))
-		WAVE/Z enabled = GetLastSetting(settingsHistory, sweep, enabledProp)
+		WAVE/Z enabled = GetLastSetting(numericalValues, sweep, enabledProp)
 		if(!WaveExists(enabled) || !enabled[headstage])
 			return NaN
 		endif
 	endif
 
-	WAVE/Z values = GetLastSetting(settingsHistory, sweep, settingsProp)
+	WAVE/Z values = GetLastSetting(numericalValues, sweep, settingsProp)
 	if(!WaveExists(values) || !IsFinite(values[headstage]))
 		return NaN
 	endif

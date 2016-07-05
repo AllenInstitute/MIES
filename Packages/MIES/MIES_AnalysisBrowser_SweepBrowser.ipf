@@ -208,10 +208,9 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	sweep     = str2num(sweepMap[mapIndex][%Sweep])
 	expFolder = sweepMap[mapIndex][%ExperimentFolder]
 
-	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/SDFR=dfr numericValues
+	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
-	return GetLastSetting(numericValues, sweep, key)
+	return GetLastSetting(numericalValues, sweep, key)
 End
 
 /// @brief Duplicate the sweep browser graph to a user given folder and name
@@ -533,9 +532,8 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	WAVE configWave = GetAnalysisConfigWave(expFolder, device, sweep)
 
-	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/SDFR=dfr numericValues
-	WAVE/T/SDFR=dfr textValues
+	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+	WAVE textualValues   = GetAnalysLBTextualValues(expFolder, device)
 
 	STRUCT TiledGraphSettings tgs
 	tgs.displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
@@ -547,7 +545,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	tgs.dDAQDisplayMode = GetCheckBoxState(panel, "check_sweepbrowser_dDAQ")
 	WAVE channelSelWave = SB_GetChannelSelWave(graph)
 
-	CreateTiledChannelGraph(graph, configWave, sweep, numericValues, textValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
+	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)

@@ -7,54 +7,54 @@
 ///
 /// The history wave will use layers to report the different headstages.
 ///
-/// @param incomingSettingsWave settingsWave sent by the each reporting subsystem
-/// @param incomingKeyWave      key wave that is used to reference the incoming settings wave
-/// @param sweepNo              sweep number
-/// @param panelTitle           device
-Function ED_createWaveNotes(incomingSettingsWave, incomingKeyWave, sweepNo, panelTitle)
-	wave incomingSettingsWave
-	wave/T incomingKeyWave
+/// @param incomingNumericalValues settingsWave sent by the each reporting subsystem
+/// @param incomingNumericalKeys   key wave that is used to reference the incoming settings wave
+/// @param sweepNo                 sweep number
+/// @param panelTitle              device
+Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, panelTitle)
+	wave incomingNumericalValues
+	wave/T incomingNumericalKeys
 	string panelTitle
 	variable sweepNo
 
 	variable rowIndex, numCols, lastValidIncomingLayer, i
 
-	WAVE/T keyWave       = GetNumDocKeyWave(panelTitle)
-	WAVE settingsHistory = GetNumDocWave(panelTitle)
+	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	ASSERT(!cmpstr(keyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
-	ASSERT(DimSize(incomingSettingsWave, LAYERS) <= DimSize(settingsHistory, LAYERS), "Unexpected large layer count in the incoming settings wave")
+	ASSERT(!cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
+	ASSERT(DimSize(incomingNumericalValues, LAYERS) <= DimSize(numericalValues, LAYERS), "Unexpected large layer count in the incoming settings wave")
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingKeyWave, keyWave, settingsHistory, rowIndex)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
 
-	settingsHistory[rowIndex][0] = sweepNo
-	settingsHistory[rowIndex][1] = DateTime
-	settingsHistory[rowIndex][2] = DateTimeInUTC()
+	numericalValues[rowIndex][0] = sweepNo
+	numericalValues[rowIndex][1] = DateTime
+	numericalValues[rowIndex][2] = DateTimeInUTC()
 
-	WAVE settingsHistoryDat = GetSettingsHistoryDateTime(settingsHistory)
-	EnsureLargeEnoughWave(settingsHistoryDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
-	settingsHistoryDat[rowIndex] = settingsHistory[rowIndex][1]
+	WAVE numericalValuesDat = GetLBNumericalValuesDat(numericalValues)
+	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
+	numericalValuesDat[rowIndex] = numericalValues[rowIndex][1]
 
-	numCols = DimSize(incomingSettingsWave, COLS)
-	lastValidIncomingLayer = DimSize(incomingSettingsWave, LAYERS) == 0 ? 0 : DimSize(incomingSettingsWave, LAYERS) - 1
+	numCols = DimSize(incomingNumericalValues, COLS)
+	lastValidIncomingLayer = DimSize(incomingNumericalValues, LAYERS) == 0 ? 0 : DimSize(incomingNumericalValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		settingsHistory[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingSettingsWave[0][i][r]
+		numericalValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(settingsHistory, NOTE_INDEX, rowIndex + 1)
+	SetNumberInWaveNote(numericalValues, NOTE_INDEX, rowIndex + 1)
 
-	SetDimensionLabels(keyWave, settingsHistory)
+	SetDimensionLabels(numericalKeys, numericalValues)
 	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
+	ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo)
 End
 
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
-static Function ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
+static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo)
 	Wave/Z saveDataWave
-	Wave/T incomingKeyWave
-	Wave settingsHistory
+	Wave/T incomingNumericalKeys
+	Wave numericalValues
 	variable sweepNo
 
 	string key, factor, unit, text, frontLabel
@@ -65,13 +65,13 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingKeyWave, setti
 		return NaN
 	endif
 
-	numCols = DimSize(incomingKeyWave, COLS)
+	numCols = DimSize(incomingNumericalKeys, COLS)
 	for (j = 0; j < numCols; j += 1)
-		key    = incomingKeyWave[0][j]
-		unit   = incomingKeyWave[1][j]
-		factor = incomingKeyWave[2][j]
-		Wave/Z currentSetting = GetLastSetting(settingsHistory, sweepNo, key)
-		Wave/Z lastSetting = GetLastSetting(settingsHistory, sweepNo - 1, key)
+		key    = incomingNumericalKeys[0][j]
+		unit   = incomingNumericalKeys[1][j]
+		factor = incomingNumericalKeys[2][j]
+		Wave/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key)
+		Wave/Z lastSetting = GetLastSetting(numericalValues, sweepNo - 1, key)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -136,10 +136,10 @@ End
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
-static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, settingsHistory, sweepNo)
+static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKeys, numericalValues, sweepNo)
 	Wave/Z saveDataWave
-	Wave/T incomingKeyWave
-	Wave/T settingsHistory
+	Wave/T incomingTextualKeys
+	Wave/T numericalValues
 	variable sweepNo
 
 	string key, factor, text, frontLabel
@@ -150,11 +150,11 @@ static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingKeyWave, s
 		return NaN
 	endif
 
-	numCols = DimSize(incomingKeyWave, COLS)
+	numCols = DimSize(incomingTextualKeys, COLS)
 	for (j = 0; j < numCols; j += 1)
-		key    = incomingKeyWave[0][j]
-		Wave/T/Z currentSetting = GetLastSettingText(settingsHistory, sweepNo, key)
-		Wave/T/Z lastSetting = GetLastSettingText(settingsHistory, sweepNo - 1, key)
+		key    = incomingTextualKeys[0][j]
+		Wave/T/Z currentSetting = GetLastSettingText(numericalValues, sweepNo, key)
+		Wave/T/Z lastSetting = GetLastSettingText(numericalValues, sweepNo - 1, key)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -283,43 +283,43 @@ End
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
-/// @param incomingTextDocWave    incoming Text Documentation Wave sent by the each reporting subsystem
-/// @param incomingTextDocKeyWave incoming Text Documentation key wave that is used to reference the incoming settings wave
+/// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
+/// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
 /// @param sweepNo                sweep number
 /// @param panelTitle             device
-Function ED_createTextNotes(incomingTextDocWave, incomingTextDocKeyWave, sweepNo, panelTitle)
-	wave/T incomingTextDocWave
-	wave/T incomingTextDocKeyWave
+Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, panelTitle)
+	wave/T incomingTextualValues
+	wave/T incomingTextualKeys
 	string panelTitle
 	variable sweepNo
 
 	variable rowIndex, numCols, i
 
-	WAVE/T textDocWave = GetTextDocWave(panelTitle)
-	WAVE/T textDocKeyWave = GetTextDocKeyWave(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
-	ASSERT(!cmpstr(textDocKeyWave[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
-	ASSERT(DimSize(incomingTextDocWave, ROWS)   == 1, "Mismatched row counts")
-	ASSERT(DimSize(incomingTextDocWave, LAYERS) == LABNOTEBOOK_LAYER_COUNT, "Mismatched layer counts")
-	ASSERT(DimSize(incomingTextDocWave, COLS)   == DimSize(incomingTextDocKeyWave, COLS), "Mismatched column counts")
+	ASSERT(!cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
+	ASSERT(DimSize(incomingTextualValues, ROWS)   == 1, "Mismatched row counts")
+	ASSERT(DimSize(incomingTextualValues, LAYERS) == LABNOTEBOOK_LAYER_COUNT, "Mismatched layer counts")
+	ASSERT(DimSize(incomingTextualValues, COLS)   == DimSize(incomingTextualKeys, COLS), "Mismatched column counts")
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextDocKeyWave, textDocKeyWave, textDocWave, rowIndex)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
-	textDocWave[rowIndex][0] = num2istr(sweepNo)
-	textDocWave[rowIndex][1] = num2istr(DateTime)
-	textDocWave[rowIndex][2] = num2istr(DateTimeInUTC())
+	textualValues[rowIndex][0] = num2istr(sweepNo)
+	textualValues[rowIndex][1] = num2istr(DateTime)
+	textualValues[rowIndex][2] = num2istr(DateTimeInUTC())
 
-	numCols = DimSize(incomingTextDocWave, COLS)
+	numCols = DimSize(incomingTextualValues, COLS)
 	for(i = 0; i < numCols; i += 1)
-		textDocWave[rowIndex][indizes[i]][] = incomingTextDocWave[0][i][r]
+		textualValues[rowIndex][indizes[i]][] = incomingTextualValues[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(textDocWave, NOTE_INDEX, rowIndex + 1)
+	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
 
-	SetDimensionLabels(textDocKeyWave, textDocWave)
+	SetDimensionLabels(textualKeys, textualValues)
 
 	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextDocKeyWave, textDocWave, sweepNo)
+	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKeys, textualValues, sweepNo)
 End
 
 /// @brief Add sweep specific information to the labnotebook
@@ -421,23 +421,15 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string ctrl
 	variable minSettingValue, maxSettingValue
 
-	// Create the numerical wave for saving the numerical settings
-	Wave asyncSettingsWave = GetAsyncSettingsWave(panelTitle)
-	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave(panelTitle)
+	Wave asyncSettingsWave = GetAsyncSettingsWave()
+	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
 
-	// Create the txt wave to be used for saving the txt settings
-	Wave/T asyncSettingsTxtWave = GetAsyncSettingsTextWave(panelTitle)
-	Wave/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave(panelTitle)
-	
-	// Create the measurement wave that will hold the measurement values
-	Wave asyncMeasurementWave = GetAsyncMeasurementWave(panelTitle)
-	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave(panelTitle)
-	
-	// fill the settings wave with NAN's...the asyncMeasurementWave will be filled with NAN's in another function
-	asyncSettingsWave[0][] = NAN
+	Wave/T asyncSettingsTxtWave = GetAsyncSettingsTextWave()
+	Wave/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave()
 
-	// Now populate the aync Settings and measurement Waves
-	// first...determine if the head stage is being controlled
+	Wave asyncMeasurementWave = GetAsyncMeasurementWave()
+	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave()
+
 	variable asyncVariablesCounter
 	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
 		ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
@@ -478,20 +470,16 @@ function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			string adUnitStringValue
 			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue
 			asyncSettingsTxtWave[0][asyncVariablesCounter + 8] = adUnitStringValue
-			// add the unit value into the settingsKey Wave
+			// add the unit value into numericalKeys
 			asyncMeasurementKey[%Units][asyncVariablesCounter] = adUnitStringValue
 		endif
 	endfor
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_Append"))
-		// call the function that will create the numerical wave notes
-		ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle)
-	
-		// call the function that will create the measurement wave notes
-		ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle)
+	ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle)
+	ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle)
 
-		ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle)
-	endif
+	ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+	ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle)
 End
 
 /// @brief Stores test pulse related data in the labnotebook

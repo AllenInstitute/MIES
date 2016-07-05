@@ -246,10 +246,11 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 		return NaN
 	endif
 
-	Wave config              = GetConfigWave(sweep)
-	string graph             = DB_GetMainGraph(panelTitle)
-	Wave settingsHistory     = DB_GetSettingsHistory(panelTitle)
-	Wave settingsHistoryText = DB_GetSettingsHistoryText(panelTitle)
+	Wave config  = GetConfigWave(sweep)
+	string graph = DB_GetMainGraph(panelTitle)
+
+	Wave numericalValues = DB_GetNumericalValues(panelTitle)
+	Wave textualValues   = DB_GetTextualValues(panelTitle)
 
 	STRUCT TiledGraphSettings tgs
 	tgs.displayDAC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
@@ -259,7 +260,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
 	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
 
-	return CreateTiledChannelGraph(graph, config, sweepNo, settingsHistory, settingsHistoryText, tgs, sweepWave=sweep)
+	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepWave=sweep)
 End
 
 static Function DB_ClearGraph(panelTitle)
@@ -270,16 +271,28 @@ static Function DB_ClearGraph(panelTitle)
 	UpdateLBGraphLegend(graph)
 End
 
-static Function/WAVE DB_GetSettingsHistory(panelTitle)
+static Function/WAVE DB_GetNumericalValues(panelTitle)
 	string panelTitle
 
-	return GetNumDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+	return GetLBNumericalValues(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
-static Function/WAVE DB_GetSettingsHistoryText(panelTitle)
+static Function/WAVE DB_GetTextualValues(panelTitle)
 	string panelTitle
 
-	return GetTextDocWave(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+	return GetLBTextualValues(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+End
+
+static Function/WAVE DB_GetNumericalKeys(panelTitle)
+	string panelTitle
+
+	return GetLBNumericalKeys(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
+End
+
+static Function/WAVE DB_GetTextualKeys(panelTitle)
+	string panelTitle
+
+	return GetLBTextualKeys(GetPopupMenuString(panelTitle, "popup_DB_lockedDevices"))
 End
 
 Function DB_UpdateToLastSweep(panel)
@@ -727,11 +740,10 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 				break
 			endif
 
-			Wave settingsHistory = DB_GetSettingsHistory(panelTitle)
-			device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-			Wave/Z/T/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
+			Wave numericalValues = DB_GetNumericalValues(panelTitle)
+			WAVE numericalKeys   = DB_GetNumericalKeys(panelTitle)
 
-			AddTraceToLBGraph(graph, keyWave, settingsHistory, popStr)
+			AddTraceToLBGraph(graph, numericalKeys, numericalValues, popStr)
 		break
 	endswitch
 
@@ -812,7 +824,7 @@ Function/S DB_GetLabNotebookViewAbleCols(panelTitle)
 		return NONE
 	endif
 
-	WAVE/T/Z/SDFR=GetDevSpecLabNBSettKeyFolder(device) keyWave
+	WAVE/T keyWave = DB_GetNumericalKeys(panelTitle)
 
 	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
 End
@@ -831,9 +843,9 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 			graph      = DB_GetLabNoteBookGraph(panelTitle)
-			WAVE settingsHistory = DB_GetSettingsHistory(panelTitle)
+			WAVE numericalValues = DB_GetNumericalValues(panelTitle)
 
-			SwitchLBGraphXAxis(graph, settingsHistory)
+			SwitchLBGraphXAxis(graph, numericalValues)
 			break
 	endswitch
 
