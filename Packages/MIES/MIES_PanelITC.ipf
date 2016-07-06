@@ -7,6 +7,8 @@ static Constant DATA_ACQU_TAB_NUM         = 0
 static Constant HARDWARE_TAB_NUM          = 6
 
 static StrConstant YOKE_LIST_OF_CONTROLS  = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
+static StrConstant YOKE_CONTROLS_DISABLE  = "StartTestPulseButton;DataAcquireButton"
+static StrConstant YOKE_CONTROLS_DISABLE_AND_LINK = "Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI"
 static StrConstant FOLLOWER               = "Follower"
 static StrConstant LEADER                 = "Leader"
 
@@ -5730,7 +5732,8 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 			DAP_SwitchSingleMultiMode(panelToYoke, 1)
 
 			DAP_UpdateITIAcrossSets(leadPanel)
-			DisableControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE)
+			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
 			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
 			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
 			EnableControl(leadPanel, "title_hardware_Release")
@@ -5843,7 +5846,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
-	EnableControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE)
+	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
 	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
