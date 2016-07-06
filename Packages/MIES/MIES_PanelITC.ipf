@@ -5761,7 +5761,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	endif
 
 	leadPanel = panelTitle
-	panelList = GetListofLeaderAndPossFollower(leadPanel)
+	panelList = GetListofLeaderAndPossFollower(panelTitle)
 	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
 
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
@@ -5784,9 +5784,7 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats", leaderRepeatSets)
 		SetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay", leaderdDAQDelay)
-		if(IsFinite(leaderOverrrideITI))
-			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", leaderOverrrideITI)
-		endif
+		SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", leaderOverrrideITI)
 	endfor
 End
 
