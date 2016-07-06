@@ -152,7 +152,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 		axisMin = V_min
 		axisMax = V_max
 
-		if(axisMax == axisMin)
+		if(axisMax == axisMin || (axisMin == -1 && axisMax == 1))
 			spacing = (statsMax - statsMin) * ADDITIONAL_SPACE_AD_GRAPH
 		else
 			spacing = (axisMax - axisMin) * ADDITIONAL_SPACE_AD_GRAPH
