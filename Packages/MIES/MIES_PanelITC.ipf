@@ -4631,11 +4631,8 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	string listOfFollowerDevices
 	variable mode
 
-	string panelTitle
-	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderRepeatSets, leaderdDAQDelay
-	variable leaderdDAQ
-	variable i, numEntries
-	string leaderSampInt
+	string panelTitle, leaderSampInt
+	variable i, j, numEntries, numCtrls
 
 	if(!WindowExists("ArduinoSeq_Panel"))
 		printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
@@ -4651,48 +4648,43 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 		return 0
 	endif
 
-	leaderdDAQ       = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_DistribDaq")
-	leaderRepeatAcq  = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_RepeatAcq")
-	leaderIndexing   = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq_Indexing")
-	leaderITI        = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_ITI")
-	leaderRepeatSets = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_SetRepeats")
-	leaderdDAQDelay  = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_dDAQDelay")
-	leaderSampInt    = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
+	leaderSampInt = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
+
+	/// @todo one entry per line when IP7 is mandatory
+	Make/T/FREE desc = {"Repeated Acquisition", "Distributed Acquisition", "Distributed DAQ delay", "Indexing", "ITI", "Number of repetitions", "Get ITI from stimset"}
+
+	numCtrls = DimSize(desc, ROWS)
+	ASSERT(ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK) == numCtrls, "Mismatched yoke linking lists")
+
+	Make/FREE/T/N=(numCtrls) leadEntries = GetGuiControlValue(ITC1600_FIRST_DEVICE, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
 
 	numEntries = ItemsInList(listOfFollowerDevices)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, listOfFollowerDevices)
-		if(leaderRepeatAcq != GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			printf "(%s) Repeat acquisition setting does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderIndexing != GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-			printf "(%s) Indexing setting does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderdDAQ != GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
-			printf "(%s) Distributed acquisition setting does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderITI != GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
-			printf "(%s) ITI does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderRepeatSets != GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats"))
-			printf "(%s) Repeat sets does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderdDAQDelay != GetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay"))
-			printf "(%s) Distributed acquisition delay does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(CmpStr(leaderSampInt,GetValDisplayAsString(panelTitle, "ValDisp_DataAcq_SamplingInt")))
+
+		if(cmpstr(leaderSampInt, GetValDisplayAsString(panelTitle, "ValDisp_DataAcq_SamplingInt")))
 			// this is no fatal error, we just inform the user
 			printf "(%s) Sampling interval does not match leader panel\r", panelTitle
 			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,65280,33024)
 		else
 			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,0,0)
 		endif
+
+		Make/FREE/T/N=(numCtrls) followerEntries = GetGuiControlValue(panelTitle, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
+
+		if(EqualWaves(leadEntries, followerEntries, 1))
+			continue
+		endif
+
+		// find the differing control
+		for(j = 0; j < numEntries; j +=1)
+			if(!cmpstr(leadEntries[j], followerEntries[j]))
+				continue
+			endif
+
+			printf "(%s) %s setting does not match leader panel\r", panelTitle, desc[i]
+			return 1
+		endfor
 	endfor
 
 	return 0
