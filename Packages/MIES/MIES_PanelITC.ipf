@@ -5743,41 +5743,26 @@ End
 static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	string panelTitle
 
-	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderOverrrideITI
-	variable leaderdDAQDelay, leaderRepeatSets, leaderdDAQ
-	variable numPanels, i
-	string panelList, leadPanel
+	variable numPanels, numEntries
+	string panelList
 
 	if(!windowExists(panelTitle) || !DAP_DeviceIsLeader(panelTitle))
 		return NaN
 	endif
 
-	leadPanel = panelTitle
 	panelList = GetListofLeaderAndPossFollower(panelTitle)
-	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
-
-	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
-	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
-	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
-	leaderOverrrideITI = GetCheckBoxState(leadPanel, "Check_DataAcq_Get_Set_ITI")
-	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
-	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
-	leaderdDAQDelay    = GetSetVariable(leadPanel, "SetVar_DataAcq_dDAQDelay")
+	DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 
 	numPanels = ItemsInList(panelList)
-	for(i = 1; i < numPanels; i += 1)
-		// i = 1 so that we don't set the values
-		// for the lead panel again
-		panelTitle = StringFromList(i, panelList)
 
-		SetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq", leaderdDAQ)
-		SetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq", leaderRepeatAcq)
-		SetCheckBoxState(panelTitle, "Check_DataAcq_Indexing", leaderIndexing)
-		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
-		SetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats", leaderRepeatSets)
-		SetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay", leaderdDAQDelay)
-		SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", leaderOverrrideITI)
-	endfor
+	if(!numPanels)
+		return NaN
+	endif
+
+	numEntries = ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK)
+
+	Make/FREE/T/N=(numEntries) leadEntries    = GetGuiControlValue(panelTitle, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
+	Make/FREE/N=(numPanels, numEntries) dummy = SetGuiControlValue(StringFromList(p, panelList), StringFromList(q, YOKE_CONTROLS_DISABLE_AND_LINK), leadEntries[q])
 End
 
 Function DAP_ButtonProc_YokeRelease(ba) : ButtonControl
