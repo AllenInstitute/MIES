@@ -1023,6 +1023,23 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 25, $"Stim set length"             , wv
 End
 
+/// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
+/// GetSweepSettingsTextWave()
+static Function SetSweepSettingsTextDimLabels(wv)
+	WAVE wv
+
+	SetDimLabel COLS,  0, $STIM_WAVE_NAME_KEY       , wv
+	SetDimLabel COLS,  1, $"DA unit"                , wv
+	SetDimLabel COLS,  2, $"AD unit"                , wv
+	SetDimLabel COLS,  3, $"TTL rack zero stim sets", wv
+	SetDimLabel COLS,  4, $"TTL rack one stim sets" , wv
+	SetDimLabel COLS,  5, $"Pre DAQ function"       , wv
+	SetDimLabel COLS,  6, $"Mid sweep function"     , wv
+	SetDimLabel COLS,  7, $"Post sweep function"    , wv
+	SetDimLabel COLS,  8, $"Post set function"      , wv
+	SetDimLabel COLS,  9, $"Post DAQ function"      , wv
+End
+
 /// @brief Returns a wave reference to the sweepSettingsWave
 ///
 /// sweepSettingsWave is used to save stimulus settings for each
@@ -1284,17 +1301,7 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 
 	wv = ""
 
-	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY        , wv
-	SetDimLabel COLS, 1, $"DA unit"                 , wv
-	SetDimLabel COLS, 2, $"AD unit"                 , wv
-	SetDimLabel COLS, 3, $"TTL rack zero stim sets" , wv
-	SetDimLabel COLS, 4, $"TTL rack one stim sets"  , wv
-	SetDimLabel COLS, 5, $"Pre DAQ function"        , wv
-	SetDimLabel COLS, 6, $"Mid sweep function"      , wv
-	SetDimLabel COLS, 7, $"Post sweep function"     , wv
-	SetDimLabel COLS, 8, $"Post set function"       , wv
-	SetDimLabel COLS, 9, $"Post DAQ function"       , wv
-
+	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1354,17 +1361,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][8] = "Post set function"
 	wv[0][9] = "Post DAQ function"
 
-	SetDimLabel COLS, 0, $STIM_WAVE_NAME_KEY        , wv
-	SetDimLabel COLS, 1, $"DA unit"                 , wv
-	SetDimLabel COLS, 2, $"AD unit"                 , wv
-	SetDimLabel COLS, 3, $"TTL rack zero stim sets" , wv
-	SetDimLabel COLS, 4, $"TTL rack one stim sets"  , wv
-	SetDimLabel COLS, 5, $"Pre DAQ function"        , wv
-	SetDimLabel COLS, 6, $"Mid sweep function"      , wv
-	SetDimLabel COLS, 7, $"Post sweep function"     , wv
-	SetDimLabel COLS, 8, $"Post set function"       , wv
-	SetDimLabel COLS, 9, $"Post DAQ function"       , wv
-
+	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
