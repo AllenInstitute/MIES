@@ -990,6 +990,39 @@ Function/Wave GetLBNumericalValues(panelTitle)
 	return wv
 End
 
+/// @brief Set dimension labels for GetSweepSettingsKeyWave() and
+/// GetSweepSettingsWave()
+static Function SetSweepSettingsDimLabels(wv)
+	WAVE wv
+
+	SetDimLabel COLS, 0 , $"Stim Scale Factor"           , wv
+	SetDimLabel COLS, 1 , $"DAC"                         , wv
+	SetDimLabel COLS, 2 , $"ADC"                         , wv
+	SetDimLabel COLS, 3 , $"DA Gain"                     , wv
+	SetDimLabel COLS, 4 , $"AD Gain"                     , wv
+	SetDimLabel COLS, 5 , $"Set Sweep Count"             , wv
+	SetDimLabel COLS, 6 , $"TP Insert Checkbox"          , wv
+	SetDimLabel COLS, 7 , $"Inter-trial interval"        , wv
+	SetDimLabel COLS, 8 , $"TTL rack zero bits"          , wv
+	SetDimLabel COLS, 9 , $"TTL rack one bits"           , wv
+	SetDimLabel COLS, 10, $"TTL rack zero channel"       , wv
+	SetDimLabel COLS, 11, $"TTL rack one channel"        , wv
+	SetDimLabel COLS, 12, $"Delay onset user"            , wv
+	SetDimLabel COLS, 13, $"Delay onset auto"            , wv
+	SetDimLabel COLS, 14, $"Delay termination"           , wv
+	SetDimLabel COLS, 15, $"Delay distributed DAQ"       , wv
+	SetDimLabel COLS, 16, $"Distributed DAQ"             , wv
+	SetDimLabel COLS, 17, $"Repeat Sets"                 , wv
+	SetDimLabel COLS, 18, $"Scaling zero"                , wv
+	SetDimLabel COLS, 19, $"Indexing"                    , wv
+	SetDimLabel COLS, 20, $"Locked indexing"             , wv
+	SetDimLabel COLS, 21, $"Repeated Acquisition"        , wv
+	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
+	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
+	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
+	SetDimLabel COLS, 25, $"Stim set length"             , wv
+End
+
 /// @brief Returns a wave reference to the sweepSettingsWave
 ///
 /// sweepSettingsWave is used to save stimulus settings for each
@@ -1031,33 +1064,7 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 
 	wv = NaN
 
-	SetDimLabel COLS, 0 , $"Stim Scale Factor"           , wv
-	SetDimLabel COLS, 1 , $"DAC"                         , wv
-	SetDimLabel COLS, 2 , $"ADC"                         , wv
-	SetDimLabel COLS, 3 , $"DA Gain"                     , wv
-	SetDimLabel COLS, 4 , $"AD Gain"                     , wv
-	SetDimLabel COLS, 5 , $"Set Sweep Count"             , wv
-	SetDimLabel COLS, 6 , $"TP Insert Checkbox"          , wv
-	SetDimLabel COLS, 7 , $"Inter-trial interval"        , wv
-	SetDimLabel COLS, 8 , $"TTL rack zero bits"          , wv
-	SetDimLabel COLS, 9 , $"TTL rack one bits"           , wv
-	SetDimLabel COLS, 10, $"TTL rack zero channel"       , wv
-	SetDimLabel COLS, 11, $"TTL rack one channel"        , wv
-	SetDimLabel COLS, 12, $"Delay onset user"            , wv
-	SetDimLabel COLS, 13, $"Delay onset auto"            , wv
-	SetDimLabel COLS, 14, $"Delay termination"           , wv
-	SetDimLabel COLS, 15, $"Delay distributed DAQ"       , wv
-	SetDimLabel COLS, 16, $"Distributed DAQ"             , wv
-	SetDimLabel COLS, 17, $"Repeat Sets"                 , wv
-	SetDimLabel COLS, 18, $"Scaling zero"                , wv
-	SetDimLabel COLS, 19, $"Indexing"                    , wv
-	SetDimLabel COLS, 20, $"Locked indexing"             , wv
-	SetDimLabel COLS, 21, $"Repeated Acquisition"        , wv
-	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
-	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
-	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
-	SetDimLabel COLS, 25, $"Stim set length"             , wv
-
+	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1232,33 +1239,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][25]     = "a. u." // points not time
 	wv[%Tolerance][25] = "1"
 
-	SetDimLabel COLS, 0 , $"Stim Scale Factor"           , wv
-	SetDimLabel COLS, 1 , $"DAC"                         , wv
-	SetDimLabel COLS, 2 , $"ADC"                         , wv
-	SetDimLabel COLS, 3 , $"DA Gain"                     , wv
-	SetDimLabel COLS, 4 , $"AD Gain"                     , wv
-	SetDimLabel COLS, 5 , $"Set Sweep Count"             , wv
-	SetDimLabel COLS, 6 , $"TP Insert Checkbox"          , wv
-	SetDimLabel COLS, 7 , $"Inter-trial interval"        , wv
-	SetDimLabel COLS, 8 , $"TTL rack zero bits"          , wv
-	SetDimLabel COLS, 9 , $"TTL rack one bits"           , wv
-	SetDimLabel COLS, 10, $"TTL rack zero channel"       , wv
-	SetDimLabel COLS, 11, $"TTL rack one channel"        , wv
-	SetDimLabel COLS, 12, $"Delay onset user"            , wv
-	SetDimLabel COLS, 13, $"Delay onset auto"            , wv
-	SetDimLabel COLS, 14, $"Delay termination"           , wv
-	SetDimLabel COLS, 15, $"Delay distributed DAQ"       , wv
-	SetDimLabel COLS, 16, $"Distributed DAQ"             , wv
-	SetDimLabel COLS, 17, $"Repeat Sets"                 , wv
-	SetDimLabel COLS, 18, $"Scaling zero"                , wv
-	SetDimLabel COLS, 19, $"Indexing"                    , wv
-	SetDimLabel COLS, 20, $"Locked indexing"             , wv
-	SetDimLabel COLS, 21, $"Repeated Acquisition"        , wv
-	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
-	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
-	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
-	SetDimLabel COLS, 25, $"Stim set length"             , wv
-
+	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
