@@ -1106,6 +1106,7 @@ End
 /// - 22: Random Repeated Acquisition
 /// - 23: Minimum Sampling interval
 /// - 24: Sampling interval multiplier
+/// - 25: Stim set length
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
