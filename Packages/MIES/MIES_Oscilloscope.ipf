@@ -35,7 +35,7 @@ Function SCOPE_OpenScopeWindow(panelTitle)
 
 	graph = SCOPE_GetGraph(panelTitle)
 
-	NewPanel/EXT=0/W=(0,0,460,837)/HOST=$panelTitle/N=Scope/K=2
+	NewPanel/EXT=0/W=(0,0,460,880)/HOST=$panelTitle/N=Scope/K=2
 	Display/W=(0,10,358,776)/HOST=$win/N=oscilloscope/FG=(FL,FT,FR,FB)
 	ModifyPanel/W=$win fixedSize=0
 	ModifyGraph/W=$graph gfSize=14
