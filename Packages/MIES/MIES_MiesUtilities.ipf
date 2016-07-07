@@ -2741,23 +2741,38 @@ End
 Function DeviceIsFollower(panelTitle)
 	string panelTitle
 
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
 
-	return SVAR_Exists(listOfFollowerDevices) && WhichListItem(panelTitle, listOfFollowerDevices) != -1
+	return WhichListItem(panelTitle, listOfFollowerDevices) != -1
 End
 
 /// @brief Check that the device can act as a leader
 Function DeviceCanLead(panelTitle)
 	string panelTitle
 
-	return !cmpstr(panelTitle, "ITC1600_Dev_0")
+	return !cmpstr(panelTitle, ITC1600_FIRST_DEVICE)
 End
 
 /// @brief Check that the device is a leader and has followers
 Function DeviceHasFollower(panelTitle)
 	string panelTitle
 
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 
-	return DeviceCanLead(panelTitle) && SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0
+	return DeviceCanLead(panelTitle) && ItemsInList(listOfFollowerDevices) > 0
+End
+
+/// @brief Convenience wrapper for GetFollowerList()
+///
+/// For iterating over a list of all followers and the leader. Returns just
+/// panelTitle if the device can not lead.
+Function/S GetListofLeaderAndPossFollower(panelTitle)
+	string panelTitle
+
+	if(!DeviceCanLead(panelTitle))
+		return panelTitle
+	endif
+
+	SVAR followerList = $GetFollowerList(panelTitle)
+	return AddListItem(panelTitle, followerList, ";", 0)
 End

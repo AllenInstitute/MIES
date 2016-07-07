@@ -28,7 +28,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 		return NaN
 	endif
 
-	SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
 	// configure follower devices
@@ -329,15 +329,6 @@ Function ITC_CallFuncForDevicesMDYoked(panelTitle, func)
 	string panelTitle
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE func
 
-	if(!DeviceHasFollower(panelTitle))
-		func(panelTitle)
-		return NaN
-	endif
-
-	func(panelTitle)
-
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0)
-		CallFunctionForEachListItem(func, listOfFollowerDevices)
-	endif
+	string list = GetListofLeaderAndPossFollower(panelTitle)
+	CallFunctionForEachListItem(func, list)
 End

@@ -382,10 +382,8 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	values = ""
 
 	if(DeviceCanLead(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices))
-			values[0][0][INDEP_HEADSTAGE] = listOfFollowerDevices
-		endif
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		values[0][0][INDEP_HEADSTAGE] = listOfFollowerDevices
 	endif
 
 	SVAR miesVersion = $GetMiesVersion()

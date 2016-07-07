@@ -57,7 +57,7 @@ static Function RA_GetTotalNumberOfSets(panelTitle)
 	numSets = IDX_MaxNoOfSweeps(panelTitle, 1)
 
 	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -92,7 +92,7 @@ static Function RA_GetTotalNumberOfTrials(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrialsLowLev(panelTitle)
 
 	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -220,7 +220,7 @@ static Function RA_StartMD(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
 	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -280,7 +280,7 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -328,7 +328,7 @@ static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		RA_FinishAcquisition(panelTitle)
 
 		if(DeviceHasFollower(panelTitle))
-			SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+			SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
 			for(i = 0; i < numberOfFollowerDevices; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -351,10 +351,7 @@ static Function RA_AreLeaderAndFollowerFinished()
 		return 1
 	endif
 
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	ASSERT(SVAR_Exists(listOfFollowerDevices) && ItemsInList(listOfFollowerDevices) > 0, "Messed up logic in RA_AreLeaderAndFollowerFinished")
-
-	listOfCandidates = AddListItem(ITC1600_FIRST_DEVICE, listOfFollowerDevices, ";", Inf)
+	listOfCandidates = GetListofLeaderAndPossFollower(ITC1600_FIRST_DEVICE)
 	numCandidates = ItemsInList(listOfCandidates)
 
 	for(i = 0; i < numCandidates; i += 1)

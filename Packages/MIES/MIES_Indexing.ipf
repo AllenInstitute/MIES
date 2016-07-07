@@ -371,14 +371,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	variable numPanels, i, j, k, iti, maxITI, numDACs, lockedIndexing, numSets
 	string panelList, setName, setList
 
-	panelList = panelTitle
-
-	if(DeviceCanLead(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices))
-			panelList = AddListItem(panelList, listOfFollowerDevices, ";", inf)
-		endif
-	endif
+	panelList = GetListofLeaderAndPossFollower(panelTitle)
 
 	maxITI = -INF
 	numPanels = ItemsInList(panelList)

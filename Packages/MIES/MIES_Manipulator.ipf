@@ -225,14 +225,7 @@ Function M_CheckSettings(panelTitle)
 		return 1
 	endif	
 
-	list = panelTitle
-
-	if(DeviceCanLead(panelTitle))
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices))
-			list = AddListItem(list, listOfFollowerDevices, ";", inf)
-		endif
-	endif
+	list = GetListofLeaderAndPossFollower(panelTitle)
 
 	DEBUGPRINT("Checking the panelTitle list: ", str=list)
 

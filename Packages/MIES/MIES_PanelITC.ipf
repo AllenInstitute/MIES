@@ -3778,8 +3778,8 @@ End
 
 Function/S DAP_GUIListOfYokedDevices()
 
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(SVAR_Exists(listOfFollowerDevices) && cmpstr(listOfFollowerDevices, "") != 0)
+	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
+	if(cmpstr(listOfFollowerDevices, "") != 0)
 		return listOfFollowerDevices
 	endif
 
@@ -4320,14 +4320,9 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	string panelList
 	variable sweep, nextSweep, maxNextSweep, numPanels, i
 
-	panelList = panelTitle
+	panelList = GetListofLeaderAndPossFollower(panelTitle)
 
 	if(DAP_DeviceIsLeader(panelTitle))
-
-		SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-		if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
-			panelList = AddListItem(panelList, listOfFollowerDevices, ";", 0)
-		endif
 		sweep = GetSetVariable(panelTitle, "SetVar_Sweep")
 	else
 		sweep = NaN
@@ -4742,7 +4737,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	list = panelTitle
 
 	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		if(DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode))
 			return 1
 		endif
@@ -5744,13 +5739,8 @@ static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	endif
 
 	leadPanel = panelTitle
+	panelList = GetListofLeaderAndPossFollower(leadPanel)
 	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
-
-	panelList = leadPanel
-	SVAR/Z ListOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(SVAR_Exists(listOfFollowerDevices) && strlen(listOfFollowerDevices) > 0)
-		panelList = AddListItem(panelList, listOfFollowerDevices, ";", 0)
-	endif
 
 	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
 	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
@@ -5816,8 +5806,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 		return 0
 	endif
 
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(!SVAR_Exists(listOfFollowerDevices))
+	SVAR listOfFollowerDevices = $GetFollowerList(leadPanel)
+	if(ItemsInList(listOfFollowerDevices) == 0)
 		return 0
 	endif
 	
@@ -5832,9 +5822,6 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 		// there are no more followers, disable the release button and its popup menu
 		DisableControl(leadPanel,"popup_Hardware_YokedDACs")
 		DisableControl(leadPanel,"button_Hardware_RemoveYoke")
-		/// @todo don't rely on the svar existence
-		/// instead query the contents only
-		KillStrings listOfFollowerDevices
 		str = "No Yoked Devices"
 	endif
 	SetVariable setvar_Hardware_YokeList Win=$leadPanel, value=_STR:str
@@ -5858,8 +5845,8 @@ Function DAP_RemoveAllYokedDACs(panelTitle)
 	string panelToDeYoke, list
 	variable i, listNum
 
-	SVAR/Z listOfFollowerDevices = $GetFollowerList(doNotCreateSVAR=1)
-	if(!SVAR_Exists(listOfFollowerDevices))
+	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
+	if(ItemsInList(listOfFollowerDevices) == 0)
 		return 0
 	endif
 
