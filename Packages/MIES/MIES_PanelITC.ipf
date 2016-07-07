@@ -5539,10 +5539,12 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
 	else
-		if(enabled)
-			if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
-				PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, headstage), val=CHECKBOX_SELECTED)
-			endif
+		if(enabled && GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+			PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, headstage), val=CHECKBOX_SELECTED)
+		endif
+
+		WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		if(Sum(statusHS) > 0 )
 			TP_RestartTestPulse(panelTitle, TPState)
 		endif
 	endif
