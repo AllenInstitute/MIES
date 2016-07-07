@@ -612,9 +612,9 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 	sprintf cmd, "ITCSelectDevice/Z %d", deviceID
 
 	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
+		return ExecuteITCOperationAbortOnError(cmd)
 	else
-		ExecuteITCOperation(cmd)
+		return ExecuteITCOperation(cmd)
 	endif
 End
 
