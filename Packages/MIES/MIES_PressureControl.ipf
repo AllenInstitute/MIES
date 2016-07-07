@@ -484,7 +484,7 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	deviceID = PressureDataWv[refHeadstage][%DAC_DevID]
-	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
+	hwType   = pressureDataWv[refHeadstage][%HW_DAC_Type]
 
 	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID))
 		HW_ResetDevice(hwType, deviceID)
