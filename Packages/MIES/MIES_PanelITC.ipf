@@ -4842,6 +4842,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 						continue
 					endif
 
+					if(!IsFinite(AFH_GetHeadstagefromDAC(panelTitle, i)))
+						printf "(%s) Distributed Acquisition does not work with unassociated DA channel %d.\r", panelTitle, i
+						return 1
+					endif
+
 					ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 					dacWave = GetPopupMenuString(panelTitle, ctrl)
 					if(isEmpty(refDacWave))
