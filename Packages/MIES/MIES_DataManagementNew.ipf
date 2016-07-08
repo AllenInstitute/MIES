@@ -269,6 +269,7 @@ static Function/WAVE DM_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	Make/O/N=(numRows, numCols)/Y=(DM_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
 
 	MultiThread sweepWave[][] = ITCDataWave[p][q] / gain[q]
+	CopyScales/P ITCDataWave, sweepWave
 
 	return sweepWave
 End
