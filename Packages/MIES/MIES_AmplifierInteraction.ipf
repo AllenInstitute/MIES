@@ -1587,3 +1587,85 @@ Function AI_FindConnectedAmps()
 
 	SetDataFolder saveDFR
 End
+
+/// @brief Opens Multi-clamp commander software
+///
+/// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
+/// Ex. "834001;435003;836059"
+/// @param ampTitleList [optional, defaults to blank] MCC gui window title
+/// @param maxAttempts [optional, defaults to inf] Maximum number of attempts made to open specified MCCs
+/// @return 1 if all MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
+Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
+	string ampSerialNumList
+	string ampTitleList
+	variable maxAttempts
+
+	string cmd, serialStr, title
+	variable i, j, serialNum, failedToOpenCount
+	variable ItemsInAmpSerialNumList = itemsinlist(AmpSerialNumList)
+
+	if(paramIsDefault(maxAttempts))
+		maxAttempts = inf
+	endif
+
+	if(paramIsDefault(AmpTitleList))
+		AmpTitleList = ""
+	endIf
+
+	WAVE OpenMCCList = AI_GetMCCSerialNumbers()
+	Do
+		for(i=0 ; i < ItemsInAmpSerialNumList ; i+=1)
+			serialStr = stringfromlist(i, AmpSerialNumList)
+			serialNum = str2num(serialStr)
+			title = stringfromlist(i, AmpTitleList)
+			findvalue/I=(serialNum) OpenMCCList
+			if( V_value == -1)
+				sprintf cmd, "\"%s%s\" /S00%g /T%s(%s)" GetProgramFilesFolder(), AI_GetMCCWinFilePath(), SerialNum, title, SerialStr
+				executeScriptText cmd
+			endif
+		endfor
+
+		failedToOpenCount=0
+		WAVE OpenMCCList = AI_GetMCCSerialNumbers()
+		for(i=0 ; i < ItemsInAmpSerialNumList ; i+=1)
+			serialNum = str2num(serialStr)
+			findvalue/I=(serialNum) OpenMCCList
+			if(v_value == -1)
+				failedToOpenCount += 1
+			endif
+		endfor
+		
+		if(failedToOpenCount > 0)
+			printf "%g MCCs failed to open on attempt count %g " failedTOopenCount, j
+		endif
+		
+		j += 1		
+	while(failedToOpenCount != 0 && j < maxAttempts)
+	
+	return failedToOpenCount == 0	
+End
+
+/// @brief Gets the serial numbers of all open MCCs
+///
+/// @return a 1D FREE wave containing amplifier serial numbers without leading zeroes
+static Function/WAVE AI_GetMCCSerialNumbers()
+		AI_FindConnectedAmps()
+		WAVE W_TelegraphServers = GetAmplifierTelegraphServers()
+		Duplicate/FREE/R=[][FindDimLabel(W_TelegraphServers, COLS, "SerialNum")] W_TelegraphServers, OpenMCCList
+		DeleteDuplicates(OpenMCCList)
+		return OpenMCCList
+End
+
+/// @brief Return a path to the MCC.
+///
+/// Hardcoded as Igor does not allow to query that information.
+///
+/// Distinguishes between i386 and x64 Igor versions
+static Function/S AI_GetMCCWinFilePath()
+
+#if defined(IGOR64)
+	return "Molecular Devices\MultiClamp_64\MC700B.exe"
+#else
+	return "Molecular Devices\MultiClamp 700B Commander\MC700B.exe"
+#endif
+End

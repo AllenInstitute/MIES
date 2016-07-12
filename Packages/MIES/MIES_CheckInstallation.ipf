@@ -91,7 +91,7 @@ Function CHI_CheckInstallation()
 	KillPath $symbPath
 
 	listOfXOPs = ListMatch(allFilesUser + "|" + allFilesSystem, "*.xop", "|")
-	listOfXOPs = TextWaveToList(RemoveDuplicates(ListToTextWave(listOfXOPs, "|")), "|")
+	listOfXOPs = TextWaveToList(DeleteDuplicates(ListToTextWave(listOfXOPs, "|")), "|")
 
 	STRUCT CHI_InstallationState state
 
