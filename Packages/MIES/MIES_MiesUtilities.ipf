@@ -2776,3 +2776,17 @@ Function/S GetListofLeaderAndPossFollower(panelTitle)
 	SVAR followerList = $GetFollowerList(panelTitle)
 	return AddListItem(panelTitle, followerList, ";", 0)
 End
+
+/// @brief Return a path to the program folder with trailing dir separator
+///
+/// Hardcoded as Igor does not allow to query that information.
+///
+/// Distinguishes between i386 and x64 Igor versions
+Function/S GetProgramFilesFolder()
+
+#if defined(IGOR64)
+	return "C:\\Program Files\\"
+#else
+	return "C:\\Program Files (x86)\\"
+#endif
+End

@@ -1958,10 +1958,26 @@ Function/S ResolveAlias(pathName, path)
 
 	return path
 End
-
-/// @brief Return a free wave with all duplicates removed, might change the
+/// @brief Return a text or numeric free wave with all duplicates deleted, might change the
 /// relative order of the entries
-Function/WAVE RemoveDuplicates(txtWave)
+Function/WAVE DeleteDuplicates(Wv)
+	WAVE wv
+	
+	switch(WaveType(wv, 1))
+		case 1: 
+			return DeleteDuplicatesNum(wv)
+			break
+		case 2:
+			return DeleteDuplicatesTxt(wv)
+			break
+		default:
+			ASSERT(0, "Can not work with this wave type")
+		endswitch
+End
+
+/// @brief Return a text free wave with all duplicates removed, might change the
+/// relative order of the entries
+static Function/WAVE DeleteDuplicatesTxt(txtWave)
 	WAVE/T txtWave
 
 	variable i, numRows
@@ -1981,6 +1997,36 @@ Function/WAVE RemoveDuplicates(txtWave)
 	for(i = 1; i < DimSize(dest, ROWS); i += 1)
 		if(!cmpstr(dest[i - 1], dest[i]))
 			DeletePoints/M=(ROWS) i, 1, dest
+		endif
+	endfor
+#endif
+
+	return dest
+End
+
+/// @brief Return a numeric free wave with all duplicates removed, might change the
+/// relative order of the entries
+static Function/WAVE DeleteDuplicatesNum(numWave)
+	WAVE numWave
+	
+	variable i, numRows
+	numRows = DimSize(numWave, ROWS)
+	
+	Duplicate/FREE numWave, dest
+	if(numRows <= 1)
+		return dest
+	endif
+	
+#if (IgorVersion() >= 7.0)
+	FindDuplicates/RN=dest numWave
+#else
+	ASSERT(DimSize(dest, COLS) == 0, "Can only work with 1D waves")
+	Sort dest, dest
+	for(i = 1; i < DimSize(dest, ROWS); i += 1)
+		FindValue/S=(i)/V=(dest[i-1]) dest
+		if(V_value != -1)
+			i-=1
+			DeletePoints/M=(ROWS) V_value, 1, dest
 		endif
 	endfor
 #endif
