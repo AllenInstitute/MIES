@@ -348,9 +348,7 @@ Function SetPopupMenuIndex(win, control, index)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	ASSERT(index >= 0,"Invalid index")
-	if(index != v_value)
-		PopupMenu $control win=$win, mode=index
-	endif
+	PopupMenu $control win=$win, mode=index
 End
 
 /// @brief Sets the popupmenu value
