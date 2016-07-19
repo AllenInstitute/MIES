@@ -442,8 +442,14 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		ASSERT(!IsEmpty(channelTypeStr), "invalid channel type string")
 		ASSERT(IsFinite(p.channelNumber), "invalid channel number")
 
+		if(strlen(p.channelSuffix) > 0)
+			str = "_" + p.channelSuffix
+		else
+			str = ""
+		endif
+
 		numPlaces = max(5, ceil(log(p.groupIndex)))
-		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
+		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, str
 	endif
 
 	// skip writing DA data with I=0 clamp mode (it will just be constant zero)
