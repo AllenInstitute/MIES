@@ -659,7 +659,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 	string setNameList
 	string ctrl, firstSetName, str, list, func, colLabel
-	variable oneFullCycle, val, singleSetLength
+	variable oneFullCycle, val, singleSetLength, singleInsertStart
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
@@ -880,22 +880,22 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		// reset to the default value without distributedDAQ
-		insertStart = onSetDelay
+		singleInsertStart = onSetDelay
 
 		// Place TTL waves into ITCDataWave
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 			WAVE/SDFR=deviceDFR TTLwave
-			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
-			ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			singleSetLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = TTLWave[decimationFactor * (p - singleInsertStart)]
 			activeColumn += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 			WAVE/SDFR=deviceDFR TTLwave
-			setLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
-			ITCDataWave[insertStart, insertStart + setLength - 1][activeColumn] = TTLWave[decimationFactor * (p - insertStart)]
+			singleSetLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = TTLWave[decimationFactor * (p - singleInsertStart)]
 		endif
 	endif
 End
