@@ -738,8 +738,12 @@ Function/Wave GetLBTextualValues(panelTitle)
 		return wv
 	endif
 
-	Make/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	wv = ""
+
+	SetDimLabel COLS, 0, SweepNum                  , wv
+	SetDimLabel COLS, 1, TimeStamp                 , wv
+	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
 
 	return wv
 End
