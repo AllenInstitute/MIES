@@ -727,7 +727,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
 	PopupMenu popup_sweep_selector,userdata(lastSweep)=  "0"
-	PopupMenu popup_sweep_selector,mode=1,popvalue="Sweep 8 [Experiment-TPStorage]",value= #"SB_GetSweepList(\"SweepBrowser1\")"
+	PopupMenu popup_sweep_selector,value= #("SB_GetSweepList(\"" + graph + "\")")
 	Button button_SweepBrowser_OpenChanSel,pos={96.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
 	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels"}
 	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
@@ -777,7 +777,7 @@ Function/S SB_GetSweepList(graph)
 
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
 	for(i = 0; i < numRows; i += 1)
-		sprintf str, "Sweep %d [%s]", str2num(map[i][%Sweep]), GetBaseName(map[i][%ExperimentName])
+		sprintf str, "Sweep %d [%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%ExperimentName]), "_")
 		list = AddListItem(str, list, ";", Inf)
 	endfor
 

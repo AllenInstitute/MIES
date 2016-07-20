@@ -475,9 +475,13 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 				SetDimensionLabels(numericalKeys, textualValues)
 			endif
 
+			// handle pxps without any data properly
 			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericalValues)
 
-			AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
+			if(IsFinite(highestSweepNumber))
+				AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
+			endif
+
 			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 			AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 
@@ -507,6 +511,8 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 	string dataFolderPath, listOfWaves
 	variable numWavesLoaded, totalNumWavesLoaded
 	variable start, step, stop, i
+
+	ASSERT(IsFinite(highestSweepNumber), "highestSweepNumber has to be finite")
 
 	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
@@ -1061,6 +1067,11 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 
 				// selection is a plain sweep, the current row either holds the sweep number, or one of the previous ones
 				sweep  = str2num(GetLastNonEmptyEntry(expBrowserList, "sweep", row))
+
+				if(!IsFinite(sweep))
+					continue
+				endif
+
 				device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
 				mapIndex    = str2num(expBrowserList[row][%experiment][1])
