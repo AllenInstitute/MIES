@@ -389,6 +389,7 @@ Structure WriteChannelParams
 	string device            ///< name of the measure device, e.g. "ITC18USB_Dev_0"
 	string stimSet           ///< name of the template simulus set
 	string channelSuffix     ///< custom channel suffix, in case the channel number is ambiguous
+	string channelSuffixDesc ///< description of the channel suffix, will be added to the `source` attribute
 	variable samplingRate    ///< sampling rate in Hz
 	variable startingTime    ///< timestamp since Igor Pro epoch in UTC of the start of this measurement
 	variable sweep           ///< running number for each measurement
@@ -442,8 +443,14 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		ASSERT(!IsEmpty(channelTypeStr), "invalid channel type string")
 		ASSERT(IsFinite(p.channelNumber), "invalid channel number")
 
+		if(strlen(p.channelSuffix) > 0)
+			str = "_" + p.channelSuffix
+		else
+			str = ""
+		endif
+
 		numPlaces = max(5, ceil(log(p.groupIndex)))
-		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
+		sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, str
 	endif
 
 	// skip writing DA data with I=0 clamp mode (it will just be constant zero)
@@ -461,6 +468,12 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 	endif
 
 	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%d", p.device, p.sweep, str, p.electrodeNumber
+
+	if(strlen(p.channelSuffixDesc) > 0 && strlen(p.channelSuffix) > 0)
+		ASSERT(strsearch(p.channelSuffix, "=", 0) == -1, "channelSuffix must not contain an equals (=) symbol")
+		ASSERT(strsearch(p.channelSuffixDesc, "=", 0) == -1, "channelSuffixDesc must not contain an equals (=) symbol")
+		source += ";" + p.channelSuffixDesc + "=" + p.channelSuffix
+	endif
 	H5_WriteTextAttribute(groupID, "source", group, list=source, overwrite=1)
 
 	if(p.channelType != CHANNEL_TYPE_OTHER)

@@ -524,7 +524,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			name = StringFromList(j, list)
 			WAVE/SDFR=dfr params.data = $name
 			path                 = "/stimulus/presentation"
-			params.channelSuffix = name
+			params.channelSuffix = name[1, inf]
+			params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
 			params.stimset       = StringFromList(str2num(name[1,inf]), listOfStimsets)
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)

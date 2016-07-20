@@ -466,3 +466,6 @@ Constant AMPLIFIER_CONNECTION_SUCCESS    = 0 ///< success
 Constant AMPLIFIER_CONNECTION_INVAL_SER  = 1 ///< stored amplifier serials are invalid
 Constant AMPLIFIER_CONNECTION_MCC_FAILED = 2 ///< calling MCC_SelectMultiClamp700B failed
 /// @}
+
+/// Additional entry in the NWB source attribute for TTL data
+StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
