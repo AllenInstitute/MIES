@@ -1481,6 +1481,8 @@ End
 /// @brief Searches the column colLabel in wv for an non-empty
 /// entry with a row number smaller or equal to endRow
 ///
+/// Return an empty string if nothing could be found.
+///
 /// @param wv         text wave to search in
 /// @param colLabel   column label from wv
 /// @param endRow     maximum row index to consider
@@ -1490,7 +1492,11 @@ Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
 	variable endRow
 
 	WAVE/Z indizes = FindIndizes(colLabel=colLabel, wvText=wv, prop=PROP_NON_EMPTY, endRow=endRow)
-	ASSERT(WaveExists(indizes), "expected a indizes wave")
+
+	if(!WaveExists(indizes))
+		return ""
+	endif
+
 	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End
 
