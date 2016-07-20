@@ -972,7 +972,7 @@ Function/Wave GetLBNumericalValues(panelTitle)
 	WAVE/D/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(!WaveExists(wv))
-		Make/D/N=(MINIMUM_WAVE_SIZE, 3, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv = NaN
+		Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv = NaN
 
 		SetDimLabel COLS, 0, SweepNum                  , wv
 		SetDimLabel COLS, 1, TimeStamp                 , wv
