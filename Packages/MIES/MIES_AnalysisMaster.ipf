@@ -171,8 +171,9 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	endif
 
 	// check that the bias current injection is less than +/100 pA
-	biasCurrent = str2num(GetGuiControlValue(panelTitle, "setVar_DataAcq_IbiasMax"))
-	if(abs(biasCurrent)>100)
+	// use the MCC_GetHolding() function to get the value directly from the Amp instead of querying the GUI control
+	biasCurrent = MCC_GetHolding()
+	if(abs(biasCurrent)>100e-12) // since we are now getting values directly from the Amp, need to have the exponent value
 		print "Bias Current Check failed..."
 		analysisSettingsWave[headStage][%PSAResult] = "0"
 		return 0
