@@ -4029,3 +4029,56 @@ Function/WAVE GetDeviceMapping()
 
 	return wv
 End
+
+/// @name Getters relating to caching
+/// @{
+/// @brief Return the datafolder reference to the wave cache
+Function/DF GetCacheFolder()
+	return createDFWithAllParents(GetCacheFolderAS())
+End
+
+/// @brief Return the full path to the wave cache datafolder, e.g. root:MIES:Cache
+Function/S GetCacheFolderAS()
+	return GetMiesPathAsString() + ":Cache"
+End
+
+/// @brief Return the wave reference wave holding the cached data
+///
+/// Dimension sizes and `NOTE_INDEX` value must coincide with GetCacheKeyWave().
+Function/Wave GetCacheValueWave()
+
+	DFREF dfr = GetCacheFolder()
+
+	WAVE/WAVE/Z/SDFR=dfr wv = values
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/WAVE/N=(MINIMUM_WAVE_SIZE) dfr:values/Wave=wv
+	endif
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return the wave reference wave holding the cache keys
+///
+/// Dimension sizes and `NOTE_INDEX` value must coincide with GetCacheValueWave().
+Function/Wave GetCacheKeyWave()
+
+	DFREF dfr = GetCacheFolder()
+
+	WAVE/T/Z/SDFR=dfr wv = keys
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/Wave=wv
+	endif
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+/// @}

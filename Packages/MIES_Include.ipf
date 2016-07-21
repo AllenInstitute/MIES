@@ -28,6 +28,7 @@
 #include "MIES_BackgroundMD"
 #include "MIES_BackgroundTimerMD"
 #include "MIES_BackgroundWatchdog"
+#include "MIES_Cache"
 #include "MIES_CheckInstallation"
 #include "MIES_Constants"
 #include "MIES_DAC-Hardware"
