@@ -3660,6 +3660,9 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
 
 	DAP_SwitchSingleMultiMode(panelTitle, 0)
+	SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", "")
+	SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", "")
+
 	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
 
