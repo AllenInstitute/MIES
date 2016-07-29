@@ -126,6 +126,11 @@ Function SCOPE_UpdateGraph(panelTitle)
 		endfor
 	endif
 
+	if(showPowerSpectrum)
+		DoUpdate/W=$graph
+		return NaN
+	endif
+
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	Make/Y=(WaveType(OscilloscopeData))/FREE/N=(min(stopCollectionPoint, DimSize(OscilloscopeData, ROWS))) ADdata
 
@@ -187,7 +192,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string graph, tagName, color, style
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
 	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue
-	string leftAxis, rightAxis, tagAxis, str
+	string leftAxis, rightAxis, tagAxis, str, powerSpectrumTrace
 	string tagPeakTrace, tagSteadyStateTrace
 	string steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
@@ -229,17 +234,34 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		leftAxis = "AD" + adcStr
 		
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
-		
-		AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
 
-		ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
-		SetAxis/W=$graph/A=2/N=2 $leftAxis
+		if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum)
+			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
 
-		ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
+			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
+			SetAxis/W=$graph/A=2/N=2 $leftAxis
+
+			ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
+		endif
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
 		// add the also the trace for the current resistance values from the test pulse
 		if(dataAcqOrTP == TEST_PULSE_MODE)
+
+			if(showPowerSpectrum)
+				powerSpectrumTrace = "powerSpectra" + adcStr
+				WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
+				AppendToGraph/W=$graph/L=$leftAxis powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
+				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
+#if (IgorVersion() >= 7.0)
+				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
+#else
+				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0)
+#endif
+				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
+				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
+				SetAxis/W=$graph $leftAxis, 1e-20, 1e20
+			endif
 
 			rightAxis = "resistance" + adcStr
 
@@ -330,16 +352,24 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	endfor
 
 	SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
-	Label/W=$graph bottom "Time (\\U)"
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-		testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) * sampInt
-		NVAR duration = $GetTestpulseDuration(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
-		SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
+		if(showPowerSpectrum)
+			Label/W=$graph bottom "Frequency (\\U)"
+			SetAxis/W=$graph/A bottom
+		else
+			Label/W=$graph bottom "Time (\\U)"
+			sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
+			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) * sampInt
+			NVAR duration = $GetTestpulseDuration(panelTitle)
+			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
+			SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
+		else
+
+		endif
 	else
+		Label/W=$graph bottom "Time (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 		sampInt = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
 		SetAxis/W=$graph bottom 0, stopCollectionPoint * sampInt
@@ -383,8 +413,13 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 			else
 				style = ""
 			endif
-			// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
-			unit = StringFromList(numActiveDACs + i, unitWaveNote)
+
+			if(GetCheckboxState(panelTitle, "check_settings_show_power"))
+				unit = "a. u."
+			else
+				// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+				unit = StringFromList(numActiveDACs + i, unitWaveNote)
+			endif
 			Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
 		endfor
 	endif

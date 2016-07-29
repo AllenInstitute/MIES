@@ -1464,6 +1464,22 @@ Function/Wave GetOscilloscopeWave(panelTitle)
 	return wv
 End
 
+/// @brief Return the testpulse power spectrum wave
+Function/WAVE GetTPPowerSpectrumWave(panelTitle)
+	string panelTitle
+
+	dfref dfr = GetDevicePath(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TPPowerSpectrum
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/R/N=(1, NUM_DA_TTL_CHANNELS) dfr:TPPowerSpectrum/Wave=wv
+
+	return wv
+End
+
 /// @brief Return the testpulse instantenous resistance wave
 ///
 /// The columns hold the *active* DA channels only and are subject to resizing.
