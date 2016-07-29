@@ -638,6 +638,7 @@ Function AI_GetMCCScale(clampMode, func)
 			case MCC_SETBRIDGEBALRESIST_FUNC:
 				return 1e+6
 			case MCC_GETBRIDGEBALRESIST_FUNC:
+			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				return 1e-6
 			case MCC_SETHOLDING_FUNC:
 				return 1e-12
