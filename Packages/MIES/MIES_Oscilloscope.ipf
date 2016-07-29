@@ -59,9 +59,10 @@ Function SCOPE_UpdateGraph(panelTitle)
 	variable latest, count, i, numADCs, minVal, maxVal, range, numDACs, statsMin, statsMax
 	variable axisMin, axisMax, spacing
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
+	variable showPowerSpectrum
 	string graph, rightAxis, leftAxis, info
 
-	SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
 	graph = SCOPE_GetGraph(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
@@ -170,12 +171,13 @@ Function SCOPE_UpdateGraph(panelTitle)
 	DoUpdate/W=$graph
 End
 
-static Function SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
 	string panelTitle
-	variable &showSteadyStateResistance, &showPeakResistance
+	variable &showSteadyStateResistance, &showPeakResistance, &showPowerSpectrum
 
 	showPeakResistance        = GetCheckboxState(panelTitle, "check_settings_TP_show_peak")
 	showSteadyStateResistance = GetCheckboxState(panelTitle, "check_settings_TP_show_steady")
+	showPowerSpectrum         = GetCheckboxState(panelTitle, "check_settings_show_power")
 End
 
 Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
@@ -190,7 +192,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
 	variable testPulseLength, cutOff, sampInt
-	variable headStage, activeHeadStage
+	variable headStage, activeHeadStage, showPowerSpectrum
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
@@ -219,7 +221,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-	SCOPE_GetResistanceCheckBoxes(panelTitle, showSteadyStateResistance, showPeakResistance)
+	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
