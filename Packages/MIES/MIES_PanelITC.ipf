@@ -3226,6 +3226,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_TTL_ALL,value= 0
+	CheckBox check_settings_show_power,pos={169.00,546.00},size={133.00,15.00},disable=1,title="Show power spectrum"
+	CheckBox check_settings_show_power,help={"Show the power spectrum (Fourier Transform) of the testpulse"}
+	CheckBox check_settings_show_power,userdata(tabnum)=  "5"
+	CheckBox check_settings_show_power,userdata(tabcontrol)=  "ADC"
+	CheckBox check_settings_show_power,userdata(ResizeControlsInfo)= A"!!,G<!!#@i!!#A3!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_settings_show_power,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_settings_show_power,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_settings_show_power,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C[!!#Da!!!!\"zzzzzzzzzzzzzzzzzzzz"
@@ -3671,6 +3679,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
+	CheckBox check_settings_show_power WIN = $panelTitle, value = 0
 	CheckBox check_Settings_DisablePressure WIN = $panelTitle, value = 0
 	CheckBox check_Settings_RequireAmpConn WIN = $panelTitle, value = 1
 
