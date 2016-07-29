@@ -3693,7 +3693,7 @@ Function DAP_EphysPanelStartUpSettings()
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
 
-	Execute/P/Q/Z "DoWindow/R " + BASE_WINDOW_TITLE
+	Execute/P/Z "DoWindow/R " + BASE_WINDOW_TITLE
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
 
