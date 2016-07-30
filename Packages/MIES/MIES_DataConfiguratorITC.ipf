@@ -390,7 +390,7 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	variable exponent
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	exponent = ceil(log(stopCollectionPoint)/log(2))
+	exponent = FindNextPower(stopCollectionPoint, 2)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1

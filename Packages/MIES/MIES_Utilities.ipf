@@ -2399,3 +2399,18 @@ Function IsValidWaveName(wvName)
 
 	return !cmpstr(wvName, CleanupName(wvName, 0))
 End
+
+/// @brief Find an integer `x` which is larger than `a` but the
+/// smallest possible power of `p`.
+///
+/// @f$ x > a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
+/// the smallest possible value.
+Function FindNextPower(a, p)
+	variable a, p
+
+	ASSERT(p > 1, "Invalid power")
+	ASSERT(a > 0, "Invalid value")
+	ASSERT(IsInteger(a), "Value has to be an integer")
+
+	return ceil(log(a)/log(p))
+End
