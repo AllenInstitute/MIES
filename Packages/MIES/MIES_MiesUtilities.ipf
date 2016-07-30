@@ -639,7 +639,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	variable headstage, red, green, blue, splitSweepMode, axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
-	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
+	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, left
@@ -867,6 +867,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					wvName = channelID + "_" + num2str(chan)
 				endif
 
+				configIdx = activeChanCount[i] + channelOffset
 				if(splitSweepMode)
 					WAVE/Z/SDFR=sweepDFR wv = $wvName
 					if(!WaveExists(wv))
@@ -874,7 +875,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 					idx = 0
 				else
-					idx = activeChanCount[i] + channelOffset
+					idx = configIdx
 					WAVE wv = sweepWave
 				endif
 
@@ -944,7 +945,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 					if(k == 0) // first column, add labels
 						if(hasPhysUnit)
-							unit = StringFromList(idx, configNote)
+							unit = StringFromList(configIdx, configNote)
 						else
 							unit = "a.u."
 						endif
