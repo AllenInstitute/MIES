@@ -24,7 +24,7 @@
 * Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 7 User Files"
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
-		* "Packages\HDF"
+		* "Packages\HDF-IP7"
 		* "Packages\IPNWB"
 		* "Packages\MIES"
 		* "Packages\Tango"
@@ -40,7 +40,7 @@
 * Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 7 User Files"
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
-		* "Packages\HDF"
+		* "Packages\HDF-IP7"
 		* "Packages\IPNWB"
 		* "Packages\MIES"
 		* "Packages\Tango"
