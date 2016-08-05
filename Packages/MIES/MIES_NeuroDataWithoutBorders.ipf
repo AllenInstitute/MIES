@@ -150,6 +150,8 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 		IPNWB#CreateIntraCellularEphys(fileID)
 
+		NWB_AddGeneratorString(fileID)
+
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
 		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
@@ -165,6 +167,35 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	DEBUGPRINT("filePathExport", str=filePathExport)
 
 	return fileIDExport
+End
+
+Function NWB_AddGeneratorString(fileID)
+	variable fileID
+
+	Make/FREE/T/N=(5, 2) props
+
+	props[0][0] = "Program"
+#if defined(IGOR64)
+	props[0][1] = "Igor Pro 64bit"
+#else
+	props[0][1] = "Igor Pro 32bit"
+#endif
+
+	props[1][0] = "Program Version"
+	props[1][1] = StringByKey("IGORFILEVERSION", IgorInfo(3))
+
+	props[2][0] = "Package"
+	props[2][1] = "MIES"
+
+	props[3][0] = "Package Version"
+	SVAR miesVersion = $GetMiesVersion()
+	props[3][1] = miesVersion
+
+	props[4][0] = "Labnotebook Version"
+	props[4][1] = num2str(LABNOTEBOOK_VERSION)
+
+	IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
+	IPNWB#MarkAsCustomEntry(fileID, "/general/generated_by")
 End
 
 static Function NWB_ReadSessionStartTime(fileID)
