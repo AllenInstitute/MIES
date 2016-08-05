@@ -696,8 +696,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE statusDA         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 	WAVE statusHS         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
+	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
+	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
 
 	numEntries = DimSize(statusDA, ROWS)
 	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, headstageDAC, DAC
@@ -785,6 +786,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstageDAC[activeColumn], i, var=DAScale[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstageDAC[activeColumn], i, var=setColumn[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, "Electrode", headstageDAC[activeColumn], i, str=cellElectrodeNames[headstageDAC[activeColumn]])
 
 		activeColumn += 1
 	endfor
