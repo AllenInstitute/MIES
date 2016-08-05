@@ -475,7 +475,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		ASSERT(strsearch(p.channelSuffixDesc, "=", 0) == -1, "channelSuffixDesc must not contain an equals (=) symbol")
 		source += ";" + p.channelSuffixDesc + "=" + p.channelSuffix
 	endif
-	H5_WriteTextAttribute(groupID, "source", group, list=source, overwrite=1)
+	H5_WriteTextAttribute(groupID, "source", group, str=source, overwrite=1)
 
 	if(p.channelType != CHANNEL_TYPE_OTHER)
 		H5_WriteTextAttribute(groupID, "comment", group, str=note(p.data), overwrite=1) // human readable version of description
