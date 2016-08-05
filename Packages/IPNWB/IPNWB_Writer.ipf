@@ -118,7 +118,7 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 		ti = toplevelInfo
 	endif
 
-	WriteTextDatasetIfSet(locationID, "neurodata_version", NWB_VERSION)
+	WriteTextDatasetIfSet(locationID, "nwb_version", NWB_VERSION)
 	WriteTextDatasetIfSet(locationID, "identifier", Hash(GetISO8601TimeStamp() + num2str(enoise(1, 2)), 1))
 	// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
 	WriteTextDatasetIfSet(locationID, "file_create_date", GetISO8601TimeStamp(), chunkedLayout=1)

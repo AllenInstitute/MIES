@@ -7,7 +7,7 @@
 /// @brief Constants
 
 StrConstant PLACEHOLDER = "PLACEHOLDER"
-Strconstant NWB_VERSION = "NWB-1.0.x"
+Strconstant NWB_VERSION = "NWB-1.0.5"
 
 /// @name Constants for FunctionInfo and WaveType
 ///
