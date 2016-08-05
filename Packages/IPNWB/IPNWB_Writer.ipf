@@ -202,9 +202,13 @@ Function AddElectrode(locationID, number, data)
 	string data
 
 	string path
+	variable groupID
 
 	sprintf path, "/general/intracellular_ephys/electrode_%d", number
-	H5_WriteTextDataset(locationID, path, str=data, skipIfExists=1)
+	H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+	H5_WriteTextDataset(groupID, "description", str=data, overwrite=1)
+
+	HDF5CloseGroup groupID
 End
 
 /// @brief Add a modification timestamp to the NWB file
