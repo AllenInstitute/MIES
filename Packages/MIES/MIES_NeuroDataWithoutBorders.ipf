@@ -481,7 +481,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		STRUCT IPNWB#TimeSeriesProperties tsp
 
 		sprintf contents, "Headstage %d", i
-		IPNWB#AddElectrode(locationID, i, contents)
+		IPNWB#AddElectrode(locationID, i, contents, panelTitle)
 
 		adc                    = ADCs[i]
 		dac                    = DACs[i]

@@ -197,9 +197,9 @@ Function AddDevice(locationID, name, data)
 End
 
 /// @brief Add an entry for the electrode `number` with contents `data`
-Function AddElectrode(locationID, number, data)
+Function AddElectrode(locationID, number, data, device)
 	variable locationID, number
-	string data
+	string data, device
 
 	string path
 	variable groupID
@@ -207,6 +207,7 @@ Function AddElectrode(locationID, number, data)
 	sprintf path, "/general/intracellular_ephys/electrode_%d", number
 	H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 	H5_WriteTextDataset(groupID, "description", str=data, overwrite=1)
+	H5_WriteTextDataset(groupID, "device", str=device, overwrite=1)
 
 	HDF5CloseGroup groupID
 End
