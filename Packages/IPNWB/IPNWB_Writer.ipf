@@ -162,6 +162,7 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 	H5_CreateGroupsRecursively(locationID, "/acquisition/timeseries")
 	H5_CreateGroupsRecursively(locationID, "/acquisition/images")
 	H5_CreateGroupsRecursively(locationID, "/epochs")
+	H5_WriteTextAttribute(locationID, "tags", "/epochs", list="")
 	H5_CreateGroupsRecursively(locationID, "/processing")
 	H5_CreateGroupsRecursively(locationID, "/analysis")
 End
