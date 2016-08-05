@@ -390,7 +390,7 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	variable exponent
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	exponent = ceil(log(stopCollectionPoint)/log(2))
+	exponent = FindNextPower(stopCollectionPoint, 2)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		exponent += 1
@@ -663,7 +663,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
-	variable multiplier, j
+	variable multiplier, j, powerSpectrum
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -673,6 +673,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
 	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+	powerSpectrum         = GetCheckboxState(panelTitle, "check_settings_show_power")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) / multiplier
@@ -763,6 +764,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 				testPulseAmplitude[activeColumn] = 0.0
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			if(powerSpectrum)
+				testPulseAmplitude[activeColumn] = 0.0
+			endif
 			DAScale[activeColumn] = testPulseAmplitude[activeColumn]
 		else
 			ASSERT(0, "unknown mode")

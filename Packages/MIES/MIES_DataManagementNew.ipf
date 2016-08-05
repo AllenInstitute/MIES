@@ -197,6 +197,15 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
 
 		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
+
+		if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
+			WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
+			// FFT knows how to transform units without prefix so transform them it temporarly
+			SetScale/P x, DimOffset(ITCDataWave, ROWS) / 1000, DimDelta(ITCDataWave, ROWS) / 1000, "s", ITCDataWave
+			FFT/OUT=4/DEST=powerSpectrum/COLS ITCDataWave
+			SetScale/P x, DimOffset(ITCDataWave, ROWS) * 1000, DimDelta(ITCDataWave, ROWS) * 1000, "ms", ITCDataWave
+		endif
+
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
