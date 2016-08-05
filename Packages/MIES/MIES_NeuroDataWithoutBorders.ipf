@@ -457,6 +457,17 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
+	// 95402da6 (NWB: Allow documenting the physical electrode, 2016-08-05)
+	WAVE/Z/T electrodeNames = GetLastSettingText(textualValues, sweep, "Electrode")
+	if(!WaveExists(electrodeNames))
+		Make/FREE/T/N=(NUM_HEADSTAGES) electrodeNames = GetDefaultElectrodeName(p)
+	else
+		WAVE/Z nonEmptyElectrodes = FindIndizes(wvText=electrodeNames, col=0, prop=PROP_NON_EMPTY)
+		if(!WaveExists(nonEmptyElectrodes)) // all are empty
+			electrodeNames[] = GetDefaultElectrodeName(p)
+		endif
+	endif
+
 	STRUCT IPNWB#WriteChannelParams params
 	IPNWB#InitWriteChannelParams(params)
 
@@ -481,11 +492,11 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		STRUCT IPNWB#TimeSeriesProperties tsp
 
 		sprintf contents, "Headstage %d", i
-		IPNWB#AddElectrode(locationID, i, contents, panelTitle)
+		IPNWB#AddElectrode(locationID, electrodeNames[i], contents, panelTitle)
 
 		adc                    = ADCs[i]
 		dac                    = DACs[i]
-		params.electrodeNumber = i
+		params.electrodeName   = electrodeNames[i]
 		params.clampMode       = clampMode[i]
 		params.stimset         = stimSets[i]
 

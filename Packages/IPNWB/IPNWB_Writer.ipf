@@ -196,15 +196,17 @@ Function AddDevice(locationID, name, data)
 	H5_WriteTextDataset(locationID, path, str=data, skipIfExists=1)
 End
 
-/// @brief Add an entry for the electrode `number` with contents `data`
-Function AddElectrode(locationID, number, data, device)
-	variable locationID, number
-	string data, device
+/// @brief Add an entry for the electrode `name` with contents `data`
+Function AddElectrode(locationID, name, data, device)
+	variable locationID
+	string name, data, device
 
 	string path
 	variable groupID
 
-	sprintf path, "/general/intracellular_ephys/electrode_%d", number
+	ASSERT(H5_IsValidIdentifier(name), "The electrode name must be a valid HDF5 identifier")
+
+	sprintf path, "/general/intracellular_ephys/electrode_%s", name
 	H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
 	H5_WriteTextDataset(groupID, "description", str=data, overwrite=1)
 	H5_WriteTextDataset(groupID, "device", str=device, overwrite=1)
@@ -402,6 +404,7 @@ Structure WriteChannelParams
 	variable channelType     ///< channel type, one of @ref IPNWB_ChannelTypes
 	variable channelNumber   ///< running number of the channel
 	variable electrodeNumber ///< electrode identifier the channel was acquired with
+	string electrodeName     ///< electrode identifier the channel was acquired with (string version)
 	variable clampMode       ///< clamp mode, one of @ref IPNWB_ClampModes
 	variable groupIndex      ///< Should be filled with the result of GetNextFreeGroupIndex(locationID, path) before
 							 ///  the first call and must stay constant for all channels for this measurement.
@@ -473,7 +476,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		sprintf str, "%s", channelTypeStr
 	endif
 
-	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%d", p.device, p.sweep, str, p.electrodeNumber
+	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%d;ElectrodeName=%s", p.device, p.sweep, str, p.electrodeNumber, p.electrodeName
 
 	if(strlen(p.channelSuffixDesc) > 0 && strlen(p.channelSuffix) > 0)
 		ASSERT(strsearch(p.channelSuffix, "=", 0) == -1, "channelSuffix must not contain an equals (=) symbol")
@@ -487,7 +490,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 	endif
 
 	if(p.channelType == CHANNEL_TYPE_ADC)
-		sprintf str, "electrode_%d", p.electrodeNumber
+		sprintf str, "electrode_%s", p.electrodeName
 		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
 
 		if(p.clampMode == V_CLAMP_MODE)
@@ -500,7 +503,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 			ancestry = "TimeSeries;PatchClampSeries"
 		endif
 	elseif(p.channelType == CHANNEL_TYPE_DAC)
-		sprintf str, "electrode_%d", p.electrodeNumber
+		sprintf str, "electrode_%s", p.electrodeName
 		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
 
 		if(p.clampMode == V_CLAMP_MODE)

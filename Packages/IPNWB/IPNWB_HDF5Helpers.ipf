@@ -338,3 +338,13 @@ Function H5_CreateGroupsRecursively(locationID, path, [groupID])
 		groupID = id
 	endif
 End
+
+/// @brief Return true if `name` is a valid hdf5 identifier
+///
+/// This is more restrictive than the actual HDF5 library checks.
+/// See the BNF Grammar [here](https://www.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FGroups%2FHDF5_Groups.htm%3Frhtocid%3Dtoc4.0_1%23TOC_4_1_Introductionbc-1).
+Function H5_IsValidIdentifier(name)
+	string name
+
+	return GrepString(name, "^[A-Za-z0-9_ -]+$")
+End
