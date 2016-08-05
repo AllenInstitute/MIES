@@ -862,7 +862,7 @@ End
 Function/Wave GetLBTextualKeys(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	string newName = "textualKeys"
 	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
 
@@ -914,7 +914,7 @@ End
 Function/Wave GetLBNumericalKeys(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	/// @todo move the renaming stuff into one function for all four labnotebook waves
 	string newName = "numericalKeys"
 	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
