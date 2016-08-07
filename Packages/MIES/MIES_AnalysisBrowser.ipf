@@ -472,7 +472,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 			str = GetDimLabel(numericalKeys, COLS, 0)
 			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(numericalKeys, textualValues)
+				SetDimensionLabels(numericalKeys, numericalValues)
 			endif
 
 			// handle pxps without any data properly
