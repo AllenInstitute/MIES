@@ -1000,7 +1000,7 @@ End
 static Function WBP_ParameterWaveToPanel(stimulusType)
 	variable stimulusType
 
-	string list, control, data
+	string list, control, data, customWaveName
 	variable segment, numEntries, i, row
 
 	WAVE WP    = GetWaveBuilderWaveParam()
@@ -1026,6 +1026,16 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		data = WBP_TranslateControlContents(control, FROM_WAVE_TO_PANEL, WPT[row][segment])
 		SetSetVariableString(panel, control, data)
 	endfor
+
+	if(stimulusType == 7)
+		customWaveName = WPT[0][segment]
+		WAVE/Z customWave = $customWaveName
+		if(WaveExists(customWave))
+			GroupBox group_WaveBuilder_FolderPath win=$panel, title=GetWavesDataFolder(customWave, 1)
+			WBP_UpdateListOfWaves()
+			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, popMatch=NameOfWave(customWave)
+		endif
+	endif
 End
 
 /// @brief Generic wrapper for setting a control's value
