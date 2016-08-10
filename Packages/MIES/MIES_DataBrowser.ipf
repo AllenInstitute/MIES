@@ -259,6 +259,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
 	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
 	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
+	tgs.oodDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions")
 
 	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepWave=sweep)
 End
@@ -438,6 +439,12 @@ Window DataBrowser() : Panel
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
+	Slider slider_oodDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
+	Slider slider_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
+	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
@@ -610,6 +617,12 @@ Window DataBrowser_IP7() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B0eb=</het@7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^0JGQ"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1bpd<0JGRY<CoSI0fhd'4%E:B6q&jl7RB1778-NR;b9q[:JNr)/i>UF2_m-M"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B2DI3E0JGRY<CoSI0fi<)8231r<CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0E2DR$A2`h"
+	Slider slider_oodDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
+	Slider slider_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
+	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
 	Display/W=(18,72,1039,362)/FG=($"",$"",UGV0,UGH1)/HOST=#
 	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
 	RenameWindow #,DataBrowserGraph
@@ -669,6 +682,9 @@ Function DB_DataBrowserStartupSettings()
 	SetCheckBoxState(panelTitle, "check_databrowser_OverlayChan", CHECKBOX_SELECTED)
 	SetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
 	EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
+
+	SetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions", -1)
+	DisableControl(panelTitle, "slider_oodDAQ_regions")
 
 	DB_ClearGraph(panelTitle)
 	SetPopupMenuIndex(panelTitle, "popup_labenotebookViewableCols", 0)
@@ -852,6 +868,19 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	return 0
 End
 
+Function DB_SliderProc_ChangedSetting(spa) : SliderControl
+	STRUCT WMSliderAction &spa
+
+	string panelTitle
+
+	if(spa.eventCode & 0x1)
+		panelTitle = spa.win
+		DB_PlotSweep(panelTitle)
+	endif
+
+	return 0
+End
+
 Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
@@ -864,13 +893,22 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			ctrl       = cba.ctrlName
 			checked    = cba.checked
 
-			if(!cmpstr(ctrl, "check_DataBrowser_SweepOverlay"))
-				if(checked)
-					DisableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL;check_databrowser_dDAQMode")
-				else
-					EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL;check_databrowser_dDAQMode")
-				endif
-			endif
+			strswitch(ctrl)
+				case "check_DataBrowser_SweepOverlay":
+					if(checked)
+						DisableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL;check_databrowser_dDAQMode")
+					else
+						EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL;check_databrowser_dDAQMode")
+					endif
+				break
+				case "check_databrowser_dDAQMode":
+					if(checked)
+						EnableControl(panelTitle, "slider_oodDAQ_regions")
+					else
+						DisableControl(panelTitle, "slider_oodDAQ_regions")
+					endif
+				break
+			endswitch
 
 			DB_PlotSweep(panelTitle)
 			break

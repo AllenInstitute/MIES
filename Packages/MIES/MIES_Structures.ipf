@@ -45,6 +45,7 @@ Structure TiledGraphSettings
 	int16 overlaySweep
 	int16 overlayChannels
 	int16 dDAQDisplayMode
+	int16 oodDAQHeadstageRegions
 EndStructure
 
 /// @brief Helper structure for formula parsing of the Wavebuilder combine epoch
