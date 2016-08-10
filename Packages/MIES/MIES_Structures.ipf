@@ -69,3 +69,56 @@ Structure WaveLocationMod
 	string name    ///< former name of the wave
 	string newName ///< new name of the wave (can be null/empty)
 EndStructure
+
+Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeatureTime, resolution)
+	STRUCT OOdDAQParams &params
+	WAVE/WAVE stimSets
+	WAVE setColumns
+	variable preFeatureTime, postFeatureTime, resolution
+
+	ASSERT(DimSize(stimSets, ROWS) >= 1, "Stimsets wave is empty")
+	ASSERT(resolution >= 0, "Unexpected resolution")
+	ASSERT(preFeatureTime >= 0, "Unexpected pre feature time")
+	ASSERT(postFeatureTime >= 0, "Unexpected post feature time")
+	ASSERT(DimSize(stimSets, ROWS) == DimSize(setColumns, ROWS), "Mismatched simtSets and setColumns sizes")
+	ASSERT(resolution >= 1 && resolution <= 1000, "Invalid resolution")
+
+	WaveClear params.preload
+	WaveClear params.stimSetsSmeared
+	WaveClear params.offsets
+	WaveClear params.regions
+
+	WAVE params.stimSets        = stimSets
+	WAVE params.setColumns      = setColumns
+	params.preFeaturePoints     = preFeatureTime  / HARDWARE_ITC_MIN_SAMPINT
+	params.postFeaturePoints    = postFeatureTime / HARDWARE_ITC_MIN_SAMPINT
+	params.resolution           = resolution
+End
+
+/// @brief Helper structure for Optimized overlap distributed acquisition (oodDAQ) functions
+Structure OOdDAQParams
+	///@name Temporaries
+	///@{
+	WAVE preload                       ///< Data used for prefilling the optimization wave.
+	                                   ///< Allows to take previous runs into account.
+	WAVE/WAVE stimSetsSmeared          ///< StimSets (single set) with pre/post feature time applied. @sa OOD_SmearStimSet()
+	WAVE/WAVE stimSetsSmearedAndOffset ///< StimSets (single set) with pre/post feature time applied and offsets.
+	///@}
+
+	///@name Input
+	///@{
+	WAVE/WAVE stimSets         ///< Wave ref wave with different stimsets
+	WAVE setColumns            ///< Set (aka column) to use for each stimset
+	variable preFeaturePoints  ///< Time in points which should be kept signal-free before features
+	variable postFeaturePoints ///< Time in points which should be kept signal-free after features
+	variable resolution        ///< Accuracy in ms used for searching an optimum, features in the stim set
+	                           ///< smaller than that *might* be ignored.
+	///@}
+
+	///@name Output
+	///@{
+	WAVE offsets               ///< Result of the optimization in points
+	WAVE/T regions             ///< List of the form `%begin-%end;...` which denotes the x-coordinates of
+	                           ///< the smeared regions in units of time of the ITCDataWave. @sa OOD_ExtractFeatureRegions()
+	///@}
+EndStructure

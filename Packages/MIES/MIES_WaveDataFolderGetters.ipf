@@ -1021,6 +1021,11 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
 	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
 	SetDimLabel COLS, 25, $"Stim set length"             , wv
+	SetDimLabel COLS, 26, $"oodDAQ Pre Feature"          , wv
+	SetDimLabel COLS, 27, $"oodDAQ Post Feature"         , wv
+	SetDimLabel COLS, 28, $"oodDAQ Resolution"           , wv
+	SetDimLabel COLS, 29, $"Optimized Overlap dDAQ"      , wv
+	SetDimLabel COLS, 30, $"Delay onset oodDAQ"          , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1038,6 +1043,7 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS,  7, $"Post sweep function"    , wv
 	SetDimLabel COLS,  8, $"Post set function"      , wv
 	SetDimLabel COLS,  9, $"Post DAQ function"      , wv
+	SetDimLabel COLS, 10, $"oodDAQ regions"         , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1059,7 +1065,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 7
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1074,9 +1080,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 26, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 31, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 26, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 31, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1124,10 +1130,15 @@ End
 /// - 23: Minimum Sampling interval
 /// - 24: Sampling interval multiplier
 /// - 25: Stim set length
+/// - 26: oodDAQ Pre Feature
+/// - 27: oodDAQ Post Feature
+/// - 28: oodDAQ Resolution
+/// - 29: Optimized Overlap dDAQ
+/// - 30: Delay onset oodDAQ
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1142,9 +1153,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 26) wv
+		Redimension/N=(-1, 31) wv
 	else
-		Make/T/N=(3, 26) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 31) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1257,6 +1268,26 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][25]     = "a. u." // points not time
 	wv[%Tolerance][25] = "1"
 
+	wv[%Parameter][26] = "oodDAQ Pre Feature"
+	wv[%Units][26]     = "ms"
+	wv[%Tolerance][26] = "1"
+
+	wv[%Parameter][27] = "oodDAQ Post Feature"
+	wv[%Units][27]     = "ms"
+	wv[%Tolerance][27] = "1"
+
+	wv[%Parameter][28] = "oodDAQ Resolution"
+	wv[%Units][28]     = "ms"
+	wv[%Tolerance][28] = "1"
+
+	wv[%Parameter][29] = "Optimized Overlap dDAQ"
+	wv[%Units][29]     = "On/Off"
+	wv[%Tolerance][29] = "-"
+
+	wv[%Parameter][30] = "Delay onset oodDAQ"
+	wv[%Units][30]     = "ms"
+	wv[%Tolerance][30] = "1"
+
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1279,7 +1310,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1294,9 +1325,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 10, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 11, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 10, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 11, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1325,10 +1356,11 @@ End
 /// - 7: Analysis function post sweep
 /// - 8: Analysis function post set
 /// - 9: Analysis function post daq
+/// -10: oodDAQ regions
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1343,23 +1375,24 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 10, 0) wv
+		Redimension/N=(-1, 11, 0) wv
 	else
-		Make/T/N=(1, 10) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 11) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
 
-	wv[0][0] = STIM_WAVE_NAME_KEY
-	wv[0][1] = "DA unit"
-	wv[0][2] = "AD unit"
-	wv[0][3] = "TTL rack zero stim sets"
-	wv[0][4] = "TTL rack one stim sets"
-	wv[0][5] = "Pre DAQ function"
-	wv[0][6] = "Mid sweep function"
-	wv[0][7] = "Post sweep function"
-	wv[0][8] = "Post set function"
-	wv[0][9] = "Post DAQ function"
+	wv[0][0]  = STIM_WAVE_NAME_KEY
+	wv[0][1]  = "DA unit"
+	wv[0][2]  = "AD unit"
+	wv[0][3]  = "TTL rack zero stim sets"
+	wv[0][4]  = "TTL rack one stim sets"
+	wv[0][5]  = "Pre DAQ function"
+	wv[0][6]  = "Mid sweep function"
+	wv[0][7]  = "Post sweep function"
+	wv[0][8]  = "Post set function"
+	wv[0][9]  = "Post DAQ function"
+	wv[0][10] = "oodDAQ regions"
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -4082,3 +4115,34 @@ Function/Wave GetCacheKeyWave()
 	return wv
 End
 /// @}
+
+/// @brief Return the datafolder reference to the oodDAQ folder
+Function/DF GetDistDAQFolder()
+	return createDFWithAllParents(GetDistDAQFolderAS())
+End
+
+/// @brief Return the full path to the optimized overlap distributed
+///        acquisition (oodDAQ) folder, e.g. root:MIES:ITCDevices:oodDAQ
+Function/S GetDistDAQFolderAS()
+	return GetITCDevicesFolderAsString() + ":oodDAQ"
+End
+
+/// @brief Return the wave used for storing preloadable data
+///
+/// Required for yoked oodDAQ only.
+Function/WAVE GetDistDAQPreloadWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDistDAQFolder()
+	string wvName = "preload_" + panelTitle
+
+	WAVE/Z/SDFR=dfr wv = $wvName
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/N=(0) dfr:$wvName/Wave=wv
+	endif
+
+	return wv
+End

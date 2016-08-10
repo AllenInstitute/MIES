@@ -54,6 +54,31 @@
 /// @anchor CacheKeyGenerators
 /// @{
 
+/// @brief Cache key generator for oodDAQ offset waves
+Function/S CA_DistDAQCreateCacheKey(params)
+	STRUCT OOdDAQParams &params
+
+	variable numWaves, crc, i
+
+	numWaves = DimSize(params.stimSets, ROWS)
+
+	crc = WaveCRC(0, params.setColumns)
+
+	for(i = 0; i < numWaves; i += 1)
+		crc = WaveCRC(crc, params.stimSets[i])
+	endfor
+
+	crc = StringCRC(crc, num2str(params.preFeaturePoints))
+	crc = StringCRC(crc, num2str(params.postFeaturePoints))
+	crc = StringCRC(crc, num2str(params.resolution))
+
+	if(WaveExists(params.preload))
+		crc = WaveCRC(crc, params.preload)
+	endif
+
+	return num2istr(crc) + "Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves

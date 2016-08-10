@@ -4863,8 +4863,14 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 			endfor
 
-			// for distributed acquisition all stim sets must be the same
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") && GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", panelTitle
+				return 1
+			endif
+
+			// classic distributed acquisition requires that all stim sets are the same
+			// oodDAQ allows different stim sets
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") || GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				numEntries = DimSize(statusDA, ROWS)
 				for(i=0; i < numEntries; i+=1)
 					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
@@ -4874,6 +4880,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 					if(!IsFinite(AFH_GetHeadstagefromDAC(panelTitle, i)))
 						printf "(%s) Distributed Acquisition does not work with unassociated DA channel %d.\r", panelTitle, i
 						return 1
+					endif
+
+					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+						continue
 					endif
 
 					ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)

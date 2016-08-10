@@ -668,7 +668,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
-	variable multiplier, j, powerSpectrum, headstage
+	variable multiplier, j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -676,6 +676,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	indexingLocked        = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
 	indexing              = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
 	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	distributedDAQOptOv   = GetCheckboxState(panelTitle, "Check_DataAcq1_dDAQOptOv")
+	distributedDAQOptPre  = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPre")
+	distributedDAQOptPost = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPost")
+	distributedDAQOptRes  = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvRes")
 	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	powerSpectrum         = GetCheckboxState(panelTitle, "check_settings_show_power")
@@ -788,6 +792,15 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	numEntries = activeColumn
 	Redimension/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, stimSet, setName, headstageDAC
 
+	if(distributedDAQOptOv && dataAcqOrTP == DATA_ACQUISITION_MODE)
+		STRUCT OOdDAQParams params
+		InitOOdDAQParams(params, stimSet, setColumn, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes)
+		OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInterval, params)
+		WAVE offsets = params.offsets
+		WAVE/T regions = params.regions
+		WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	endif
+
 	setLength[] = DC_CalculateStimsetLength(stimSet[p], decimationFactor)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
@@ -801,7 +814,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
 	DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
 	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
@@ -842,8 +855,23 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		endif
 	endif
 
+	if(!WaveExists(offsets))
+		Make/FREE/N=(numEntries) offsets = 0
+	else
+		// realSamplingInterval / 1000 is the real sampling interval in ms
+		// decimationFactor because offset is in number of stimset points and stimsets
+		// are with minimum sampling interval
+		offsets[] *= minSamplingInterval / 1000 / decimationFactor
+	endif
+
+	if(!WaveExists(regions))
+		Make/FREE/T/N=(numEntries) regions
+	endif
+
 	for(i = 0; i < numEntries; i += 1)
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstageDAC[i], DAC[i], var=setLength[i])
+		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstageDAC[i], DAC[i], var=offsets[i])
+		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstageDAC[i], DAC[i], str=regions[i])
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
@@ -854,9 +882,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
 	DC_DocumentChannelProperty(panelTitle, "Delay termination", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay"))
 	DC_DocumentChannelProperty(panelTitle, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPre"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPost"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_dDAQOptOvRes"))
 
 	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, var=GlobalTPInsert)
 	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, var=distributedDAQ)
+	DC_DocumentChannelProperty(panelTitle, "Optimized Overlap dDAQ", INDEP_HEADSTAGE, NaN, var=distributedDAQOptOv)
 	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats"))
 	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, var=scalingZero)
 	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, var=indexing)
@@ -867,6 +899,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
 		// also headstage independent
+		ASSERT(!distributedDAQOptOv, "Unexpected oodDAQ mode")
 		ASSERT(WaveMin(setLength) == WaveMax(setLength), "Unexpected varying stim set length")
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, var=setLength[0])
 	endif
@@ -1173,7 +1206,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 End
 
 /// @brief Returns the length increase of the ITCDataWave following onset/termination delay insertion and
-/// distributed data aquisition.
+/// distributed data aquisition. Does not incorporate adaptations for oodDAQ.
 ///
 /// All returned values are in number of points, *not* in time.
 ///
@@ -1222,24 +1255,25 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetD
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
-static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLengths)
 	string panelTitle
 	variable dataAcqOrTP
+	WAVE setLengths
 
-	variable DAClength, TTLlength, totalIncrease, multiplier
+	variable DAClength, TTLlength, totalIncrease
 	DAClength = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
 		TTLlength     = DC_CalculateLongestSweep(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
-			multiplier = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-		else
-			multiplier = 1
+		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+			DAClength = WaveMax(setLengths)
+		elseif(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+			DAClength *= DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 		endif
 
-		return max(DAClength * multiplier, TTLlength) + totalIncrease
+		return max(DAClength, TTLlength) + totalIncrease
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return DAClength
 	endif
