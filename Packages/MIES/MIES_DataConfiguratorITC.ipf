@@ -81,18 +81,13 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		endif
 	endif
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
-
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
-	DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
-	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
 	DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
 	DC_MakeFIFOAvailAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
-	DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
+	DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
@@ -433,12 +428,13 @@ End
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @param panelTitle        panel title
-/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
-/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
+/// @param panelTitle          panel title
+/// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param minSamplingInterval sampling interval as returned by DAP_GetITCSampInt()
+/// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
 	string panelTitle
-	variable numActiveChannels, dataAcqOrTP
+	variable numActiveChannels, minSamplingInterval, dataAcqOrTP
 
 	variable numRows
 
@@ -448,7 +444,7 @@ static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP)
 	Make/W/O/N=(numRows, numActiveChannels) dfr:ITCDataWave/Wave=ITCDataWave
 
 	FastOp ITCDataWave = 0
-	SetScale/P x 0, DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / 1000, "ms", ITCDataWave
+	SetScale/P x 0, minSamplingInterval / 1000, "ms", ITCDataWave
 End
 
 /// @brief Initializes the wave used for displaying DAQ/TP results in the
@@ -644,26 +640,35 @@ static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	return DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
 End
 
+/// @brief Get the stimset length for the real sampling interval
+///
+/// @param stimSet          stimset wave
+/// @param decimationFactor see DC_GetDecimationFactor()
+static Function DC_CalculateStimsetLength(stimSet, decimationFactor)
+	WAVE stimSet
+	variable decimationFactor
+
+	return round(DimSize(stimSet, ROWS) / decimationFactor)
+End
+
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
-/// @param panelTitle  panel title
-/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
-static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
+/// @param panelTitle        panel title
+/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param multiDevice       [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 	string panelTitle
-	variable dataAcqOrTP, multiDevice
+	variable numActiveChannels, dataAcqOrTP, multiDevice
 
-	variable i, activeColumn, headstage, numEntries
-	DFREF deviceDFR = GetDevicePath(panelTitle)
-	WAVE/SDFR=deviceDFR ITCDataWave
-
+	variable i, activeColumn, numEntries
 	string setNameList
-	string ctrl, firstSetName, str, list, func, colLabel
-	variable oneFullCycle, val, singleSetLength, singleInsertStart
-	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength
+	string ctrl, str, list, func, colLabel
+	variable oneFullCycle, val, singleSetLength, singleInsertStart, minSamplingInterval
+	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
-	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, indexActiveHeadStage, decimationFactor, cutoff
-	variable multiplier, j, powerSpectrum
+	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
+	variable multiplier, j, powerSpectrum, headstage
 	variable/C ret
 
 	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
@@ -675,6 +680,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	powerSpectrum         = GetCheckboxState(panelTitle, "check_settings_show_power")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
+	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
@@ -690,7 +696,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
 	numEntries = DimSize(statusDA, ROWS)
-	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn
+	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, headstageDAC, DAC
 	Make/T/FREE/N=(numEntries) setName
 	Make/WAVE/FREE/N=(numEntries) stimSet
 
@@ -700,7 +706,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			continue
 		endif
 
-		headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
+		DAC[activeColumn]          = i
+		headstageDAC[activeColumn] = AFH_GetheadstageFromDAC(panelTitle, i)
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 			setName[activeColumn] = StringFromList(i, setNameList)
@@ -712,31 +719,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ASSERT(0, "unknown mode")
 		endif
 
-		setLength[activeColumn] = round(DimSize(stimSet[activeColumn], ROWS) / decimationFactor)
-
-		if(distributedDAQ)
-			if(activeColumn == 0)
-				firstSetName = setName[activeColumn]
-			else
-				ASSERT(!cmpstr(firstSetName, setName[activeColumn]), "Non-equal stim sets")
-			endif
-		endif
-
 		if(dataAcqOrTP == TEST_PULSE_MODE)
-			setColumn[activeColumn]   = 0
-			insertStart[activeColumn] = 0
+			setColumn[activeColumn] = 0
 		else
 			// only call DC_CalculateChannelColumnNo for real data acquisition
 			ret = DC_CalculateChannelColumnNo(panelTitle, setName[activeColumn], i, CHANNEL_TYPE_DAC)
 			oneFullCycle = imag(ret)
 			setColumn[activeColumn] = real(ret)
-			if(distributedDAQ)
-				indexActiveHeadStage = sum(statusHS, 0, headstage)
-				ASSERT(indexActiveHeadStage > 0, "Invalid index")
-				insertStart[activeColumn] = onsetDelay + (indexActiveHeadStage - 1) * (distributedDAQDelay + setLength[activeColumn])
-			else
-				insertStart[activeColumn] = onsetDelay
-			endif
 		endif
 
 		channelMode = ChannelClampMode[i][%DAC]
@@ -771,46 +760,65 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 			ASSERT(0, "unknown mode")
 		endif
 
-		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, i, var=i)
+		DC_DocumentChannelProperty(panelTitle, "DAC", headstageDAC[activeColumn], i, var=i)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 		val = GetSetVariable(panelTitle, ctrl)
 		DAGain[activeColumn] = HARDWARE_ITC_BITS_PER_VOLT / val
 
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, i, var=val)
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=val)
 
-		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, i, str=setName[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			func     = ExtractAnalysisFuncFromStimSet(stimSet[activeColumn], j)
 			colLabel = GetDimLabel(sweepDataTxTLNB, COLS, 5 + j)
-			DC_DocumentChannelProperty(panelTitle, colLabel, headstage, i, str=func)
+			DC_DocumentChannelProperty(panelTitle, colLabel, headstageDAC[activeColumn], i, str=func)
 		endfor
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
+		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstageDAC[activeColumn], i, str=GetSetVariableString(panelTitle, ctrl))
 
-		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstage, i, var=DAScale[activeColumn])
-		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, i, var=setColumn[activeColumn])
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, i, var=setLength[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstageDAC[activeColumn], i, var=DAScale[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstageDAC[activeColumn], i, var=setColumn[activeColumn])
 
 		activeColumn += 1
 	endfor
 
 	numEntries = activeColumn
-	Redimension/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, stimSet, setName
+	Redimension/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, stimSet, setName, headstageDAC
+
+	setLength[] = DC_CalculateStimsetLength(stimSet[p], decimationFactor)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		insertStart[] = 0
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		if(distributedDAQ)
+			insertStart[] = onsetDelay + (sum(statusHS, 0, headstageDAC[p]) - 1) * (distributedDAQDelay + setLength[p])
+		else
+			insertStart[] = onsetDelay
+		endif
+	endif
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP)
+
+	DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
+	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 	// varies per DAC:
 	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
-	// setName, setColumn
+	// setName, setColumn, headstageDAC
 	//
 	// constant:
 	// decimationFactor, testPulseLength, baselineFrac
 	//
 	// we only have to fill in the DA channels
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		ASSERT(sum(insertStart) == 0 , "Unexpected insert start value ")
-		ASSERT(sum(setColumn) == 0 , "Unexpected setColumn value ")
+		ASSERT(sum(insertStart) == 0, "Unexpected insert start value")
+		ASSERT(sum(setColumn) == 0, "Unexpected setColumn value")
 		WAVE singleStimSet = GetTestPulse()
 		singleSetLength = setLength[0]
 		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
@@ -834,6 +842,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 		endif
 	endif
 
+	for(i = 0; i < numEntries; i += 1)
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstageDAC[i], DAC[i], var=setLength[i])
+	endfor
+
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
 	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * 1e-3)
 
@@ -853,7 +865,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, dataAcqOrTP, multiDevice)
 	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "check_DataAcq_RepAcqRandom"))
 
 	if(distributedDAQ)
-		// dDAQ requires that all stimsets have the same length, so store that the stim set length
+		// dDAQ requires that all stimsets have the same length, so store the stim set length
 		// also headstage independent
 		ASSERT(WaveMin(setLength) == WaveMax(setLength), "Unexpected varying stim set length")
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, var=setLength[0])
