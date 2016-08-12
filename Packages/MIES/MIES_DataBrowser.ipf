@@ -357,12 +357,12 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_SweepOverlay,value= 0
 	CheckBox check_DataBrowser_SweepOverlay help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
-	CheckBox check_DataBrowser_AutoUpdate,pos={602,6},size={149,14},title="Display last sweep acquired"
+	CheckBox check_DataBrowser_AutoUpdate,pos={431.00,9.00},size={159.00,15.00},title="Display last sweep acquired"
+	CheckBox check_DataBrowser_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,J'J,hjM!!#A$!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_AutoUpdate,value= 0
-	CheckBox check_DataBrowser_AutoUpdate help={"Displays the last sweep acquired when data acquistion is ongoing"}
 	PopupMenu popup_DB_lockedDevices,pos={639,673},size={266,21},proc=DB_PopMenuProc_LockDBtoDevice,bodyWidth=170,title="Device assingment:"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,J0^]6bN5QF0*!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
