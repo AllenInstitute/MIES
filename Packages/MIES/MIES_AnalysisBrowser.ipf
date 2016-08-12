@@ -150,11 +150,33 @@ static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
 	endif
 End
 
+/// @brief Add an experiment entry into the list
+///        if there is none yet.
+static Function AB_AddExperimentNameIfReq(expName, list, index)
+	string expName
+	WAVE/T list
+	variable index
+
+	variable lastIndex
+
+	WAVE/Z indizes = FindIndizes(colLabel="experiment", wvText=list, str=expName)
+
+	if(WaveExists(indizes))
+		lastIndex = indizes[DimSize(indizes, ROWS) - 1]
+		if(!cmpstr(list[lastIndex][%experiment][0], expName))
+			return NaN
+		endif
+	endif
+
+	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
+	list[index][%experiment][0] = expName
+	index += 1
+End
+
 static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-
 	string str, name, listOfSweepConfigWaves
 
 	DFREF expDataDFR      = GetAnalysisDeviceConfigFolder(expFolder, device)
@@ -162,11 +184,9 @@ static Function AB_FillListWave(expFolder, expName, device)
 	WAVE textualValues    = GetAnalysLBTextualValues(expFolder, device)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
-
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
-	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
-	list[index][%experiment][0] = expName
-	index += 1
+
+	AB_AddExperimentNameIfReq(expName, list, index)
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
