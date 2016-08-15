@@ -2140,15 +2140,14 @@ Function WBP_MainWindowHook(s)
 
 		win = s.winName
 
-		GetWindow $win activeSW
-		// abort if not in the subwindow
-		if(cmpstr(S_value,WaveBuilderGraph))
+		if(cmpstr(win, WaveBuilderGraph))
 			break
 		endif
 
 		loc = AxisValFromPixel(WaveBuilderGraph, "bottom", s.mouseLoc.h)
 
-		if(!IsFinite(loc))
+		GetAxis/Q/W=$WaveBuilderGraph bottom
+		if(loc < V_min || loc > V_max)
 			break
 		endif
 
