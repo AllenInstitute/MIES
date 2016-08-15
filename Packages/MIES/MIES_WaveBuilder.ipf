@@ -573,6 +573,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.Offset)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.DeltaOffset, appendCR=1)
+
+					params.Duration = DimSize(customWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 				elseif(!isEmpty(customWaveName))
 					printf "Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", i, customWaveName
 				endif
