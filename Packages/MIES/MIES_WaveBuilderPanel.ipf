@@ -2163,11 +2163,10 @@ Function WBP_MainWindowHook(s)
 			if(epochID[i][%timeBegin] < loc && epochID[i][%timeEnd] > loc)
 				SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", i)
 				WBP_SelectEpoch(i)
-				break
+				return 1
 			endif
 		endfor
 
-		return 1
 		break
 	endswitch
 
