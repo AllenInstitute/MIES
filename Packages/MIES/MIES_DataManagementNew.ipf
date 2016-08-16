@@ -259,9 +259,9 @@ static Function/WAVE DM_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 
 	Make/FREE/N=(numCols) gain
 
-	// DA: w' = w * g / s
+	// DA: w' = w / (s / g)
 	if(numDACs > 0)
-		gain[0, numDACs - 1] = DA_EphysGuiState[DACs[p]][%DAGain] / HARDWARE_ITC_BITS_PER_VOLT
+		gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%DAGain]
 	endif
 
 	// AD: w' = w  / (g * s)
