@@ -77,7 +77,7 @@ static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	string baseFolder, expFilePath
 
 	variable index
-	string fileName, expFolderName
+	string expFolderName, relativePath, extension
 	WAVE/T experimentMap = GetExperimentMap()
 
 	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
@@ -85,10 +85,11 @@ static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
 	experimentMap[index][%ExperimentDiscLocation] = expFilePath
 
-	fileName = ParseFilePath(0, expFilePath, ":", 1, 0)
-	experimentMap[index][%ExperimentName] = fileName
+	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
+	experimentMap[index][%ExperimentName] = relativePath
 
-	expFolderName = CleanupName(GetBaseName(expFilePath), 0)
+	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
+	expFolderName = CleanupName(RemoveEnding(relativePath, extension), 0)
 	KillOrMoveToTrashPath(GetAnalysisExpFolderAS(expFolderName))
 	experimentMap[index][%ExperimentFolder] = expFolderName
 
