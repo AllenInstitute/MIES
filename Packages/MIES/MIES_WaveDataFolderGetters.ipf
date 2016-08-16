@@ -745,6 +745,8 @@ Function/Wave GetLBTextualValues(panelTitle)
 	SetDimLabel COLS, 1, TimeStamp                 , wv
 	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
 
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
 	return wv
 End
 
