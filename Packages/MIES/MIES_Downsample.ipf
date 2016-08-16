@@ -134,24 +134,22 @@ Function/S GetPopupMenuDeviceListWithData()
 
 			str = deviceString
 
-			if(!DeviceHasFollower(str))
-				continue
-			endif
+			if(DeviceHasFollower(str))
+				SVAR listOfFollowerDevices = $GetFollowerList(str)
+				allFollowerDevices = AddListItem(listOfFollowerDevices, allFollowerDevices, ";", inf)
 
-			SVAR listOfFollowerDevices = $GetFollowerList(str)
-			allFollowerDevices = AddListItem(listOfFollowerDevices, allFollowerDevices, ";", inf)
+				numFollower = ItemsInList(listOfFollowerDevices)
 
-			numFollower = ItemsInList(listOfFollowerDevices)
+				followerDeviceIDList = ""
+				for(k=0; k<numFollower ;k+=1)
+					follower = StringFromList(k, listOfFollowerDevices)
+					ParseDeviceString(follower, followerDeviceType, followerDeviceNumber)
+					followerDeviceIDList = AddListItem(followerDeviceNumber, followerDeviceIDList, ",", inf)
+				endfor
 
-			followerDeviceIDList = ""
-			for(k=0; k<numFollower ;k+=1)
-				follower = StringFromList(k, listOfFollowerDevices)
-				ParseDeviceString(follower, followerDeviceType, followerDeviceNumber)
-				followerDeviceIDList = AddListItem(followerDeviceNumber, followerDeviceIDList, ",", inf)
-			endfor
-
-			if(numFollower > 0)
-				str += " (" + RemoveEnding(followerDeviceIDList, ",") + ")"
+				if(numFollower > 0)
+					str += " (" + RemoveEnding(followerDeviceIDList, ",") + ")"
+				endif
 			endif
 
 			if(WhichListItem(deviceString, allFollowerDevices) == -1)
