@@ -73,8 +73,8 @@ static Function AB_ClearWaves()
 	sel = NaN
 End
 
-static Function AB_AddExperimentMapEntry(expFilePath)
-	string expFilePath
+static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
+	string baseFolder, expFilePath
 
 	variable index
 	string fileName, expFolderName
@@ -112,15 +112,15 @@ static Function AB_RemoveExperimentMapEntry(index)
 	endif
 End
 
-static Function AB_AddExperimentFile(expFilePath)
-	string expFilePath
+static Function AB_AddExperimentFile(baseFolder, expFilePath)
+	string baseFolder, expFilePath
 
 	variable mapIndex
 	variable firstMapped, lastMapped
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
-	mapIndex = AB_AddExperimentMapEntry(expFilePath)
+	mapIndex = AB_AddExperimentMapEntry(baseFolder, expFilePath)
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
 	AB_LoadLabNotebookFromFile(expFilePath)
@@ -924,7 +924,7 @@ Function AB_ScanFolder(win)
 
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
-		AB_AddExperimentFile(StringFromList(i, list, "|"))
+		AB_AddExperimentFile(baseFolder, StringFromList(i, list, "|"))
 	endfor
 
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
