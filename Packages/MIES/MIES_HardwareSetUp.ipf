@@ -58,6 +58,15 @@ Function HSU_LockDevice(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
 	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
 
+	if(ITCDeviceIDGlobal < 0 || ITCDeviceIDGlobal >= HARDWARE_MAX_DEVICES)
+#ifndef EVIL_KITTEN_EATING_MODE
+		Abort "Can not lock the device."
+#else
+		print "EVIL_KITTEN_EATING_MODE is ON: Forcing ITCDeviceIDGlobal to zero"
+		ITCDeviceIDGlobal = 0
+#endif
+	endif
+
 	DisableControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
