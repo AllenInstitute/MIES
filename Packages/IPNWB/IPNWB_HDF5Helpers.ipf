@@ -4,7 +4,11 @@
 #pragma version=0.13
 
 /// @cond DOXYGEN_IGNORES_THIS
+#if (IgorVersion() < 7.0)
 #include "HDF5 Browser", version=1.04
+#else
+#include "HDF5 Browser", version=1.20
+#endif
 /// @endcond
 
 /// @file IPNWB_HDF5Helpers.ipf
