@@ -4769,10 +4769,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
+#ifndef EVIL_KITTEN_EATING_MODE
 		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			return 1
 		endif
+#endif
 
 		if(!DAP_PanelIsUpToDate(panelTitle))
 			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", panelTitle

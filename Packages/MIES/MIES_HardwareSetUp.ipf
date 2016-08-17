@@ -55,6 +55,18 @@ Function HSU_LockDevice(panelTitle)
 		Abort "Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one."
 	endif
 
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
+	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
+
+	if(ITCDeviceIDGlobal < 0 || ITCDeviceIDGlobal >= HARDWARE_MAX_DEVICES)
+#ifndef EVIL_KITTEN_EATING_MODE
+		Abort "Can not lock the device."
+#else
+		print "EVIL_KITTEN_EATING_MODE is ON: Forcing ITCDeviceIDGlobal to zero"
+		ITCDeviceIDGlobal = 0
+#endif
+	endif
+
 	DisableControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
@@ -66,8 +78,6 @@ Function HSU_LockDevice(panelTitle)
 
 	AI_FindConnectedAmps()
 	HSU_UpdateListOfITCPanels()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
-	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
 	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)

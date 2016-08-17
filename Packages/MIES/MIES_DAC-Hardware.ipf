@@ -443,8 +443,10 @@ End
 Function HW_AssertOnInvalid(hardwareType, deviceID)
 	variable hardwareType, deviceID
 
+#ifndef EVIL_KITTEN_EATING_MODE
 	ASSERT(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC , "Invalid hardwareType")
 	ASSERT(deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES, "Invalid deviceID")
+#endif
 End
 
 /// @brief Register an opened device in our device map
