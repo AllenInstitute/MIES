@@ -2,6 +2,10 @@
 
 ## Full Installation
 
+Pressure control may be implemented with ITC and/or NIDAQ hardware.  For NIDAQ
+hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
+package from Wavemetrics.
+
 ### Igor Pro 6.3.x (32bit only)
 
 * Quit Igor Pro
@@ -84,13 +88,16 @@ Advanced measurement modes like Yoking require an Arduino for triggering the DAC
 * Upload Sequence
 * The start of DAQ is done by MIES itself
 
-## Doxygen documentation
+## Documentation
 
-Within the Allen Institute, the latest documentation builds can be found [here](http://10.128.24.29/master/index.html) for the master branch and [here](http://10.128.24.29/release/index.html) for the release branch.
+Within the Allen Institute, the documentation can be reached at the following locations:
 
-### Building the documentation
+* [Documentation for the master branch](http://10.128.24.29/master/index.html)
+* [Documentation for the latest release branch](http://10.128.24.29/release/index.html)
 
-#### Required 3rd party tools
+#### Building the doxygen documentation
+
+##### Required 3rd party tools
 * [Doxygen](http://doxygen.org) 1.8.10
 * [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
@@ -102,11 +109,22 @@ You can test that by executing the following statements in a cmd window:
 * `gawk --version`
 * `dot -V`
 
-## Releasing to non-developer machines
+Go to `Packages/doc` and execute doxygen
+
+## Release Handling
 
 If guidelines are not followed, the MIES version will be unknown, and data acquisition is blocked.
 
-### Creating a release package
+### Cutting a new release
+* Check that main MIES and all separate modules compile (IP6 and IP7)
+* Check that doxygen returns neither errors nor warnings
+* Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
+* Adapt the release notes, `tools\create-changelog.sh` allows to generate a changelog as template
+* Create a release branch: `git checkout -b release/X.Y`
+* Push everything: `git push --tags --set-upstream origin release/X.Y`
+* Change the bamboo jobs using release branches to use the branch you just created
+
+### Creating a release package manually
 * Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
 * Checkout the release branch `git checkout release/$myVersion`
 * If none exists create one with `git checkout -b release/$myVersion`
@@ -114,13 +132,13 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 * Execute `./create-release.sh`
 * The release package including the version information is then available as zip file
 
-### Installing it
+### Installing a release
 * Extract the zip archive into a folder on the target machine
 * Follow the steps outlined in the section "Full Installation"
 
 ## Continuous integration server
-Our CI server, called bamboo, can be reached [here](http://bamboo.corp.alleninstitute.org/browse/MIES)
-and provides the following services for MIES.
+Our [CI server](http://bamboo.corp.alleninstitute.org/browse/MIES), called
+bamboo, provides the following services for MIES:
 
 ### Automatic release package building
 * The release branch, `release/$number` with the highest `$number`, is polled every 3 minutes for changes
@@ -143,15 +161,4 @@ For testing compilation manually perform the following steps:
 * Watch the output
 
 ### Documentation building
-The documentation for the master and the latest release branch, `release/$number`, are automatically built by:
-
-* http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD
-* http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE
-
-## Cutting a new release
-* Check that main MIES and all separate modules compile (IP6 and IP7)
-* Check that doxygen returns neither errors nor warnings
-* Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
-* Create a release branch: `git checkout -b release/X.Y`
-* Push everything: `git push --tags --set-upstream origin release/X.Y`
-* Change the bamboo jobs using release branches to use the branch you just created
+The documentation for the master and the latest release branch, `release/$number`, are automatically built by [MIES-BUILD](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD) and [MIES-BUILDRELEASE](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE).
