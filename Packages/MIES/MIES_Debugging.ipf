@@ -241,3 +241,15 @@ Function DisableDebugMode()
 	Execute/P/Q "SetIgorOption poundUnDefine=DEBUGGING_ENABLED"
 	Execute/P/Q "COMPILEPROCEDURES "
 End
+
+///@brief Enable evil mode
+Function EnableEvilMode()
+	Execute/P/Q "SetIgorOption poundDefine=EVIL_KITTEN_EATING_MODE"
+	Execute/P/Q "COMPILEPROCEDURES "
+End
+
+///@brief Disable evil mode
+Function DisableEvilMode()
+	Execute/P/Q "SetIgorOption poundUnDefine=EVIL_KITTEN_EATING_MODE"
+	Execute/P/Q "COMPILEPROCEDURES "
+End
