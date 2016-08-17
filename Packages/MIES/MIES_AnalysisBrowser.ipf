@@ -442,28 +442,36 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 			if(!WaveExists(numericalKeys))
 				basepath = path + ":KeyWave"
-				Wave/Z/SDFR=$basepath numericalKeys = keyWave
+				if(DataFolderExists(basepath))
+					Wave/Z/SDFR=$basepath numericalKeys = keyWave
+				endif
 			endif
 
 			Wave/Z/SDFR=$path numericalValues
 
 			if(!WaveExists(numericalValues))
 				basepath = path + ":settingsHistory"
-				Wave/Z/SDFR=$basepath numericalValues = settingsHistory
+				if(DataFolderExists(basepath))
+					Wave/Z/SDFR=$basepath numericalValues = settingsHistory
+				endif
 			endif
 
 			Wave/Z/SDFR=$path textualKeys
 
 			if(!WaveExists(textualKeys))
 				basepath = path + ":TextDocKeyWave"
-				Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
+				if(DataFolderExists(basepath))
+					Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
+				endif
 			endif
 
 			Wave/Z/SDFR=$path textualValues
 
 			if(!WaveExists(textualValues))
 				basepath = path + ":textDocumentation"
-				Wave/Z/SDFR=$basepath textualValues = txtDocWave
+				if(DataFolderExists(basepath))
+					Wave/Z/SDFR=$basepath textualValues = txtDocWave
+				endif
 			endif
 
 			device = BuildDeviceString(type, number)
