@@ -469,7 +469,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			device = BuildDeviceString(type, number)
 
 			if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
-				printf "Could not find all four labnotebook waves, dropping all data from device %s\r", device
+				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, expFilePath
 				continue
 			endif
 
