@@ -73,11 +73,11 @@ static Function AB_ClearWaves()
 	sel = NaN
 End
 
-static Function AB_AddExperimentMapEntry(expFilePath)
-	string expFilePath
+static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
+	string baseFolder, expFilePath
 
 	variable index
-	string fileName, expFolderName
+	string expFolderName, relativePath, extension
 	WAVE/T experimentMap = GetExperimentMap()
 
 	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
@@ -85,10 +85,11 @@ static Function AB_AddExperimentMapEntry(expFilePath)
 	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
 	experimentMap[index][%ExperimentDiscLocation] = expFilePath
 
-	fileName = ParseFilePath(0, expFilePath, ":", 1, 0)
-	experimentMap[index][%ExperimentName] = fileName
+	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
+	experimentMap[index][%ExperimentName] = relativePath
 
-	expFolderName = CleanupName(GetBaseName(expFilePath), 0)
+	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
+	expFolderName = CleanupName(RemoveEnding(relativePath, extension), 0)
 	KillOrMoveToTrashPath(GetAnalysisExpFolderAS(expFolderName))
 	experimentMap[index][%ExperimentFolder] = expFolderName
 
@@ -112,15 +113,15 @@ static Function AB_RemoveExperimentMapEntry(index)
 	endif
 End
 
-static Function AB_AddExperimentFile(expFilePath)
-	string expFilePath
+static Function AB_AddExperimentFile(baseFolder, expFilePath)
+	string baseFolder, expFilePath
 
 	variable mapIndex
 	variable firstMapped, lastMapped
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
-	mapIndex = AB_AddExperimentMapEntry(expFilePath)
+	mapIndex = AB_AddExperimentMapEntry(baseFolder, expFilePath)
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
 	AB_LoadLabNotebookFromFile(expFilePath)
@@ -150,11 +151,33 @@ static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
 	endif
 End
 
+/// @brief Add an experiment entry into the list
+///        if there is none yet.
+static Function AB_AddExperimentNameIfReq(expName, list, index)
+	string expName
+	WAVE/T list
+	variable index
+
+	variable lastIndex
+
+	WAVE/Z indizes = FindIndizes(colLabel="experiment", wvText=list, str=expName)
+
+	if(WaveExists(indizes))
+		lastIndex = indizes[DimSize(indizes, ROWS) - 1]
+		if(!cmpstr(list[lastIndex][%experiment][0], expName))
+			return NaN
+		endif
+	endif
+
+	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
+	list[index][%experiment][0] = expName
+	index += 1
+End
+
 static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-
 	string str, name, listOfSweepConfigWaves
 
 	DFREF expDataDFR      = GetAnalysisDeviceConfigFolder(expFolder, device)
@@ -162,11 +185,9 @@ static Function AB_FillListWave(expFolder, expName, device)
 	WAVE textualValues    = GetAnalysLBTextualValues(expFolder, device)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
-
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
-	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
-	list[index][%experiment][0] = expName
-	index += 1
+
+	AB_AddExperimentNameIfReq(expName, list, index)
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
@@ -904,7 +925,7 @@ Function AB_ScanFolder(win)
 
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
-		AB_AddExperimentFile(StringFromList(i, list, "|"))
+		AB_AddExperimentFile(baseFolder, StringFromList(i, list, "|"))
 	endfor
 
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
