@@ -539,11 +539,28 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"      , var=params.DeltaOffset, appendCR=1)
 				break
 			case 7:
+				WAVE/Z customWave = $""
 				customWaveName = WPT[0][i]
 
-				if(windowExists("Wavebuilder") && strsearch(customWaveName, ":", 0) == -1)
-					// old style entries with only the wave name
-					Wave/Z/SDFR=WBP_GetFolderPath() customWave = $customWaveName
+				// old style entries with only the wave name
+				if(strsearch(customWaveName, ":", 0) == -1)
+					printf "Warning: Legacy format for custom wave epochs detected.\r"
+
+					if(windowExists("Wavebuilder"))
+						DFREF customWaveDFR = WBP_GetFolderPath()
+						Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
+					endif
+
+					if(!WaveExists(customWave))
+						DFREF customWaveDFR = GetSetFolder(channelType)
+						Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
+					endif
+
+					if(WaveExists(customWave))
+						printf "Upgraded custom wave format successfully.\r"
+						WPT[0][i] = GetWavesDataFolder(customWave, 2)
+						customWaveName = WPT[0][i]
+					endif
 				else
 					// try new style entries with full path
 					WAVE/Z customWave = $customWaveName
@@ -556,8 +573,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.Offset)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.DeltaOffset, appendCR=1)
+
+					params.Duration = DimSize(customWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 				elseif(!isEmpty(customWaveName))
-					print "Wave currently selected no longer exists. Please select a new Wave from the pull down menu"
+					printf "Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", i, customWaveName
 				endif
 				break
 			case 8:
