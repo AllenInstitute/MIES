@@ -324,7 +324,6 @@ Function NWB_ExportAllData([overrideFilePath])
 		return NaN
 	endif
 
-	NWB_AddMiesVersion(locationID)
 	IPNWB#AddModificationTimeEntry(locationID)
 
 	numEntries = ItemsInList(devicesWithData)
@@ -385,14 +384,6 @@ Function NWB_ExportWithDialog()
 	CloseNWBFile()
 End
 
-static Function NWB_AddMiesVersion(locationID)
-	variable locationID
-
-	SVAR miesVersion = $GetMiesVersion()
-
-	IPNWB#H5_WriteTextDataset(locationID, "/general/version", str=miesVersion, overwrite=1)
-	IPNWB#MarkAsCustomEntry(locationID, "/general/version")
-End
 
 Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	string panelTitle
@@ -409,7 +400,6 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	if(createdNewNWBFile)
 		NWB_ExportAllData()
 	else
-		NWB_AddMiesVersion(locationID)
 		IPNWB#AddModificationTimeEntry(locationID)
 		NWB_AddDeviceSpecificData(locationID, panelTitle)
 		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
