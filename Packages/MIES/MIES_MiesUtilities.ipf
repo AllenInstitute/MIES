@@ -637,16 +637,16 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/Z sweepWave
 	WAVE/Z channelSelWave
 
-	variable headstage, red, green, blue, splitSweepMode, axisIndex, numChannels
+	variable red, green, blue, splitSweepMode, axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks
-	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, left
-	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal
+	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, left, first, last
+	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry, totalXRange
 
-	string trace, traceType, channelID, axisLabel, existingLabel
-	string unit, configNote, name, wvName, str, vertAxis
+	string trace, traceType, channelID, axisLabel, existingLabel, entry, range
+	string unit, configNote, name, wvName, str, vertAxis, oodDAQRegionsAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -758,13 +758,20 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	high = 1.0
 
-	dDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ")
+	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ")
+	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ")
 
-	if(tgs.dDAQDisplayMode && !dDAQEnabled)
+	if(tgs.dDAQDisplayMode && !(dDAQEnabled || oodDAQEnabled))
 		printf "Distributed DAQ display mode turned off as no dDAQ data could be found.\r"
+		tgs.dDAQDisplayMode = 0
 	endif
 
-	tgs.dDAQDisplayMode = tgs.dDAQDisplayMode && dDAQEnabled
+	WAVE/Z/T oodDAQRegions = GetLastSettingText(textualValues, sweepNo, "oodDAQ regions")
+
+	if(tgs.dDAQDisplayMode && oodDAQEnabled && !WaveExists(oodDAQRegions))
+		printf "Distributed DAQ display mode turned off as no oodDAQ regions could be found in the labnotebook.\r"
+		tgs.dDAQDisplayMode = 0
+	endif
 
 	if(tgs.dDAQDisplayMode)
 		stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length")
@@ -782,6 +789,33 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
 		DEBUGPRINT(str)
+
+		if(oodDAQEnabled)
+			numEntries = DimSize(oodDAQRegions, ROWS)
+			oodDAQRegionsAll = ""
+
+			for(i = 0; i < numEntries; i += 1)
+				// use only the selected region if requested
+				if(tgs.oodDAQHeadstageRegions >= 0 && tgs.oodDAQHeadstageRegions < NUM_HEADSTAGES && tgs.oodDAQHeadstageRegions != i)
+					continue
+				endif
+
+				entry = RemoveEnding(oodDAQRegions[i], ";")
+				numRangesPerEntry = ItemsInList(entry)
+				for(j = 0; j < numRangesPerEntry; j += 1)
+					range = StringFromList(j, entry)
+					oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
+
+					xRangeStart = str2num(StringFromList(0, range, "-"))
+					xRangeEnd = str2num(StringFromList(1, range, "-"))
+					totalXRange += (xRangeEnd - XRangeStart) / samplingInt
+				endfor
+			endfor
+
+			numRegions = ItemsInList(oodDAQRegionsAll)
+			sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", numRegions, oodDAQRegionsAll, totalXRange
+			DEBUGPRINT(str)
+		endif
 	endif
 
 	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC")
@@ -811,7 +845,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					channelOffset    = 0
 					hasPhysUnit      = 1
 					slotMult         = 1
-					numHorizWaves    = tgs.dDAQDisplayMode ? numDACsOriginal : 1
+					numHorizWaves    = tgs.dDAQDisplayMode ? (oodDAQEnabled ? numRegions : numDACsOriginal) : 1
 					numVertWaves     = 1
 					numChannels      = numDACs
 					break
@@ -826,7 +860,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					channelOffset    = numDACs
 					hasPhysUnit      = 1
 					slotMult         = ADC_SLOT_MULTIPLIER
-					numHorizWaves    = tgs.dDAQDisplayMode ? numADCsOriginal : 1
+					numHorizWaves    = tgs.dDAQDisplayMode ? (oodDAQEnabled ? numRegions : numADCsOriginal) : 1
 					numVertWaves     = 1
 					numChannels      = numADCs
 					break
@@ -883,6 +917,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					axisIndex += 1
 				endif
 
+				DEBUGPRINT("")
+				first = 0
+
 				// number of horizontally distributed
 				// waves per channel type
 				for(k = 0; k < numHorizWaves; k += 1)
@@ -899,15 +936,28 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 					if(tgs.dDAQDisplayMode && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
 
-						// fallback to manual calculation
-						// for versions prior to 17b49b63 (DC_PlaceDataInITCDataWave: Document stim set length, 2016-05-12)
-						if(!IsFinite(stimSetLength))
-							stimSetLength = (DimSize(wv, ROWS) - (delayOnsetUser + delayOnsetAuto + delayTermination + delaydDAQ * (numADCs - 1))) /  numADCs
-							DEBUGPRINT("Stim set length (manually calculated)", var=stimSetLength)
-						endif
+						if(dDAQEnabled)
+							// fallback to manual calculation
+							// for versions prior to 17b49b63 (DC_PlaceDataInITCDataWave: Document stim set length, 2016-05-12)
+							if(!IsFinite(stimSetLength))
+								stimSetLength = (DimSize(wv, ROWS) - (delayOnsetUser + delayOnsetAuto + delayTermination + delaydDAQ * (numADCs - 1))) /  numADCs
+								DEBUGPRINT("Stim set length (manually calculated)", var=stimSetLength)
+							endif
 
-						xRangeStart = delayOnsetUser + delayOnsetAuto + k * (stimSetLength + delaydDAQ)
-						xRangeEnd   = xRangeStart + stimSetLength
+							xRangeStart = delayOnsetUser + delayOnsetAuto + k * (stimSetLength + delaydDAQ)
+							xRangeEnd   = xRangeStart + stimSetLength
+						elseif(oodDAQEnabled)
+							/// regions list format: $begin1-$end1;$begin2-$end2;...
+							/// the values are in x values of the ITCDataWave but we need points here ignored the onset delays
+							xRangeStart = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+							xRangeEnd   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+
+							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
+							DEBUGPRINT(str)
+
+							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
+							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd   / samplingInt
+						endif
 					else
 						xRangeStart = NaN
 						xRangeEnd   = NaN
@@ -921,16 +971,26 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						AppendToGraph/W=$graph/L=$vertAxis wv[][idx]/TN=$trace
 					else
-						AppendToGraph/W=$graph/L=$vertAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+						if(dDAQEnabled)
+							AppendToGraph/W=$graph/L=$vertAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
 
-						left  = 1/numHorizWaves * k
+							left = 1/numHorizWaves * k
 
-						if(left != 0.0)
-							left += GRAPH_DIV_SPACING
+							if(left != 0.0)
+								left += GRAPH_DIV_SPACING
+							endif
+
+							ModifyGraph/W=$graph freePos($vertAxis)={left,kwFraction}, axisOnTop($vertAxis) = 1
+						elseif(oodDAQEnabled)
+							horizAxis = vertAxis + "_b"
+							AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+							first = first
+							last  = first + (xRangeEnd - xRangeStart) / totalXRange
+							ModifyGraph/W=$graph axisEnab($horizAxis)={first, last}
+							first += (xRangeEnd - xRangeStart) / totalXRange
 						endif
 
-						ModifyGraph/W=$graph freePos($vertAxis)={left,kwFraction}, axisOnTop($vertAxis) = 1
-						sprintf str, "horiz axis offset=[%g], stimset=[%d, %d]", left, xRangeStart, xRangeEnd
+						sprintf str, "horiz axis offset=[%g], stimset=[%d, %d] aka (%g, %g)", left, xRangeStart, xRangeEnd, pnt2x(wv,xRangeStart), pnt2x(wv,xRangeEnd)
 						DEBUGPRINT(str)
 					endif
 
@@ -967,6 +1027,13 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						Label/W=$graph $vertAxis, "\\u#2"
 					endif
 
+					if(tgs.dDAQDisplayMode && oodDAQEnabled)
+						ModifyGraph/W=$graph axRGB($vertAxis)=(65535,65535,65535), tlblRGB($vertAxis)=(65535,65535,65535)
+						ModifyGraph/W=$graph axThick($vertAxis)=0
+						ModifyGraph/W=$graph axRGB($horizAxis)=(65535,65535,65535), tlblRGB($horizAxis)=(65535,65535,65535)
+						ModifyGraph/W=$graph alblRGB($horizAxis)=(65535,65535,65535), axThick($horizAxis)=0
+					endif
+
 					// Color scheme:
 					// 0-7:   Different headstages
 					// 8:     Unknown headstage
@@ -1001,6 +1068,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			activeChanCount[i] += 1
 		endfor
 	while(moreData)
+
+	if(tgs.dDAQDisplayMode && oodDAQEnabled)
+		ModifyGraph/W=$graph margin(left)=28
+	else
+		ModifyGraph/W=$graph margin(left)=0
+	endif
 
 	SetAxesRanges(graph, ranges)
 End

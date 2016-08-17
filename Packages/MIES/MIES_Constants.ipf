@@ -255,12 +255,12 @@ Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
 /// @anchor IgorTypes
 /// @{
 Constant IGOR_TYPE_COMPLEX          = 0x001
-CONSTANT IGOR_TYPE_32BIT_FLOAT      = 0x002
-CONSTANT IGOR_TYPE_64BIT_FLOAT      = 0x004
+Constant IGOR_TYPE_32BIT_FLOAT      = 0x002
+Constant IGOR_TYPE_64BIT_FLOAT      = 0x004
 Constant IGOR_TYPE_8BIT_INT         = 0x008
 Constant IGOR_TYPE_16BIT_INT        = 0x010
 Constant IGOR_TYPE_32BIT_INT        = 0x020
-CONSTANT IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
+Constant IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
 Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 /// @}
 
@@ -422,7 +422,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION = 9
+Constant DA_EPHYS_PANEL_VERSION = 10
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

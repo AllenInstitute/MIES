@@ -543,6 +543,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	tgs.overlayChannels = GetCheckBoxState(panel, "check_sweepbrowser_OverlayChan")
 	tgs.splitTTLBits    = GetCheckBoxState(panel, "check_SweepBrowser_SplitTTL")
 	tgs.dDAQDisplayMode = GetCheckBoxState(panel, "check_sweepbrowser_dDAQ")
+	tgs.oodDAQHeadstageRegions = str2num(GetPopupMenuString(panel, "popup_oodDAQ_regions"))
 	WAVE channelSelWave = SB_GetChannelSelWave(graph)
 
 	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
@@ -749,6 +750,9 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckboxChangedSettings,title="dDAQ"
 	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_sweepbrowser_dDAQ,value= 0
+	PopupMenu popup_oodDAQ_regions,pos={96.00,67.00},size={35.00,19.00},bodyWidth=35,disable=2,proc=SB_PopMenuProc_ChangedSettings
+	PopupMenu popup_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
+	PopupMenu popup_oodDAQ_regions,mode=1,popvalue="-1",value= #"\"-1;0;1;2;3;4;5;6;7\""
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
@@ -809,6 +813,12 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 					DisableControls(win, SWEEP_OVERLAY_DEP_CTRLS)
 				else
 					EnableControls(win, SWEEP_OVERLAY_DEP_CTRLS)
+				endif
+			elseif(!cmpstr(ctrl, "check_sweepbrowser_dDAQ"))
+				if(checked)
+					EnableControl(win, "popup_oodDAQ_regions")
+				else
+					DisableControl(win, "popup_oodDAQ_regions")
 				endif
 			elseif(StringMatch(ctrl, "check_SB_channelSel_*"))
 				WAVE channelSel = SB_GetChannelSelWave(graph)
@@ -1097,6 +1107,25 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 				EDC_FindMinis(workDFR, wv)
 			endfor
 			break
+	endswitch
+
+	return 0
+End
+
+Function SB_PopMenuProc_ChangedSettings(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	variable idx
+	string graph, win
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			win   = pa.win
+			graph = GetMainWindow(win)
+			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
+			idx = GetPopupMenuIndex(win, "popup_sweep_selector")
+			SB_PlotSweep(dfr, idx, idx)
+		break
 	endswitch
 
 	return 0

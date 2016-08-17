@@ -658,6 +658,33 @@ Function SetNumberInWaveNote(wv, key, val)
 	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
 End
 
+/// @brief Return the string value of `key` found in the wave note,
+/// returns an empty string if it could not be found
+///
+/// The expected wave note format is: `key1:val1;key2:str2;`
+Function/S GetStringFromWaveNote(wv, key)
+	Wave wv
+	string key
+
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	return StringByKey(key, note(wv))
+End
+
+/// @brief Update the string value of `key` found in the wave note to `str`
+///
+/// The expected wave note format is: `key1:val1;key2:str2;`
+Function SetStringInWaveNote(wv, key, str)
+	Wave wv
+	string key, str
+
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	Note/K wv, ReplaceStringByKey(key, note(wv), str)
+End
+
 /// @brief Remove the single quotes from a liberal wave name if they can be found
 Function/S PossiblyUnquoteName(name)
 	string name
@@ -2413,4 +2440,75 @@ Function FindNextPower(a, p)
 	ASSERT(IsInteger(a), "Value has to be an integer")
 
 	return ceil(log(a)/log(p))
+End
+
+/// @brief Return a wave with deep copies of all referenced waves
+///
+/// The deep copied waves will be free waves.
+/// Does not allow invalid wave references in `src`.
+///
+/// @param src       wave reference wave
+/// @param dimension [optional] copy only a single dimension, requires `index` or
+///                  `indexWave` as well
+/// @param index     [optional] specifies the index into `dimension`
+/// @param indexWave [optional] specifies the indizes into `dimension`, allows for
+///                  differing indizes per `src` entry
+Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
+	WAVE/WAVE src
+	variable dimension, index
+	WAVE indexWave
+
+	variable i, numEntries
+
+	ASSERT(WaveType(src, 1) == 4, "Expected wave ref wave")
+
+	if(!ParamIsDefault(dimension))
+		ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+		ASSERT(ParamIsDefault(index) + ParamIsDefault(indexWave) == 1, "Need exactly one of parameter of type index or indexWave")
+	endif
+
+	if(!ParamIsDefault(indexWave) || !ParamIsDefault(index))
+		ASSERT(!ParamIsDefault(dimension), "Missing optional parameter dimension")
+	endif
+
+	Duplicate/WAVE/FREE src, dst
+
+	// using numpnts so that a single `for loop` is enough
+	numEntries = numpnts(src)
+
+	if(!ParamIsDefault(indexWave))
+		ASSERT(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z srcWave = dst[i]
+		ASSERT(WaveExists(srcWave), "Missing wave at linear index" + num2str(i))
+
+		if(!ParamIsDefault(indexWave))
+			index = indexWave[i]
+		endif
+
+		if(ParamIsDefault(dimension))
+			Duplicate/FREE srcWave, dstWave
+		else
+			switch(dimension)
+				case ROWS:
+					Duplicate/FREE/R=[index][][][] srcWave, dstWave
+					break
+				case COLS:
+					Duplicate/FREE/R=[][index][][] srcWave, dstWave
+					break
+				case LAYERS:
+					Duplicate/FREE/R=[][][index][] srcWave, dstWave
+					break
+				case CHUNKS:
+					Duplicate/FREE/R=[][][][index] srcWave, dstWave
+					break
+			endswitch
+		endif
+
+		dst[i] = dstWave
+	endfor
+
+	return dst
 End

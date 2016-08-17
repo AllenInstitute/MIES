@@ -7,6 +7,9 @@ static Constant DATA_ACQU_TAB_NUM         = 0
 static Constant HARDWARE_TAB_NUM          = 6
 
 static StrConstant YOKE_LIST_OF_CONTROLS  = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
+static StrConstant YOKE_CONTROLS_DISABLE  = "StartTestPulseButton;DataAcquireButton"
+/// Synced with `desc` in DAP_CheckSettingsAcrossYoked()
+static StrConstant YOKE_CONTROLS_DISABLE_AND_LINK = "Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI;Setvar_DataAcq_dDAQOptOvPre;Setvar_DataAcq_dDAQOptOvPost;Check_DataAcq1_dDAQOptOv;setvar_DataAcq_dDAQOptOvRes"
 static StrConstant FOLLOWER               = "Follower"
 static StrConstant LEADER                 = "Leader"
 
@@ -17,7 +20,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(186,439,678,1275)
+	NewPanel /K=1 /W=(161,502,653,1382)
 	GroupBox group_DataAcq_WholeCell,pos={47.00,200.00},size={150.00,62.00},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_WholeCell,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -434,7 +437,7 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_07,limits={-inf,inf,10},value= _NUM:1
-	SetVariable SetVar_DataAcq_Comment,pos={54.00,737.00},size={362.00,14.00},disable=1,title="Comment"
+	SetVariable SetVar_DataAcq_Comment,pos={54.00,781.00},size={362.00,14.00},disable=1,title="Comment"
 	SetVariable SetVar_DataAcq_Comment,help={"Appends a comment to wave note of next sweep"}
 	SetVariable SetVar_DataAcq_Comment,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_Comment,userdata(tabcontrol)=  "ADC"
@@ -442,7 +445,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
-	Button DataAcquireButton,pos={50.00,755.00},size={405.00,42.00},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
+	Button DataAcquireButton,pos={50.00,799.00},size={405.00,42.00},disable=1,proc=DAP_ButtonProc_AcquireData,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,DW!!#DL^]6aEJ,hnaz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button DataAcquireButton,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1279,7 +1282,7 @@ Window DA_Ephys() : Panel
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_07,value= _STR:""
-	CheckBox Check_DataAcq_Indexing,pos={190.00,660.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
+	CheckBox Check_DataAcq_Indexing,pos={200.00,680.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
 	CheckBox Check_DataAcq_Indexing,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq_Indexing,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_Indexing,userdata(tabcontrol)=  "ADC"
@@ -1713,7 +1716,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_moreSettings_DeviceNo,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
-	SetVariable setvar_DataAcq_TerminationDelay,pos={289.00,662.00},size={177.00,18.00},bodyWidth=50,disable=1,title="Termination delay (ms)"
+	SetVariable setvar_DataAcq_TerminationDelay,pos={293.00,657.00},size={177.00,18.00},bodyWidth=50,disable=1,title="Termination delay (ms)"
 	SetVariable setvar_DataAcq_TerminationDelay,help={"Global set(s) termination delay. Continues recording after set sweep is complete. Useful when recorded phenomena continues after termination of final set epoch."}
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(tabcontrol)=  "ADC"
@@ -1802,7 +1805,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_SweepsInSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsInSet,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_SweepsInSet,value= _NUM:1
-	CheckBox Check_DataAcq1_IndexingLocked,pos={216.00,694.00},size={53.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Locked"
+	CheckBox Check_DataAcq1_IndexingLocked,pos={216.00,714.00},size={53.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Locked"
 	CheckBox Check_DataAcq1_IndexingLocked,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabcontrol)=  "ADC"
@@ -1810,7 +1813,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_IndexingLocked,value= 0
-	SetVariable SetVar_DataAcq_ListRepeats,pos={204.00,710.00},size={109.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat List(s)"
+	SetVariable SetVar_DataAcq_ListRepeats,pos={140.00,734.00},size={109.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat List(s)"
 	SetVariable SetVar_DataAcq_ListRepeats,help={"This number is set automatically at based on the number of 1d waves contained in the largest set on active DA/TTL channels"}
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabcontrol)=  "ADC"
@@ -1819,7 +1822,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ListRepeats,fColor=(65280,43520,0)
 	SetVariable SetVar_DataAcq_ListRepeats,limits={1,inf,1},value= _NUM:1
-	CheckBox check_DataAcq_IndexRandom,pos={216.00,677.00},size={60.00,15.00},disable=1,title="Random"
+	CheckBox check_DataAcq_IndexRandom,pos={216.00,697.00},size={60.00,15.00},disable=1,title="Random"
 	CheckBox check_DataAcq_IndexRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
 	CheckBox check_DataAcq_IndexRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_IndexRandom,userdata(tabcontrol)=  "ADC"
@@ -2192,7 +2195,7 @@ Window DA_Ephys() : Panel
 	TitleBox title_DataAcq_NextSweep3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_DataAcq_NextSweep3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_DataAcq_NextSweep3,fSize=14,frame=0,fStyle=0
-	GroupBox group_DataAcq_DataAcq,pos={30.00,622.00},size={445.00,185.00},disable=1,title="Data Acquisition"
+	GroupBox group_DataAcq_DataAcq,pos={30.00,622.00},size={446.00,228.00},disable=1,title="Data Acquisition"
 	GroupBox group_DataAcq_DataAcq,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_DataAcq,userdata(tabcontrol)=  "ADC"
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo)= A"!!,CT!!#D+J,hsnJ,hqsz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2241,7 +2244,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_Independent,userdata(ResizeControlsInfo)= A"!!,FC!!#AR!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_Independent,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_Independent,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_Hardware_Status,pos={152.00,812.00},size={189.00,18.00},bodyWidth=99,title="ITC DAC Status:"
+	SetVariable setvar_Hardware_Status,pos={152.00,852.00},size={189.00,18.00},bodyWidth=99,title="ITC DAC Status:"
 	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo)= A"!!,G(!!#D[!!#AL!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -3038,7 +3041,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_SealAtm,value= 0
-	CheckBox Check_DataAcq1_DistribDaq,pos={180.00,644.00},size={97.00,15.00},disable=1,proc=DAP_CheckProc_DistributedAcq,title="Distributed Acq"
+	CheckBox Check_DataAcq1_DistribDaq,pos={138.00,644.00},size={100.00,15.00},disable=1,proc=DAP_CheckProc_SyncCtrl,title="distributed DAQ"
 	CheckBox Check_DataAcq1_DistribDaq,help={"Determines if distributed acquisition is used."}
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabcontrol)=  "ADC"
@@ -3046,15 +3049,39 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_DistribDaq,value= 0
-	SetVariable setvar_DataAcq_dDAQDelay,pos={322.00,683.00},size={144.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="dDAQ delay (ms)"
-	SetVariable setvar_DataAcq_dDAQDelay,help={"Delay between the sets during distributed DAQ."}
-	SetVariable setvar_DataAcq_dDAQDelay,userdata(tabnum)=  "0"
-	SetVariable setvar_DataAcq_dDAQDelay,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo)= A"!!,H\\!!#D:^]6_5!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_dDAQDelay,limits={0,inf,1},value= _NUM:0
-	Button button_DataAcq_OpenCommentNB,pos={416.00,735.00},size={36.00,19.00},disable=1,proc=DAP_ButtonProc_OpenCommentNB,title="NB"
+	CheckBox Check_DataAcq1_dDAQOptOv,pos={154.00,660.00},size={61.00,15.00},bodyWidth=50,disable=1,proc=DAP_CheckProc_SyncCtrl,title="oodDAQ"
+	CheckBox Check_DataAcq1_dDAQOptOv,help={"Optimizes the stim set layout for minimum length and no overlap."}
+	CheckBox Check_DataAcq1_dDAQOptOv,userdata(tabnum)=  "0"
+	CheckBox Check_DataAcq1_dDAQOptOv,userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DataAcq1_dDAQOptOv,userdata(ResizeControlsInfo)= A"!!,GD!!#D1!!#@&!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_DataAcq1_dDAQOptOv,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_DataAcq1_dDAQOptOv,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_DataAcq1_dDAQOptOv,value= 0
+	SetVariable Setvar_DataAcq_dDAQDelay,pos={326.00,677.00},size={144.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="dDAQ delay (ms)"
+	SetVariable Setvar_DataAcq_dDAQDelay,help={"Delay between the sets during distributed DAQ."}
+	SetVariable Setvar_DataAcq_dDAQDelay,userdata(tabnum)=  "0"
+	SetVariable Setvar_DataAcq_dDAQDelay,userdata(tabcontrol)=  "ADC"
+	SetVariable Setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo)= A"!!,H\\!!#D:^]6_5!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Setvar_DataAcq_dDAQDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Setvar_DataAcq_dDAQDelay,limits={0,inf,1},value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPost,pos={286.00,716.00},size={184.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="oodDAQ post delay (ms)"
+	SetVariable setvar_DataAcq_dDAQOptOvPost,help={"Timespan in ms after features in stimset not filled with another's stimset data. Used only for optimized overlay dDAQ."}
+	SetVariable setvar_DataAcq_dDAQOptOvPost,userdata(tabnum)=  "0"
+	SetVariable setvar_DataAcq_dDAQOptOvPost,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_DataAcq_dDAQOptOvPost,userdata(ResizeControlsInfo)= A"!!,H\\!!#D:^]6_5!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_dDAQOptOvPost,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_DataAcq_dDAQOptOvPost,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_dDAQOptOvPost,limits={0,inf,1},value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPre,pos={292.00,696.00},size={178.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="oodDAQ pre delay (ms)"
+	SetVariable setvar_DataAcq_dDAQOptOvPre,help={"Timespan in ms before features in stimset not filled with another's stimset data. Used only for optimized overlay dDAQ."}
+	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(tabnum)=  "0"
+	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(ResizeControlsInfo)= A"!!,H\\!!#D:^]6_5!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_dDAQOptOvPre,limits={0,inf,1},value= _NUM:0
+	Button button_DataAcq_OpenCommentNB,pos={416.00,779.00},size={36.00,19.00},disable=1,proc=DAP_ButtonProc_OpenCommentNB,title="NB"
 	Button button_DataAcq_OpenCommentNB,help={"Open a notebook displaying the comments of all sweeps and allowing free form additions by the user."}
 	Button button_DataAcq_OpenCommentNB,userdata(tabnum)=  "0"
 	Button button_DataAcq_OpenCommentNB,userdata(tabcontrol)=  "ADC"
@@ -3108,7 +3135,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_NwbExport,value= 0
-	SetVariable setvar_DataAcq_OnsetDelayUser,pos={299.00,642.00},size={167.00,18.00},bodyWidth=50,disable=1,title="User onset delay (ms)"
+	SetVariable setvar_DataAcq_OnsetDelayUser,pos={303.00,638.00},size={167.00,18.00},bodyWidth=50,disable=1,title="User onset delay (ms)"
 	SetVariable setvar_DataAcq_OnsetDelayUser,help={"A global parameter that delays the onset time of a set after the initiation of data acquistion. Data acquisition start time is NOT delayed. Useful when set(s) have insufficient baseline epoch."}
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(tabcontrol)=  "ADC"
@@ -3116,7 +3143,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_OnsetDelayUser,limits={0,inf,1},value= _NUM:1
-	ValDisplay valdisp_DataAcq_OnsetDelayAuto,pos={323.00,705.00},size={143.00,17.00},bodyWidth=50,disable=1,title="Onset delay (ms)"
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto,pos={327.00,756.00},size={143.00,17.00},bodyWidth=50,disable=1,title="Onset delay (ms)"
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,help={"The additional onset delay required by the \"Insert TP\" setting."}
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(tabcontrol)=  "ADC"
@@ -3234,6 +3261,14 @@ Window DA_Ephys() : Panel
 	CheckBox check_settings_show_power,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_settings_show_power,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_settings_show_power,value= 0
+	SetVariable setvar_DataAcq_dDAQOptOvRes,pos={287.00,735.00},size={183.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="oodDAQ resolution (ms)"
+	SetVariable setvar_DataAcq_dDAQOptOvRes,help={"The resolution used for finding an optimal offset. Processing time is linear with resolution, all feature in the stimset smaller than this value *might* be ignored."}
+	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(tabnum)=  "0"
+	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(ResizeControlsInfo)= A"!!,H\\!!#D:^]6_5!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_dDAQOptOvRes,limits={1,inf,1},value= _NUM:1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C[!!#Da!!!!\"zzzzzzzzzzzzzzzzzzzz"
@@ -3374,6 +3409,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 1
 	CheckBox Check_DataAcq1_DistribDaq Win = $panelTitle, value = 0
+	CheckBox Check_DataAcq1_dDAQOptOv Win = $panelTitle, value = 0
 
 	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0
 
@@ -3573,6 +3609,9 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_Sweep WIN = $panelTitle, limits={0,0,1}, value= _NUM:0
 
 	SetVariable SetVar_DataAcq_dDAQDelay WIN = $panelTitle,value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPost WIN = $panelTitle,value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPre WIN = $panelTitle,value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvRes WIN = $panelTitle,value= _NUM:1
 	SetVariable SetVar_DataAcq_OnsetDelayUser WIN = $panelTitle,value= _NUM:1
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto WIN = $panelTitle,value= _NUM:0
 	ValDisplay valdisp_DataAcq_SweepsInSet WIN = $panelTitle,value= _NUM:1
@@ -4629,11 +4668,8 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	string listOfFollowerDevices
 	variable mode
 
-	string panelTitle
-	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderRepeatSets, leaderdDAQDelay
-	variable leaderdDAQ
-	variable i, numEntries
-	string leaderSampInt
+	string panelTitle, leaderSampInt
+	variable i, j, numEntries, numCtrls
 
 	if(!WindowExists("ArduinoSeq_Panel"))
 		printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
@@ -4649,48 +4685,43 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 		return 0
 	endif
 
-	leaderdDAQ       = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_DistribDaq")
-	leaderRepeatAcq  = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq1_RepeatAcq")
-	leaderIndexing   = GetCheckBoxState(ITC1600_FIRST_DEVICE, "Check_DataAcq_Indexing")
-	leaderITI        = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_ITI")
-	leaderRepeatSets = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_SetRepeats")
-	leaderdDAQDelay  = GetSetVariable(ITC1600_FIRST_DEVICE, "SetVar_DataAcq_dDAQDelay")
-	leaderSampInt    = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
+	leaderSampInt = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
+
+	/// @todo one entry per line when IP7 is mandatory
+	Make/T/FREE desc = {"Repeated Acquisition", "Distributed Acquisition", "Distributed DAQ delay", "Indexing", "ITI", "Number of repetitions", "Get ITI from stimset", "Optimized overlap dDAQ pre feature time", "Optimized overlap dDAQ post feature time", "Optimized overlap dDAQ", "Optimized overlap dDAQ resolution"}
+
+	numCtrls = DimSize(desc, ROWS)
+	ASSERT(ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK) == numCtrls, "Mismatched yoke linking lists")
+
+	Make/FREE/T/N=(numCtrls) leadEntries = GetGuiControlValue(ITC1600_FIRST_DEVICE, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
 
 	numEntries = ItemsInList(listOfFollowerDevices)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, listOfFollowerDevices)
-		if(leaderRepeatAcq != GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			printf "(%s) Repeat acquisition setting does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderIndexing != GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
-			printf "(%s) Indexing setting does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderdDAQ != GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
-			printf "(%s) Distributed acquisition setting does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderITI != GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
-			printf "(%s) ITI does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderRepeatSets != GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats"))
-			printf "(%s) Repeat sets does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(leaderdDAQDelay != GetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay"))
-			printf "(%s) Distributed acquisition delay does not match leader panel\r", panelTitle
-			return 1
-		endif
-		if(CmpStr(leaderSampInt,GetValDisplayAsString(panelTitle, "ValDisp_DataAcq_SamplingInt")))
+
+		if(cmpstr(leaderSampInt, GetValDisplayAsString(panelTitle, "ValDisp_DataAcq_SamplingInt")))
 			// this is no fatal error, we just inform the user
 			printf "(%s) Sampling interval does not match leader panel\r", panelTitle
 			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,65280,33024)
 		else
 			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,0,0)
 		endif
+
+		Make/FREE/T/N=(numCtrls) followerEntries = GetGuiControlValue(panelTitle, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
+
+		if(EqualWaves(leadEntries, followerEntries, 1))
+			continue
+		endif
+
+		// find the differing control
+		for(j = 0; j < numEntries; j +=1)
+			if(!cmpstr(leadEntries[j], followerEntries[j]))
+				continue
+			endif
+
+			printf "(%s) %s setting does not match leader panel\r", panelTitle, desc[i]
+			return 1
+		endfor
 	endfor
 
 	return 0
@@ -4832,11 +4863,26 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 			endfor
 
-			// for distributed acquisition all stim sets must be the same
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") && GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", panelTitle
+				return 1
+			endif
+
+			// classic distributed acquisition requires that all stim sets are the same
+			// oodDAQ allows different stim sets
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") || GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				numEntries = DimSize(statusDA, ROWS)
 				for(i=0; i < numEntries; i+=1)
 					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+						continue
+					endif
+
+					if(!IsFinite(AFH_GetHeadstagefromDAC(panelTitle, i)))
+						printf "(%s) Distributed Acquisition does not work with unassociated DA channel %d.\r", panelTitle, i
+						return 1
+					endif
+
+					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 						continue
 					endif
 
@@ -5730,7 +5776,8 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 			DAP_SwitchSingleMultiMode(panelToYoke, 1)
 
 			DAP_UpdateITIAcrossSets(leadPanel)
-			DisableControls(panelToYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE)
+			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
 			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
 			EnableControl(leadPanel, "popup_Hardware_YokedDACs")
 			EnableControl(leadPanel, "title_hardware_Release")
@@ -5743,43 +5790,26 @@ End
 static Function DAP_SyncGuiFromLeaderToFollower(panelTitle)
 	string panelTitle
 
-	variable leaderRepeatAcq, leaderIndexing, leaderITI, leaderOverrrideITI
-	variable leaderdDAQDelay, leaderRepeatSets, leaderdDAQ
-	variable numPanels, i
-	string panelList, leadPanel
+	variable numPanels, numEntries
+	string panelList
 
 	if(!windowExists(panelTitle) || !DAP_DeviceIsLeader(panelTitle))
 		return NaN
 	endif
 
-	leadPanel = panelTitle
-	panelList = GetListofLeaderAndPossFollower(leadPanel)
-	DAP_UpdateSweepLimitsAndDisplay(leadPanel)
-
-	leaderdDAQ         = GetCheckBoxState(leadPanel, "Check_DataAcq1_DistribDaq")
-	leaderRepeatAcq    = GetCheckBoxState(leadPanel, "Check_DataAcq1_RepeatAcq")
-	leaderIndexing     = GetCheckBoxState(leadPanel, "Check_DataAcq_Indexing")
-	leaderOverrrideITI = GetCheckBoxState(leadPanel, "Check_DataAcq_Get_Set_ITI")
-	leaderITI          = GetSetVariable(leadPanel, "SetVar_DataAcq_ITI")
-	leaderRepeatSets   = GetSetVariable(leadPanel, "SetVar_DataAcq_SetRepeats")
-	leaderdDAQDelay    = GetSetVariable(leadPanel, "SetVar_DataAcq_dDAQDelay")
+	panelList = GetListofLeaderAndPossFollower(panelTitle)
+	DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 
 	numPanels = ItemsInList(panelList)
-	for(i = 1; i < numPanels; i += 1)
-		// i = 1 so that we don't set the values
-		// for the lead panel again
-		panelTitle = StringFromList(i, panelList)
 
-		SetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq", leaderdDAQ)
-		SetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq", leaderRepeatAcq)
-		SetCheckBoxState(panelTitle, "Check_DataAcq_Indexing", leaderIndexing)
-		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", leaderITI)
-		SetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats", leaderRepeatSets)
-		SetSetVariable(panelTitle, "SetVar_DataAcq_dDAQDelay", leaderdDAQDelay)
-		if(IsFinite(leaderOverrrideITI))
-			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", leaderOverrrideITI)
-		endif
-	endfor
+	if(!numPanels)
+		return NaN
+	endif
+
+	numEntries = ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK)
+
+	Make/FREE/T/N=(numEntries) leadEntries    = GetGuiControlValue(panelTitle, StringFromList(p, YOKE_CONTROLS_DISABLE_AND_LINK))
+	Make/FREE/N=(numPanels, numEntries) dummy = SetGuiControlValue(StringFromList(p, panelList), StringFromList(q, YOKE_CONTROLS_DISABLE_AND_LINK), leadEntries[q])
 End
 
 Function DAP_ButtonProc_YokeRelease(ba) : ButtonControl
@@ -5843,7 +5873,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
-	EnableControls(panelToDeYoke, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
+	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE)
+	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
 	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
 	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
@@ -6129,7 +6160,7 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_CheckProc_DistributedAcq(cba) : CheckBoxControl
+Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
