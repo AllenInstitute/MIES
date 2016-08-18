@@ -1438,14 +1438,31 @@ Function/WAVE ConvertListOfWaves(list)
 End
 
 /// @brief Return a list of datafolders located in `dfr`
-Function/S GetListOfDataFolders(dfr)
+///
+/// @param dfr base folder
+/// @param absolute [optional, defaults to false] return absolute paths
+Function/S GetListOfDataFolders(dfr, [absolute])
 	DFREF dfr
+	variable absolute
 
-	string list = DataFolderDir(0x01, dfr)
+	string list, datafolder
+
+	if(ParamIsDefault(absolute))
+		absolute = 0
+	else
+		absolute = !!absolute
+	endif
+
+	list = DataFolderDir(0x01, dfr)
 	list = StringByKey("FOLDERS", list , ":")
 	list = ReplaceString(",", list, ";")
 
-	return list
+	if(!absolute)
+		return list
+	endif
+
+	datafolder = GetDataFolder(1, dfr)
+	return AddPrefixToEachListItem(datafolder, list)
 End
 
 /// @brief Return the base name of the file
