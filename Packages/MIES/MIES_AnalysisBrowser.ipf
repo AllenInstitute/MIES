@@ -59,7 +59,10 @@ static Function AB_ResetSelectionWave()
 End
 
 /// @brief Clear all waves of the main experiment browser
-static Function AB_ClearWaves()
+///        and delete all folders inside GetAnalysisFolder().
+static Function AB_ClearAnalysisFolder()
+
+	string folders
 
 	WAVE/T experimentMap = GetExperimentMap()
 	experimentMap = ""
@@ -71,6 +74,10 @@ static Function AB_ClearWaves()
 
 	WAVE sel = GetExperimentBrowserGUISel()
 	sel = NaN
+
+	DFREF dfr = GetAnalysisFolder()
+	folders = GetListOfDataFolders(dfr, absolute=1)
+	CallFunctionForEachListItem(KillOrMoveToTrashPath, folders)
 End
 
 static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
@@ -89,9 +96,10 @@ static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	experimentMap[index][%ExperimentName] = relativePath
 
 	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
-	expFolderName = CleanupName(RemoveEnding(relativePath, extension), 0)
-	KillOrMoveToTrashPath(GetAnalysisExpFolderAS(expFolderName))
-	experimentMap[index][%ExperimentFolder] = expFolderName
+	DFREF dfr = GetAnalysisFolder()
+	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
+	expFolderName = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
+	experimentMap[index][%ExperimentFolder] = RemoveEnding(expFolderName, ":")
 
 	index += 1
 	SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
@@ -923,7 +931,7 @@ Function AB_ScanFolder(win)
 		return naN
 	endif
 
-	AB_ClearWaves()
+	AB_ClearAnalysisFolder()
 
 	pxpList = GetAllFilesRecursivelyFromPath(path, extension=".pxp")
 	uxpList = GetAllFilesRecursivelyFromPath(path, extension=".uxp")
