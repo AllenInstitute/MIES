@@ -1305,7 +1305,7 @@ Function AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
 
 	ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
 	ModifyGraph/W=$graph mode = 3
-	ModifyGraph/W=$graph nticks(bottom) = 10
+	ModifyGraph/W=$graph nticks(bottom) = 10, manTick(bottom) = {0,1,0,0}, manMinor(bottom) = {0,50}
 
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
