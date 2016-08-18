@@ -31,7 +31,7 @@ Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, swee
 	numericalValues[rowIndex][1] = DateTime
 	numericalValues[rowIndex][2] = DateTimeInUTC()
 
-	WAVE numericalValuesDat = GetLBNumericalValuesDat(numericalValues)
+	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(numericalValues)
 	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
 	numericalValuesDat[rowIndex] = numericalValues[rowIndex][1]
 
@@ -308,6 +308,14 @@ Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo,
 	textualValues[rowIndex][0] = num2istr(sweepNo)
 	textualValues[rowIndex][1] = num2istr(DateTime)
 	textualValues[rowIndex][2] = num2istr(DateTimeInUTC())
+
+	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
+	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
+	textualValuesDat[rowIndex] = str2num(textualValues[rowIndex][1])
+
+	WAVE textualValuesSweep = ExtractLBColumnSweep(textualValues)
+	EnsureLargeEnoughWave(textualValuesSweep, minimumSize=rowIndex, dimension=ROWS)
+	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
 
 	numCols = DimSize(incomingTextualValues, COLS)
 	for(i = 0; i < numCols; i += 1)
