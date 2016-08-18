@@ -758,8 +758,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	high = 1.0
 
-	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ")
-	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ")
+	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", defValue=0)
+	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", defValue=0)
 
 	if(tgs.dDAQDisplayMode && !(dDAQEnabled || oodDAQEnabled))
 		printf "Distributed DAQ display mode turned off as no dDAQ data could be found.\r"
