@@ -901,8 +901,9 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 			panelTitle = ba.win
 			graph      = DB_GetLabNoteBookGraph(panelTitle)
 			WAVE numericalValues = DB_GetNumericalValues(panelTitle)
+			WAVE textualValues   = DB_GetTextualValues(panelTitle)
 
-			SwitchLBGraphXAxis(graph, numericalValues)
+			SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 			break
 	endswitch
 

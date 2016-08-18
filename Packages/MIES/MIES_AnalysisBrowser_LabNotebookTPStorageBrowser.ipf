@@ -343,8 +343,9 @@ Function LBN_ButtonProc_SwitchXaxisType(ba) : ButtonControl
 			device = GetPopupMenuString(panel, "popup_select_device")
 
 			WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+			WAVE textualValues   = GetAnalysLBTextualValues(expFolder, device)
 
-			SwitchLBGraphXAxis(graph, numericalValues)
+			SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 			break
 	endswitch
 

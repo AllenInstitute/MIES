@@ -1302,44 +1302,61 @@ End
 
 /// @brief Add a trace to the labnotebook graph
 ///
-/// @param graph name of the graph
-/// @param numericalKeys labnotebook numerical key wave
-/// @param numericalValues labnotebook numerical wave
-/// @param key name of the key to add
-Function AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
+/// @param graph  name of the graph
+/// @param keys   labnotebook keys wave (numerical or text)
+/// @param values labnotebook values wave (numerical or text)
+/// @param key    name of the key to add
+Function AddTraceToLBGraph(graph, keys, values, key)
 	string graph
-	WAVE/T numericalKeys
-	WAVE numericalValues
+	WAVE values, keys
 	string key
 
-	string unit, lbl, axis, trace, panelTitle, device
+	string unit, lbl, axis, trace, text, tagString
 	string traceList = ""
-	variable sweepNo, i, numEntries, row, col
-	variable red, green, blue, isTimeAxis, sweepCol
+	variable i, j, numEntries, row, col, numRows, sweepCol
+	variable red, green, blue, isTimeAxis, isTextData, xPos
 
-	if(GetKeyWaveParameterAndUnit(numericalKeys, key, lbl, unit, col))
+	if(GetKeyWaveParameterAndUnit(keys, key, lbl, unit, col))
 		return NaN
 	endif
 
 	lbl = LineBreakingIntoParWithMinWidth(lbl)
 
-	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(values)
+	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
-	sweepCol   = GetSweepColumn(numericalValues)
+	isTextData = IsTextWave(values)
+	sweepCol   = GetSweepColumn(values)
 
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
-	numEntries = DimSize(numericalValues, LAYERS)
+	numRows    = DimSize(values, ROWS)
+	numEntries = DimSize(values, LAYERS)
+
+	if(IsTextData)
+		WAVE valuesNull  = ExtractLBColumnEmpty(values)
+		WAVE valuesSweep = ExtractLBColumnSweep(values)
+	endif
+
 	for(i = 0; i < numEntries; i += 1)
 
 		trace = CleanupName(lbl + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
 		traceList = AddListItem(trace, traceList, ";", inf)
 
-		if(isTimeAxis)
-			AppendToGraph/W=$graph/L=$axis numericalValues[][col][i]/TN=$trace vs numericalValuesDat
+		if(isTextData)
+			if(isTimeAxis)
+				AppendToGraph/W=$graph/L=$axis valuesNull/TN=$trace vs valuesDat
+			else
+				AppendToGraph/W=$graph/L=$axis valuesNull/TN=$trace vs valuesSweep
+			endif
+
+			ModifyGraph/W=$graph nticks($axis)=0, axRGB($axis)=(65535,65535,65535)
 		else
-			AppendToGraph/W=$graph/L=$axis numericalValues[][col][i]/TN=$trace vs numericalValues[][sweepCol][0]
+			if(isTimeAxis)
+				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs valuesDat
+			else
+				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs values[][sweepCol][i]
+			endif
 		endif
 
 		ModifyGraph/W=$graph userData($trace)={key, 0, key}
@@ -1347,6 +1364,40 @@ Function AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
 		GetTraceColor(i, red, green, blue)
 		ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 	endfor
+
+	if(isTextData)
+		WAVE/T valuesText = values
+		for(i = 0; i < numRows; i += 1)
+			if(isTimeAxis)
+				xPos = valuesDat[i]
+			else
+				xPos = valuesSweep[i]
+			endif
+
+			if(!IsFinite(xPos))
+				continue
+			endif
+
+			tagString = ""
+			for(j = 0; j < numEntries; j += 1)
+				text = valuesText[i][col][j]
+
+				if(IsEmpty(text))
+					continue
+				endif
+
+				GetTraceColor(j, red, green, blue)
+				sprintf text, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)%s\r", red, green, blue, j + 1, text
+				tagString += text
+			endfor
+
+			if(IsEmpty(tagString))
+				continue
+			endif
+
+			Tag/W=$graph/F=0/L=0/X=0.00/Y=0.00 $trace, i, RemoveEnding(tagString, "\r")
+		endfor
+	endif
 
 	if(!isEmpty(unit))
 		lbl += "\r(" + unit + ")"
@@ -1364,11 +1415,11 @@ Function AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
 End
 
 /// @brief Switch the labnotebook graph x axis type (time <-> sweep numbers)
-Function SwitchLBGraphXAxis(graph, numericalValues)
+Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 	string graph
-	WAVE numericalValues
+	WAVE numericalValues, textualValues
 
-	string trace, dataUnits, list
+	string trace, dataUnits, list, wvName
 	variable i, numEntries, isTimeAxis, sweepCol
 
 	list = TraceNameList(graph, ";", 0 + 1)
@@ -1384,12 +1435,26 @@ Function SwitchLBGraphXAxis(graph, numericalValues)
 	for(i = 0; i < numEntries; i += 1)
 		trace = StringFromList(i, list)
 
+		// instance does not matter as all instances use the same xwave
+		wvName = StringByKey("XWAVE", TraceInfo(graph, trace, 0))
+
+		if(StringMatch(wvName, "numericalValues*"))
+			WAVE valuesDat     = ExtractLBColumnTimeStamp(numericalValues)
+			WAVE/Z valuesSweep = $""
+		else
+			WAVE valuesDat   = ExtractLBColumnTimeStamp(textualValues)
+			WAVE valuesSweep = ExtractLBColumnSweep(textualValues)
+		endif
+
 		// change from timestamps to sweepNums
 		if(isTimeAxis)
-			ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
+			if(!WaveExists(valuesSweep))
+				ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
+			else
+				ReplaceWave/W=$graph/X trace=$trace, valuesSweep
+			endif
 		else // other direction
-			Wave xWave = GetLBNumericalValuesDat(numericalValues)
-			ReplaceWave/W=$graph/X trace=$trace, xWave
+			ReplaceWave/W=$graph/X trace=$trace, valuesDat
 		endif
 	endfor
 
