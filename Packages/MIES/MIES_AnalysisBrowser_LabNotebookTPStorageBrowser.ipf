@@ -44,7 +44,8 @@ Function LBN_OpenLabnotebookBrowser()
 
 	SetPopupMenuIndex(leftPanel, "popup_select_experiment", 0)
 	SetPopupMenuIndex(leftPanel, "popup_select_device", 0)
-	SetPopupMenuIndex(leftPanel, "popup_labenotebookViewableCols", 0)
+	SetPopupMenuIndex(leftPanel, "popup_LBNumericalKeys", 0)
+	SetPopupMenuIndex(leftPanel, "popup_LBTextualKeys", 0)
 	DoUpdate/W=$leftPanel
 End
 
@@ -148,32 +149,38 @@ End
 
 Window LabnotebookBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display/K=1/W=(1224,152.75,1656,401.75)
+	Display /W=(1160.25,188.75,1592.25,437.75)/K=1
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
-	NewPanel/K=2/HOST=#/EXT=1/W=(258,0,0,332) as " "
+	NewPanel/HOST=#/EXT=1/W=(258,0,0,332) /K=2  as " "
 	ModifyPanel fixedSize=0
-	Button button_clearlabnotebookgraph,pos={59,37},size={73,23},proc=LBN_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,pos={59.00,57.00},size={90.00,23.00},proc=LBN_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,help={"Remove all traces from the graph"}
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KCJ,ht*J,hp!!!#<pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	BUtton button_clearlabnotebookgraph, help={"Remove all traces from the graph"}
-	PopupMenu popup_select_experiment,pos={29,94},size={199,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Experiment:"
-	PopupMenu popup_select_experiment,mode=1,value= #"LBN_GetAllExperiments()"
+	PopupMenu popup_select_experiment,pos={29.00,124.00},size={174.00,19.00},proc=LBN_PopMenuProc_ExpDevSelector,title="Experiment:"
 	PopupMenu popup_select_experiment,help={"Select an experiment from the ones open in the experiment browser"}
-	PopupMenu popup_select_device,pos={46,123},size={161,21},proc=LBN_PopMenuProc_ExpDevSelector,title="Device: "
-	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment(\"LabnotebookBrowser\")"
+	PopupMenu popup_select_experiment,mode=1,value= #"LBN_GetAllExperiments()"
+	PopupMenu popup_select_device,pos={46.00,153.00},size={144.00,19.00},proc=LBN_PopMenuProc_ExpDevSelector,title="Device: "
 	PopupMenu popup_select_device,help={"Select a device from the currently selected experiment"}
-	PopupMenu popup_labenotebookViewableCols,pos={27,12},size={150,21},bodyWidth=150,proc=LBN_PopMenuProc_LBNViewableCols
-	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
-	PopupMenu popup_labenotebookViewableCols,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_labenotebookViewableCols,mode=1,value= #"LBN_GetLabNotebookViewAbleCols(\"LabnotebookBrowser\")"
-	PopupMenu popup_labenotebookViewableCols,help={"All keys from the numeric labnotebook. Selecting one will add it to the graph."}
-	Button button_switch,pos={58,63},size={72,23},proc=LBN_ButtonProc_SwitchXaxisType,title="Switch x-axis"
+	PopupMenu popup_select_device,mode=1,value= #"LBN_GetAllDevicesForExperiment(\"LabnotebookBrowser\")"
+	PopupMenu popup_LBNumericalKeys,pos={27.00,12.00},size={150.00,19.00},bodyWidth=150,proc=LBN_PopMenuProc_LBNViewableCols
+	PopupMenu popup_LBNumericalKeys,help={"All keys from the numeric labnotebook. Selecting one will add it to the graph."}
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	PopupMenu popup_LBNumericalKeys,mode=1,value= #"LBN_GetLBNumericalKeys(\"LabnotebookBrowser\")"
+	PopupMenu popup_LBTextualKeys,pos={27.00,34.00},size={150.00,19.00},bodyWidth=150,proc=LBN_PopMenuProc_LBNViewableCols
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,K>TE%@>J,hqP!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	PopupMenu popup_LBTextualKeys,mode=1,value= #"LBN_GetLBTextualKeys(\"LabnotebookBrowser\")"
+	Button button_switch,pos={58.00,83.00},size={90.00,23.00},proc=LBN_ButtonProc_SwitchXaxisType,title="Switch x-axis"
 	Button button_switch,help={"Switch between timestamp and sweep numbers as x axis type"}
-	CheckBox check_sync_with_sweepBrowser,pos={17,194},size={141,14},proc=LBN_CheckProc_SyncSweepBrowser,title="Sync with Sweep Browser"
-	CheckBox check_sync_with_sweepBrowser,value= 0, disable=2, help={"Synchronize the currently selected experiment and device to the current sweep from the top sweep browser"}
+	CheckBox check_sync_with_sweepBrowser,pos={17.00,194.00},size={148.00,15.00},disable=2,proc=LBN_CheckProc_SyncSweepBrowser,title="Sync with Sweep Browser"
+	CheckBox check_sync_with_sweepBrowser,help={"Synchronize the currently selected experiment and device to the current sweep from the top sweep browser"}
+	CheckBox check_sync_with_sweepBrowser,value= 0
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 EndMacro
@@ -251,11 +258,14 @@ Function LBN_PopMenuProc_LBNViewableCols(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string popStr, graph, panel, expFolder, device, folder
+	string ctrl
+
 	switch(pa.eventCode)
 		case 2: // mouse up
 			popStr = pa.popStr
-			panel = pa.win
-			graph = GetMainWindow(panel)
+			panel  = pa.win
+			graph  = GetMainWindow(panel)
+			ctrl   = pa.ctrlName
 
 			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
@@ -266,10 +276,21 @@ Function LBN_PopMenuProc_LBNViewableCols(pa) : PopupMenuControl
 				break
 			endif
 
-			WAVE/T numericalKeys = GetAnalysLBNumericalKeys(expFolder, device)
-			WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+			strswitch(ctrl)
+				case "popup_LBNumericalKeys":
+					Wave values = GetAnalysLBNumericalValues(expFolder, device)
+					WAVE keys   = GetAnalysLBNumericalKeys(expFolder, device)
+				break
+				case "popup_LBTextualKeys":
+					Wave values = GetAnalysLBTextualValues(expFolder, device)
+					WAVE keys   = GetAnalysLBTextualKeys(expFolder, device)
+				break
+				default:
+					ASSERT(0, "Unknown ctrl")
+					break
+			endswitch
 
-			AddTraceToLBGraph(graph, numericalKeys, numericalValues, popStr)
+			AddTraceToLBGraph(graph, keys, values, popStr)
 			break
 	endswitch
 
@@ -470,7 +491,7 @@ Function/S LBN_GetAllExperiments()
 	return list
 End
 
-Function/S LBN_GetLabNotebookViewAbleCols(graph)
+Function/S LBN_GetLBTextualKeys(graph)
 	string graph
 
 	string expFolder, device, panel, control
@@ -482,7 +503,31 @@ Function/S LBN_GetLabNotebookViewAbleCols(graph)
 		return NONE
 	endif
 
-	device = GetPopupMenuString(panel, control)
+	device    = GetPopupMenuString(panel, control)
+	expFolder = LBN_GetExpFolderFromPopup(graph)
+
+	if(isEmpty(device) || isEmpty(expFolder))
+		return NONE
+	endif
+
+	WAVE/T textualKeys = GetAnalysLBTextualKeys(expFolder, device)
+
+	return GetLabNotebookSortedKeys(textualKeys)
+End
+
+Function/S LBN_GetLBNumericalKeys(graph)
+	string graph
+
+	string expFolder, device, panel, control
+
+	panel   = LBN_GetLeftPanel(graph)
+	control = "popup_select_device"
+
+	if(!windowExists(panel) || !ControlExists(panel, control))
+		return NONE
+	endif
+
+	device    = GetPopupMenuString(panel, control)
 	expFolder = LBN_GetExpFolderFromPopup(graph)
 
 	if(isEmpty(device) || isEmpty(expFolder))
