@@ -2512,3 +2512,10 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 
 	return dst
 End
+
+/// @brief Return 1 if the wave is a text wave, zero otherwise
+Function IsTextWave(wv)
+	WAVE wv
+
+	return WaveType(wv, 1) == 2
+End
