@@ -12,31 +12,81 @@ static Constant GRAPH_DIV_SPACING   = 0.03
 static Constant ADC_SLOT_MULTIPLIER = 4
 static Constant NUM_CHANNEL_TYPES   = 3
 
-/// @brief Extracts the date/time column of the numericalValues wave
+/// @brief Extract the date/time column of the labnotebook values wave
+Function/WAVE ExtractLBColumnTimeStamp(values)
+	WAVE values
+
+	return ExtractLBColumn(values, 1, "Dat")
+End
+
+/// @brief Extract the sweep number column of the labnotebook values wave
+Function/WAVE ExtractLBColumnSweep(values)
+	WAVE values
+
+	return ExtractLBColumn(values, 0, "Sweep")
+End
+
+/// @brief Extract a column of the labnotebook values wave and makes it empty
+Function/WAVE ExtractLBColumnEmpty(values)
+	WAVE values
+
+	WAVE wv = ExtractLBColumn(values, 0, "Null")
+	wv = 0
+
+	return wv
+End
+
+/// @brief Extract a single column of the labnotebook values wave
 ///
-/// This is useful if you want to plot values against the time and let
-/// Igor do the formatting of the date/time values
-Function/WAVE GetLBNumericalValuesDat(numericalValues)
-	WAVE numericalValues
+/// This is useful if you want to plot values against e.g time and let
+/// Igor do the formatting of the date/time values.
+/// Always returns a numerical wave.
+static Function/WAVE ExtractLBColumn(values, col, suffix)
+	WAVE values
+	variable col
+	string suffix
 
-	DFREF dfr = GetWavesDataFolderDFR(numericalValues)
-	WAVE/Z/SDFR=dfr numericalValuesDat
-	variable nextRowIndex = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	string name, colName
+	variable nextRowIndex
 
-	if(!WaveExists(numericalValuesDat) || DimSize(numericalValuesDat, ROWS) != DimSize(numericalValues, ROWS) || DimSize(numericalValuesDat, ROWS) < nextRowIndex || (nextRowIndex > 0 && !IsFinite(numericalValuesDat[nextRowIndex - 1])))
-		Duplicate/O/R=[0, DimSize(numericalValues, ROWS)][1][-1][-1] numericalValues, dfr:numericalValuesDat/Wave=numericalValuesDat
+	// we can't use the GetDevSpecLabNBTempFolder getter as we are
+	// called from the analysisbrowser as well.
+	DFREF dfr = createDFWithAllParents(GetWavesDataFolder(values, 1) + "Temp")
+	colName = GetDimLabel(values, COLS, col)
+	ASSERT(!isEmpty(colName), "colName must not be empty")
+	name = NameOfWave(values) + suffix
+	WAVE/Z/SDFR=dfr singleColumn = $name
+
+	nextRowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
+
+	if(!WaveExists(singleColumn) || DimSize(singleColumn, ROWS) != DimSize(values, ROWS) || DimSize(singleColumn, ROWS) < nextRowIndex || (nextRowIndex > 0 && !IsFinite(singleColumn[nextRowIndex - 1])))
+		KillOrMoveToTrash(wv=singleColumn)
+		Duplicate/O/R=[0, DimSize(values, ROWS)][col][-1][-1] values, dfr:$name/Wave=singleColumn
 		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
-		Redimension/N=-1 numericalValuesDat
+		Redimension/N=-1 singleColumn
+
 		// redimension has the odd behaviour to change a wave with zero rows to one with 1 row and then initializes that point to zero
 		// we need to fix that
-		if(DimSize(numericalValuesDat, ROWS) == 1)
-			numericalValuesDat = NaN
+		if(DimSize(singleColumn, ROWS) == 1 && !IsTextWave(singleColumn))
+			singleColumn = NaN
 		endif
-		SetScale d, 0, 0, "dat" numericalValuesDat
-		SetDimLabel ROWS, -1, TimeStamp, numericalValuesDat
+
+		if(!cmpstr(colName, "TimeStamp"))
+			SetScale d, 0, 0, "dat" singleColumn
+		endif
+
+		SetDimLabel ROWS, -1, $colName, singleColumn
 	endif
 
-	return numericalValuesDat
+	if(IsTextWave(singleColumn))
+		WAVE/T singleColumnFree = MakeWaveFree(singleColumn)
+		Make/O/D/N=(DimSize(singleColumnFree, ROWS), DimSize(singleColumnFree, COLS), DimSize(singleColumnFree, LAYERS), DimSize(singleColumnFree, CHUNKS)) dfr:$name/Wave=singleColumnFromText
+		CopyScales singleColumnFree, singleColumnFromText
+		singleColumnFromText = str2num(singleColumnFree)
+		return singleColumnFromText
+	endif
+
+	return singleColumn
 End
 
 /// @brief Return a list of the AD channels from the ITC config
@@ -1273,7 +1323,8 @@ Function AddTraceToLBGraph(graph, numericalKeys, numericalValues, key)
 
 	lbl = LineBreakingIntoParWithMinWidth(lbl)
 
-	WAVE numericalValuesDat = GetLBNumericalValuesDat(numericalValues)
+	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(values)
+
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(numericalValues)
 

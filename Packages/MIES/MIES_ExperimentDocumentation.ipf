@@ -31,7 +31,7 @@ Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, swee
 	numericalValues[rowIndex][1] = DateTime
 	numericalValues[rowIndex][2] = DateTimeInUTC()
 
-	WAVE numericalValuesDat = GetLBNumericalValuesDat(numericalValues)
+	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(numericalValues)
 	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
 	numericalValuesDat[rowIndex] = numericalValues[rowIndex][1]
 
