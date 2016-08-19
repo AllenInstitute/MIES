@@ -3664,8 +3664,10 @@ End
 /// 0: %ExperimentDiscLocation:  Path to Experiment on Disc
 /// 1: %ExperimentName:          Name of File in experiment column in ExperimentBrowser
 /// 2: %ExperimentFolder         Data folder inside current Igor experiment
+/// 3: %ExperimentFileType       File Type identifier for routing to loader functions
 Function/Wave GetAnalysisBrowserMap()
 	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = 1
 
 	STRUCT WaveLocationMod p
 	p.dfr     = dfr
@@ -3675,17 +3677,22 @@ Function/Wave GetAnalysisBrowserMap()
 
 	WAVE/Z/T wv = UpgradeWaveLocationAndGetIt(p)
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 4) wv
+		wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 4)/T dfr:analysisBrowserMap/Wave=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
-
-	Make/N=(MINIMUM_WAVE_SIZE, 3)/T dfr:analysisBrowserMap/Wave=wv
 
 	SetDimLabel COLS, 0, ExperimentDiscLocation, wv
 	SetDimLabel COLS, 1, ExperimentName, wv
 	SetDimLabel COLS, 2, ExperimentFolder, wv
+	SetDimLabel COLS, 3, ExperimentFileType, wv
 
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetWaveVersion(wv, versionOfWave)
 
 	return wv
 End
