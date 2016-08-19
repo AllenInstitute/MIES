@@ -179,7 +179,7 @@ static Function AB_AddFile(baseFolder, discLocation)
 	mapIndex = AB_AddMapEntry(baseFolder, discLocation)
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
-	AB_LoadLabNotebookFromFile(discLocation)
+	AB_LoadFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped > firstMapped)
@@ -187,6 +187,42 @@ static Function AB_AddFile(baseFolder, discLocation)
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
 	endif
+End
+
+/// @brief function tries to load Data From discLocation.
+static Function/S AB_LoadFile(discLocation)
+	string discLocation
+
+	string device, deviceList
+	variable numDevices, i, highestSweepNumber
+
+	Wave/T map = AB_GetMap(discLocation)
+
+	deviceList = AB_LoadLabNotebookFromFile(discLocation)
+	numDevices = ItemsInList(deviceList)
+
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, deviceList)
+		strswitch(map[%FileType])
+			case ANALYSISBROWSER_FILE_TYPE_IGOR:
+				// handle pxps without any data properly
+				highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
+				if(IsFinite(highestSweepNumber))
+					AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+				endif
+				AB_LoadTPStorageFromFile(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
+				break
+			case ANALYSISBROWSER_FILE_TYPE_NWB:
+				break
+			default:
+				ASSERT(0, "invalid file type")
+		endswitch
+
+		AB_FillListWave(map[%DataFolder], map[%FileName], device)
+	endfor
+
+	return deviceList
 End
 
 static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
@@ -387,8 +423,11 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(numericalValues)
-	WAVE numericalValues
+static Function AB_GetHighestPossibleSweepNum(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
+	WAVE/SDFR=dfr numericalValues
 
 	variable sweepCol = GetSweepColumn(numericalValues)
 	MatrixOP/FREE sweepNums = col(numericalValues, sweepCol)
@@ -561,18 +600,6 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
 				SetDimensionLabels(numericalKeys, numericalValues)
 			endif
-
-			// handle pxps without any data properly
-			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericalValues)
-
-			if(IsFinite(highestSweepNumber))
-				AB_LoadSweepConfigData(discLocation, map[%DataFolder], device, highestSweepNumber)
-			endif
-
-			AB_LoadTPStorageFromFile(discLocation, map[%DataFolder], device)
-			AB_LoadUserCommentFromFile(discLocation, map[%DataFolder], device)
-
-			AB_FillListWave(map[%DataFolder], map[%FileName], device)
 		endfor
 	endfor
 
