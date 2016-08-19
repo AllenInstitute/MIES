@@ -1302,9 +1302,9 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 	for(i = 0; i < numChannels; i += 1)
 		channel = StringFromList(i, channelList)
 
+		// use AnalyseChannelName as a fallback if properties from the source attribute are missing
 		IPNWB#AnalyseChannelName(channel, p)
-		/// @todo: do not use channel name. Use source attribute instead
-		//IPNWB#LoadSourceAttribute(h5_groupID, channel, p)
+		IPNWB#LoadSourceAttribute(h5_groupID, channel, p)
 
 		switch(p.channelType)
 			case ITC_XOP_CHANNEL_TYPE_DAC:
@@ -1334,12 +1334,12 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 				endif
 
 				if(WaveMax(loaded) < 2)
-					base += 2^(str2num(p.channelSuffix)) * loaded
+					base += 2^(p.ttlBit) * loaded
 				else
 					base += loaded
 				endif
 
-				channelName += "_" + p.channelSuffix
+				channelName += "_" + num2str(p.ttlBit)
 				break
 			default:
 				ASSERT(1, "unknown channel type " + num2str(p.channelType))

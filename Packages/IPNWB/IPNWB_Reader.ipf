@@ -6,7 +6,7 @@
 /// @file IPNWB_Reader.ipf
 /// @brief Generic functions related to import from the NeuroDataWithoutBorders format
 
-/// @brief list devices in given hdf5 file
+/// @brief List devices in given hdf5 file
 ///
 /// @param  fileID identifier of open HDF5 file
 /// @return        comma separated list of devices
@@ -16,7 +16,7 @@ Function/S ReadDevices(fileID)
 	return RemovePrefixFromListItem("device_", H5_ListGroupMembers(fileID, "/general/devices"))
 End
 
-/// @brief list groups inside /general/labnotebook
+/// @brief List groups inside /general/labnotebook
 ///
 /// @param  fileID identifier of open HDF5 file
 /// @return        list with name of all groups inside /general/labnotebook/*
@@ -26,7 +26,7 @@ Function/S ReadLabNoteBooks(fileID)
 	return H5_ListGroups(fileID, "/general/labnotebook")
 End
 
-/// @brief list all acquisition channels.
+/// @brief List all acquisition channels.
 ///
 /// @param  fileID identifier of open HDF5 file
 /// @return        comma separated list of channels
@@ -36,7 +36,7 @@ Function/S ReadAcquisition(fileID)
 	return H5_ListGroups(fileID, "/acquisition/timeseries")
 End
 
-/// @brief list all stimulus channels.
+/// @brief List all stimulus channels.
 ///
 /// @param  fileID identifier of open HDF5 file
 /// @return        comma separated list of channels
@@ -46,7 +46,7 @@ Function/S ReadStimulus(fileID)
 	return H5_ListGroups(fileID, "/stimulus/presentation")
 End
 
-/// @brief check if the file can be handled by the IPNWB Read Procedures
+/// @brief Check if the file can be handled by the IPNWB Read Procedures
 ///
 /// @param   fileID  Open HDF5-File Identifier
 /// @return  True:   All checks successful
@@ -84,7 +84,7 @@ Function CheckIntegrity(fileID)
 	return integrity
 End
 
-/// @brief  try loading a channel and perform some checks
+/// @brief  Try loading a channel and perform some checks
 ///         this can be used to verify the source data
 ///
 /// @param   groupID  HDF5 group specified channel is a member of
@@ -155,6 +155,7 @@ Structure ReadChannelParams
 	variable channelNumber    ///< running number of the channel
 	variable electrodeNumber  ///< electrode identifier the channel was acquired with
 	variable groupIndex       ///< constant for all channels in this measurement.
+	variable ttlBit           ///< unambigous ttl-channel-number
 EndStructure
 
 /// @brief Try to extract information from channel name string
@@ -168,6 +169,7 @@ Function AnalyseChannelName(channel, p)
 
 	SplitString/E="^(?i)data_([A-Z0-9]+)_([A-Z]+)([0-9]+)(?:_([A-Z0-9]+)){0,1}" channel, groupIndex, channelID, channelNumber, p.channelSuffix
 	p.groupIndex = str2num(groupIndex)
+	p.ttlBit = str2num(p.channelSuffix)
 	strswitch(channelID)
 		case "AD":
 			p.channelType = CHANNEL_TYPE_ADC
@@ -249,6 +251,9 @@ Function LoadSourceAttribute(locationID, channel, p)
 			case "TTL":
 				p.channelType = CHANNEL_TYPE_TTL
 				p.channelNumber = str2num(value)
+				break
+			case "TTLBit":
+				p.ttlBit = str2num(value)
 				break
 			default:
 		endswitch
