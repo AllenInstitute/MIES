@@ -1174,44 +1174,72 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 	string filePath, dataFolder, fileType, device
 	variable sweep
 
+	String sweepFolder, sweeps, msg
+	Variable failure
+
+	ASSERT(!isEmpty(filePath), "Empty file or Folder name on disc")
+	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
+	ASSERT(cmpstr(fileType, "unknown"), "unknown file format")
+	ASSERT(!isEmpty(device), "Empty device")
+	ASSERT(isFinite(sweep), "Non-finite sweep")
+
+	sweepFolder = GetAnalysisSweepDataPathAS(dataFolder, device, sweep)
+
+	// sweep already loaded
+	if(DataFolderExists(sweepFolder))
+		return 0
+	endif
+
+	DFREF sweepDFR = createDFWithAllParents(sweepFolder)
+
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			return AB_LoadSweepFromIgor(filePath, dataFolder, device, sweep)
+			sweeps = AB_LoadSweepFromIgor(filePath, sweepDFR, device, sweep)
+			if(!cmpstr(sweeps, ""))
+				return 1
+			endif
+			Wave sweepsWave = sweepDFR:$sweeps
+			if(AB_SplitSweepIntoComponents(dataFolder, device, sweep, sweepsWave))
+				return 1
+			endif
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWB:
-			/// @todo direct to functions
+			if(AB_LoadSweepFromNWB(filePath, sweepDFR, device, sweep))
+				return 1
+			endif
 			break
 		default:
-			/// @todo assert here
+			ASSERT(0, "fileType not handled")
 	endswitch
+
+	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, filePath
+	DEBUGPRINT(msg)
+
+	return 0
 End
 
-/// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
-Function AB_LoadSweepFromIgor(expFilePath, expFolder, device, sweep)
-	string expFilePath, expFolder, device
+Function AB_LoadSweepFromNWB(nwbFilePath, sweepFolder, device, sweep)
+	string nwbFilePath, device
+	DFREF sweepFolder
+	variable sweep
+
+	return 1
+End
+
+Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
+	string expFilePath, device
+	DFREF sweepDFR
 	variable sweep
 
 	variable numWavesLoaded
 	string sweepWaveList = ""
-	string sweepWaveName, dataPath, sweepFolder, msg
+	string sweepWaveName, dataPath
 
 	// we load the backup wave also
 	// in case it exists, it holds the original unmodified data
 	sweepWaveName  = "sweep_" + num2str(sweep)
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName, ";", Inf)
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName + WAVE_BACKUP_SUFFIX, ";", Inf)
-
-	ASSERT(!isEmpty(expFilePath), "Empty expFileOrFolder")
-	ASSERT(!isEmpty(expFolder), "Empty expFolder")
-	ASSERT(!isEmpty(device), "Empty device")
-	ASSERT(isFinite(sweep), "Non-finite sweep")
-
-	sweepFolder = GetAnalysisSweepDataPathAS(expFolder, device, sweep)
-
-	// sweep already loaded
-	if(DataFolderExists(sweepFolder))
-		return 0
-	endif
 
 	dataPath = GetDeviceDataPathAsString(device)
 	DFREF saveDFR = GetDataFolderDFR()
@@ -1222,7 +1250,8 @@ Function AB_LoadSweepFromIgor(expFilePath, expFolder, device, sweep)
 		printf "Could not load sweep %d of device %s and %s\r", sweep, device, expFilePath
 		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
-		return 1
+		KillOrMoveToTrash(dfr=sweepDFR)
+		return ""
 	endif
 
 	Wave sweepWave = $sweepWaveName
@@ -1231,20 +1260,11 @@ Function AB_LoadSweepFromIgor(expFilePath, expFolder, device, sweep)
 		ReplaceWaveWithBackup(sweepWave)
 	endif
 
-	DFREF sweepDataDFR = createDFWithAllParents(sweepFolder)
-	MoveWave sweepWave, sweepDataDFR
+	MoveWave sweepWave, sweepDFR
 	SetDataFolder saveDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
-	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, expFilePath
-	DEBUGPRINT(msg)
-
-	if(AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave))
-		KillOrMoveToTrash(dfr=sweepDataDFR)
-		return 1
-	endif
-
-	return 0
+	return sweepWaveName
 End
 
 static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
