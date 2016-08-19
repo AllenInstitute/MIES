@@ -211,7 +211,7 @@ static Function/S AB_LoadFile(discLocation)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
-				WAVE sweepNums = AB_GetSweepsFromLabNotebook(map[%DataFolder], device, clean = 1)
+				WAVE sweepNums = AB_GetSweepsFromNWB(map[%DiscLocation], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -495,6 +495,35 @@ static Function/WAVE AB_GetSweepsFromExperiment(discLocation, device)
 /// @param dataFolder    datafolder of the project
 
 	return sweepNumbers
+End
+
+/// @brief Returns a wave containing all present sweep numbers
+///
+/// Function uses source attribute of /acquisition/timeseries
+///
+/// @param discLocation  location of NWB File on Disc.
+///                      ID in AnalysisBrowserMap
+/// @param device        device for which to get sweeps.
+static Function/WAVE AB_GetSweepsFromNWB(discLocation, device)
+	string discLocation, device
+
+	variable h5_fileID, h5_groupID, numSweeps, i
+	string channelList, channelString
+	STRUCT IPNWB#ReadChannelParams channel
+
+	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+	channelList = IPNWB#ReadChannelList(h5_fileID, acquisition = 1)
+	h5_groupID = H5_OpenGroup(h5_fileID, "/acquisition/timeseries")
+
+	numSweeps = ItemsInList(channelList)
+	Make/FREE/N=(numSweeps) sweepNumbers
+	for(i = 0; i < numSweeps; i += 1)
+		channelString = StringFromList(i, channelList)
+		IPNWB#LoadSingleChannel(h5_groupID, channelString, channel)
+		sweepNumbers[i] = channel.sweep
+	endfor
+
+	return GetUniqueEntries(sweepNumbers)
 End
 
 static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
