@@ -16,38 +16,6 @@ Function/S ReadDevices(fileID)
 	return RemovePrefixFromListItem("device_", H5_ListGroupMembers(fileID, "/general/devices"))
 End
 
-/// @brief list all channels inside the file. Specifiy which type of channel by
-///        optional arguments.
-/// @param[in] locationID          identifier pointing to open HDF5 file or group
-/// @param[in] acquisition         optional: select /acquisition/timeseries
-/// @param[in] stimulus            optional: select /stimulus/presentation
-/// @param[out] channelList        list of all channels
-/// @param[out] groupID            optional: group with channels remains open and
-///                                groupID will be filled with open group
-Function/S ReadChannelList(locationID, [acquisition, stimulus])
-	variable locationID
-	variable acquisition, stimulus
-
-	string path
-
-	if(ParamIsDefault(acquisition))
-		acquisition = 0
-	endif
-	if(ParamIsDefault(stimulus))
-		stimulus = 0
-	endif
-
-	ASSERT((acquisition + stimulus) == 1, "Function takes exactly one optional parameter at once")
-
-	if(acquisition)
-		path = "/acquisition/timeseries"
-	elseif(stimulus)
-		path = "/stimulus/presentation"
-	endif
-
-	return H5_ListGroups(locationID, path)
-End
-
 /// @brief list groups inside /general/labnotebook
 ///
 /// @param  fileID identifier of open HDF5 file
@@ -56,6 +24,26 @@ Function/S ReadLabNoteBooks(fileID)
 	Variable fileID
 
 	return H5_ListGroups(fileID, "/general/labnotebook")
+End
+
+/// @brief list all acquisition channels.
+///
+/// @param  fileID identifier of open HDF5 file
+/// @return        comma separated list of channels
+Function/S ReadAcquisition(fileID)
+	variable fileID
+
+	return H5_ListGroups(fileID, "/acquisition/timeseries")
+End
+
+/// @brief list all stimulus channels.
+///
+/// @param  fileID identifier of open HDF5 file
+/// @return        comma separated list of channels
+Function/S ReadStimulus(fileID)
+	variable fileID
+
+	return H5_ListGroups(fileID, "/stimulus/presentation")
 End
 
 /// @brief check if the file can be handled by the IPNWB Read Procedures
@@ -77,19 +65,21 @@ Function CheckIntegrity(fileID)
 		integrity = 0
 	endif
 
-	channelList = ReadChannelList(fileID, acquisition = 1)
-	groupID = H5_OpenGroup(fileID, "/acquisition/timeseries")
+	channelList = ReadAcquisition(fileID)
+	groupID = OpenAcquisition(fileID)
 	if(!CheckChannels(groupID, channelList))
 		print "acquisition channel corrupt"
 		integrity = 0
 	endif
+	HDF5CloseGroup/Z groupID
 
-	channelList = ReadChannelList(fileID, stimulus = 1)
-	groupID = H5_OpenGroup(fileID, "/stimulus/presentation")
+	channelList = ReadStimulus(fileID)
+	groupID = OpenStimulus(fileID)
 	if(!CheckChannels(groupID, channelList))
 		print "stimulus channel corrupt"
 		integrity = 0
 	endif
+	HDF5CloseGroup/Z groupID
 
 	return integrity
 End
@@ -205,20 +195,23 @@ Function LoadSourceAttribute(locationID, channel, p)
 	STRUCT ReadChannelParams &p
 
 	string attribute, property, value
-	variable numStrings, i
+	variable numStrings, i, error
 
 	attribute = "source"
 	ASSERT(!H5_DatasetExists(locationID, channel + "/" + attribute), "Could not find source attribute!")
 
-	HDF5LoadData/O/A=(attribute)/TYPE=1/Q/Z locationID, channel
-	if(V_flag)
+	HDF5LoadData/O/A=(attribute)/N=tempAttributeWave/TYPE=1/Q/Z locationID, channel
+	error = V_flag
+	if(error)
 		HDf5DumpErrors/CLR=1
 		HDF5DumpState
-		ASSERT(0, "Could not load the HDF5 dataset ./source")
+		HDF5CloseGroup/Z locationID
+		KillWaves/Z tempAttributeWave
+		ASSERT(0, "\rCould not load the HDF5 attribute '" + attribute + "' in channel '" + channel + "'\rError No: " + num2str(error))
 	endif
 
 	ASSERT(ItemsInList(S_WaveNames) == 1, "Expected only one wave")
-	WAVE/T wv = $StringFromList(0, S_WaveNames)
+	WAVE/T wv = tempAttributeWave
 	ASSERT(WaveType(wv, 1) == 2, "Expected a dataset of type text")
 
 	numStrings = DimSize(wv, ROWS)
@@ -261,8 +254,7 @@ Function LoadSourceAttribute(locationID, channel, p)
 		endswitch
 	endfor
 
-	// from /acquisition/timeseries/data_*_*/source
-	//sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
+	KillWaves/Z wv
 End
 
 /// @brief Load data wave from specified path
@@ -330,4 +322,26 @@ Function/Wave LoadStimulus(locationID, channel, [dfr])
 	endif
 
 	return data
+End
+
+/// @brief Open hdf5 group containing acquisition channels
+///
+/// @param fileID id of an open hdf5 group or file
+///
+/// @return id of hdf5 group
+Function OpenAcquisition(fileID)
+	variable fileID
+
+	return H5_OpenGroup(fileID, "/acquisition/timeseries")
+End
+
+/// @brief Open hdf5 group containing stimulus channels
+///
+/// @param fileID id of an open hdf5 group or file
+///
+/// @return id of hdf5 group
+Function OpenStimulus(fileID)
+	variable fileID
+
+	return H5_OpenGroup(fileID, "/stimulus/presentation")
 End

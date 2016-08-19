@@ -545,16 +545,21 @@ static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
 	h5_fileID = IPNWB#H5_OpenFile(discLocation)
 
 	// load from /acquisition/timeseries
-	channelList = IPNWB#ReadChannelList(h5_fileID, acquisition = 1)
-	h5_groupID = IPNWB#H5_OpenGroup(h5_fileID, "/acquisition/timeseries")
+	channelList = IPNWB#ReadAcquisition(h5_fileID)
+	h5_groupID  = IPNWB#OpenAcquisition(h5_fileID)
 	Wave/T acquisition = GetAnalysisChannelAcqWave(dataFolder, device)
 	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, acquisition)
+	HDF5CloseGroup/Z h5_groupID
 
 	// load from /stimulus/presentation
-	channelList = IPNWB#ReadChannelList(h5_fileID, stimulus = 1)
-	h5_groupID = IPNWB#H5_OpenGroup(h5_fileID, "/stimulus/presentation")
+	channelList = IPNWB#ReadStimulus(h5_fileID)
+	h5_groupID  = IPNWB#OpenStimulus(h5_fileID)
 	Wave/T stimulus = GetAnalysisChannelStimWave(dataFolder, device)
 	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, stimulus)
+	HDF5CloseGroup/Z h5_groupID
+
+	// close hdf5 file
+	IPNWB#H5_CloseFile(h5_fileID)
 End
 
 /// @brief Store channelList in storage wave according to index in sweeps wave
@@ -817,6 +822,7 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 
 	h5_fileID = IPNWB#H5_OpenFile(nwb[%DiscLocation])
 	if (!IPNWB#CheckIntegrity(h5_fileID))
+		IPNWB#H5_CloseFile(h5_fileID)
 		return ""
 	endif
 
@@ -842,6 +848,7 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 	endfor
 
 	// H5_CloseFile closes all associated open groups.
+	HDF5CloseGroup/Z h5_notebooksID
 	IPNWB#H5_CloseFile(h5_fileID)
 
 	return devicelist
@@ -1270,6 +1277,9 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep))
 		return 1
 	endif
+
+	// close NWB file
+	IPNWB#H5_CloseFile(h5_fileID)
 
 	return 0
 End
