@@ -720,3 +720,30 @@ static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbPr
 
 	IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor)
 End
+
+/// @brief function saves contents of specified notebook to data folder
+///
+/// @param locationID id of nwb file or notebooks folder
+/// @param notebook name of notebook to be loaded
+/// @param dfr igor data folder where data should be loaded into
+Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
+	Variable locationID
+	String notebook
+	DFREF dfr
+
+	String deviceList, path
+
+	if(!DataFolderExistsDFR(dfr))
+		return 0
+	endif
+
+	path = "/general/labnotebook/" + notebook
+	if(IPNWB#H5_GroupExists(locationID, path))
+		HDF5LoadGroup/Z/IGOR=-1 dfr, locationID, path
+		if(!V_flag)
+			return ItemsInList(S_objectPaths)
+		endif
+	endif
+
+	return 0
+End
