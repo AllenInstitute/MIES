@@ -67,7 +67,8 @@ End
 Function CheckIntegrity(fileID)
 	variable fileID
 
-	string deviceList
+	string deviceList, channelList
+	variable groupID
 	variable integrity = 1
 
 	deviceList = ReadDevices(fileID)
@@ -76,7 +77,83 @@ Function CheckIntegrity(fileID)
 		integrity = 0
 	endif
 
+	channelList = ReadChannelList(fileID, acquisition = 1)
+	groupID = H5_OpenGroup(fileID, "/acquisition/timeseries")
+	if(!CheckChannels(groupID, channelList))
+		print "acquisition channel corrupt"
+		integrity = 0
+	endif
+
+	channelList = ReadChannelList(fileID, stimulus = 1)
+	groupID = H5_OpenGroup(fileID, "/stimulus/presentation")
+	if(!CheckChannels(groupID, channelList))
+		print "stimulus channel corrupt"
+		integrity = 0
+	endif
+
 	return integrity
+End
+
+/// @brief  try loading a channel and perform some checks
+///         this can be used to verify the source data
+///
+/// @param   groupID  HDF5 group specified channel is a member of
+/// @param   channel  channel to load
+/// @return  True:    All checks successful
+///          False:   Error(s) occured.
+///                   The result of the analysis is printed to history.
+Function CheckChannel(groupID, channel)
+	Variable groupID
+	String channel
+
+	Struct ReadChannelParams p
+	Struct ReadChannelParams q
+
+	Variable integrity = 1
+
+	LoadSourceAttribute(groupID, channel, p)
+	AnalyseChannelName(channel, q)
+	if(p.channelType != q.channelType)
+		printf "name of channel %s differs from channelType %d\r" channel, p.channelType
+		integrity = 0
+	endif
+	if(p.channelNumber != q.channelNumber)
+		printf "name of channel %s differs from channelNumber %d\r" channel, p.channelNumber
+		integrity = 0
+	endif
+
+	return integrity
+End
+
+/// @brief Check every channel from channelList inside a specified group
+///
+/// @param   groupID     HDF5 group containing the channels to check
+/// @param   channelList List of all channels that have to be checked
+/// @return  True:       All checks successful
+///          False:      Error(s) occured.
+///                      The result of the analysis is printed to history.
+Function CheckChannels(groupID, channelList)
+	Variable groupID
+	String channelList
+
+	String channel
+	Variable numChannels, i
+
+	numChannels = ItemsInList(channelList)
+	for(i = 0; i < numChannels; i += 1)
+		channel = StringFromList(i, channelList)
+		if(!CheckChannel(groupID, channel))
+			return 0
+		endif
+		wave loaded = LoadDataWave(groupID, channel)
+		if(!WaveExists(loaded))
+			printf "could not load DataSet for channel %s" channel
+			return 0
+		endif
+		WaveClear loaded
+	endfor
+
+	return 1
 End
 
 /// @brief Loader structure analog to #IPNWB::WriteChannelParams
