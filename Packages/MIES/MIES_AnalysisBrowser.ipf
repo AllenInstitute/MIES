@@ -1218,12 +1218,105 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 	return 0
 End
 
-Function AB_LoadSweepFromNWB(nwbFilePath, sweepFolder, device, sweep)
-	string nwbFilePath, device
-	DFREF sweepFolder
+Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
+	string discLocation, device
+	DFREF sweepDFR
 	variable sweep
 
-	return 1
+	string channelList
+	variable h5_fileID, numSweeps
+
+	Wave/T nwb = AB_GetMap(discLocation)
+
+	// find sweep in map
+	Wave/T devices = GetAnalysisDeviceWave(nwb[%DataFolder])
+	FindValue/S=0/TEXT=(device) devices
+	ASSERT(V_Value >= 0, "device not found")
+	Wave/I sweeps  = GetAnalysisChannelSweepWave(nwb[%DataFolder], device)
+	FindValue/S=0/I=(sweep) sweeps
+	ASSERT(V_Value >= 0, "sweep not found")
+
+	// load sweep info wave
+	Wave/Wave channelStorage = GetAnalysisChannelStorage(nwb[%DataFolder], device)
+	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
+	if(numSweeps != GetNumberFromWaveNote(channelStorage, NOTE_INDEX))
+		EnsureLargeEnoughWave(channelStorage, minimumSize = numSweeps, dimension = ROWS)
+	endif
+	Wave/Z/I sweepInfo = channelStorage[V_Value][%sweepInfo]
+	if(!WaveExists(sweepInfo))
+		Wave/I sweepInfo = GetAnalysisConfigWave(nwb[%DataFolder], device, sweep)
+		channelStorage[V_Value][%sweepInfo] = sweepInfo
+	endif
+
+	// open NWB file
+	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+
+	// load acquisition
+	Wave/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
+	channelList = acquisition[V_Value]
+	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo))
+		return 1
+	endif
+
+	// load stimulus
+	Wave/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
+	channelList = stimulus[V_Value]
+	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo))
+		return 1
+	endif
+
+	return 0
+End
+
+Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo)
+	variable h5_fileID
+	string channelList
+	DFREF sweepDFR
+	Wave/I sweepInfo
+
+	string channel, channelName, channelID
+	variable numChannels, numEntries, i
+	STRUCT IPNWB#ReadChannelParams p
+
+	numEntries = DimSize(sweepInfo, 0)
+	numChannels = ItemsInList(channelList)
+	Redimension/N=((numEntries + numChannels), -1) sweepInfo
+
+	for(i = 0; i < numChannels; i += 1)
+		channel = StringFromList(i, channelList)
+
+		IPNWB#AnalyseChannelName(channel, p)
+
+		switch(p.channelType)
+			case ITC_XOP_CHANNEL_TYPE_DAC:
+				wave loaded = IPNWB#LoadStimulus(h5_fileID, channel, dfr = sweepDFR, readIgorAttr = 1)
+				channelID = "DA"
+				break
+			case ITC_XOP_CHANNEL_TYPE_ADC:
+				wave loaded = IPNWB#LoadTimeseries(h5_fileID, channel, dfr = sweepDFR, readIgorAttr = 1)
+				channelID = "AD"
+				break
+			case ITC_XOP_CHANNEL_TYPE_TTL:
+				break
+			default:
+				ASSERT(1, "unknown channel type " + num2str(p.channelType))
+		endswitch
+
+		// fake Config_Sweeps Wave
+		sweepInfo[(numEntries + i)][0] = p.channelType
+		sweepInfo[(numEntries + i)][1] = p.channelNumber
+		sweepInfo[(numEntries + i)][2] = trunc(DimDelta(loaded, ROWS) * 1000)
+		sweepInfo[(numEntries + i)][3] = -1 // -1 for faked Config_Sweeps Waves
+
+		// set unit in config_wave from WaveNote of loaded dataset
+		Note/K sweepInfo, AddListItem(WaveUnits(loaded, COLS), Note(sweepInfo), ";", Inf)
+
+		channelName = channelID + "_" + num2str(p.channelNumber)
+		Rename loaded $ChannelName
+		WaveClear loaded
+	endfor
+
+	return 0 // no error
 End
 
 Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)

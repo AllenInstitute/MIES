@@ -3662,6 +3662,28 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
+///  wave is used to relate it's index to sweepWave and deviceWave.
+Function/Wave GetAnalysisChannelStorage(dataFolder, device)
+	String dataFolder, device
+	Variable versionOfWave = 1
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+	Wave/Z/SDFR=dfr/WAVE wv = channelStorage
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	Make/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	SetDimLabel COLS, 0, sweepInfo,   wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
 /// @brief Return a wave containing all stimulus channels in the NWB file as a ";"-separated List
 ///  wave is used to relate it's index to sweepWave and deviceWave.
 Function/Wave GetAnalysisChannelStimWave(dataFolder, device)
@@ -3832,11 +3854,20 @@ Function/Wave GetExperimentBrowserGUISel()
 End
 
 /// @brief Return the config wave of a given sweep from the analysis subfolder
-Function/Wave GetAnalysisConfigWave(expFolder, device, sweep)
-	string expFolder, device
+Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
+	string dataFolder, device
 	variable sweep
 
-	Wave/SDFR=GetAnalysisDeviceConfigFolder(expFolder, device) wv = $("Config_Sweep_" + num2str(sweep))
+	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
+	string config  = "Config_Sweep_" + num2str(sweep)
+
+	Wave/I/Z/SDFR=dfr wv = $config
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0, 4)/I dfr:$config/Wave=wv = -1
 
 	return wv
 End
