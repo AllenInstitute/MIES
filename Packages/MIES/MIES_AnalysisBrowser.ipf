@@ -80,6 +80,8 @@ static Function AB_ClearAnalysisFolder()
 	CallFunctionForEachListItem(KillOrMoveToTrashPath, folders)
 End
 
+/// @brief Create relation (experimentMap) between file on disk and datafolder in current experiment
+/// @return total number of files mapped
 static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	string baseFolder, expFilePath
 
@@ -88,13 +90,15 @@ static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	WAVE/T experimentMap = GetExperimentMap()
 
 	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
-
 	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
+
+	// %ExperimentDiscLocation = full path to file
 	experimentMap[index][%ExperimentDiscLocation] = expFilePath
 
+	// %ExperimentName = filename + extension
 	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
 	experimentMap[index][%ExperimentName] = relativePath
-
+	// %ExperimentFolder = igor friendly DF name; Delete existing folder
 	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
@@ -402,11 +406,13 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 	WAVE/T experimentMap = GetExperimentMap()
 
+	// map filePath to DataFolder in current experiment
 	FindValue/TXOP=4/TEXT=(expFilePath) experimentMap
 	ASSERT(V_Value >= 0, "invalid index")
 	expName   = experimentMap[V_Value][%ExperimentName]
 	expFolder = experimentMap[V_Value][%ExperimentFolder]
 
+	// load notebook waves from file to (temporary) data folder
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
 	labNotebookWaves += "numericalKeys;textualKeys;numericalValues;textualValues"
 	labNotebookPath = GetLabNotebookFolderAsString()
@@ -420,8 +426,10 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 		return ""
 	endif
 
+	// AB_LoadDataWrapper switched current Data Folder to newDFR
 	cdf = GetDataFolder(1)
 
+	// loop through root:MIES:LabNoteBook:[DEVICE_TYPES]:Device[DEVICE_NUMBERS]:
 	numDevices = ItemsInList(DEVICE_NUMBERS)
 	numTypes   = ItemsInList(DEVICE_TYPES)
 
@@ -441,6 +449,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 				continue
 			endif
 
+			// search for Loaded labNotebookWaves
 			// first try the new wave names and then as fallback
 			// the old ones
 			// Supports old/new wavename mixes although these should not
@@ -493,6 +502,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 
 			deviceList = AddListItem(device, deviceList, ";", inf)
 
+			// copy and rename loaded waves to Analysisbrowser directory.
 			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 
 			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
@@ -922,6 +932,7 @@ Function AB_ScanFolder(win)
 	string baseFolder, path, pxpList, uxpList, list
 	variable i, numEntries
 
+	// create new symbolic path
 	baseFolder = GetSetVariableString(win, "setvar_baseFolder")
 	path = UniqueName("scanfolder_path", 12, 1)
 	NewPath/Q/Z $path, baseFolder
@@ -933,6 +944,7 @@ Function AB_ScanFolder(win)
 
 	AB_ClearAnalysisFolder()
 
+	// process *.pxp and *.uxp files
 	pxpList = GetAllFilesRecursivelyFromPath(path, extension=".pxp")
 	uxpList = GetAllFilesRecursivelyFromPath(path, extension=".uxp")
 	KillPath $path
@@ -941,9 +953,11 @@ Function AB_ScanFolder(win)
 
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
+		// analyse pxp files and save content in list (GetExperimentBrowserGUIList)
 		AB_AddExperimentFile(baseFolder, StringFromList(i, list, "|"))
 	endfor
 
+	// redimension to maximum size (all expanded)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
 	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
 
@@ -952,6 +966,7 @@ Function AB_ScanFolder(win)
 
 	AB_ResetSelectionWave()
 
+	// backup initial state
 	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
 	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
@@ -1022,6 +1037,7 @@ Window ExperimentBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 EndMacro
 
+/// @brief Button "Expand all"
 Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1035,6 +1051,7 @@ Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Collapse all"
 Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1047,6 +1064,7 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Load Selection"
 Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1136,6 +1154,7 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Scan folder"
 Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1148,16 +1167,20 @@ Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Select directory"
+/// Display dialog box for choosing a folder and call AB_ScanFolder()
 Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string path, win
 	switch(ba.eventCode)
 		case 2: // mouse up
+				// If exists start with previously saved folder in setvar_baseFolder
 				win = ba.win
 				PathInfo/S $GetSetVariableString(win, "setvar_baseFolder")
 				GetFileFolderInfo/D/Q/Z=2
 
+				// store results and scan chosen folder
 				if(V_flag == 0 && V_isFolder)
 					SetSetVariableString(win, "setvar_baseFolder", S_Path)
 					AB_ScanFolder(win)
@@ -1168,6 +1191,7 @@ Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Select same stim set sweeps"
 Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1207,6 +1231,7 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 	return 0
 End
 
+/// @brief main ListBox list_experiment_contents
 Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
@@ -1249,6 +1274,7 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 	return 0
 End
 
+/// @brief Button "Open comment NB"
 Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 

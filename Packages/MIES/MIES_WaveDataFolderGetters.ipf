@@ -3649,7 +3649,8 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
-/// @brief Return the text wave mapping the properties of the loaded experiments
+/// @brief Get text wave mapping the properties of the loaded experiments
+/// @return wave with 3 columns: %ExperimentDiscLocation %ExperimentName %ExperimentFolder
 Function/Wave GetExperimentMap()
 
 	DFREF dfr = GetAnalysisFolder()
