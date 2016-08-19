@@ -430,9 +430,9 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	return channelMap
 End
 
-/// @param sweepBrowserDFR datatfolder of the sweep browser
-/// @param currentMapIndex index into the sweep browser map of the currently shown sweep
-/// @param newMapIndex index into the sweep browser map of the new to-be-shown sweep
+/// @param sweepBrowserDFR datafolder of the sweep browser
+/// @param currentMapIndex index in the sweep browser map of the currently shown sweep
+/// @param newMapIndex     index in the sweep browser map of the new to-be-shown sweep
 Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	DFREF sweepBrowserDFR
 	variable currentMapIndex, newMapIndex
