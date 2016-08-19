@@ -243,6 +243,53 @@ Function H5_WriteAttribute(locationID, attrName, path, var, varType, [overwrite]
 	endif
 End
 
+/// @brief Open HDF5 file and return ID
+///
+/// @param discLocation  full path to nwb file
+/// @param write         open file for writing. default is readonly.
+/// @return              ID for referencing open hdf5 file
+Function H5_OpenFile(discLocation, [write])
+	String discLocation
+	variable write
+	if(ParamIsDefault(write))
+		write = 0
+	endif
+
+	Variable fileID
+
+	GetFileFolderInfo/Q/Z discLocation
+	ASSERT(!V_Flag, "The given file does not exist.")
+
+	if(write)
+		HDF5OpenFile/Z fileID as discLocation
+	else
+		HDF5OpenFile/Z/R fileID as discLocation
+	endif
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "Could not open HDF5 file.")
+	endif
+
+	return fileID
+End
+
+/// @brief Close HDF5 file
+///
+/// @param fileID  ID of open hdf5 file
+/// @return        open state as true/false
+Function H5_CloseFile(fileID)
+	variable fileID
+
+	if(H5_IsFileOpen(fileID))
+		// try to close the file (once)
+		HDF5CloseFile/Z fileID
+		return H5_IsFileOpen(fileID)
+	endif
+
+	return 0
+End
+
 /// @brief Return 1 if the given HDF5 file is already open, 0 otherwise.
 ///
 /// @param fileID HDF5 locationID from `HDF5OpenFile`.

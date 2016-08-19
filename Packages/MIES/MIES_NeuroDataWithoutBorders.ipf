@@ -101,13 +101,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 
 	GetFileFolderInfo/Q/Z filePath
 	if(!V_flag)
-		HDF5OpenFile/Z fileID as filePath
-
-		if(V_flag)
-			HDf5DumpErrors/CLR=1
-			HDF5DumpState
-			ASSERT(0, "Could not open HDF5 file")
-		endif
+		fileID = IPNWB#H5_OpenFile(filePath, write = 1)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
 		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
