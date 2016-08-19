@@ -27,7 +27,7 @@ static Function/S LBN_GetExpFolderFromPopup(graph)
 
 	ASSERT(index >= 0 && index < DimSize(experimentMap, ROWS), "Invalid index")
 
-	return experimentMap[index][%ExperimentFolder]
+	return experimentMap[index][%DataFolder]
 End
 
 Function LBN_OpenLabnotebookBrowser()
@@ -486,7 +486,7 @@ Function/S LBN_GetAllExperiments()
 	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
 
 	for(i = 0; i < index; i += 1)
-		list = AddListItem(experimentMap[i][%ExperimentName], list, ";", Inf)
+		list = AddListItem(experimentMap[i][%FileName], list, ";", Inf)
 	endfor
 
 	return list

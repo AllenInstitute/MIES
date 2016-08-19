@@ -92,18 +92,18 @@ static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
 	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
 
-	// %ExperimentDiscLocation = full path to file
-	experimentMap[index][%ExperimentDiscLocation] = expFilePath
+	// %DiscLocation = full path to file
+	experimentMap[index][%DiscLocation] = expFilePath
 
-	// %ExperimentName = filename + extension
+	// %FileName = filename + extension
 	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
-	experimentMap[index][%ExperimentName] = relativePath
-	// %ExperimentFolder = igor friendly DF name; Delete existing folder
+	experimentMap[index][%FileName] = relativePath
+	// %DataFolder = igor friendly DF name; Delete existing folder
 	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
 	expFolderName = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
-	experimentMap[index][%ExperimentFolder] = RemoveEnding(expFolderName, ":")
+	experimentMap[index][%DataFolder] = RemoveEnding(expFolderName, ":")
 
 	index += 1
 	SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
@@ -409,8 +409,8 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	// map filePath to DataFolder in current experiment
 	FindValue/TXOP=4/TEXT=(expFilePath) experimentMap
 	ASSERT(V_Value >= 0, "invalid index")
-	expName   = experimentMap[V_Value][%ExperimentName]
-	expFolder = experimentMap[V_Value][%ExperimentFolder]
+	expName   = experimentMap[V_Value][%FileName]
+	expFolder = experimentMap[V_Value][%DataFolder]
 
 	// load notebook waves from file to (temporary) data folder
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
@@ -785,9 +785,9 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 
 		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
 		mapIndex    = str2num(expBrowserList[j][%experiment][1])
-		expName     = experimentMap[mapIndex][%ExperimentName]
-		expFolder   = experimentMap[mapIndex][%ExperimentFolder]
-		expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+		expName     = experimentMap[mapIndex][%FileName]
+		expFolder   = experimentMap[mapIndex][%DataFolder]
+		expFilePath = experimentMap[mapIndex][%DiscLocation]
 
 		if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep) == 1)
 			continue
@@ -1130,9 +1130,9 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
 				mapIndex    = str2num(expBrowserList[row][%experiment][1])
-				expName     = experimentMap[mapIndex][%ExperimentName]
-				expFolder   = experimentMap[mapIndex][%ExperimentFolder]
-				expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+				expName     = experimentMap[mapIndex][%FileName]
+				expFolder   = experimentMap[mapIndex][%DataFolder]
+				expFilePath = experimentMap[mapIndex][%DiscLocation]
 
 				if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep))
 					continue
@@ -1304,9 +1304,9 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 				break
 			endif
 
-			expName     = experimentMap[mapIndex][%ExperimentName]
-			expFolder   = experimentMap[mapIndex][%ExperimentFolder]
-			expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+			expName     = experimentMap[mapIndex][%FileName]
+			expFolder   = experimentMap[mapIndex][%DataFolder]
+			expFilePath = experimentMap[mapIndex][%DiscLocation]
 
 			SVAR/Z/SDFR=GetAnalysisDeviceFolder(expFolder, device) userComment
 			if(!SVAR_Exists(userComment))
