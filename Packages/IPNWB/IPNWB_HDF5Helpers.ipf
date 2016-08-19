@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.14
+#pragma version=0.15
 
 /// @cond DOXYGEN_IGNORES_THIS
 #if (IgorVersion() < 7.0)
@@ -404,4 +404,59 @@ Function H5_IsValidIdentifier(name)
 	string name
 
 	return GrepString(name, "^[A-Za-z0-9_ -]+$")
+End
+
+/// @brief Non-recursivly list all datasets at path
+///
+/// @param[in] locationID          HDF5 identifier, can be a file or group
+/// @param[in] path                Additional path on top of `locationID` which identifies
+///                                the group
+Function/S H5_ListGroupMembers(locationID, path)
+	Variable locationID
+	String path
+
+	Variable groupID
+	String groupList
+
+	ASSERT(H5_GroupExists(locationID, path), path + " not in HDF5 file")
+
+	HDF5ListGroup/Z locationID, path
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "HDF5ListGroup returned error " + num2str(V_flag))
+	endif
+
+	return S_HDF5ListGroup
+End
+
+/// @brief List all groups inside a group
+///
+/// @param[in]  fileID        HDF5 file identifier
+/// @param[in]  path          Full path to the group inside fileID
+Function/S H5_ListGroups(fileID, path)
+	Variable fileID
+	String path
+
+	ASSERT(H5_GroupExists(fileID, path), path + " not in HDF5 file")
+
+	HDF5ListGroup/TYPE=1/Z fileID, path
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "HDF5ListGroup returned error " + num2str(V_flag))
+	endif
+
+	return S_HDF5ListGroup
+End
+
+Function H5_OpenGroup(locationID, path)
+	Variable locationID
+	String path
+
+	Variable id
+
+	ASSERT(H5_GroupExists(locationID, path, groupID = id), path + " not in HDF5 file")
+
+	return id
 End

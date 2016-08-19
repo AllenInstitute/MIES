@@ -165,3 +165,29 @@ Function WriteTextDatasetIfSet(locationID, name, str, [chunkedLayout])
 
 	H5_WriteTextDataset(locationID, name, str=str, chunkedLayout=chunkedLayout)
 End
+
+/// @brief Remove a string prefix from each list item and
+/// return the new list
+Function/S RemovePrefixFromListItem(prefix, list, [listSep])
+	string prefix, list
+	string listSep
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
+
+	string result, entry
+	variable numEntries, i, len
+
+	result = ""
+	len = strlen(prefix)
+	numEntries = ItemsInList(list, listSep)
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, listSep)
+		if(!cmpstr(entry[0,(len-1)], prefix))
+			entry = entry[(len),inf]
+		endif
+		result = AddListItem(entry, result, listSep, inf)
+	endfor
+
+	return result
+End
