@@ -64,9 +64,9 @@ static Function AB_ClearAnalysisFolder()
 
 	string folders
 
-	WAVE/T experimentMap = GetExperimentMap()
-	experimentMap = ""
-	SetNumberInWaveNote(experimentMap, NOTE_INDEX, 0)
+	WAVE/T map = GetAnalysisBrowserMap()
+	map = ""
+	SetNumberInWaveNote(map, NOTE_INDEX, 0)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	list = ""
@@ -80,33 +80,33 @@ static Function AB_ClearAnalysisFolder()
 	CallFunctionForEachListItem(KillOrMoveToTrashPath, folders)
 End
 
-/// @brief Create relation (experimentMap) between file on disk and datafolder in current experiment
+/// @brief Create relation (map) between file on disk and datafolder in current experiment
 /// @return total number of files mapped
 static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	string baseFolder, expFilePath
 
 	variable index
 	string expFolderName, relativePath, extension
-	WAVE/T experimentMap = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
-	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
-	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
+	index = GetNumberFromWaveNote(map, NOTE_INDEX)
+	EnsureLargeEnoughWave(map, minimumSize=index, dimension=ROWS)
 
 	// %DiscLocation = full path to file
-	experimentMap[index][%DiscLocation] = expFilePath
+	map[index][%DiscLocation] = expFilePath
 
 	// %FileName = filename + extension
 	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
-	experimentMap[index][%FileName] = relativePath
+	map[index][%FileName] = relativePath
 	// %DataFolder = igor friendly DF name; Delete existing folder
 	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
 	expFolderName = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
-	experimentMap[index][%DataFolder] = RemoveEnding(expFolderName, ":")
+	map[index][%DataFolder] = RemoveEnding(expFolderName, ":")
 
 	index += 1
-	SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
+	SetNumberInWaveNote(map, NOTE_INDEX, index)
 
 	return index - 1
 End
@@ -114,14 +114,14 @@ End
 static Function AB_RemoveExperimentMapEntry(index)
 	variable index
 
-	WAVE/T experimentMap = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
-	ASSERT(index < DimSize(experimentMap, ROWS), "row index out-of-bounds")
+	ASSERT(index < DimSize(map, ROWS), "row index out-of-bounds")
 
-	experimentMap[index][] = ""
+	map[index][] = ""
 
-	if(index + 1 == GetNumberFromWaveNote(experimentMap, NOTE_INDEX))
-		SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
+	if(index + 1 == GetNumberFromWaveNote(map, NOTE_INDEX))
+		SetNumberInWaveNote(map, NOTE_INDEX, index)
 	endif
 End
 
@@ -404,13 +404,13 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	string deviceList = ""
 	variable numDevices, numTypes, i, j, err, numWavesLoaded, highestSweepNumber
 
-	WAVE/T experimentMap = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
 	// map filePath to DataFolder in current experiment
-	FindValue/TXOP=4/TEXT=(expFilePath) experimentMap
+	FindValue/TXOP=4/TEXT=(expFilePath) map
 	ASSERT(V_Value >= 0, "invalid index")
-	expName   = experimentMap[V_Value][%FileName]
-	expFolder = experimentMap[V_Value][%DataFolder]
+	expName   = map[V_Value][%FileName]
+	expFolder = map[V_Value][%DataFolder]
 
 	// load notebook waves from file to (temporary) data folder
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
@@ -759,7 +759,7 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-	WAVE/T experimentMap  = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
 	ASSERT(subSectionColumn == EXPERIMENT_TREEVIEW_COLUMN || subSectionColumn == DEVICE_TREEVIEW_COLUMN, "Invalid subsection column")
 	if(!(expBrowserSel[row][subSectionColumn] & LISTBOX_TREEVIEW))
@@ -785,9 +785,9 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 
 		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
 		mapIndex    = str2num(expBrowserList[j][%experiment][1])
-		expName     = experimentMap[mapIndex][%FileName]
-		expFolder   = experimentMap[mapIndex][%DataFolder]
-		expFilePath = experimentMap[mapIndex][%DiscLocation]
+		expName     = map[mapIndex][%FileName]
+		expFolder   = map[mapIndex][%DataFolder]
+		expFilePath = map[mapIndex][%DiscLocation]
 
 		if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep) == 1)
 			continue
@@ -1075,7 +1075,7 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 		case 2:
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-			WAVE/T experimentMap  = GetExperimentMap()
+			WAVE/T map = GetAnalysisBrowserMap()
 
 			// Our mode for the listbox stores the selection bit only in the first column
 			WAVE/Z indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
@@ -1130,9 +1130,9 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
 				mapIndex    = str2num(expBrowserList[row][%experiment][1])
-				expName     = experimentMap[mapIndex][%FileName]
-				expFolder   = experimentMap[mapIndex][%DataFolder]
-				expFilePath = experimentMap[mapIndex][%DiscLocation]
+				expName     = map[mapIndex][%FileName]
+				expFolder   = map[mapIndex][%DataFolder]
+				expFilePath = map[mapIndex][%DiscLocation]
 
 				if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep))
 					continue
@@ -1286,7 +1286,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 		case 2: // mouse up
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
-			WAVE/T experimentMap  = GetExperimentMap()
+			WAVE/T map = GetAnalysisBrowserMap()
 
 			WAVE/Z indizes = FindIndizes(col=0, var=1, wv=expBrowserSel)
 
@@ -1304,9 +1304,9 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 				break
 			endif
 
-			expName     = experimentMap[mapIndex][%FileName]
-			expFolder   = experimentMap[mapIndex][%DataFolder]
-			expFilePath = experimentMap[mapIndex][%DiscLocation]
+			expName     = map[mapIndex][%ExperimentName]
+			expFolder   = map[mapIndex][%ExperimentFolder]
+			expFilePath = map[mapIndex][%ExperimentDiscLocation]
 
 			SVAR/Z/SDFR=GetAnalysisDeviceFolder(expFolder, device) userComment
 			if(!SVAR_Exists(userComment))

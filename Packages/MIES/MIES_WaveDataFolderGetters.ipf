@@ -3649,12 +3649,6 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
-/// @deprecated former experimentMap now at analysisBrowserMap.
-/// @return AnalysisBrowserMap
-Function/Wave GetExperimentMap()
-	return GetAnalysisBrowserMap()
-End
-
 /// @brief Return AnalysisBrowser indexing storage wave
 ///
 /// Rows:
