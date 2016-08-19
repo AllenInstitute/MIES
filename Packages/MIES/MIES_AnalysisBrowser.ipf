@@ -524,6 +524,7 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
 	endswitch
 
@@ -646,6 +647,47 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
+End
+
+static Function/S AB_LoadLabNotebookFromNWB(discLocation)
+	String discLocation
+
+	variable numDevices, numLoaded, i
+	variable h5_fileID, h5_notebooksID
+	string notebookList, deviceList, device
+
+	Wave/T nwb = AB_GetMap(discLocation)
+
+	h5_fileID = IPNWB#H5_OpenFile(nwb[%DiscLocation])
+	if (!IPNWB#CheckIntegrity(h5_fileID))
+		return ""
+	endif
+
+	notebookList = IPNWB#ReadLabNoteBooks(h5_fileID)
+	h5_notebooksID = IPNWB#H5_OpenGroup(h5_fileID, "/general/labnotebook")
+
+	numDevices = ItemsInList(notebookList)
+	devicelist = ""
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, notebookList)
+
+		DFREF notebookDFR = GetAnalysisLabNBFolder(nwb[%DataFolder], device)
+		numLoaded = NWB_LoadLabNoteBook(h5_notebooksID, device, notebookDFR)
+		if (numLoaded != 4)
+			printf "Could not find four labnotebook waves in nwb file for device %s\r", device
+			KillOrMoveToTrash(dfr=NotebookDFR)
+			continue
+		endif
+
+		/// add current device to output devicelist
+		DEBUGPRINT("Loaded NWB labnotebook for device: ", str=device)
+		devicelist = AddListItem(device, devicelist, ";", inf)
+	endfor
+
+	// H5_CloseFile closes all associated open groups.
+	IPNWB#H5_CloseFile(h5_fileID)
+
+	return devicelist
 End
 
 ///@brief function checks if LabNoteBook Waves do exist.
