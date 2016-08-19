@@ -41,7 +41,7 @@ static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
 
 Menu "Mies Panels"
-	"Analysis Browser"   , /Q, AB_OpenExperimentBrowser()
+	"Analysis Browser"   , /Q, AB_OpenAnalysisBrowser()
 	"Labnotebook Browser", /Q, LBN_OpenLabnotebookBrowser()
 	"TPStorage Browser"  , /Q, LBN_OpenTPStorageBrowser()
 End
@@ -1543,9 +1543,9 @@ Function AB_ScanFolder(win)
 	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
-Function AB_OpenExperimentBrowser()
+Function AB_OpenAnalysisBrowser()
 
-	string panel = "ExperimentBrowser"
+	string panel = "AnalysisBrowser"
 
 	if(windowExists(panel))
 		DoWindow/F $panel
@@ -1557,11 +1557,11 @@ Function AB_OpenExperimentBrowser()
 	WAVE   sel  = GetExperimentBrowserGUISel()
 	sel = 0
 
-	Execute "ExperimentBrowser()"
+	Execute "AnalysisBrowser()"
 	GetMiesVersion()
 End
 
-Window ExperimentBrowser() : Panel
+Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(180,275,1057,764)
 	Button button_base_folder_scan,pos={6,41},size={100,20},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
