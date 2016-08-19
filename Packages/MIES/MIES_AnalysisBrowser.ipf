@@ -82,28 +82,28 @@ End
 
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
 /// @return total number of files mapped
-static Function AB_AddMapEntry(baseFolder, expFilePath)
-	string baseFolder, expFilePath
+static Function AB_AddMapEntry(baseFolder, discLocation)
+	string baseFolder, discLocation
 
 	variable index
-	string expFolderName, relativePath, extension
+	string dataFolder, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 	EnsureLargeEnoughWave(map, minimumSize=index, dimension=ROWS)
 
 	// %DiscLocation = full path to file
-	map[index][%DiscLocation] = expFilePath
+	map[index][%DiscLocation] = discLocation
 
 	// %FileName = filename + extension
-	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
+	relativePath = RemovePrefix(discLocation, startStr=baseFolder)
 	map[index][%FileName] = relativePath
 	// %DataFolder = igor friendly DF name; Delete existing folder
-	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
+	extension = "." + ParseFilePath(4, dataFolder, ":", 0, 0)
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
-	expFolderName = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
-	map[index][%DataFolder] = RemoveEnding(expFolderName, ":")
+	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
+	map[index][%DataFolder] = RemoveEnding(dataFolder, ":")
 
 	index += 1
 	SetNumberInWaveNote(map, NOTE_INDEX, index)
@@ -126,18 +126,18 @@ static Function AB_RemoveMapEntry(index)
 End
 
 /// @brief general loader for pxp, uxp and nwb files
-static Function AB_AddFile(baseFolder, expFilePath)
-	string baseFolder, expFilePath
+static Function AB_AddFile(baseFolder, discLocation)
+	string baseFolder, discLocation
 
 	variable mapIndex
 	variable firstMapped, lastMapped
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
-	mapIndex = AB_AddMapEntry(baseFolder, expFilePath)
+	mapIndex = AB_AddMapEntry(baseFolder, discLocation)
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
-	AB_LoadLabNotebookFromFile(expFilePath)
+	AB_LoadLabNotebookFromFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped > firstMapped)
@@ -397,21 +397,21 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	return numStringsLoaded
 End
 
-static Function/S AB_LoadLabNotebookFromFile(expFilePath)
-	string expFilePath
+static Function/S AB_LoadLabNotebookFromFile(discLocation)
+	string discLocation
 
 	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
-	string expName, expFolder
+	string fileName, dataFolder
 	string deviceList = ""
 	variable numDevices, numTypes, i, j, err, numWavesLoaded, highestSweepNumber
 
 	WAVE/T map = GetAnalysisBrowserMap()
 
-	// map filePath to DataFolder in current experiment
-	FindValue/TXOP=4/TEXT=(expFilePath) map
+	// map discLocation to DataFolder in current experiment
+	FindValue/TXOP=4/TEXT=(discLocation) map
 	ASSERT(V_Value >= 0, "invalid index")
-	expName   = map[V_Value][%FileName]
-	expFolder = map[V_Value][%DataFolder]
+	fileName   = map[V_Value][%FileName]
+	dataFolder = map[V_Value][%DataFolder]
 
 	// load notebook waves from file to (temporary) data folder
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
@@ -419,7 +419,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	labNotebookPath = GetLabNotebookFolderAsString()
 	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, labNotebookPath, labNotebookWaves)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, labNotebookPath, labNotebookWaves)
 
 	if(numWavesLoaded <= 0)
 		SetDataFolder saveDFR
@@ -495,7 +495,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			device = BuildDeviceString(type, number)
 
 			if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
-				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, expFilePath
+				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, discLocation
 				continue
 			endif
 
@@ -504,7 +504,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			deviceList = AddListItem(device, deviceList, ";", inf)
 
 			// copy and rename loaded waves to Analysisbrowser directory.
-			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
+			DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
 
 			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
 			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
@@ -527,13 +527,14 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericalValues)
 
 			if(IsFinite(highestSweepNumber))
-				AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
+				AB_LoadSweepConfigData(discLocation, dataFolder, device, highestSweepNumber)
 			endif
 
-			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
-			AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
+			AB_LoadTPStorageFromFile(discLocation, dataFolder, device)
+			AB_LoadUserCommentFromFile(discLocation, dataFolder, device)
 
-			AB_FillListWave(expFolder, expName, device)
+
+			AB_FillListWave(dataFolder, fileName, device)
 		endfor
 	endfor
 
@@ -756,7 +757,7 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 	variable row, subSectionColumn
 
 	variable j, endRow, mapIndex, ret, sweep, oneValidSweep
-	string device, expFolder, expFilePath, expName
+	string device, discLocation, dataFolder, fileName
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
@@ -786,16 +787,16 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 
 		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
 		mapIndex    = str2num(expBrowserList[j][%experiment][1])
-		expName     = map[mapIndex][%FileName]
-		expFolder   = map[mapIndex][%DataFolder]
-		expFilePath = map[mapIndex][%DiscLocation]
+		dataFolder   = map[mapIndex][%DataFolder]
+		discLocation = map[mapIndex][%DiscLocation]
+		fileName     = map[mapIndex][%FileName]
 
-		if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep) == 1)
+		if(AB_LoadSweepAndRelated(discLocation, dataFolder, device, sweep) == 1)
 			continue
 		endif
 
 		oneValidSweep = 1
-		SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
+		SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	endfor
 
 	if(oneValidSweep)
@@ -1070,7 +1071,7 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	variable mapIndex, sweep, numRows, i, row, ret, oneValidSweep
-	string expFolder, expName, expFilePath, device
+	string dataFolder, fileName, discLocation, device
 
 	switch(ba.eventcode)
 		case 2:
@@ -1131,16 +1132,16 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
 				mapIndex    = str2num(expBrowserList[row][%experiment][1])
-				expName     = map[mapIndex][%FileName]
-				expFolder   = map[mapIndex][%DataFolder]
-				expFilePath = map[mapIndex][%DiscLocation]
+				fileName     = map[mapIndex][%FileName]
+				dataFolder   = map[mapIndex][%DataFolder]
+				discLocation = map[mapIndex][%DiscLocation]
 
-				if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep))
+				if(AB_LoadSweepAndRelated(discLocation, dataFolder, device, sweep))
 					continue
 				endif
 
 				oneValidSweep = 1
-				SB_AddToSweepBrowser(sweepBrowserDFR, expName, expFolder, device, sweep)
+				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 			endfor
 
 			if(oneValidSweep)
@@ -1280,7 +1281,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	variable row, mapIndex
-	string device, expName, expFolder, expFilePath
+	string device, fileName, dataFolder, discLocation
 	string titleString, commentNotebook, comment
 
 	switch(ba.eventCode)
@@ -1305,18 +1306,18 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 				break
 			endif
 
-			expName     = map[mapIndex][%ExperimentName]
-			expFolder   = map[mapIndex][%ExperimentFolder]
-			expFilePath = map[mapIndex][%ExperimentDiscLocation]
+			fileName     = map[mapIndex][%FileName]
+			dataFolder   = map[mapIndex][%DataFolder]
+			discLocation = map[mapIndex][%DiscLocation]
 
-			SVAR/Z/SDFR=GetAnalysisDeviceFolder(expFolder, device) userComment
+			SVAR/Z/SDFR=GetAnalysisDeviceFolder(dataFolder, device) userComment
 			if(!SVAR_Exists(userComment))
 				comment = "The user comment string does not exist for the given device!"
 			else
 				comment = userComment
 			endif
 
-			sprintf titleString, "Experiment %s and Device %s", expName, device
+			sprintf titleString, "Experiment %s and Device %s", fileName, device
 			commentNotebook = UniqueName("EB_UserComment", 10, 0)
 			NewNoteBook/K=1/F=0/OPTS=(2^2 + 2^3)/N=$commentNotebook/W=(0,0,300,400) as titleString
 			Notebook $commentNotebook text=comment
