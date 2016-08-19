@@ -513,7 +513,7 @@ static Function/WAVE AB_GetSweepsFromNWB(discLocation, device)
 
 	h5_fileID = IPNWB#H5_OpenFile(discLocation)
 	channelList = IPNWB#ReadChannelList(h5_fileID, acquisition = 1)
-	h5_groupID = H5_OpenGroup(h5_fileID, "/acquisition/timeseries")
+	h5_groupID = IPNWB#H5_OpenGroup(h5_fileID, "/acquisition/timeseries")
 
 	numSweeps = ItemsInList(channelList)
 	Make/FREE/N=(numSweeps) sweepNumbers
@@ -1038,7 +1038,7 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 	variable row, subSectionColumn
 
 	variable j, endRow, mapIndex, ret, sweep, oneValidSweep
-	string device, discLocation, dataFolder, fileName
+	string device, discLocation, dataFolder, fileName, fileType
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
@@ -1070,9 +1070,10 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 		mapIndex    = str2num(expBrowserList[j][%experiment][1])
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
+		fileType     = map[mapIndex][%FileType]
 		fileName     = map[mapIndex][%FileName]
 
-		if(AB_LoadSweepAndRelated(discLocation, dataFolder, device, sweep) == 1)
+		if(AB_LoadSweepAndRelated(discLocation, dataFolder, fileType, device, sweep) == 1)
 			continue
 		endif
 
@@ -1108,7 +1109,24 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 End
 
 /// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
-Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
+Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
+	string filePath, dataFolder, fileType, device
+	variable sweep
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			return AB_LoadSweepFromIgor(filePath, dataFolder, device, sweep)
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			/// @todo direct to functions
+			break
+		default:
+			/// @todo assert here
+	endswitch
+End
+
+/// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
+Function AB_LoadSweepFromIgor(expFilePath, expFolder, device, sweep)
 	string expFilePath, expFolder, device
 	variable sweep
 
@@ -1354,7 +1372,7 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	variable mapIndex, sweep, numRows, i, row, ret, oneValidSweep
-	string dataFolder, fileName, discLocation, device
+	string dataFolder, fileName, discLocation, fileType, device
 
 	switch(ba.eventcode)
 		case 2:
@@ -1418,8 +1436,9 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				fileName     = map[mapIndex][%FileName]
 				dataFolder   = map[mapIndex][%DataFolder]
 				discLocation = map[mapIndex][%DiscLocation]
+				fileType     = map[mapIndex][%FileType]
 
-				if(AB_LoadSweepAndRelated(discLocation, dataFolder, device, sweep))
+				if(AB_LoadSweepAndRelated(discLocation, dataFolder, fileType, device, sweep))
 					continue
 				endif
 
