@@ -1475,6 +1475,15 @@ Function/S GetBaseName(filePathWithSuffix)
 	return ParseFilePath(3, filePathWithSuffix, ":", 1, 0)
 End
 
+/// @brief Return the file extension (suffix)
+///
+/// Given `path/file.suffix` this gives `suffix`.
+Function/S GetFileSuffix(filePathWithSuffix)
+	string filePathWithSuffix
+
+	return ParseFilePath(4, filePathWithSuffix, ":", 0, 0)
+End
+
 /// @brief Return the folder of the file
 ///
 /// Given `path/file.suffix` this gives `path`.

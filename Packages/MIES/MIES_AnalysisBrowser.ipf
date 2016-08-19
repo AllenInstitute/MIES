@@ -86,7 +86,7 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
 	variable index
-	string dataFolder, relativePath, extension
+	string dataFolder, fileType, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
@@ -98,8 +98,23 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	// %FileName = filename + extension
 	relativePath = RemovePrefix(discLocation, startStr=baseFolder)
 	map[index][%FileName] = relativePath
-	// %DataFolder = igor friendly DF name; Delete existing folder
-	extension = "." + ParseFilePath(4, dataFolder, ":", 0, 0)
+
+	extension = "." + GetFileSuffix(discLocation)
+
+	// %FileType = igor
+	strswitch(extension)
+		case ".pxp":
+		case ".uxp":
+			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
+			break
+		case ".nwb":
+			fileType = ANALYSISBROWSER_FILE_TYPE_NWB
+			break
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+	map[index][%FileType] = fileType
+	// %DataFolder = igor friendly DF name
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
 	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
@@ -412,6 +427,10 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	ASSERT(V_Value >= 0, "invalid index")
 	fileName   = map[V_Value][%FileName]
 	dataFolder = map[V_Value][%DataFolder]
+
+	if(!cmpstr(map[V_Value][%FileType], ANALYSISBROWSER_FILE_TYPE_IGOR))
+		return "" // can not load file
+	endif
 
 	// load notebook waves from file to (temporary) data folder
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
@@ -931,7 +950,7 @@ End
 Function AB_ScanFolder(win)
 	string win
 
-	string baseFolder, path, pxpList, uxpList, list
+	string baseFolder, path, pxpList, uxpList, nwbList, list
 	variable i, numEntries
 
 	// create new symbolic path
@@ -946,12 +965,14 @@ Function AB_ScanFolder(win)
 
 	AB_ClearAnalysisFolder()
 
-	// process *.pxp and *.uxp files
+	// process *.pxp, *.uxp, and *.nwb files
 	pxpList = GetAllFilesRecursivelyFromPath(path, extension=".pxp")
 	uxpList = GetAllFilesRecursivelyFromPath(path, extension=".uxp")
+	nwbList = GetAllFilesRecursivelyFromPath(path, extension=".nwb")
 	KillPath $path
 
-	list = SortList(pxpList + uxpList, "|")
+	// sort combined list for readability
+	list = SortList(pxpList + uxpList + nwbList, "|")
 
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
