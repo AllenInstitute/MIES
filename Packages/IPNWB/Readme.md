@@ -1,6 +1,6 @@
-# Igor Pro module for writing NeurodataWithoutBorder files
+# Igor Pro module for reading and writing NeurodataWithoutBorder files
 
-This modules allows to easily create valid NeurodataWithoutBorder style HDF5
+This modules allows to easily write and read valid NeurodataWithoutBorder style HDF5
 files. It encapsulates most of the specification in easy to use functions.
 
 Compliant to NeurodataWithoutBorders specification 1.0.5.
