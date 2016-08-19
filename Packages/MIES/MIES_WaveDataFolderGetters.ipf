@@ -3664,16 +3664,22 @@ End
 /// 0: %ExperimentDiscLocation:  Path to Experiment on Disc
 /// 1: %ExperimentName:          Name of File in experiment column in ExperimentBrowser
 /// 2: %ExperimentFolder         Data folder inside current Igor experiment
-Function/Wave getAnalysisBrowserMap()
+Function/Wave GetAnalysisBrowserMap()
 	DFREF dfr = GetAnalysisFolder()
 
-	Wave/Z/SDFR=dfr/T wv = experimentMap
+	STRUCT WaveLocationMod p
+	p.dfr     = dfr
+	p.newDFR  = dfr
+	p.name    = "experimentMap"
+	p.newName = "analysisBrowserMap"
+
+	WAVE/Z/T wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE, 3)/T dfr:experimentMap/Wave=wv
+	Make/N=(MINIMUM_WAVE_SIZE, 3)/T dfr:analysisBrowserMap/Wave=wv
 
 	SetDimLabel COLS, 0, ExperimentDiscLocation, wv
 	SetDimLabel COLS, 1, ExperimentName, wv
