@@ -516,6 +516,23 @@ End
 static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	string discLocation
 
+	String deviceList = ""
+	Wave/T map = AB_GetMap(discLocation)
+
+	strswitch(map[%FileType])
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			break
+	endswitch
+
+	return deviceList
+End
+
+static Function/S AB_LoadLabNotebookFromIgor(discLocation)
+	String discLocation
+
 	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
 	string deviceList = ""
 	variable numDevices, numTypes, i, j, numWavesLoaded
