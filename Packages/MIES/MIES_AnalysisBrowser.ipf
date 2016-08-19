@@ -269,7 +269,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 	string expFolder, expName, device
 
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-	string str, name, listOfSweepConfigWaves
+	string str, sweep_config, listOfSweepConfigWaves
 
 	DFREF expDataDFR      = GetAnalysisDeviceConfigFolder(expFolder, device)
 	WAVE numericalValues  = GetAnalysLBNumericalValues(expFolder, device)
@@ -290,10 +290,10 @@ static Function AB_FillListWave(expFolder, expName, device)
 	index += 1
 
 	for(i = 0; i < numWaves; i += 1)
-		name = StringFromList(i, listOfSweepConfigWaves)
+		sweep_config = StringFromList(i, listOfSweepConfigWaves)
 		EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 
-		sweepNo = ExtractSweepNumber(name)
+		sweepNo = ExtractSweepNumber(sweep_config)
 
 		list[index][%sweep][0] = num2str(sweepNo)
 
