@@ -499,6 +499,8 @@ static Function/S AB_LoadLabNotebook(discLocation)
 			continue
 		endif
 
+		AB_updateLabelsInLabNotebook(dfr)
+
 		deviceListChecked = AddListItem(device, deviceListchecked, ";", inf)
 	endfor
 
@@ -636,8 +638,6 @@ End
 static Function AB_checkLabNotebook(dfr)
 	DFREF dfr
 
-	string str
-
 	Wave/Z/SDFR=dfr numericalKeys
 	Wave/Z/SDFR=dfr numericalValues
 	Wave/Z/SDFR=dfr textualKeys
@@ -648,8 +648,21 @@ static Function AB_checkLabNotebook(dfr)
 		return 0
 	endif
 
-	// add dimension labels in older versions of igor-MIES and hdf5-loaded data
-	// and overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
+	return 1
+End
+
+/// @brief add dimension labels in older versions of igor-MIES and hdf5-loaded data
+///        overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
+static Function AB_updateLabelsInLabNotebook(dfr)
+	DFREF dfr
+
+	string str
+
+	Wave/Z/SDFR=dfr numericalKeys
+	Wave/Z/SDFR=dfr numericalValues
+	Wave/Z/SDFR=dfr textualKeys
+	Wave/Z/SDFR=dfr textualValues
+
 	str = GetDimLabel(textualValues, COLS, 0)
 	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
 		SetDimensionLabels(textualKeys, textualValues)
