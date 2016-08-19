@@ -1242,10 +1242,10 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	if(numSweeps != GetNumberFromWaveNote(channelStorage, NOTE_INDEX))
 		EnsureLargeEnoughWave(channelStorage, minimumSize = numSweeps, dimension = ROWS)
 	endif
-	Wave/Z/I sweepInfo = channelStorage[V_Value][%sweepInfo]
-	if(!WaveExists(sweepInfo))
-		Wave/I sweepInfo = GetAnalysisConfigWave(nwb[%DataFolder], device, sweep)
-		channelStorage[V_Value][%sweepInfo] = sweepInfo
+	Wave/Z/I configSweep = channelStorage[V_Value][%configSweep]
+	if(!WaveExists(configSweep))
+		Wave/I configSweep = GetAnalysisConfigWave(nwb[%DataFolder], device, sweep)
+		channelStorage[V_Value][%configSweep] = configSweep
 	endif
 
 	// open NWB file
@@ -1254,33 +1254,33 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	// load acquisition
 	Wave/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
 	channelList = acquisition[V_Value]
-	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo))
+	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
 	// load stimulus
 	Wave/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
 	channelList = stimulus[V_Value]
-	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo))
+	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
 	return 0
 End
 
-Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo)
+Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep)
 	variable h5_fileID
 	string channelList
 	DFREF sweepDFR
-	Wave/I sweepInfo
+	Wave/I configSweep
 
 	string channel, channelName, channelID
 	variable numChannels, numEntries, i, waveNoteLoaded
 	STRUCT IPNWB#ReadChannelParams p
 
-	numEntries = DimSize(sweepInfo, 0)
+	numEntries = DimSize(configSweep, 0)
 	numChannels = ItemsInList(channelList)
-	Redimension/N=((numEntries + numChannels), -1) sweepInfo
+	Redimension/N=((numEntries + numChannels), -1) configSweep
 
 	for(i = 0; i < numChannels; i += 1)
 		channel = StringFromList(i, channelList)
@@ -1309,14 +1309,14 @@ Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo)
 			endif
 			waveNoteLoaded = 1
 		endif
-		// fake Config_Sweeps Wave
-		sweepInfo[(numEntries + i)][0] = p.channelType
-		sweepInfo[(numEntries + i)][1] = p.channelNumber
-		sweepInfo[(numEntries + i)][2] = trunc(DimDelta(loaded, ROWS) * 1000)
-		sweepInfo[(numEntries + i)][3] = -1 // -1 for faked Config_Sweeps Waves
+		// fake configSweep_Sweeps Wave
+		configSweep[(numEntries + i)][0] = p.channelType
+		configSweep[(numEntries + i)][1] = p.channelNumber
+		configSweep[(numEntries + i)][2] = trunc(DimDelta(loaded, ROWS) * 1000)
+		configSweep[(numEntries + i)][3] = -1 // -1 for faked configSweep_Sweeps Waves
 
-		// set unit in config_wave from WaveNote of loaded dataset
-		Note/K sweepInfo, AddListItem(WaveUnits(loaded, COLS), Note(sweepInfo), ";", Inf)
+		// set unit in configSweep_wave from WaveNote of loaded dataset
+		Note/K configSweep, AddListItem(WaveUnits(loaded, COLS), Note(configSweep), ";", Inf)
 
 		channelName = channelID + "_" + num2str(p.channelNumber)
 		Rename loaded $ChannelName
@@ -1380,8 +1380,8 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	string channelType, str
 
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
-	Wave config = GetAnalysisConfigWave(expFolder, device, sweep)
-	if(DimSize(config, ROWS) != DimSize(sweepWave, COLS))
+	Wave configSweep = GetAnalysisConfigWave(expFolder, device, sweep)
+	if(DimSize(configSweep, ROWS) != DimSize(sweepWave, COLS))
 		printf "The sweep %d of device %s in experiment %s does not match its configuration data. Therefore we ignore it.\r", sweep, device, expFolder
 		return 1
 	endif
@@ -1389,15 +1389,15 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/T/SDFR=dfr numericalValues
 
-	numRows = DimSize(config, ROWS)
+	numRows = DimSize(configSweep, ROWS)
 	for(i = 0; i < numRows; i += 1)
-		channelType = StringFromList(config[i][0], ITC_CHANNEL_NAMES)
+		channelType = StringFromList(configSweep[i][0], ITC_CHANNEL_NAMES)
 		ASSERT(!isEmpty(channelType), "empty channel type")
-		channelNumber = config[i][1]
+		channelNumber = configSweep[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
 		str = channelType + "_" + num2istr(channelNumber)
 
-		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
+		WAVE data = ExtractOneDimDataFromSweep(configSweep, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
 			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), sweepFolder, str + "_")
