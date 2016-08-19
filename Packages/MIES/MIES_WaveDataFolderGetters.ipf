@@ -3566,6 +3566,19 @@ Function/S GetAnalysisDeviceFolderAS(expFolder, device)
 	return GetAnalysisExpFolderAS(expFolder) + ":" + device
 End
 
+/// @brief Return the datafolder reference to the sweep to channel relation of a device and experiment pair
+Function/DF GetAnalysisDevChannelFolder(expFolder, device)
+	string expFolder, device
+	return createDFWithAllParents(GetAnalysisDevChannelFolderAS(expFolder, device))
+End
+
+/// @brief Return the full path to the sweep to channel relation folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:channel
+Function/S GetAnalysisDevChannelFolderAS(expFolder, device)
+	string expFolder, device
+
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":channel"
+End
+
 /// @brief Return the datafolder reference to the sweep config folder of a device and experiment pair
 Function/DF GetAnalysisDeviceConfigFolder(expFolder, device)
 	string expFolder, device
@@ -3647,6 +3660,63 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	string expFolder, device
 
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
+End
+
+/// @brief Return a wave containing all stimulus channels in the NWB file as a ";"-separated List
+///  wave is used to relate it's index to sweepWave and deviceWave.
+Function/Wave GetAnalysisChannelStimWave(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/T wv = stimulus
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:stimulus/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave containing all acquisition channels in the NWB file as a ";"-separated List
+///  wave is used to relate it's index to sweepWave and deviceWave.
+Function/Wave GetAnalysisChannelAcqWave(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/T wv = acquisition
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:acquisition/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave containing all sweeps in a unique fashion.
+///  wave is used to relate it's index to channelWave and deviceWave
+Function/Wave GetAnalysisChannelSweepWave(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/I wv = sweeps
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/I dfr:sweeps/Wave=wv = -1
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
 End
 
 /// @brief Return a wave containing all devices
