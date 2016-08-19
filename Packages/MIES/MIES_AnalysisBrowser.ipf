@@ -1275,7 +1275,7 @@ Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo)
 	Wave/I sweepInfo
 
 	string channel, channelName, channelID
-	variable numChannels, numEntries, i
+	variable numChannels, numEntries, i, waveNoteLoaded
 	STRUCT IPNWB#ReadChannelParams p
 
 	numEntries = DimSize(sweepInfo, 0)
@@ -1302,6 +1302,13 @@ Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo)
 				ASSERT(1, "unknown channel type " + num2str(p.channelType))
 		endswitch
 
+		if(waveNoteLoaded == 0)
+			SVAR/Z test = sweepDFR:note
+			if(!SVAR_EXISTS(test))
+				string/G sweepDFR:note = note(loaded)
+			endif
+			waveNoteLoaded = 1
+		endif
 		// fake Config_Sweeps Wave
 		sweepInfo[(numEntries + i)][0] = p.channelType
 		sweepInfo[(numEntries + i)][1] = p.channelNumber
@@ -1316,7 +1323,11 @@ Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, sweepInfo)
 		WaveClear loaded
 	endfor
 
-	return 0 // no error
+	if(!waveNoteLoaded)
+		return 1 // nothing was loaded
+	else
+		return 0 // no error
+	endif
 End
 
 Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
