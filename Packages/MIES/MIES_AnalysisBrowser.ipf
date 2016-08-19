@@ -167,6 +167,26 @@ Function/Wave AB_GetMap(discLocation)
 	return wv
 End
 
+/// @brief save deviceList to wave
+/// @return created wave.
+Function/Wave AB_SaveDeviceList(deviceList, dataFolder)
+	String deviceList, dataFolder
+
+	Variable numDevices
+	Wave/T wv = GetAnalysisDeviceWave(dataFolder)
+
+	Wave/T deviceListWave = ConvertListToTextWave(deviceList)
+	numDevices = DimSize(deviceListWave, ROWS)
+	if(numDevices > 0)
+		EnsureLargeEnoughWave(wv, minimumSize=numDevices, dimension=ROWS)
+		wv[0, numDevices - 1] = deviceListWave[p]
+	endif
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, numDevices)
+
+	return wv
+End
+
 /// @brief general loader for pxp, uxp and nwb files
 static Function AB_AddFile(baseFolder, discLocation)
 	string baseFolder, discLocation
@@ -199,10 +219,11 @@ static Function/S AB_LoadFile(discLocation)
 	Wave/T map = AB_GetMap(discLocation)
 
 	deviceList = AB_LoadLabNotebook(discLocation)
-	numDevices = ItemsInList(deviceList)
+	Wave/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
 
+	numDevices = GetNumberFromWaveNote(deviceWave, NOTE_INDEX)
 	for(i = 0; i < numDevices; i += 1)
-		device = StringFromList(i, deviceList)
+		device = deviceWave[i]
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				Wave sweepNums = AB_GetSweepsFromExperiment(map[%DiscLocation], device)

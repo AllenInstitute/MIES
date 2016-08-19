@@ -3649,6 +3649,25 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
+/// @brief Return a wave containing all devices
+///  wave is used to relate it's index to sweepWave and channelWave.
+Function/Wave GetAnalysisDeviceWave(dataFolder)
+	String dataFolder
+
+	DFREF dfr = GetAnalysisExpFolder(dataFolder)
+
+	Wave/Z/SDFR=dfr/T wv = devices
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:devices/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief Return AnalysisBrowser indexing storage wave
 ///
 /// Rows:

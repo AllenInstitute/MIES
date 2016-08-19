@@ -1441,6 +1441,21 @@ Function/WAVE ConvertListOfWaves(list)
 	return waves
 End
 
+/// @brief Convert a list of strings to a text wave.
+Function/WAVE ConvertListToTextWave(list, [listSepString])
+	string list, listSepString
+	if(ParamIsDefault(listSepString))
+		listSepString = ";"
+	endif
+
+#if (IgorVersion() >= 7.0)
+	return ListToTextWave(list, listSepString)
+#else
+	MAKE/FREE/T/N=(ItemsInList(list, listSepString)) wv = StringFromList(p, list, listSepString)
+	return wv
+#endif
+End
+
 /// @brief Return a list of datafolders located in `dfr`
 ///
 /// @param dfr base folder
