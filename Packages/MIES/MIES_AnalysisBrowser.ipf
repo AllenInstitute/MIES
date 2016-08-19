@@ -314,7 +314,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	fileNameWOExtension = GetBaseName(expFilePath)
 	baseFolder          = GetFolder(expFilePath)
-	extension           = ParseFilePath(4, expFilePath, ":", 1, 0)
+	extension           = GetFileSuffix(expFilePath)
 
 	/// @todo this is not 100% correct as users might choose a different name for the unpacked experiment folder
 	if(!cmpstr(extension, "uxp"))
