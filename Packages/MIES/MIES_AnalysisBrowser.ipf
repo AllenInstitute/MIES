@@ -14,6 +14,12 @@
 #include ":ACL_UserdataEditor"
 #include ":FixScrolling"
 
+// NWB includes
+#include ":..:IPNWB:IPNWB_Include"
+#include ":MIES_NeuroDataWithoutBorders"
+#include ":MIES_WaveBuilder"
+#include ":MIES_WaveBuilderPanel"
+
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_Constants"
