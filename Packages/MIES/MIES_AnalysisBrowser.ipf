@@ -198,7 +198,7 @@ static Function/S AB_LoadFile(discLocation)
 
 	Wave/T map = AB_GetMap(discLocation)
 
-	deviceList = AB_LoadLabNotebookFromFile(discLocation)
+	deviceList = AB_LoadLabNotebook(discLocation)
 	numDevices = ItemsInList(deviceList)
 
 	for(i = 0; i < numDevices; i += 1)
@@ -478,16 +478,49 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	return numStringsLoaded
 End
 
+static Function/S AB_LoadLabNotebook(discLocation)
+	string discLocation
+
+	string device, deviceList, err
+	string deviceListChecked = ""
+	variable numDevices, i
+
+	Wave/T map = AB_GetMap(discLocation)
+	deviceList = AB_LoadLabNoteBookFromFile(discLocation)
+
+	numDevices = ItemsInList(deviceList)
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, deviceList)
+
+		// check if data was loaded
+		DFREF dfr = GetAnalysisLabNBFolder(map[%DataFolder], device)
+		if (!AB_checkLabNotebook(dfr))
+			KillOrMoveToTrash(dfr = dfr)
+			continue
+		endif
+
+		deviceListChecked = AddListItem(device, deviceListchecked, ";", inf)
+	endfor
+
+	numDevices -= ItemsInList(deviceListChecked)
+	if(numDevices > 0)
+		sprintf err, "Dropped %d Loaded Items\r", numDevices
+		DEBUGPRINT(err)
+	endif
+
+	return deviceListChecked
+End
+
 static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	string discLocation
 
 	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
 	string deviceList = ""
-	variable numDevices, numTypes, i, j, err, numWavesLoaded, highestSweepNumber
+	variable numDevices, numTypes, i, j, numWavesLoaded
 
-	WAVE/T map = AB_GetMap(discLocation)
+	WAVE/T experiment = AB_GetMap(discLocation)
 
-	if(!cmpstr(map[%FileType], ANALYSISBROWSER_FILE_TYPE_IGOR))
+	if(cmpstr(experiment[%FileType], ANALYSISBROWSER_FILE_TYPE_IGOR))
 		return "" // can not load file
 	endif
 
@@ -496,7 +529,7 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	labNotebookWaves += "numericalKeys;textualKeys;numericalValues;textualValues"
 	labNotebookPath = GetLabNotebookFolderAsString()
 	DFREF saveDFR = GetDataFolderDFR()
-	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "igorLoadNote")
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, labNotebookPath, labNotebookWaves)
 
 	if(numWavesLoaded <= 0)
@@ -577,29 +610,16 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 				continue
 			endif
 
-			DEBUGPRINT("Found labnotebook for device: ", str=device)
-
-			deviceList = AddListItem(device, deviceList, ";", inf)
-
 			// copy and rename loaded waves to Analysisbrowser directory.
-			DFREF dfr = GetAnalysisLabNBFolder(map[%DataFolder], device)
-
+			DFREF dfr = GetAnalysisLabNBFolder(experiment[%DataFolder], device)
 			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
 			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
 			Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
-			Duplicate/O textualValues, dfr:textualValues/Wave=textualValues
+			Duplicate/O textualValues, dfr:textualValues
 
-			// add some forgotten dimension labels in older versions of MIES
-			// and overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
-			str = GetDimLabel(textualValues, COLS, 0)
-			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(textualKeys, textualValues)
-			endif
-
-			str = GetDimLabel(numericalKeys, COLS, 0)
-			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(numericalKeys, numericalValues)
-			endif
+			// add device to devicelist
+			DEBUGPRINT("Loaded Igor labnotebook for device: ", str=device)
+			deviceList = AddListItem(device, deviceList, ";", inf)
 		endfor
 	endfor
 
@@ -607,6 +627,40 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
+End
+
+///@brief function checks if LabNoteBook Waves do exist.
+///@param  dfr path to labNoteBook dataFolder reference.
+///@return 0 labNotebook does not exist.
+///        1 labNoteBook exists. also update dimension lables
+static Function AB_checkLabNotebook(dfr)
+	DFREF dfr
+
+	string str
+
+	Wave/Z/SDFR=dfr numericalKeys
+	Wave/Z/SDFR=dfr numericalValues
+	Wave/Z/SDFR=dfr textualKeys
+	Wave/Z/SDFR=dfr textualValues
+
+	if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
+		printf "Data is not in correct Format for %s\r", GetDataFolder(0, dfr)
+		return 0
+	endif
+
+	// add dimension labels in older versions of igor-MIES and hdf5-loaded data
+	// and overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
+	str = GetDimLabel(textualValues, COLS, 0)
+	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
+		SetDimensionLabels(textualKeys, textualValues)
+	endif
+
+	str = GetDimLabel(numericalKeys, COLS, 0)
+	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
+		SetDimensionLabels(numericalKeys, numericalValues)
+	endif
+
+	return 1
 End
 
 static Constant LOAD_CONFIG_CHUNK_SIZE = 50
