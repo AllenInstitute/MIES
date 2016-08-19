@@ -735,7 +735,7 @@ Function/S SB_GetSweepList(graph)
 
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
 	for(i = 0; i < numRows; i += 1)
-		sprintf str, "Sweep %d [%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%FileName]), "_")
+		sprintf str, "Sweep %d [%s.%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%FileName]), "_"), GetFileSuffix(map[i][%FileName])
 		list = AddListItem(str, list, ";", Inf)
 	endfor
 
