@@ -82,7 +82,7 @@ End
 
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
 /// @return total number of files mapped
-static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
+static Function AB_AddMapEntry(baseFolder, expFilePath)
 	string baseFolder, expFilePath
 
 	variable index
@@ -111,7 +111,7 @@ static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
 	return index - 1
 End
 
-static Function AB_RemoveExperimentMapEntry(index)
+static Function AB_RemoveMapEntry(index)
 	variable index
 
 	WAVE/T map = GetAnalysisBrowserMap()
@@ -125,7 +125,8 @@ static Function AB_RemoveExperimentMapEntry(index)
 	endif
 End
 
-static Function AB_AddExperimentFile(baseFolder, expFilePath)
+/// @brief general loader for pxp, uxp and nwb files
+static Function AB_AddFile(baseFolder, expFilePath)
 	string baseFolder, expFilePath
 
 	variable mapIndex
@@ -133,7 +134,7 @@ static Function AB_AddExperimentFile(baseFolder, expFilePath)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
-	mapIndex = AB_AddExperimentMapEntry(baseFolder, expFilePath)
+	mapIndex = AB_AddMapEntry(baseFolder, expFilePath)
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
 	AB_LoadLabNotebookFromFile(expFilePath)
@@ -142,7 +143,7 @@ static Function AB_AddExperimentFile(baseFolder, expFilePath)
 	if(lastMapped > firstMapped)
 		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
 	else // experiment could not be loaded
-		AB_RemoveExperimentMapEntry(mapIndex)
+		AB_RemoveMapEntry(mapIndex)
 	endif
 End
 
@@ -953,8 +954,8 @@ Function AB_ScanFolder(win)
 
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
-		// analyse pxp files and save content in list (GetExperimentBrowserGUIList)
-		AB_AddExperimentFile(baseFolder, StringFromList(i, list, "|"))
+		// analyse files and save content in global list (GetExperimentBrowserGUIList)
+		AB_AddFile(baseFolder, StringFromList(i, list, "|"))
 	endfor
 
 	// redimension to maximum size (all expanded)
