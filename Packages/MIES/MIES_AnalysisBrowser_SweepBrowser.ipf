@@ -437,7 +437,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	DFREF sweepBrowserDFR
 	variable currentMapIndex, newMapIndex
 
-	string device, expFolder, panel
+	string device, dataFolder, panel
 	variable sweep, newWaveDisplayed, currentWaveDisplayed
 	variable displayDAC, overlaySweep, overlayChannels
 
@@ -480,14 +480,14 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
-	expFolder = sweepMap[newMapIndex][%DataFolder]
+	dataFolder = sweepMap[newMapIndex][%DataFolder]
 	device    = sweepMap[newMapIndex][%Device]
 	sweep     = str2num(sweepMap[newMapIndex][%Sweep])
 
-	WAVE configWave = GetAnalysisConfigWave(expFolder, device, sweep)
+	WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweep)
 
-	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
-	WAVE textualValues   = GetAnalysLBTextualValues(expFolder, device)
+	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
 
 	STRUCT TiledGraphSettings tgs
 	tgs.displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
@@ -507,9 +507,9 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	PostPlotTransformations(graph, pps)
 End
 
-Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
+Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	DFREF sweepBrowser
-	string expName, expFolder, device
+	string fileName, dataFolder, device
 	variable sweep
 
 	variable index
@@ -523,8 +523,8 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	Duplicate/FREE/R=[0][]/T map, singleRow
 
 	singleRow = ""
-	singleRow[0][%FileName]   = expName
-	singleRow[0][%DataFolder] = expFolder
+	singleRow[0][%FileName]         = fileName
+	singleRow[0][%DataFolder]       = dataFolder
 	singleRow[0][%Device]           = device
 	singleRow[0][%Sweep]            = sweepStr
 
@@ -533,8 +533,8 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 		return NaN
 	endif
 
-	map[index][%FileName]   = expName
-	map[index][%DataFolder] = expFolder
+	map[index][%FileName]         = fileName
+	map[index][%DataFolder]       = dataFolder
 	map[index][%Device]           = device
 	map[index][%Sweep]            = sweepStr
 
