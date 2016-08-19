@@ -3649,10 +3649,22 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
-/// @brief Get text wave mapping the properties of the loaded experiments
-/// @return wave with 3 columns: %ExperimentDiscLocation %ExperimentName %ExperimentFolder
+/// @deprecated former experimentMap now at analysisBrowserMap.
+/// @return AnalysisBrowserMap
 Function/Wave GetExperimentMap()
+	return GetAnalysisBrowserMap()
+End
 
+/// @brief Return AnalysisBrowser indexing storage wave
+///
+/// Rows:
+/// Experiments found in current Directory
+///
+/// Columns:
+/// 0: %ExperimentDiscLocation:  Path to Experiment on Disc
+/// 1: %ExperimentName:          Name of File in experiment column in ExperimentBrowser
+/// 2: %ExperimentFolder         Data folder inside current Igor experiment
+Function/Wave getAnalysisBrowserMap()
 	DFREF dfr = GetAnalysisFolder()
 
 	Wave/Z/SDFR=dfr/T wv = experimentMap
