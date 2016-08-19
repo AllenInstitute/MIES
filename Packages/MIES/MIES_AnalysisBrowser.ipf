@@ -205,21 +205,19 @@ static Function/S AB_LoadFile(discLocation)
 		device = StringFromList(i, deviceList)
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
-				// handle pxps without any data properly
-				highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
-				if(IsFinite(highestSweepNumber))
-					AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
-				endif
+				Wave sweepNums = AB_GetSweepsFromExperiment(map[%DiscLocation], device)
+
 				AB_LoadTPStorageFromFile(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
+				WAVE sweepNums = AB_GetSweepsFromLabNotebook(map[%DataFolder], device, clean = 1)
 				break
 			default:
 				ASSERT(0, "invalid file type")
 		endswitch
 
-		AB_FillListWave(map[%DataFolder], map[%FileName], device)
+		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweepNums)
 	endfor
 
 	return deviceList
@@ -265,36 +263,42 @@ static Function AB_AddExperimentNameIfReq(expName, list, index)
 	index += 1
 End
 
-static Function AB_FillListWave(expFolder, expName, device)
-	string expFolder, expName, device
-
+/// @brief Creates list-view for AnalysisBrowser
+///
+/// Depends on LabNoteBook to be loaded prior to call.
+///
+/// @param fileName   current Project's filename
+/// @param device     current device
+/// @param dataFolder current Project's Lab Notebook DataFolder reference
+/// @param sweepNums  Wave containing all sweeps actually present for device
+static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
+	string fileName, device, dataFolder
+	WAVE sweepNums
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-	string str, sweep_config, listOfSweepConfigWaves
+	string str
 
-	DFREF expDataDFR      = GetAnalysisDeviceConfigFolder(expFolder, device)
-	WAVE numericalValues  = GetAnalysLBNumericalValues(expFolder, device)
-	WAVE textualValues    = GetAnalysLBTextualValues(expFolder, device)
+	DFREF labNBdfr         = GetAnalysisLabNBFolder(dataFolder, device)
+	WAVE  numericalValues  = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE  textualValues    = GetAnalysLBTextualValues(dataFolder, device)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	AB_AddExperimentNameIfReq(expName, list, index)
+	AB_AddExperimentNameIfReq(fileName, list, index)
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
 
-	listOfSweepConfigWaves = SortList(GetListOfWaves(expDataDFR, ".*"), ";", 16)
-	numWaves = ItemsInList(listOfSweepConfigWaves)
+	Sort sweepNums, sweepNums
 
+	numWaves = Dimsize(sweepNums, ROWS)
 	list[index][%'#sweeps'][0] = num2istr(numWaves)
 	index += 1
 
 	for(i = 0; i < numWaves; i += 1)
-		sweep_config = StringFromList(i, listOfSweepConfigWaves)
 		EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 
-		sweepNo = ExtractSweepNumber(sweep_config)
-
+		sweepNo = sweepNums[i]
 		list[index][%sweep][0] = num2str(sweepNo)
 
 		str = AB_GetSettingNumFiniteVals(numericalValues, device, sweepNo, "DAC")
@@ -422,18 +426,75 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	return V_flag
 End
 
-/// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(dataFolder, device)
+/// @brief Returns a wave containing all present sweep numbers
+///
+/// @param dataFolder    DataFolder of HDF5 or Experiment File where LabNoteBook is saved
+/// @param device        device for which to get sweeps.
+/// @param clean         Variable indicating if ouput can contain duplicate values
+static Function/WAVE AB_GetSweepsFromLabNotebook(dataFolder, device, [clean])
 	String dataFolder, device
+	variable clean
+	if(ParamIsDefault(clean))
+		clean = 0
+	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
 	WAVE/SDFR=dfr numericalValues
 
 	variable sweepCol = GetSweepColumn(numericalValues)
 	MatrixOP/FREE sweepNums = col(numericalValues, sweepCol)
+	Redimension/N=-1 sweepNums
+
+	if(clean)
+		return GetUniqueEntries(sweepNums)
+	else
+		return sweepNums
+	endif
+End
+
+/// @brief Returns the highest referenced sweep number from the labnotebook
+static Function AB_GetHighestPossibleSweepNum(dataFolder, device)
+	string dataFolder, device
+
+	WAVE sweepNums = AB_GetSweepsFromLabNotebook(dataFolder, device, clean = 0)
 	WaveStats/M=1/Q sweepNums
 
 	return V_max
+End
+
+/// @brief Returns a wave containing all present sweep numbers
+///
+/// Function uses Config Waves from Igor Experiment to determine present sweeps
+///
+/// @param discLocation  location of Experiment File on Disc.
+///                      ID in AnalysisBrowserMap
+/// @param device        device for which to get sweeps.
+static Function/WAVE AB_GetSweepsFromExperiment(discLocation, device)
+	string discLocation, device
+
+	variable highestSweepNumber, sweepNumber, numSweeps, i
+	string listSweepConfig, sweepConfig
+	WAVE/T map = AB_GetMap(discLocation)
+	DFREF SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
+
+	// Load Sweep Config Waves
+	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
+	if(IsFinite(highestSweepNumber))
+		AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+	endif
+	listSweepConfig = GetListOfWaves(sweepConfigDFR, ".*")
+
+	// store Sweep Numbers in wave
+	numSweeps = ItemsInList(listSweepConfig)
+	Make/FREE/N=(numSweeps) sweepNumbers
+	for(i = 0; i < numSweeps; i += 1)
+		sweepConfig = StringFromList(i, listSweepConfig)
+		sweepNumber = ExtractSweepNumber(sweepConfig)
+		sweepNumbers[i] = sweepNumber
+	endfor
+/// @param dataFolder    datafolder of the project
+
+	return sweepNumbers
 End
 
 static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
