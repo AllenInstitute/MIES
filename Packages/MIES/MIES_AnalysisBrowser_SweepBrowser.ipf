@@ -5,6 +5,7 @@
 
 static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"
 static StrConstant SWEEP_OVERLAY_DEP_CTRLS = "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan;check_SweepBrowser_DisplayTTL;check_SweepBrowser_DisplayADC;check_SweepBrowser_splitTTL"
+static StrConstant WAVE_NOTE_LAYOUT_KEY    = "WAVE_LAYOUT_VERSION"
 
 static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
 	string graphOrPanel
@@ -22,19 +23,25 @@ static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	DFREF sweepBrowser
 
 	ASSERT(DataFolderExistsDFR(sweepBrowser), "Missing sweepBrowser DFR")
+
+	Variable versionOfWave = 1
+
 	WAVE/T/Z/SDFR=sweepBrowser wv = map
 	if(WaveExists(wv))
-		return wv
+		if(GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY) == versionOfWave)
+			return wv
+		endif
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 4) sweepBrowser:map/Wave=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
-	Make/T/N=(MINIMUM_WAVE_SIZE, 4) sweepBrowser:map/Wave=wv
-
-	SetDimLabel COLS, 0, ExperimentName, wv
-	SetDimLabel COLS, 1, ExperimentFolder, wv
+	SetDimLabel COLS, 0, FileName, wv
+	SetDimLabel COLS, 1, DataFolder, wv
 	SetDimLabel COLS, 2, Device, wv
 	SetDimLabel COLS, 3, Sweep, wv
 
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, versionOfWave)
 
 	return wv
 End
@@ -64,7 +71,7 @@ static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 
 	device    = sweepMap[mapIndex][%Device]
 	sweep     = str2num(sweepMap[mapIndex][%Sweep])
-	expFolder = sweepMap[mapIndex][%ExperimentFolder]
+	expFolder = sweepMap[mapIndex][%DataFolder]
 
 	if(!IsFinite(sweep))
 		return $""
@@ -153,7 +160,7 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 
 	device    = sweepMap[mapIndex][%Device]
 	sweep     = str2num(sweepMap[mapIndex][%Sweep])
-	expFolder = sweepMap[mapIndex][%ExperimentFolder]
+	expFolder = sweepMap[mapIndex][%DataFolder]
 
 	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
@@ -307,7 +314,7 @@ Function/S SB_GetListOfExperiments(graph)
 
 	numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 	for(i = 0; i < numEntries; i += 1)
-		experiment = sweepMap[i][%ExperimentName]
+		experiment = sweepMap[i][%FileName]
 		if(WhichListItem(experiment, list) == -1)
 			list = AddListItem(experiment, list, ";", Inf)
 		endif
@@ -370,7 +377,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 		numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 		Make/FREE/N=(numEntries) indizes = p
 	else
-		WAVE/Z indizes = FindIndizes(wvText=sweepMap, colLabel="ExperimentName", str=experiment)
+		WAVE/Z indizes = FindIndizes(wvText=sweepMap, colLabel="FileName", str=experiment)
 		ASSERT(WaveExists(indizes), "The experiment could not be found in the sweep browser")
 		numEntries = DimSize(indizes, ROWS)
 	endif
@@ -473,7 +480,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
-	expFolder = sweepMap[newMapIndex][%ExperimentFolder]
+	expFolder = sweepMap[newMapIndex][%DataFolder]
 	device    = sweepMap[newMapIndex][%Device]
 	sweep     = str2num(sweepMap[newMapIndex][%Sweep])
 
@@ -516,8 +523,8 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 	Duplicate/FREE/R=[0][]/T map, singleRow
 
 	singleRow = ""
-	singleRow[0][%ExperimentName]   = expName
-	singleRow[0][%ExperimentFolder] = expFolder
+	singleRow[0][%FileName]   = expName
+	singleRow[0][%DataFolder] = expFolder
 	singleRow[0][%Device]           = device
 	singleRow[0][%Sweep]            = sweepStr
 
@@ -526,8 +533,8 @@ Function SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
 		return NaN
 	endif
 
-	map[index][%ExperimentName]   = expName
-	map[index][%ExperimentFolder] = expFolder
+	map[index][%FileName]   = expName
+	map[index][%DataFolder] = expFolder
 	map[index][%Device]           = device
 	map[index][%Sweep]            = sweepStr
 
@@ -728,7 +735,7 @@ Function/S SB_GetSweepList(graph)
 
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
 	for(i = 0; i < numRows; i += 1)
-		sprintf str, "Sweep %d [%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%ExperimentName]), "_")
+		sprintf str, "Sweep %d [%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%FileName]), "_")
 		list = AddListItem(str, list, ";", Inf)
 	endfor
 
