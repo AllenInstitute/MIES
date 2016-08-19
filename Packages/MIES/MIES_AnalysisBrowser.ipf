@@ -226,19 +226,19 @@ static Function/S AB_LoadFile(discLocation)
 		device = deviceWave[i]
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
-				Wave sweepNums = AB_GetSweepsFromExperiment(map[%DiscLocation], device)
-
+				AB_LoadSweepsFromExperiment(map[%DiscLocation], device)
 				AB_LoadTPStorageFromFile(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
-				Wave sweepNums = AB_GetSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
 		endswitch
 
-		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweepNums)
+		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
+		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweeps)
 	endfor
 
 	return deviceList
@@ -489,7 +489,7 @@ End
 /// @param discLocation  location of Experiment File on Disc.
 ///                      ID in AnalysisBrowserMap
 /// @param device        device for which to get sweeps.
-static Function/WAVE AB_GetSweepsFromExperiment(discLocation, device)
+static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 	string discLocation, device
 
 	variable highestSweepNumber, sweepNumber, numSweeps, i
@@ -518,7 +518,7 @@ static Function/WAVE AB_GetSweepsFromExperiment(discLocation, device)
 	return sweeps
 End
 
-/// @brief Returns a wave containing all present sweep numbers
+/// @brief Analyse data in NWB file and sort as sweeps.
 ///
 /// Function uses source attribute of /acquisition/timeseries
 ///                               and /stimulus/presentation
@@ -527,7 +527,7 @@ End
 ///                      ID in AnalysisBrowserMap
 /// @param dataFolder    datafolder of the project
 /// @param device        device for which to get sweeps.
-static Function/WAVE AB_GetSweepsFromNWB(discLocation, dataFolder, device)
+static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
 	string discLocation, dataFolder, device
 
 	variable h5_fileID, h5_groupID
