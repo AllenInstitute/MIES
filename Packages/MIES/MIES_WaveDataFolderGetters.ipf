@@ -3885,16 +3885,6 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 	return wv
 End
 
-/// @brief Return the sweep wave of a given sweep from the analysis subfolder
-Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
-	string expFolder, device
-	variable sweep
-
-	Wave/SDFR=GetAnalysisSweepDataPath(expFolder, device, sweep) wv = $("Sweep_" + num2str(sweep))
-
-	return wv
-End
-
 /// @brief Return the numerical labnotebook values in the analysis browser of a device and experiment pair
 Function/WAVE GetAnalysLBNumericalValues(expFolder, device)
 	string expFolder, device
