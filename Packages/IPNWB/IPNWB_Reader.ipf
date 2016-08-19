@@ -160,3 +160,70 @@ Function LoadSourceAttribute(locationID, channel, p)
 	// from /acquisition/timeseries/data_*_*/source
 	//sprintf group, "%s/data_%0*d_%s%d%s", path, numPlaces, p.groupIndex, channelTypeStr, p.channelNumber, p.channelSuffix
 End
+
+/// @brief Load data wave from specified path
+///
+/// @param locationID   id of an open hdf5 group containing channel
+///                     id can also be of an open nwb file. In this case specify (optional) path.
+/// @param channel      name of channel for which data attribute is loaded
+/// @param path         use path to specify group inside hdf5 file where ./channel/data is located.
+/// @return             reference to free wave containing loaded data
+Function/Wave LoadDataWave(locationID, channel, [path])
+	variable locationID
+	string channel, path
+
+	if(ParamIsDefault(path))
+		path = "./"
+	endif
+
+	Assert(IPNWB#H5_GroupExists(locationID, path), "Path is not in nwb file")
+
+	path += channel + "/data"
+	HDF5LoadData/Q/IGOR=(-1) locationID, path
+
+	Assert(!V_flag, "could not load data wave from specified path")
+	Assert(ItemsInList(S_waveNames) == 1, "unspecified data format")
+
+	wave data = $StringFromList(0, S_waveNames)
+	MoveWave data $channel
+
+	return MakeWaveFree(data)
+End
+
+/// @brief Load single channel data as a wave from /acquisition/timeseries
+///
+/// @param locationID   id of an open hdf5 group or file
+/// @param channel      name of channel for which data attribute is loaded
+/// @param dfr          dataFolder where data is saved
+/// @return             reference to wave containing loaded data
+Function/Wave LoadTimeseries(locationID, channel, [dfr])
+	Variable locationID
+	String channel
+	DFREF dfr
+
+	WAVE data = LoadDataWave(locationID, channel, path = "/acquisition/timeseries/")
+	if(!ParamIsDefault(dfr))
+		MoveAndRename(data, "AD" + NameOfWave(data), dfr = dfr)
+	endif
+
+	return data
+End
+
+/// @brief Load single channel data as a wave from /stimulus/presentation/
+///
+/// @param locationID   id of an open hdf5 group or file
+/// @param channel      name of channel for which data attribute is loaded
+/// @param dfr          dataFolder where data is saved
+/// @return             reference to wave containing loaded data
+Function/Wave LoadStimulus(locationID, channel, [dfr])
+	Variable locationID
+	String channel
+	DFREF dfr
+
+	WAVE data = LoadDataWave(locationID, channel, path = "/stimulus/presentation/")
+	if(!ParamIsDefault(dfr))
+		MoveAndRename(data, "DA" + NameOfWave(data), dfr = dfr)
+	endif
+
+	return data
+End

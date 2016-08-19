@@ -232,7 +232,7 @@ static Function/S AB_LoadFile(discLocation)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
-				WAVE sweepNums = AB_GetSweepsFromNWB(map[%DiscLocation], device)
+				Wave sweepNums = AB_GetSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -310,9 +310,8 @@ static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
 
-	Sort sweepNums, sweepNums
+	numWaves = GetNumberFromWaveNote(sweepNums, NOTE_INDEX)
 
-	numWaves = Dimsize(sweepNums, ROWS)
 	list[index][%'#sweeps'][0] = num2istr(numWaves)
 	index += 1
 
@@ -497,6 +496,7 @@ static Function/WAVE AB_GetSweepsFromExperiment(discLocation, device)
 	string listSweepConfig, sweepConfig
 	WAVE/T map = AB_GetMap(discLocation)
 	DFREF SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
+	WAVE/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
 
 	// Load Sweep Config Waves
 	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
@@ -507,44 +507,84 @@ static Function/WAVE AB_GetSweepsFromExperiment(discLocation, device)
 
 	// store Sweep Numbers in wave
 	numSweeps = ItemsInList(listSweepConfig)
-	Make/FREE/N=(numSweeps) sweepNumbers
+	EnsureLargeEnoughWave(sweeps, minimumSize=numSweeps, dimension=ROWS, initialValue = -1)
 	for(i = 0; i < numSweeps; i += 1)
 		sweepConfig = StringFromList(i, listSweepConfig)
 		sweepNumber = ExtractSweepNumber(sweepConfig)
-		sweepNumbers[i] = sweepNumber
+		sweeps[i] = sweepNumber
 	endfor
-/// @param dataFolder    datafolder of the project
+	SetNumberInWaveNote(sweeps, NOTE_INDEX, numSweeps)
 
-	return sweepNumbers
+	return sweeps
 End
 
 /// @brief Returns a wave containing all present sweep numbers
 ///
 /// Function uses source attribute of /acquisition/timeseries
+///                               and /stimulus/presentation
 ///
 /// @param discLocation  location of NWB File on Disc.
 ///                      ID in AnalysisBrowserMap
+/// @param dataFolder    datafolder of the project
 /// @param device        device for which to get sweeps.
-static Function/WAVE AB_GetSweepsFromNWB(discLocation, device)
-	string discLocation, device
+static Function/WAVE AB_GetSweepsFromNWB(discLocation, dataFolder, device)
+	string discLocation, dataFolder, device
 
-	variable h5_fileID, h5_groupID, numSweeps, i
-	string channelList, channelString
-	STRUCT IPNWB#ReadChannelParams channel
+	variable h5_fileID, h5_groupID
+	string channelList
 
+	Wave/I sweeps = GetAnalysisChannelSweepWave(dataFolder, device)
+
+	// open hdf5 file
 	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+
+	// load from /acquisition/timeseries
 	channelList = IPNWB#ReadChannelList(h5_fileID, acquisition = 1)
 	h5_groupID = IPNWB#H5_OpenGroup(h5_fileID, "/acquisition/timeseries")
+	Wave/T acquisition = GetAnalysisChannelAcqWave(dataFolder, device)
+	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, acquisition)
 
-	numSweeps = ItemsInList(channelList)
-	Make/FREE/N=(numSweeps) sweepNumbers
-	for(i = 0; i < numSweeps; i += 1)
+	// load from /stimulus/presentation
+	channelList = IPNWB#ReadChannelList(h5_fileID, stimulus = 1)
+	h5_groupID = IPNWB#H5_OpenGroup(h5_fileID, "/stimulus/presentation")
+	Wave/T stimulus = GetAnalysisChannelStimWave(dataFolder, device)
+	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, stimulus)
+End
+
+/// @brief Store channelList in storage wave according to index in sweeps wave
+Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
+	variable groupID
+	string channelList
+	Wave/I sweeps
+	Wave/T storage
+
+	variable numChannels, numSweeps, i
+	string channelString
+	STRUCT IPNWB#ReadChannelParams channel
+
+	numChannels = ItemsInList(channelList)
+	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
+
+	EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
+	storage = ""
+
+	for(i = 0; i < numChannels; i += 1)
 		channelString = StringFromList(i, channelList)
-		IPNWB#LoadSingleChannel(h5_groupID, channelString, channel)
-		sweepNumbers[i] = channel.sweep
+		IPNWB#LoadSourceAttribute(groupID, channelString, channel)
+		FindValue/I=(channel.sweep)/S=0 sweeps
+		if(V_Value == -1)
+			numSweeps += 1
+			EnsureLargeEnoughWave(sweeps, minimumSize = numSweeps, dimension = ROWS, initialValue = -1)
+			EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
+			sweeps[numSweeps - 1] = channel.sweep
+			storage[numSweeps - 1] = AddListItem(channelString, "")
+		else
+			storage[V_Value] = AddListItem(channelString, storage[V_Value])
+		endif
 	endfor
 
-	return GetUniqueEntries(sweepNumbers)
+	SetNumberInWaveNote(sweeps, NOTE_INDEX, numSweeps)
+	SetNumberInWaveNote(storage, NOTE_INDEX, numSweeps)
 End
 
 static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
