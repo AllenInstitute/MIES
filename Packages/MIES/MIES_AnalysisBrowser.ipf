@@ -140,6 +140,33 @@ static Function AB_RemoveMapEntry(index)
 	endif
 End
 
+/// @brief  Get single matching entry from getAnalysisBrowserMap
+/// @param  discLocation: first column. Path to file on disc
+/// @return wave with 4 columns
+/// Columns:
+/// 0: %DiscLocation:  Path to Experiment on Disc
+/// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
+/// 2: %DataFolder     Data folder inside current Igor experiment
+/// 3: %FileType       File Type identifier for routing to loader functions
+Function/Wave AB_GetMap(discLocation)
+	string discLocation
+
+	WAVE/T map = getAnalysisBrowserMap()
+
+	FindValue/TXOP=4/TEXT=(discLocation) map
+	ASSERT(V_Value >= 0, "invalid index")
+
+	Make/FREE/N=4/T wv
+	wv = 	map[V_Value][p]
+
+	SetDimLabel ROWS, 0, DiscLocation, wv
+	SetDimLabel ROWS, 1, FileName, wv
+	SetDimLabel ROWS, 2, DataFolder, wv
+	SetDimLabel ROWS, 3, FileType, wv
+
+	return wv
+End
+
 /// @brief general loader for pxp, uxp and nwb files
 static Function AB_AddFile(baseFolder, discLocation)
 	string baseFolder, discLocation
@@ -416,19 +443,12 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	string discLocation
 
 	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
-	string fileName, dataFolder
 	string deviceList = ""
 	variable numDevices, numTypes, i, j, err, numWavesLoaded, highestSweepNumber
 
-	WAVE/T map = GetAnalysisBrowserMap()
+	WAVE/T map = AB_GetMap(discLocation)
 
-	// map discLocation to DataFolder in current experiment
-	FindValue/TXOP=4/TEXT=(discLocation) map
-	ASSERT(V_Value >= 0, "invalid index")
-	fileName   = map[V_Value][%FileName]
-	dataFolder = map[V_Value][%DataFolder]
-
-	if(!cmpstr(map[V_Value][%FileType], ANALYSISBROWSER_FILE_TYPE_IGOR))
+	if(!cmpstr(map[%FileType], ANALYSISBROWSER_FILE_TYPE_IGOR))
 		return "" // can not load file
 	endif
 
@@ -523,7 +543,7 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 			deviceList = AddListItem(device, deviceList, ";", inf)
 
 			// copy and rename loaded waves to Analysisbrowser directory.
-			DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
+			DFREF dfr = GetAnalysisLabNBFolder(map[%DataFolder], device)
 
 			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
 			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
@@ -546,14 +566,13 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericalValues)
 
 			if(IsFinite(highestSweepNumber))
-				AB_LoadSweepConfigData(discLocation, dataFolder, device, highestSweepNumber)
+				AB_LoadSweepConfigData(discLocation, map[%DataFolder], device, highestSweepNumber)
 			endif
 
-			AB_LoadTPStorageFromFile(discLocation, dataFolder, device)
-			AB_LoadUserCommentFromFile(discLocation, dataFolder, device)
+			AB_LoadTPStorageFromFile(discLocation, map[%DataFolder], device)
+			AB_LoadUserCommentFromFile(discLocation, map[%DataFolder], device)
 
-
-			AB_FillListWave(dataFolder, fileName, device)
+			AB_FillListWave(map[%DataFolder], map[%FileName], device)
 		endfor
 	endfor
 
