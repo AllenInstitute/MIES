@@ -90,6 +90,33 @@ Structure ReadChannelParams
 	variable groupIndex       ///< constant for all channels in this measurement.
 EndStructure
 
+/// @brief Try to extract information from channel name string
+///
+/// @param[in]  channel  Input channel name in form data_00000_TTL1_3
+/// @param[out] p        ReadChannelParams structure to get filled
+Function AnalyseChannelName(channel, p)
+	String channel
+	STRUCT ReadChannelParams &p
+	String groupIndex, channelTypeStr, channelNumber, channelSuffix, channelID
+
+	SplitString/E="^(?i)data_([A-Z0-9]+)_([A-Z]+)([0-9]+)(?:_([A-Z0-9]+)){0,1}" channel, groupIndex, channelID, channelNumber, p.channelSuffix
+	p.groupIndex = str2num(groupIndex)
+	strswitch(channelID)
+		case "AD":
+			p.channelType = CHANNEL_TYPE_ADC
+			break
+		case "DA":
+			p.channelType = CHANNEL_TYPE_DAC
+			break
+		case "TTL":
+			p.channelType = CHANNEL_TYPE_TTL
+			break
+		default:
+			p.channelType = CHANNEL_TYPE_OTHER
+	endswitch
+	p.channelNumber = str2num(channelNumber)
+End
+
 /// @brief Read parameters from source attribute
 ///
 /// @param[in]  locationID   HDF5 group specified channel is a member of
