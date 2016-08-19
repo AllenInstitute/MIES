@@ -480,7 +480,7 @@ Function CalculateLCMOfWave(wv)
 	return result
 End
 
-/// @brief Returns an unsorted free wave with all unique entries from wv.
+/// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN.
 ///
 /// This is not the best possible implementation but should
 /// suffice for our needs.
@@ -501,6 +501,9 @@ Function/Wave GetUniqueEntries(wv)
 	result  = NaN
 	idx     = numRows - 1
 	for(i=0; i < numRows; i+=1 )
+		if (!IsFinite(wv[i]))
+			continue
+		endif
 		FindValue/V=(wv[i])/S=(idx) result
 		if(V_Value == -1)
 			result[idx] = wv[i]
