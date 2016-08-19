@@ -3862,14 +3862,21 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 
 	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
 	string configSweep  = "Config_Sweep_" + num2str(sweep)
+	variable versionOfNewWave = 1
 
 	Wave/I/Z/SDFR=dfr wv = $configSweep
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		// do nothing
+	else
+		Make/N=(0, 4)/I dfr:$configSweep/Wave=wv = -1
 	endif
 
-	Make/N=(0, 4)/I dfr:$configSweep/Wave=wv = -1
+	SetDimLabel COLS, 0, type,   wv
+	SetDimLabel COLS, 1, number, wv
+	SetDimLabel COLS, 2, timeMS, wv
 
 	return wv
 End

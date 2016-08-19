@@ -1237,7 +1237,7 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	variable sweep
 
 	string channelList
-	variable h5_fileID, numSweeps
+	variable h5_fileID, h5_groupID, numSweeps
 
 	Wave/T nwb = AB_GetMap(discLocation)
 
@@ -1267,14 +1267,16 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	// load acquisition
 	Wave/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
 	channelList = acquisition[V_Value]
-	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep))
+	h5_groupID = IPNWB#OpenAcquisition(h5_fileID)
+	if(AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
 	// load stimulus
 	Wave/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
 	channelList = stimulus[V_Value]
-	if(AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep))
+	h5_groupID = IPNWB#OpenStimulus(h5_fileID)
+	if(AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
@@ -1284,35 +1286,60 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	return 0
 End
 
-Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSweep)
-	variable h5_fileID
+Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep)
+	variable h5_groupID
 	string channelList
 	DFREF sweepDFR
 	Wave/I configSweep
 
-	string channel, channelName, channelID
-	variable numChannels, numEntries, i, waveNoteLoaded
+	string channel, channelName
+	variable numChannels, numEntries, i
 	STRUCT IPNWB#ReadChannelParams p
+	variable waveNoteLoaded, fakeConfigWave, fakeTTLbase
 
-	numEntries = DimSize(configSweep, 0)
 	numChannels = ItemsInList(channelList)
-	Redimension/N=((numEntries + numChannels), -1) configSweep
 
 	for(i = 0; i < numChannels; i += 1)
 		channel = StringFromList(i, channelList)
 
 		IPNWB#AnalyseChannelName(channel, p)
+		/// @todo: do not use channel name. Use source attribute instead
+		//IPNWB#LoadSourceAttribute(h5_groupID, channel, p)
 
 		switch(p.channelType)
 			case ITC_XOP_CHANNEL_TYPE_DAC:
-				wave loaded = IPNWB#LoadStimulus(h5_fileID, channel, dfr = sweepDFR, readIgorAttr = 1)
-				channelID = "DA"
+				channelName = "DA"
+				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel, dfr = sweepDFR)
+				channelName += "_" + num2str(p.channelNumber)
+				fakeConfigWave = 1
 				break
 			case ITC_XOP_CHANNEL_TYPE_ADC:
-				wave loaded = IPNWB#LoadTimeseries(h5_fileID, channel, dfr = sweepDFR, readIgorAttr = 1)
-				channelID = "AD"
+				channelName = "AD"
+				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel, dfr = sweepDFR)
+				channelName += "_" + num2str(p.channelNumber)
+				fakeConfigWave = 1
 				break
 			case ITC_XOP_CHANNEL_TYPE_TTL:
+				channelName  = "TTL"
+				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel, dfr = sweepDFR, channelPrefix = channelName)
+				channelName += "_" + num2str(p.channelNumber)
+
+				// always fake TTL base wave (bitwise sum of all TTL channels)
+				wave/Z/I base = sweepDFR:$channelName
+				if(!WaveExists(base))
+					Duplicate loaded sweepDFR:$channelName/wave=base
+					base = 0
+					fakeConfigWave = 1
+					SetNumberInWaveNote(base, "fake", 1)
+				endif
+
+				if(WaveMax(loaded) < 2)
+					base += 2^(str2num(p.channelSuffix)) * loaded
+				else
+					base += loaded
+				endif
+
+				channelName += "_" + p.channelSuffix
 				break
 			default:
 				ASSERT(1, "unknown channel type " + num2str(p.channelType))
@@ -1325,16 +1352,24 @@ Function AB_LoadSweepFromNWBgeneric(h5_fileID, channelList, sweepDFR, configSwee
 			endif
 			waveNoteLoaded = 1
 		endif
-		// fake configSweep_Sweeps Wave
-		configSweep[(numEntries + i)][0] = p.channelType
-		configSweep[(numEntries + i)][1] = p.channelNumber
-		configSweep[(numEntries + i)][2] = trunc(DimDelta(loaded, ROWS) * 1000)
-		configSweep[(numEntries + i)][3] = -1 // -1 for faked configSweep_Sweeps Waves
 
-		// set unit in configSweep_wave from WaveNote of loaded dataset
-		Note/K configSweep, AddListItem(WaveUnits(loaded, COLS), Note(configSweep), ";", Inf)
+		// fake Config_Sweeps Wave
+		if(fakeConfigWave)
+			numEntries = DimSize(configSweep, ROWS)
+			Redimension/N=((numEntries + 1), -1) configSweep
 
-		channelName = channelID + "_" + num2str(p.channelNumber)
+			configSweep[numEntries][%type]   = p.channelType
+			configSweep[numEntries][%number] = p.channelNumber
+			configSweep[numEntries][%timeMS] = trunc(DimDelta(loaded, ROWS) * 1000)
+			configSweep[numEntries][3]       = -1 // -1 for faked Config_Sweeps Waves
+
+			// set unit in config_wave from WaveNote of loaded dataset
+			Note/K configSweep, AddListItem(WaveUnits(loaded, COLS), Note(configSweep), ";", Inf)
+
+			fakeConfigWave = 0
+		endif
+
+		ASSERT(!WaveExists($channelName), "wave with same name already exists")
 		Rename loaded $ChannelName
 		WaveClear loaded
 	endfor

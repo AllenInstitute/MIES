@@ -307,18 +307,22 @@ End
 
 /// @brief Load single channel data as a wave from /stimulus/presentation/
 ///
-/// @param locationID   id of an open hdf5 group or file
-/// @param channel      name of channel for which data attribute is loaded
-/// @param dfr          dataFolder where data is saved
+/// @param locationID    id of an open hdf5 group or file
+/// @param channel       name of channel for which data attribute is loaded
+/// @param dfr           dataFolder where data is saved
+/// @param channelPrefix Add custom Prefix to WaveName
 /// @return             reference to wave containing loaded data
-Function/Wave LoadStimulus(locationID, channel, [dfr])
+Function/Wave LoadStimulus(locationID, channel, [dfr, channelPrefix])
 	Variable locationID
-	String channel
+	String channel, channelPrefix
 	DFREF dfr
+	if(ParamIsDefault(channelPrefix))
+		channelPrefix = "DA"
+	endif
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/stimulus/presentation/")
 	if(!ParamIsDefault(dfr))
-		MoveAndRename(data, "DA" + NameOfWave(data), dfr = dfr)
+		MoveAndRename(data, channelPrefix + NameOfWave(data), dfr = dfr)
 	endif
 
 	return data
