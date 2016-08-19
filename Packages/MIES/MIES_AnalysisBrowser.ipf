@@ -1374,11 +1374,44 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 		WaveClear loaded
 	endfor
 
+	AB_SortConfigSweeps(configSweep)
+
 	if(!waveNoteLoaded)
 		return 1 // nothing was loaded
 	else
 		return 0 // no error
 	endif
+End
+
+/// @brief Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser
+///
+/// function is oriented at MDSort()
+Function AB_SortConfigSweeps(config)
+	wave/I config
+
+	string wavenote = Note(config)
+	variable numRows = DimSize(config, ROWS)
+
+	ASSERT(ItemsInList(wavenote) == numRows, "Size of Config Wave differs from stored Wave Units")
+	ASSERT(DimSize(config, COLS) == 4, "Incorrect Column Size for Config Wave")
+	ASSERT(FindDimLabel(config, COLS, "type") != -2, "Config Wave has no column labels")
+	ASSERT(FindDimLabel(config, COLS, "number") != -2, "Config Wave has no column labels")
+
+	wave/T units = ConvertListToTextWave(Note(config))
+	Make/I/Free/N=(numRows) keyPrimary, keySecondary
+	Make/Free/N=(numRows)/I/U valindex = p
+
+	//sort order: ITC_XOP_CHANNEL_TYPE_DAC = 1, ITC_XOP_CHANNEL_TYPE_ADC = 0, ITC_XOP_CHANNEL_TYPE_TTL = 3
+	MultiThread keyPrimary[]   = config[p][%type] == ITC_XOP_CHANNEL_TYPE_ADC ? 2 : config[p][%type]
+	MultiThread keySecondary[] = config[p][%number]
+	Sort/A {keyPrimary, keySecondary}, valindex
+
+	Duplicate/FREE/I config config_temp
+	Duplicate/FREE/T units units_temp
+	MultiThread config[][] = config_temp[valindex[p]][q]
+	units[] = units_temp[valindex[p]]
+
+	Note/K config, ConvertTextWaveToList(units)
 End
 
 Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)

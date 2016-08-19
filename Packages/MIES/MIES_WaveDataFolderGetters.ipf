@@ -278,7 +278,14 @@ static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	variable versionOfNewWave
 
 	// The equality check ensures that you can also downgrade, e.g. from version 5 to 4, although this is *strongly* discouraged.
-	return WaveExists(wv) && GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY) == versionOfNewWave
+	return WaveExists(wv) && GetWaveVersion(wv) == versionOfNewWave
+End
+
+/// @brief return the Version of the Wave
+static Function GetWaveVersion(wv)
+	Wave/Z wv
+
+	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
 End
 
 /// @brief Set the wave layout version of wave
@@ -3862,13 +3869,10 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 
 	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
 	string configSweep  = "Config_Sweep_" + num2str(sweep)
-	variable versionOfNewWave = 1
 
 	Wave/I/Z/SDFR=dfr wv = $configSweep
 
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
+	if(WaveExists(wv))
 		// do nothing
 	else
 		Make/N=(0, 4)/I dfr:$configSweep/Wave=wv = -1
