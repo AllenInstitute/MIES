@@ -1369,8 +1369,10 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 			fakeConfigWave = 0
 		endif
 
-		ASSERT(!WaveExists($channelName), "wave with same name already exists")
-		Rename loaded $ChannelName
+		WAVE/Z/SDFR=sweepDFR targetName = $channelName
+		// nwb files created prior to 901428b might have duplicated datasets
+		ASSERT(!WaveExists(targetName) || (WaveExists(targetName) && WaveCRC(0, targetName) == WaveCRC(0, loaded)), "wave with same name, but different content, already exists")
+		Duplicate/O loaded, sweepDFR:$channelName
 		WaveClear loaded
 	endfor
 
