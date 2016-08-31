@@ -85,7 +85,7 @@ Function/S GetMiesVersion()
 	string path = GetSVARAsString(GetMiesPath(), "version")
 	SVAR str = $path
 
-	if(!CmpStr(str,""))
+	if(!CmpStr(str,"") || !CmpStr(str, UNKNOWN_MIES_VERSION))
 		str = CreateMiesVersion()
 	endif
 
