@@ -2536,3 +2536,17 @@ Function IsTextWave(wv)
 
 	return WaveType(wv, 1) == 2
 End
+
+// @brief Return the user name of the running user
+Function/S GetSystemUserName()
+
+	variable numElements
+	string path
+
+	// example: C:Users:thomas:AppData:Roaming:WaveMetrics:Igor Pro 7:Packages:
+	path = SpecialDirPath("Packages", 0, 0, 0)
+	numElements = ItemsInList(path, ":")
+	ASSERT(numElements > 3, "Unexpected format")
+
+	return StringFromList(2, path, ":")
+End
