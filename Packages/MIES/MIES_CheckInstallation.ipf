@@ -107,6 +107,16 @@ Function CHI_CheckInstallation()
 	CHI_InitInstallationState(state)
 	printf "\rChecking base installation:\r"
 
+	SVAR miesVersion = $GetMiesVersion()
+	state.numTries += 1
+
+	if(!cmpstr(miesVersion, UNKNOWN_MIES_VERSION))
+		printf "Mies version info: Invalid (Very Bad)\r"
+		state.numErrors += 1
+	else
+		printf "Mies version info: Valid \"%s\" (Nice!)\r", miesVersion
+	endif
+
 #if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
