@@ -97,22 +97,39 @@ End
 /// @returns the mies version (e.g. Release_0.3.0.0_20141007-3-gdf4bb1e-dirty) or #UNKNOWN_MIES_VERSION
 static Function/S CreateMiesVersion()
 
-	string path, cmd, topDir, gitPaths, version
+	string path, cmd, topDir, version, gitPathCandidates, gitPath
+	string userName, gitDir, fullVersionPath
 	variable refNum, numEntries, i
 
 	// set path to the toplevel directory in the mies folder structure
 	path = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
-	gitPaths = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe"
+	fullVersionPath = path + "version.txt"
 
-	numEntries = ItemsInList(gitPaths)
+	// standard locations for 32bit and 64bit standalone git versions
+	gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe"
+
+	// Atlassian Sourcetree (Embedded git)
+	userName = GetSystemUserName()
+	gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Atlassian\\SourceTree\\git_local\\mingw32\\bin\\git.exe", gitPathCandidates, ";", Inf)
+
+	numEntries = ItemsInList(gitPathCandidates)
 	for(i = 0; i < numEntries; i += 1)
-		GetFileFolderInfo/Z/Q StringFromList(i, gitPaths)
+		gitPath = StringFromList(i, gitPathCandidates)
+		GetFileFolderInfo/Z/Q gitPath
 		if(!V_flag) // git is installed, try to regenerate version.txt
+			DEBUGPRINT("Found git at: ", str=gitPath)
 			topDir = ParseFilePath(5, path, "*", 0, 0)
-			GetFileFolderInfo/Z/Q topDir + ".git"
+			gitDir = topDir + ".git"
+			GetFileFolderInfo/Z/Q gitDir
 			if(!V_flag) // topDir is a git repository
-				sprintf cmd "\"%stools\\gitVersion.bat\"", topDir
-				ExecuteScriptText/Z/B/W=5 cmd
+				// delete the old version.txt so that we can be sure to get the correct one afterwards
+				DeleteFile/Z fullVersionPath
+				DEBUGPRINT("Folder is a git repository: ", str=topDir)
+				// explanation:
+				// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
+				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+				DEBUGPRINT("Cmd to execute: ", str=cmd)
+				ExecuteScriptText/B/Z cmd
 				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 			endif
 
@@ -128,7 +145,9 @@ static Function/S CreateMiesVersion()
 	FReadLine refNum, version
 	Close refNum
 
-	if(IsEmpty(version))
+	DEBUGPRINT("Version.txt contents: ", str=version)
+
+	if(IsEmpty(version) || strsearch(version, " ", 0) != -1) // only error messages have spaces
 		return UNKNOWN_MIES_VERSION
 	endif
 
