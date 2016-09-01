@@ -3,14 +3,14 @@
 This modules allows to easily create valid NeurodataWithoutBorder style HDF5
 files. It encapsulates most of the specification in easy to use functions.
 
-Compliant to NeurodataWithoutBorders specification 1.0.x.
+Compliant to NeurodataWithoutBorders specification 1.0.5.
 
 Example code:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.ipf}
 Function NWBWriterExample()
 
 	variable fileID
-	string contents
+	string contents, device
 
 	// Open a dialog for selecting an HDF5 file name
 	HDF5CreateFile fileID as ""
@@ -32,11 +32,6 @@ Function NWBWriterExample()
 
 	IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti, generalInfo=gi, subjectInfo=si)
 
-	// use the following if you do intracellular ephys
-	// IPNWB#CreateIntraCellularEphys(fileID)
-	// sprintf contents, "Electrode %d", params.ElectrodeNumber
-	// IPNWB#AddElectrode(fileID, params.ElectrodeNumber, contents)
-
 	// 1D waves from your measurement program
 	// we use fake data here
 	Make/FREE AD = (sin(p) + cos(p/10)) * enoise(0.1)
@@ -50,9 +45,16 @@ Function NWBWriterExample()
 	params.channelSuffix   = ""
 	params.sweep           = 123
 	params.electrodeNumber = 1
+	params.electrodeName   = "Nose of the mouse"
 	params.stimset         = "My fancy sine curve"
 	params.channelType     = 0 // @see IPNWB_ChannelTypes
 	WAVE params.data       = AD
+
+	device = "My selfbuilt DAC"
+
+	IPNWB#CreateIntraCellularEphys(fileID)
+	sprintf contents, "Electrode %d", params.ElectrodeNumber
+	IPNWB#AddElectrode(fileID, params.electrodeName, contents, device)
 
 	// calculate the timepoint of the first wave point relative to the session_start_time
 	params.startingTime  = NumberByKeY("MODTIME", WaveInfo(AD, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)

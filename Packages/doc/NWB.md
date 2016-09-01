@@ -55,37 +55,17 @@ stimulus:
                 ancestry       : Class hierarchy defined by NWB spec, important members are
                                  CurrentClampStimulusSeries and VoltageClampStimulusSeries
                 neurodata_type : TimeSeries
-    templates:
-            XXXXXX_DA_Y: Name of the stimset, referenced from stimulus_description
-                data           : N-dimensional data
-                num_samples    : Number of rows in data
-                description    : Unused
-                source         : Human readable description of the source of the data
-                ancestry       : Class hierarchy defined by NWB spec, important members are CurrentClampStimulusSeries
-                                 and VoltageClampStimulusSeries
-                neurodata_type : TimeSeries
 
-            XXXXXX_DA_Y_SegWvType/WP/WPT: The Wavebuilder parameter waves. These waves will not be available for
-                                          "third party stimsets" created outside of MIES
-                data           : N-dimensional dataset with attributes unit, conversion and resolution
-                electrode_name : Name of the electrode headstage, more info in /general/intracellular_ephys/electrode_name
-                gain           :
-                num_samples    : Number of rows in data
-                starting_time  : relative to /session_start_time with attributes rate and unit
-                description    : Unused
-                source         : Human readable description of the source of the data
-                ancestry       : Class hierarchy defined by NWB spec, important members are
-                                 CurrentClampStimulusSeries and VoltageClampStimulusSeries
-                neurodata_type : TimeSeries
+	template: unused
 
 general:
     devices:
         device_XXX: Name of the DA_ephys device, something like "Harvard Bioscience ITC 18USB"
         intracellular_ephys:
-                electrode_XXX: Holds the description of the electrode, something like Headstage 1
-                filtering: Unused
+                electrode_XXX: (XXX can be set by the user via writing into GetCellElectrodeNames())
+					description: Holds the description of the electrode, something like "Headstage 1".
+					device: Device used to record the data
 
-    version: mies version string (custom entry)
     labnotebook: custom entry
 		XXXX: Name of the device
 			numericalKeys   : Numerical labnotebook
@@ -100,11 +80,23 @@ general:
 		XXXX: Name of the device
             userComment: All user comments from this session
 
-file_create_date    : text array with UTC modification timestamps as proposed in tentative NWB 1.0.1 spec
+	generated_by: custom entry
+		Nx2 text data array describing the system which created the data. First column is the key, second the value.
+
+    stimsets: custom entry
+            XXXXXX_DA/TTL_Y_SegWvType/WP/WPT: The Wavebuilder parameter waves. These waves will not be available for
+                                              "third party stimsets" created outside of MIES.
+			XXXXXX_DA/TTL_Y: Name of the stimset, referenced from stimulus_description. Only present if not all
+						     parameter waves could be found.
+
+file_create_date    : text array with UTC modification timestamps
 identifier          : SHA256 hash, ensured to be unique
-neurodata_version   : NWB specification version
+nwb_version         : NWB specification version
 session_description : unused
 session_start_time  : UTC timestamp defining when the recording session started
+
+epochs:
+	tags: unuused
 
 The following entries are only available if explicitly set by the user:
     data_collection

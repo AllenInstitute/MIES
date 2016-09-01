@@ -1,13 +1,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.13
+#pragma version=0.14
 
 /// @file IPNWB_Constants.ipf
 /// @brief Constants
 
 StrConstant PLACEHOLDER = "PLACEHOLDER"
-Strconstant NWB_VERSION = "NWB-1.0.x"
+Strconstant NWB_VERSION = "NWB-1.0.5"
 
 /// @name Constants for FunctionInfo and WaveType
 ///

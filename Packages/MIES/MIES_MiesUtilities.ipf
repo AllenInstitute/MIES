@@ -2984,3 +2984,12 @@ Function/S GetProgramFilesFolder()
 	return "C:\\Program Files (x86)\\"
 #endif
 End
+
+/// @brief Return the default name of a electrode
+Function/S GetDefaultElectrodeName(headstage)
+	variable headstage
+
+	ASSERT(headstage >=0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+
+	return num2str(headstage)
+End

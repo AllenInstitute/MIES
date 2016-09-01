@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.13
+#pragma version=0.14
 
 /// @file IPNWB_Writer.ipf
 /// @brief Generic functions related to export into the NeuroDataWithoutBorders format
@@ -118,7 +118,7 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 		ti = toplevelInfo
 	endif
 
-	WriteTextDatasetIfSet(locationID, "neurodata_version", NWB_VERSION)
+	WriteTextDatasetIfSet(locationID, "nwb_version", NWB_VERSION)
 	WriteTextDatasetIfSet(locationID, "identifier", Hash(GetISO8601TimeStamp() + num2str(enoise(1, 2)), 1))
 	// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
 	WriteTextDatasetIfSet(locationID, "file_create_date", GetISO8601TimeStamp(), chunkedLayout=1)
@@ -162,8 +162,12 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 	H5_CreateGroupsRecursively(locationID, "/acquisition/timeseries")
 	H5_CreateGroupsRecursively(locationID, "/acquisition/images")
 	H5_CreateGroupsRecursively(locationID, "/epochs")
+	H5_WriteTextAttribute(locationID, "tags", "/epochs", list="")
 	H5_CreateGroupsRecursively(locationID, "/processing")
 	H5_CreateGroupsRecursively(locationID, "/analysis")
+
+	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets")
+	MarkAsCustomEntry(locationID, "/general/stimsets")
 End
 
 /// @brief Create the HDF5 group for intracellular ephys
@@ -195,15 +199,22 @@ Function AddDevice(locationID, name, data)
 	H5_WriteTextDataset(locationID, path, str=data, skipIfExists=1)
 End
 
-/// @brief Add an entry for the electrode `number` with contents `data`
-Function AddElectrode(locationID, number, data)
-	variable locationID, number
-	string data
+/// @brief Add an entry for the electrode `name` with contents `data`
+Function AddElectrode(locationID, name, data, device)
+	variable locationID
+	string name, data, device
 
 	string path
+	variable groupID
 
-	sprintf path, "/general/intracellular_ephys/electrode_%d", number
-	H5_WriteTextDataset(locationID, path, str=data, skipIfExists=1)
+	ASSERT(H5_IsValidIdentifier(name), "The electrode name must be a valid HDF5 identifier")
+
+	sprintf path, "/general/intracellular_ephys/electrode_%s", name
+	H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+	H5_WriteTextDataset(groupID, "description", str=data, overwrite=1)
+	H5_WriteTextDataset(groupID, "device", str=device, overwrite=1)
+
+	HDF5CloseGroup groupID
 End
 
 /// @brief Add a modification timestamp to the NWB file
@@ -396,6 +407,7 @@ Structure WriteChannelParams
 	variable channelType     ///< channel type, one of @ref IPNWB_ChannelTypes
 	variable channelNumber   ///< running number of the channel
 	variable electrodeNumber ///< electrode identifier the channel was acquired with
+	string electrodeName     ///< electrode identifier the channel was acquired with (string version)
 	variable clampMode       ///< clamp mode, one of @ref IPNWB_ClampModes
 	variable groupIndex      ///< Should be filled with the result of GetNextFreeGroupIndex(locationID, path) before
 							 ///  the first call and must stay constant for all channels for this measurement.
@@ -467,21 +479,21 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		sprintf str, "%s", channelTypeStr
 	endif
 
-	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%d", p.device, p.sweep, str, p.electrodeNumber
+	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%d;ElectrodeName=%s", p.device, p.sweep, str, p.electrodeNumber, p.electrodeName
 
 	if(strlen(p.channelSuffixDesc) > 0 && strlen(p.channelSuffix) > 0)
 		ASSERT(strsearch(p.channelSuffix, "=", 0) == -1, "channelSuffix must not contain an equals (=) symbol")
 		ASSERT(strsearch(p.channelSuffixDesc, "=", 0) == -1, "channelSuffixDesc must not contain an equals (=) symbol")
 		source += ";" + p.channelSuffixDesc + "=" + p.channelSuffix
 	endif
-	H5_WriteTextAttribute(groupID, "source", group, list=source, overwrite=1)
+	H5_WriteTextAttribute(groupID, "source", group, str=source, overwrite=1)
 
 	if(p.channelType != CHANNEL_TYPE_OTHER)
 		H5_WriteTextAttribute(groupID, "comment", group, str=note(p.data), overwrite=1) // human readable version of description
 	endif
 
 	if(p.channelType == CHANNEL_TYPE_ADC)
-		sprintf str, "electrode_%d", p.electrodeNumber
+		sprintf str, "electrode_%s", p.electrodeName
 		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
 
 		if(p.clampMode == V_CLAMP_MODE)
@@ -494,7 +506,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 			ancestry = "TimeSeries;PatchClampSeries"
 		endif
 	elseif(p.channelType == CHANNEL_TYPE_DAC)
-		sprintf str, "electrode_%d", p.electrodeNumber
+		sprintf str, "electrode_%s", p.electrodeName
 		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
 
 		if(p.clampMode == V_CLAMP_MODE)

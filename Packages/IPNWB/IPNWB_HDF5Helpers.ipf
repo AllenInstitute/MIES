@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.13
+#pragma version=0.14
 
 /// @cond DOXYGEN_IGNORES_THIS
 #if (IgorVersion() < 7.0)
@@ -160,37 +160,47 @@ End
 /// @param attrName                                Name of the attribute
 /// @param path                                    Additional path on top of `locationID` which identifies the object onto which the
 ///                                                attribute should be attached.
-/// @param wvText                                  Contents to write into the attribute
-/// @param list                                    Contents to write into the attribute, list will be written as 1D-array
+/// @param list                                    Contents to write into the attribute, list will be always written as 1D-array
 /// @param str                                     Contents to write into the attribute
 /// @param overwrite [optional, defaults to false] Should existing attributes be overwritten
 ///
-/// Only one of `str `, `wvText` or `list` can be given.
-Function H5_WriteTextAttribute(locationID, attrName, path, [wvText, list, str, overwrite])
+/// Only one of `str ` or `list` can be given.
+Function H5_WriteTextAttribute(locationID, attrName, path, [list, str, overwrite])
 	variable locationID
 	string attrName, path
-	WAVE/T/Z wvText
 	string list, str
 	variable overwrite
 
-	ASSERT(ParamIsDefault(wvText) + ParamIsDefault(str) + ParamIsDefault(list) == 2, "Need exactly one of wvText, str or list")
+	variable forceSimpleDataSpace
+
+	ASSERT(ParamIsDefault(str) + ParamIsDefault(list) == 1, "Need exactly one of str or list")
 
 	if(!ParamIsDefault(str))
 		Make/FREE/T/N=(1) data = str
 	elseif(!ParamIsDefault(list))
 		Make/FREE/T/N=(ItemsInList(list)) data = StringFromList(p, list)
-	elseif(!ParamIsDefault(wvText))
-		ASSERT(WaveExists(wvText), "wvText does not exist")
-		WAVE/T data = wvText
+		forceSimpleDataSpace = 1
 	endif
 
 	overwrite = ParamIsDefault(overwrite) ? 0 : !!overwrite
 
+#if (IgorVersion() >= 7.0)
+	if(overwrite)
+		HDF5SaveData/A={attrName, forceSimpleDataSpace}/IGOR=0/O/Z data, locationID, path
+	else
+		HDF5SaveData/A={attrName, forceSimpleDataSpace}/IGOR=0/Z data, locationID, path
+	endif
+#else
 	if(overwrite)
 		HDF5SaveData/A=attrName/IGOR=0/O/Z data, locationID, path
 	else
 		HDF5SaveData/A=attrName/IGOR=0/Z data, locationID, path
 	endif
+	if(forceSimpleDataSpace)
+		print "H5_WriteTextAttribute: Please consider upgrading to Igor Pro 7 in order to"
+		print "create nwb spec compliant files."
+	endif
+#endif
 
 	if(V_flag)
 		HDf5DumpErrors/CLR=1
@@ -337,4 +347,14 @@ Function H5_CreateGroupsRecursively(locationID, path, [groupID])
 	else
 		groupID = id
 	endif
+End
+
+/// @brief Return true if `name` is a valid hdf5 identifier
+///
+/// This is more restrictive than the actual HDF5 library checks.
+/// See the BNF Grammar [here](https://www.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FGroups%2FHDF5_Groups.htm%3Frhtocid%3Dtoc4.0_1%23TOC_4_1_Introductionbc-1).
+Function H5_IsValidIdentifier(name)
+	string name
+
+	return GrepString(name, "^[A-Za-z0-9_ -]+$")
 End

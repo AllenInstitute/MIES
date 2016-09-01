@@ -862,7 +862,7 @@ End
 Function/Wave GetLBTextualKeys(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	string newName = "textualKeys"
 	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
 
@@ -914,7 +914,7 @@ End
 Function/Wave GetLBNumericalKeys(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	/// @todo move the renaming stuff into one function for all four labnotebook waves
 	string newName = "numericalKeys"
 	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
@@ -1044,6 +1044,7 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS,  8, $"Post set function"      , wv
 	SetDimLabel COLS,  9, $"Post DAQ function"      , wv
 	SetDimLabel COLS, 10, $"oodDAQ regions"         , wv
+	SetDimLabel COLS, 11, $"Electrode"              , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1310,7 +1311,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 8
+	variable versionOfNewWave = 9
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1325,9 +1326,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 11, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 12, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 11, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1357,10 +1358,11 @@ End
 /// - 8: Analysis function post set
 /// - 9: Analysis function post daq
 /// -10: oodDAQ regions
+/// -11: Electrode
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 8
+	variable versionOfNewWave = 9
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1375,9 +1377,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 11, 0) wv
+		Redimension/N=(-1, 12, 0) wv
 	else
-		Make/T/N=(1, 11) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 12) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1393,6 +1395,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][8]  = "Post set function"
 	wv[0][9]  = "Post DAQ function"
 	wv[0][10] = "oodDAQ regions"
+	wv[0][11] = "Electrode"
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -4144,5 +4147,30 @@ Function/WAVE GetDistDAQPreloadWave(panelTitle)
 		Make/N=(0) dfr:$wvName/Wave=wv
 	endif
 
+	return wv
+End
+
+/// @brief Returns the names of the electrodes
+///
+/// The electrodes represents the physically connected part to the cell whereas
+/// the headstage refers to the logical entity inside MIES.
+///
+/// Will be written into the labnotebook and used for the NWB export.
+Function/WAVE GetCellElectrodeNames(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/T/SDFR=dfr wv = cellElectrodeNames
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	else
+		Make/T/N=(NUM_HEADSTAGES) dfr:cellElectrodeNames/WAVE=wv
+		wv = GetDefaultElectrodeName(p)
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End

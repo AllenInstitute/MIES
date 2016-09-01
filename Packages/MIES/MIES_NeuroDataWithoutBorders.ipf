@@ -150,6 +150,8 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
 		IPNWB#CreateIntraCellularEphys(fileID)
 
+		NWB_AddGeneratorString(fileID)
+
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
 		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
@@ -165,6 +167,35 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	DEBUGPRINT("filePathExport", str=filePathExport)
 
 	return fileIDExport
+End
+
+Function NWB_AddGeneratorString(fileID)
+	variable fileID
+
+	Make/FREE/T/N=(5, 2) props
+
+	props[0][0] = "Program"
+#if defined(IGOR64)
+	props[0][1] = "Igor Pro 64bit"
+#else
+	props[0][1] = "Igor Pro 32bit"
+#endif
+
+	props[1][0] = "Program Version"
+	props[1][1] = StringByKey("IGORFILEVERSION", IgorInfo(3))
+
+	props[2][0] = "Package"
+	props[2][1] = "MIES"
+
+	props[3][0] = "Package Version"
+	SVAR miesVersion = $GetMiesVersion()
+	props[3][1] = miesVersion
+
+	props[4][0] = "Labnotebook Version"
+	props[4][1] = num2str(LABNOTEBOOK_VERSION)
+
+	IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
+	IPNWB#MarkAsCustomEntry(fileID, "/general/generated_by")
 End
 
 static Function NWB_ReadSessionStartTime(fileID)
@@ -293,7 +324,6 @@ Function NWB_ExportAllData([overrideFilePath])
 		return NaN
 	endif
 
-	NWB_AddMiesVersion(locationID)
 	IPNWB#AddModificationTimeEntry(locationID)
 
 	numEntries = ItemsInList(devicesWithData)
@@ -354,14 +384,6 @@ Function NWB_ExportWithDialog()
 	CloseNWBFile()
 End
 
-static Function NWB_AddMiesVersion(locationID)
-	variable locationID
-
-	SVAR miesVersion = $GetMiesVersion()
-
-	IPNWB#H5_WriteTextDataset(locationID, "/general/version", str=miesVersion, overwrite=1)
-	IPNWB#MarkAsCustomEntry(locationID, "/general/version")
-End
 
 Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	string panelTitle
@@ -378,7 +400,6 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	if(createdNewNWBFile)
 		NWB_ExportAllData()
 	else
-		NWB_AddMiesVersion(locationID)
 		IPNWB#AddModificationTimeEntry(locationID)
 		NWB_AddDeviceSpecificData(locationID, panelTitle)
 		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
@@ -436,6 +457,17 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
+	// 95402da6 (NWB: Allow documenting the physical electrode, 2016-08-05)
+	WAVE/Z/T electrodeNames = GetLastSettingText(textualValues, sweep, "Electrode")
+	if(!WaveExists(electrodeNames))
+		Make/FREE/T/N=(NUM_HEADSTAGES) electrodeNames = GetDefaultElectrodeName(p)
+	else
+		WAVE/Z nonEmptyElectrodes = FindIndizes(wvText=electrodeNames, col=0, prop=PROP_NON_EMPTY)
+		if(!WaveExists(nonEmptyElectrodes)) // all are empty
+			electrodeNames[] = GetDefaultElectrodeName(p)
+		endif
+	endif
+
 	STRUCT IPNWB#WriteChannelParams params
 	IPNWB#InitWriteChannelParams(params)
 
@@ -460,11 +492,11 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		STRUCT IPNWB#TimeSeriesProperties tsp
 
 		sprintf contents, "Headstage %d", i
-		IPNWB#AddElectrode(locationID, i, contents)
+		IPNWB#AddElectrode(locationID, electrodeNames[i], contents, panelTitle)
 
 		adc                    = ADCs[i]
 		dac                    = DACs[i]
-		params.electrodeNumber = i
+		params.electrodeName   = electrodeNames[i]
 		params.clampMode       = clampMode[i]
 		params.stimset         = stimSets[i]
 
@@ -494,8 +526,10 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 		DEBUGPRINT_ELAPSED(refTime)
 
-		params.stimSet = stimSets[i]
-		NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
+		// don't output stimsets for I=0 mode
+		if(params.clampMode != I_EQUAL_ZERO_MODE)
+			NWB_WriteStimsetTemplateWaves(locationID, stimSets[i], chunkedLayout)
+		endif
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -541,36 +575,22 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				continue
 			endif
 
-			params.stimSet = name
-			NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
+			NWB_WriteStimsetTemplateWaves(locationID, name, chunkedLayout)
 		endfor
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
+static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout)
 	variable locationID
-	STRUCT IPNWB#WriteChannelParams &params
+	string stimSet
 	variable chunkedLayout
 
-	STRUCT IPNWB#TimeSeriesProperties tsp
-	string stimSet, path
+	variable groupID
+	string name
 
-	stimSet = params.stimSet
-
-	// don't output stimsets for I=0 mode
-	if(params.clampMode == I_EQUAL_ZERO_MODE)
-		return NaN
-	endif
-
-	path                 = "/stimulus/templates"
-	params.channelNumber = NaN
-	params.channelType   = -1
-	WAVE params.data     = WB_CreateAndGetStimset(stimSet)
-	NWB_GetTimeSeriesProperties(params, tsp)
-	params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+	ASSERT(IPNWB#H5_GroupExists(locationID, "/general/stimsets", groupID=groupID), "Missing group")
 
 	// write also the stim set parameter waves if all three exist
 	WAVE/Z WP  = WB_GetWaveParamForSet(stimSet)
@@ -578,23 +598,30 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, params, chunkedLayout)
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
-		// don't need to write the stimset parameter waves
+		// third party stim sets need to be written as we don't have parameter waves
+		WAVE stimSetWave = WB_CreateAndGetStimSet(stimSet)
+		name = stimSet
+		IPNWB#H5_WriteDataset(groupID, name, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+		// @todo remove once IP7 64bit is mandatory
+		// save memory by deleting the stimset again
+		KillOrMoveToTrash(wv=stimSetWave)
+
+		HDF5CloseGroup groupID
 		return NaN
 	endif
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType) , "Some stim set parameter waves are missing")
 
-	params.stimSet = stimSet + "_WP"
-	WAVE params.data = WP
-	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+	name = stimSet + "_WP"
+	IPNWB#H5_WriteDataset(groupID, name, wv=WP, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
-	params.stimSet = stimSet + "_WPT"
-	WAVE params.data = WPT
-	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+	name = stimSet + "_WPT"
+	IPNWB#H5_WriteDataset(groupID, name, wv=WPT, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
-	params.stimSet = stimSet + "_SegWvType"
-	WAVE params.data = SegWvType
-	IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+	name = stimSet + "_SegWvType"
+	IPNWB#H5_WriteDataset(groupID, name, wv=SegWVType, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+
+	HDF5CloseGroup groupID
 End
 
 static Function NWB_GetTimeSeriesProperties(p, tsp)
