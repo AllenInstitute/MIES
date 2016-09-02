@@ -89,7 +89,6 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
-	variable sweepNo
 	variable adc, col
 	Variable apLevelValue
 	variable xPoint
@@ -97,8 +96,7 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave
 	
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
-	Wave/Z sweep = GetSweepWave(paneltitle, (sweepNo-1))
+	Wave/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)	
 	if(!WaveExists(sweep))
      		Abort "***Error getting current sweep wave..."
 	endif
@@ -283,7 +281,6 @@ Function AM_PSA_electrodeBaselineQC(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 	
-	variable sweepNo
 	variable x
 	variable numDACs
 	variable idx
@@ -302,8 +299,7 @@ Function AM_PSA_electrodeBaselineQC(panelTitle, headStage)
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
 	elapsedTime = actionScaleSettingsWave[headStage][%elapsedTime]	
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
-	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
+	Wave/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
 	endif
@@ -375,15 +371,13 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	variable sweepNo
 	variable adc, col
 	variable tracePeakValue
 	
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
-	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
+	Wave/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
 	endif
