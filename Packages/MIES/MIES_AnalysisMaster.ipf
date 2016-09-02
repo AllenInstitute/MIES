@@ -97,8 +97,8 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave
 	
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
-	Wave/Z sweep = GetSweepWave(paneltitle, (sweepNo-1))
+	sweepNo = (GetSetVariable(panelTitle, "SetVar_Sweep") - 1)	
+	Wave/Z sweep = GetSweepWave(paneltitle, (sweepNo))
 	if(!WaveExists(sweep))
      		Abort "***Error getting current sweep wave..."
 	endif
@@ -302,7 +302,7 @@ Function AM_PSA_electrodeBaselineQC(panelTitle, headStage)
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)
 	elapsedTime = actionScaleSettingsWave[headStage][%elapsedTime]	
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
+	sweepNo = (GetSetVariable(panelTitle, "SetVar_Sweep")	- 1)
 	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
@@ -382,7 +382,7 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")	
+	sweepNo = (GetSetVariable(panelTitle, "SetVar_Sweep")	- 1)
 	Wave/Z sweep = GetSweepWave(paneltitle, sweepNo)
 	if(!WaveExists(sweep))
      		Abort "Error getting current sweep wave..."
