@@ -456,7 +456,7 @@ Constant HARDWARE_ITC_DAC = 0
 Constant HARDWARE_NI_DAC  = 1
 /// @}
 
-Constant HARDWARE_MAX_DEVICES = 32
+Constant HARDWARE_MAX_DEVICES = 10
 
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)
 /// @{
