@@ -264,7 +264,7 @@ End
 /// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
 ///                         `mV` instead of `V`
 ///
-/// @returns return value or error condition. An error is indicated by a return value of NaN.
+/// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
 Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes])
 	string panelTitle
 	variable headStage, mode, func, value
@@ -559,6 +559,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 	endif
 
+	// return value is only relevant for the getters
 	return ret * scale
 End
 
