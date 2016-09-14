@@ -1105,7 +1105,9 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	endif
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
-	Make/W/O/N=(maxRows) deviceDFR:TTLWave/Wave=TTLWave = 0
+	WAVE TTLWave = GetTTLWave(panelTitle)
+	Redimension/N=(maxRows) TTLWave
+	FastOp TTLWave = 0
 
 	for(i = first; i <= last; i += 1)
 
