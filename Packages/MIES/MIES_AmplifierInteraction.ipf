@@ -669,7 +669,8 @@ End
 /// @param panelTitle       device
 /// @param ctrl             name of the amplifier control
 /// @param headStage        headstage of the desired amplifier
-/// @param value            [optional: defaults to the controls value] value to set
+/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
+///                         and there the description of `usePrefixes`.
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
 /// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
