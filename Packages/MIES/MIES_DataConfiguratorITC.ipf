@@ -935,7 +935,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		// Place TTL waves into ITCDataWave
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
-			WAVE/SDFR=deviceDFR TTLwave
+			WAVE TTLWave = GetTTLWave(panelTitle)
 			singleSetLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
 			ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = TTLWave[decimationFactor * (p - singleInsertStart)]
 			activeColumn += 1
@@ -943,7 +943,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
-			WAVE/SDFR=deviceDFR TTLwave
+			WAVE TTLWave = GetTTLWave(panelTitle)
 			singleSetLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
 			ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = TTLWave[decimationFactor * (p - singleInsertStart)]
 		endif
