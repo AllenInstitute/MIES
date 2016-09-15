@@ -610,6 +610,23 @@ Function/Wave GetITCResultsWave(panelTitle)
 	return wv
 End
 
+/// @brief Return the intermediate storage wave for the TTL data
+Function/Wave GetTTLWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/W/Z/SDFR=dfr wv = TTLWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/W/O/N=0 dfr:TTLWave/Wave=wv
+
+	return wv
+End
+
 /// @name Experiment Documentation
 /// @{
 
