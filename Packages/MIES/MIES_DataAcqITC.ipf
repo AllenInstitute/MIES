@@ -289,6 +289,8 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 			maximumAutoBiasCurrent = DEFAULT_MAXAUTOBIASCURRENT
 		endif
 
+		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)
+
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
 
@@ -298,9 +300,9 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		resistance = SSResistance[0][activeHeadStages - 1] * 1e6
 		setVoltage = BaselineSSAvg[0][activeHeadStages - 1] * 1e-3
 
-		DEBUGPRINT("resistance=", var=resistance)
-		DEBUGPRINT("setVoltage=", var=setVoltage)
-		DEBUGPRINT("targetVoltage=", var=targetVoltage)
+		DEBUGPRINT("resistance[Ohm]=", var=resistance)
+		DEBUGPRINT("setVoltage[V]=", var=setVoltage)
+		DEBUGPRINT("targetVoltage[V]=", var=targetVoltage)
 
 		// if we are in the desired voltage region, check the next headstage
 		if(abs(targetVoltage - setVoltage) < targetVoltageTol)
@@ -310,7 +312,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		// neuron needs a current shot
 		// I = U / R
 		current = ( targetVoltage - setVoltage ) / resistance
-		DEBUGPRINT("current=", var=current)
+		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
 		current *= 0.15
@@ -322,7 +324,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 			actualCurrent = 0
 		endif
 
-		DEBUGPRINT("actualCurrent=", var=actualCurrent)
+		DEBUGPRINT("actualCurrent[A]=", var=actualCurrent)
 
 		if(!IsFinite(actualCurrent))
 			print "Queried amplifier current is non-finite"
@@ -336,7 +338,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 			continue
 		endif
 
-		DEBUGPRINT("current to send=", var=current)
+		DEBUGPRINT("current[A] to send=", var=current)
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnable", headStage, value=1)
 		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12)
 	endfor
