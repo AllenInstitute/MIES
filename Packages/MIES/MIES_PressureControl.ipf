@@ -1915,8 +1915,7 @@ Function ButtonProc_Seal(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			variable PressureMode = 1
-			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
+			P_UpdatePressureMode(ba.win, P_METHOD_1_SEAL, ba.ctrlName, 1)
 			break
 	endswitch
 
@@ -1929,8 +1928,7 @@ Function ButtonProc_BreakIn(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			variable PressureMode = 2
-			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 1)
+			P_UpdatePressureMode(ba.win, P_METHOD_2_BREAKIN, ba.ctrlName, 1)
 			break
 	endswitch
 
@@ -1943,8 +1941,7 @@ Function ButtonProc_Clear(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			variable PressureMode = 3
-			P_UpdatePressureMode(ba.win, PressureMode, ba.ctrlName, 0)
+			P_UpdatePressureMode(ba.win, P_METHOD_3_CLEAR, ba.ctrlName, 0)
 			break
 	endswitch
 
