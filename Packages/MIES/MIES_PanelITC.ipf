@@ -5026,6 +5026,10 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
+		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
+			return 1
+		endif
+
 		AI_QueryGainsUnitsForClampMode(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
@@ -5222,10 +5226,6 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	if(GetCheckBoxState(panelTitle, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", panelTitle, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
-		return 1
-	endif
-
-	if(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
 		return 1
 	endif
 
