@@ -1549,6 +1549,26 @@ Function/Wave GetInstResistanceWave(panelTitle)
 	return wv
 End
 
+/// @brief Return the testpulse steady state average
+///
+/// The columns hold the *active* AD channels only and are subject to resizing.
+///
+/// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
+Function/Wave GetBaselineAverage(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = BaselineSSAvg
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, NUM_AD_CHANNELS) dfr:BaselineSSAvg/Wave=wv
+
+	return wv
+End
+
 /// @brief Return the testpulse steady state resistance wave
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.

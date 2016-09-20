@@ -1397,8 +1397,8 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 	variable i, col
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
 	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
-		DFREF dfr = GetDeviceTestPulse(panelTitle)
-		WAVE/SDFR=dfr baselineSSAvg
+
+		WAVE baselineSSAvg = GetBaselineAverage(panelTitle)
 		if(!ParamIsDefault(headstage))
 			col = TP_GetTPResultsColOfHS(panelTitle, headstage)
 			if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
