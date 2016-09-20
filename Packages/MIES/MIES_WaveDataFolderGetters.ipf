@@ -1470,6 +1470,21 @@ Function/Wave GetTPStorage(panelTitle)
 	return wv
 End
 
+/// @brief Return a free wave reference for AcqTPStorage wave for passing to ACQ4
+///
+/// The wave stores PeakResistance, SteadyStateResistance, and TimeStamp in rows and headstages in cols
+Function/Wave GetAcqTPStorage()
+
+	Make/FREE/N=(3, NUM_HEADSTAGES, HARDWARE_MAX_DEVICES) wv
+
+	SetDimLabel COLS, -1, HeadStage            , wv
+	SetDimLabel ROWS, 0 , TimeStamp            , wv
+	SetDimLabel ROWS, 1 , SteadyStateResistance, wv
+	SetDimLabel ROWS, 2 , PeakResistance       , wv
+
+	return wv
+End
+
 /// @brief Return a datafolder reference to the test pulse folder
 Function/DF GetDeviceTestPulse(panelTitle)
 	string panelTitle
@@ -4062,14 +4077,17 @@ End
 Function/WAVE GetDeviceMapping()
 
 	DFREF dfr = GetITCDevicesFolder()
+	variable versionOfNewWave = 1
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(HARDWARE_MAX_DEVICES, -1, -1) wv
+	else
+		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 3) dfr:deviceMapping/Wave=wv
 	endif
-
-	Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 3) dfr:deviceMapping/Wave=wv
 
 	SetDimLabel ROWS, -1, DeviceID, wv
 
@@ -4079,6 +4097,8 @@ Function/WAVE GetDeviceMapping()
 	SetDimLabel LAYERS, 0, MainDevice    , wv
 	SetDimLabel LAYERS, 1, InternalDevice, wv
 	SetDimLabel LAYERS, 2, PressureDevice, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
