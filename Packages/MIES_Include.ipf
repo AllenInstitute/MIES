@@ -12,7 +12,6 @@
 #include "ACL_TabUtilities"
 #include "ACL_UserdataEditor"
 #include "Arduino_Sequencer_Vs1"
-#include "FixScrolling"
 
 // NWB for Igor Pro
 #include "IPNWB_Include"
