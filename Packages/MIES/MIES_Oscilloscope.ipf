@@ -96,18 +96,14 @@ Function SCOPE_UpdateGraph(panelTitle)
 			minVal = +Inf
 			maxVal = -Inf
 
-			/// @todo switch to WaveStats/RMD once IP7 is mandatory
-
 			if(showPeakResistance)
-				Duplicate/FREE/R=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage, peak
-				WaveStats/M=1/Q peak
+				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage
 				minVal = min(V_min, minVal)
 				maxVal = max(V_max, maxVal)
 			endif
 
 			if(showSteadyStateResistance)
-				Duplicate/FREE/R=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage, steady
-				WaveStats/M=1/Q steady
+				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage
 				minVal = min(V_min, minVal)
 				maxVal = max(V_max, maxVal)
 			endif
@@ -132,17 +128,13 @@ Function SCOPE_UpdateGraph(panelTitle)
 	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	Make/Y=(WaveType(OscilloscopeData))/FREE/N=(min(stopCollectionPoint, DimSize(OscilloscopeData, ROWS))) ADdata
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
 		leftAxis = "AD" + num2str(ADCs[i])
 
-		ADdata[] = OscilloscopeData[p][numDACs + i]
-
-		/// @todo switch to WaveStats/RMD once IP7 is mandatory
-		WaveStats/M=1/Q ADdata
+		WaveStats/M=1/Q/RMD=[][numDACs + i] OscilloscopeData
 
 		statsMin = V_min
 		statsMax = V_max

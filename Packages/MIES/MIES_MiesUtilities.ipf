@@ -1973,7 +1973,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			continue
 		endif
 
-		/// @todo Use WaveStats/RMD once IP7 is mandatory
 		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
 		MatrixOP/FREE rangeStart = col(ranges, 0)
 		MatrixOP/FREE rangeStop  = col(ranges, 1)
