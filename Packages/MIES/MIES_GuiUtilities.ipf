@@ -227,11 +227,7 @@ Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")	
 
-#if (IgorVersion() >= 7.0)
 	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B,Alpha)
-#else	
-	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B)
-#endif
 End
 
 /// @brief Change the background color of a list of controls
@@ -1179,8 +1175,6 @@ Function GetCheckBoxMode(win, checkBoxName)
 	return mode
 End
 
-#if (IgorVersion() >= 7.0)
-
 ///@brief Returns formatted control name
 	Function/S GetFormattedControlName(win, control)
 		string win, control
@@ -1205,7 +1199,6 @@ End
 		return control
 	End
 
-
 ///@ brief Returns a wave of formatted control names
 Function/WAVE GetFormattedCtrlNames(win)
 	string win
@@ -1229,5 +1222,3 @@ Function/WAVE GetFormattedCtrlNames(win)
 	endfor
 	return controlNames
 End
-
-#endif

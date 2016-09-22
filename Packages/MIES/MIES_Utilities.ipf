@@ -3,12 +3,6 @@
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
-#if defined(IGOR64)
-#if (IgorVersion() < 7.0)
-	#define *** The 64bit version of MIES can only be used with Igor Pro 7 or later ***
-#endif
-#endif
-
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
 ///
 /// @hidecallgraph
@@ -1975,11 +1969,7 @@ End
 /// Uses symbol font for IP6 or unicode Ohm symbol for IP7
 Function/S GetSymbolOhm()
 
-#if (IgorVersion() >= 7.0)
 	return "Ω"
-#else
-	return "\\[0\\F'Symbol'W\\F]0"
-#endif
 End
 
 /// @brief Return the disc folder name where the XOPs are located
@@ -2044,17 +2034,7 @@ static Function/WAVE DeleteDuplicatesTxt(txtWave)
 		return dest
 	endif
 
-#if (IgorVersion() >= 7.0)
 	FindDuplicates/RT=dest txtWave
-#else
-	ASSERT(DimSize(dest, COLS) == 0, "Can only work with 1D waves")
-	Sort dest, dest
-	for(i = 1; i < DimSize(dest, ROWS); i += 1)
-		if(!cmpstr(dest[i - 1], dest[i]))
-			DeletePoints/M=(ROWS) i, 1, dest
-		endif
-	endfor
-#endif
 
 	return dest
 End
@@ -2072,19 +2052,7 @@ static Function/WAVE DeleteDuplicatesNum(numWave)
 		return dest
 	endif
 	
-#if (IgorVersion() >= 7.0)
 	FindDuplicates/RN=dest numWave
-#else
-	ASSERT(DimSize(dest, COLS) == 0, "Can only work with 1D waves")
-	Sort dest, dest
-	for(i = 1; i < DimSize(dest, ROWS); i += 1)
-		FindValue/S=(i)/V=(dest[i-1]) dest
-		if(V_value != -1)
-			i-=1
-			DeletePoints/M=(ROWS) V_value, 1, dest
-		endif
-	endfor
-#endif
 
 	return dest
 End
@@ -2197,19 +2165,6 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 	// remove empty entries
 	return ListMatch(allFiles, "!", "|")
 End
-
-#if (IgorVersion() >= 7.0)
-	// ListToTextWave is available
-#else
-/// @brief Convert a string list to a text wave
-Function/WAVE ListToTextWave(list, sep)
-	string list, sep
-
-	Make/T/FREE/N=(ItemsInList(list, sep)) result = StringFromList(p, list, sep)
-
-	return result
-End
-#endif
 
 /// @brief Convert a text wave to string list
 Function/S TextWaveToList(txtWave, sep)

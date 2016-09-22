@@ -253,11 +253,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
 				AppendToGraph/W=$graph/L=$leftAxis powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
 				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
-#if (IgorVersion() >= 7.0)
 				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
-#else
-				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0)
-#endif
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
 				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
 				SetAxis/W=$graph $leftAxis, 1e-20, 1e20
