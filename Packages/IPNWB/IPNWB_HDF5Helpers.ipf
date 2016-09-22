@@ -1,14 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
 #pragma version=0.14
 
 /// @cond DOXYGEN_IGNORES_THIS
-#if (IgorVersion() < 7.0)
-#include "HDF5 Browser", version=1.04
-#else
 #include "HDF5 Browser", version=1.20
-#endif
 /// @endcond
 
 /// @file IPNWB_HDF5Helpers.ipf
@@ -184,23 +179,11 @@ Function H5_WriteTextAttribute(locationID, attrName, path, [list, str, overwrite
 
 	overwrite = ParamIsDefault(overwrite) ? 0 : !!overwrite
 
-#if (IgorVersion() >= 7.0)
 	if(overwrite)
 		HDF5SaveData/A={attrName, forceSimpleDataSpace}/IGOR=0/O/Z data, locationID, path
 	else
 		HDF5SaveData/A={attrName, forceSimpleDataSpace}/IGOR=0/Z data, locationID, path
 	endif
-#else
-	if(overwrite)
-		HDF5SaveData/A=attrName/IGOR=0/O/Z data, locationID, path
-	else
-		HDF5SaveData/A=attrName/IGOR=0/Z data, locationID, path
-	endif
-	if(forceSimpleDataSpace)
-		print "H5_WriteTextAttribute: Please consider upgrading to Igor Pro 7 in order to"
-		print "create nwb spec compliant files."
-	endif
-#endif
 
 	if(V_flag)
 		HDf5DumpErrors/CLR=1
