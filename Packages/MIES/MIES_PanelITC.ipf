@@ -4835,8 +4835,10 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 
 	leaderSampInt = GetValDisplayAsString(ITC1600_FIRST_DEVICE, "ValDisp_DataAcq_SamplingInt")
 
-	/// @todo one entry per line when IP7 is mandatory
-	Make/T/FREE desc = {"Repeated Acquisition", "Distributed Acquisition", "Distributed DAQ delay", "Indexing", "ITI", "Number of repetitions", "Get ITI from stimset", "Optimized overlap dDAQ pre feature time", "Optimized overlap dDAQ post feature time", "Optimized overlap dDAQ", "Optimized overlap dDAQ resolution"}
+	Make/T/FREE desc = {"Repeated Acquisition", "Distributed Acquisition", "Distributed DAQ delay",            \
+						"Indexing", "ITI", "Number of repetitions", "Get ITI from stimset",                    \
+						"Optimized overlap dDAQ pre feature time", "Optimized overlap dDAQ post feature time", \
+						"Optimized overlap dDAQ", "Optimized overlap dDAQ resolution"}
 
 	numCtrls = DimSize(desc, ROWS)
 	ASSERT(ItemsInList(YOKE_CONTROLS_DISABLE_AND_LINK) == numCtrls, "Mismatched yoke linking lists")
