@@ -1973,14 +1973,6 @@ Function ParseISO8601TimeStamp(timestamp)
 	return secondsSinceEpoch
 End
 
-/// @brief Return an `Ohm` symbol
-///
-/// Uses symbol font for IP6 or unicode Ohm symbol for IP7
-Function/S GetSymbolOhm()
-
-	return "Ω"
-End
-
 /// @brief Return the disc folder name where the XOPs are located
 ///
 /// Distinguishes between i386 and x64 Igor versions

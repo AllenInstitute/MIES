@@ -281,10 +281,10 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
 				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
 				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit(top)=1
-				Label/W=$graph $rightAxis "(M" + GetSymbolOhm() + ")"
+				Label/W=$graph $rightAxis "(MΩ)"
 
 				if(!oneTimeInitDone)
-					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(M%s)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(M%s)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, GetSymbolOhm(), peakColor.red, peakColor.green, peakColor.blue, GetSymbolOhm()
+					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(MΩ)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(MΩ)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, peakColor.red, peakColor.green, peakColor.blue
 					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2  str
 
 					Label/W=$graph top "Relative time (s)"
