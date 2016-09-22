@@ -5376,7 +5376,8 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 		// non fatal errors which we fix ourselves
 		if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
-			sprintf str, "(%s) The stim set %s of headstage %d must have a row dimension delta of %g, row dimension offset of zero and row unit \"ms\".\r", panelTitle, dacWave, headstage, HARDWARE_ITC_MIN_SAMPINT
+			sprintf str, "(%s) The stim set %s of headstage %d must have a row dimension delta of %g, " + \
+						 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, dacWave, headstage, HARDWARE_ITC_MIN_SAMPINT
 			DEBUGPRINT(str)
 			DEBUGPRINT("The stim set is now automatically fixed")
 			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet

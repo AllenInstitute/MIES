@@ -267,7 +267,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
 					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
 					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535,65535,65535)
-					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE),(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE),BlueBlackRed,0}
+					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],   \
+											(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE), \
+											(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE), BlueBlackRed,0}
 					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][i][%PressureChange],0,1,1,4}
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)

@@ -532,15 +532,19 @@ Function HD_SaveSweepData([cmdID])
 	endif
 End
 
-/// @brief Parses list of controls from the DA_Ephys panel and removes the variables associated with Amp settings and should not be saved or loaded with other config settings
-///
+/// @brief Parses list of controls from the DA_Ephys panel and removes the
+/// variables associated with Amp settings and should not be saved or loaded
+/// with other config settings
 Static Function/S HD_GetConfigList(panelTitle)
 	string panelTitle
 
 	string list = controlNameList(panelTitle)
-	string ampSettings = "Gain_DA_*;Unit_DA_*;Scale_DA_*;Gain_AD_*;Unit_AD_*;SetVar_Settings_*;SetVar_Hardware_*;setvar_Settings_*;setvar_DataAcq_Hold_*;setvar_DataAcq_WC*;setvar_DataAcq_Rs*;setvar_DataAcq_PipetteOffset*;setvar_DataAcq_BB*"
-	string trimmedList
+	string trimmedList, ampSettings
 	variable i
+
+	ampSettings = "Gain_DA_*;Unit_DA_*;Scale_DA_*;Gain_AD_*;Unit_AD_*;SetVar_Settings_*;SetVar_Hardware_*;" + \
+				  "setvar_Settings_*;setvar_DataAcq_Hold_*;setvar_DataAcq_WC*;setvar_DataAcq_Rs*;"          + \
+				  "setvar_DataAcq_PipetteOffset*;setvar_DataAcq_BB*"
 
 	for(i=0;i<itemsinlist(ampSettings);i+=1)
 		trimmedList = ListMatch(list, stringfromlist(i, ampSettings))

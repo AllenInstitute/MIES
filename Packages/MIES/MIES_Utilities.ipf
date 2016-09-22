@@ -947,7 +947,11 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 
 	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
 	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wv/wvText argument")
-	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2 || (!ParamIsDefault(prop) && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) && !ParamIsDefault(var) && ParamIsDefault(str)), "Expected exactly one optional var/str/prop argument")
+	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
+		   || (!ParamIsDefault(prop)                                                          \
+			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
+			  && !ParamIsDefault(var) && ParamIsDefault(str)),                                \
+			  "Expected exactly one optional var/str/prop argument")
 
 	if(ParamIsDefault(var))
 		var = str2num(str)
@@ -984,7 +988,11 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	endif
 
 	if(!ParamIsDefault(prop))
-		ASSERT(prop == PROP_NON_EMPTY || prop == PROP_EMPTY || prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, "Invalid property")
+		ASSERT(prop == PROP_NON_EMPTY                    \
+			   || prop == PROP_EMPTY                     \
+			   || prop == PROP_MATCHES_VAR_BIT_MASK      \
+			   || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, \
+			   "Invalid property")
 	endif
 
 	if(ParamIsDefault(startRow))
