@@ -480,10 +480,10 @@ End
 
 /// @brief Deregister an opened device in our device map
 ///
-/// @param deviceID     device identifier
 /// @param hardwareType One of @ref HardwareDACTypeConstants
-Function HW_DeRegisterDevice(deviceID, hardwareType)
-	variable deviceID, hardwareType
+/// @param deviceID     device identifier
+Function HW_DeRegisterDevice(hardwareType, deviceID)
+	variable hardwareType, deviceID
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
