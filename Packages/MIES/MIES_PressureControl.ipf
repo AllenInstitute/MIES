@@ -557,6 +557,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	variable headStage, psi
 
 	variable hwType, deviceID, channel, scale
+	string msg
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
@@ -570,6 +571,9 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
 		psi += PressureDataWv[headStage][%NegCalConst]
 	endif
+
+	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, psi
+	DEBUGPRINT(msg)
 
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_WriteDAC(hwType, deviceID, channel, psi / scale + PRESSURE_OFFSET)
