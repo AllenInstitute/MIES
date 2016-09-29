@@ -59,7 +59,7 @@
 	* The Downsample Panel (MIES_Downsample.ipf)
 * To install one of them perform the following steps:
 	* Quit Igor Pro
-	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s) 
+	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s)
 	* Restart Igor Pro
 
 ## Arduino
