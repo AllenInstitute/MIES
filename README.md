@@ -91,7 +91,7 @@ Within the Allen Institute, the latest documentation builds can be found [here](
 ### Building the documentation
 
 #### Required 3rd party tools
-* [Doxygen](http://doxygen.org) 1.8.10
+* [Doxygen](http://doxygen.org) 1.8.12
 * [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
 

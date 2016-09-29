@@ -4,15 +4,11 @@ top_level=$(git rev-parse --show-toplevel)
 branch=$(git rev-parse --abbrev-ref HEAD)
 version=$(git describe --always --tags)
 
-# Doxygen has real issues with quoting and filter patterns.
-# The Doxyfile version in the repository works only with Windows
 case $(uname) in
     Linux)
-      FILTER_PATTERNS='FILTER_PATTERNS = "*.ipf=\"gawk -f doxygen-filter-ipf.awk\""'
       ZIP_EXE=zip
       ;;
     *)
-      FILTER_PATTERNS=
       ZIP_EXE="$top_level/tools/zip.exe"
       ;;
 esac
@@ -21,7 +17,7 @@ echo "Start building the documentation"
 
 cd "$top_level/Packages/doc"
 
-output=$( (cat Doxyfile; echo "PROJECT_NUMBER = \"($branch) $version\""; echo $FILTER_PATTERNS ) | doxygen - 2>&1 >/dev/null)
+output=$( (cat Doxyfile; echo "PROJECT_NUMBER = \"($branch) $version\"") | doxygen - 2>&1 >/dev/null)
 
 if [ ! -z  "$output" ]
 then
