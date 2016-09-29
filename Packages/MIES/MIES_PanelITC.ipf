@@ -5432,7 +5432,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 				panelTitle = cba.win
 				control    = cba.ctrlName
 				DAP_GetInfoFromControl(panelTitle, control, mode, headStage)
-				DAP_ChangeHeadStageMode(panelTitle, mode, headstage)
+				DAP_ChangeHeadStageMode(panelTitle, mode, headstage, DO_MCC_MIES_SYNCING)
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				Abort
@@ -5467,12 +5467,15 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 End
 
 /// @brief Change the clamp mode of the given headstage
-/// @param panelTitle device
-/// @param clampMode  clamp mode to activate
-/// @param headStage  Headstage [0, 8[
-Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
+/// @param panelTitle          device
+/// @param clampMode           clamp mode to activate
+/// @param headStage           Headstage [0, 8[
+/// @param mccMiesSyncOverride should be zero for normal callers, 1 for callers which
+///                            are doing a auto MCC function and need to change the clamp mode temporarily.
+///                            Use one of @ref MCCSyncOverrides for better readability.
+Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage, mccMiesSyncOverride)
 	string panelTitle
-	variable headStage, clampMode
+	variable headStage, clampMode, mccMiesSyncOverride
 
 	string iZeroCtrl, VCctrl, ICctrl, headStageCtrl, ctrl
 	variable activeHS, testPulseMode, oppositeMode, DAC, ADC
@@ -5526,7 +5529,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	GuiState[headStage][%HSmode] = clampMode
 
-	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
+	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMiesSyncOverride)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	if(activeHS)
@@ -5534,9 +5537,10 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage)
 	endif
 End
 
-static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
+/// See @ref MCCSyncOverrides for allowed values of `mccMiesSyncOverride`
+static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMiesSyncOverride)
 	string panelTitle
-	variable headStage, clampMode
+	variable headStage, clampMode, mccMiesSyncOverride
 
 	string highlightSpec = "\\f01\\Z11"
 
@@ -5545,7 +5549,7 @@ static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
 	AI_SyncAmpStorageToGUI(panelTitle, headStage)
 	ChangeTab(panelTitle, "tab_DataAcq_Amp", clampMode)
 
-	if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+	if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC") && mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
 		AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	endif
 
@@ -5960,7 +5964,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		P_LoadPressureButtonState(panelTitle)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
-		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode)
+		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
 		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
 	endif
 
