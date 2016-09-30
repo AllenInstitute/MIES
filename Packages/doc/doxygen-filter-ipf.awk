@@ -31,6 +31,23 @@ BEGIN{
   namespace=""
 }
 
+# Convert Igor wave types to valid C++ types
+function nicifyWaveType(str)
+{
+  # change wave type specifiers to something sphinx likes
+  if(match(str, /\yWave\/[a-z]+/))
+  {
+    # more complex ones are at the top
+    gsub("Wave/Z/T" , "WaveTextOrNull", str)
+    gsub("Wave/T/Z" , "WaveTextOrNull", str)
+    gsub("Wave/Wave", "WaveRefWave"   , str)
+    gsub("Wave/Z"   , "WaveOrNull"    , str)
+    gsub("Wave/T"   , "WaveText"      , str)
+  }
+
+  return str
+}
+
 # Remove whitespace at beginning and end of string
 # Return the whitespace in front of the string in the
 # global variable frontSpace to be able
@@ -184,6 +201,8 @@ function handleParameter(params, a,  i, iOpt, str, entry)
           # translate module separator "#" to C++ namespace separator
           gsub("#", "::", paramType)
 
+          paramType = nicifyWaveType(paramType)
+
           output = gensub("__Param__" j " ",paramType " ","g",output)
           # printf("Found parameter type %s at index %d\n",paramType,j)
         }
@@ -232,6 +251,11 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     numEntries = splitIntoWords(code, entries)
     code = "funcref " entries[numEntries]
   }
+  else if(insideStructure && match(code,/^STRUCT/))
+  {
+    # make structure declarations valid C++
+    gsub(/\ystruct\y/,"",code)
+  }
   else if(insideStructure && match(code,/EndStructure/))
   {
     insideStructure=0
@@ -269,6 +293,17 @@ function handleParameter(params, a,  i, iOpt, str, entry)
   gsub(/\yconstant\y/,"const variable",code)
   # prevent that doxygen sees elseif as a function call
   gsub(/\yelseif\y/,"else if",code)
+
+  # fix case of static keyword
+  gsub(/^Static\y/,"static",code)
+
+  # make threadsafe a valid c++11 attribute
+  gsub(/^threadsafe\y/,"[[ threadsafe ]]",code)
+
+  if(insideStructure || insideFunction || insideMacro)
+  {
+    code = nicifyWaveType(code)
+  }
 
   # code outside of function/macro definitions is "translated" into statements
   if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,1,1) != "#")
