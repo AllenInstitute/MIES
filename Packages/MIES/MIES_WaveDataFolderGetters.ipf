@@ -1475,7 +1475,7 @@ End
 /// The wave stores PeakResistance, SteadyStateResistance, and TimeStamp in rows and headstages in cols
 Function/Wave GetAcqTPStorage()
 
-	Make/FREE/N=(3, NUM_HEADSTAGES, HARDWARE_MAX_DEVICES) wv
+	Make/FREE/D/N=(3, NUM_HEADSTAGES, HARDWARE_MAX_DEVICES) wv
 
 	SetDimLabel COLS, -1, HeadStage            , wv
 	SetDimLabel ROWS, 0 , TimeStamp            , wv
