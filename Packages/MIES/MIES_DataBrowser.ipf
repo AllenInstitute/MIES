@@ -301,14 +301,7 @@ End
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	CheckBox check_DataBrowser_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	Slider slider_oodDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
-	Slider slider_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
-	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
-	NewPanel /K=1 /W=(439,223,1651,943) as "DataBrowser"
+	NewPanel /K=1 /W=(8,449,1220,1169) as "DataBrowser"
 	Button button_DataBrowser_NextSweep,pos={628.00,630.00},size={425.00,45.00},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-J,hsdJ,hnmz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
@@ -348,12 +341,12 @@ Window DataBrowser() : Panel
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_databrowser_dDAQMode,value= 0
-	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1758.00,75.00},size={197.00,39.00}
-	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
-	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
+	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1757.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LB^]6]e!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
+	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
 	CheckBox check_DataBrowser_SweepOverlay,pos={205.00,9.00},size={97.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Sweeps"
 	CheckBox check_DataBrowser_SweepOverlay,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo)= A"!!,G]!!#:r!!#@&!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -402,28 +395,28 @@ Window DataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataBrowser_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
 	SetVariable setvar_DataBrowser_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
-	PopupMenu popup_LBNumericalKeys,pos={1043.00,460.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBNumericalKeys,pos={1042.00,460.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
-	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"DB_GetLBNumericalKeys(\"\")"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,K>?iWRV!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBTextualKeys,pos={1043.00,489.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"DB_GetLBNumericalKeys(\"\")"
+	PopupMenu popup_LBTextualKeys,pos={1042.00,489.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBTextualKeys,help={"Select textual lab notebook data to display"}
-	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"DB_GetLBTextualKeys(\"\")"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,K>?iWRdJ,hqP!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	Button button_clearlabnotebookgraph,pos={1077.00,521.00},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"DB_GetLBTextualKeys(\"\")"
+	Button button_clearlabnotebookgraph,pos={1076.00,521.00},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KBTE%@]5QF-D!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={1077.00,548.00},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,pos={1076.00,548.00},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
 	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
 	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,KBTE%@d!!#?Y!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={1035.00,439.00},size={170.00,78.00},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,pos={1034.00,439.00},size={170.00,78.00},title="Settings History Column"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=?iWRKJ,hqd!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
@@ -446,6 +439,12 @@ Window DataBrowser() : Panel
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
+	Slider slider_oodDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
+	Slider slider_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
+	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
@@ -456,12 +455,6 @@ Window DataBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1bpd<0JGRY<CoSI0fhd'4%E:B6q&jl7RB1778-NR;b9q[:JNr)/i>UF2_m-M"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B2DI3E0JGRY<CoSI0fi<)8231r<CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0E2DR$A2`h"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={909,540,inf,inf}" // sizeLimit requires Igor 7 or later
-	Slider slider_oodDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
-	Slider slider_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
-	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
 	Display/W=(18,72,1039,362)/FG=($"",$"",UGV0,UGH1)/HOST=#
 	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
 	RenameWindow #,DataBrowserGraph
