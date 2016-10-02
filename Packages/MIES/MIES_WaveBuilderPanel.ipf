@@ -1408,7 +1408,6 @@ static Function WBP_ChangeWaveType(stimulusType)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P3", 0)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P4", 0)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P5", 0)
-		WBP_UpdatePanelIfAllowed()
 
 		WBP_ExecuteAdamsTabcontrol(0)
 	elseif(stimulusType == STIMULUS_TYPE_DA)
@@ -1417,6 +1416,8 @@ static Function WBP_ChangeWaveType(stimulusType)
 	else
 		ASSERT(0, "Unknown stimulus type")
 	endif
+
+	WBP_UpdatePanelIfAllowed()
 End
 
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
