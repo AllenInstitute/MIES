@@ -1079,7 +1079,7 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 	string formula
 	struct FormulaProperties &fp
 
-	string stimset, shorthand, replacedFormula, stimsetSpec
+	string stimset, shorthand, replacedFormula, stimsetSpec, prefix, suffix
 	variable numSets, i
 	variable numRows = Inf
 	variable numCols = Inf
@@ -1104,7 +1104,14 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 		stimset     = epochCombineList[i][%stimset]
 		stimsetSpec = LowerStr(stimset) + "?"
 
-		replacedFormula = ReplaceString(shorthand, formula, stimsetSpec, 1)
+		replacedFormula = formula
+		ASSERT(!SearchWordInString(stimsetSpec, shorthand), "circle reference: shorthand is part of stimset. prevented infinite loop")
+		do
+			if(!SearchWordInString(formula, shorthand, prefix = prefix, suffix = suffix))
+				break
+			endif
+			replacedFormula = prefix + stimsetSpec + suffix
+		while(1)
 
 		if(cmpstr(replacedFormula, formula))
 			// create the stimset as it is part of the formula
