@@ -1432,16 +1432,16 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
-	Wave/Z/SDFR=dfr wv = TPStorage
+	Wave/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 12) wv
+		Redimension/N=(-1, -1, 12)/D wv
 	else
-		Make/N=(128, NUM_AD_CHANNELS, 12) dfr:TPStorage/Wave=wv
+		Make/N=(128, NUM_AD_CHANNELS, 12)/D dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
@@ -1475,7 +1475,7 @@ End
 /// The wave stores PeakResistance, SteadyStateResistance, and TimeStamp in rows and headstages in cols
 Function/Wave GetAcqTPStorage()
 
-	Make/FREE/N=(3, NUM_HEADSTAGES, HARDWARE_MAX_DEVICES) wv
+	Make/FREE/D/N=(3, NUM_HEADSTAGES, HARDWARE_MAX_DEVICES) wv
 
 	SetDimLabel COLS, -1, HeadStage            , wv
 	SetDimLabel ROWS, 0 , TimeStamp            , wv
