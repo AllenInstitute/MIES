@@ -478,7 +478,7 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 	variable refHeadstage
 
 	variable headStage, deviceID, hwType
-	variable i, j
+	variable i, j, doDeRegister
 	string ListOfHeadstageUsingITCDevice = ""
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 
@@ -488,8 +488,7 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 
 	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID))
 		HW_ResetDevice(hwType, deviceID)
-		HW_CloseDevice(hwType, deviceID)
-		HW_DeRegisterDevice(hwType, deviceID)
+		doDeRegister = 1
 	endif
 
 	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
@@ -498,12 +497,20 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 		for(i = 0; i < ItemsInList(ListOfHeadstageUsingITCDevice); i += 1)
 			if(cmpstr("",ListOfHeadstageUsingITCDevice) != 0)
 				headStage = str2num(StringFromList(i, ListOfHeadstageUsingITCDevice))
+				if(IsFinite(PressureDataWv[headStage][%DAC_DevID]) && IsFinite(PressureDataWv[headstage][%HW_DAC_Type]))
+					P_SetAndGetPressure(panelTitle, headstage, 0)
+				endif
 				WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 				PressureDataWv[headStage][%DAC_DevID]   = NaN
 				PressureDataWv[headstage][%HW_DAC_Type] = NaN
 			endif
 		endfor
 	endfor
+
+	if(doDeRegister)
+		HW_CloseDevice(hwType, deviceID)
+		HW_DeRegisterDevice(hwType, deviceID)
+	endif
 End
 
 /// @brief Returns a list of rows that contain a particular string
@@ -557,6 +564,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	variable headStage, psi
 
 	variable hwType, deviceID, channel, scale
+	string msg
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
@@ -570,6 +578,9 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
 		psi += PressureDataWv[headStage][%NegCalConst]
 	endif
+
+	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, psi
+	DEBUGPRINT(msg)
 
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_WriteDAC(hwType, deviceID, channel, psi / scale + PRESSURE_OFFSET)
