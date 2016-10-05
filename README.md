@@ -63,7 +63,7 @@ package from Wavemetrics.
 	* The Downsample Panel (MIES_Downsample.ipf)
 * To install one of them perform the following steps:
 	* Quit Igor Pro
-	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s) 
+	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s)
 	* Restart Igor Pro
 
 ## Arduino
@@ -98,7 +98,7 @@ Within the Allen Institute, the documentation can be reached at the following lo
 #### Building the doxygen documentation
 
 ##### Required 3rd party tools
-* [Doxygen](http://doxygen.org) 1.8.10
+* [Doxygen](http://doxygen.org) 1.8.12
 * [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
 
