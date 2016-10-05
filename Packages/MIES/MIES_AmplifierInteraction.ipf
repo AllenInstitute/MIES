@@ -825,11 +825,11 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCall)
 				// the pipette offset for the opposite mode has also changed, fetch that too
 				try
-					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i)
+					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i, SKIP_MCC_MIES_SYNCING)
 					value = AI_SendToAmp(panelTitle, i, oppositeMode, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite)
 					AmpStorageWave[%$rowLabelOpposite][0][i] = value
 					AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCallOpposite)
-					DAP_ChangeHeadStageMode(panelTitle, clampMode, i)
+					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, SKIP_MCC_MIES_SYNCING)
 				catch
 					if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
 						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, AI_ConvertAmplifierModeToString(oppositeMode), i

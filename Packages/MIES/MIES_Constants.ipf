@@ -477,3 +477,10 @@ Constant AMPLIFIER_CONNECTION_MCC_FAILED = 2 ///< calling MCC_SelectMultiClamp70
 
 /// Additional entry in the NWB source attribute for TTL data
 StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
+
+/// @name Convenience constants for DAP_UpdateClampmodeTabs() and DAP_ChangeHeadStageMode()
+/// @anchor MCCSyncOverrides
+/// @{
+Constant SKIP_MCC_MIES_SYNCING = 1
+Constant DO_MCC_MIES_SYNCING   = 0
+/// @}
