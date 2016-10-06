@@ -304,8 +304,6 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		expFileOrFolder = expFilePath
 	endif
 
-	// LoadData does not accept the root: prefix, as that might be already a subfolder
-	dataFolderPath = RemovePrefix(dataFolderPath, startStr = "root:")
 	SetDataFolder tmpDFR
 
 	// work around LoadData not respecting AbortOnRTE properly
