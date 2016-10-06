@@ -1095,8 +1095,10 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 
 	// we replace, case sensitive!, all upper case shorthands with lower case
 	// stimsets in that way we don't mess up the formula
+	// iterate the stimset list from bottom to top, so that we replace first the shorthands
+	// with numeric prefix and only later on the ones without
 	numSets = DimSize(epochCombineList, ROWS)
-	for(i = 0; i < numSets; i += 1)
+	for(i = numSets - 1; i >= 0; i -= 1)
 		shorthand   = epochCombineList[i][%Shorthand]
 		stimset     = epochCombineList[i][%stimset]
 		stimsetSpec = LowerStr(stimset) + "?"
