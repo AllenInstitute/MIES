@@ -155,8 +155,9 @@ Function/S M_GetManipFromHS(panelTitle, headStage)
 	return ManipulatorTextWave[headStage][%manipulatorName]
 End
 
-/// @brief Documents X,Y,Z position of manipulators of active headstages in lab notebook	
-// This funciton should be run once whole cell config is aquired on all cells in experiment. Not sure how to do this.
+/// @brief Documents X,Y,Z position of manipulators of active headstages in lab notebook
+///
+/// This function should be run once whole cell config is aquired on all cells in experiment. Not sure how to do this.
 Function M_DocumentManipulatorXYZ(panelTitle)
 	string panelTitle
 
