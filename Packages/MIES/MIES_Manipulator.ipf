@@ -205,7 +205,7 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 	endfor
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle)
+	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, UNKNOWN_MODE)
 End
 
 /// @brief Check if settings are valid to send a manipulator server call
@@ -276,9 +276,9 @@ Function M_ManipulatorGizmoPlot(panelTitle, [sweep])
 		// Need to check if there is actually manipulator data stored for the sweep
 	endif
 
-	WaveForGizmo[][0] = GetLastSetting(numericalValues, sweep, "ManipX")[p]
-	WaveForGizmo[][1] = GetLastSetting(numericalValues, sweep, "ManipY")[p]
-	WaveForGizmo[][2] = GetLastSetting(numericalValues, sweep, "ManipZ")[p]
+	WaveForGizmo[][0] = GetLastSetting(numericalValues, sweep, "ManipX", UNKNOWN_MODE)[p]
+	WaveForGizmo[][1] = GetLastSetting(numericalValues, sweep, "ManipY", UNKNOWN_MODE)[p]
+	WaveForGizmo[][2] = GetLastSetting(numericalValues, sweep, "ManipZ", UNKNOWN_MODE)[p]
 
 	string cmd = "NewGizmo/k=1/N=CellPosPlot/T=\"CellPosPlot\""
 	Execute cmd

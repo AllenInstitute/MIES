@@ -761,6 +761,7 @@ Function/Wave GetLBTextualValues(panelTitle)
 	SetDimLabel COLS, 0, SweepNum                  , wv
 	SetDimLabel COLS, 1, TimeStamp                 , wv
 	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel COLS, 3, EntrySourceType           , wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -774,6 +775,7 @@ End
 /// - Addition of nineth layer for headstage independent data
 /// - Conversion of numeric labnotebook to 64bit floats
 /// - Removal of invalid units for "Stim Scale Factor", "DA Gain" and "AD Gain"
+/// - Addition of fourth column "EntrySourceType"
 static Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
@@ -801,6 +803,7 @@ static Function UpgradeLabNotebook(panelTitle)
 	ASSERT(DimSize(numericalKeys, COLS) == DimSize(numericalValues, COLS), "Non matching number of rows for numeric labnotebook")
 	ASSERT(DimSize(textualKeys, COLS) == DimSize(textualValues, COLS), "Non matching number of rows for textual labnotebook")
 
+	// BEGIN UTC timestamps
 	if(cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"))
 
 		numCols = DimSize(numericalKeys, COLS)
@@ -834,6 +837,43 @@ static Function UpgradeLabNotebook(panelTitle)
 
 		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
 	endif
+	// END UTC timestamps
+
+	// BEGIN epoch source type
+	if(cmpstr(numericalKeys[0][3], "EntrySourceType"))
+
+		numCols = DimSize(numericalKeys, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) numericalKeys, numericalValues
+
+		numericalKeys[][numCols]     = numericalKeys[p][3]
+		numericalValues[][numCols][] = numericalValues[p][3][r]
+
+		numericalValues[][3][] = NaN
+		numericalKeys[][3]     = ""
+		numericalKeys[0][3]    = "EntrySourceType"
+		SetDimensionLabels(numericalKeys, numericalValues)
+
+		DEBUGPRINT("Upgraded numerical labnotebook to hold entry source type column")
+	endif
+
+	if(cmpstr(textualKeys[0][3], "EntrySourceType"))
+
+		numCols = DimSize(textualKeys, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) textualKeys, textualValues
+
+		textualKeys[][numCols]     = textualKeys[p][3]
+		textualValues[][numCols][] = textualValues[p][3][r]
+
+		textualValues[][3][] = ""
+		textualKeys[][3]     = ""
+		textualKeys[0][3]    = "EntrySourceType"
+		SetDimensionLabels(textualKeys, textualValues)
+
+		DEBUGPRINT("Upgraded textual labnotebook to hold entry source type column")
+	endif
+	// END epoch source type
 
 	if(DimSize(textualValues, LAYERS) == NUM_HEADSTAGES && DimSize(numericalValues, LAYERS) == NUM_HEADSTAGES)
 		Redimension/N=(-1, -1, LABNOTEBOOK_LAYER_COUNT, -1) textualValues, numericalValues
@@ -875,6 +915,7 @@ End
 /// - 0: Sweep Number
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
+/// - 3: Source entry type, one of @ref DataAcqModes
 /// - other columns are filled at runtime
 Function/Wave GetLBTextualKeys(panelTitle)
 	string panelTitle
@@ -906,6 +947,7 @@ Function/Wave GetLBTextualKeys(panelTitle)
 	wv[0][0] = "SweepNum"
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
+	wv[0][3] = "EntrySourceType"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
@@ -927,6 +969,7 @@ End
 /// - 0: Sweep Number
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
+/// - 3: Source entry type, one of @ref DataAcqModes
 /// - other columns are filled at runtime
 Function/Wave GetLBNumericalKeys(panelTitle)
 	string panelTitle
@@ -959,6 +1002,7 @@ Function/Wave GetLBNumericalKeys(panelTitle)
 	wv[0][0] = "SweepNum"
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
+	wv[0][3] = "EntrySourceType"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
@@ -1000,6 +1044,7 @@ Function/Wave GetLBNumericalValues(panelTitle)
 		SetDimLabel COLS, 0, SweepNum                  , wv
 		SetDimLabel COLS, 1, TimeStamp                 , wv
 		SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
+		SetDimLabel COLS, 3, EntrySourceType           , wv
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif

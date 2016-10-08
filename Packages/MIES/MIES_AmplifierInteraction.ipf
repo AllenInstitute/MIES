@@ -1183,8 +1183,8 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * AI_GetMCCScale(NaN, MCC_GETPIPETTEOFFSET_FUNC)
 	endfor
 
-	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle)
-	ED_createTextNotes(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle)
+	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
+	ED_createTextNotes(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
 End
 
 // Below is code to open the MCC and manipulate the MCC windows. It is hard coded from TimJs 700Bs. Needs to be adapted for MIES

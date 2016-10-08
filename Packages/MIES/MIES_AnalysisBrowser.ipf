@@ -149,7 +149,7 @@ static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
 
 	variable numRows
 
-	WAVE/Z settings = GetLastSetting(wv, sweepNo, name)
+	WAVE/Z settings = GetLastSetting(wv, sweepNo, name, DATA_ACQUISITION_MODE)
 	if(!WaveExists(settings))
 		printf "Could not query the labnotebook of device %s for the setting %s\r", device, name
 		return "unknown"
@@ -220,7 +220,7 @@ static Function AB_FillListWave(expFolder, expName, device)
 		str = AB_GetSettingNumFiniteVals(numericalValues, device, sweepNo, "ADC")
 		list[index][%'#ADC'][0] = str
 
-		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Headstage Active")
+		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 		numRows = WaveExists(settings) ? NUM_HEADSTAGES : 0
 		if(numRows > 0)
 			list[index][%'#headstages'][0] = num2str(Sum(settings, 0, NUM_HEADSTAGES - 1))
@@ -228,10 +228,10 @@ static Function AB_FillListWave(expFolder, expName, device)
 			list[index][%'#headstages'][0] = "unknown"
 		endif
 
-		WAVE/T/Z settingsText = GetLastSettingText(textualValues, sweepNo, "Stim Wave Name")
+		WAVE/T/Z settingsText = GetLastSettingText(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
-		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count")
+		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
 
 		if(!numRows)
 			list[index][%'stim sets'][0] = "unknown"
