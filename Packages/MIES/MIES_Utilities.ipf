@@ -50,11 +50,11 @@ End
 /// @param errorMsg error message to output in failure case
 ///
 /// Example usage:
-///@code
-///ControlInfo/W = $panelTitle popup_MoreSettings_DeviceType
-///ASSERT(V_flag > 0, "Non-existing control or window")
-///do something with S_value
-///@endcode
+/// @code
+/// ControlInfo/W = $panelTitle popup_MoreSettings_DeviceType
+/// ASSERT(V_flag > 0, "Non-existing control or window")
+/// do something with S_value
+/// @endcode
 ///
 /// @hidecallgraph
 /// @hidecallergraph
@@ -585,12 +585,12 @@ End
 /// @brief Reset the debugger to the given state
 ///
 /// Useful in conjunction with DisableDebugger() to temporarily disable the debugger
-///@code
-/// variable debuggerState = DisableDebugger()
-/// // code which might trigger the debugger, e.g. CurveFit
-/// ResetDebuggerState(debuggerState)
-/// // now the debugger is in the same state as before
-///@endcode
+/// @code
+///  variable debuggerState = DisableDebugger()
+///  // code which might trigger the debugger, e.g. CurveFit
+///  ResetDebuggerState(debuggerState)
+///  // now the debugger is in the same state as before
+/// @endcode
 Function ResetDebuggerState(debuggerState)
 	variable debuggerState
 
