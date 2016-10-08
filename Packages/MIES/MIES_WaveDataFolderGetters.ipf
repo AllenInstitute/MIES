@@ -2529,7 +2529,7 @@ End
 /// - 39: Async Alarm 7 Max
 Function/Wave GetAsyncSettingsWave()
 
-	Make/N=(1,40) wv
+	Make/N=(1,40)/FREE wv
 	wv = Nan
 
 	SetDimLabel 1, 0, ADOnOff0, wv
@@ -2629,7 +2629,7 @@ End
 /// - 39: Async Alarm 7 Max
 Function/Wave GetAsyncSettingsKeyWave()
 
-	Make/T/N=(3,40) wv
+	Make/T/N=(3,40)/FREE wv
 	wv = ""
 
 	SetDimLabel 0, 0, Parameter, wv
@@ -2799,7 +2799,7 @@ Function/Wave GetAsyncSettingsKeyWave()
 	return wv
 End
 
-/// @brief Return a free wave for the AsyncSettingsTxtWave
+/// @brief Return a *free* wave for the AsyncSettingsTxtWave
 ///
 /// AsyncSettingsTxtData is used to store the async text settings used on a particular
 /// headstage and then create waveNotes for the sweep data
@@ -2826,7 +2826,7 @@ End
 /// - 15: Async 7 Units
 Function/Wave GetAsyncSettingsTextWave()
 
-	Make/T/N=(1,16) wv
+	Make/T/N=(1,16)/FREE wv
 	wv = ""
 
 	return wv
@@ -2858,7 +2858,7 @@ End
 /// - 15: Async 7 Unit
 Function/Wave GetAsyncSettingsTextKeyWave()
 
-	Make/T/N=(1,16) wv
+	Make/T/N=(1,16)/FREE wv
 	wv = ""
 
 	wv[0][0] = "Async AD0 Title"
