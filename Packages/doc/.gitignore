@@ -1,4 +1,12 @@
-
 # Doxygen Build
 html
 latex
+xml
+releasenotes.rst
+readme.rst
+file
+filelist.rst
+struct
+structlist.rst
+namespace
+namespacelist.rst

@@ -228,7 +228,10 @@ TAB_SIZE               = 4
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines.
 
-ALIASES                =
+# TB: This has to be leading-asterisk as it seems that alias expansion
+# changes from slashes to asterisks
+ALIASES                += "rst    =@verbatim embed:rst:leading-asterisk"
+ALIASES                += "endrst =@endverbatim"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
@@ -784,7 +787,6 @@ INPUT                  = .                                \
                          ../MIES                          \
                          ../IPNWB                         \
                          ..                               \
-                         ../../README.md                  \
                          ../../tools/compilation-testing
 
 # This tag can be used to specify the character encoding of the source files
@@ -810,8 +812,7 @@ INPUT_ENCODING         = UTF-8
 # *.m, *.markdown, *.md, *.mm, *.dox, *.py, *.pyw, *.f90, *.f95, *.f03, *.f08,
 # *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf and *.qsf.
 
-FILE_PATTERNS          = *.ipf \
-                         *.md
+FILE_PATTERNS          = *.ipf
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -937,7 +938,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = mainpage.md
+USE_MDFILE_AS_MAINPAGE =
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
