@@ -398,6 +398,19 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	values[0][1][INDEP_HEADSTAGE] = miesVersion
 
 	ED_createTextNotes(values, keys, SweepCount, panelTitle)
+
+	if(GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
+		AI_FillAndSendAmpliferSettings(panelTitle, sweepCount)
+		// function for debugging
+		// AI_createDummySettingsWave(panelTitle, SweepNo)
+	endif
+
+	if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
+		ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
+	endif
+
+	// TP settings, especially useful if "global TP insertion" is active
+	ED_TPSettingsDocumentation(panelTitle)
 End
 
 /// @brief Write the user comment from the DA_Ephys panel to the labnotebook
@@ -420,7 +433,7 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 End
 
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
-function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
+static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
 	Variable sweepCount
 
@@ -586,7 +599,7 @@ Function ED_TPDocumentation(panelTitle)
 End
 
 /// @brief Document the settings of the Testpulse
-Function ED_TPSettingsDocumentation(panelTitle)
+static Function ED_TPSettingsDocumentation(panelTitle)
 	string panelTitle
 
 	variable sweepNo
