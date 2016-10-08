@@ -293,14 +293,14 @@ Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo,
 	string panelTitle
 	variable sweepNo
 
-	variable rowIndex, numCols, i
+	variable rowIndex, numCols, i, lastValidIncomingLayer
 
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
 	ASSERT(!cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
 	ASSERT(DimSize(incomingTextualValues, ROWS)   == 1, "Mismatched row counts")
-	ASSERT(DimSize(incomingTextualValues, LAYERS) == LABNOTEBOOK_LAYER_COUNT, "Mismatched layer counts")
+	ASSERT(DimSize(incomingTextualValues, LAYERS) <= DimSize(textualValues, LAYERS), "Mismatched layer counts")
 	ASSERT(DimSize(incomingTextualValues, COLS)   == DimSize(incomingTextualKeys, COLS), "Mismatched column counts")
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
@@ -318,8 +318,9 @@ Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo,
 	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
 
 	numCols = DimSize(incomingTextualValues, COLS)
+	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		textualValues[rowIndex][indizes[i]][] = incomingTextualValues[0][i][r]
+		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingTextualValues[0][i][r]
 	endfor
 
 	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
