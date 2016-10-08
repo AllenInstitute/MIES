@@ -59,13 +59,14 @@ Function P_PressureControl(panelTitle)
 	variable headStage
 
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
-		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !P_DACIsCollectingData(panelTitle, headStage)) // are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing).
+		// are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing)
+		if(P_ValidatePressureSetHeadstage(panelTitle, headStage) && !P_DACIsCollectingData(panelTitle, headStage))
 			switch(PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear])
 				case P_METHOD_neg1_ATM:
-						P_MethodAtmospheric(panelTitle, headstage)
+					P_MethodAtmospheric(panelTitle, headstage)
 					break
 				case P_METHOD_0_APPROACH:
-						P_MethodApproach(panelTitle, headStage)
+					P_MethodApproach(panelTitle, headStage)
 					break
 				case P_METHOD_1_SEAL:
 					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
