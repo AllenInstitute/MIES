@@ -55,8 +55,10 @@ EndStructure
 Function P_PressureControl(panelTitle)
 	string panelTitle
 
+	variable headStage, manPressureAll
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable headStage
+
+	manPressureAll = GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll")
 
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		// are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing)
@@ -84,7 +86,7 @@ Function P_PressureControl(panelTitle)
 					endif
 					break
 				case P_METHOD_4_MANUAL:
-					P_ManSetPressure(panelTitle, headStage)
+					P_ManSetPressure(panelTitle, headStage, manPressureAll)
 					break
 				default:
 					PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_neg1_ATM
@@ -1777,28 +1779,27 @@ static Function/WAVE P_DecToBinary(dec)
 	return binary
 End
 
-// MANUAL PRESSURE CONTROL
-
-/// @brief Sets the pressure on the active headstage or all headstages.
-static Function P_ManSetPressure(panelTitle, headStage)
+/// @brief Manual pressure control
+static Function P_ManSetPressure(panelTitle, headStage, manPressureAll)
 	string panelTitle
-	variable headStage
+	variable headStage, manPressureAll
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable psi = PressureDataWv[headStage][%ManSSPressure]
+
+	variable psi
 	variable ONorOFF = 1
+	variable userSelectedHeadstage
 
-	PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = P_METHOD_4_MANUAL
+	userSelectedHeadstage = PressureDataWv[0][%UserSelectedHeadstage]
 
-	if(GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll"))
-		for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
-			PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, psi)
-			P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
-		endfor
-	else
-		PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headStage, psi)
-		P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
+	if(manPressureAll && PressureDataWv[userSelectedHeadstage][%Approach_Seal_BrkIn_Clear] == P_METHOD_4_MANUAL && headstage == 0)
+		PressureDataWv[][%ManSSPressure] = PressureDataWv[userSelectedHeadstage][%ManSSPressure]
 	endif
+
+	psi = PressureDataWv[headStage][%ManSSPressure]
+
+	PressureDataWv[headstage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headstage, psi)
+	P_UpdateTTLstate(panelTitle, headStage, ONorOFF)
 End
 
 /// @brief Saves user seleted headstage in pressureData wave
