@@ -9,7 +9,7 @@ package from Wavemetrics.
 ### Igor Pro 6.3.x (32bit only)
 
 * Quit Igor Pro
-* Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files"
+* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 6 User Files"
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
 		* "Packages\HDF"
@@ -25,7 +25,7 @@ package from Wavemetrics.
 ### Igor Pro 7.0.x (32bit)
 
 * Quit Igor Pro
-* Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 7 User Files"
+* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
 		* "Packages\HDF-IP7"
@@ -41,7 +41,7 @@ package from Wavemetrics.
 ### Igor Pro 7.0.x (64bit)
 
 * Quit Igor Pro
-* Create the following shortcuts in "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 7 User Files"
+* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
 	* In "User Procedures" a shortcut pointing to
 		* "Packages\Arduino"
 		* "Packages\HDF-IP7"
@@ -56,14 +56,14 @@ package from Wavemetrics.
 * Please note that data acquisition is currently not possible with the 64bit version.
 
 ## Partial Installation without hardware dependencies
-* There are currently four packages (Located in: "....\MIES-Igor-Master\Packages\MIES") which can be installed on demand:
+* There are currently four packages (Located in: "..\Packages\MIES") which can be installed on demand:
 	* The Analysis Browser (MIES_AnalysisBrowser.ipf)
 	* The Data Browser (MIES_DataBrowser.ipf)
 	* The Wave Builder (MIES_WaveBuilderPanel.ipf)
 	* The Downsample Panel (MIES_Downsample.ipf)
 * To install one of them perform the following steps:
 	* Quit Igor Pro
-	* In "C:\Users\<username>\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s)
+	* In "C:\Users\$username\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s)
 	* Restart Igor Pro
 
 ## Arduino
@@ -74,7 +74,7 @@ Advanced measurement modes like Yoking require an Arduino for triggering the DAC
 * Get an [Arduino UNO](https://www.arduino.cc/en/Main/ArduinoBoardUno), for easier PIN access a [screw shield](http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html) comes in handy too
 * Connect the device to the PC via USB
 * Install the Arduino studio from "Packages\Arduino\arduino-1.6.8-windows.exe"
-* Extract "Packages\Arduino\Arduino-libraries-and-sequencer.zip" into "C:\Users\<username>\Documents\Arduino"
+* Extract "Packages\Arduino\Arduino-libraries-and-sequencer.zip" into "C:\Users\$username\Documents\Arduino"
 * Start Arduino studio and try connecting to the device
 * Load and compile the installed sequence "Igor_Sequencer3.ino"
 * Connect Pin 12 and GND to the trigger input of the DAC hardware
@@ -95,21 +95,19 @@ Within the Allen Institute, the documentation can be reached at the following lo
 * [Documentation for the master branch](http://10.128.24.29/master/index.html)
 * [Documentation for the latest release branch](http://10.128.24.29/release/index.html)
 
-#### Building the doxygen documentation
+### Building the documentation
 
-##### Required 3rd party tools
+#### Required 3rd party tools
 * [Doxygen](http://doxygen.org) 1.8.12
 * [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
+* [pandoc](https://github.com/jgm/pandoc/releases) 1.17.1 or later
+* [python](http://www.python.org) 2.7 or later
+* [breathe](https://github.com/michaeljones/breathe) 4.20 or later, via `pip install -U breathe`
+* [sphinx](http://www.sphinx-doc.org/en/stable) 1.4.6 or later, via `pip install -U sphinx`
+* [sphinxcontrib-fulltoc](https://sphinxcontrib-fulltoc.readthedocs.io/en/latest/) via `pip install -U sphinxcontrib-fulltoc`
 
-Remember to add all paths with executables from these tools to your `PATH` variable.<br>
-You can test that by executing the following statements in a cmd window:
-
-* `doxygen --version`
-* `gawk --version`
-* `dot -V`
-
-Go to `Packages/doc` and execute doxygen
+Execute `tools/build-documentation.sh`.
 
 ## Release Handling
 
@@ -157,7 +155,7 @@ For testing compilation manually perform the following steps:
 * Create in "User Procedures" a shortcut pointing to Packages\MIES_Include.ipf
 * Remove the shortcut Packages\MIES_Include.ipf in "Igor Procedures"
 * Close all Igor Pro instances
-* Execute tools\compilation-testing\check_mies_compilation.bat
+* Execute `tools\compilation-testing\check_mies_compilation.bat`
 * Watch the output
 
 ### Documentation building
