@@ -2993,3 +2993,15 @@ Function/S GetDefaultElectrodeName(headstage)
 
 	return num2str(headstage)
 End
+
+/// @brief Create a labnotebook key for unassociated channels
+Function/S CreateLBNUnassocKey(setting, channelNumber)
+	string setting
+	variable channelNumber
+
+	string key
+
+	sprintf key, "%s UNASSOC_%d", setting, channelNumber
+
+	return key
+End
