@@ -427,6 +427,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
+	Make/FREE/N=(DimSize(ITCDataWave, COLS)) writtenDataColumns = 0
+
 	// comment denotes the introducing comment of the labnotebook entry
 	// 9b35fdad (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
 	WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode")
@@ -501,11 +503,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		params.stimset         = stimSets[i]
 
 		if(IsFinite(adc))
-			path                 = "/acquisition/timeseries"
-			params.channelNumber = ADCs[i]
-			params.channelType   = ITC_XOP_CHANNEL_TYPE_ADC
-			col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
-			WAVE params.data     = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
+			path                    = "/acquisition/timeseries"
+			params.channelNumber    = ADCs[i]
+			params.channelType      = ITC_XOP_CHANNEL_TYPE_ADC
+			col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
+			writtenDataColumns[col] = 1
+			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
@@ -514,11 +517,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		DEBUGPRINT_ELAPSED(refTime)
 
 		if(IsFinite(dac))
-			path                 = "/stimulus/presentation"
-			params.channelNumber = DACs[i]
-			params.channelType   = ITC_XOP_CHANNEL_TYPE_DAC
-			col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
-			WAVE params.data     = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
+			path                    = "/stimulus/presentation"
+			params.channelNumber    = DACs[i]
+			params.channelType      = ITC_XOP_CHANNEL_TYPE_DAC
+			col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
+			writtenDataColumns[col] = 1
+			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
@@ -543,10 +547,11 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 		listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, i)
 
-		params.clampMode     = NaN
-		params.channelNumber = i
-		params.channelType   = ITC_XOP_CHANNEL_TYPE_TTL
-		col                  = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
+		params.clampMode        = NaN
+		params.channelNumber    = i
+		params.channelType      = ITC_XOP_CHANNEL_TYPE_TTL
+		col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
+		writtenDataColumns[col] = 1
 
 		WAVE data = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 		DFREF dfr = NewFreeDataFolder()
@@ -577,6 +582,31 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 			NWB_WriteStimsetTemplateWaves(locationID, name, chunkedLayout)
 		endfor
+	endfor
+
+	DEBUGPRINT_ELAPSED(refTime)
+
+	numEntries = DimSize(writtenDataColumns, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(writtenDataColumns[i])
+			continue
+		endif
+
+		// unassociated channel data
+		// can currently be ADC only
+		path                   = "/acquisition/timeseries"
+		ASSERT(ITCChanConfigWave[i][0] == ITC_XOP_CHANNEL_TYPE_ADC, "Unexpected channel type")
+		params.clampMode       = NaN
+		params.electrodeNumber = NaN
+		params.electrodeName   = ""
+		params.channelType     = ITCChanConfigWave[i][0]
+		params.channelNumber   = ITCChanConfigWave[i][1]
+		params.stimSet         = ""
+		NWB_GetTimeSeriesProperties(params, tsp)
+		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, i)
+		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+		IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -631,6 +661,11 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	WAVE numericalValues = GetLBNumericalValues(p.device)
 
 	IPNWB#InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
+
+	// unassociated channel
+	if(!IsFinite(p.clampMode))
+		return NaN
+	endif
 
 	if(strlen(tsp.missing_fields) > 0)
 		ASSERT(IsFinite(p.electrodeNumber), "Expected finite electrode number with non empty \"missing_fields\"")

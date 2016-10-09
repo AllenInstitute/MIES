@@ -322,7 +322,8 @@ Function InitTimeSeriesProperties(tsp, channelType, clampMode)
 			// CurrentClampSeries
 			 tsp.missing_fields = "gain;bias_current;bridge_balance;capacitance_compensation"
 		else
-			 ASSERT(0, "Unknown clamp mode")
+			// unassociated channel
+			tsp.missing_fields = ""
 		endif
 	elseif(channelType == CHANNEL_TYPE_DAC)
 		tsp.missing_fields = "gain"
@@ -438,7 +439,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 	variable chunkedLayout
 
 	variable groupID, numPlaces, numEntries, i
-	string ancestry, str, source, channelTypeStr, group
+	string ancestry, str, source, channelTypeStr, group, electrodeNumberStr
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
 
@@ -479,7 +480,13 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		sprintf str, "%s", channelTypeStr
 	endif
 
-	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%d;ElectrodeName=%s", p.device, p.sweep, str, p.electrodeNumber, p.electrodeName
+	if(IsFinite(p.electrodeNumber))
+		sprintf electrodeNumberStr, "%d", p.electrodeNumber
+	else
+		electrodeNumberStr = "NaN"
+	endif
+
+	sprintf source, "Device=%s;Sweep=%d;%s;ElectrodeNumber=%s;ElectrodeName=%s", p.device, p.sweep, str, electrodeNumberStr, p.electrodeName
 
 	if(strlen(p.channelSuffixDesc) > 0 && strlen(p.channelSuffix) > 0)
 		ASSERT(strsearch(p.channelSuffix, "=", 0) == -1, "channelSuffix must not contain an equals (=) symbol")
@@ -492,10 +499,13 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		H5_WriteTextAttribute(groupID, "comment", group, str=note(p.data), overwrite=1) // human readable version of description
 	endif
 
-	if(p.channelType == CHANNEL_TYPE_ADC)
+	// only write electrode_name for associated channels
+	if(IsFinite(p.electrodeNumber) && (p.channelType == CHANNEL_TYPE_DAC || p.channelType == CHANNEL_TYPE_ADC))
 		sprintf str, "electrode_%s", p.electrodeName
 		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
+	endif
 
+	if(p.channelType == CHANNEL_TYPE_ADC)
 		if(p.clampMode == V_CLAMP_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;VoltageClampSeries"
 		elseif(p.clampMode == I_CLAMP_MODE)
@@ -506,9 +516,6 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 			ancestry = "TimeSeries"
 		endif
 	elseif(p.channelType == CHANNEL_TYPE_DAC)
-		sprintf str, "electrode_%s", p.electrodeName
-		H5_WriteTextDataset(groupID, "electrode_name", str=str, overwrite=1)
-
 		if(p.clampMode == V_CLAMP_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;VoltageClampStimulusSeries"
 		elseif(p.clampMode == I_CLAMP_MODE)
@@ -556,7 +563,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		H5_WriteTextAttribute(groupID, "unit", group + "/starting_time", str="Seconds", overwrite=1)
 	endif
 
-	if(p.channelType == CHANNEL_TYPE_ADC || p.channelType == CHANNEL_TYPE_TTL)
+	if(strlen(p.stimSet) > 0 && (p.channelType == CHANNEL_TYPE_ADC || p.channelType == CHANNEL_TYPE_TTL))
 		// custom data not specified by NWB spec
 		H5_WriteTextDataset(groupID, "stimulus_description", str=p.stimSet, overwrite=1)
 		MarkAsCustomEntry(groupID, "stimulus_description")
