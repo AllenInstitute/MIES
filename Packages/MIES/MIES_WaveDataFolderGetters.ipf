@@ -1531,7 +1531,9 @@ End
 
 /// @brief Return the testpulse instantenous resistance wave
 ///
-/// The columns hold the *active* DA channels only and are subject to resizing.
+/// The columns hold the *active* AD channels only and are subject to resizing.
+///
+/// Unit: MOhm (1e3 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
 
@@ -1542,14 +1544,36 @@ Function/Wave GetInstResistanceWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:InstResistance/Wave=wv
+	Make/N=(1, NUM_AD_CHANNELS) dfr:InstResistance/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the testpulse steady state average
+///
+/// The columns hold the *active* AD channels only and are subject to resizing.
+///
+/// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
+Function/Wave GetBaselineAverage(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = BaselineSSAvg
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(1, NUM_AD_CHANNELS) dfr:BaselineSSAvg/Wave=wv
 
 	return wv
 End
 
 /// @brief Return the testpulse steady state resistance wave
 ///
-/// The columns hold the *active* DA channels only and are subject to resizing.
+/// The columns hold the *active* AD channels only and are subject to resizing.
+///
+/// Unit: MOhm (1e3 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
 	string 	panelTitle
 
@@ -1560,7 +1584,7 @@ Function/Wave GetSSResistanceWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, NUM_DA_TTL_CHANNELS) dfr:SSResistance/Wave=wv
+	Make/N=(1, NUM_AD_CHANNELS) dfr:SSResistance/Wave=wv
 
 	return wv
 End

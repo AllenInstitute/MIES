@@ -236,7 +236,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave BaselineSSAvg, SSResistance
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
-	variable activeHeadStages, DAC, ADC
+	variable activeADCol, DAC, ADC
 	variable resistance, maximumAutoBiasCurrent
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
@@ -257,7 +257,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave channelClampMode = GetChannelClampMode(panelTitle)
 	Wave ampSettings      = GetAmplifierParamStorageWave(panelTitle)
 
-	activeHeadStages = 0
 	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
 
 		DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
@@ -268,8 +267,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		if(!IsFinite(DAC) || !IsFinite(ADC) || !IsFinite(channelClampMode[DAC][%DAC]) || !IsFinite(channelClampMode[ADC][%ADC]))
 			continue
 		endif
-
-		activeHeadStages += 1
 
 		// headStage channels not in current clamp mode
 		if(channelClampMode[DAC][%DAC] != I_CLAMP_MODE && channelClampMode[ADC][%ADC] != I_CLAMP_MODE)
@@ -289,18 +286,23 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 			maximumAutoBiasCurrent = DEFAULT_MAXAUTOBIASCURRENT
 		endif
 
+		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)
+
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
 
 		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
 		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
 
-		resistance = SSResistance[0][activeHeadStages - 1] * 1e6
-		setVoltage = BaselineSSAvg[0][activeHeadStages - 1] * 1e-3
+		activeADCol = TP_GetTPResultsColOfHS(panelTitle, headstage)
+		ASSERT(activeADCol >= 0, "Active Testpulse column is invalid")
 
-		DEBUGPRINT("resistance=", var=resistance)
-		DEBUGPRINT("setVoltage=", var=setVoltage)
-		DEBUGPRINT("targetVoltage=", var=targetVoltage)
+		resistance = SSResistance[0][activeADCol] * 1e6
+		setVoltage = BaselineSSAvg[0][activeADCol] * 1e-3
+
+		DEBUGPRINT("resistance[Ohm]=", var=resistance)
+		DEBUGPRINT("setVoltage[V]=", var=setVoltage)
+		DEBUGPRINT("targetVoltage[V]=", var=targetVoltage)
 
 		// if we are in the desired voltage region, check the next headstage
 		if(abs(targetVoltage - setVoltage) < targetVoltageTol)
@@ -310,16 +312,19 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		// neuron needs a current shot
 		// I = U / R
 		current = ( targetVoltage - setVoltage ) / resistance
-		DEBUGPRINT("current=", var=current)
+		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
 		current *= 0.15
 		
 		// check if holding is enabled. If it is not, ignore holding current value.
 		if(AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
-			actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN)
+			actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, usePrefixes=0)
+		else
+			actualCurrent = 0
 		endif
-		DEBUGPRINT("actualCurrent=", var=actualCurrent)
+
+		DEBUGPRINT("actualCurrent[A]=", var=actualCurrent)
 
 		if(!IsFinite(actualCurrent))
 			print "Queried amplifier current is non-finite"
@@ -333,7 +338,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 			continue
 		endif
 
-		DEBUGPRINT("current to send=", var=current)
+		DEBUGPRINT("current[A] to send=", var=current)
 		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnable", headStage, value=1)
 		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12)
 	endfor

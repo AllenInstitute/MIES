@@ -264,7 +264,7 @@ End
 /// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
 ///                         `mV` instead of `V`
 ///
-/// @returns return value or error condition. An error is indicated by a return value of NaN.
+/// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
 Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes])
 	string panelTitle
 	variable headStage, mode, func, value
@@ -559,6 +559,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 	endif
 
+	// return value is only relevant for the getters
 	return ret * scale
 End
 
@@ -668,7 +669,8 @@ End
 /// @param panelTitle       device
 /// @param ctrl             name of the amplifier control
 /// @param headStage        headstage of the desired amplifier
-/// @param value            [optional: defaults to the controls value] value to set
+/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
+///                         and there the description of `usePrefixes`.
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
 /// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
@@ -1395,8 +1397,8 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 	variable i, col
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
 	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
-		DFREF dfr = GetDeviceTestPulse(panelTitle)
-		WAVE/SDFR=dfr baselineSSAvg
+
+		WAVE baselineSSAvg = GetBaselineAverage(panelTitle)
 		if(!ParamIsDefault(headstage))
 			col = TP_GetTPResultsColOfHS(panelTitle, headstage)
 			if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
