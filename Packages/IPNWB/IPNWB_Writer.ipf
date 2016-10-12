@@ -503,7 +503,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		elseif(p.clampMode == I_EQUAL_ZERO_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;CurrentClampSeries;IZeroClampSeries"
 		else
-			ancestry = "TimeSeries;PatchClampSeries"
+			ancestry = "TimeSeries"
 		endif
 	elseif(p.channelType == CHANNEL_TYPE_DAC)
 		sprintf str, "electrode_%s", p.electrodeName
@@ -514,7 +514,7 @@ Function WriteSingleChannel(locationID, path, p, tsp, [chunkedLayout])
 		elseif(p.clampMode == I_CLAMP_MODE)
 			ancestry = "TimeSeries;PatchClampSeries;CurrentClampStimulusSeries"
 		else
-			ancestry = "TimeSeries;PatchClampSeries"
+			ancestry = "TimeSeries"
 		endif
 	else
 		ancestry = "TimeSeries"
