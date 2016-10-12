@@ -997,7 +997,7 @@ static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channel
 	endif
 
 	// headstage is not finite, so the channel is unassociated
-	sprintf ua_entry, "%s UNASSOC_%d", entry, channelNumber
+	ua_entry = CreateLBNUnassocKey(entry, channelNumber)
 
 	if(!ParamIsDefault(var))
 		colData = FindDimLabel(sweepDataLNB, COLS, ua_entry)
