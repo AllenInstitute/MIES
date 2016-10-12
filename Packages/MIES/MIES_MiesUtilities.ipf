@@ -1012,7 +1012,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					wvName = channelID + "_" + num2str(chan)
 				endif
 
-				configIdx = activeChanCount[i] + channelOffset
 				if(splitSweepMode)
 					WAVE/Z/SDFR=sweepDFR wv = $wvName
 					if(!WaveExists(wv))
@@ -1020,7 +1019,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 					idx = 0
 				else
-					idx = configIdx
+					idx = AFH_GetITCDataColumn(config, chan, channelTypes[i])
 					WAVE wv = sweepWave
 				endif
 
@@ -1116,6 +1115,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 					if(k == 0) // first column, add labels
 						if(hasPhysUnit)
+							// for removed channels their units are also removed from the
+							// config note, so we can just take total channel number here
+							configIdx = activeChanCount[i] + channelOffset
 							unit = StringFromList(configIdx, configNote)
 						else
 							unit = "a.u."
