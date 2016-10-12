@@ -3186,7 +3186,7 @@ static Function SetPressureWaveDimLabels(wv)
 	SetDimLabel COLS, 5 , DAC_Gain                 , wv
 	SetDimLabel COLS, 6 , ADC                      , wv
 	SetDimLabel COLS, 7 , ADC_Gain                 , wv
-	SetDimLabel COLS, 8 , TTL                      , wv
+	SetDimLabel COLS, 8 , TTL_A                    , wv
 	SetDimLabel COLS, 9 , PSI_air                  , wv
 	SetDimLabel COLS, 10, PSI_solution             , wv
 	SetDimLabel COLS, 11, PSI_slice                , wv
@@ -3209,28 +3209,29 @@ static Function SetPressureWaveDimLabels(wv)
 	/// slope values need to be used
 	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
 	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
-	SetDimLabel COLS, 24, PeakResistanceSlopeThreshold, wv
+	SetDimLabel COLS, 25, PeakResistanceSlopeThreshold, wv
 	// If the PeakResistance slope is greater than the PeakResistanceSlope
 	// thershold pressure method does not need to update i.e. the pressure is
 	// "good" as it is
-	SetDimLabel COLS, 25, TimeOfLastRSlopeCheck   , wv
-	SetDimLabel COLS, 26, LastPressureCommand     , wv
-	SetDimLabel COLS, 27, OngoingPessurePulse     , wv
-	SetDimLabel COLS, 28, LastVcom                , wv
-	SetDimLabel COLS, 29, ManSSPressure           , wv
-	SetDimLabel COLS, 30, ManPPPressure           , wv
-	SetDimLabel COLS, 31, ManPPDuration           , wv
-	SetDimLabel COLS, 32, LastPeakR               , wv
-	SetDimLabel COLS, 33, PeakR                   , wv
-	SetDimLabel COLS, 34, TimePeakRcheck          , wv
-	SetDimLabel COLS, 35, PosCalConst             , wv
-	SetDimLabel COLS, 36, NegCalConst             , wv
-	SetDimLabel COLS, 37, ApproachNear            , wv
-	SetDimLabel COLS, 38, SealAtm                 , wv
-	SetDimLabel COLS, 39, UserSelectedHeadStage   , wv
-	SetDimLabel COLS, 40, UserPressureOffset      , wv
-	SetDimLabel COLS, 41, UserPressureOffsetTotal , wv
-	SetDimLabel COLS, 42, UserPressureOffsetPeriod, wv
+	SetDimLabel COLS, 26, TimeOfLastRSlopeCheck   , wv
+	SetDimLabel COLS, 27, LastPressureCommand     , wv
+	SetDimLabel COLS, 28, OngoingPessurePulse     , wv
+	SetDimLabel COLS, 29, LastVcom                , wv
+	SetDimLabel COLS, 30, ManSSPressure           , wv
+	SetDimLabel COLS, 31, ManPPPressure           , wv
+	SetDimLabel COLS, 32, ManPPDuration           , wv
+	SetDimLabel COLS, 33, LastPeakR               , wv
+	SetDimLabel COLS, 34, PeakR                   , wv
+	SetDimLabel COLS, 35, TimePeakRcheck          , wv
+	SetDimLabel COLS, 36, PosCalConst             , wv
+	SetDimLabel COLS, 37, NegCalConst             , wv
+	SetDimLabel COLS, 38, ApproachNear            , wv
+	SetDimLabel COLS, 39, SealAtm                 , wv
+	SetDimLabel COLS, 40, UserSelectedHeadStage   , wv
+	SetDimLabel COLS, 41, UserPressureOffset      , wv
+	SetDimLabel COLS, 42, UserPressureOffsetTotal , wv
+	SetDimLabel COLS, 43, UserPressureOffsetPeriod, wv
+	SetDimLabel COLS, 44, TTL_B                   , wv
 
 	SetDimLabel ROWS, 0, Headstage_0, wv
 	SetDimLabel ROWS, 1, Headstage_1, wv
@@ -3295,18 +3296,17 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(8, 43) wv
-
+		Redimension/N=(8, 45) wv
 		SetPressureWaveDimLabels(wv)
 	else
-		Make/N=(8, 43) dfr:PressureData/Wave=wv
+		Make/N=(8, 45) dfr:PressureData/Wave=wv
 
 		SetPressureWaveDimLabels(wv)
 
@@ -3318,7 +3318,8 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		wv[][%DAC_List_Index]            = 0
 		wv[][%DAC]                       = 0
 		wv[][%ADC]                       = 0
-		wv[][%TTL]                       = 0
+		wv[][%TTL_A]                     = 0
+		wv[][%TTL_B]                     = 0
 		wv[][%ApproachNear]              = 0
 		wv[][%SealAtm]                   = 0
 		wv[][%ManSSPressure]             = 0
@@ -4030,16 +4031,16 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 		wv = Nan
 	endif
 
-	SetDimLabel COLS, 0, HSState, wv
-	SetDimLabel COLS, 1, HSMode, wv
-	SetDimLabel COLS, 2, DAState, wv
-	SetDimLabel COLS, 3, DAGain, wv
-	SetDimLabel COLS, 4, DAScale, wv
-	SetDimLabel COLS, 5, DAStartIndex, wv
-	SetDimLabel COLS, 6, DAEndIndex, wv
-	SetDimLabel COLS, 7, ADState, wv
-	SetDimLabel COLS, 8, ADGain, wv
-	SetDimLabel COLS, 9, TTLState, wv
+	SetDimLabel COLS,  0, HSState, wv
+	SetDimLabel COLS,  1, HSMode, wv
+	SetDimLabel COLS,  2, DAState, wv
+	SetDimLabel COLS,  3, DAGain, wv
+	SetDimLabel COLS,  4, DAScale, wv
+	SetDimLabel COLS,  5, DAStartIndex, wv
+	SetDimLabel COLS,  6, DAEndIndex, wv
+	SetDimLabel COLS,  7, ADState, wv
+	SetDimLabel COLS,  8, ADGain, wv
+	SetDimLabel COLS,  9, TTLState, wv
 	SetDimLabel COLS, 10, TTLStartIndex, wv
 	SetDimLabel COLS, 11, TTLEndIndex, wv
 	SetDimLabel COLS, 12, AsyncState, wv
@@ -4296,4 +4297,44 @@ Function/WAVE GetCellElectrodeNames(panelTitle)
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
+End
+
+/// @brief Returns a 1D wave with the same number of rows as headstages used to store the pressure type (See: P_GetPressureType(panelTitle)).
+/// pressure types are: Atm(-1), Automated(0), Manual(1), User(2)
+///
+/// ROWS:
+/// - One row for each headstage
+Function/WAVE GetPressureTypeWv(panelTitle)
+	string panelTitle
+
+	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = pressureType
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
+
+	return wv
+End
+
+/// old wave needs to copied and deleted prior to creating new wave
+/// only for 2-D waves
+Function MoveDataToNewWaveCols(oldWaveCopy, newWave)
+	WAVE oldWaveCopy, newWave
+	
+	ASSERT(dimsize(oldWaveCopy,0) == dimsize(newWave,0), "Waves must have the same number of rows")
+	variable Columns = dimsize(oldWaveCopy, 1)
+	variable i
+	string colDimLabel
+	variable colNum
+	for(i = 0; i < Columns; i += 1)
+	colDimLabel = getDimLabel(oldWaveCopy, COLS, i)
+	colNum = findDimLabel(newWave, COLS, colDimLabel)
+	if(colNum >= 0)
+		newWave[][colNum] = oldWaveCopy[p][i]
+	endif
+	endfor
 End

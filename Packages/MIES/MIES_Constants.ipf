@@ -423,7 +423,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION = 10
+Constant DA_EPHYS_PANEL_VERSION = 11
 
 /// Version of the labnotebooks (numerical and textual)
 ///

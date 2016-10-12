@@ -208,15 +208,30 @@ Function ChangeControlValueColors(win, controlList, R, G, B)
 End
 
 /// @brief Changes the background color of a control
-Function ChangeControlBckgColor(win, controlName, R, G, B)
+///
+/// @param win         panel
+/// @param controlName GUI control name
+/// @param R           red
+/// @param G           green
+/// @param B           blue
+/// @param Alpha defaults to opaque if not provided
+Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 	string win, controlName
-	variable R, G, B
+	variable R, G, B, Alpha
 	
+	if(paramIsDefault(Alpha))
+		Alpha = 1
+	Endif
+	ASSERT(Alpha > 0 && Alpha <= 1, "Alpha must be between 0 and 1")
+	Alpha *= 65535
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")	
-	
-	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B)
 
+#if (IgorVersion() >= 7.0)
+	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B,Alpha)
+#else	
+	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B)
+#endif
 End
 
 /// @brief Change the background color of a list of controls
