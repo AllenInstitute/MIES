@@ -720,37 +720,6 @@ Function/S BuildDeviceString(deviceType, deviceNumber)
 	return deviceType + "_Dev_" + deviceNumber
 End
 
-static Function RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
-	WAVE/Z channelSelWave
-	WAVE ADCs, DACs
-	string &configNote
-
-	variable numADCs, numDACs, i
-
-	if(!WaveExists(channelSelWave))
-		return NaN
-	endif
-
-	numADCs = DimSize(ADCs, ROWS)
-	numDACs = DimSize(DACs, ROWS)
-
-	// start at the end of the config wave
-	// we always have the order DA/AD/TTLs
-	for(i = numADCs - 1; i >= 0; i -= 1)
-		if(!channelSelWave[ADCs[i]][%AD])
-			DeletePoints/M=(ROWS) i, 1, ADCs
-			configNote = RemoveListItem(numDACs + i, configNote)
-		endif
-	endfor
-
-	for(i = numDACs - 1; i >= 0; i -= 1)
-		if(!channelSelWave[DACs[i]][%DA])
-			DeletePoints/M=(ROWS) i, 1, DACs
-			configNote = RemoveListItem(i, configNote)
-		endif
-	endfor
-End
-
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
@@ -803,7 +772,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCsOriginal = DimSize(ADCs, ROWS)
 	numTTLsOriginal = DimSize(TTLs, ROWS)
 
-	RemoveDisabledChannels(channelSelWave, ADCs, DACs, configNote)
+	RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo, configNote)
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
@@ -3095,4 +3064,172 @@ Function/S CreateLBNUnassocKey(setting, channelNumber)
 	sprintf key, "%s UNASSOC_%d", setting, channelNumber
 
 	return key
+End
+
+/// @brief Parse a control name for the "Channel Selection Panel" and return
+///        its channel type and number.
+Function ParseChannelSelectionControl(ctrl, channelType, channelNum)
+	string ctrl
+	string &channelType
+	variable &channelNum
+
+	sscanf ctrl, "check_channelSel_%[^_]_%d", channelType, channelNum
+	ASSERT(V_flag == 2, "Unexpected control name format")
+End
+
+/// @brief Set the channel selection dialog controls according to the channel
+///        selection wave
+Function ChannelSelectionWaveToGUI(panel, channelSel)
+	string panel
+	WAVE channelSel
+
+	string list, channelType, ctrl
+	variable channelNum, numEntries, i
+
+	list = ControlNameList(panel, ";", "check_channelSel_*")
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+		ParseChannelSelectionControl(ctrl, channelType, channelNum)
+		SetCheckBoxState(panel, ctrl, channelSel[channelNum][%$channelType])
+	endfor
+End
+
+/// @brief Open/Close the channel selection dialog
+///
+/// @param win          panel/graph
+/// @param channelSel   channelSelectionWave as returned by GetChannelSelectionWave()
+/// @param checkBoxProc checkbox GUI control procedure name
+Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
+	string win
+	WAVE channelSel
+	string checkBoxProc
+
+	string extPanel = GetMainWindow(win) + "#channelSel"
+
+	if(windowExists(extPanel))
+		KillWindow $extPanel
+		return NaN
+	endif
+
+	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=channelSel  as " "
+
+	GroupBox group_channelSel_DA,pos={52.00,3.00},size={44.00,199.00},title="DA"
+	CheckBox check_channelSel_DA_0,pos={62.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
+	CheckBox check_channelSel_DA_0,value= 1
+	CheckBox check_channelSel_DA_1,pos={62.00,40.00},size={21.00,15.00},proc=$checkBoxProc,title="1"
+	CheckBox check_channelSel_DA_1,value= 1
+	CheckBox check_channelSel_DA_2,pos={62.00,61.00},size={21.00,15.00},proc=$checkBoxProc,title="2"
+	CheckBox check_channelSel_DA_2,value= 1
+	CheckBox check_channelSel_DA_3,pos={62.00,82.00},size={21.00,15.00},proc=$checkBoxProc,title="3"
+	CheckBox check_channelSel_DA_3,value= 1
+	CheckBox check_channelSel_DA_4,pos={62.00,103.00},size={21.00,15.00},proc=$checkBoxProc,title="4"
+	CheckBox check_channelSel_DA_4,value= 1
+	CheckBox check_channelSel_DA_5,pos={62.00,124.00},size={21.00,15.00},proc=$checkBoxProc,title="5"
+	CheckBox check_channelSel_DA_5,value= 1
+	CheckBox check_channelSel_DA_6,pos={62.00,145.00},size={21.00,15.00},proc=$checkBoxProc,title="6"
+	CheckBox check_channelSel_DA_6,value= 1
+	CheckBox check_channelSel_DA_7,pos={62.00,166.00},size={21.00,15.00},proc=$checkBoxProc,title="7"
+	CheckBox check_channelSel_DA_7,value= 1
+
+	GroupBox group_channelSel_HEADSTAGE,pos={3.00,3.00},size={44.00,199.00},title="HS"
+	CheckBox check_channelSel_HEADSTAGE_0,pos={13.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
+	CheckBox check_channelSel_HEADSTAGE_0,value= 1
+	CheckBox check_channelSel_HEADSTAGE_1,pos={13.00,40.00},size={21.00,15.00},proc=$checkBoxProc,title="1"
+	CheckBox check_channelSel_HEADSTAGE_1,value= 1
+	CheckBox check_channelSel_HEADSTAGE_2,pos={13.00,61.00},size={21.00,15.00},proc=$checkBoxProc,title="2"
+	CheckBox check_channelSel_HEADSTAGE_2,value= 1
+	CheckBox check_channelSel_HEADSTAGE_3,pos={13.00,82.00},size={21.00,15.00},proc=$checkBoxProc,title="3"
+	CheckBox check_channelSel_HEADSTAGE_3,value= 1
+	CheckBox check_channelSel_HEADSTAGE_4,pos={13.00,103.00},size={21.00,15.00},proc=$checkBoxProc,title="4"
+	CheckBox check_channelSel_HEADSTAGE_4,value= 1
+	CheckBox check_channelSel_HEADSTAGE_5,pos={13.00,124.00},size={21.00,15.00},proc=$checkBoxProc,title="5"
+	CheckBox check_channelSel_HEADSTAGE_5,value= 1
+	CheckBox check_channelSel_HEADSTAGE_6,pos={13.00,145.00},size={21.00,15.00},proc=$checkBoxProc,title="6"
+	CheckBox check_channelSel_HEADSTAGE_6,value= 1
+	CheckBox check_channelSel_HEADSTAGE_7,pos={13.00,166.00},size={21.00,15.00},proc=$checkBoxProc,title="7"
+	CheckBox check_channelSel_HEADSTAGE_7,value= 1
+
+	GroupBox group_channelSel_AD,pos={100.00,3.00},size={45.00,360.00},title="AD"
+	CheckBox check_channelSel_AD_0,pos={108.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
+	CheckBox check_channelSel_AD_0,value= 1
+	CheckBox check_channelSel_AD_1,pos={108.00,40.00},size={21.00,15.00},proc=$checkBoxProc,title="1"
+	CheckBox check_channelSel_AD_1,value= 1
+	CheckBox check_channelSel_AD_2,pos={108.00,61.00},size={21.00,15.00},proc=$checkBoxProc,title="2"
+	CheckBox check_channelSel_AD_2,value= 1
+	CheckBox check_channelSel_AD_3,pos={108.00,82.00},size={21.00,15.00},proc=$checkBoxProc,title="3"
+	CheckBox check_channelSel_AD_3,value= 1
+	CheckBox check_channelSel_AD_4,pos={108.00,103.00},size={21.00,15.00},proc=$checkBoxProc,title="4"
+	CheckBox check_channelSel_AD_4,value= 1
+	CheckBox check_channelSel_AD_5,pos={108.00,124.00},size={21.00,15.00},proc=$checkBoxProc,title="5"
+	CheckBox check_channelSel_AD_5,value= 1
+	CheckBox check_channelSel_AD_6,pos={108.00,145.00},size={21.00,15.00},proc=$checkBoxProc,title="6"
+	CheckBox check_channelSel_AD_6,value= 1
+	CheckBox check_channelSel_AD_7,pos={108.00,166.00},size={21.00,15.00},proc=$checkBoxProc,title="7"
+	CheckBox check_channelSel_AD_7,value= 1
+	CheckBox check_channelSel_AD_8,pos={108.00,188.00},size={21.00,15.00},proc=$checkBoxProc,title="8"
+	CheckBox check_channelSel_AD_8,value= 1
+	CheckBox check_channelSel_AD_9,pos={108.00,209.00},size={21.00,15.00},proc=$checkBoxProc,title="9"
+	CheckBox check_channelSel_AD_9,value= 1
+	CheckBox check_channelSel_AD_10,pos={108.00,230.00},size={27.00,15.00},proc=$checkBoxProc,title="10"
+	CheckBox check_channelSel_AD_10,value= 1
+	CheckBox check_channelSel_AD_11,pos={108.00,251.00},size={27.00,15.00},proc=$checkBoxProc,title="11"
+	CheckBox check_channelSel_AD_11,value= 1
+	CheckBox check_channelSel_AD_12,pos={108.00,272.00},size={27.00,15.00},proc=$checkBoxProc,title="12"
+	CheckBox check_channelSel_AD_12,value= 1
+	CheckBox check_channelSel_AD_13,pos={108.00,293.00},size={27.00,15.00},proc=$checkBoxProc,title="13"
+	CheckBox check_channelSel_AD_13,value= 1
+	CheckBox check_channelSel_AD_14,pos={108.00,314.00},size={27.00,15.00},proc=$checkBoxProc,title="14"
+	CheckBox check_channelSel_AD_14,value= 1
+	CheckBox check_channelSel_AD_15,pos={108.00,336.00},size={27.00,15.00},proc=$checkBoxProc,title="15"
+	CheckBox check_channelSel_AD_15,value= 1
+
+	ChannelSelectionWaveToGUI(extPanel, channelSel)
+End
+
+/// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
+Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo, configNote)
+	WAVE/Z channelSel
+	WAVE ADCs, DACs, numericalValues
+	variable sweepNo
+	string &configNote
+
+	variable numADCs, numDACs, i
+
+	if(!WaveExists(channelSel) || (WaveMin(channelSel) == 1 && WaveMax(channelSel) == 1))
+		return NaN
+	endif
+
+	Duplicate/O/FREE channelSel, channelSelMod
+
+	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
+
+	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
+	WAVE/Z statusHS  = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+
+	// disable the AD/DA channels not wanted by the headstage setting first
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!channelSelMod[i][%HEADSTAGE] && statusHS[i])
+			channelSelMod[statusADC[i]][%AD] = 0
+			channelSelMod[statusDAC[i]][%DA] = 0
+		endif
+	endfor
+
+	// start at the end of the config wave
+	// we always have the order DA/AD/TTLs
+	for(i = numADCs - 1; i >= 0; i -= 1)
+		if(!channelSelMod[ADCs[i]][%AD])
+			DeletePoints/M=(ROWS) i, 1, ADCs
+			configNote = RemoveListItem(numDACs + i, configNote)
+		endif
+	endfor
+
+	for(i = numDACs - 1; i >= 0; i -= 1)
+		if(!channelSelMod[DACs[i]][%DA])
+			DeletePoints/M=(ROWS) i, 1, DACs
+			configNote = RemoveListItem(i, configNote)
+		endif
+	endfor
 End
