@@ -632,6 +632,10 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 
 	IPNWB#InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
 
+	if(strlen(tsp.missing_fields) > 0)
+		ASSERT(IsFinite(p.electrodeNumber), "Expected finite electrode number with non empty \"missing_fields\"")
+	endif
+
 	if(p.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
 		if(p.clampMode == V_CLAMP_MODE)
 			// VoltageClampSeries: datasets
