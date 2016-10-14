@@ -7,37 +7,45 @@
 /// @name Constants used by pressure control
 /// @anchor PRESSURE_CONSTANTS
 /// @{
-static StrConstant  PRESSURE_CONTROLS_BUTTON_LIST  = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
-static StrConstant  PRESSURE_CONTROL_TITLE_LIST    = "Approach;Seal;Break In;Clear;Apply"
-static StrConstant  PRESSURE_CONTROL_CHECKBOX_LIST = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
-static StrConstant  PRESSURE_CONTROL_PRESSURE_DISP = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
-static StrConstant  PRESSURE_CONTROL_LED_DASHBOARD = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"
-static Constant     P_METHOD_neg1_ATM              = -1
-static Constant     P_METHOD_0_APPROACH            = 0
-static Constant     P_METHOD_1_SEAL                = 1
-static Constant     P_METHOD_2_BREAKIN             = 2
-static Constant     P_METHOD_3_CLEAR               = 3
-static Constant     P_METHOD_4_MANUAL              = 4
-static Constant     NEG_PRESSURE_PULSE_INCREMENT   = 0.2 // psi
-static Constant     POS_PRESSURE_PULSE_INCREMENT   = 0.1 // psi
-static Constant     PRESSURE_PULSE_ENDpt           = 70000
-static Constant     PRESSURE_TTL_HIGH_START        = 20000
-static Constant     GIGA_SEAL                      = 1000
-static Constant     PRESSURE_OFFSET                = 5
-static Constant     MIN_NEG_PRESSURE_PULSE         = -2
-static Constant     MAX_POS_PRESSURE_PULSE         = 0.1
-static Constant     MAX_REGULATOR_PRESSURE         = 10
-static Constant     MIN_REGULATOR_PRESSURE         = -10
-static Constant     ATMOSPHERIC_PRESSURE           = 0
-static Constant     PRESSURE_CHANGE                = 1
-static Constant     P_NEGATIVE_PULSE               = 0x0
-static Constant     P_POSITIVE_PULSE               = 0x1
-static Constant     P_MANUAL_PULSE                 = 0x2
-static Constant     SEAL_POTENTIAL                 = -70 // mV
-static Constant     SEAL_RESISTANCE_THRESHOLD      = 100 // Mohm
-static Constant     ACCESS_ATM                     = 0 // Access constants are used to set TTL valve configuration
-static Constant     ACCESS_REGULATOR               = 1
-static Constant     ACCESS_USER                    = 2
+static StrConstant  PRESSURE_CONTROLS_BUTTON_LIST   = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
+static StrConstant  PRESSURE_CONTROL_TITLE_LIST     = "Approach;Seal;Break In;Clear;Apply"
+static StrConstant  PRESSURE_CONTROL_CHECKBOX_LIST  = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
+static StrConstant  PRESSURE_CONTROL_PRESSURE_DISP  = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
+static StrConstant  PRESSURE_CONTROL_LED_DASHBOARD  = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"
+static StrConstant  PRESSURE_CONTROL_LED_MODE_USER  = "valdisp_DataAcq_P_LED_Approach;valdisp_DataAcq_P_LED_Seal;valdisp_DataAcq_P_LED_BreakIn;valdisp_DataAcq_P_LED_Clear"
+static StrConstant  PRESSURE_CONTROL_USER_CHECBOXES = "check_Settings_UserP_Approach;check_Settings_UserP_Seal;check_Settings_UserP_BreakIn;check_Settings_UserP_Clear"
+static StrConstant  LOW_COLOR_HILITE                = "65535;65535;65535"
+static StrConstant  ZERO_COLOR_HILITE               = "52428;52425;1"
+static StrConstant  HIGH_COLOR_HILITE               = "52428;1;1"
+static StrConstant  LOW_COLOR                       = "65535;65535;65535"
+static StrConstant  ZERO_COLOR                      = "65535;65533;32768"
+static StrConstant  HIGH_COLOR                      = "65535;0;0"
+static Constant     P_METHOD_neg1_ATM               = -1
+static Constant     P_METHOD_0_APPROACH             = 0
+static Constant     P_METHOD_1_SEAL                 = 1
+static Constant     P_METHOD_2_BREAKIN              = 2
+static Constant     P_METHOD_3_CLEAR                = 3
+static Constant     P_METHOD_4_MANUAL               = 4
+static Constant     NEG_PRESSURE_PULSE_INCREMENT    = 0.2 // psi
+static Constant     POS_PRESSURE_PULSE_INCREMENT    = 0.1 // psi
+static Constant     PRESSURE_PULSE_ENDpt            = 70000
+static Constant     PRESSURE_TTL_HIGH_START         = 20000
+static Constant     GIGA_SEAL                       = 1000
+static Constant     PRESSURE_OFFSET                 = 5
+static Constant     MIN_NEG_PRESSURE_PULSE          = -2
+static Constant     MAX_POS_PRESSURE_PULSE          = 0.1
+static Constant     MAX_REGULATOR_PRESSURE          = 10
+static Constant     MIN_REGULATOR_PRESSURE          = -10
+static Constant     ATMOSPHERIC_PRESSURE            = 0
+static Constant     PRESSURE_CHANGE                 = 1
+static Constant     P_NEGATIVE_PULSE                = 0x0
+static Constant     P_POSITIVE_PULSE                = 0x1
+static Constant     P_MANUAL_PULSE                  = 0x2
+static Constant     SEAL_POTENTIAL                  = -70 // mV
+static Constant     SEAL_RESISTANCE_THRESHOLD       = 100 // Mohm
+static Constant     ACCESS_ATM                      = 0 // Access constants are used to set TTL valve configuration
+static Constant     ACCESS_REGULATOR                = 1
+static Constant     ACCESS_USER                     = 2
 /// @}
 
 /// @brief Filled by P_GetPressureForDA()
@@ -98,7 +106,7 @@ Function P_PressureControl(panelTitle)
 					break
 			endswitch
 		endif
-		P_GetPressureType(panelTitle)
+
 		P_UpdateTPStorage(panelTitle, headStage)
 	endfor
 End
@@ -255,8 +263,8 @@ static Function P_MethodSeal(panelTitle, headStage)
 				endif
 				PressureDataWv[headStage][%TimeOfLastRSlopeCheck] = ticks
 			endif
-			P_ApplyNegV(panelTitle, headStage) // apply negative voltage
 		endif
+		P_ApplyNegV(panelTitle, headStage) // apply negative voltage
 	endif
 End
 
@@ -1482,6 +1490,8 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				endif
 			endif
 		endif
+		P_GetPressureType(panelTitle)
+		P_PressureDisplayHighlite(panelTitle, 1)
 	endif
 
 	if(checkAll)
@@ -1533,6 +1543,7 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 			endfor
 		endif
 	endif
+	P_GetPressureType(panelTitle)
 End
 
 Function P_SetPressureOffset(panelTitle, headstage, userOffset)
@@ -1642,8 +1653,7 @@ Function P_LoadPressureButtonState(panelTitle)
 		SetPressureButtonsToBaseState(panelTitle)
 	endif
 
-	P_PressureDisplayUnhighlite(panelTitle) // remove highlite from val displays that show pressure for each headStage
-	P_PressureDisplayHighlite(panelTitle, headStageNo) // highlites specific headStage
+	P_PressureDisplayHighlite(panelTitle, 1) // highlites specific headStage
 End
 
 /// @brief Sets the pressure toggle buttons to disabled, default color, default title
@@ -1824,22 +1834,35 @@ static Function P_ResetAll_P_ButtonsToBaseState(panelTitle)
 	endfor
 End
 
-/// @brief Highlite pressure display
-static Function P_PressureDisplayHighlite(panelTitle, headStageNo)
+Function P_PressureDisplayHighlite(panelTitle, hilite)
 	string panelTitle
-	variable headStageNo
+	variable hilite
 
-	string ControlName
-	sprintf ControlName, "valdisp_DataAcq_P_%d" headStageNo
-	ChangeControlValueColor(panelTitle, controlName, 65535, 65535, 65535) // black
-	SetControlBckgColor(panelTitle, controlName, 0, 0, 0) // white
-End
+	string Zero, Low, High
+	if(hilite)
+		Zero = ZERO_COLOR_HILITE
+		Low = LOW_COLOR_HILITE
+		high = HIGH_COLOR_HILITE
+	else
+		Zero = ZERO_COLOR
+		Low = LOW_COLOR
+		high = HIGH_COLOR	
+	endif
+	
+	wave PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	variable Rz = str2num(stringFromList(0,Zero))
+	variable Gz = str2num(stringFromList(1,Zero))
+	variable Bz = str2num(stringFromList(2,Zero))
+	variable Rl = str2num(stringFromList(0,Low))
+	variable Gl = str2num(stringFromList(1,Low))
+	variable Bl = str2num(stringFromList(2,Low))
+	variable Rh = str2num(stringFromList(0,High))
+	variable Gh = str2num(stringFromList(1,High))
+	variable Bh = str2num(stringFromList(2,High))	
 
-/// @brief unHighlites pressure display
-static Function P_PressureDisplayUnhighlite(panelTitle)
-	string panelTitle
-	ChangeControlValueColors(panelTitle, PRESSURE_CONTROL_PRESSURE_DISP, 0, 0, 0) // white
-	ChangeControlBckgColors(panelTitle, PRESSURE_CONTROL_PRESSURE_DISP,65535, 65535, 65535) // black
+	string controlName
+	sprintf controlName, "valdisp_DataAcq_P_LED_%d" pressureDataWv[0][%userSelectedHeadStage]
+	ValDisplay $controlName zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh)
 End
 
 /// @brief Enables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
@@ -2217,6 +2240,8 @@ End
 Function P_RunP_ControlIfTPOFF(panelTitle)
 	string panelTitle
 
+	variable headStageNo = P_GetPressureDataWaveRef(panelTitle)[0][%userSelectedHeadstage]
+
 	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(panelTitle)
 	endif
@@ -2240,13 +2265,24 @@ Function P_SetLEDValueAssoc(panelTitle)
 	string panelTitle
 
 	WAVE pressureType = GetPressureTypeWv(panelTitle)
-	String pressureTypeStringPath = GetWavesDataFolder(PressureType, 2)
-	String pathAndCell, controlName
-	variable i
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
-	for(i=0; i<NUM_HEADSTAGES;i+=1)
-		sprintf pathAndCell, "%s[%d]" pressureTypeStringPath, i
+	String stringPath = GetWavesDataFolder(PressureType, 2)
+	String pathAndCell, controlName
+	variable i, col
+
+	for(i = 0; i < NUM_HEADSTAGES;i += 1)
+		sprintf pathAndCell, "%s[%d]" stringPath, i
 		controlName = stringfromlist(i, PRESSURE_CONTROL_LED_DASHBOARD)
+		SetValDisplaySingleVariable(panelTitle, controlName, NaN, format=pathAndCell)
+	endfor
+	
+	stringPath = GetWavesDataFolder(GuiState, 2)
+	for(i = 0; i < 4; i += 1)
+		controlName = stringFromList(i,PRESSURE_CONTROL_USER_CHECBOXES)
+		col = FindDimlabel(GuiState, COLS, controlName)
+		sprintf pathAndCell, "%s[0][%d]" stringPath, col
+		controlName = stringFromList(i,PRESSURE_CONTROL_LED_MODE_USER)
 		SetValDisplaySingleVariable(panelTitle, controlName, NaN, format=pathAndCell)
 	endfor
 End
