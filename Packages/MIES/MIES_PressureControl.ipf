@@ -2193,6 +2193,7 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			DAP_AbortIfUnlocked(cba.win)
 			P_UpdatePressureDataStorageWv(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
 			break
@@ -2206,6 +2207,7 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			DAP_AbortIfUnlocked(cba.win)
 			P_UpdatePressureDataStorageWv(cba.win)
 			break
 	endswitch
