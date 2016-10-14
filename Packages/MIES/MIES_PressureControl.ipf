@@ -594,7 +594,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	channel  = pressureDataWv[headStage][%DAC]
 	scale    = pressureDataWv[headStage][%DAC_Gain]
 	// psi offset: 0V = -10 psi, 5V = 0 psi, 10V = 10 psi
-
+	SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP), psi, format = "%2.2f")
 	if(psi && isFinite(PressureDataWv[headStage][%PosCalConst]))
 		psi += PressureDataWv[headStage][%PosCalConst]
 	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
@@ -606,8 +606,6 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_WriteDAC(hwType, deviceID, channel, psi / scale + PRESSURE_OFFSET)
-
-	SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP), psi, format = "%2.2f")
 
 	return psi
 End
@@ -2247,9 +2245,9 @@ Function P_SetLEDValueAssoc(panelTitle)
 	variable i
 
 	for(i=0; i<NUM_HEADSTAGES;i+=1)
-		sprintf PathAndCell, "%s[%d]" PressureTypeStringPath, i
+		sprintf pathAndCell, "%s[%d]" pressureTypeStringPath, i
 		controlName = stringfromlist(i, PRESSURE_CONTROL_LED_DASHBOARD)
-		SetValDisplaySingleVariable(panelTitle, controlName, NaN, format=PathAndCell)
+		SetValDisplaySingleVariable(panelTitle, controlName, NaN, format=pathAndCell)
 	endfor
 End
 
@@ -2262,13 +2260,14 @@ Function P_GetPressureType(panelTitle)
 	WAVE pressureType = GetPressureTypeWv(panelTitle)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	// Encode atm pressure mode (keep all -1)
-	pressureType[] = pressureDataWv[p][0] == P_METHOD_neg1_ATM ? P_METHOD_neg1_ATM : PressureType[p]
+	pressureType[] = pressureDataWv[p][0] == P_METHOD_neg1_ATM ? P_METHOD_neg1_ATM : pressureType[p]
 	// Encode automated pressure modes (change 0,1,2,3 to 0)
-	pressureType[] = pressureDataWv[p][0] >= P_METHOD_0_APPROACH && pressureDataWv[p][0] <= P_METHOD_3_CLEAR ? 0 : PressureType[p]
+	pressureType[] = pressureDataWv[p][0] >= P_METHOD_0_APPROACH && pressureDataWv[p][0] <= P_METHOD_3_CLEAR ? 0 : pressureType[p]
 	//	Encode manual pressure mode (change 4 to 1)
-	pressureType[] = pressureDataWv[p][0] == P_METHOD_4_MANUAL ? 1 : PressureType[p]
+	pressureType[] = pressureDataWv[p][0] == P_METHOD_4_MANUAL ? 1 : pressureType[p]
 	// Encode user access (if there is user access on the user selected headstage encode as 2)
-	pressureType[PressureDataWv[0][%UserSelectedHeadStage]] = P_GetUserAccess(panelTitle, PressureDataWv[0][%UserSelectedHeadStage], pressureDataWv[PressureDataWv[0][%UserSelectedHeadStage]][0]) == ACCESS_USER ? 2 : PressureType[PressureDataWv[0][%UserSelectedHeadStage]]
+	// ToDo: Add line continuation character when we migrate to IP7
+	pressureType[pressureDataWv[0][%userSelectedHeadStage]] = P_GetUserAccess(panelTitle, pressureDataWv[0][%userSelectedHeadStage], pressureDataWv[PressureDataWv[0][%userSelectedHeadStage]][0]) == ACCESS_USER ? 2 : PressureType[PressureDataWv[0][%UserSelectedHeadStage]]
 	// Encode headstages without valid pressure settings
-	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? PressureType[p] : NaN
+	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? pressureType[p] : NaN
 End
