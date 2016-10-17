@@ -4556,7 +4556,7 @@ End
 Function DAP_UpdateITCSampIntDisplay(panelTitle)
 	string panelTitle
 
-	SetValDisplaySingleVariable(panelTitle, "ValDisp_DataAcq_SamplingInt", DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
+	SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
 End
 
 /// @brief Return the ITC sampling interval with taking the mode and
@@ -4598,9 +4598,9 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 		numSetRepeats = 1
 	endif
 
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", numSetRepeats)
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsInSet", numSetRepeats)
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", IDX_MaxNoOfSweeps(panelTitle, 1))
+	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=numSetRepeats)
+	SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsInSet", var=numSetRepeats)
+	SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=IDX_MaxNoOfSweeps(panelTitle, 1))
 End
 
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
@@ -6264,7 +6264,7 @@ Function DAP_UpdateOnsetDelay(panelTitle)
 		testPulseDurWithBL = 0
 	endif
 
-	SetValDisplaySingleVariable(paneltitle, "valdisp_DataAcq_OnsetDelayAuto", testPulseDurWithBL)
+	SetValDisplay(paneltitle, "valdisp_DataAcq_OnsetDelayAuto", var=testPulseDurWithBL)
 End
 
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl

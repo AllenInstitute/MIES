@@ -194,7 +194,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_VALDISPLAY:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetValDisplaySingleVariable(win, control, val)
+			SetValDisplay(win, control, var=val)
 			// Value displays don't have control procedures
 			break
 		case CONTROL_TYPE_SLIDER:

@@ -602,7 +602,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	channel  = pressureDataWv[headStage][%DAC]
 	scale    = pressureDataWv[headStage][%DAC_Gain]
 	// psi offset: 0V = -10 psi, 5V = 0 psi, 10V = 10 psi
-	SetValDisplaySingleVariable(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP), psi, format = "%2.2f")
+	SetValDisplay(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP), var=psi, format = "%2.2f")
 	if(psi && isFinite(PressureDataWv[headStage][%PosCalConst]))
 		psi += PressureDataWv[headStage][%PosCalConst]
 	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
@@ -2283,7 +2283,7 @@ Function P_SetLEDValueAssoc(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES;i += 1)
 		sprintf pathAndCell, "%s[%d]" stringPath, i
 		controlName = stringfromlist(i, PRESSURE_CONTROL_LED_DASHBOARD)
-		SetValDisplaySingleVariable(panelTitle, controlName, NaN, format=pathAndCell)
+		SetValDisplay(panelTitle, controlName, str=pathAndCell)
 	endfor
 	
 	stringPath = GetWavesDataFolder(GuiState, 2)
@@ -2292,7 +2292,7 @@ Function P_SetLEDValueAssoc(panelTitle)
 		col = FindDimlabel(GuiState, COLS, controlName)
 		sprintf pathAndCell, "%s[0][%d]" stringPath, col
 		controlName = stringFromList(i,PRESSURE_CONTROL_LED_MODE_USER)
-		SetValDisplaySingleVariable(panelTitle, controlName, NaN, format=pathAndCell)
+		SetValDisplay(panelTitle, controlName, str=pathAndCell)
 	endfor
 End
 

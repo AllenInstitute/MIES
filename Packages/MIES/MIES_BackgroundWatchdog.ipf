@@ -92,7 +92,7 @@ Function BW_InvalidateValDisplays()
 
 	for(i = 0; i < numControls; i += 1)
 		ctrl = StringFromList(i, list)
-		SetValDisplaySingleVariable(PANEL, ctrl, INVALIDATE_STATE)
+		SetValDisplay(PANEL, ctrl, var=INVALIDATE_STATE)
 	endfor
 End
 
@@ -121,7 +121,7 @@ Function BW_BackgroundWatchdog(s)
 		bkg  = ctrl[strlen(CONTROL_PREFIX), Inf]
 
 		state = IsBackgroundTaskRunning(bkg)
-		SetValDisplaySingleVariable(PANEL, ctrl, state)
+		SetValDisplay(PANEL, ctrl, var=state)
 	endfor
 
 	return 0

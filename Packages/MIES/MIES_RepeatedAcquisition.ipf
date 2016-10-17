@@ -123,7 +123,7 @@ Function RA_Start(panelTitle)
 		return RA_FinishAcquisition(panelTitle)
 	endif
 
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 	RA_HandleITI(panelTitle)
 End
 
@@ -149,7 +149,7 @@ Function RA_Counter(panelTitle)
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 
 	if(indexing)
 		if(activeSetcount == 0)
@@ -157,7 +157,7 @@ Function RA_Counter(panelTitle)
 				IDX_IndexingDoIt(panelTitle)
 			endif
 
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+			SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		endif
 
@@ -226,14 +226,14 @@ static Function RA_StartMD(panelTitle)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
 			totTrials = max(totTrials, RA_GetTotalNumberOfTrials(followerPanelTitle))
-			SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+			SetValDisplay(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 
 			NVAR followerCount = $GetCount(followerPanelTitle)
 			followerCount = 0
 		endfor
 	endif
 
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 	RA_HandleITI_MD(panelTitle)
 End
 
@@ -257,7 +257,7 @@ Function RA_CounterMD(panelTitle)
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 
 	recalcActiveSetCount = (activeSetCount == 0)
 
@@ -268,7 +268,7 @@ Function RA_CounterMD(panelTitle)
 				IDX_IndexingDoIt(panelTitle)
 			endif
 
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+			SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		endif
 
@@ -287,14 +287,14 @@ Function RA_CounterMD(panelTitle)
 			NVAR followerCount = $GetCount(followerPanelTitle)
 			followerCount += 1
 
-			SetValDisplaySingleVariable(panelTitle, "valdisp_DataAcq_TrialsCountdown", totTrials - count)
+			SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 
 			if(indexing)
 				if(recalcActiveSetCount)
 					if(indexingLocked)
 						IDX_IndexingDoIt(followerPanelTitle)
 					endif
-					SetValDisplaySingleVariable(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", numSets)
+					SetValDisplay(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
 					activeSetCount = max(activeSetCount, followerActiveSetCount)
 				endif

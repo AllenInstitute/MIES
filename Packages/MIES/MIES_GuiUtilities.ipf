@@ -423,18 +423,37 @@ End
 
 /// @brief Set a ValDisplay
 ///
-/// The variable var can be formatted using format.
-Function SetValDisplaySingleVariable(win, control, var, [format])
+/// @param win     panel
+/// @param control GUI control
+/// @param var     numeric variable to set
+/// @param format  format string referencing the numeric variable `var`
+/// @param str     path to global variable or wave element
+///
+/// The following parameter combinations are valid:
+/// - `var`
+/// - `var` and `format`
+/// - `str`
+Function SetValDisplay(win, control, [var, str, format])
 	string win, control
 	variable var
-	string format
+	string str, format
 
 	string formattedString
 
-	if(ParamIsDefault(format))
-		formattedString = num2istr(var)
-	else
+	if(!ParamIsDefault(format))
+		ASSERT(ParamIsDefault(str), "Unexpected parameter combination")
+		ASSERT(!ParamIsDefault(var), "Unexpected parameter combination")
 		sprintf formattedString, format, var
+	elseif(!ParamIsDefault(var))
+		ASSERT(ParamIsDefault(str), "Unexpected parameter combination")
+		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
+		sprintf formattedString, "%g", var
+	elseif(!ParamIsDefault(str))
+		ASSERT(ParamIsDefault(var), "Unexpected parameter combination")
+		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
+		formattedString = str
+	else
+		ASSERT(0, "Unexpected parameter combination")
 	endif
 
 	// Don't update if the content does not change, prevents flickering
