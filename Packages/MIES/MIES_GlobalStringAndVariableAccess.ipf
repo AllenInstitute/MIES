@@ -9,19 +9,19 @@
 ///
 /// Instead if you have a global variable named `iceCreamCounter` in `root:myfood` you
 /// would write in this file here a function like
-///@code
-///Function/S GetIceCreamCounterAsVariable()
-///	return GetNVARAsString(createDFWithAllParents("root:myfood"), "iceCreamCounter")
-///End
-///@endcode
-/// and then use it in your code as
-///@code
-///Function doStuff()
-///	NVAR iceCreamCounter = $GetIceCreamCounterAsVariable()
+/// @code
+/// Function/S GetIceCreamCounterAsVariable()
+/// 	return GetNVARAsString(createDFWithAllParents("root:myfood"), "iceCreamCounter")
+/// End
+/// @endcode
+///  and then use it in your code as
+/// @code
+/// Function doStuff()
+/// 	NVAR iceCreamCounter = $GetIceCreamCounterAsVariable()
 ///
-///	iceCreamCounter += 1
-///End
-///@endcode
+/// 	iceCreamCounter += 1
+/// End
+/// @endcode
 
 /// @brief Returns the full path to a global variable
 ///

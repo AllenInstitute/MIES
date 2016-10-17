@@ -13,14 +13,14 @@ static StrConstant functionReturnMessage = "return value"
 /// Debug function especially designed for usage in return statements.
 ///
 /// For example calling the following function
-///@code
-///Function doStuff()
-/// variable var = 1 + 2
-/// return DEBUGPRINTv(var)
-///End
-///@endcode
+/// @code
+/// Function doStuff()
+///  variable var = 1 + 2
+///  return DEBUGPRINTv(var)
+/// End
+/// @endcode
 /// will output
-///@verbatim DEBUG doStuff(...)#L5: return value 3 @endverbatim
+/// @verbatim DEBUG doStuff(...)#L5: return value 3 @endverbatim
 /// to the history.
 ///
 /// @hidecallgraph
@@ -46,14 +46,14 @@ End
 /// Debug function especially designed for usage in return statements.
 ///
 /// For example calling the following function
-///@code
-///Function/s doStuff()
-/// variable str= "a" + "b"
-/// return DEBUGPRINTs(str)
-///End
-///@endcode
+/// @code
+/// Function/s doStuff()
+///  variable str= "a" + "b"
+///  return DEBUGPRINTs(str)
+/// End
+/// @endcode
 /// will output
-///@verbatim DEBUG doStuff(...)#L5: return value ab @endverbatim
+/// @verbatim DEBUG doStuff(...)#L5: return value ab @endverbatim
 /// to the history.
 ///
 /// @hidecallgraph
@@ -78,12 +78,12 @@ End
 /// Outputs variables and strings with optional format argument.
 ///
 ///Examples:
-///@code
-///DEBUGPRINT("before a possible crash")
-///DEBUGPRINT("some variable", var=myVariable)
-///DEBUGPRINT("my string", str=myString)
-///DEBUGPRINT("Current state", var=state, format="%.5f")
-///@endcode
+/// @code
+/// DEBUGPRINT("before a possible crash")
+/// DEBUGPRINT("some variable", var=myVariable)
+/// DEBUGPRINT("my string", str=myString)
+/// DEBUGPRINT("Current state", var=state, format="%.5f")
+/// @endcode
 ///
 /// @hidecallgraph
 /// @hidecallergraph

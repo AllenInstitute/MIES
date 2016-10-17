@@ -3925,25 +3925,30 @@ End
 /// - Column specific GUI control settings usually associated with control name number
 ///
 /// Columns:
-/// - DACs
-/// 0: HSState State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
-/// 1: HSMode Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC. 
-/// 2: DAState State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
-/// 3: DAGain Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
-/// 4: DAScale Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
-/// 5: DAStartIndex PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index of active DA stimulus set during data acquisition. Stores index of next DA stimulus set when data acquistion is not active.
-/// 6: DAEndIndex PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the index of the last DA stimulus set used in indexed aquisition mode.
-/// 7: ADState State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
-/// 8: ADGain Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
-/// 9: TTLState State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
-/// 10: TTLStartIndex PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores index of active TTL stimulus set during data acquisition. Stores index of next TTL stimulus set when data acquistion is not active.
-/// 11: TTLEndIndex PopupMenu Index of popupMenu:IndexEnd_TTL_RowNum. Stores the index of the last TTL stimulus set used in indexed aquisition mode.
-/// 12: AsyncState State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked 
-/// 13: AsyncGain Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
-/// 14: AlarmState State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
-/// 15: AlarmMin Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
-/// 16: AlarmMax Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
-/// 17+: Unique controls
+/// - 0: HSState State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
+/// - 1: HSMode Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
+/// - 2: DAState State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
+/// - 3: DAGain Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
+/// - 4: DAScale Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
+/// - 5: DAStartIndex PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
+///  	 of active DA stimulus set during data acquisition. Stores index of next DA
+///      stimulus set when data acquistion is not active.
+/// - 6: DAEndIndex PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
+///      index of the last DA stimulus set used in indexed aquisition mode.
+/// - 7: ADState State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
+/// - 8: ADGain Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
+/// - 9: TTLState State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
+/// - 10: TTLStartIndex PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores
+///       index of active TTL stimulus set during data acquisition. Stores index of
+///       next TTL stimulus set when data acquistion is not active.
+/// - 11: TTLEndIndex PopupMenu Index of popupMenu:IndexEnd_TTL_RowNum. Stores
+///       the index of the last TTL stimulus set used in indexed aquisition mode.
+/// - 12: AsyncState State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked
+/// - 13: AsyncGain Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
+/// - 14: AlarmState State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
+/// - 15: AlarmMin Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
+/// - 16: AlarmMax Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
+/// - 17+: Unique controls
 Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
 

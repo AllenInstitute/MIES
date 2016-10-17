@@ -17,7 +17,7 @@ echo "Start building the documentation"
 
 cd "$top_level/Packages/doc"
 
-output=$( (cat Doxyfile; echo "PROJECT_NUMBER = \"($branch) $version\"") | doxygen - 2>&1 >/dev/null)
+output=$( (cat Doxyfile ; echo "HAVE_DOT = NO" ; echo "GENERATE_HTML = NO") | doxygen - 2>&1 >/dev/null)
 
 if [ ! -z  "$output" ]
 then
@@ -27,14 +27,38 @@ then
   exit 1
 fi
 
-if hash mogrify 2>/dev/null; then
-  echo "Start shrinking the PNGs"
+if hash pandoc 2>/dev/null; then
+  echo "Start converting markdown files to rst"
 
-  if hash parallel 2>/dev/null; then
-    find html -iname "*.png" | parallel mogrify -quality 0 +dither -colors 32 {}
-  else
-    mogrify -quality 0 +dither -colors 32 html/*png
-  fi
+  pandoc -f markdown_strict "$top_level/README.md" -o readme.rst
+  pandoc -f markdown_strict "$top_level/ReleaseNotes.md" -o releasenotes.rst
+
+else
+  echo "Errors building the documentation" 1>&2
+  echo "pandoc could not be found"         1>&2
+  exit 1
+fi
+
+if hash breathe-apidoc 2>/dev/null; then
+  echo "Start breathe-apidoc"
+
+  breathe-apidoc -o . xml
+
+else
+  echo "Errors building the documentation" 1>&2
+  echo "breathe-apidoc could not be found" 1>&2
+  exit 1
+fi
+
+if hash sphinx-build 2>/dev/null; then
+  echo "Start sphinx-build"
+
+  sphinx-build . html
+
+else
+  echo "Errors building the documentation" 1>&2
+  echo "sphinx-build could not be found"   1>&2
+  exit 1
 fi
 
 echo "Start zipping the results"
