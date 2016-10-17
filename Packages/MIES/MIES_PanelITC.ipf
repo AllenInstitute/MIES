@@ -1,4 +1,3 @@
-#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_PanelITC.ipf
@@ -2273,7 +2272,7 @@ Window DA_Ephys() : Panel
 	TitleBox title_DataAcq_NextSweep2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_DataAcq_NextSweep2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_DataAcq_NextSweep2,fSize=14,frame=0,fStyle=0
-	TitleBox title_DataAcq_NextSweep3,pos={182.00,592.00},size={132.00,19.00},disable=1,title="Sampling Interval (µs)"
+	TitleBox title_DataAcq_NextSweep3,pos={182.00,592.00},size={132.00,19.00},disable=1,title="Sampling Interval (�s)"
 	TitleBox title_DataAcq_NextSweep3,userdata(tabnum)=  "0"
 	TitleBox title_DataAcq_NextSweep3,userdata(tabcontrol)=  "ADC"
 	TitleBox title_DataAcq_NextSweep3,userdata(ResizeControlsInfo)= A"!!,GL!!#D$!!#@h!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2389,7 +2388,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_DataAcq_Hold_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox Title_DataAcq_Hold_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox Title_DataAcq_Hold_IC,frame=0
-	TitleBox Title_DataAcq_Bridge,pos={56.00,208.00},size={110.00,16.00},disable=1,title="Bridge Balance (M\\F'Symbol'Ω\\F]0)"
+	TitleBox Title_DataAcq_Bridge,pos={56.00,208.00},size={110.00,16.00},disable=1,title="Bridge Balance (M\\F'Symbol'W\\F]0)"
 	TitleBox Title_DataAcq_Bridge,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_Bridge,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	TitleBox Title_DataAcq_Bridge,userdata(ResizeControlsInfo)= A"!!,D7!!#AP!!#@,!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2468,14 +2467,14 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataAcq_AutoBias,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
-	SetVariable setvar_DataAcq_IbiasMax,pos={298.00,241.00},size={136.00,20.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
+	SetVariable setvar_DataAcq_IbiasMax,pos={298.00,241.00},size={136.00,20.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) �"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo)= A"!!,HV!!#A`!!#@T!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_IbiasMax,value= _NUM:200
-	SetVariable setvar_DataAcq_AutoBiasVrange,pos={392.00,218.00},size={62.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
+	SetVariable setvar_DataAcq_AutoBiasVrange,pos={392.00,218.00},size={62.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="�"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(ResizeControlsInfo)= A"!!,I)J,hr!!!#>F!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2557,7 +2556,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_HoldEnableVC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_HoldEnableVC,value= 0
-	SetVariable setvar_DataAcq_WCR,pos={111.00,219.00},size={75.00,19.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="M\\F'Symbol'Ω\\F]0"
+	SetVariable setvar_DataAcq_WCR,pos={111.00,219.00},size={75.00,19.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="M\\F'Symbol'W\\F]0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR,userdata(ResizeControlsInfo)= A"!!,FO!!#Aj!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2713,7 +2712,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_SaveAmpSettings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_SaveAmpSettings,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_SaveAmpSettings,value= 1
-	SetVariable setvar_Settings_TP_RTolerance,pos={304.00,84.00},size={146.00,19.00},bodyWidth=50,disable=1,title="Min delta R (M\\F'Symbol'Ω\\F]0)"
+	SetVariable setvar_Settings_TP_RTolerance,pos={304.00,84.00},size={146.00,19.00},bodyWidth=50,disable=1,title="Min delta R (M\\F'Symbol'W\\F]0)"
 	SetVariable setvar_Settings_TP_RTolerance,help={"Sets the minimum delta required forTP resistance values to be appended as a wave note to the data sweep. TP resistance values are always documented in the Lab Note Book."}
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabcontrol)=  "ADC"
@@ -2935,7 +2934,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SealMaxP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SealMaxP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_SealMaxP,limits={-10,0,0.1},value= _NUM:-1.4
-	SetVariable setvar_Settings_SurfaceHeight,pos={29.00,751.00},size={135.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface\\Z11 (\\F'Symbol'µ\\F]0\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SurfaceHeight,pos={29.00,751.00},size={135.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Sol surface\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SurfaceHeight,help={"Distance from the bottom of the recording chamber to the surface of the recording chamber solution."}
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SurfaceHeight,userdata(tabcontrol)=  "ADC"
@@ -2943,7 +2942,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SurfaceHeight,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SurfaceHeight,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_SurfaceHeight,limits={0,inf,100},value= _NUM:3500
-	SetVariable setvar_Settings_SliceSurfHeight,pos={169.00,751.00},size={143.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface\\Z11 (\\F'Symbol'µ\\F]0\\F'MS Sans Serif'm)"
+	SetVariable setvar_Settings_SliceSurfHeight,pos={169.00,751.00},size={143.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="Slice surface\\Z11 (\\F'Symbol'm\\F]0\\F'MS Sans Serif'm)"
 	SetVariable setvar_Settings_SliceSurfHeight,help={"Distance from the bottom of the recording chamber to the top surface of the slice."}
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(tabcontrol)=  "ADC"
