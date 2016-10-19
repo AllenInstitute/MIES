@@ -431,7 +431,7 @@ Constant DA_EPHYS_PANEL_VERSION = 10
 /// - New entries
 /// - Changed names of entries
 /// - Changed units or meaning of entries
-Constant LABNOTEBOOK_VERSION = 5
+Constant LABNOTEBOOK_VERSION = 6
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
