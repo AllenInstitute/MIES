@@ -236,17 +236,17 @@ End
 /// @brief Return a headstage independent setting from the numerical labnotebook
 ///
 /// @return the headstage independent setting or `defValue`
-Function GetLastSettingIndep(numericalValues, sweepNo, setting, [defValue])
+Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave numericalValues
 	variable sweepNo
 	string setting
-	variable defValue
+	variable defValue, entrySourceType
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
 	endif
 
-	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, setting)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
@@ -259,16 +259,17 @@ End
 /// @brief Return a headstage independent setting from the textual labnotebook
 ///
 /// @return the headstage independent setting or `defValue`
-Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, [defValue])
+Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave/T textualValues
 	variable sweepNo
 	string setting, defValue
+	variable entrySourceType
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSettingText(textualValues, sweepNo, setting)
+	WAVE/T/Z settings = GetLastSettingText(textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
@@ -283,13 +284,15 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSetting(numericalValues, sweepNo, setting)
+Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 	Wave numericalValues
 	variable sweepNo
 	string setting
+	variable entrySourceType
 
 	variable settingCol, numLayers, i, sweepCol, numEntries
-	variable first, last
+	variable first, last, sourceTypeCol, peakResistanceCol, pulseDurationCol
+	variable testpulseBlockLength, blockType
 
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 	numLayers = DimSize(numericalValues, LAYERS)
@@ -311,6 +314,74 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting)
 
 	for(i = last; i >= first; i -= 1)
 
+		if(IsFinite(entrySourceType))
+			if(!sourceTypeCol)
+				sourceTypeCol = FindDimLabel(numericalValues, COLS, "EntrySourceType")
+			endif
+
+			if(sourceTypeCol < 0 || !IsFinite(numericalValues[i][sourceTypeCol][0]))
+				// no source type information available but it is requested
+				// use a heuristic
+				//
+				// Since 60f4a9d9 (TP documenting is implemented using David
+				// Reid's documenting functions, 2014-07-28) we have one
+				// row for the testpulse which holds "TP Peak Resistance".
+				// Since dd49bf47 (Document the testpulse settings in the
+				// labnotebook, 2015-07-28) we have two rows; starting with
+				// "TP Peak Resistance" and ending with "TP Pulse Duration".
+				if(!pulseDurationCol)
+					pulseDurationCol = FindDimLabel(numericalValues, COLS, "TP Pulse Duration")
+				endif
+
+				if(!peakResistanceCol)
+					peakResistanceCol = FindDimLabel(numericalValues, COLS, "TP Peak Resistance")
+				endif
+
+				blockType = UNKNOWN_MODE
+
+				status[] = numericalValues[i][pulseDurationCol][p]
+				WaveStats/Q/M=1 status
+				if(V_numNaNs != numLayers)
+					// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
+					status[] = numericalValues[i - 1][peakResistanceCol][p]
+					WaveStats/Q/M=1 status
+					if(V_numNaNs != numLayers)
+						blockType = TEST_PULSE_MODE
+						testpulseBlockLength = 1
+					else
+						blockType = DATA_ACQUISITION_MODE
+					endif
+				else // no match, maybe old format
+					status[] = numericalValues[i][peakResistanceCol][p]
+					WaveStats/Q/M=1 status
+					if(V_numNaNs != numLayers)
+						blockType = TEST_PULSE_MODE
+						testpulseBlockLength = 0
+					else
+						blockType = DATA_ACQUISITION_MODE
+					endif
+				endif
+
+				if(entrySourceType == DATA_ACQUISITION_MODE && blockType == TEST_PULSE_MODE)
+					// testpulse block starts but DAQ was requested
+					// two row long testpulse block, skip it
+					i -= testpulseBlockLength
+					DEBUGPRINT("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var=testPulseBlockLength)
+					continue
+				elseif(entrySourceType == TEST_PULSE_MODE && blockType == DATA_ACQUISITION_MODE)
+					// sweep block starts but TP was requested
+					// as the sweep block occupies always the first blocks
+					// we now know that we did not find the entries
+					DEBUGPRINT("Skipping the DAQ block as testpulse is requested, as this is the last block, we can also return.")
+					return $""
+				endif
+			elseif(entrySourceType != numericalValues[i][sourceTypeCol][0])
+				// labnotebook has entrySourceType and it is not matching
+				DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
+				continue
+			endif
+		endif
+
 		status[] = numericalValues[i][settingCol][p]
 		WaveStats/Q/M=1 status
 
@@ -319,7 +390,7 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting)
 			return status
 		endif
 	endfor
-	
+
 	return $""
 End
 
@@ -330,13 +401,14 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSettingText(textualValues, sweepNo, setting)
+Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceType)
 	Wave/T textualValues
 	variable sweepNo
 	string setting
+	variable entrySourceType
 
 	variable settingCol, numLayers, i, sweepCol
-	variable first, last
+	variable first, last, sourceTypeCol
 
 	ASSERT(!WaveType(textualValues), "Can only work with text waves")
 	numLayers = DimSize(textualValues, LAYERS)
@@ -358,6 +430,23 @@ Function/WAVE GetLastSettingText(textualValues, sweepNo, setting)
 	Make/FREE/N=(numLayers) lengths
 
 	for(i = last; i >= first; i -= 1)
+		if(IsFinite(entrySourceType))
+			if(!sourceTypeCol)
+				sourceTypeCol = FindDimLabel(textualValues, COLS, "EntrySourceType")
+			endif
+
+			if(sourceTypeCol < 0 || !IsFinite(str2num(textualValues[i][sourceTypeCol][0])))
+				// before the sourceType entries we never had any testpulse
+				// entries in the textualValues labnotebook wave
+				if(entrySourceType == TEST_PULSE_MODE)
+					return $""
+				endif
+			elseif(entrySourceType != str2num(textualValues[i][sourceTypeCol][0]))
+				// labnotebook has entrySourceType and it is not matching
+				DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
+				continue
+			endif
+		endif
 
 		status[] = textualValues[i][settingCol][p]
 		lengths[] = strlen(status[p])
@@ -729,8 +818,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		RemoveTracesFromGraph(graph)
 	endif
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits")
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits")
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
 		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
@@ -808,15 +897,15 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	high = 1.0
 
-	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", defValue=0)
-	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", defValue=0)
+	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", DATA_ACQUISITION_MODE, defValue=0)
+	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE, defValue=0)
 
 	if(tgs.dDAQDisplayMode && !(dDAQEnabled || oodDAQEnabled))
 		printf "Distributed DAQ display mode turned off as no dDAQ data could be found.\r"
 		tgs.dDAQDisplayMode = 0
 	endif
 
-	WAVE/Z/T oodDAQRegions = GetLastSettingText(textualValues, sweepNo, "oodDAQ regions")
+	WAVE/Z/T oodDAQRegions = GetLastSettingText(textualValues, sweepNo, "oodDAQ regions", DATA_ACQUISITION_MODE)
 
 	if(tgs.dDAQDisplayMode && oodDAQEnabled && !WaveExists(oodDAQRegions))
 		printf "Distributed DAQ display mode turned off as no oodDAQ regions could be found in the labnotebook.\r"
@@ -824,7 +913,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	endif
 
 	if(tgs.dDAQDisplayMode)
-		stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length")
+		stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
 		DEBUGPRINT("Stim set length (labnotebook)", var=stimSetLength)
 
 		samplingInt = GetSamplingInterval(config) * 1e-3
@@ -832,10 +921,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		// dDAQ data taken with versions prior to
 		// 125a5407 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 		// does not have the delays stored in the labnotebook
-		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", defValue=0) / samplingInt
-		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", defValue=0) / samplingInt
-		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", defValue=0) / samplingInt
-		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", defValue=0) / samplingInt
+		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
+		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
+		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
+		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
 
 		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
 		DEBUGPRINT(str)
@@ -868,8 +957,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		endif
 	endif
 
-	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC")
-	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC")
+	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) channelTypes
 	channelTypes[0] = ITC_XOP_CHANNEL_TYPE_DAC
@@ -2333,13 +2422,13 @@ Function GetTTLBits(numericalValues, sweep, channel)
 
 	variable index = GetIndexForHeadstageIndepData(numericalValues)
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel")
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel")
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
 
 	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
-		WAVE ttlBits = GetLastSetting(numericalValues, sweep, "TTL rack zero bits")
+		WAVE ttlBits = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
-		WAVE ttlBits = GetLastSetting(numericalValues, sweep, "TTL rack one bits")
+		WAVE ttlBits = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
 	else
 		return NaN
 	endif
@@ -2372,13 +2461,13 @@ Function/S GetTTLStimSets(numericalValues, textualValues, sweep, channel)
 
 	variable index = GetIndexForHeadstageIndepData(numericalValues)
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel")
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel")
+	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
 
 	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack zero stim sets")
+		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack one stim sets")
+		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
 	else
 		return ""
 	endif

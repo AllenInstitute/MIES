@@ -431,23 +431,23 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	// comment denotes the introducing comment of the labnotebook entry
 	// 9b35fdad (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
-	WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode")
+	WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(clampMode))
-		WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Operating Mode")
+		WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Operating Mode", DATA_ACQUISITION_MODE)
 		ASSERT(WaveExists(clampMode), "Labnotebook is too old for NWB export.")
 	endif
 
 	// 3a94d3a4 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
-	WAVE/Z ADCs = GetLastSetting(numericalValues, sweep, "ADC")
+	WAVE/Z ADCs = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(ADCs), "Labnotebook is too old for NWB export.")
 
 	// dito
-	WAVE DACs = GetLastSetting(numericalValues, sweep, "DAC")
+	WAVE DACs = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
 
 	// 9c8e1a94 (Record the active headstage in the settingsHistory, 2014-11-04)
-	WAVE/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active")
+	WAVE/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
 		Duplicate/FREE ADCs, statusHS
 
@@ -456,11 +456,11 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	endif
 
 	// 296097c2 (Changes to Tango Interact, 2014-09-03)
-	WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY)
+	WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
 	// 95402da6 (NWB: Allow documenting the physical electrode, 2016-08-05)
-	WAVE/Z/T electrodeNames = GetLastSettingText(textualValues, sweep, "Electrode")
+	WAVE/Z/T electrodeNames = GetLastSettingText(textualValues, sweep, "Electrode", DATA_ACQUISITION_MODE)
 	if(!WaveExists(electrodeNames))
 		Make/FREE/T/N=(NUM_HEADSTAGES) electrodeNames = GetDefaultElectrodeName(p)
 	else
@@ -692,7 +692,7 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	elseif(p.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
 		NWB_AddSweepDataSets(numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
 
-		WAVE/Z values = GetLastSetting(numericalValues, p.sweep, "Stim Scale Factor")
+		WAVE/Z values = GetLastSetting(numericalValues, p.sweep, "Stim Scale Factor", DATA_ACQUISITION_MODE)
 		if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
 			IPNWB#AddCustomProperty(tsp, "scale", values[p.electrodeNumber])
 		endif
@@ -713,13 +713,13 @@ static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbPr
 	endif
 
 	if(!ParamIsDefault(enabledProp))
-		WAVE/Z enabled = GetLastSetting(numericalValues, sweep, enabledProp)
+		WAVE/Z enabled = GetLastSetting(numericalValues, sweep, enabledProp, DATA_ACQUISITION_MODE)
 		if(!WaveExists(enabled) || !enabled[headstage])
 			return NaN
 		endif
 	endif
 
-	WAVE/Z values = GetLastSetting(numericalValues, sweep, settingsProp)
+	WAVE/Z values = GetLastSetting(numericalValues, sweep, settingsProp, DATA_ACQUISITION_MODE)
 	if(!WaveExists(values) || !IsFinite(values[headstage]))
 		return NaN
 	endif

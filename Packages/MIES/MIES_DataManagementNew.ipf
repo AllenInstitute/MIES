@@ -24,21 +24,8 @@ Function DM_SaveAndScaleITCData(panelTitle)
 
 	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
 
-	if(GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
-		AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
-		// function for debugging
-		// AI_createDummySettingsWave(panelTitle, SweepNo)
-	endif
-
-	if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
-		ED_createAsyncWaveNoteTags(panelTitle, sweepNo)
-	endif
-
-	// Add wave notes for the stim wave name and scale factor
+	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(panelTitle, sweepNo)
-
-	// TP settings, especially useful if "global TP insertion" is active
-	ED_TPSettingsDocumentation(panelTitle)
 
 	if(GetCheckBoxState(panelTitle, "Check_Settings_NwbExport"))
 		NWB_AppendSweep(panelTitle, dataWave, configWave, sweepNo)

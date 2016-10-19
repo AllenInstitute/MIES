@@ -210,7 +210,7 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 
 	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
-	return GetLastSetting(numericalValues, sweep, key)
+	return GetLastSetting(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 End
 
 /// @brief Duplicate the sweep browser graph to a user given folder and name

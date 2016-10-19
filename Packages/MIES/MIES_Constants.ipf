@@ -154,7 +154,7 @@ Constant LISTBOX_TREEVIEW_EXPANDED = 0x10
 Constant LISTBOX_TREEVIEW          = 0x40
 /// @}
 
-Constant INITIAL_KEY_WAVE_COL_COUNT = 3
+Constant INITIAL_KEY_WAVE_COL_COUNT = 4
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
@@ -170,9 +170,10 @@ Constant SAVE_AND_CLEAR            = 0x01
 Constant SAVE_AND_SPLIT            = 0x02
 /// @}
 
-/// @name Constants for both data acquisition modes
+/// @name Constants for data acquisition modes
 /// @anchor DataAcqModes
 /// @{
+Constant UNKNOWN_MODE          = NaN
 Constant DATA_ACQUISITION_MODE = 0
 Constant TEST_PULSE_MODE       = 1
 /// @}
@@ -430,7 +431,7 @@ Constant DA_EPHYS_PANEL_VERSION = 10
 /// - New entries
 /// - Changed names of entries
 /// - Changed units or meaning of entries
-Constant LABNOTEBOOK_VERSION = 4
+Constant LABNOTEBOOK_VERSION = 5
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
