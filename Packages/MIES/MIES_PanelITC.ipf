@@ -4863,6 +4863,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 			endfor
 
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && GetCheckBoxState(panelTitle, "check_DataAcq_RepAcqRandom") && indexingEnabled)
+				printf "(%s) Repeated random acquisition can not be combined with indexing.\r", panelTitle
+				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
+				return 1
+			endif
+
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") && GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", panelTitle
 				return 1
