@@ -94,18 +94,16 @@ Function ITC_FIFOMonitorMD(s)
 
 	DFREF activeDevices = GetActiveITCDevicesFolder()
 	WAVE/SDFR=activeDevices ActiveDeviceList
-	WAVE/SDFR=activeDevices/T ActiveDeviceTextList
-	WAVE/WAVE/SDFR=activeDevices ActiveDevWavePathWave
 	variable deviceID, moreData
 	variable i, fifoPos
 	string panelTitle
 
-	for(i = 0; i < DimSize(ActiveDeviceTextList, ROWS); i += 1)
-		panelTitle = ActiveDeviceTextList[i]
+	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
 		deviceID   = ActiveDeviceList[i][0]
+		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-		moreData = HW_ITC_MoreData(deviceID, fifoAvail=ActiveDevWavePathWave[i][1], ADChannelToMonitor=ActiveDeviceList[i][1], stopCollectionPoint=ActiveDeviceList[i][2], fifoPos=fifoPos)
+		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos)
 
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
@@ -119,7 +117,7 @@ Function ITC_FIFOMonitorMD(s)
 		endif
 	endfor
 
-	if(DimSize(ActiveDeviceTextList, ROWS) == 0)
+	if(DimSize(ActiveDeviceList, ROWS) == 0)
 		print "no more active devices, stopping named background"
 		return 1
 	endif
@@ -154,10 +152,8 @@ END
 static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	String panelTitle
 
-	string cmd
-
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceTextList
+	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
@@ -168,7 +164,7 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
-	if (dimsize(ActiveDeviceTextList, 0) == 0) 
+	if(DimSize(ActiveDeviceList, ROWS) == 0)
 		print "no more active devices, stopping named background"
 		CtrlNamedBackground ITC_FIFOMonitorMD, stop
 	endif
@@ -246,76 +242,6 @@ static Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, A
 		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
 		ASSERT(V_Value >= 0, "Trying to remove a non existing device")
 		DeletePoints/M=(ROWS) V_Value, 1, ActiveDeviceList
-	else
-		ASSERT(0, "Invalid addOrRemoveDevice value")
-	endif
-
-	ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, addOrRemoveDevice)
-
-	WAVE/Z/SDFR=dfr ActiveDeviceList, ActiveDeviceTextList, ActiveDevWavePathWave
-	ASSERT(WaveExists(ActiveDeviceList), "Missing wave ActiveDeviceList")
-	ASSERT(WaveExists(ActiveDeviceTextList), "Missing wave ActiveDeviceTextList")
-	ASSERT(WaveExists(ActiveDevWavePathWave), "Missing wave ActiveDevWavePathWave")
-	ASSERT(DimSize(ActiveDeviceList, ROWS) == DimSize(ActiveDeviceTextList, ROWS), "Number of rows in ActiveDeviceList and ActiveDeviceTextList must be equal")
-	ASSERT(DimSize(ActiveDeviceList, ROWS) == DimSize(ActiveDevWavePathWave, ROWS), "Number of rows in ActiveDeviceList and ActiveDevWavePathWave must be equal")
-End
-
-static Function ITC_MakeOrUpdtActivDevListTxtWv(panelTitle, addOrRemoveDevice)
-	string panelTitle
-	variable addOrRemoveDevice
-
-	variable rowToRemove = NaN
-	variable numberOfRows
-
-	DFREF dfr = GetActiveITCDevicesFolder()
-	WAVE/Z/T/SDFR=dfr ActiveDeviceTextList
-	if(addOrRemoveDevice == 1) // Add a device
-		if(!WaveExists(ActiveDeviceTextList))
-			Make/T/N=1 dfr:ActiveDeviceTextList/Wave=ActiveDeviceTextList
-			ActiveDeviceTextList[0] = panelTitle
-		else
-			numberOfRows = DimSize(ActiveDeviceTextList, ROWS)
-			Redimension/N=(numberOfRows + 1) ActiveDeviceTextList
-			ActiveDeviceTextList[numberOfRows] = panelTitle
-		endif
-	elseif(addOrRemoveDevice == -1) // remove a device
-		FindValue/TEXT=panelTitle ActiveDeviceTextList
-		rowToRemove = V_value
-		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
-		DeletePoints/m=(ROWS) rowToRemove, 1, ActiveDeviceTextList
-	else
-		ASSERT(0, "Invalid addOrRemoveDevice value")
-	endif
-
-	ITC_MakeOrUpdtActDevWvPth(panelTitle, addOrRemoveDevice, rowToRemove)
-End
-
-static Function ITC_MakeOrUpdtActDevWvPth(panelTitle, addOrRemoveDevice, rowToRemove)
-	String panelTitle
-	variable addOrRemoveDevice, rowToRemove
-
-	variable numberOfRows
-
-	WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-	WAVE ITCFIFOAvailAllConfigWave    = GetITCFIFOAvailAllConfigWave(panelTitle)
-
-	DFREF dfr = GetActiveITCDevicesFolder()
-	WAVE/Z/WAVE/SDFR=dfr ActiveDevWavePathWave
-	if(addOrRemoveDevice == 1)
-		if(!WaveExists(ActiveDevWavePathWave))
-			Make/WAVE/N=(1, 2) dfr:ActiveDevWavePathWave/Wave=ActiveDevWavePathWave
-
-			ActiveDevWavePathWave[0][0] = ITCDataWave
-			ActiveDevWavePathWave[0][1] = ITCFIFOAvailAllConfigWave
-		else
-			numberOfRows = DimSize(ActiveDevWavePathWave, ROWS)
-			Redimension/N=(numberOfRows + 1, 2) ActiveDevWavePathWave
-			ActiveDevWavePathWave[numberOfRows][0] = ITCDataWave
-			ActiveDevWavePathWave[numberOfRows][1] = ITCFIFOAvailAllConfigWave
-		endif
-	elseif(addOrRemoveDevice == -1)
-		ASSERT(rowToRemove >= 0 && rowToRemove < DimSize(ActiveDevWavePathWave, ROWS), "Trying to remove a non existing index")
-		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevWavePathWave
 	else
 		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif

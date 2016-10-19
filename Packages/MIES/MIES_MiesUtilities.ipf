@@ -2649,7 +2649,6 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 		return 0
 	endif
 
-	/// @todo merge all these waves into one and add flags for what currently is performed
 	strswitch(task)
 		case "TestPulseMD":
 			WAVE/Z/SDFR=GetActITCDevicesTestPulseFolder() deviceIDList = ActiveDeviceList
