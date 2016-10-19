@@ -1201,7 +1201,7 @@ End
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 8
+	variable versionOfNewWave = 9
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1296,8 +1296,8 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][16] = "-"
 
 	wv[%Parameter][17] = "Repeat Sets"
-	wv[%Units][17]     = "On/Off"
-	wv[%Tolerance][17] = "-"
+	wv[%Units][17]     = ""
+	wv[%Tolerance][17] = ".0001"
 
 	wv[%Parameter][18] = "Scaling zero"
 	wv[%Units][18]     = "On/Off"
