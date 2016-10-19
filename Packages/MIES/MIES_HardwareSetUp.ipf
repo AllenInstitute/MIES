@@ -225,16 +225,12 @@ Function HSU_UnlockDevice(panelTitle)
 		CloseNWBFile()
 
 		DFREF dfr = GetActITCDevicesTestPulseFolder()
-		WAVE/Z/SDFR=dfr ActiveDeviceList, ActiveDeviceTextList, ActiveDevWavePathWave
+		WAVE/Z/SDFR=dfr ActiveDeviceList
 		HSU_ClearWaveIfExists(ActiveDeviceList)
-		HSU_ClearWaveIfExists(ActiveDeviceTextList)
-		HSU_ClearWaveIfExists(ActiveDevWavePathWave)
 
 		DFREF dfr = GetActiveITCDevicesFolder()
-		WAVE/Z/SDFR=dfr ActiveDeviceList, ActiveDeviceTextList, ActiveDevWavePathWave
+		WAVE/Z/SDFR=dfr ActiveDeviceList
 		HSU_ClearWaveIfExists(ActiveDeviceList)
-		HSU_ClearWaveIfExists(ActiveDeviceTextList)
-		HSU_ClearWaveIfExists(ActiveDevWavePathWave)
 
 		DFREF dfr = GetActiveITCDevicesTimerFolder()
 		WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
