@@ -21,82 +21,82 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(824,78,1316,958)
+	NewPanel /K=1 /W=(506,53,998,933)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red :user"},userdata(tabnum)=  "0"
+	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,frame=0
 	ValDisplay valdisp_DataAcq_P_LED_Clear,limits={0,1,0.5},barmisc={0,0},mode= 2,highColor= (65535,16385,16385),lowColor= (61423,61423,61423),zeroColor= (65535,16385,16385)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_BreakIn,pos={256.00,298.00},size={86.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_BreakIn,help={"red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_BreakIn,help={"red:user"}
 	ValDisplay valdisp_DataAcq_P_LED_BreakIn,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_BreakIn,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	ValDisplay valdisp_DataAcq_P_LED_BreakIn,frame=0
 	ValDisplay valdisp_DataAcq_P_LED_BreakIn,limits={0,1,0.5},barmisc={0,0},mode= 2,highColor= (65535,16385,16385),lowColor= (61423,61423,61423),zeroColor= (65535,16385,16385)
 	ValDisplay valdisp_DataAcq_P_LED_BreakIn,value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_Seal,pos={146.00,298.00},size={86.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_Seal,help={"red :user"},userdata(tabnum)=  "0"
+	ValDisplay valdisp_DataAcq_P_LED_Seal,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Seal,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	ValDisplay valdisp_DataAcq_P_LED_Seal,frame=0
 	ValDisplay valdisp_DataAcq_P_LED_Seal,limits={0,1,0.5},barmisc={0,0},mode= 2,highColor= (65535,16385,16385),lowColor= (61423,61423,61423),zeroColor= (65535,16385,16385)
 	ValDisplay valdisp_DataAcq_P_LED_Seal,value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_Approach,pos={36.00,298.00},size={86.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_Approach,help={"red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_Approach,help={"red:user"}
 	ValDisplay valdisp_DataAcq_P_LED_Approach,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Approach,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	ValDisplay valdisp_DataAcq_P_LED_Approach,frame=0
 	ValDisplay valdisp_DataAcq_P_LED_Approach,limits={0,1,0.5},barmisc={0,0},mode= 2,highColor= (65535,16385,16385),lowColor= (61423,61423,61423),zeroColor= (65535,16385,16385)
 	ValDisplay valdisp_DataAcq_P_LED_Approach,value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_7,pos={407.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_7,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_7,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_7,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_7,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_7,limits={-1,2,0},barmisc={0,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_7,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_7,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_6,pos={364.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_6,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_6,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_6,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_6,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_6,limits={-1,2,0},barmisc={0,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_6,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_6,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_5,pos={321.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_5,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_5,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_5,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_5,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_5,limits={-1,2,0},barmisc={0,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_5,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_5,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_4,pos={278.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_4,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_4,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_4,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_4,userdata(tabcontrol)=  "ADC",frame=5
 	ValDisplay valdisp_DataAcq_P_LED_4,valueBackColor=(61423,61423,61423)
-	ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={10,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={10,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_4,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_4,limitsBackColor= (61423,61423,61423)
 	ValDisplay valdisp_DataAcq_P_LED_3,pos={235.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_3,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_3,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_3,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_3,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_3,limits={-1,3,0},barmisc={0,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_3,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_3,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_2,pos={192.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_2,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_2,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_2,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_2,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65278,0,0),lowColor= (0,0,0),zeroColor= (0,0,65535)
 	ValDisplay valdisp_DataAcq_P_LED_2,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_0,pos={106.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_0,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_0,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_0,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_0,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,16385,16385),lowColor= (65535,65535,65535),zeroColor= (65535,65533,32768)
+	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_0,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_1,pos={149.00,347.00},size={43.00,29.00},disable=1
-	ValDisplay valdisp_DataAcq_P_LED_1,help={"gray:atmospheric, yellow:automated mode, orange:manual, red :user"}
+	ValDisplay valdisp_DataAcq_P_LED_1,help={"Blue:Automated mode, Purple:Manual, Red:User"}
 	ValDisplay valdisp_DataAcq_P_LED_1,userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_1,userdata(tabcontrol)=  "ADC",frame=5
-	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,lowColor= (61423,61423,61423),zeroColor= (65535,65532,16385)
+	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_1,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_3,pos={239.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_3,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2809,7 +2809,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Pressure_dev,mode=2,popvalue="ITC1600_Dev_1",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;ITC18USB_Dev_0;\""
+	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;ITC18USB_Dev_0;\""
 	TitleBox Title_settings_Hardware_Pressur,pos={45.00,475.00},size={44.00,15.00},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC"
@@ -2998,6 +2998,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_2,fSize=14,frame=0,fStyle=0
+	ValDisplay valdisp_DataAcq_P_2,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_4,pos={282.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3042,35 +3043,35 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TabControl tab_DataAcq_Pressure,labelBack=(60928,60928,60928),fSize=10
-	TabControl tab_DataAcq_Pressure,tabLabel(0)="Auto",tabLabel(1)="Manual"
+	TabControl tab_DataAcq_Pressure,tabLabel(0)="Auto",tabLabel(1)="\f01\Z11Manual"
 	TabControl tab_DataAcq_Pressure,tabLabel(2)="User",value= 0
-	Button button_DataAcq_SSSetPressureMan,pos={46.00,302.00},size={84.00,27.00},disable=3,proc=ButtonProc_DataAcq_ManPressSet,title="Apply"
+	Button button_DataAcq_SSSetPressureMan,pos={39.00,302.00},size={84.00,27.00},disable=3,proc=ButtonProc_DataAcq_ManPressSet,title="Apply"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	Button button_DataAcq_SSSetPressureMan,userdata(ResizeControlsInfo)= A"!!,D7!!#BFJ,hp7!!#=;z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_SSSetPressureMan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_SSSetPressureMan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_PPSetPressureMan,pos={207.00,302.00},size={90.00,27.00},disable=1,proc=ButtonProc_ManPP,title="Pressure Pulse"
+	Button button_DataAcq_PPSetPressureMan,pos={200.00,302.00},size={90.00,27.00},disable=1,proc=ButtonProc_ManPP,title="Pressure Pulse"
 	Button button_DataAcq_PPSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_PPSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	Button button_DataAcq_PPSetPressureMan,userdata(ResizeControlsInfo)= A"!!,GT!!#BFJ,hp7!!#=;z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_PPSetPressureMan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_PPSetPressureMan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_SSPressure,pos={132.00,307.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="psi"
+	SetVariable setvar_DataAcq_SSPressure,pos={125.00,307.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="psi"
 	SetVariable setvar_DataAcq_SSPressure,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_SSPressure,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	SetVariable setvar_DataAcq_SSPressure,userdata(ResizeControlsInfo)= A"!!,Fh!!#BJ!!#?!!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_SSPressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_SSPressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_SSPressure,limits={-10,10,1},value= _NUM:0
-	SetVariable setvar_DataAcq_PPPressure,pos={298.00,307.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="psi"
+	SetVariable setvar_DataAcq_PPPressure,pos={291.00,307.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="psi"
 	SetVariable setvar_DataAcq_PPPressure,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_PPPressure,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	SetVariable setvar_DataAcq_PPPressure,userdata(ResizeControlsInfo)= A"!!,HHJ,hrt!!#?!!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_PPPressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_PPPressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_PPPressure,limits={-10,10,1},value= _NUM:5
-	SetVariable setvar_DataAcq_PPDuration,pos={369.00,307.00},size={87.00,18.00},bodyWidth=40,disable=1,proc=DAP_SetVarProc_CAA,title="Dur(ms)"
+	SetVariable setvar_DataAcq_PPDuration,pos={362.00,307.00},size={87.00,18.00},bodyWidth=40,disable=1,proc=DAP_SetVarProc_CAA,title="Dur(ms)"
 	SetVariable setvar_DataAcq_PPDuration,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_PPDuration,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	SetVariable setvar_DataAcq_PPDuration,userdata(ResizeControlsInfo)= A"!!,Hh!!#BIJ,hp?!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"

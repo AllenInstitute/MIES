@@ -14,12 +14,12 @@ static StrConstant  PRESSURE_CONTROL_PRESSURE_DISP  = "valdisp_DataAcq_P_0;valdi
 static StrConstant  PRESSURE_CONTROL_LED_DASHBOARD  = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"
 static StrConstant  PRESSURE_CONTROL_LED_MODE_USER  = "valdisp_DataAcq_P_LED_Approach;valdisp_DataAcq_P_LED_Seal;valdisp_DataAcq_P_LED_BreakIn;valdisp_DataAcq_P_LED_Clear"
 static StrConstant  PRESSURE_CONTROL_USER_CHECBOXES = "check_Settings_UserP_Approach;check_Settings_UserP_Seal;check_Settings_UserP_BreakIn;check_Settings_UserP_Clear"
-static StrConstant  LOW_COLOR_HILITE                = "65535;65535;65535"
-static StrConstant  ZERO_COLOR_HILITE               = "52428;52425;1"
-static StrConstant  HIGH_COLOR_HILITE               = "52428;1;1"
+static StrConstant  LOW_COLOR_HILITE                = "0;0;0"
+static StrConstant  ZERO_COLOR_HILITE               = "0;0;65535"
+static StrConstant  HIGH_COLOR_HILITE               = "65278;0;0"
 static StrConstant  LOW_COLOR                       = "65535;65535;65535"
-static StrConstant  ZERO_COLOR                      = "65535;65533;32768"
-static StrConstant  HIGH_COLOR                      = "65535;0;0"
+static StrConstant  ZERO_COLOR                      = "49151;53155;65535"
+static StrConstant  HIGH_COLOR                      = "65535;49000;49000"
 static Constant     P_METHOD_neg1_ATM               = -1
 static Constant     P_METHOD_0_APPROACH             = 0
 static Constant     P_METHOD_1_SEAL                 = 1
@@ -1837,16 +1837,19 @@ End
 Function P_PressureDisplayHighlite(panelTitle, hilite)
 	string panelTitle
 	variable hilite
-
+	
+	variable RGB
 	string Zero, Low, High
 	if(hilite)
 		Zero = ZERO_COLOR_HILITE
 		Low = LOW_COLOR_HILITE
 		high = HIGH_COLOR_HILITE
+		RGB = 65000
 	else
 		Zero = ZERO_COLOR
 		Low = LOW_COLOR
-		high = HIGH_COLOR	
+		high = HIGH_COLOR
+		RGB = 0
 	endif
 	
 	wave PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
@@ -1863,6 +1866,12 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 	string controlName
 	sprintf controlName, "valdisp_DataAcq_P_LED_%d" pressureDataWv[0][%userSelectedHeadStage]
 	ValDisplay $controlName zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh)
+	
+	sprintf controlName, "valdisp_DataAcq_P_%d" pressureDataWv[0][%userSelectedHeadStage]
+	ChangeControlValueColor(panelTitle, controlName, RGB, RGB, RGB)
+
+//	sprintf controlName, "valdisp_DataAcq_P_%d" pressureDataWv[0][%userSelectedHeadStage]
+	//ValDisplay $controlNamevalueColor=(65535,65535,65535)
 End
 
 /// @brief Enables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
