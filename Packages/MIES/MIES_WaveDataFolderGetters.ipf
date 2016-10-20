@@ -776,10 +776,11 @@ End
 /// - Conversion of numeric labnotebook to 64bit floats
 /// - Removal of invalid units for "Stim Scale Factor", "DA Gain" and "AD Gain"
 /// - Addition of fourth column "EntrySourceType"
+/// - Fix unit and tolerance of "Repeat Sets"
 static Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
-	variable numCols, i, col, numEntries
+	variable numCols, i, col, numEntries, sourceCol
 	string list, key
 
 	WAVE  numericalValues = GetLBNumericalValues(panelTitle)
@@ -902,6 +903,17 @@ static Function UpgradeLabNotebook(panelTitle)
 			endif
 		endif
 	endfor
+
+	key = "Repeat Sets"
+	col = FindDimLabel(numericalKeys, COLS, key)
+	if(col >= 0 && cmpstr(numericalKeys[%Units][col], ""))
+		WAVE/T sweepKeyWave = GetSweepSettingsKeyWave(panelTitle)
+		sourceCol = FindDimLabel(sweepKeyWave, COLS, key)
+		ASSERT(sourceCol >= 0, "Unexpected sweep key wave format")
+		numericalKeys[%Units][col]     = sweepKeyWave[%Units][sourceCol]
+		numericalKeys[%Tolerance][col] = sweepKeyWave[%Tolerance][sourceCol]
+		DEBUGPRINT("Fixed numeric labnotebook key wave entry \"Repeat Sets\"")
+	endif
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1201,7 +1213,7 @@ End
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 8
+	variable versionOfNewWave = 9
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1296,8 +1308,8 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][16] = "-"
 
 	wv[%Parameter][17] = "Repeat Sets"
-	wv[%Units][17]     = "On/Off"
-	wv[%Tolerance][17] = "-"
+	wv[%Units][17]     = ""
+	wv[%Tolerance][17] = ".0001"
 
 	wv[%Parameter][18] = "Scaling zero"
 	wv[%Units][18]     = "On/Off"
