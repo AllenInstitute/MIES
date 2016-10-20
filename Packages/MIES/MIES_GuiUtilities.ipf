@@ -208,15 +208,30 @@ Function ChangeControlValueColors(win, controlList, R, G, B)
 End
 
 /// @brief Changes the background color of a control
-Function ChangeControlBckgColor(win, controlName, R, G, B)
+///
+/// @param win         panel
+/// @param controlName GUI control name
+/// @param R           red
+/// @param G           green
+/// @param B           blue
+/// @param Alpha defaults to opaque if not provided
+Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 	string win, controlName
-	variable R, G, B
+	variable R, G, B, Alpha
 	
+	if(paramIsDefault(Alpha))
+		Alpha = 1
+	Endif
+	ASSERT(Alpha > 0 && Alpha <= 1, "Alpha must be between 0 and 1")
+	Alpha *= 65535
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")	
-	
-	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B)
 
+#if (IgorVersion() >= 7.0)
+	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B,Alpha)
+#else	
+	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B)
+#endif
 End
 
 /// @brief Change the background color of a list of controls
@@ -408,18 +423,37 @@ End
 
 /// @brief Set a ValDisplay
 ///
-/// The variable var can be formatted using format.
-Function SetValDisplaySingleVariable(win, control, var, [format])
+/// @param win     panel
+/// @param control GUI control
+/// @param var     numeric variable to set
+/// @param format  format string referencing the numeric variable `var`
+/// @param str     path to global variable or wave element
+///
+/// The following parameter combinations are valid:
+/// - `var`
+/// - `var` and `format`
+/// - `str`
+Function SetValDisplay(win, control, [var, str, format])
 	string win, control
 	variable var
-	string format
+	string str, format
 
 	string formattedString
 
-	if(ParamIsDefault(format))
-		formattedString = num2istr(var)
-	else
+	if(!ParamIsDefault(format))
+		ASSERT(ParamIsDefault(str), "Unexpected parameter combination")
+		ASSERT(!ParamIsDefault(var), "Unexpected parameter combination")
 		sprintf formattedString, format, var
+	elseif(!ParamIsDefault(var))
+		ASSERT(ParamIsDefault(str), "Unexpected parameter combination")
+		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
+		sprintf formattedString, "%g", var
+	elseif(!ParamIsDefault(str))
+		ASSERT(ParamIsDefault(var), "Unexpected parameter combination")
+		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
+		formattedString = str
+	else
+		ASSERT(0, "Unexpected parameter combination")
 	endif
 
 	// Don't update if the content does not change, prevents flickering

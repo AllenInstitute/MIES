@@ -113,7 +113,7 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 		last = ItemsInList(list) - 1 + first
 	endif
 
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataBrowser_LastSweep", last)
+	SetValDisplay(panelTitle, "valdisp_DataBrowser_LastSweep", var=last)
 	SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {first, last, 1}
 End
 
@@ -492,7 +492,7 @@ Function DB_DataBrowserStartupSettings()
 
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", 0)
 	SetVariable setvar_DataBrowser_SweepNo, win=$panelTitle, limits={0, 0, 1}
-	SetValDisplaySingleVariable(panelTitle, "valdisp_DataBrowser_LastSweep", 0)
+	SetValDisplay(panelTitle, "valdisp_DataBrowser_LastSweep", var=0)
 
 	RemoveTracesFromGraph(DB_GetMainGraph(panelTitle))
 	RemoveTracesFromGraph(DB_GetLabNotebookGraph(panelTitle))

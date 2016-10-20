@@ -271,7 +271,7 @@ static Function UpdateCurrentSize(win)
 		size = max(1, ConvertFromBytesToMiB(size))
 	endif
 
-	SetValDisplaySingleVariable(win, valdisp_currentsize, size, format="%3.0f")
+	SetValDisplay(win, valdisp_currentsize, var=size, format="%3.0f")
 End
 
 static Function UpdateEstimatedSizeAfterwards(win)
@@ -293,7 +293,7 @@ static Function UpdateEstimatedSizeAfterwards(win)
 		size = NaN
 	endif
 
-	SetValDisplaySingleVariable(win, valdisp_estimatedsize, size, format="%3.0f")
+	SetValDisplay(win, valdisp_estimatedsize, var=size, format="%3.0f")
 End
 
 /// @brief Disable the equalize checkbox if all data waves have the same rate

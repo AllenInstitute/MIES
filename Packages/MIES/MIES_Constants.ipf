@@ -353,7 +353,7 @@ StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
 Constant SEGMENT_TYPE_WAVE_LAST_IDX = 97
 
 /// Minimum logarithm to base two for the ITCDataWave size
-Constant MINIMUM_ITCDATAWAVE_EXPONENT = 17
+Constant MINIMUM_ITCDATAWAVE_EXPONENT = 20
 
 /// Minimum value for the baseline fraction of the Testpulse in percent
 Constant MINIMUM_TP_BASELINE_PERCENTAGE = 25
@@ -423,7 +423,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION = 10
+Constant DA_EPHYS_PANEL_VERSION = 11
 
 /// Version of the labnotebooks (numerical and textual)
 ///
