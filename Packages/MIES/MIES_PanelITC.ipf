@@ -103,7 +103,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_3,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_3,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_3,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_3,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	GroupBox group_DataAcq_WholeCell,pos={41.00,200.00},size={150.00,62.00},disable=1,title="       Whole Cell"
 	GroupBox group_DataAcq_WholeCell,userdata(tabnum)=  "0"
@@ -2980,7 +2980,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={153.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_1,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2988,7 +2988,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_1,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_2,pos={196.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_2,help={"black background:user selected headstage"}
@@ -2998,7 +2998,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_2,fSize=14,frame=0,fStyle=0
 	ValDisplay valdisp_DataAcq_P_2,valueColor=(65000,65000,65000)
-	ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_4,pos={282.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_4,help={"black background:user selected headstage"}
@@ -3007,7 +3007,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_4,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_4,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_4,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_4,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_4,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_5,pos={325.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_5,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3015,7 +3015,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_5,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_5,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_5,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_5,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_6,pos={368.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_6,help={"black background:user selected headstage"}
@@ -3024,7 +3024,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_6,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_6,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_6,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_6,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_6,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_6,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_7,pos={411.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_7,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3032,7 +3032,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_7,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_7,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_7,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	TabControl tab_DataAcq_Pressure,pos={32.00,272.00},size={425.00,110.00},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Pressure,userdata(tabnum)=  "0"
@@ -6717,13 +6717,29 @@ Function/S DAP_CreateDAEphysPanel()
 	string panel
 
 	Execute "DA_Ephys()"
-
+	#if (IgorVersion() >= 7.0)	
+		 DAP_SetDAEphysAlpha()
+	#endif
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
 	SetWindow $panel, userData(panelVersion) = num2str(DA_EPHYS_PANEL_VERSION)
 
 	return panel
 End
+
+/// @brief Sets DA_Ephys control alpha for IP7
+#if (IgorVersion() >= 7.0)
+Function DAP_SetDAEphysAlpha()
+	ValDisplay valdisp_DataAcq_P_0, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_1, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_2, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_3, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_4, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_5, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_6, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_7, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+End
+#endif
 
 /// @brief Returns the headstage State
 Function DAP_GetHSState(panelTitle, headStage)
