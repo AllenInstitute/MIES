@@ -6717,10 +6717,10 @@ Function/S DAP_CreateDAEphysPanel()
 	string panel
 
 	Execute "DA_Ephys()"
-	#if (IgorVersion() >= 7.0)	
-		 DAP_SetDAEphysAlpha()
-	#endif
 	panel = GetCurrentWindow()
+	#if (IgorVersion() >= 7.0)	
+		 DAP_SetDAEphysAlpha(panel)
+	#endif
 	SCOPE_OpenScopeWindow(panel)
 	SetWindow $panel, userData(panelVersion) = num2str(DA_EPHYS_PANEL_VERSION)
 
@@ -6729,15 +6729,17 @@ End
 
 /// @brief Sets DA_Ephys control alpha for IP7
 #if (IgorVersion() >= 7.0)
-Function DAP_SetDAEphysAlpha()
-	ValDisplay valdisp_DataAcq_P_0, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_1, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_2, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_3, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_4, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_5, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_6, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_7, Win = DA_Ephys, valueBackColor=(65535,65535,65535,0)
+Function DAP_SetDAEphysAlpha(panelTitle)
+	string panelTitle
+	
+	ValDisplay valdisp_DataAcq_P_0, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_1, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_2, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_3, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_4, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_5, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_6, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_7, Win = $panelTitle, valueBackColor=(65535,65535,65535,0)
 End
 #endif
 
