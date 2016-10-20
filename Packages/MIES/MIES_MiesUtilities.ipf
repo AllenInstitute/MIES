@@ -1444,7 +1444,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 			if(isTimeAxis)
 				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs valuesDat
 			else
-				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs values[][sweepCol][i]
+				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs values[][sweepCol][0]
 			endif
 		endif
 
