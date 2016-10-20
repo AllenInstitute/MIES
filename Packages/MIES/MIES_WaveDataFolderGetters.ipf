@@ -4319,22 +4319,3 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 
 	return wv
 End
-
-/// old wave needs to copied and deleted prior to creating new wave
-/// only for 2-D waves
-Function MoveDataToNewWaveCols(oldWaveCopy, newWave)
-	WAVE oldWaveCopy, newWave
-	
-	ASSERT(dimsize(oldWaveCopy,0) == dimsize(newWave,0), "Waves must have the same number of rows")
-	variable Columns = dimsize(oldWaveCopy, 1)
-	variable i
-	string colDimLabel
-	variable colNum
-	for(i = 0; i < Columns; i += 1)
-	colDimLabel = getDimLabel(oldWaveCopy, COLS, i)
-	colNum = findDimLabel(newWave, COLS, colDimLabel)
-	if(colNum >= 0)
-		newWave[][colNum] = oldWaveCopy[p][i]
-	endif
-	endfor
-End

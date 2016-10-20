@@ -2270,7 +2270,7 @@ Function P_GetAutoUserOff(panelTitle)
 End
 
 /// @brief Sets the value of the headstage LED valDisplays to the correct cell in pressureType wave
-Function P_SetLEDValueAssoc(panelTitle)
+static Function P_SetLEDValueAssoc(panelTitle)
 	string panelTitle
 
 	WAVE pressureType = GetPressureTypeWv(panelTitle)
