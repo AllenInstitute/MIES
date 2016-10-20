@@ -818,6 +818,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		RemoveTracesFromGraph(graph)
 	endif
 
+	WAVE/Z statusHS           = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
@@ -954,6 +955,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			numRegions = ItemsInList(oodDAQRegionsAll)
 			sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", numRegions, oodDAQRegionsAll, totalXRange
 			DEBUGPRINT(str)
+		else
+			numRegions = sum(statusHS, 0, NUM_HEADSTAGES - 1)
 		endif
 	endif
 
@@ -984,7 +987,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					channelOffset    = 0
 					hasPhysUnit      = 1
 					slotMult         = 1
-					numHorizWaves    = tgs.dDAQDisplayMode ? (oodDAQEnabled ? numRegions : numDACsOriginal) : 1
+					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
 					numVertWaves     = 1
 					numChannels      = numDACs
 					break
@@ -999,7 +1002,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					channelOffset    = numDACs
 					hasPhysUnit      = 1
 					slotMult         = ADC_SLOT_MULTIPLIER
-					numHorizWaves    = tgs.dDAQDisplayMode ? (oodDAQEnabled ? numRegions : numADCsOriginal) : 1
+					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
 					numVertWaves     = 1
 					numChannels      = numADCs
 					break
