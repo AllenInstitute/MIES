@@ -4319,3 +4319,27 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 
 	return wv
 End
+/// @brief Return the channel selection wave for the databrowser or sweep browser
+Function/WAVE GetChannelSelectionWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/Z/SDFR=dfr wv = channelSelection
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) wv
+	else
+		Make/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/Wave=wv
+
+		// by default all channels are selected
+		wv = 1
+	endif
+
+	SetDimLabel COLS, 0, DA       , wv
+	SetDimLabel COLS, 1, AD       , wv
+	SetDimLabel COLS, 2, HEADSTAGE, wv
+
+	return wv
+End

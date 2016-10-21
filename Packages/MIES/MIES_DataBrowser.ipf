@@ -256,7 +256,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
 	tgs.oodDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions")
 
-	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepWave=sweep)
+	WAVE channelSel = GetChannelSelectionWave(dfr)
+	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepWave=sweep, channelSelWave=channelSel)
 End
 
 static Function DB_ClearGraph(panelTitle)
@@ -341,12 +342,17 @@ Window DataBrowser() : Panel
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_databrowser_dDAQMode,value= 0
-	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1757.00,75.00},size={197.00,39.00}
-	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LB^]6]e!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
-	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_DataBrowser_OpenChanSel,pos={155.00,25.00},size={40.00,20.00},proc=DB_OpenChannelSelectionPanel,title="Chan"
+	Button button_DataBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
+	Button button_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo)= A"!!,G+!!#=+!!#>.!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
+	Button button_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1756,75},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
 	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
+	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LBJ,hp%!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_SweepOverlay,pos={205.00,9.00},size={97.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Sweeps"
 	CheckBox check_DataBrowser_SweepOverlay,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo)= A"!!,G]!!#:r!!#@&!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -395,29 +401,29 @@ Window DataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataBrowser_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
 	SetVariable setvar_DataBrowser_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
-	PopupMenu popup_LBNumericalKeys,pos={1042.00,460.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBNumericalKeys,pos={1041,460},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,K>?iWRV!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"DB_GetLBNumericalKeys(\"\")"
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,K>+94dk!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"DB_GetLBNumericalKeys(\"\")"
-	PopupMenu popup_LBTextualKeys,pos={1042.00,489.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBTextualKeys,pos={1041,489},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBTextualKeys,help={"Select textual lab notebook data to display"}
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,K>?iWRdJ,hqP!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"DB_GetLBTextualKeys(\"\")"
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,K>+94e$J,hqP!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"DB_GetLBTextualKeys(\"\")"
-	Button button_clearlabnotebookgraph,pos={1076.00,521.00},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KBTE%@]5QF-D!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_clearlabnotebookgraph,pos={1075,521},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KB?iWRr5QF-D!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={1076.00,548.00},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,pos={1075,548},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
 	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
-	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,KBTE%@d!!#?Y!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,KB?iWS$!!#?Y!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={1034.00,439.00},size={170.00,78.00},title="Settings History Column"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=?iWRKJ,hqd!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_ctrls,pos={1033,439},size={170.00,78.00},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=+94d`J,hqd!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_ZeroTraces,pos={349.00,27.00},size={73.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero traces"
@@ -751,12 +757,12 @@ End
 Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable checked
-	string panelTitle, ctrl
+	variable checked, channelNum
+	string panelTitle, ctrl, channelType, device
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			panelTitle = cba.win
+			panelTitle = GetMainWindow(cba.win)
 			ctrl       = cba.ctrlName
 			checked    = cba.checked
 
@@ -774,6 +780,14 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					else
 						DisableControl(panelTitle, "slider_oodDAQ_regions")
 					endif
+				break
+				default:
+				if(StringMatch(ctrl, "check_channelSel_*"))
+					DFREF dfr = DB_GetDataPath(panelTitle)
+					WAVE channelSel = GetChannelSelectionWave(dfr)
+					ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
+					channelSel[channelNum][%$channelType] = checked
+				endif
 				break
 			endswitch
 
@@ -807,4 +821,22 @@ static Function DB_PanelUpdate(graphOrPanel)
 	if(GetCheckBoxState(panel, "checkbox_DB_AutoScaleVertAxVisX"))
 		AutoscaleVertAxisVisXRange(graph)
 	endif
+End
+
+Function DB_OpenChannelSelectionPanel(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string panelTitle
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			panelTitle = GetMainWindow(ba.win)
+			DFREF dfr = DB_GetDataPath(panelTitle)
+			WAVE channelSel = GetChannelSelectionWave(dfr)
+			WAVE channelSel = GetChannelSelectionWave(dfr)
+			ToggleChannelSelectionPanel(panelTitle, channelSel, "DB_CheckProc_ChangedSetting")
+			break
+	endswitch
+
+	return 0
 End
