@@ -165,7 +165,7 @@ function tp_show_error ( )
 	SetDimLabel 1, 2, Description, error_stack
 	SetDimLabel 1, 3, Origin, error_stack
 	Make/O/N=(dimsize(error_stack, 1)) ww
-	Variable min_wd = FontSizeStringWidth("MS Shell Dlg", kLB_FONTSIZE, 0, "Severity")
+	Variable min_wd = FontSizeStringWidth(kLB_FONT, kLB_FONTSIZE, 0, "Severity")
 	WAVE/T es = root:tango:common:error_stack
 	tools_get_listbox_colwidths(es, ww, min_wd)
 	ListBox err_list,win=tango_panel,widths={ww[0],ww[1],ww[2],ww[3],ww[4]}
@@ -456,8 +456,8 @@ function tp_ctrlproc_update_list_but (ctrlName) : ButtonControl
 			return kNO_ERROR
 		endif 
 	endif
-	Variable min_w = FontSizeStringWidth("MS Shell Dlg", kLB_FONTSIZE, 0, "Device")
-	tools_get_listbox_colwidths(dlist, ww, min_w, f="MS Shell Dlg", fs=kLB_FONTSIZE)
+	Variable min_w = FontSizeStringWidth(kLB_FONT, kLB_FONTSIZE, 0, "Device")
+	tools_get_listbox_colwidths(dlist, ww, min_w, f=kLB_FONT, fs=kLB_FONTSIZE)
 	Variable w0 = show_aliases ? ww[0] : 0
 	Variable w1 = show_classes ? ww[1] : (4 * ww[1])
 	Variable w2 = show_classes ? ww[2] : 0
@@ -1275,7 +1275,7 @@ function tp_update_cmd_list (device_name)
 	SetDimLabel 1, 3, Argout, clist
 	SetDimLabel 1, 4, Argout_Note, clist
 	Make /O /N=(5) ww
-	Variable min_wd = FontSizeStringWidth("MS Shell Dlg", kLB_FONTSIZE, 0, "Argin_note")
+	Variable min_wd = FontSizeStringWidth(kLB_FONT, kLB_FONTSIZE, 0, "Argin_note")
 	tools_get_listbox_colwidths(clist, ww, min_wd)
 	ListBox cmd_list, win=tango_panel, widths={ww[0],ww[1],ww[2],ww[3],ww[4]}
 	ListBox cmd_list, win=tango_panel, listWave=clist, row=0, selRow=-1 
@@ -1325,8 +1325,8 @@ function tp_update_attr_list (device_name)
 	SetDimLabel 1,15, Desc, alist
 	SetDimLabel 1,16, WAttrName, alist
 	Make /O /N=(17) ww
-	Variable min_w = FontSizeStringWidth("MS Shell Dlg", kLB_FONTSIZE, 0, "WAttrName")
-	tools_get_listbox_colwidths(alist, ww, min_w, f="MS Shell Dlg", fs=kLB_FONTSIZE)
+	Variable min_w = FontSizeStringWidth(kLB_FONT, kLB_FONTSIZE, 0, "WAttrName")
+	tools_get_listbox_colwidths(alist, ww, min_w, f=kLB_FONT, fs=kLB_FONTSIZE)
 	ListBox attr_list, win=tango_panel, widths={ww[0],ww[1],ww[2],ww[3],ww[4],ww[5],ww[6],ww[7],ww[8]}
 	ListBox attr_list, win=tango_panel, widths+={ww[9],ww[10],ww[11],ww[12],ww[13],ww[14],ww[15],ww[16]}
 	ListBox attr_list, win=tango_panel, listWave=alist, row=0, selRow=-1 
@@ -1431,8 +1431,8 @@ function tp_update_prop_list (device_name)
 		SetDimLabel 1, 0, Name, plist
 		SetDimLabel 1, 1, Value, plist
 		Make/O/N=2 ww
-		Variable min_wd = FontSizeStringWidth("MS Shell Dlg", kLB_FONTSIZE, 0, "Value")
-		tools_get_listbox_colwidths(plist, ww, min_wd, f="MS Shell Dlg", fs=kLB_FONTSIZE)
+		Variable min_wd = FontSizeStringWidth(kLB_FONT, kLB_FONTSIZE, 0, "Value")
+		tools_get_listbox_colwidths(plist, ww, min_wd, f=kLB_FONT, fs=kLB_FONTSIZE)
 		ListBox prop_list, win=tango_panel, widths={ww[0],ww[1]}
 		ListBox prop_list, win=tango_panel, listWave=plist, row=0, selRow=-1 
 		KillWaves/Z ww 
