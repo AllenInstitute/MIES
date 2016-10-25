@@ -486,7 +486,7 @@ static function tmon_display_scalar (wns, win_title)
 	ModifyGraph /W=$wns.win dateInfo(bottom)={0,0,0}
 	TabControl tab_ctrl,win=$wns.win,pos={0,0},size={2000,50}
 	TabControl tab_ctrl,win=$wns.win,proc=tmon_image_tab_proc
-	TabControl tab_ctrl,win=$wns.win,font="MS Sans Serif",fSize=8
+	TabControl tab_ctrl,win=$wns.win,font=$kLB_FONT,fSize=8
 	Variable tab_id = 0
 	if (wns.access == kREAD_WRITE || wns.access == kREAD_WITH_WRITE || wns.access == kWRITE)
 		tab_id = 1

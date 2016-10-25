@@ -1062,7 +1062,7 @@ static function tep_open (show_err_stack)
 	SetDimLabel 1, 2, Description, error_stack
 	SetDimLabel 1, 3, Origin, error_stack
 	Make /O /N=(dimsize(error_stack,1)) ww
-	Variable min_w = FontSizeStringWidth("MS Shell Dlg", kLB_FONTSIZE, 0, "Severity")
+	Variable min_w = FontSizeStringWidth(kLB_FONT, kLB_FONTSIZE, 0, "Severity")
 	Wave/T es = root:tango:common:error_stack
 	tools_get_listbox_colwidths(es, ww, min_w)
 	if (show_err_stack)
@@ -1074,9 +1074,9 @@ static function tep_open (show_err_stack)
 	DoWindow/T tep_modal, "*** TANGO Error Panel ***" 
 	ModifyPanel/W=tep_modal fixedSize=1
 	GroupBox grp_box,win=tep_modal,pos={17,6},size={716,138}
-	GroupBox grp_box,win=tep_modal,title="Main Error",font="MS Shell Dlg"
+	GroupBox grp_box,win=tep_modal,title="Main Error",font=$kLB_FONT
 	ListBox err_list,win=tep_modal,pos={18,167},size={715,189},frame=2,disable=1
-	ListBox err_list,win=tep_modal,mode=2, font="MS Shell Dlg",fsize=kLB_FONTSIZE
+	ListBox err_list,win=tep_modal,mode=2, font=$kLB_FONT,fsize=kLB_FONTSIZE
 	ListBox err_list,win=tep_modal,widths={ww[0],ww[1],ww[2],ww[3],ww[4]}
 	ListBox err_list,win=tep_modal,listWave=error_stack
 	KillWaves/Z ww   
