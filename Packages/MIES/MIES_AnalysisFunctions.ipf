@@ -117,3 +117,166 @@ Function Enforce_IC(panelTitle, eventType, ITCDataWave, headStage, realDataLengt
 
 	return 0
 End
+
+// User Defined Analysis Functions
+// Functions which can be assigned to various epochs of a stimulus set
+// Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
+
+
+static strCONSTANT panelTitle = "ITC18USB_Dev_0"
+static strCONSTANT stimSetlocal = "PulseTrain_150Hz_DA_0"
+static CONSTANT Vm1local = -55
+static CONSTANT Vm2local = -85
+static CONSTANT scalelocal = 70
+static CONSTANT sweepslocal = 6
+static CONSTANT ITIlocal = 15
+ 
+
+// Force active headstages into voltage clamp
+Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage
+	
+	setVClampMode(panelTitle)
+	
+	printf "Stimulus set running in V-Clamp on headstage: %d\r", headStage
+	
+End
+
+// Change holding potential midway through stim set
+Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage
+	
+	variable StimRemaining = switchHolding(panelTitle,Vm2local)
+	
+	printf "Number of stimuli remaining is: %d on headstage: %d\r", StimRemaining, headStage
+End
+
+// GUI to set subset of initial stimulus parameters and begin data acquisition. NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! 
+Function StimParamGUI()
+	
+	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
+	
+	variable Vm1 = Vm1local, Scale = Scalelocal, sweeps = sweepslocal, ITI = ITIlocal
+	string stimSet = stimSetlocal 
+	Prompt stimSet, "Choose which stimulus set to run:", popup, StimSetList
+	Prompt Vm1, "Enter initial holding potential: "
+	Prompt Scale, "Enter scale of stimulation [mV]: "
+	Prompt sweeps, "Enter number of sweeps to run: "
+	Prompt ITI, "Enter inter-trial interval [s]: "
+	
+	DoPrompt "Choose stimulus set and enter initial parameters", stimSet, Vm1,  Scale, sweeps, ITI
+	
+	SetStimParam(stimSet,Vm1,Scale,Sweeps,ITI)
+	
+	PGC_SetAndActivateControl(panelTitle,"DataAcquireButton")
+End
+
+// Setting of stimulus parameters	
+Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
+	variable Vm1, scale, sweeps, ITI
+	string stimSet
+	
+	setHolding(panelTitle, Vm1)
+	
+	variable stimSetIndex = GetStimSet(stimSet)
+	
+	PGC_SetAndActivateControl(panelTitle,"Wave_DA_All", val = stimSetIndex + 1)
+	PGC_SetAndActivateControl(panelTitle,"Scale_DA_All", val = scale)
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = sweeps)
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = ITI)
+	
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	
+   variable GuiControl = findDimLabel(GuiState,1,"Check_DataAcq1_DistribDaq")				// make sure dDAQ is enabled
+   if (GuiControl != 1)
+   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+   	endif
+   	
+   	GuiControl = findDimLabel(GuiState,1,"Check_DataAcq_Get_Set_ITI")						// make sure Get/Set ITI is disabled
+   	if (GuiControl != 0)
+   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = 0)
+   	endif
+
+End
+
+// set holding potential for active headstages
+Function setHolding(panelTitle, Vm1)
+	string panelTitle
+	variable Vm1
+	
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+	variable i
+	
+	for (i=0; i<NUM_HEADSTAGES; i+=1)
+		if (statusHS[i] == 1)
+			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
+			PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm1)
+			PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm1)
+		endif
+	endfor
+End
+
+//Set active headstages into V-clamp
+Function setVClampMode(panelTitle)
+	string panelTitle
+	
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+	variable i
+	
+	for (i=0; i<NUM_HEADSTAGES; i+=1)
+		if (statusHS[i] == 1)
+			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
+			PGC_SetAndActivateControl(panelTitle,"Radio_ClampMode_0", val = 1)
+		endif
+	endfor
+End
+
+// change holding potential on active headstages to Vm2 after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2)
+Function switchHolding(panelTitle, Vm2)
+	string panelTitle
+	variable Vm2
+	
+	variable numSweeps = GetValDisplayAsNum(panelTitle,"valdisp_DataAcq_SweepsInSet")
+	variable switchSweep = floor(numSweeps/2)
+	
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	
+	variable StimRemaining = GuiState[0][findDimLabel(GuiState,1,"valdisp_DataAcq_TrialsCountdown")]-1
+	
+	if (StimRemaining == switchSweep)
+		variable i
+		for (i=0; i<NUM_HEADSTAGES; i+=1)
+			if (statusHS[i] == 1)
+				PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
+				if (GuiState[i][1] == 0)
+					PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm2)
+				elseif (GuiState[i][1] == 1)
+					PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm2)
+				endif
+			endif
+		endfor
+		printf "Half-way through stim set, changing holding potential to: %d\r", Vm2  
+	endif
+	
+	return StimRemaining
+End
+
+// Get index of stim set from stim set list
+Function GetStimSet(stimSet)
+	string stimSet
+	
+	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
+	variable stimSetIndex = whichlistitem(stimSet,StimSetList)
+	
+	return stimSetIndex
+End
