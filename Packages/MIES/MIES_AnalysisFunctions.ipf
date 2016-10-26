@@ -122,17 +122,19 @@ End
 // Functions which can be assigned to various epochs of a stimulus set
 // Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
 
+/// @name Initial parameters for stimulation
+///@{
+static strCONSTANT STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0"	///< Initial stimulus set
+static CONSTANT VM1_LOCAL = -55										///< Initial holding potential	
+static CONSTANT VM2_LOCAL = -85										///< Second holding potential to switch to
+static CONSTANT SCALE_LOCAL = 70										///< Stimulus amplitude in mV
+static CONSTANT NUM_SWEEPS_LOCAL = 6								///< Number of sweeps to acquire
+static CONSTANT ITI_LOCAL = 15										///< Inter-trial-interval
+///@}
 
 static strCONSTANT panelTitle = "ITC18USB_Dev_0"
-static strCONSTANT stimSetlocal = "PulseTrain_150Hz_DA_0"
-static CONSTANT Vm1local = -55
-static CONSTANT Vm2local = -85
-static CONSTANT scalelocal = 70
-static CONSTANT sweepslocal = 6
-static CONSTANT ITIlocal = 15
- 
 
-// Force active headstages into voltage clamp
+/// @brief Force active headstages into voltage clamp
 Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
 	variable eventType
@@ -145,25 +147,26 @@ Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
 	
 End
 
-// Change holding potential midway through stim set
+/// @brief Change holding potential midway through stim set
 Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
 	variable eventType
 	Wave ITCDataWave
 	variable headstage
 	
-	variable StimRemaining = switchHolding(panelTitle,Vm2local)
+	variable StimRemaining = switchHolding(panelTitle,VM2_LOCAL)
 	
 	printf "Number of stimuli remaining is: %d on headstage: %d\r", StimRemaining, headStage
 End
 
-// GUI to set subset of initial stimulus parameters and begin data acquisition. NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! 
+/// @brief GUI to set initial stimulus parameters using SetStimParam() and begin data acquisition. 
+/// NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! 
 Function StimParamGUI()
 	
 	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
 	
-	variable Vm1 = Vm1local, Scale = Scalelocal, sweeps = sweepslocal, ITI = ITIlocal
-	string stimSet = stimSetlocal 
+	variable Vm1 = VM1_LOCAL, Scale = SCALE_LOCAL, sweeps = NUM_SWEEPS_LOCAL, ITI = ITI_LOCAL
+	string stimSet = STIM_SET_LOCAL 
 	Prompt stimSet, "Choose which stimulus set to run:", popup, StimSetList
 	Prompt Vm1, "Enter initial holding potential: "
 	Prompt Scale, "Enter scale of stimulation [mV]: "
@@ -177,7 +180,13 @@ Function StimParamGUI()
 	PGC_SetAndActivateControl(panelTitle,"DataAcquireButton")
 End
 
-// Setting of stimulus parameters	
+/// @brief Called by StimParamGUI to set initial stimulus parameters
+///
+/// @param stimSet	Stimulus set to run
+/// @param Vm1		Holding potential
+/// @param Scale		Stimulus amplitude in mV	
+/// @param Sweeps	Number of sweeps
+/// @param ITI		Inter-trial-interval
 Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	variable Vm1, scale, sweeps, ITI
 	string stimSet
@@ -205,7 +214,9 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 
 End
 
-// set holding potential for active headstages
+/// @brief Set holding potential for active headstages
+///
+/// @param Vm1		Holding potential
 Function setHolding(panelTitle, Vm1)
 	string panelTitle
 	variable Vm1
@@ -223,7 +234,7 @@ Function setHolding(panelTitle, Vm1)
 	endfor
 End
 
-//Set active headstages into V-clamp
+/// @brief Set active headstages into V-clamp
 Function setVClampMode(panelTitle)
 	string panelTitle
 	
@@ -239,7 +250,10 @@ Function setVClampMode(panelTitle)
 	endfor
 End
 
-// change holding potential on active headstages to Vm2 after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2)
+/// @brief Change holding potential on active headstages to Vm2.
+/// Switch occurs after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2)
+///
+/// @param Vm2	Holding potential to switch to
 Function switchHolding(panelTitle, Vm2)
 	string panelTitle
 	variable Vm2
@@ -271,7 +285,7 @@ Function switchHolding(panelTitle, Vm2)
 	return StimRemaining
 End
 
-// Get index of stim set from stim set list
+/// @brief Get index of stim set from stim set list
 Function GetStimSet(stimSet)
 	string stimSet
 	
