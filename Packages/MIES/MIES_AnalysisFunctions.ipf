@@ -132,6 +132,12 @@ static CONSTANT NUM_SWEEPS_LOCAL = 6								///< Number of sweeps to acquire
 static CONSTANT ITI_LOCAL = 15										///< Inter-trial-interval
 ///@}
 
+/// @name Initial settings for oodDAQ stimulation
+///@{
+static CONSTANT POST_DELAY = 150										///< Delay after stimulation event in which no other event can occur in ms
+static CONSTANT RESOLUTION = 25										///< Resolution of oodDAQ protocol in ms
+///@}
+
 static strCONSTANT panelTitle = "ITC18USB_Dev_0"
 
 /// @brief Force active headstages into voltage clamp
@@ -200,17 +206,7 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = sweeps)
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = ITI)
 	
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
-	
-   variable GuiControl = findDimLabel(GuiState,1,"Check_DataAcq1_DistribDaq")				// make sure dDAQ is enabled
-   if (GuiControl != 1)
-   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
-   	endif
-   	
-   	GuiControl = findDimLabel(GuiState,1,"Check_DataAcq_Get_Set_ITI")						// make sure Get/Set ITI is disabled
-   	if (GuiControl != 0)
-   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = 0)
-   	endif
+	InitoodDAQ(panelTitle)
 
 End
 
@@ -293,4 +289,25 @@ Function GetStimSet(stimSet)
 	variable stimSetIndex = whichlistitem(stimSet,StimSetList)
 	
 	return stimSetIndex
+End
+
+/// @brief Initialize oodDAQ settings
+Function InitoodDAQ(panelTitle)
+	string panelTitle
+	
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	
+   variable GuiControl = findDimLabel(GuiState,1,"Check_DataAcq1_dDAQOptOv")				// make sure oodDAQ is enabled
+   if (GuiControl != 1)
+   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+   	endif
+   	
+   	GuiControl = findDimLabel(GuiState,1,"Check_DataAcq_Get_Set_ITI")						// make sure Get/Set ITI is disabled
+   	if (GuiControl != 0)
+   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = 0)
+   	endif
+   	
+   	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
+   	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = RESOLUTION)
+
 End
