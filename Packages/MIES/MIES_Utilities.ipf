@@ -2554,3 +2554,9 @@ Function/S GetSystemUserName()
 
 	return StringFromList(2, path, ":")
 End
+
+/// @brief Bring the control window (the window with the command line) to the
+///        front of the desktop
+Function ControlWindowToFront()
+	DoWindow/H
+End

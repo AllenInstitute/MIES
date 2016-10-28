@@ -4819,11 +4819,13 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 
 	if(!WindowExists("ArduinoSeq_Panel"))
 		printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(IsControlDisabled("ArduinoSeq_Panel", "ArduinoStartButton"))
 		printf "(%s) The Arduino sequencer panel has a disabled \"Start\" button. Is it connected? Have you loaded the default sequence?\r", ITC1600_FIRST_DEVICE
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -4849,6 +4851,7 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 			// this is no fatal error, we just inform the user
 			printf "(%s) Sampling interval does not match leader panel\r", panelTitle
 			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,65280,33024)
+			ControlWindowToFront()
 		else
 			ValDisplay ValDisp_DataAcq_SamplingInt win=$panelTitle, valueBackColor=(0,0,0)
 		endif
@@ -4866,6 +4869,7 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 			endif
 
 			printf "(%s) %s setting does not match leader panel\r", panelTitle, desc[i]
+			ControlWindowToFront()
 			return 1
 		endfor
 	endfor
@@ -4892,11 +4896,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
 		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(mode == DATA_ACQUISITION_MODE && DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -4906,10 +4912,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		if(!NVAR_Exists(skip_free_memory_warning) || !skip_free_memory_warning)
 			sprintf msg, "The amount of free memory is below %gGB,\r would you like to start a new experiment?", FREE_MEMORY_LOWER_LIMIT
+			ControlWindowToFront()
 			DoAlert/T="Low memory warning" 1, msg
 			if(V_flag == 1)
 				SaveExperimentSpecial(SAVE_AND_SPLIT)
 				print "Please restart data acquisition"
+				ControlWindowToFront()
 				return 1
 			else
 				variable/G dfr:skip_free_memory_warning = 1
@@ -4920,6 +4928,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	// check that if multiple devices are locked we are in multi device mode
 	if(ItemsInList(GetListOfLockedDevices()) > 1 && !GetCheckBoxState(panelTitle, "check_Settings_MD"))
 		print "If multiple devices are locked, DAQ/TP is only possible in multi device mode"
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -4941,6 +4950,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		if(DAP_DeviceIsUnlocked(panelTitle))
 			printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -4949,18 +4959,21 @@ Function DAP_CheckSettings(panelTitle, mode)
 #ifndef EVIL_KITTEN_EATING_MODE
 		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
+			ControlWindowToFront()
 			return 1
 		endif
 #endif
 
 		if(!DAP_PanelIsUpToDate(panelTitle))
 			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", panelTitle
+			ControlWindowToFront()
 			return 1
 		endif
 
 		numHS = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -4968,12 +4981,14 @@ Function DAP_CheckSettings(panelTitle, mode)
 		numDACs = sum(statusDA)
 		if(!numDACS)
 			printf "(%s) Please activate at least one DA channel\r", panelTitle
+			ControlWindowToFront()
 			return 1
 		endif
 
 		numADCs = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC))
 		if(!numADCs)
 			printf "(%s) Please activate at least one AD channel\r", panelTitle
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -4993,6 +5008,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 				ttlWave = GetPopupMenuString(panelTitle, ctrl)
 				if(!CmpStr(ttlWave, NONE))
 					printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
+					ControlWindowToFront()
 					return 1
 				endif
 
@@ -5001,9 +5017,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 					endWave = GetPopupMenuString(panelTitle, ctrl)
 					if(!CmpStr(endWave, NONE))
 						printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
+						ControlWindowToFront()
 						return 1
 					elseif(!CmpStr(ttlWave, endWave))
 						printf "(%s) Please select a indexing end wave different as the main wave for TTL channel %d\r", panelTitle, i
+						ControlWindowToFront()
 						return 1
 					endif
 				endif
@@ -5012,11 +5030,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && GetCheckBoxState(panelTitle, "check_DataAcq_RepAcqRandom") && indexingEnabled)
 				printf "(%s) Repeated random acquisition can not be combined with indexing.\r", panelTitle
 				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
+				ControlWindowToFront()
 				return 1
 			endif
 
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") && GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", panelTitle
+				ControlWindowToFront()
 				return 1
 			endif
 
@@ -5031,6 +5051,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 					if(!IsFinite(AFH_GetHeadstagefromDAC(panelTitle, i)))
 						printf "(%s) Distributed Acquisition does not work with unassociated DA channel %d.\r", panelTitle, i
+						ControlWindowToFront()
 						return 1
 					endif
 
@@ -5044,6 +5065,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 						refDacWave = dacWave
 					elseif(CmpStr(refDacWave, dacWave))
 						printf "(%s) Please select the same stim sets for all DACs when distributed acquisition is used\r", panelTitle
+						ControlWindowToFront()
 						return 1
 					endif
 				endfor
@@ -5078,6 +5100,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 				ADCs[i] = ChanAmpAssign[%IC_AD][i]
 			else
 				printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
+				ControlWindowToFront()
 				return 1
 			endif
 		endfor
@@ -5085,18 +5108,21 @@ Function DAP_CheckSettings(panelTitle, mode)
 		if(SearchForDuplicates(DACs))
 			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same DA channels.\r", panelTitle
 			printf "Please clear the associations for unused headstages.\r"
+			ControlWindowToFront()
 			return 1
 		endif
 
 		if(SearchForDuplicates(ADCs))
 			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same AD channels.\r", panelTitle
 			printf "Please clear the associations for unused headstages.\r"
+			ControlWindowToFront()
 			return 1
 		endif
 
 		if(SearchForDuplicates(ampSpec))
 			printf "(%s) Different headstages in the \"DAC Channel and Device Associations\" menu reference the same amplifier-channel-combination.\r", panelTitle
 			printf "Please clear the associations for unused headstages.\r"
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -5114,6 +5140,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		if(GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration") <= 0)
 			print "The testpulse duration must be greater than 0 ms"
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -5121,6 +5148,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 		if(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)))
 			printf "(%s) Removing leftover lock on ITCDataWave\r", panelTitle
+			ControlWindowToFront()
 			SetWaveLock 0, ITCDataWave
 		endif
 	endfor
@@ -5141,6 +5169,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
 		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5150,6 +5179,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	if(headstage < 0 || headStage >= DimSize(ChanAmpAssign, COLS))
 		printf "(%s) Invalid headstage %d\r", panelTitle, headStage
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5171,6 +5201,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		ADUnit     = ChanAmpAssignUnit[%IC_ADUnit][headStage]
 	else
 		printf "(%s) Unhandled mode %d\r", panelTitle, clampMode
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5207,6 +5238,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		if(needResetting)
 			AI_UpdateChanAmpAssign(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
 			printf "(%s) Please restart DAQ or TP to use the automatically imported gains from MCC.\r", panelTitle
+			ControlWindowToFront()
 			HSU_UpdateChanAmpAssignPanel(panelTitle)
 			DAP_SyncChanAmpAssignToActiveHS(panelTitle)
 			return 1
@@ -5215,35 +5247,41 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
 		printf "(%s) Please select a valid DA and AD channel in \"DAC Channel and Device Associations\" in the Hardware tab.\r", panelTitle
+		ControlWindowToFront()
 		return 1
 	endif
 
 	realMode = channelClampMode[DACchannel][%DAC]
 	if(realMode != clampMode)
 		printf "(%s) The clamp mode of DA %d is %s and differs from the requested mode %s.\r", panelTitle, DACchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		ControlWindowToFront()
 		return 1
 	endif
 
 	realMode = channelClampMode[ADCchannel][%ADC]
 	if(realMode != clampMode)
 		printf "(%s) The clamp mode of AD %d is %s and differs from the requested mode %s.\r", panelTitle, ADCchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		ControlWindowToFront()
 		return 1
 	endif
 
 	ADheadstage = AFH_GetHeadstageFromADC(panelTitle, ADCchannel)
 	if(!IsFinite(ADheadstage))
 		printf "(%s) Could not determine the headstage for the ADChannel %d.\r", panelTitle, ADCchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
 	DAheadstage = AFH_GetHeadstageFromDAC(panelTitle, DACchannel)
 	if(!IsFinite(DAheadstage))
 		printf "(%s) Could not determine the headstage for the DACchannel %d.\r", panelTitle, DACchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(DAheadstage != ADheadstage)
 		printf "(%s) The configured headstages for the DA channel %d and the AD channel %d differ (%d vs %d).\r", panelTitle, DACchannel, ADCchannel, DAheadstage, ADheadstage
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5251,11 +5289,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && cmpstr(DAUnit, unit))
 		printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", panelTitle, DACchannel, DAUnit, unit
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5263,11 +5303,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	gain = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", panelTitle, DACchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(DAGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", panelTitle, DACchannel, DAGain, gain
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5276,6 +5318,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	scale = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(scale))
 		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5283,11 +5326,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for ADCchannel %d is empty.\r", panelTitle, ADCchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && cmpstr(ADUnit, unit))
 		printf "(%s) The configured unit for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", panelTitle, ADCchannel, ADUnit, unit
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5295,11 +5340,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	gain = GetSetVariable(panelTitle, ctrl)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", panelTitle, ADCchannel
+		ControlWindowToFront()
 		return 1
 	endif
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(ADGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", panelTitle, ADCchannel, ADGain, gain
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -5308,6 +5355,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		dacWave = GetPopupMenuString(panelTitle, ctrl)
 		if(!CmpStr(dacWave, NONE))
 			printf "(%s) Please select a stimulus set for DA channel %d referenced by Headstage %d\r", panelTitle, DACchannel, headStage
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -5316,9 +5364,11 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 		if(!WaveExists(stimSet))
 			printf "(%s) The stim set %s of headstage %d does not exist or could not be created..\r", panelTitle, dacWave, headstage
+			ControlWindowToFront()
 			return 1
 		elseif(DimSize(stimSet, ROWS) == 0)
 			printf "(%s) The stim set %s of headstage %d is empty, but must have at least one row.\r", panelTitle, dacWave, headstage
+			ControlWindowToFront()
 			return 1
 		endif
 
@@ -5342,6 +5392,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 				if(isEmpty(info))
 					printf "(%s) Warning: The analysis function %s for stim set %s and event type \"%s\" could not be found\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+					ControlWindowToFront()
 					continue
 				endif
 
@@ -5353,11 +5404,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 				if(!valid_f1 && !valid_f2) // not a valid analysis function
 					printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+					ControlWindowToFront()
 					return 1
 				endif
 
 				if(i == MID_SWEEP_EVENT && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), dacWave
+					ControlWindowToFront()
 					return 1
 				endif
 			endfor
@@ -5368,6 +5421,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			endWave = GetPopupMenuString(panelTitle, ctrl)
 			if(!CmpStr(endWave, NONE))
 				printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
+				ControlWindowToFront()
 				return 1
 			elseif(!CmpStr(dacWave, endWave))
 				printf "(%s) Please select a different indexing end wave than the DAC wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
@@ -5379,6 +5433,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	if(GetCheckBoxState(panelTitle, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", panelTitle, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
+		ControlWindowToFront()
 		return 1
 	endif
 
