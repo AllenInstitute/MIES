@@ -5358,6 +5358,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 				if(i == MID_SWEEP_EVENT && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), dacWave
+					return 1
 				endif
 			endfor
 		endif
