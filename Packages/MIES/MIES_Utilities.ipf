@@ -85,6 +85,7 @@ Function ASSERT(var, errorMsg)
 
 		sprintf abortMsg, "Assertion FAILED in function %s(...) %s:%s.\rMessage: %s\r", func, file, line, errorMsg
 		printf abortMsg
+		ControlWindowToFront()
 		Debugger
 		Abort
 	endtry
