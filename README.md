@@ -6,6 +6,9 @@ Pressure control may be implemented with ITC and/or NIDAQ hardware.  For NIDAQ
 hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 package from Wavemetrics.
 
+Install the [Visual C++ Redistributable for Visual Studio 2015](
+https://www.microsoft.com/en-us/download/details.aspx?id=48145) package.
+
 ### Igor Pro 6.3.x (32bit only)
 
 * Quit Igor Pro
@@ -22,7 +25,7 @@ package from Wavemetrics.
 	* In "Igor Help File"  a shortcut pointing to HelpFiles
 * Start Igor Pro
 
-### Igor Pro 7.0.x (32bit)
+### Igor Pro 7.0.1 (32bit)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -38,7 +41,7 @@ package from Wavemetrics.
 	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
-### Igor Pro 7.0.x (64bit)
+### Igor Pro 7.0.1 (64bit)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
