@@ -8,6 +8,7 @@
   namespacelist
   NWB
   misc
+  ZeroMQ-XOP-Readme
 
 Introduction
 =============
