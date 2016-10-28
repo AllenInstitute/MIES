@@ -2541,7 +2541,7 @@ Function IsTextWave(wv)
 	return WaveType(wv, 1) == 2
 End
 
-// @brief Return the user name of the running user
+/// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 
 	variable numElements
