@@ -1543,11 +1543,17 @@ End
 /// @brief This function creates a string that is used to name the 2d output wave of the wavebuilder panel.
 ///
 /// The naming is based on userinput to the wavebuilder panel
-static Function/S WBP_AssembleSetName()
+static Function/S WBP_AssembleSetName([modName])
+	string modName
 	string AssembledBaseName = ""
 
 	ControlInfo/W=$panel setvar_WaveBuilder_baseName
-	AssembledBaseName += s_value[0,15]
+	if(ParamIsDefault(modName))
+		AssembledBaseName += s_value[0,15]
+	else
+		AssembledBaseName += s_value[0,(15 - strlen(modName))]
+		AssembledBaseName += modName
+	endif
 	ControlInfo/W=$panel popup_WaveBuilder_OutputType
 	AssembledBaseName += "_" + s_value + "_"
 	ControlInfo/W=$panel setvar_WaveBuilder_SetNumber
@@ -1616,8 +1622,8 @@ Function/S WBP_ReturnListSavedSets(setType)
 end
 
 static Function WBP_SaveSetParam()
-
-	string setName
+	string setName, childStimsets
+	variable i
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP        = GetWaveBuilderWaveParam()
@@ -1625,6 +1631,16 @@ static Function WBP_SaveSetParam()
 
 	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
 	setName = WBP_AssembleSetName()
+
+	// avoid circle references of any order
+	childStimsets = WB_StimsetRecursion()
+	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		do
+			i += 1
+			setName = WBP_AssembleSetName(modName = "_" + num2str(i))
+		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
+	endif
 
 	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
 	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)

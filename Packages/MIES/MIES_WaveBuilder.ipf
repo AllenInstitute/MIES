@@ -40,13 +40,14 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 
 	if(!WaveExists(stimSet))
 		needToCreateStimSet = 1
-	elseif(WaveExists(stimSet) && WB_ParameterWvsNewerThanStim(setName))
+	elseif(WaveExists(stimSet) && WB_StimsetNeedsUpdate(setName))
 		needToCreateStimSet = 1
 	else
 		needToCreateStimSet = 0
 	endif
 
 	if(needToCreateStimSet)
+		// create current stimset
 		WAVE/Z stimSet = WB_GetStimSet(setName=setName)
 		if(!WaveExists(stimSet))
 			return $""
@@ -130,6 +131,10 @@ Function/Wave WB_GetWaveTextParamForSet(setName)
 
 	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 
+	if(WaveExists(wv))
+		UpgradeWaveTextParam(wv)
+	endif
+
 	return wv
 End
 
@@ -154,33 +159,81 @@ Function/Wave WB_GetSegWvTypeForSet(setName)
 	return wv
 End
 
-/// @return One if one of the parameter waves is newer than the stim set wave, zero otherwise
+/// @brief Check if stimset needs to be created
+///
+/// Stimset is recreated
+///     * if one of the parameter waves was modified
+///     * the custom wave that was used to build the stimset was modified
+///
+/// @return 1 if stimset needs to be recreated, 0 otherwise
+static Function WB_StimsetNeedsUpdate(setName)
+	string setName
+
+	string stimsets
+	variable lastModStimSet, numWaves, numStimsets, i
+
+	// check if parameter waves were modified
+	stimsets = WB_StimsetRecursion(parent = setName)
+	stimsets = AddListItem(setName, stimsets)
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		if(WB_ParameterWvsNewerThanStim(StringFromList(i, stimsets)))
+			return 1
+		endif
+	endfor
+
+	// check if custom waves were modified
+	lastModStimSet = WB_GetLastModStimSet(setName)
+	WAVE/WAVE customWaves = WB_CustomWavesFromStimSet(stimSetList = stimsets)
+	numWaves = DimSize(customWaves, ROWS)
+	for(i = 0; i < numWaves; i += 1)
+		ASSERT(WaveExists(customWaves[i]), "customWaves should not contain non-existing wave ref")
+		if(modDate(customWaves[i]) > lastModStimSet)
+			return 1
+		endif
+	endfor
+
+	return 0
+End
+
+/// @brief Check if parameter waves' modification date is newer than saved stimset
+///
+/// @param setName	string containing name of stimset
+///
+/// @return 1 if Parameter waves were modified, 0 otherwise
 static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
-	variable type, lastModStimSet
+	variable lastModStimSet
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
-	WAVE/Z WPT       = WB_GetWaveTextParamForSet(setName)
+	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(setName)
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
 
+	lastModStimSet = WB_GetLastModStimSet(setName)
 	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
-
-		type = GetStimSetType(setName)
-		DFREF dfr = GetSetFolder(type)
-		WAVE/Z/SDFR=dfr stimSet = $setName
-		if(!WaveExists(stimSet))
-			return 0
-		endif
-
-		lastModStimSet = modDate(stimSet)
-
 		if(modDate(WP) > lastModStimSet || modDate(WPT) > lastModStimSet || modDate(SegWvType) > lastModStimSet)
 			return 1
 		endif
 	endif
 
 	return 0
+End
+
+/// @brief Get modification date of saved stimset wave
+///
+/// @param setName	string containing name of stimset
+/// @return date of last modification as double precision Igor date/time value
+Function WB_GetLastModStimSet(setName)
+	string setname
+
+	DFREF dfr = GetSetFolder(GetStimSetType(setName))
+	WAVE/Z/SDFR=dfr stimSet = $setName
+	if(!WaveExists(stimSet))
+		return 0
+	endif
+
+	return modDate(stimSet)
 End
 
 /// @brief Return the stim set wave
@@ -196,9 +249,26 @@ End
 Function/Wave WB_GetStimSet([setName])
 	string setName
 
-	variable i, numEpochs, numSweeps, updateEpochIDWave
+	variable i, numEpochs, numSweeps, numStimsets, updateEpochIDWave
 	variable last, lengthOf1DWaves, length, channelType
 	variable referenceTime = DEBUG_TIMER_START()
+	string stimSetList, stimSetName
+
+	if(ParamIsDefault(setName))
+		stimSetList = WB_StimsetRecursion()
+	else
+		stimSetList = WB_StimsetRecursion(parent = setName)
+		ASSERT(WhichListItem(setName, stimSetList) == -1, "invalid stimset: stimset references itself")
+	endif
+
+	// recursive stimset creation: first stimsets have deepest dependence
+	numStimsets = ItemsInList(stimSetList)
+	for(i = 0; i < numStimSets; i += 1)
+		stimSetName = StringFromList(i, stimSetList)
+		if(WB_StimsetNeedsUpdate(stimSetName))
+			WB_CreateAndGetStimSet(stimSetName)
+		endif
+	endfor
 
 	if(ParamIsDefault(setName))
 		updateEpochIDWave = 1
@@ -1288,19 +1358,40 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 	variable sweep
 	struct FormulaProperties &fp
 
+	string dependentStimsets
+	variable i, numStimsets
 	struct FormulaProperties trans
-	WB_FormulaSwitchToStimset(formula, trans)
+	variable numRows = Inf
+	variable numCols = Inf
 
 	InitFormulaProperties(fp)
+	InitFormulaProperties(trans)
+	WB_FormulaSwitchToStimset(formula, trans)
 
-	// and now we look for shorthand-like strings not referring to existing stimsets
+	// look for shorthand-like strings not referring to existing stimsets
 	if(GrepString(trans.formula, "\\b[A-Z][0-9]*\\b"))
 		printf "WBP_ParseCombinerFormula: Parse error in the formula \"%s\": Non-existing shorthand found\r", formula
 		return 1
 	endif
 
+	// Do not allow questionmarks as part of the formula
+	if(CountSubstrings(formula, "?") > 0)
+		printf "WBP_ParseCombinerFormula: Quenstionmark char not allowed in formula.\r"
+		return 1
+	endif
+
+	numStimsets = ItemsInList(trans.stimsetList)
+	for(i = 0; i < numStimsets; i += 1)
+		WAVE/Z wv = WB_CreateAndGetStimSet(StringFromList(i, trans.stimsetList))
+		ASSERT(WaveExists(wv), "all stimsets of current formula should have been created previously by WB_GetStimset()")
+		numRows = min(numRows, DimSize(wv, ROWS))
+		numCols = min(numCols, DimSize(wv, COLS))
+	endfor
+	trans.numRows = numRows
+	trans.numCols = numCols
+
 	if(sweep >= trans.numCols)
-		printf "Requested step %d is larger as the minimum number of sweeps in the referenced stim sets\r", sweep
+		printf "WBP_ParseCombinerFormula: Requested step %d is larger than the minimum number of sweeps in the referenced stim sets\r", sweep
 		return 1
 	endif
 
@@ -1323,8 +1414,6 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 
 	string stimset, shorthand, stimsetSpec, prefix, suffix
 	variable numSets, i, stimsetFound
-	variable numRows = Inf
-	variable numCols = Inf
 
 	InitFormulaProperties(fp)
 
@@ -1357,18 +1446,17 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 			stimsetFound = 1
 		while(1)
 
-		// create the stimset if it is part of the formula
+		// save current stimset in a list
 		if(stimsetFound)
-			WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
-			ASSERT(WaveExists(wv), "Could not recreate a required stimset")
-			numRows = min(numRows, DimSize(wv, ROWS))
-			numCols = min(numCols, DimSize(wv, COLS))
+			fp.stimsetList = AddListItem(stimset, fp.stimsetList)
 		endif
 	endfor
 
+	if(ItemsInList(fp.stimsetList) == 0)
+		printf "no stimset present in formula.\r"
+	endif
+
 	fp.formula = formula
-	fp.numRows = numRows
-	fp.numCols = numCols
 End
 
 /// @brief Add wave ranges to every stimset (location marked by `?`) and
@@ -1405,4 +1493,199 @@ Function/S WB_FormulaSwitchToShorthand(formula)
 	endfor
 
 	return formula
+End
+
+/// @brief Get all custom waves that are used by the supplied stimset.
+///
+/// used by WaveBuilder and NeuroDataWithoutBorders
+///
+/// @returns a wave of wave references on success and a invalid wave if a wave did not exist.
+Function/WAVE WB_CustomWavesFromStimSet([stimsetList])
+	string stimsetList
+
+	variable numStimsets, numEpochs, i, j, k
+	string stimset
+
+	if(ParamIsDefault(stimsetList))
+		numStimsets = 1
+	else
+		numStimsets = ItemsInList(stimsetList)
+	endif
+	Make/N=(numStimsets * SEGMENT_TYPE_WAVE_LAST_IDX)/FREE/WAVE customWaves
+
+	for(i = 0; i < numStimsets; i += 1)
+		if(ParamIsDefault(stimsetList))
+			WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
+			WAVE/Z SegWvType = GetSegmentTypeWave()
+		else
+			stimset = StringFromList(i, stimsetList)
+			WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
+			WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+		endif
+
+		if(!WaveExists(WPT) || !WaveExists(SegWvType))
+			continue
+		endif
+
+		UpgradeSegWvType(SegWvType)
+		UpgradeWaveTextParam(WPT)
+
+		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
+		numEpochs = SegWvType[%'Total number of epochs']
+		for(j = 0; j < numEpochs; j += 1)
+			if(SegWvType[j] == 7)
+				WAVE/Z customWave = $(WPT[0][j])
+				if(WaveExists(customWave))
+					customWaves[k] = customWave
+					k += 1
+				else
+					printf "reference to custom wave \"%s\" failed.", WPT[0][j]
+				endif
+			endif
+		endfor
+	endfor
+
+	Redimension/N=(k) customWaves
+	return customWaves
+End
+
+/// @brief Search for stimsets in formula epochs
+///
+/// a stimset (parent) can depend on other stimsets (child)
+///
+/// @return non-unique list of all (child) stimsets
+static Function/S WB_StimsetChildren([stimset])
+	string stimset
+
+	variable numEpochs, numStimsets, i, j
+	string formula, regex, prefix, match, suffix
+	string stimsets = ""
+
+	if(ParamIsDefault(stimset))
+		WAVE/Z WP        = GetWaveBuilderWaveParam()
+		WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
+		WAVE/Z SegWvType = GetSegmentTypeWave()
+	else
+		WAVE/Z WP        = WB_GetWaveParamForSet(stimSet)
+		WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
+		WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+	endif
+
+	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType), "Parameter Waves not found.")
+	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SEGWVTYPE_WAVE_LAYOUT_VERSION = 4 is required. Check for changed DimLabels in SegWave!")
+
+	// search for stimsets in all formula-epochs by a regex pattern
+	numEpochs = SegWvType[%'Total number of epochs']
+	for(i = 0; i < numEpochs; i += 1)
+		if(SegWvType[i] == 8)
+			formula = WPT[6][i]
+			numStimsets = CountSubstrings(formula, "?")
+			for(j = 0; j < numStimsets; j += 1)
+				WAVE/T/Z wv = SearchStringBase(formula, "(.*)\\b(\\w+)\\b\\?(.*)")
+				ASSERT(WaveExists(wv), "Error in formula: could not properly resolve formula to stimset")
+				formula = wv[0] + wv[2]
+				stimsets = AddListItem(wv[1], stimsets)
+			endfor
+		endif
+	endfor
+
+	return stimsets
+End
+
+/// @brief Get children of current parent stimset.
+///
+/// @param      parent		[optional: defaults to current WB panel] specify parent stimset.
+/// @param[out] knownNames	unique list of stimsets
+///
+/// @return number of parents stimsets that were moved to child stimsets
+static Function WB_StimsetFamilyNames(knownNames, [parent])
+	string parent, &knownNames
+
+	string children, familynames
+	variable numChildren, i, numMoved
+
+	// look for family members
+	if(ParamIsDefault(parent))
+		children = WB_StimsetChildren()
+	else
+		children = WB_StimsetChildren(stimset = parent)
+	endif
+
+	// unique names list with dependent children always left to their parents
+	WAVE/T wv = ListToTextWave(children, ";")
+	children = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+	knownNames = children + knownNames
+	numMoved = ItemsInList(knownNames)
+	WAVE/T wv = ListToTextWave(knownNames, ";")
+	knownNames = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+	numMoved -= ItemsInList(knownNames)
+
+	return numMoved
+End
+
+/// @brief Recursively descents into parent stimsets
+///
+/// You can not recurse into a stimset that depends on itself.
+///
+/// @return list of stimsets that derive from the input stimset
+Function/S WB_StimsetRecursion([parent, knownStimsets])
+	string parent, knownStimsets
+
+	string stimset, stimsetQueue
+	variable numStimsets, i, numBefore, numAfter, numMoved
+
+	if(ParamIsDefault(knownStimsets))
+		knownStimsets = ""
+	endif
+
+	numBefore = ItemsInList(knownStimsets)
+	if(ParamIsDefault(parent))
+		numMoved = WB_StimsetFamilyNames(knownStimsets)
+		parent = ""
+	else
+		numMoved = WB_StimsetFamilyNames(knownStimsets, parent = parent)
+	endif
+	numAfter = ItemsInList(knownStimsets)
+
+	// check recently added stimsets.
+	// @todo: moved parent stimsets should not be checked again and therefore moved between child and parent.
+	stimsetQueue = knownStimsets
+	for(i = 0; i < numAfter - numBefore + numMoved; i += 1)
+		stimset  = StringFromList(i, stimsetQueue)
+		// avoid first order circle references.
+		if(cmpstr(stimset, parent))
+			knownStimsets = WB_StimsetRecursion(parent = stimset, knownStimsets = knownStimsets)
+		endif
+	endfor
+
+	DebugPrint(num2str(numMoved) + "stimsets were moved to the front because they have deep relationships.")
+	DebugPrint(num2str(numAfter - numBefore) + " new stimsets added.")
+
+	return knownStimsets
+End
+
+/// @brief Recursively descents into parent stimsets
+///
+/// @param stimsetQueue	can be a list of stimsets (separated by ;) or a simple string
+///
+/// @return list of stimsets that derive from the input stimsets
+Function/S WB_StimsetRecursionForList(stimsetQueue)
+	string stimsetQueue
+
+	variable i, numStimsets
+	string stimset, stimsetList
+
+	// assure unique entry list
+	WAVE/T wv = ListToTextWave(stimsetQueue, ";")
+	stimsetQueue = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+
+	// loop through list
+	numStimsets = ItemsInList(stimsetQueue)
+	stimsetList = stimsetQueue
+	for(i = 0; i < numStimsets; i += 1)
+		stimset = StringFromList(i, stimsetQueue)
+		stimsetList = WB_StimsetRecursion(parent = stimset, knownStimsets = stimsetList)
+	endfor
+
+	return stimsetList
 End
