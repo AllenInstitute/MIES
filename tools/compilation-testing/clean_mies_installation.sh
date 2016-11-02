@@ -34,4 +34,7 @@ cp -r  "$top_level"/XOPs-IP7/*  "$xops"
 cp -r  "$top_level"/XOP-tango/* "$xops"
 rm -f  "$xops"/NIDAQmx.*
 
+# rename DLL, wine seems to be pickier than windows itself
+mv "$xops"/ITCMM32.dll "$xops"/ITCMM.dll
+
 exit 0
