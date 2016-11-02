@@ -85,6 +85,7 @@ Function ASSERT(var, errorMsg)
 
 		sprintf abortMsg, "Assertion FAILED in function %s(...) %s:%s.\rMessage: %s\r", func, file, line, errorMsg
 		printf abortMsg
+		ControlWindowToFront()
 		Debugger
 		Abort
 	endtry
@@ -2541,7 +2542,7 @@ Function IsTextWave(wv)
 	return WaveType(wv, 1) == 2
 End
 
-// @brief Return the user name of the running user
+/// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 
 	variable numElements
@@ -2553,4 +2554,10 @@ Function/S GetSystemUserName()
 	ASSERT(numElements > 3, "Unexpected format")
 
 	return StringFromList(2, path, ":")
+End
+
+/// @brief Bring the control window (the window with the command line) to the
+///        front of the desktop
+Function ControlWindowToFront()
+	DoWindow/H
 End
