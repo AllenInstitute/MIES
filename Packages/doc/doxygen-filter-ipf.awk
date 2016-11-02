@@ -43,6 +43,9 @@ function nicifyWaveType(str)
     gsub("Wave/Wave", "WaveRefWave"   , str)
     gsub("Wave/Z"   , "WaveOrNull"    , str)
     gsub("Wave/T"   , "WaveText"      , str)
+    gsub("Wave/I"   , "WaveInteger"   , str)
+    gsub("Wave/D"   , "WaveDouble"    , str)
+    gsub("Wave/R"   , "WaveReal"      , str)
   }
 
   return str
