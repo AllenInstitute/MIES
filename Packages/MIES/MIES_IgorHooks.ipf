@@ -122,6 +122,15 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	IH_Cleanup()
+	StartZeroMQMessageHandler()
+
+	return 0
+End
+
+static Function IgorStartOrNewHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	StartZeroMQMessageHandler()
 
 	return 0
 End

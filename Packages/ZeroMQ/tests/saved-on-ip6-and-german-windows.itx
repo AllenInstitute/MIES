@@ -1,0 +1,6 @@
+IGOR
+WAVES/T	wv
+BEGIN
+	"EuroSymbol: €"
+END
+X SetScale/P x 0,1,"", wv; SetScale y 0,0,"", wv

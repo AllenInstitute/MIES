@@ -3235,3 +3235,50 @@ Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo
 		endif
 	endfor
 End
+
+/// @brief Start the ZeroMQ message handler
+///
+/// Debug note: Tracking the connection state can be done via
+/// `netstat | grep $port`. The binded port only shows up *after* a
+/// successfull connection with zeromq_client_connect() is established.
+Function StartZeroMQMessageHandler()
+
+	variable i, port, err
+
+#if exists("zeromq_stop")
+
+	zeromq_stop()
+
+#if defined(DEBUGGING_ENABLED)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT)
+#else
+	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT)
+#endif
+
+	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
+		port = ZEROMQ_BIND_REP_PORT + i
+		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1)
+
+		if(err != 0)
+			DEBUGPRINT("The port is in use:", var=port)
+			continue
+		endif
+
+		zeromq_handler_start(); err = GetRTError(1)
+		if(err != 0)
+			zeromq_stop() // restart from scratch
+			continue
+		endif
+
+		DEBUGPRINT("Successfully listening on port:", var=port)
+		return NaN
+	endfor
+
+	ASSERT(0, "Could not start ZeroMQ Message Handler!")
+
+#else
+
+	DEBUGPRINT("ZeroMQ XOP is not present")
+
+#endif
+End

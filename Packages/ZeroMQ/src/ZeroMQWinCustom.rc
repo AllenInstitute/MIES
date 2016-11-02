@@ -1,0 +1,32 @@
+/*	XOP-specific resources for ZeroMQ on Windows
+
+	This file is compiled by the resource compiler and creates XOP-specific
+	resources that IGOR looks for in an XOP module.
+*/
+
+#include "XOPResources.h"			// Defines XOP-specific symbols.
+
+1100 STR#					// Custom error messages.
+BEGIN
+  "ZeroMQ requires Igor Pro 7.00 or later.\0",         // OLD_IGOR
+  "Unhandled C++ exception.\0",                        // UNHANDLED_CPP_EXCEPTION
+  "Unknown zeromq_set flag.\0",                        // UNKNOWN_SET_FLAG
+  "Internal error, this should not happen!\0",         // INTERNAL_ERROR
+  "Invalid argument!\0",                               // INVALID_ARGUMENT
+  "Message handler already running.\0",                // HANDLER_ALREADY_RUNNING
+  "Message handler could not find a binded server.\0", // HANDLER_NO_CONNECTION
+  "Required procedure files are missing.\0",           // MISSING_PROCEDURE_FILES
+  "Unexpected multi-part message format.\0",           // INVALID_MESSAGE_FORMAT
+	0,								// NOTE: 0 required to terminate the resource.
+END
+
+/* no menu item */
+
+1100 XOPI							// XOPI - Describes general XOP properties to IGOR.
+BEGIN
+	XOP_VERSION,					// Version number of host XOP system.
+	DEV_SYS_CODE,					// Code for development system used to make XOP.
+	0,								// Obsolete - set to zero.
+	0,								// Obsolete - set to zero.
+	XOP_TOOLKIT_VERSION				// XOP Toolkit version.
+END

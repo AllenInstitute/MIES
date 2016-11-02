@@ -485,3 +485,8 @@ StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
 Constant SKIP_MCC_MIES_SYNCING = 1
 Constant DO_MCC_MIES_SYNCING   = 0
 /// @}
+
+/// Number of trials to find a suitable port for binding a ZeroMQ service
+Constant ZEROMQ_NUM_BIND_TRIALS = 4
+
+Constant ZEROMQ_BIND_REP_PORT = 5670

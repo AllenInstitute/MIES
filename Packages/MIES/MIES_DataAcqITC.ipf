@@ -22,6 +22,7 @@ Function ITC_DataAcq(panelTitle)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do
+		DoXOPIdle
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
 	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
@@ -359,6 +360,7 @@ Function ITC_StartTestPulse(panelTitle)
 	WAVE ResultsWave = GetITCResultsWave(paneltitle)
 
 	do
+		DoXOPIdle
 		HW_ITC_ResetFifo(ITCDeviceIDGlobal)
 		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 

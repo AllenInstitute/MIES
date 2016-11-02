@@ -1,3 +1,6 @@
+Table of Contents
+=================
+
 .. toctree::
   :maxdepth: 1
 
@@ -8,9 +11,10 @@
   namespacelist
   NWB
   misc
+  ZeroMQ-XOP-Readme
 
 Introduction
-=============
+============
 
 MIES is sweep based data acquisition code written in Igor Pro from
 WaveMetrics.

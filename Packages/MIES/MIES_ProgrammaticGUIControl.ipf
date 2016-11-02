@@ -60,6 +60,21 @@ Function PGC_SliderControlProcedure(sla) : SliderControl
 End
 /// @}
 
+/// @brief Wrapper for PGC_SetAndActivateControl()
+Function PGC_SetAndActivateControlStr(win, control, str)
+	string win, control, str
+
+	return PGC_SetAndActivateControl(win, control, str=str)
+End
+
+/// @brief Wrapper for PGC_SetAndActivateControl()
+Function PGC_SetAndActivateControlVar(win, control, var)
+	string win, control
+	variable var
+
+	return PGC_SetAndActivateControl(win, control, val=var)
+End
+
 /// @brief Set the control's value and execute the control procedure
 /// of the given control (if it exists)
 ///

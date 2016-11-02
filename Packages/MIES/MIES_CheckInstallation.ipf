@@ -123,12 +123,14 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "HDF5-64.xop", "HDF5 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
 #else
 	CHI_CheckXOP(listOfXOPs, "ITC_X86_V31.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "HDF5.xop", "HDF5 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander.xop", "Multi Clamp Commander XOP", state)
+	CHI_CheckXOP(listOfXOPs, "ZeroMQ.xop", "ZeroMQ XOP", state)
 #endif
 
 	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings

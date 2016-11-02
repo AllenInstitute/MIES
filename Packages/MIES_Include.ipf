@@ -17,6 +17,9 @@
 // NWB for Igor Pro
 #include "IPNWB_Include"
 
+// ZeroMQ procedures
+#include ":ZeroMQ:procedures:ZeroMQ_Interop"
+
 // our includes
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisBrowser" menus=0
