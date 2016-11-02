@@ -1,3 +1,4 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_Constants.ipf
@@ -396,11 +397,7 @@ Constant COMMON_CONTROL_GROUP_COUNT = 17
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
 
-#if (IgorVersion() >= 7.0)
-	Constant MAX_COMMANDLINE_LENGTH = 1000
-#else
-	Constant MAX_COMMANDLINE_LENGTH = 400
-#endif
+Constant MAX_COMMANDLINE_LENGTH = 1000
 
 StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 

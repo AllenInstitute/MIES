@@ -1,4 +1,6 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3
+#pragma igorVersion=7.0
 
 /// @file MIES_Downsample.ipf
 /// @brief Panel for downsampling acquired data
@@ -14,7 +16,6 @@
 // third party includes
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
-#include ":FixScrolling"
 
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"

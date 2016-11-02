@@ -1,3 +1,4 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_DataAcqITC.ipf
@@ -109,7 +110,8 @@ Function ITC_STOPFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 
-Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)//Function name is the name of the function you want to run after run time has elapsed
+//Function name is the name of the function you want to run after run time has elapsed
+Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)
 	Variable RunTimePassed//how long you want the background timer to run in seconds
 	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
 

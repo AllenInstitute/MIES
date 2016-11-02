@@ -1,4 +1,6 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma igorVersion=7.0
 
 /// @file MIES_AnalysisBrowser.ipf
 /// @brief __AB__ Analysis browser
@@ -12,7 +14,6 @@
 // third party includes
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
-#include ":FixScrolling"
 
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
@@ -303,8 +304,6 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		expFileOrFolder = expFilePath
 	endif
 
-	// LoadData does not accept the root: prefix, as that might be already a subfolder
-	dataFolderPath = RemovePrefix(dataFolderPath, startStr = "root:")
 	SetDataFolder tmpDFR
 
 	// work around LoadData not respecting AbortOnRTE properly

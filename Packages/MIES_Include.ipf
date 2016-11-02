@@ -1,5 +1,6 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#pragma IgorVersion=6.3
+#pragma IgorVersion=7.0
 
 /// @file MIES_Include.ipf
 /// @brief Main include
@@ -12,7 +13,6 @@
 #include "ACL_TabUtilities"
 #include "ACL_UserdataEditor"
 #include "Arduino_Sequencer_Vs1"
-#include "FixScrolling"
 
 // NWB for Igor Pro
 #include "IPNWB_Include"

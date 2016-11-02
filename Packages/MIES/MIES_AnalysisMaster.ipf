@@ -1,3 +1,4 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_AnalysisMaster.ipf
@@ -489,12 +490,18 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 	
 	// Fetch the post sweep analysis result
 	analysisResult = str2num(analysisSettingsWave[headStage][%PSAResult])
-	
-	if((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))	 // action potential did not fire while using coarse tune
+
+	if((analysisResult == 0)                                         \
+	   && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1)  \
+	   && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))
+		// action potential did not fire while using coarse tune
 		scaleFactor = scaleFactor + actionScaleSettingsWave[headStage][%coarseScaleValue]
 		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
 		return 0
-	elseif((analysisResult == 1) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))	// action potential fired on the coarse tuning
+	elseif((analysisResult == 1)                                        \
+		   && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) \
+		   && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))
+		   // action potential fired on the coarse tuning
 		print "switching to fine factor..."
 		// bump the scale back one step of the coarse incValue
 		SetSetVariable(panelTitle, scaleControlName, (scaleFactor - actionScaleSettingsWave[headStage][%coarseScaleValue]))
@@ -506,13 +513,19 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		actionScaleSettingsWave[headStage][%fineTuneUse] = 1
 		
 		return 0
-	elseif((analysisResult == 0) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential didn't fire on the fine tuning			
+	elseif((analysisResult == 0)                                        \
+		   && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) \
+		   && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))
+		   // action potential didn't fire on the fine tuning
 		// bump up the scale factor by the fine Scale adjustment
 		scaleFactor = scaleFactor + actionScaleSettingsWave[headStage][% fineScaleValue]
 		
 		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
 		return 0
-	elseif((analysisResult == 1) && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))	// action potential fired on the fine tuning
+	elseif((analysisResult == 1)                                        \
+		   && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) \
+		   && (actionScaleSettingsWave[headStage][%fineTuneUse] == 1))
+		   // action potential fired on the fine tuning
 		print "found the AP!"
 		// Stop the ongoing data acquisition
 		DAP_StopOngoingDataAcquisition(panelTitle)

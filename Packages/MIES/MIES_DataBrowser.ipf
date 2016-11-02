@@ -1,4 +1,6 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma igorVersion=7.0
 
 /// @file MIES_DataBrowser.ipf
 /// @brief __DB__ Panel for browsing acquired data during acquisition
@@ -9,7 +11,6 @@
 // third party includes
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
-#include ":FixScrolling"
 
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"

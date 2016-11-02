@@ -1,3 +1,4 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_Menu.ipf
@@ -90,7 +91,12 @@ Function CloseMies()
 
 	for (index = 0; index < noOfActiveWindows;index += 1)
 		windowToClose = StringFromList(index, activeWindows)
-		if ( StringMatch(windowToClose, "waveBuilder*") || StringMatch(windowToClose, "dataBrowser*") || StringMatch(windowToClose, "DB_ITC*") || StringMatch(windowToClose, "DA_Ephys*") || StringMatch(windowToClose, "configureAnalysis*") || StringMatch(windowToClose, "analysisMaster*") )
+		if(StringMatch(windowToClose, "waveBuilder*")          \
+		   || StringMatch(windowToClose, "dataBrowser*")       \
+		   || StringMatch(windowToClose, "DB_ITC*")            \
+		   || StringMatch(windowToClose, "DA_Ephys*")          \
+		   || StringMatch(windowToClose, "configureAnalysis*") \
+		   || StringMatch(windowToClose, "analysisMaster*"))
 			KillWindow $windowToClose
 		endif
 	endfor

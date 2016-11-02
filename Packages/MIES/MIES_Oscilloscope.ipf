@@ -1,3 +1,4 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_Oscilloscope.ipf
@@ -96,18 +97,14 @@ Function SCOPE_UpdateGraph(panelTitle)
 			minVal = +Inf
 			maxVal = -Inf
 
-			/// @todo switch to WaveStats/RMD once IP7 is mandatory
-
 			if(showPeakResistance)
-				Duplicate/FREE/R=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage, peak
-				WaveStats/M=1/Q peak
+				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage
 				minVal = min(V_min, minVal)
 				maxVal = max(V_max, maxVal)
 			endif
 
 			if(showSteadyStateResistance)
-				Duplicate/FREE/R=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage, steady
-				WaveStats/M=1/Q steady
+				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage
 				minVal = min(V_min, minVal)
 				maxVal = max(V_max, maxVal)
 			endif
@@ -132,17 +129,13 @@ Function SCOPE_UpdateGraph(panelTitle)
 	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	Make/Y=(WaveType(OscilloscopeData))/FREE/N=(min(stopCollectionPoint, DimSize(OscilloscopeData, ROWS))) ADdata
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
 		leftAxis = "AD" + num2str(ADCs[i])
 
-		ADdata[] = OscilloscopeData[p][numDACs + i]
-
-		/// @todo switch to WaveStats/RMD once IP7 is mandatory
-		WaveStats/M=1/Q ADdata
+		WaveStats/M=1/Q/RMD=[][numDACs + i] OscilloscopeData
 
 		statsMin = V_min
 		statsMax = V_max
@@ -253,11 +246,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
 				AppendToGraph/W=$graph/L=$leftAxis powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
 				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
-#if (IgorVersion() >= 7.0)
 				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
-#else
-				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0)
-#endif
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
 				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
 				SetAxis/W=$graph $leftAxis, 1e-20, 1e20
@@ -279,7 +268,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
 					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
 					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535,65535,65535)
-					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE),(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE),BlueBlackRed,0}
+					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],   \
+											(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE), \
+											(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE), BlueBlackRed,0}
 					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][i][%PressureChange],0,1,1,4}
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
@@ -290,10 +281,10 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
 				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
 				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit(top)=1
-				Label/W=$graph $rightAxis "(M" + GetSymbolOhm() + ")"
+				Label/W=$graph $rightAxis "(MΩ)"
 
 				if(!oneTimeInitDone)
-					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(M%s)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(M%s)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, GetSymbolOhm(), peakColor.red, peakColor.green, peakColor.blue, GetSymbolOhm()
+					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(MΩ)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(MΩ)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, peakColor.red, peakColor.green, peakColor.blue
 					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2  str
 
 					Label/W=$graph top "Relative time (s)"

@@ -1,8 +1,14 @@
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 /// @file MIES_PressureControl.ipf
-/// @brief __P__ Supports use of analog pressure regulators controlled via a ITC device for automated pressure control during approach, seal, break in, and clearing of pipette.
-/// @todo TPbackground can crash while operating pressure regulators if called in the middle of a TP. Need to call P_Pressure control from TP functions that occur between TPs to prevent this from happening
+/// @brief __P__ Supports use of analog pressure regulators controlled via a
+/// ITC device for automated pressure control during approach, seal, break in,
+/// and clearing of pipette.
+///
+/// @todo TPbackground can crash while operating pressure regulators if called
+/// in the middle of a TP. Need to call P_Pressure control from TP functions
+/// that occur between TPs to prevent this from happening
 
 /// @name Constants used by pressure control
 /// @anchor PRESSURE_CONSTANTS
@@ -902,10 +908,15 @@ static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 
 	SetPopupMenuIndex(panelTitle, control, PressureDataWv[headStageNo][%DAC_List_Index])
 
-	if(isFinite(PressureDataWv[headStageNo][%DAC_List_Index])) // only compare saved and selected device if a device was saved
+	// only compare saved and selected device if a device was saved
+	if(isFinite(PressureDataWv[headStageNo][%DAC_List_Index]))
 		string SavedITCdev = PressureDataTxtWv[headStageNo][0]
 		string PopUpMenuString = GetPopupMenuString(panelTitle, control)
-		if(PressureDataWv[headStageNo][%DAC_List_Index] != 1) // compare saved and selected device to verify that they match. Non match could occur if data was saved prior to a popup menu update and ITC hardware change.
+
+		// compare saved and selected device to verify that they match. Non
+		// match could occur if data was saved prior to a popup menu update
+		// and ITC hardware change.
+		if(PressureDataWv[headStageNo][%DAC_List_Index] != 1)
 			if(cmpstr(SavedITCdev, PopUpMenuString) != 0)
 				print "Saved ITC device for headStage", headStageNo, "is no longer at same list position."
 				print "Verify the selected ITC device for headStage.", headStageNo

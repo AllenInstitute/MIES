@@ -9,22 +9,6 @@ package from Wavemetrics.
 Install the [Visual C++ Redistributable for Visual Studio 2015](
 https://www.microsoft.com/en-us/download/details.aspx?id=48145) package.
 
-### Igor Pro 6.3.x (32bit only)
-
-* Quit Igor Pro
-* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 6 User Files"
-	* In "User Procedures" a shortcut pointing to
-		* "Packages\Arduino"
-		* "Packages\HDF"
-		* "Packages\IPNWB"
-		* "Packages\MIES"
-		* "Packages\Tango"
-	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-	* In "Igor Extensions" a shortcut pointing to XOPs
-	* In "Igor Extensions" a shortcut pointing to XOP-tango
-	* In "Igor Help File"  a shortcut pointing to HelpFiles
-* Start Igor Pro
-
 ### Igor Pro 7.0.1 (32bit)
 
 * Quit Igor Pro
@@ -66,7 +50,7 @@ https://www.microsoft.com/en-us/download/details.aspx?id=48145) package.
 	* The Downsample Panel (MIES_Downsample.ipf)
 * To install one of them perform the following steps:
 	* Quit Igor Pro
-	* In "C:\Users\$username\Documents\WaveMetrics\Igor Pro 6 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s)
+	* In "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files\Igor Procedures" create a shortcut to the procedure file(s) (.ipf) for the desired package(s)
 	* Restart Igor Pro
 
 ## Arduino
@@ -117,7 +101,7 @@ Execute `tools/build-documentation.sh`.
 If guidelines are not followed, the MIES version will be unknown, and data acquisition is blocked.
 
 ### Cutting a new release
-* Check that main MIES and all separate modules compile (IP6 and IP7)
+* Check that main MIES and all separate modules compile
 * Check that doxygen returns neither errors nor warnings
 * Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
 * Adapt the release notes, `tools\create-changelog.sh` allows to generate a changelog as template
@@ -162,4 +146,7 @@ For testing compilation manually perform the following steps:
 * Watch the output
 
 ### Documentation building
-The documentation for the master and the latest release branch, `release/$number`, are automatically built by [MIES-BUILD](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD) and [MIES-BUILDRELEASE](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE).
+The documentation for the master and the latest release branch,
+`release/$number`, are automatically built by
+[MIES-BUILD](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD) and
+[MIES-BUILDRELEASE](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE).
