@@ -279,7 +279,14 @@ static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	variable versionOfNewWave
 
 	// The equality check ensures that you can also downgrade, e.g. from version 5 to 4, although this is *strongly* discouraged.
-	return WaveExists(wv) && GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY) == versionOfNewWave
+	return WaveExists(wv) && GetWaveVersion(wv) == versionOfNewWave
+End
+
+/// @brief return the Version of the Wave
+static Function GetWaveVersion(wv)
+	Wave/Z wv
+
+	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
 End
 
 /// @brief Set the wave layout version of wave
@@ -3567,6 +3574,19 @@ Function/S GetAnalysisDeviceFolderAS(expFolder, device)
 	return GetAnalysisExpFolderAS(expFolder) + ":" + device
 End
 
+/// @brief Return the datafolder reference to the sweep to channel relation of a device and experiment pair
+Function/DF GetAnalysisDevChannelFolder(expFolder, device)
+	string expFolder, device
+	return createDFWithAllParents(GetAnalysisDevChannelFolderAS(expFolder, device))
+End
+
+/// @brief Return the full path to the sweep to channel relation folder of a device and experiment pair, e.g. root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:channel
+Function/S GetAnalysisDevChannelFolderAS(expFolder, device)
+	string expFolder, device
+
+	return GetAnalysisDeviceFolderAS(expFolder, device) + ":channel"
+End
+
 /// @brief Return the datafolder reference to the sweep config folder of a device and experiment pair
 Function/DF GetAnalysisDeviceConfigFolder(expFolder, device)
 	string expFolder, device
@@ -3650,24 +3670,146 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
-/// @brief Return the text wave mapping the properties of the loaded experiments
-Function/Wave GetExperimentMap()
+///  wave is used to relate it's index to sweepWave and deviceWave.
+Function/Wave GetAnalysisChannelStorage(dataFolder, device)
+	String dataFolder, device
+	Variable versionOfWave = 2
 
-	DFREF dfr = GetAnalysisFolder()
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+	Wave/Z/SDFR=dfr/WAVE wv = channelStorage
 
-	Wave/Z/SDFR=dfr/T wv = experimentMap
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
+		// update Dimension label
+	else
+		Make/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
+
+	SetDimLabel COLS, 0, configSweep,   wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return a wave containing all stimulus channels in the NWB file as a ";"-separated List
+///  wave is used to relate it's index to sweepWave and deviceWave.
+Function/Wave GetAnalysisChannelStimWave(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/T wv = stimulus
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE, 3)/T dfr:experimentMap/Wave=wv
-
-	SetDimLabel COLS, 0, ExperimentDiscLocation, wv
-	SetDimLabel COLS, 1, ExperimentName, wv
-	SetDimLabel COLS, 2, ExperimentFolder, wv
-
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:stimulus/Wave=wv
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave containing all acquisition channels in the NWB file as a ";"-separated List
+///  wave is used to relate it's index to sweepWave and deviceWave.
+Function/Wave GetAnalysisChannelAcqWave(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/T wv = acquisition
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:acquisition/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave containing all sweeps in a unique fashion.
+///  wave is used to relate it's index to channelWave and deviceWave
+Function/Wave GetAnalysisChannelSweepWave(dataFolder, device)
+	String dataFolder, device
+
+	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/I wv = sweeps
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/I dfr:sweeps/Wave=wv = -1
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave containing all devices
+///  wave is used to relate it's index to sweepWave and channelWave.
+Function/Wave GetAnalysisDeviceWave(dataFolder)
+	String dataFolder
+
+	DFREF dfr = GetAnalysisExpFolder(dataFolder)
+
+	Wave/Z/SDFR=dfr/T wv = devices
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:devices/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return AnalysisBrowser indexing storage wave
+///
+/// Rows:
+/// Experiments found in current Directory
+///
+/// Columns:
+/// 0: %DiscLocation:  Path to Experiment on Disc
+/// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
+/// 2: %DataFolder     Data folder inside current Igor experiment
+/// 3: %FileType       File Type identifier for routing to loader functions
+Function/Wave GetAnalysisBrowserMap()
+	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = 2
+
+	STRUCT WaveLocationMod p
+	p.dfr     = dfr
+	p.newDFR  = dfr
+	p.name    = "experimentMap"
+	p.newName = "analysisBrowserMap"
+
+	WAVE/Z/T wv = UpgradeWaveLocationAndGetIt(p)
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
+		// update dimension labels
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 4) wv
+		wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 4)/T dfr:analysisBrowserMap/Wave=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
+
+	SetDimLabel COLS, 0, DiscLocation, wv
+	SetDimLabel COLS, 1, FileName, wv
+	SetDimLabel COLS, 2, DataFolder, wv
+	SetDimLabel COLS, 3, FileType, wv
+
+	SetWaveVersion(wv, versionOfWave)
 
 	return wv
 End
@@ -3721,22 +3863,25 @@ Function/Wave GetExperimentBrowserGUISel()
 	return wv
 End
 
-/// @brief Return the config wave of a given sweep from the analysis subfolder
-Function/Wave GetAnalysisConfigWave(expFolder, device, sweep)
-	string expFolder, device
+/// @brief Return the configSweep wave of a given sweep from the analysis subfolder
+Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
+	string dataFolder, device
 	variable sweep
 
-	Wave/SDFR=GetAnalysisDeviceConfigFolder(expFolder, device) wv = $("Config_Sweep_" + num2str(sweep))
+	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
+	string configSweep  = "Config_Sweep_" + num2str(sweep)
 
-	return wv
-End
+	Wave/I/Z/SDFR=dfr wv = $configSweep
 
-/// @brief Return the sweep wave of a given sweep from the analysis subfolder
-Function/Wave GetAnalysisSweepWave(expFolder, device, sweep)
-	string expFolder, device
-	variable sweep
+	if(WaveExists(wv))
+		// do nothing
+	else
+		Make/N=(0, 4)/I dfr:$configSweep/Wave=wv = -1
+	endif
 
-	Wave/SDFR=GetAnalysisSweepDataPath(expFolder, device, sweep) wv = $("Sweep_" + num2str(sweep))
+	SetDimLabel COLS, 0, type,   wv
+	SetDimLabel COLS, 1, number, wv
+	SetDimLabel COLS, 2, timeMS, wv
 
 	return wv
 End

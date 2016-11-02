@@ -2,7 +2,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
-#pragma version=0.14
+#pragma version=0.15
 
 /// @file IPNWB_Utils.ipf
 /// @brief Utility functions
@@ -165,4 +165,116 @@ Function WriteTextDatasetIfSet(locationID, name, str, [chunkedLayout])
 	endif
 
 	H5_WriteTextDataset(locationID, name, str=str, chunkedLayout=chunkedLayout)
+End
+
+/// @brief Remove a string prefix from each list item and
+/// return the new list
+Function/S RemovePrefixFromListItem(prefix, list, [listSep])
+	string prefix, list
+	string listSep
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
+
+	string result, entry
+	variable numEntries, i, len
+
+	result = ""
+	len = strlen(prefix)
+	numEntries = ItemsInList(list, listSep)
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, listSep)
+		if(!cmpstr(entry[0,(len-1)], prefix))
+			entry = entry[(len),inf]
+		endif
+		result = AddListItem(entry, result, listSep, inf)
+	endfor
+
+	return result
+End
+
+/// @brief Turn a persistent wave into a free wave
+Function/Wave MakeWaveFree(wv)
+	WAVE wv
+
+	DFREF dfr = NewFreeDataFolder()
+
+	MoveWave wv, dfr
+
+	return wv
+End
+
+/// @brief Rename wv to newName. Check for Unique Name and return new name of wave
+Function MoveAndRename(wv, newName, [dfr])
+	WAVE wv
+	String newName
+	DFREF dfr
+
+	if(ParamIsDefault(dfr))
+		dfr = GetWavesDataFolderDFR(wv)
+	endif
+	newName = UniqueWaveName(dfr, newName)
+
+	MoveWave wv, dfr:$newName
+End
+
+/// @brief Returns a wave name not used in the given datafolder
+///
+/// Basically a datafolder aware version of UniqueName for datafolders
+///
+/// @param dfr 	    datafolder reference where the new datafolder should be created
+/// @param baseName first part of the wave name, might be shorted due to Igor Pro limitations
+Function/S UniqueWaveName(dfr, baseName)
+	dfref dfr
+	string baseName
+
+	variable index
+	string name
+	string path
+
+	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
+
+	// shorten basename so that we can attach some numbers
+	baseName = CleanupName(baseName[0, 26], 0)
+	path = GetDataFolder(1, dfr)
+	name = baseName
+
+	do
+		if(!WaveExists($(path + name)))
+			return name
+		endif
+
+		name = baseName + "_" + num2istr(index)
+
+		index += 1
+	while(index < 10000)
+
+	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+
+	return ""
+End
+
+/// @brief Checks if the datafolder referenced by dfr exists.
+///
+/// Unlike DataFolderExists() a dfref pointing to an empty ("") dataFolder is considered non-existing here.
+/// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
+/// Taken from http://www.igorexchange.com/node/2055
+Function DataFolderExistsDFR(dfr)
+	dfref dfr
+
+	string dataFolder
+
+	switch(DataFolderRefStatus(dfr))
+		case 0: // invalid ref, does not exist
+			return 0
+		case 1: // might be valid
+			dataFolder = GetDataFolder(1,dfr)
+			return cmpstr(dataFolder,"") != 0 && DataFolderExists(dataFolder)
+		case 3: // free data folders always exist
+			return 1
+		default:
+			Abort "unknown status"
+			return 0
+	endswitch
 End

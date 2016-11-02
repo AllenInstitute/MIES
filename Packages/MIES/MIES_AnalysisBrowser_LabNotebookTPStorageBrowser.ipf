@@ -22,13 +22,13 @@ static Function/S LBN_GetExpFolderFromPopup(graph)
 	string panel
 	variable index
 
-	WAVE/T experimentMap = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 	panel = LBN_GetLeftPanel(graph)
 	index = GetPopupMenuIndex(panel, "popup_select_experiment")
 
-	ASSERT(index >= 0 && index < DimSize(experimentMap, ROWS), "Invalid index")
+	ASSERT(index >= 0 && index < DimSize(map, ROWS), "Invalid index")
 
-	return experimentMap[index][%ExperimentFolder]
+	return map[index][%DataFolder]
 End
 
 Function LBN_OpenLabnotebookBrowser()
@@ -483,11 +483,11 @@ Function/S LBN_GetAllExperiments()
 	variable i, index
 	string list = ""
 
-	WAVE/T experimentMap = GetExperimentMap()
-	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
+	WAVE/T map = GetAnalysisBrowserMap()
+	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 
 	for(i = 0; i < index; i += 1)
-		list = AddListItem(experimentMap[i][%ExperimentName], list, ";", Inf)
+		list = AddListItem(map[i][%FileName], list, ";", Inf)
 	endfor
 
 	return list

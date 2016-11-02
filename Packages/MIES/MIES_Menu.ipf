@@ -10,7 +10,7 @@ Menu "Mies Panels", dynamic
 	"DA_Ephys"                      , /Q, DAP_CreateDAEphysPanel()
 	"WaveBuilder"                   , /Q, WBP_CreateWaveBuilderPanel()
 	"Data Browser"                  , /Q, DB_OpenDataBrowser()
-	"Analysis Browser"              , /Q, AB_OpenExperimentBrowser()
+	"Analysis Browser"              , /Q, AB_OpenAnalysisBrowser()
 	"Labnotebook Browser"           , /Q, LBN_OpenLabnotebookBrowser()
 	"TPStorage Browser"             , /Q, LBN_OpenTPStorageBrowser()
 	"Restart ZeroMQ Message Handler", /Q, StartZeroMQMessageHandler()

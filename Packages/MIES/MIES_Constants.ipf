@@ -487,3 +487,9 @@ Constant DO_MCC_MIES_SYNCING   = 0
 Constant ZEROMQ_NUM_BIND_TRIALS = 4
 
 Constant ZEROMQ_BIND_REP_PORT = 5670
+
+/// @name Constants for AnalysisBrowserMap (Text Wave)
+/// @{
+StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR = "I"
+StrConstant ANALYSISBROWSER_FILE_TYPE_NWB  = "N"
+/// @}

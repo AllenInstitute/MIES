@@ -475,7 +475,7 @@ Function CalculateLCMOfWave(wv)
 	return result
 End
 
-/// @brief Returns an unsorted free wave with all unique entries from wv.
+/// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN.
 ///
 /// This is not the best possible implementation but should
 /// suffice for our needs.
@@ -496,6 +496,9 @@ Function/Wave GetUniqueEntries(wv)
 	result  = NaN
 	idx     = numRows - 1
 	for(i=0; i < numRows; i+=1 )
+		if (!IsFinite(wv[i]))
+			continue
+		endif
 		FindValue/V=(wv[i])/S=(idx) result
 		if(V_Value == -1)
 			result[idx] = wv[i]
@@ -1441,6 +1444,45 @@ Function/WAVE ConvertListOfWaves(list)
 	return waves
 End
 
+/// @brief Convert a list of strings to a text wave.
+Function/WAVE ConvertListToTextWave(list, [listSepString])
+	string list, listSepString
+	if(ParamIsDefault(listSepString))
+		listSepString = ";"
+	endif
+
+#if (IgorVersion() >= 7.0)
+	return ListToTextWave(list, listSepString)
+#else
+	MAKE/FREE/T/N=(ItemsInList(list, listSepString)) wv = StringFromList(p, list, listSepString)
+	return wv
+#endif
+End
+
+/// @brief Convert text wave to list
+///
+/// @return list without trailing listSepString
+Function/S ConvertTextWaveToList(wv, [listSepString])
+	wave/T wv
+	string listSepString
+	if(ParamIsDefault(listSepString))
+		listSepString = ";"
+	endif
+
+	variable i, numRows
+	string list = ""
+
+	numRows = DimSize(wv, ROWS)
+	for(i = numRows; i > 0; i -= 1)
+		list = AddListItem(wv[(i-1)], list, listSepString)
+	endfor
+
+	// remove trailing list Separator, added by AddListItem
+	list = list[0, strsearch(list,listSepString,Inf,1) -1]
+
+	return list
+End
+
 /// @brief Return a list of datafolders located in `dfr`
 ///
 /// @param dfr base folder
@@ -1476,6 +1518,15 @@ Function/S GetBaseName(filePathWithSuffix)
 	string filePathWithSuffix
 
 	return ParseFilePath(3, filePathWithSuffix, ":", 1, 0)
+End
+
+/// @brief Return the file extension (suffix)
+///
+/// Given `path/file.suffix` this gives `suffix`.
+Function/S GetFileSuffix(filePathWithSuffix)
+	string filePathWithSuffix
+
+	return ParseFilePath(4, filePathWithSuffix, ":", 0, 0)
 End
 
 /// @brief Return the folder of the file
@@ -1801,6 +1852,32 @@ Function/S AddPrefixToEachListItem(prefix, list)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		result = AddListItem(prefix + StringFromList(i, list), result, ";", inf)
+	endfor
+
+	return result
+End
+
+/// @brief Remove a string prefix from each list item and
+/// return the new list
+Function/S RemovePrefixFromListItem(prefix, list, [listSep])
+	string prefix, list
+	string listSep
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
+
+	string result, entry
+	variable numEntries, i, len
+
+	result = ""
+	len = strlen(prefix)
+	numEntries = ItemsInList(list, listSep)
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, listSep)
+		if(!cmpstr(entry[0,(len-1)], prefix))
+			entry = entry[(len),inf]
+		endif
+		result = AddListItem(entry, result, listSep, inf)
 	endfor
 
 	return result

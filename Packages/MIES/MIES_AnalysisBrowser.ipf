@@ -15,6 +15,12 @@
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
 
+// NWB includes
+#include ":..:IPNWB:IPNWB_Include"
+#include ":MIES_NeuroDataWithoutBorders"
+#include ":MIES_WaveBuilder"
+#include ":MIES_WaveBuilderPanel"
+
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_Constants"
@@ -36,7 +42,7 @@ static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
 
 Menu "Mies Panels"
-	"Analysis Browser"   , /Q, AB_OpenExperimentBrowser()
+	"Analysis Browser"   , /Q, AB_OpenAnalysisBrowser()
 	"Labnotebook Browser", /Q, LBN_OpenLabnotebookBrowser()
 	"TPStorage Browser"  , /Q, LBN_OpenTPStorageBrowser()
 End
@@ -65,9 +71,9 @@ static Function AB_ClearAnalysisFolder()
 
 	string folders
 
-	WAVE/T experimentMap = GetExperimentMap()
-	experimentMap = ""
-	SetNumberInWaveNote(experimentMap, NOTE_INDEX, 0)
+	WAVE/T map = GetAnalysisBrowserMap()
+	map = ""
+	SetNumberInWaveNote(map, NOTE_INDEX, 0)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	list = ""
@@ -81,66 +87,168 @@ static Function AB_ClearAnalysisFolder()
 	CallFunctionForEachListItem(KillOrMoveToTrashPath, folders)
 End
 
-static Function AB_AddExperimentMapEntry(baseFolder, expFilePath)
-	string baseFolder, expFilePath
+/// @brief Create relation (map) between file on disk and datafolder in current experiment
+/// @return total number of files mapped
+static Function AB_AddMapEntry(baseFolder, discLocation)
+	string baseFolder, discLocation
 
 	variable index
-	string expFolderName, relativePath, extension
-	WAVE/T experimentMap = GetExperimentMap()
+	string dataFolder, fileType, relativePath, extension
+	WAVE/T map = GetAnalysisBrowserMap()
 
-	index = GetNumberFromWaveNote(experimentMap, NOTE_INDEX)
+	index = GetNumberFromWaveNote(map, NOTE_INDEX)
+	EnsureLargeEnoughWave(map, minimumSize=index, dimension=ROWS)
 
-	EnsureLargeEnoughWave(experimentMap, minimumSize=index, dimension=ROWS)
-	experimentMap[index][%ExperimentDiscLocation] = expFilePath
+	// %DiscLocation = full path to file
+	map[index][%DiscLocation] = discLocation
 
-	relativePath = RemovePrefix(expFilePath, startStr=baseFolder)
-	experimentMap[index][%ExperimentName] = relativePath
+	// %FileName = filename + extension
+	relativePath = RemovePrefix(discLocation, startStr=baseFolder)
+	map[index][%FileName] = relativePath
 
-	extension = "." + ParseFilePath(4, expFilePath, ":", 0, 0)
+	extension = "." + GetFileSuffix(discLocation)
+
+	// %FileType = igor
+	strswitch(extension)
+		case ".pxp":
+		case ".uxp":
+			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
+			break
+		case ".nwb":
+			fileType = ANALYSISBROWSER_FILE_TYPE_NWB
+			break
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+	map[index][%FileType] = fileType
+	// %DataFolder = igor friendly DF name
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
-	expFolderName = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
-	experimentMap[index][%ExperimentFolder] = RemoveEnding(expFolderName, ":")
+	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
+	map[index][%DataFolder] = RemoveEnding(dataFolder, ":")
 
 	index += 1
-	SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
+	SetNumberInWaveNote(map, NOTE_INDEX, index)
 
 	return index - 1
 End
 
-static Function AB_RemoveExperimentMapEntry(index)
+static Function AB_RemoveMapEntry(index)
 	variable index
 
-	WAVE/T experimentMap = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
-	ASSERT(index < DimSize(experimentMap, ROWS), "row index out-of-bounds")
+	ASSERT(index < DimSize(map, ROWS), "row index out-of-bounds")
 
-	experimentMap[index][] = ""
+	map[index][] = ""
 
-	if(index + 1 == GetNumberFromWaveNote(experimentMap, NOTE_INDEX))
-		SetNumberInWaveNote(experimentMap, NOTE_INDEX, index)
+	if(index + 1 == GetNumberFromWaveNote(map, NOTE_INDEX))
+		SetNumberInWaveNote(map, NOTE_INDEX, index)
 	endif
 End
 
-static Function AB_AddExperimentFile(baseFolder, expFilePath)
-	string baseFolder, expFilePath
+/// @brief  Get single matching entry from getAnalysisBrowserMap
+/// @param  discLocation: first column. Path to file on disc
+/// @return wave with 4 columns
+/// Columns:
+/// 0: %DiscLocation:  Path to Experiment on Disc
+/// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
+/// 2: %DataFolder     Data folder inside current Igor experiment
+/// 3: %FileType       File Type identifier for routing to loader functions
+Function/Wave AB_GetMap(discLocation)
+	string discLocation
+
+	WAVE/T map = getAnalysisBrowserMap()
+
+	FindValue/TXOP=4/TEXT=(discLocation) map
+	ASSERT(V_Value >= 0, "invalid index")
+
+	Make/FREE/N=4/T wv
+	wv = 	map[V_Value][p]
+
+	SetDimLabel ROWS, 0, DiscLocation, wv
+	SetDimLabel ROWS, 1, FileName, wv
+	SetDimLabel ROWS, 2, DataFolder, wv
+	SetDimLabel ROWS, 3, FileType, wv
+
+	return wv
+End
+
+/// @brief save deviceList to wave
+/// @return created wave.
+Function/Wave AB_SaveDeviceList(deviceList, dataFolder)
+	String deviceList, dataFolder
+
+	Variable numDevices
+	Wave/T wv = GetAnalysisDeviceWave(dataFolder)
+
+	Wave/T deviceListWave = ConvertListToTextWave(deviceList)
+	numDevices = DimSize(deviceListWave, ROWS)
+	if(numDevices > 0)
+		EnsureLargeEnoughWave(wv, minimumSize=numDevices, dimension=ROWS)
+		wv[0, numDevices - 1] = deviceListWave[p]
+	endif
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, numDevices)
+
+	return wv
+End
+
+/// @brief general loader for pxp, uxp and nwb files
+static Function AB_AddFile(baseFolder, discLocation)
+	string baseFolder, discLocation
 
 	variable mapIndex
 	variable firstMapped, lastMapped
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
-	mapIndex = AB_AddExperimentMapEntry(baseFolder, expFilePath)
+	mapIndex = AB_AddMapEntry(baseFolder, discLocation)
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
-	AB_LoadLabNotebookFromFile(expFilePath)
+	AB_LoadFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped > firstMapped)
 		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
 	else // experiment could not be loaded
-		AB_RemoveExperimentMapEntry(mapIndex)
+		AB_RemoveMapEntry(mapIndex)
 	endif
+End
+
+/// @brief function tries to load Data From discLocation.
+static Function/S AB_LoadFile(discLocation)
+	string discLocation
+
+	string device, deviceList
+	variable numDevices, i, highestSweepNumber
+
+	Wave/T map = AB_GetMap(discLocation)
+
+	deviceList = AB_LoadLabNotebook(discLocation)
+	Wave/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
+
+	numDevices = GetNumberFromWaveNote(deviceWave, NOTE_INDEX)
+	for(i = 0; i < numDevices; i += 1)
+		device = deviceWave[i]
+		strswitch(map[%FileType])
+			case ANALYSISBROWSER_FILE_TYPE_IGOR:
+				AB_LoadSweepsFromExperiment(map[%DiscLocation], device)
+				AB_LoadTPStorageFromFile(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
+				break
+			case ANALYSISBROWSER_FILE_TYPE_NWB:
+				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				break
+			default:
+				ASSERT(0, "invalid file type")
+		endswitch
+
+		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
+		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweeps)
+	endfor
+
+	return deviceList
 End
 
 static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
@@ -183,36 +291,41 @@ static Function AB_AddExperimentNameIfReq(expName, list, index)
 	index += 1
 End
 
-static Function AB_FillListWave(expFolder, expName, device)
-	string expFolder, expName, device
-
+/// @brief Creates list-view for AnalysisBrowser
+///
+/// Depends on LabNoteBook to be loaded prior to call.
+///
+/// @param fileName   current Project's filename
+/// @param device     current device
+/// @param dataFolder current Project's Lab Notebook DataFolder reference
+/// @param sweepNums  Wave containing all sweeps actually present for device
+static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
+	string fileName, device, dataFolder
+	WAVE sweepNums
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
-	string str, name, listOfSweepConfigWaves
+	string str
 
-	DFREF expDataDFR      = GetAnalysisDeviceConfigFolder(expFolder, device)
-	WAVE numericalValues  = GetAnalysLBNumericalValues(expFolder, device)
-	WAVE textualValues    = GetAnalysLBTextualValues(expFolder, device)
+	DFREF labNBdfr         = GetAnalysisLabNBFolder(dataFolder, device)
+	WAVE  numericalValues  = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE  textualValues    = GetAnalysLBTextualValues(dataFolder, device)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	AB_AddExperimentNameIfReq(expName, list, index)
+	AB_AddExperimentNameIfReq(fileName, list, index)
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
 
-	listOfSweepConfigWaves = SortList(GetListOfWaves(expDataDFR, ".*"), ";", 16)
-	numWaves = ItemsInList(listOfSweepConfigWaves)
+	numWaves = GetNumberFromWaveNote(sweepNums, NOTE_INDEX)
 
 	list[index][%'#sweeps'][0] = num2istr(numWaves)
 	index += 1
 
 	for(i = 0; i < numWaves; i += 1)
-		name = StringFromList(i, listOfSweepConfigWaves)
 		EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 
-		sweepNo = ExtractSweepNumber(name)
-
+		sweepNo = sweepNums[i]
 		list[index][%sweep][0] = num2str(sweepNo)
 
 		str = AB_GetSettingNumFiniteVals(numericalValues, device, sweepNo, "DAC")
@@ -295,7 +408,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	fileNameWOExtension = GetBaseName(expFilePath)
 	baseFolder          = GetFolder(expFilePath)
-	extension           = ParseFilePath(4, expFilePath, ":", 1, 0)
+	extension           = GetFileSuffix(expFilePath)
 
 	/// @todo this is not 100% correct as users might choose a different name for the unpacked experiment folder
 	if(!cmpstr(extension, "uxp"))
@@ -338,15 +451,150 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	return V_flag
 End
 
-/// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(numericalValues)
-	WAVE numericalValues
+/// @brief Returns a wave containing all present sweep numbers
+///
+/// @param dataFolder    DataFolder of HDF5 or Experiment File where LabNoteBook is saved
+/// @param device        device for which to get sweeps.
+/// @param clean         Variable indicating if ouput can contain duplicate values
+static Function/WAVE AB_GetSweepsFromLabNotebook(dataFolder, device, [clean])
+	String dataFolder, device
+	variable clean
+	if(ParamIsDefault(clean))
+		clean = 0
+	endif
+
+	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
+	WAVE/SDFR=dfr numericalValues
 
 	variable sweepCol = GetSweepColumn(numericalValues)
 	MatrixOP/FREE sweepNums = col(numericalValues, sweepCol)
+	Redimension/N=-1 sweepNums
+
+	if(clean)
+		return GetUniqueEntries(sweepNums)
+	else
+		return sweepNums
+	endif
+End
+
+/// @brief Returns the highest referenced sweep number from the labnotebook
+static Function AB_GetHighestPossibleSweepNum(dataFolder, device)
+	string dataFolder, device
+
+	WAVE sweepNums = AB_GetSweepsFromLabNotebook(dataFolder, device, clean = 0)
 	WaveStats/M=1/Q sweepNums
 
 	return V_max
+End
+
+/// @brief Returns a wave containing all present sweep numbers
+///
+/// Function uses Config Waves from Igor Experiment to determine present sweeps
+///
+/// @param discLocation  location of Experiment File on Disc.
+///                      ID in AnalysisBrowserMap
+/// @param device        device for which to get sweeps.
+static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
+	string discLocation, device
+
+	variable highestSweepNumber, sweepNumber, numSweeps, i
+	string listSweepConfig, sweepConfig
+	WAVE/T map = AB_GetMap(discLocation)
+	DFREF SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
+	WAVE/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
+
+	// Load Sweep Config Waves
+	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
+	if(IsFinite(highestSweepNumber))
+		AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+	endif
+	listSweepConfig = GetListOfWaves(sweepConfigDFR, ".*")
+
+	// store Sweep Numbers in wave
+	numSweeps = ItemsInList(listSweepConfig)
+	EnsureLargeEnoughWave(sweeps, minimumSize=numSweeps, dimension=ROWS, initialValue = -1)
+	for(i = 0; i < numSweeps; i += 1)
+		sweepConfig = StringFromList(i, listSweepConfig)
+		sweepNumber = ExtractSweepNumber(sweepConfig)
+		sweeps[i] = sweepNumber
+	endfor
+	SetNumberInWaveNote(sweeps, NOTE_INDEX, numSweeps)
+
+	return sweeps
+End
+
+/// @brief Analyse data in NWB file and sort as sweeps.
+///
+/// Function uses source attribute of /acquisition/timeseries
+///                               and /stimulus/presentation
+///
+/// @param discLocation  location of NWB File on Disc.
+///                      ID in AnalysisBrowserMap
+/// @param dataFolder    datafolder of the project
+/// @param device        device for which to get sweeps.
+static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
+	string discLocation, dataFolder, device
+
+	variable h5_fileID, h5_groupID
+	string channelList
+
+	Wave/I sweeps = GetAnalysisChannelSweepWave(dataFolder, device)
+
+	// open hdf5 file
+	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+
+	// load from /acquisition/timeseries
+	channelList = IPNWB#ReadAcquisition(h5_fileID)
+	h5_groupID  = IPNWB#OpenAcquisition(h5_fileID)
+	Wave/T acquisition = GetAnalysisChannelAcqWave(dataFolder, device)
+	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, acquisition)
+	HDF5CloseGroup/Z h5_groupID
+
+	// load from /stimulus/presentation
+	channelList = IPNWB#ReadStimulus(h5_fileID)
+	h5_groupID  = IPNWB#OpenStimulus(h5_fileID)
+	Wave/T stimulus = GetAnalysisChannelStimWave(dataFolder, device)
+	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, stimulus)
+	HDF5CloseGroup/Z h5_groupID
+
+	// close hdf5 file
+	IPNWB#H5_CloseFile(h5_fileID)
+End
+
+/// @brief Store channelList in storage wave according to index in sweeps wave
+Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
+	variable groupID
+	string channelList
+	Wave/I sweeps
+	Wave/T storage
+
+	variable numChannels, numSweeps, i
+	string channelString
+	STRUCT IPNWB#ReadChannelParams channel
+
+	numChannels = ItemsInList(channelList)
+	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
+
+	EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
+	storage = ""
+
+	for(i = 0; i < numChannels; i += 1)
+		channelString = StringFromList(i, channelList)
+		IPNWB#LoadSourceAttribute(groupID, channelString, channel)
+		FindValue/I=(channel.sweep)/S=0 sweeps
+		if(V_Value == -1)
+			numSweeps += 1
+			EnsureLargeEnoughWave(sweeps, minimumSize = numSweeps, dimension = ROWS, initialValue = -1)
+			EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
+			sweeps[numSweeps - 1] = channel.sweep
+			storage[numSweeps - 1] = AddListItem(channelString, "")
+		else
+			storage[V_Value] = AddListItem(channelString, storage[V_Value])
+		endif
+	endfor
+
+	SetNumberInWaveNote(sweeps, NOTE_INDEX, numSweeps)
+	SetNumberInWaveNote(storage, NOTE_INDEX, numSweeps)
 End
 
 static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
@@ -391,27 +639,79 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	return numStringsLoaded
 End
 
-static Function/S AB_LoadLabNotebookFromFile(expFilePath)
-	string expFilePath
+static Function/S AB_LoadLabNotebook(discLocation)
+	string discLocation
+
+	string device, deviceList, err
+	string deviceListChecked = ""
+	variable numDevices, i
+
+	Wave/T map = AB_GetMap(discLocation)
+	deviceList = AB_LoadLabNoteBookFromFile(discLocation)
+
+	numDevices = ItemsInList(deviceList)
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, deviceList)
+
+		// check if data was loaded
+		DFREF dfr = GetAnalysisLabNBFolder(map[%DataFolder], device)
+		if (!AB_checkLabNotebook(dfr))
+			KillOrMoveToTrash(dfr = dfr)
+			continue
+		endif
+
+		AB_updateLabelsInLabNotebook(dfr)
+
+		deviceListChecked = AddListItem(device, deviceListchecked, ";", inf)
+	endfor
+
+	numDevices -= ItemsInList(deviceListChecked)
+	if(numDevices > 0)
+		sprintf err, "Dropped %d Loaded Items\r", numDevices
+		DEBUGPRINT(err)
+	endif
+
+	return deviceListChecked
+End
+
+static Function/S AB_LoadLabNotebookFromFile(discLocation)
+	string discLocation
+
+	String deviceList = ""
+	Wave/T map = AB_GetMap(discLocation)
+
+	strswitch(map[%FileType])
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
+			break
+	endswitch
+
+	return deviceList
+End
+
+static Function/S AB_LoadLabNotebookFromIgor(discLocation)
+	String discLocation
 
 	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
-	string expName, expFolder
 	string deviceList = ""
-	variable numDevices, numTypes, i, j, err, numWavesLoaded, highestSweepNumber
+	variable numDevices, numTypes, i, j, numWavesLoaded
 
-	WAVE/T experimentMap = GetExperimentMap()
+	WAVE/T experiment = AB_GetMap(discLocation)
 
-	FindValue/TXOP=4/TEXT=(expFilePath) experimentMap
-	ASSERT(V_Value >= 0, "invalid index")
-	expName   = experimentMap[V_Value][%ExperimentName]
-	expFolder = experimentMap[V_Value][%ExperimentFolder]
+	if(cmpstr(experiment[%FileType], ANALYSISBROWSER_FILE_TYPE_IGOR))
+		return "" // can not load file
+	endif
 
+	// load notebook waves from file to (temporary) data folder
 	labNotebookWaves  = "settingsHistory;keyWave;txtDocWave;txtDocKeyWave;"
 	labNotebookWaves += "numericalKeys;textualKeys;numericalValues;textualValues"
 	labNotebookPath = GetLabNotebookFolderAsString()
 	DFREF saveDFR = GetDataFolderDFR()
-	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, labNotebookPath, labNotebookWaves)
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "igorLoadNote")
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, labNotebookPath, labNotebookWaves)
 
 	if(numWavesLoaded <= 0)
 		SetDataFolder saveDFR
@@ -419,8 +719,10 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 		return ""
 	endif
 
+	// AB_LoadDataWrapper switched current Data Folder to newDFR
 	cdf = GetDataFolder(1)
 
+	// loop through root:MIES:LabNoteBook:[DEVICE_TYPES]:Device[DEVICE_NUMBERS]:
 	numDevices = ItemsInList(DEVICE_NUMBERS)
 	numTypes   = ItemsInList(DEVICE_TYPES)
 
@@ -440,6 +742,7 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 				continue
 			endif
 
+			// search for Loaded labNotebookWaves
 			// first try the new wave names and then as fallback
 			// the old ones
 			// Supports old/new wavename mixes although these should not
@@ -484,44 +787,20 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 			device = BuildDeviceString(type, number)
 
 			if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
-				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, expFilePath
+				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, discLocation
 				continue
 			endif
 
-			DEBUGPRINT("Found labnotebook for device: ", str=device)
-
-			deviceList = AddListItem(device, deviceList, ";", inf)
-
-			DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-
+			// copy and rename loaded waves to Analysisbrowser directory.
+			DFREF dfr = GetAnalysisLabNBFolder(experiment[%DataFolder], device)
 			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
 			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
 			Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
-			Duplicate/O textualValues, dfr:textualValues/Wave=textualValues
+			Duplicate/O textualValues, dfr:textualValues
 
-			// add some forgotten dimension labels in older versions of MIES
-			// and overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
-			str = GetDimLabel(textualValues, COLS, 0)
-			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(textualKeys, textualValues)
-			endif
-
-			str = GetDimLabel(numericalKeys, COLS, 0)
-			if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-				SetDimensionLabels(numericalKeys, numericalValues)
-			endif
-
-			// handle pxps without any data properly
-			highestSweepNumber = AB_GetHighestPossibleSweepNum(numericalValues)
-
-			if(IsFinite(highestSweepNumber))
-				AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
-			endif
-
-			AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
-			AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
-
-			AB_FillListWave(expFolder, expName, device)
+			// add device to devicelist
+			DEBUGPRINT("Loaded Igor labnotebook for device: ", str=device)
+			deviceList = AddListItem(device, deviceList, ";", inf)
 		endfor
 	endfor
 
@@ -529,6 +808,94 @@ static Function/S AB_LoadLabNotebookFromFile(expFilePath)
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
+End
+
+static Function/S AB_LoadLabNotebookFromNWB(discLocation)
+	String discLocation
+
+	variable numDevices, numLoaded, i
+	variable h5_fileID, h5_notebooksID
+	string notebookList, deviceList, device
+
+	Wave/T nwb = AB_GetMap(discLocation)
+
+	h5_fileID = IPNWB#H5_OpenFile(nwb[%DiscLocation])
+	if (!IPNWB#CheckIntegrity(h5_fileID))
+		IPNWB#H5_CloseFile(h5_fileID)
+		return ""
+	endif
+
+	notebookList = IPNWB#ReadLabNoteBooks(h5_fileID)
+	h5_notebooksID = IPNWB#H5_OpenGroup(h5_fileID, "/general/labnotebook")
+
+	numDevices = ItemsInList(notebookList)
+	devicelist = ""
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, notebookList)
+
+		DFREF notebookDFR = GetAnalysisLabNBFolder(nwb[%DataFolder], device)
+		numLoaded = NWB_LoadLabNoteBook(h5_notebooksID, device, notebookDFR)
+		if (numLoaded != 4)
+			printf "Could not find four labnotebook waves in nwb file for device %s\r", device
+			KillOrMoveToTrash(dfr=NotebookDFR)
+			continue
+		endif
+
+		/// add current device to output devicelist
+		DEBUGPRINT("Loaded NWB labnotebook for device: ", str=device)
+		devicelist = AddListItem(device, devicelist, ";", inf)
+	endfor
+
+	// H5_CloseFile closes all associated open groups.
+	HDF5CloseGroup/Z h5_notebooksID
+	IPNWB#H5_CloseFile(h5_fileID)
+
+	return devicelist
+End
+
+///@brief function checks if LabNoteBook Waves do exist.
+///@param  dfr path to labNoteBook dataFolder reference.
+///@return 0 labNotebook does not exist.
+///        1 labNoteBook exists. also update dimension lables
+static Function AB_checkLabNotebook(dfr)
+	DFREF dfr
+
+	Wave/Z/SDFR=dfr numericalKeys
+	Wave/Z/SDFR=dfr numericalValues
+	Wave/Z/SDFR=dfr textualKeys
+	Wave/Z/SDFR=dfr textualValues
+
+	if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
+		printf "Data is not in correct Format for %s\r", GetDataFolder(0, dfr)
+		return 0
+	endif
+
+	return 1
+End
+
+/// @brief add dimension labels in older versions of igor-MIES and hdf5-loaded data
+///        overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
+static Function AB_updateLabelsInLabNotebook(dfr)
+	DFREF dfr
+
+	string str
+
+	Wave/Z/SDFR=dfr numericalKeys
+	Wave/Z/SDFR=dfr numericalValues
+	Wave/Z/SDFR=dfr textualKeys
+	Wave/Z/SDFR=dfr textualValues
+
+	str = GetDimLabel(textualValues, COLS, 0)
+	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
+		SetDimensionLabels(textualKeys, textualValues)
+	endif
+
+	str = GetDimLabel(numericalKeys, COLS, 0)
+	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
+		SetDimensionLabels(numericalKeys, numericalValues)
+	endif
+
+	return 1
 End
 
 static Constant LOAD_CONFIG_CHUNK_SIZE = 50
@@ -744,11 +1111,11 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 	variable row, subSectionColumn
 
 	variable j, endRow, mapIndex, ret, sweep, oneValidSweep
-	string device, expFolder, expFilePath, expName
+	string device, discLocation, dataFolder, fileName, fileType
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-	WAVE/T experimentMap  = GetExperimentMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
 	ASSERT(subSectionColumn == EXPERIMENT_TREEVIEW_COLUMN || subSectionColumn == DEVICE_TREEVIEW_COLUMN, "Invalid subsection column")
 	if(!(expBrowserSel[row][subSectionColumn] & LISTBOX_TREEVIEW))
@@ -774,16 +1141,17 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 
 		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
 		mapIndex    = str2num(expBrowserList[j][%experiment][1])
-		expName     = experimentMap[mapIndex][%ExperimentName]
-		expFolder   = experimentMap[mapIndex][%ExperimentFolder]
-		expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+		dataFolder   = map[mapIndex][%DataFolder]
+		discLocation = map[mapIndex][%DiscLocation]
+		fileType     = map[mapIndex][%FileType]
+		fileName     = map[mapIndex][%FileName]
 
-		if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep) == 1)
+		if(AB_LoadSweepAndRelated(discLocation, dataFolder, fileType, device, sweep) == 1)
 			continue
 		endif
 
 		oneValidSweep = 1
-		SB_AddToSweepBrowser(sweepBrowser, expName, expFolder, device, sweep)
+		SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	endfor
 
 	if(oneValidSweep)
@@ -814,31 +1182,253 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 End
 
 /// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
-Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
-	string expFilePath, expFolder, device
+Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
+	string filePath, dataFolder, fileType, device
+	variable sweep
+
+	String sweepFolder, sweeps, msg
+	Variable failure
+
+	ASSERT(!isEmpty(filePath), "Empty file or Folder name on disc")
+	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
+	ASSERT(cmpstr(fileType, "unknown"), "unknown file format")
+	ASSERT(!isEmpty(device), "Empty device")
+	ASSERT(isFinite(sweep), "Non-finite sweep")
+
+	sweepFolder = GetAnalysisSweepDataPathAS(dataFolder, device, sweep)
+
+	// sweep already loaded
+	if(DataFolderExists(sweepFolder))
+		return 0
+	endif
+
+	DFREF sweepDFR = createDFWithAllParents(sweepFolder)
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			sweeps = AB_LoadSweepFromIgor(filePath, sweepDFR, device, sweep)
+			if(!cmpstr(sweeps, ""))
+				return 1
+			endif
+			Wave sweepsWave = sweepDFR:$sweeps
+			if(AB_SplitSweepIntoComponents(dataFolder, device, sweep, sweepsWave))
+				return 1
+			endif
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			if(AB_LoadSweepFromNWB(filePath, sweepDFR, device, sweep))
+				return 1
+			endif
+			break
+		default:
+			ASSERT(0, "fileType not handled")
+	endswitch
+
+	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, filePath
+	DEBUGPRINT(msg)
+
+	return 0
+End
+
+Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
+	string discLocation, device
+	DFREF sweepDFR
+	variable sweep
+
+	string channelList
+	variable h5_fileID, h5_groupID, numSweeps
+
+	Wave/T nwb = AB_GetMap(discLocation)
+
+	// find sweep in map
+	Wave/T devices = GetAnalysisDeviceWave(nwb[%DataFolder])
+	FindValue/S=0/TEXT=(device) devices
+	ASSERT(V_Value >= 0, "device not found")
+	Wave/I sweeps  = GetAnalysisChannelSweepWave(nwb[%DataFolder], device)
+	FindValue/S=0/I=(sweep) sweeps
+	ASSERT(V_Value >= 0, "sweep not found")
+
+	// load sweep info wave
+	Wave/Wave channelStorage = GetAnalysisChannelStorage(nwb[%DataFolder], device)
+	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
+	if(numSweeps != GetNumberFromWaveNote(channelStorage, NOTE_INDEX))
+		EnsureLargeEnoughWave(channelStorage, minimumSize = numSweeps, dimension = ROWS)
+	endif
+	Wave/Z/I configSweep = channelStorage[V_Value][%configSweep]
+	if(!WaveExists(configSweep))
+		Wave/I configSweep = GetAnalysisConfigWave(nwb[%DataFolder], device, sweep)
+		channelStorage[V_Value][%configSweep] = configSweep
+	endif
+
+	// open NWB file
+	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+
+	// load acquisition
+	Wave/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
+	channelList = acquisition[V_Value]
+	h5_groupID = IPNWB#OpenAcquisition(h5_fileID)
+	if(AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep))
+		return 1
+	endif
+
+	// load stimulus
+	Wave/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
+	channelList = stimulus[V_Value]
+	h5_groupID = IPNWB#OpenStimulus(h5_fileID)
+	if(AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep))
+		return 1
+	endif
+
+	// close NWB file
+	IPNWB#H5_CloseFile(h5_fileID)
+
+	return 0
+End
+
+Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep)
+	variable h5_groupID
+	string channelList
+	DFREF sweepDFR
+	Wave/I configSweep
+
+	string channel, channelName
+	variable numChannels, numEntries, i
+	STRUCT IPNWB#ReadChannelParams p
+	variable waveNoteLoaded, fakeConfigWave, fakeTTLbase
+
+	numChannels = ItemsInList(channelList)
+
+	for(i = 0; i < numChannels; i += 1)
+		channel = StringFromList(i, channelList)
+
+		// use AnalyseChannelName as a fallback if properties from the source attribute are missing
+		IPNWB#AnalyseChannelName(channel, p)
+		IPNWB#LoadSourceAttribute(h5_groupID, channel, p)
+
+		switch(p.channelType)
+			case ITC_XOP_CHANNEL_TYPE_DAC:
+				channelName = "DA"
+				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel, dfr = sweepDFR)
+				channelName += "_" + num2str(p.channelNumber)
+				fakeConfigWave = 1
+				break
+			case ITC_XOP_CHANNEL_TYPE_ADC:
+				channelName = "AD"
+				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel, dfr = sweepDFR)
+				channelName += "_" + num2str(p.channelNumber)
+				fakeConfigWave = 1
+				break
+			case ITC_XOP_CHANNEL_TYPE_TTL:
+				channelName  = "TTL"
+				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel, dfr = sweepDFR, channelPrefix = channelName)
+				channelName += "_" + num2str(p.channelNumber)
+
+				// always fake TTL base wave (bitwise sum of all TTL channels)
+				wave/Z/I base = sweepDFR:$channelName
+				if(!WaveExists(base))
+					Duplicate loaded sweepDFR:$channelName/wave=base
+					base = 0
+					fakeConfigWave = 1
+					SetNumberInWaveNote(base, "fake", 1)
+				endif
+
+				if(WaveMax(loaded) < 2)
+					base += 2^(p.ttlBit) * loaded
+				else
+					base += loaded
+				endif
+
+				channelName += "_" + num2str(p.ttlBit)
+				break
+			default:
+				ASSERT(1, "unknown channel type " + num2str(p.channelType))
+		endswitch
+
+		if(waveNoteLoaded == 0)
+			SVAR/Z test = sweepDFR:note
+			if(!SVAR_EXISTS(test))
+				string/G sweepDFR:note = note(loaded)
+			endif
+			waveNoteLoaded = 1
+		endif
+
+		// fake Config_Sweeps Wave
+		if(fakeConfigWave)
+			numEntries = DimSize(configSweep, ROWS)
+			Redimension/N=((numEntries + 1), -1) configSweep
+
+			configSweep[numEntries][%type]   = p.channelType
+			configSweep[numEntries][%number] = p.channelNumber
+			configSweep[numEntries][%timeMS] = trunc(DimDelta(loaded, ROWS) * 1000)
+			configSweep[numEntries][3]       = -1 // -1 for faked Config_Sweeps Waves
+
+			// set unit in config_wave from WaveNote of loaded dataset
+			Note/K configSweep, AddListItem(WaveUnits(loaded, COLS), Note(configSweep), ";", Inf)
+
+			fakeConfigWave = 0
+		endif
+
+		WAVE/Z/SDFR=sweepDFR targetName = $channelName
+		// nwb files created prior to 901428b might have duplicated datasets
+		ASSERT(!WaveExists(targetName) || (WaveExists(targetName) && WaveCRC(0, targetName) == WaveCRC(0, loaded)), "wave with same name, but different content, already exists")
+		Duplicate/O loaded, sweepDFR:$channelName
+		WaveClear loaded
+	endfor
+
+	AB_SortConfigSweeps(configSweep)
+
+	if(!waveNoteLoaded)
+		return 1 // nothing was loaded
+	else
+		return 0 // no error
+	endif
+End
+
+/// @brief Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser
+///
+/// function is oriented at MDSort()
+Function AB_SortConfigSweeps(config)
+	wave/I config
+
+	string wavenote = Note(config)
+	variable numRows = DimSize(config, ROWS)
+
+	ASSERT(ItemsInList(wavenote) == numRows, "Size of Config Wave differs from stored Wave Units")
+	ASSERT(DimSize(config, COLS) == 4, "Incorrect Column Size for Config Wave")
+	ASSERT(FindDimLabel(config, COLS, "type") != -2, "Config Wave has no column labels")
+	ASSERT(FindDimLabel(config, COLS, "number") != -2, "Config Wave has no column labels")
+
+	wave/T units = ConvertListToTextWave(Note(config))
+	Make/I/Free/N=(numRows) keyPrimary, keySecondary
+	Make/Free/N=(numRows)/I/U valindex = p
+
+	//sort order: ITC_XOP_CHANNEL_TYPE_DAC = 1, ITC_XOP_CHANNEL_TYPE_ADC = 0, ITC_XOP_CHANNEL_TYPE_TTL = 3
+	MultiThread keyPrimary[]   = config[p][%type] == ITC_XOP_CHANNEL_TYPE_ADC ? 2 : config[p][%type]
+	MultiThread keySecondary[] = config[p][%number]
+	Sort/A {keyPrimary, keySecondary}, valindex
+
+	Duplicate/FREE/I config config_temp
+	Duplicate/FREE/T units units_temp
+	MultiThread config[][] = config_temp[valindex[p]][q]
+	units[] = units_temp[valindex[p]]
+
+	Note/K config, ConvertTextWaveToList(units)
+End
+
+Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
+	string expFilePath, device
+	DFREF sweepDFR
 	variable sweep
 
 	variable numWavesLoaded
 	string sweepWaveList = ""
-	string sweepWaveName, dataPath, sweepFolder, msg
+	string sweepWaveName, dataPath
 
 	// we load the backup wave also
 	// in case it exists, it holds the original unmodified data
 	sweepWaveName  = "sweep_" + num2str(sweep)
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName, ";", Inf)
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName + WAVE_BACKUP_SUFFIX, ";", Inf)
-
-	ASSERT(!isEmpty(expFilePath), "Empty expFileOrFolder")
-	ASSERT(!isEmpty(expFolder), "Empty expFolder")
-	ASSERT(!isEmpty(device), "Empty device")
-	ASSERT(isFinite(sweep), "Non-finite sweep")
-
-	sweepFolder = GetAnalysisSweepDataPathAS(expFolder, device, sweep)
-
-	// sweep already loaded
-	if(DataFolderExists(sweepFolder))
-		return 0
-	endif
 
 	dataPath = GetDeviceDataPathAsString(device)
 	DFREF saveDFR = GetDataFolderDFR()
@@ -849,7 +1439,8 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 		printf "Could not load sweep %d of device %s and %s\r", sweep, device, expFilePath
 		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
-		return 1
+		KillOrMoveToTrash(dfr=sweepDFR)
+		return ""
 	endif
 
 	Wave sweepWave = $sweepWaveName
@@ -858,20 +1449,11 @@ Function AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep)
 		ReplaceWaveWithBackup(sweepWave)
 	endif
 
-	DFREF sweepDataDFR = createDFWithAllParents(sweepFolder)
-	MoveWave sweepWave, sweepDataDFR
+	MoveWave sweepWave, sweepDFR
 	SetDataFolder saveDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
-	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, expFilePath
-	DEBUGPRINT(msg)
-
-	if(AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave))
-		KillOrMoveToTrash(dfr=sweepDataDFR)
-		return 1
-	endif
-
-	return 0
+	return sweepWaveName
 End
 
 static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
@@ -883,8 +1465,8 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	string channelType, str
 
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
-	Wave config = GetAnalysisConfigWave(expFolder, device, sweep)
-	if(DimSize(config, ROWS) != DimSize(sweepWave, COLS))
+	Wave configSweep = GetAnalysisConfigWave(expFolder, device, sweep)
+	if(DimSize(configSweep, ROWS) != DimSize(sweepWave, COLS))
 		printf "The sweep %d of device %s in experiment %s does not match its configuration data. Therefore we ignore it.\r", sweep, device, expFolder
 		return 1
 	endif
@@ -892,15 +1474,15 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/T/SDFR=dfr numericalValues
 
-	numRows = DimSize(config, ROWS)
+	numRows = DimSize(configSweep, ROWS)
 	for(i = 0; i < numRows; i += 1)
-		channelType = StringFromList(config[i][0], ITC_CHANNEL_NAMES)
+		channelType = StringFromList(configSweep[i][0], ITC_CHANNEL_NAMES)
 		ASSERT(!isEmpty(channelType), "empty channel type")
-		channelNumber = config[i][1]
+		channelNumber = configSweep[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
 		str = channelType + "_" + num2istr(channelNumber)
 
-		WAVE data = ExtractOneDimDataFromSweep(config, sweepWave, i)
+		WAVE data = ExtractOneDimDataFromSweep(configSweep, sweepWave, i)
 
 		if(!cmpstr(channelType, "TTL"))
 			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), sweepFolder, str + "_")
@@ -918,9 +1500,10 @@ End
 Function AB_ScanFolder(win)
 	string win
 
-	string baseFolder, path, pxpList, uxpList, list
+	string baseFolder, path, pxpList, uxpList, nwbList, list
 	variable i, numEntries
 
+	// create new symbolic path
 	baseFolder = GetSetVariableString(win, "setvar_baseFolder")
 	path = UniqueName("scanfolder_path", 12, 1)
 	NewPath/Q/Z $path, baseFolder
@@ -932,17 +1515,22 @@ Function AB_ScanFolder(win)
 
 	AB_ClearAnalysisFolder()
 
+	// process *.pxp, *.uxp, and *.nwb files
 	pxpList = GetAllFilesRecursivelyFromPath(path, extension=".pxp")
 	uxpList = GetAllFilesRecursivelyFromPath(path, extension=".uxp")
+	nwbList = GetAllFilesRecursivelyFromPath(path, extension=".nwb")
 	KillPath $path
 
-	list = SortList(pxpList + uxpList, "|")
+	// sort combined list for readability
+	list = SortList(pxpList + uxpList + nwbList, "|")
 
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
-		AB_AddExperimentFile(baseFolder, StringFromList(i, list, "|"))
+		// analyse files and save content in global list (GetExperimentBrowserGUIList)
+		AB_AddFile(baseFolder, StringFromList(i, list, "|"))
 	endfor
 
+	// redimension to maximum size (all expanded)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
 	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
 
@@ -951,13 +1539,14 @@ Function AB_ScanFolder(win)
 
 	AB_ResetSelectionWave()
 
+	// backup initial state
 	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
 	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
-Function AB_OpenExperimentBrowser()
+Function AB_OpenAnalysisBrowser()
 
-	string panel = "ExperimentBrowser"
+	string panel = "AnalysisBrowser"
 
 	if(windowExists(panel))
 		DoWindow/F $panel
@@ -969,11 +1558,11 @@ Function AB_OpenExperimentBrowser()
 	WAVE   sel  = GetExperimentBrowserGUISel()
 	sel = 0
 
-	Execute "ExperimentBrowser()"
+	Execute "AnalysisBrowser()"
 	GetMiesVersion()
 End
 
-Window ExperimentBrowser() : Panel
+Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(180,275,1057,764)
 	Button button_base_folder_scan,pos={6,41},size={100,20},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
@@ -1021,6 +1610,7 @@ Window ExperimentBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 EndMacro
 
+/// @brief Button "Expand all"
 Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1034,6 +1624,7 @@ Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Collapse all"
 Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1046,17 +1637,18 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Load Selection"
 Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	variable mapIndex, sweep, numRows, i, row, ret, oneValidSweep
-	string expFolder, expName, expFilePath, device
+	string dataFolder, fileName, discLocation, fileType, device
 
 	switch(ba.eventcode)
 		case 2:
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-			WAVE/T experimentMap  = GetExperimentMap()
+			WAVE/T map = GetAnalysisBrowserMap()
 
 			// Our mode for the listbox stores the selection bit only in the first column
 			WAVE/Z indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
@@ -1111,16 +1703,17 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
 				mapIndex    = str2num(expBrowserList[row][%experiment][1])
-				expName     = experimentMap[mapIndex][%ExperimentName]
-				expFolder   = experimentMap[mapIndex][%ExperimentFolder]
-				expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+				fileName     = map[mapIndex][%FileName]
+				dataFolder   = map[mapIndex][%DataFolder]
+				discLocation = map[mapIndex][%DiscLocation]
+				fileType     = map[mapIndex][%FileType]
 
-				if(AB_LoadSweepAndRelated(expFilePath, expFolder, device, sweep))
+				if(AB_LoadSweepAndRelated(discLocation, dataFolder, fileType, device, sweep))
 					continue
 				endif
 
 				oneValidSweep = 1
-				SB_AddToSweepBrowser(sweepBrowserDFR, expName, expFolder, device, sweep)
+				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 			endfor
 
 			if(oneValidSweep)
@@ -1135,6 +1728,7 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Scan folder"
 Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1147,16 +1741,20 @@ Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Select directory"
+/// Display dialog box for choosing a folder and call AB_ScanFolder()
 Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string path, win
 	switch(ba.eventCode)
 		case 2: // mouse up
+				// If exists start with previously saved folder in setvar_baseFolder
 				win = ba.win
 				PathInfo/S $GetSetVariableString(win, "setvar_baseFolder")
 				GetFileFolderInfo/D/Q/Z=2
 
+				// store results and scan chosen folder
 				if(V_flag == 0 && V_isFolder)
 					SetSetVariableString(win, "setvar_baseFolder", S_Path)
 					AB_ScanFolder(win)
@@ -1167,6 +1765,7 @@ Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Select same stim set sweeps"
 Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1206,6 +1805,7 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 	return 0
 End
 
+/// @brief main ListBox list_experiment_contents
 Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
@@ -1248,18 +1848,19 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 	return 0
 End
 
+/// @brief Button "Open comment NB"
 Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	variable row, mapIndex
-	string device, expName, expFolder, expFilePath
+	string device, fileName, dataFolder, discLocation
 	string titleString, commentNotebook, comment
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
-			WAVE/T experimentMap  = GetExperimentMap()
+			WAVE/T map = GetAnalysisBrowserMap()
 
 			WAVE/Z indizes = FindIndizes(col=0, var=1, wv=expBrowserSel)
 
@@ -1277,18 +1878,18 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 				break
 			endif
 
-			expName     = experimentMap[mapIndex][%ExperimentName]
-			expFolder   = experimentMap[mapIndex][%ExperimentFolder]
-			expFilePath = experimentMap[mapIndex][%ExperimentDiscLocation]
+			fileName     = map[mapIndex][%FileName]
+			dataFolder   = map[mapIndex][%DataFolder]
+			discLocation = map[mapIndex][%DiscLocation]
 
-			SVAR/Z/SDFR=GetAnalysisDeviceFolder(expFolder, device) userComment
+			SVAR/Z/SDFR=GetAnalysisDeviceFolder(dataFolder, device) userComment
 			if(!SVAR_Exists(userComment))
 				comment = "The user comment string does not exist for the given device!"
 			else
 				comment = userComment
 			endif
 
-			sprintf titleString, "Experiment %s and Device %s", expName, device
+			sprintf titleString, "Experiment %s and Device %s", fileName, device
 			commentNotebook = UniqueName("EB_UserComment", 10, 0)
 			NewNoteBook/K=1/F=0/OPTS=(2^2 + 2^3)/N=$commentNotebook/W=(0,0,300,400) as titleString
 			Notebook $commentNotebook text=comment

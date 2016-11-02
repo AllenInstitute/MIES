@@ -102,13 +102,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 
 	GetFileFolderInfo/Q/Z filePath
 	if(!V_flag)
-		HDF5OpenFile/Z fileID as filePath
-
-		if(V_flag)
-			HDf5DumpErrors/CLR=1
-			HDF5DumpState
-			ASSERT(0, "Could not open HDF5 file")
-		endif
+		fileID = IPNWB#H5_OpenFile(filePath, write = 1)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
 		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
@@ -726,4 +720,31 @@ static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbPr
 	endif
 
 	IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor)
+End
+
+/// @brief function saves contents of specified notebook to data folder
+///
+/// @param locationID id of nwb file or notebooks folder
+/// @param notebook name of notebook to be loaded
+/// @param dfr igor data folder where data should be loaded into
+Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
+	Variable locationID
+	String notebook
+	DFREF dfr
+
+	String deviceList, path
+
+	if(!DataFolderExistsDFR(dfr))
+		return 0
+	endif
+
+	path = "/general/labnotebook/" + notebook
+	if(IPNWB#H5_GroupExists(locationID, path))
+		HDF5LoadGroup/Z/IGOR=-1 dfr, locationID, path
+		if(!V_flag)
+			return ItemsInList(S_objectPaths)
+		endif
+	endif
+
+	return 0
 End

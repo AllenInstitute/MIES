@@ -44,7 +44,7 @@ https://www.microsoft.com/en-us/download/details.aspx?id=48145) package.
 
 ## Partial Installation without hardware dependencies
 * There are currently four packages (Located in: "..\Packages\MIES") which can be installed on demand:
-	* The Analysis Browser (MIES_AnalysisBrowser.ipf)
+	* The Analysis Browser (MIES_AnalysisBrowser.ipf), requires the HDF5 XOP to be installed.
 	* The Data Browser (MIES_DataBrowser.ipf)
 	* The Wave Builder (MIES_WaveBuilderPanel.ipf)
 	* The Downsample Panel (MIES_Downsample.ipf)
