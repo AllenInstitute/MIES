@@ -21,6 +21,9 @@
 #include ":MIES_WaveBuilder"
 #include ":MIES_WaveBuilderPanel"
 
+// ZeroMQ procedures
+#include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
+
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_Constants"

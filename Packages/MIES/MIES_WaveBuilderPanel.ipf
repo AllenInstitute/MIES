@@ -12,6 +12,9 @@
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"
 
+// ZeroMQ procedures
+#include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
+
 // our includes
 #include ":MIES_AnalysisFunctions"
 #include ":MIES_AnalysisFunctionHelpers"
