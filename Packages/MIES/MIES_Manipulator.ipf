@@ -241,7 +241,7 @@ Function M_CheckSettings(panelTitle)
 			return 1
 		endif
 
-		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal))
+		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			return 1
 		endif

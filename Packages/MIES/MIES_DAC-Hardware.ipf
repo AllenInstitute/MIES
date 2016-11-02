@@ -6,6 +6,68 @@
 ///
 /// Naming scheme of the functions is `HW_$TYPE_$Suffix` where `$TYPE` is one of `ITC` or `NI`.
 
+/// @name Error codes for the ITC XOP2
+/// @anchor ITCXOP2Errors
+/// @{
+Constant OLD_IGOR                    = 10001
+
+Constant UNHANDLED_CPP_EXCEPTION     = 10002
+
+// DeviceID is locked to another thread.
+Constant SLOT_LOCKED_TO_OTHER_THREAD = 10003
+// Tried to access an unused DeviceID.
+Constant SLOT_EMPTY                  = 10004
+// No DeviceIDs available to use.
+Constant COULDNT_FIND_EMPTY_SLOT     = 10005
+
+// ITC DLL errors
+Constant ITC_DLL_ERROR               = 10006
+
+// Invalid numeric device type (/DTN).
+Constant INVALID_DEVICETYPE_NUMERIC  = 10007
+// Invalid string device type (/DTS).
+Constant INVALID_DEVICETYPE_STRING   = 10008
+// The device types specified by /DTN and /DTS do not agree.
+Constant DTN_DTS_DISAGREE            = 10009
+
+// Invalid numeric channel type (/CHN).
+Constant INVALID_CHANNELTYPE_NUMERIC = 10010
+// Invalid string channel type (/CHS).
+Constant INVALID_CHANNELTYPE_STRING  = 10011
+// The channel types specified by /CHN and /CHS do not agree.
+Constant CHN_CHS_DISAGREE            = 10012
+// Must specify /CHN or /CHS.
+Constant MUST_SPECIFY_CHN_OR_CHS     = 10013
+
+// ITCConfigChannel2 flags
+// Invalid value for /S flag.
+Constant ITCCONFIGCHANNEL2_BAD_S     = 10014
+// Invalid value for /M flag.
+Constant ITCCONFIGCHANNEL2_BAD_M     = 10015
+// Invalid value for /A flag.
+Constant ITCCONFIGCHANNEL2_BAD_A     = 10016
+// Invalid value for /O flag.
+Constant ITCCONFIGCHANNEL2_BAD_O     = 10017
+// Invalid value for /U flag.
+Constant ITCCONFIGCHANNEL2_BAD_U     = 10018
+
+// Wave does not have the minumum number of rows required
+Constant  NEED_MIN_ROWS              = 10019
+
+// ITCInitialize2 errors
+// The /F flag requires an ITC18, ITC18USB or ITC1600
+Constant F_FLAG_REQ_ITC18_18USB_1600 = 10020
+// The /D flag requires an ITC1600
+Constant D_FLAG_REQUIRES_ITC1600     = 10021
+// The /H flag requires an ITC1600
+Constant H_FLAG_REQUIRES_ITC1600     = 10022
+// The /R flag requires an ITC1600
+Constant R_FLAG_REQUIRES_ITC1600     = 10023
+
+// Tried to access the default device, but the default device has not been set.
+Constant THREAD_DEVICE_ID_NOT_SET    = 10024
+/// @}
+
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 /// @{
 
@@ -18,8 +80,6 @@
 /// @return 0 if sucessfull, 1 on error
 Function HW_SelectDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
-
-	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -73,8 +133,6 @@ End
 Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	HW_AssertOnInvalid(hardwareType, deviceID)
-
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			HW_ITC_CloseDevice(flags=flags)
@@ -89,10 +147,11 @@ End
 Function/S HW_ITC_ListOfOpenDevices()
 
 	variable i
-	string device, type, number, cmd
+	string device, type, number
 	string list = ""
 
-	Make/N=20/I/O DevInfo
+	DEBUGPRINTSTACKINFO()
+
 	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
 		if(HW_ITC_SelectDevice(i))
 			continue
@@ -100,9 +159,11 @@ Function/S HW_ITC_ListOfOpenDevices()
 
 		// device could be selected
 		// get the device type
-		DevInfo[] = -1
-		sprintf cmd, "ITCGetDeviceInfo DevInfo"
-		ExecuteITCOperationAbortOnError(cmd)
+		do
+			ITCGetDeviceInfo2/FREE DevInfo
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
 
 		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
 		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
@@ -124,11 +185,11 @@ End
 ///         Does not include devices which are already open.
 Function/S HW_ITC_ListDevices()
 
-	variable i, j
-	string type, number, cmd, msg, device
+	variable i, j, deviceID
+	string type, number, msg, device
 	string list = ""
 
-	Make/O/I/N=1 dev = -1
+	DEBUGPRINTSTACKINFO()
 
 	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
 		type = StringFromList(i, DEVICE_TYPES)
@@ -137,34 +198,31 @@ Function/S HW_ITC_ListDevices()
 			continue
 		endif
 
-		dev[0] = -1
-		sprintf cmd, "ITCGetDevices/Z=DisplayErrors \"%s\", dev", type
-		ExecuteITCOperation(cmd)
+		do
+			ITCGetDevices2/Z=1/DTS=type
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-		NVAR itcerror, itcxoperror
-		if(dev[0] > 0)
+
+		if(V_Value > 0)
 			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
 				number = StringFromList(j, DEVICE_NUMBERS)
 				device = BuildDeviceString(type,number)
 
-				itcerror    = 0
-				itcxoperror = 0
-				dev = -1
-				sprintf cmd, "ITCOpenDevice/Z=1 \"%s\", %s, dev", type, number
-				Execute/Z cmd
-				if(itcerror == 0 && itcxoperror == 0 && dev[0] >= 0)
+				do
+					ITCOpenDevice2/Z=1/DTS=type str2num(number)
+				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+				deviceID = V_Value
+				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
 					sprintf msg, "Found device type %s with number %s", type, number
 					DEBUGPRINT(msg)
-					HW_ITC_SelectDevice(dev[0])
+					HW_ITC_SelectDevice(deviceID)
 					HW_ITC_CloseDevice()
 					list = AddListItem(device, list, ";", inf)
 				endif
 			endfor
 		endif
 	endfor
-
-	KillVariables/Z itcerror, itcxoperror
-	KillOrMoveToTrash(wv=dev)
 
 	return list
 End
@@ -437,16 +495,38 @@ End
 
 /// @brief Assert on using an invalid value of `hardwareType` or `deviceID`
 ///
-/// Invalid here means that the values are out-of-range
-///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 Function HW_AssertOnInvalid(hardwareType, deviceID)
 	variable hardwareType, deviceID
 
+	ASSERT(HW_IsValidHardwareType(hardwareType), "Invalid hardwareType")
+	ASSERT(HW_IsValidDeviceID(deviceID), "Invalid deviceID")
+End
+
+/// @brief Check if the given hardware type is valid
+///
+/// Invalid here means that the value is out-of-range.
+static Function HW_IsValidHardwareType(hardwareType)
+	variable hardwareType
+
 #ifndef EVIL_KITTEN_EATING_MODE
-	ASSERT(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC , "Invalid hardwareType")
-	ASSERT(deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES, "Invalid deviceID")
+	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC
+#else
+	return 1
+#endif
+End
+
+/// @brief Check if the given device ID is valid
+///
+/// Invalid here means that the value is out-of-range.
+static Function HW_IsValidDeviceID(deviceID)
+	variable deviceID
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	return deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES
+#else
+	return 1
 #endif
 End
 
@@ -483,10 +563,13 @@ End
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
-Function HW_DeRegisterDevice(hardwareType, deviceID)
-	variable hardwareType, deviceID
+/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_DeRegisterDevice(hardwareType, deviceID, [flags])
+	variable deviceID, hardwareType, flags
 
-	HW_AssertOnInvalid(hardwareType, deviceID)
+	if(!HW_IsValidDeviceID(deviceID) || !HW_IsValidHardwareType(hardwareType))
+		return NaN
+	endif
 
 	WAVE/T devMap = GetDeviceMapping()
 
@@ -547,20 +630,139 @@ End
 Function/S HW_GetInternalDeviceName(hardwareType, deviceID)
 	variable hardwareType, deviceID
 
-	string internalDeviceName
-
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	WAVE/T devMap = GetDeviceMapping()
 
-	internalDeviceName = devMap[deviceID][hardwareType][%InternalDevice]
-
-	return internalDeviceName
+	return devMap[deviceID][hardwareType][%InternalDevice]
 End
 /// @}
 
 /// @name ITC
 /// @{
+
+/// @brief Output an informative error message for the ITC XOP2 operations
+///
+/// @return 0 on success, 1 otherwise
+Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
+	variable flags, ITCError, ITCXOPError
+
+	// we only need the lower 32bits of the error
+	ITCError = ITCError & 0x00000000ffffffff
+
+	if(ITCError != 0)
+		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
+
+		do
+			ITCGetErrorString2/X itcError
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+		print S_errorMEssage
+		print "Some hints you might want to try!"
+		print "- Is the correct ITC device type selected?"
+		print "- Is your ITC Device connected to a power socket?"
+		print "- Is your ITC Device connected to your computer?"
+		print "- Have you tried unlocking/locking the device already?"
+		print "- Reseating all connections between the DAC and the computer has also helped in the past."
+	elseif(ITCXOPError != 0)
+		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
+		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
+		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
+		printf "Responsible function: %s\r", GetRTStackInfo(2)
+		printf "Complete call stack: %s\r", GetRTStackInfo(3)
+	endif
+
+	if(ITCXOPError != 0 || ITCError != 0)
+		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
+	endif
+
+	return ITCXOPError != 0 || ITCError != 0
+End
+
+/// @brief Return the error message for the given ITC XOP2 error code
+///
+/// @param errCode one of @ref ITCXOP2Errors
+static Function/S HW_ITC_GetXOPErrorMessage(errCode)
+	variable errCode
+
+	switch(errCode)
+		case OLD_IGOR:
+			return "itcXOP2 requires at least Igor Pro 6.30 (32bit) or Igor Pro 7.0 (64bit)."
+			break
+		case UNHANDLED_CPP_EXCEPTION:
+			return "Unhandled C++ Exception"
+			break
+		case SLOT_LOCKED_TO_OTHER_THREAD:
+			return "DeviceID is locked to another thread."
+			break
+		case SLOT_EMPTY:
+			return "Tried to access an unused DeviceID."
+			break
+		case COULDNT_FIND_EMPTY_SLOT:
+			return "No DeviceIDs available to use."
+			break
+		case ITC_DLL_ERROR:
+			return "Problem with ITC DLL."
+			break
+		case INVALID_DEVICETYPE_NUMERIC:
+			return "Invalid numeric device type (/DTN)."
+			break
+		case INVALID_DEVICETYPE_STRING:
+			return "Invalid string device type (/DTS)."
+			break
+		case DTN_DTS_DISAGREE:
+			return "The device types specified by /DTN and /DTS do not agree."
+			break
+		case INVALID_CHANNELTYPE_NUMERIC:
+			return "Invalid numeric channel type (/CHN)."
+			break
+		case INVALID_CHANNELTYPE_STRING:
+			return "Invalid string channel type (/CHS)."
+			break
+		case CHN_CHS_DISAGREE:
+			return "The channel types specified by /CHN and /CHS do not agree."
+			break
+		case MUST_SPECIFY_CHN_OR_CHS:
+			return "Must specify /CHN or /CHS."
+			break
+		case ITCCONFIGCHANNEL2_BAD_S:
+			return "Invalid value for /S flag."
+			break
+		case ITCCONFIGCHANNEL2_BAD_M:
+			return "Invalid value for /M flag."
+			break
+		case ITCCONFIGCHANNEL2_BAD_A:
+			return "Invalid value for /A flag."
+			break
+		case ITCCONFIGCHANNEL2_BAD_O:
+			return "Invalid value for /O flag."
+			break
+		case ITCCONFIGCHANNEL2_BAD_U:
+			return "Invalid value for /U flag."
+			break
+		case NEED_MIN_ROWS:
+			return "Wave does not have the minumum number of rows required"
+			break
+		case F_FLAG_REQ_ITC18_18USB_1600:
+			return "The /F flag requires an ITC18, ITC18USB or ITC1600"
+			break
+		case D_FLAG_REQUIRES_ITC1600:
+			return "The /D flag requires an ITC1600"
+			break
+		case H_FLAG_REQUIRES_ITC1600:
+			return "The /H flag requires an ITC1600"
+			break
+		case R_FLAG_REQUIRES_ITC1600:
+			return "The /R flag requires an ITC1600"
+			break
+		case THREAD_DEVICE_ID_NOT_SET:
+			return "Tried to access the default device, but the default device has not been set."
+			break
+		default:
+			return "Unknown error code: " + num2str(errCode)
+			break
+	endswitch
+End
 
 /// @brief Open a ITC device
 ///
@@ -573,22 +775,18 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	variable deviceType, deviceNumber
 	variable flags
 
-	string cmd
 	variable deviceID
 
-	Make/O/I/U/N=1 DevID = -1
-	sprintf cmd, "ITCOpenDevice %d, %d, DevID", deviceType, deviceNumber
+	DEBUGPRINTSTACKINFO()
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	do
+			ITCOpenDevice2/DTN=(deviceType) deviceNumber
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	printf "ITC Device ID = %d is locked.\r", DevID[0]
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+	deviceID = V_Value
 
-	deviceID = DevID[0]
-	KillOrMoveToTrash(wv=DevID)
+	printf "ITC Device opened, returned deviceID is %d.\r", deviceID
 
 	return deviceID
 End
@@ -597,82 +795,74 @@ End
 Function HW_ITC_CloseDevice([flags])
 	variable flags
 
-	string cmd
-	sprintf cmd, "ITCCloseDevice"
+	DEBUGPRINTSTACKINFO()
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
+	if(HW_ITC_IsRunning(flags=flags))
+		HW_ITC_StopAcq(flags=flags)
 	endif
+
+	do
+		ITCCloseDevice2/Z
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 End
 
 /// @see HW_SelectDevice
 Function HW_ITC_SelectDevice(deviceID, [flags])
 	variable deviceID, flags
 
-	string cmd
-	sprintf cmd, "ITCSelectDevice/Z %d", deviceID
+	DEBUGPRINTSTACKINFO()
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		return ExecuteITCOperationAbortOnError(cmd)
-	else
-		return ExecuteITCOperation(cmd)
-	endif
+	do
+		ITCSelectDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) deviceID
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	return HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_EnableYoking
 Function HW_ITC_EnableYoking([flags])
 	variable flags
 
-	string cmd
+	DEBUGPRINTSTACKINFO()
 
-	sprintf cmd, "ITCInitialize/M=1"
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	do
+		ITCInitialize2/M=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_DisableYoking
 Function HW_ITC_DisableYoking([flags])
 	variable flags
 
-	string cmd
+	DEBUGPRINTSTACKINFO()
 
-	sprintf cmd, "ITCInitialize/M=0"
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	do
+		ITCInitialize2/M=0/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_StopAcq
 Function HW_ITC_StopAcq([prepareForDAQ, flags])
 	variable prepareForDAQ, flags
 
-	string cmd
+	DEBUGPRINTSTACKINFO()
 
-	prepareForDAQ = !!prepareForDAQ
+	do
+		ITCStopAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	sprintf cmd, "ITCStopAcq"
-
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	if(prepareForDAQ)
-		sprintf cmd, "ITCConfigChannelUpload"
+		do
+			ITCConfigChannelUpload2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ExecuteITCOperationAbortOnError(cmd)
-		else
-			ExecuteITCOperation(cmd)
-		endif
+		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	endif
 End
 
@@ -681,21 +871,15 @@ End
 Function HW_ITC_GetCurrentDevice([flags])
 	variable flags
 
-	string cmd
-	variable val
+	DEBUGPRINTSTACKINFO()
 
-	Make/O/I/N=1 dev
-	sprintf cmd "ITCGetCurrentDevice %s", GetWavesDataFolder(dev, 2)
+	do
+		ITCGetCurrentDevice2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	val = dev[0]
-	KillOrMoveToTrash(wv=dev)
-	return val
+	return V_Value
 End
 
 /// @brief Reset the AD/DA channel FIFOs
@@ -709,7 +893,9 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 	WAVE/Z fifoPos
 	variable  flags
 
-	string cmd, panelTitle
+	string panelTitle
+
+	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
@@ -717,148 +903,171 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 		WAVE fifoPos = GetITCFIFOPositionAllConfigWave(panelTitle)
 	endif
 
-	sprintf cmd, "ITCUpdateFIFOPositionAll %s", GetWavesDataFolder(fifoPos, 2)
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
+
+	do
+		ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_StartAcq
 Function HW_ITC_StartAcq(triggerMode, [flags])
 	variable triggerMode, flags
 
-	string cmd
+	DEBUGPRINTSTACKINFO()
 
 	switch(triggerMode)
 		case HARDWARE_DAC_EXTERNAL_TRIGGER:
-			sprintf cmd, "ITCStartAcq 1, 256"
+			do
+				ITCStartAcq2/EXT=256/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 			break
 		case HARDWARE_DAC_DEFAULT_TRIGGER:
-			sprintf cmd, "ITCStartAcq"
+			do
+				ITCStartAcq2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 			break
 		default:
 			ASSERT(0, "Unknown trigger mode")
 			break
 	endswitch
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @brief Check wether DAQ is still ongoing
 ///
-/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+/// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_ITC_IsRunning([flags])
 	variable flags
 
-	variable val
+	DEBUGPRINTSTACKINFO()
 
-	Make/I/N=(4)/O state
-	HW_ITC_GetState(state, flags=flags)
-	val = state[0]
-	KillOrMoveToTrash(wv=state)
+	WAVE/Z state = HW_ITC_GetState(flags=flags)
 
-	return val
+	if(!WaveExists(state))
+		return 0
+	endif
+
+	return state[0]
 End
 
-/// @brief Fill the passed wave `state` with information about
-///        the ITC device state
+/// @brief Query the ITC device state
 ///
-/// @param state 32bit integer wave with 4 rows to fill with state information
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_GetState(state, [flags])
-	WAVE state
+Function/WAVE HW_ITC_GetState([flags])
 	variable flags
 
-	string cmd
-	sprintf cmd, "ITCGetState/R/O/C/E %s", GetWavesDataFolder(state, 2)
+	DEBUGPRINTSTACKINFO()
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	do
+		ITCGetState2/R/O/C/E/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) state
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	return state
 End
 
 /// @see HW_ReadADC
 Function HW_ITC_ReadADC(deviceID, channel, [flags])
 	variable deviceID, channel, flags
 
-	string cmd
-	variable val
+	DEBUGPRINTSTACKINFO()
 
-	Make/N=1/D/O data
-	sprintf cmd, "ITCReadADC/C=1/V=1 %d, %s", channel, GetWavesDataFolder(data, 2)
+	do
+		ITCReadADC2/C=1/V=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	val = data[0]
-	KillOrMoveToTrash(wv=data)
-
-	return val
+	return V_Value
 End
 
 /// @see HW_WriteDAC
 Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 	variable deviceID, channel, value, flags
 
-	string cmd
-	sprintf cmd, "ITCSetDAC %d, %g", channel, value
+	DEBUGPRINTSTACKINFO()
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	do
+		ITCSetDAC2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_ReadDigital
 Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
 	variable deviceID, xopChannel, flags
 
-	string cmd
-	variable val
+	DEBUGPRINTSTACKINFO()
 
-	Make/N=1/O/W data
-	sprintf cmd, "ITCReadDigital %d, %s", xopChannel, GetWavesDataFolder(data, 2)
+	do
+		ITCReadDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-		val = data[0]
-		KillOrMoveToTrash(wv=data)
-	endif
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	return val
+	return V_Value
 End
 
 /// @see HW_WriteDigital
-Function HW_ITC_WriteDigital(deviceID, rack, value, [flags])
-	variable deviceID, rack, value, flags
+Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
+	variable deviceID, xopChannel, value, flags
 
-	string cmd
-	sprintf cmd, "ITCWriteDigital %d, %d", rack, value
+	DEBUGPRINTSTACKINFO()
 
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	do
+		ITCWriteDigital2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) xopChannel, value
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+End
+
+/// @brief Set the debug flag of the ITC XOP to ON/OFF
+Function HW_ITC_DebugMode(state, [flags])
+	variable state, flags
+
+	DEBUGPRINTSTACKINFO()
+
+	ITCSetGlobals2/D=(state)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 End
 
 Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
 	string str
 end
+
+Function/WAVE HW_ITC_TransposeAndToDouble(wv)
+	WAVE wv
+
+#if (IgorVersion() >= 7.0)
+	MatrixOp/FREE wv_t = fp64(wv^t)
+#else
+	MatrixOp/FREE wv_t = wv^t
+	Redimension/D wv_t
+#endif
+
+	return wv_t
+End
+
+Function/WAVE HW_ITC_TransposeAndToInt(wv)
+	WAVE wv
+
+#if (IgorVersion() >= 7.0)
+	MatrixOp/FREE wv_t = int32(wv^t)
+#else
+	MatrixOp/FREE wv_t = wv^t
+	Redimension/I wv_t
+#endif
+
+	return wv_t
+End
 
 /// @brief Prepare for data acquisition
 ///
@@ -876,8 +1085,9 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc, fifoPosFunc
 	variable flags
 
-	variable ret
-	string cmd, panelTitle
+	string panelTitle
+
+	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
@@ -905,23 +1115,33 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 		endif
 	endif
 
-	sprintf cmd, "ITCconfigAllchannels %s, %s", GetWavesDataFolder(config, 2), GetWavesDataFolder(data, 2)
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ret = ExecuteITCOperationAbortOnError(cmd)
-	else
-		ret = ExecuteITCOperation(cmd)
-	endif
+	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+	do
+		ITCconfigAllchannels2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, data
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	if(ret)
-		return NaN
-	endif
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	sprintf cmd, "ITCUpdateFIFOPositionAll %s", GetWavesDataFolder(fifoPos, 2)
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+#ifdef DEBUGGING_ENABLED
+	do
+		ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
+	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][1], GetAlignment(settings[%FIFOPointer][1])
+	printf "diff = %d\r", settings[%FIFOPointer][1] - settings[%FIFOPointer][0]
+	printf "numRows = %d\r", DimSize(data, ROWS)
+#endif // DEBUGGING_ENABLED
+
+	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
+
+	do
+		ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @brief Check wether more data can be acquired
@@ -944,7 +1164,9 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 	variable flags
 
 	variable fifoPosValue
-	string cmd, panelTitle
+	string panelTitle
+
+	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
@@ -966,12 +1188,16 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 		endif
 	endif
 
-	sprintf cmd, "ITCFIFOAvailableALL %s", GetWavesDataFolder(fifoAvail, 2)
-	if(flags & HARDWARE_ABORT_ON_ERROR)
-		ExecuteITCOperationAbortOnError(cmd)
-	else
-		ExecuteITCOperation(cmd)
-	endif
+	wave config = GetITCChanConfigWave(panelTitle)
+	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+
+	do
+		ITCFIFOAvailableALL2/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, fifoAvail_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+	WAVE fifoAvailNew = HW_ITC_TransposeAndToInt(fifoAvail_t)
+	fifoAvail[][] = fifoAvailNew[p][q]
 
 	fifoPosValue = fifoAvail[ADChannelToMonitor][2]
 
@@ -1112,6 +1338,8 @@ Function HW_NI_PrintPropertiesOfDevices()
 	string lines = ""
 	variable numDevices, extCalDate, i, j, portWidth
 
+	DEBUGPRINTSTACKINFO()
+
 	devices    = fDAQmx_DeviceNames()
 	numDevices = ItemsInList(devices)
 	for(i = 0; i < numDevices; i += 1)
@@ -1153,6 +1381,8 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 
 	variable taskID, ret, result, lineGrouping
 	string line
+
+	DEBUGPRINTSTACKINFO()
 
 	if(ParamIsDefault(DIOPort))
 		DIOPort = 0
@@ -1207,6 +1437,8 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 
 	variable taskID, ret, lineGrouping
 	string line
+
+	DEBUGPRINTSTACKINFO()
 
 	if(ParamIsDefault(DIOPort))
 		DIOPort = 0
@@ -1270,6 +1502,8 @@ Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
 
 	variable ret
 
+	DEBUGPRINTSTACKINFO()
+
 	ASSERT(value < HW_NI_MAX_VOLTAGE && value > HW_NI_MIN_VOLTAGE, "Value to set is out of range")
 	ret = fDAQmx_WriteChan(device, channel, value, HW_NI_MIN_VOLTAGE, HW_NI_MAX_VOLTAGE)
 
@@ -1299,6 +1533,8 @@ Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 
 	variable value
 
+	DEBUGPRINTSTACKINFO()
+
 	value = fDAQmx_ReadChan(device, channel, HW_NI_MIN_VOLTAGE, HW_NI_MAX_VOLTAGE, HW_NI_DIFFERENTIAL_SETUP)
 
 	if(!IsFinite(value))
@@ -1318,6 +1554,8 @@ End
 Function/S HW_NI_ListDevices([flags])
 	variable flags
 
+	DEBUGPRINTSTACKINFO()
+
 	return fDAQmx_DeviceNames()
 End
 
@@ -1328,6 +1566,8 @@ End
 Function HW_NI_StopAcq(device, [flags])
 	string device
 	variable flags
+
+	DEBUGPRINTSTACKINFO()
 
 	fDAQmx_ScanStop(device)
 	return fDAQmx_WaveformStop(device) == 0
@@ -1341,6 +1581,8 @@ Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
+	DEBUGPRINTSTACKINFO()
+
 	fDAQmx_resetDevice(device)
 End
 
@@ -1351,6 +1593,8 @@ End
 Function HW_NI_IsRunning(device, [flags])
 	string device
 	variable flags
+
+	DEBUGPRINTSTACKINFO()
 
 	return !fDAQmx_WF_IsFinished(device)
 End

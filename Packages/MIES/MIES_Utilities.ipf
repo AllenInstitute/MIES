@@ -8,7 +8,7 @@
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function IsFinite(var)
+threadsafe Function IsFinite(var)
 	variable var
 
 	return numType(var) == 0
@@ -19,7 +19,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function isNull(str)
+threadsafe Function IsNull(str)
 	string& str
 
 	variable len = strlen(str)
@@ -31,7 +31,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function isEmpty(str)
+threadsafe Function IsEmpty(str)
 	string& str
 
 	variable len = strlen(str)
@@ -83,6 +83,35 @@ Function ASSERT(var, errorMsg)
 		ControlWindowToFront()
 		Debugger
 		Abort
+	endtry
+End
+
+/// @brief Low overhead function to check assertions (threadsafe variant)
+///
+/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
+///                 nothing is done otherwise.
+/// @param errorMsg error message to output in failure case
+///
+/// Example usage:
+///@code
+///	ASSERT(DataFolderExistsDFR(dfr), "MyFunc: dfr does not exist")
+///	do something with dfr
+///@endcode
+///
+/// Unlike ASSERT() this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations.
+/// Therefore it is advised to prefix `errorMsg` with the current function name.
+///
+/// @hidecallgraph
+/// @hidecallergraph
+threadsafe Function ASSERT_TS(var, errorMsg)
+	variable var
+	string errorMsg
+
+	try
+		AbortOnValue var==0, 1
+	catch
+		printf "Assertion FAILED with message %s\r", errorMsg
+		AbortOnValue 1, 1
 	endtry
 End
 
@@ -316,7 +345,7 @@ End
 /// Unlike DataFolderExists() a dfref pointing to an empty ("") dataFolder is considered non-existing here.
 /// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
 /// Taken from http://www.igorexchange.com/node/2055
-Function DataFolderExistsDFR(dfr)
+threadsafe Function DataFolderExistsDFR(dfr)
 	dfref dfr
 
 	string dataFolder
@@ -330,7 +359,7 @@ Function DataFolderExistsDFR(dfr)
 		case 3: // free data folders always exist
 			return 1
 		default:
-			Abort "unknown status"
+			ASSERT_TS(0, "impossible case")
 			return 0
 	endswitch
 End
@@ -342,7 +371,7 @@ End
 ///
 /// Includes fast handling of the common case that the datafolder exists.
 /// @returns reference to the datafolder
-Function/DF createDFWithAllParents(dataFolder)
+threadsafe Function/DF createDFWithAllParents(dataFolder)
     string dataFolder
 
     variable i, numItems
@@ -1124,27 +1153,53 @@ End
 /// Basically a datafolder aware version of UniqueName for datafolders
 ///
 /// @param dfr 	    datafolder reference where the new datafolder should be created
-/// @param baseName first part of the datafolder, might be shorted due to Igor Pro limitations
+/// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
 Function/DF UniqueDataFolder(dfr, baseName)
 	dfref dfr
 	string baseName
 
-	variable index
-	string name = ""
-	string basePath, path
+	string path
 
 	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
-	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	// shorten basename so that we can attach some numbers
 	baseName = CleanupName(baseName[0, 26], 0)
+
+	path = UniqueDataFolderName(dfr, basename)
+
+	if(isEmpty(path))
+		return $""
+	endif
+
+	NewDataFolder $path
+	return $path
+End
+
+/// @brief Return a unique data folder name which does not exist in dfr
+///
+/// If you want to have the datafolder created for you and don't need a
+/// threadsafe function, use UniqueDataFolder() instead.
+///
+/// @param dfr      datafolder to search
+/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
+///
+/// @todo use CleanupName for baseName once that is threadsafe
+threadsafe Function/S UniqueDataFolderName(dfr, baseName)
+	DFREF dfr
+	string baseName
+
+	variable index
+	string basePath, path
+
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
+
 	basePath = GetDataFolder(1, dfr)
 	path = basePath + baseName
 
 	do
 		if(!DataFolderExists(path))
-			NewDataFolder $path
-			return $path
+			return path
 		endif
 
 		path = basePath + baseName + "_" + num2istr(index)
@@ -1152,9 +1207,9 @@ Function/DF UniqueDataFolder(dfr, baseName)
 		index += 1
 	while(index < 10000)
 
-	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+	DEBUGPRINT_TS("Could not find a unique folder with 10000 trials")
 
-	return $""
+	return ""
 End
 
 /// @brief Returns a wave name not used in the given datafolder
@@ -2593,4 +2648,17 @@ End
 ///        front of the desktop
 Function ControlWindowToFront()
 	DoWindow/H
+End
+
+/// @brief Return the alignment of the decimal number (usually a 32bit/64bit pointer)
+Function GetAlignment(val)
+	variable val
+
+	variable i
+
+	for(i=1; i < 64; i+= 1)
+		if(mod(val, 2^i) != 0)
+			return 2^(i-1)
+		endif
+	endfor
 End

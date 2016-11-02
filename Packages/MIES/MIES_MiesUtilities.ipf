@@ -699,7 +699,7 @@ End
 /// @param[out] deviceType   returns the device type X
 /// @param[out] deviceNumber returns the device number Y
 /// @returns one on successfull parsing, zero on error
-Function ParseDeviceString(device, deviceType, deviceNumber)
+threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 	string device
 	string &deviceType, &deviceNumber
 
@@ -1746,81 +1746,6 @@ Function ReportAndAbortOnITCErrors()
 
 	return 0
 End
-
-#if defined(DEBUGGING_ENABLED)
-
-/// @brief Execute a given ITC XOP operation
-///
-/// Includes debug output.
-///
-/// @return 0 if sucessfull, 1 on error
-Function ExecuteITCOperation(cmd)
-	string &cmd
-
-	string msg
-
-	sprintf msg, "Executing ITC command for %s: \"%s\"", GetRTStackInfo(2), cmd
-	DEBUGPRINT("", str=msg)
-	Execute cmd
-
-	NVAR ITCError, ITCXOPError
-	// we only need the lower 32bits of the error
-	ITCError = ITCError & 0x00000000ffffffff
-	sprintf msg, "ITCError=%#x, ITCXOPError=%#x", ITCError, ITCXOPError
-	DEBUGPRINT("Result:", str=msg)
-
-	return ITCError != 0 || ITCXOPError != 0
-End
-
-/// @brief Execute a given ITC XOP operation and abort on error
-///
-/// Includes debug output.
-Function ExecuteITCOperationAbortOnError(cmd)
-	string &cmd
-
-	string msg
-
-	sprintf msg, "Executing ITC command for %s: \"%s\"", GetRTStackInfo(2), cmd
-	DEBUGPRINT("", str=msg)
-	Execute cmd
-
-	NVAR ITCError, ITCXOPError
-	// we only need the lower 32bits of the error
-	ITCError = ITCError & 0x00000000ffffffff
-	sprintf msg, "ITCError=%#x, ITCXOPError=%#x", ITCError, ITCXOPError
-	DEBUGPRINT("Result:", str=msg)
-
-	ReportAndAbortOnITCErrors()
-
-	return 0
-End
-
-#else
-
-/// @brief Execute a given ITC XOP operation
-///
-/// @return 0 if sucessfull, 1 on error
-Function ExecuteITCOperation(cmd)
-	string &cmd
-
-	Execute cmd
-
-	NVAR ITCError, ITCXOPError
-	return ITCError != 0 || ITCXOPError != 0
-End
-
-/// @brief Execute a given ITC XOP operation and abort on error
-Function ExecuteITCOperationAbortOnError(cmd)
-	string &cmd
-
-	Execute cmd
-
-	ReportAndAbortOnITCErrors()
-
-	return 0
-End
-
-#endif
 
 /// @brief Append the MIES version to the wave's note
 Function AppendMiesVersionToWaveNote(wv)

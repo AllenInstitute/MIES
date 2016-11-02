@@ -11,7 +11,6 @@ Function ITC_DataAcq(panelTitle)
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE ResultsWave = GetITCResultsWave(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
@@ -28,7 +27,6 @@ Function ITC_DataAcq(panelTitle)
 		DoUpdate/W=$oscilloscopeSubwindow
 	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
 
-	HW_ITC_GetState(ResultsWave)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitle)
@@ -179,7 +177,6 @@ Function ITC_TestPulseFunc(s)
 	string panelTitle = panelTitleG
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE ResultsWave       = GetITCResultsWave(panelTitle)
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -196,7 +193,6 @@ Function ITC_TestPulseFunc(s)
 		// nothing
 	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-	HW_ITC_GetState(ResultsWave)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 	TP_Delta(panelTitle)
@@ -359,7 +355,6 @@ Function ITC_StartTestPulse(panelTitle)
 
 	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE ResultsWave = GetITCResultsWave(paneltitle)
 
 	do
 		DoXOPIdle
@@ -370,7 +365,6 @@ Function ITC_StartTestPulse(panelTitle)
 			// nothing
 		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-		HW_ITC_GetState(ResultsWave)
 		HW_ITC_StopAcq(prepareForDAQ=1)
 		DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)

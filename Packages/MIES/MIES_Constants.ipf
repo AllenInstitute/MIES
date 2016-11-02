@@ -441,7 +441,9 @@ Constant HARDWARE_ITC_TTL_1600_RACK_ONE  = 3
 /// @name Flags for all hardware interaction functions from MIES_DAC-Hardware.ipf
 /// @anchor HardwareInteractionFlags
 /// @{
-Constant HARDWARE_ABORT_ON_ERROR = 0x01
+Constant HARDWARE_ABORT_ON_ERROR        = 0x01
+Constant HARDWARE_PREVENT_ERROR_POPUP   = 0x02
+Constant HARDWARE_PREVENT_ERROR_MESSAGE = 0x04
 /// @}
 
 /// List of different DAC hardware types
@@ -493,3 +495,10 @@ Constant ZEROMQ_BIND_REP_PORT = 5670
 StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR = "I"
 StrConstant ANALYSISBROWSER_FILE_TYPE_NWB  = "N"
 /// @}
+
+/// Device restart happens after this number of trials with stuck FIFO, used by
+/// TP MD
+Constant NUM_CONSEC_FIFO_STILLSTANDS = 3
+
+/// Convenience definition for functions interacting with threads
+Constant MAIN_THREAD = 0
