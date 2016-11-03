@@ -39,7 +39,6 @@ Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.micr
 	* In "Igor Extensions" a shortcut pointing to XOP-tango-IP7-64bit
 	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
-* Please note that data acquisition is currently not possible with the 64bit version.
 
 ## Partial Installation without hardware dependencies
 * There are currently four packages (Located in: "..\Packages\MIES") which can be installed on demand:
