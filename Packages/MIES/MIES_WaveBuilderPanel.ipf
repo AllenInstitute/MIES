@@ -1100,7 +1100,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 			endif
 
 			SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-			if(SVAR_Exists(ITCPanelTitleList))
+			if(SVAR_Exists(ITCPanelTitleList) && cmpstr(ITCPanelTitleList, ""))
 				numPanels = ItemsInList(ITCPanelTitleList)
 				for(i = 0; i < numPanels; i += 1)
 					panelTitle = StringFromList(i, ITCPanelTitleList)
