@@ -1110,6 +1110,11 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 						channelType = CHANNEL_TYPE_TTL
 					endif
 
+					if(!WindowExists(panelTitle))
+						WBP_DeleteSet()
+						continue
+					endif
+
 					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
 					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END)
 					WBP_DeleteSet()
