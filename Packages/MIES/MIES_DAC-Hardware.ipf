@@ -996,7 +996,7 @@ Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	do
-		ITCSetDAC2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
+		ITCSetDAC2/C=1/V=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
