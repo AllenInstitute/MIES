@@ -3289,7 +3289,7 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
@@ -3312,7 +3312,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		wv[][%DAC]                       = 0
 		wv[][%ADC]                       = 0
 		wv[][%TTL_A]                     = 0
-		wv[][%TTL_B]                     = 0
+		wv[][%TTL_B]                     = NaN
 		wv[][%ApproachNear]              = 0
 		wv[][%SealAtm]                   = 0
 		wv[][%ManSSPressure]             = 0

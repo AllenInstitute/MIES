@@ -21,7 +21,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(255,137,747,1017)
+	NewPanel /K=1 /W=(167,392,659,1272)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2873,14 +2873,14 @@ Window DA_Ephys() : Panel
 	TitleBox Title_Hardware_Pressure_AD_Div,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox Title_Hardware_Pressure_AD_Div,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox Title_Hardware_Pressure_AD_Div,frame=0
-	PopupMenu Popup_Settings_Pressure_TTLA,pos={233.00,524.00},size={62.00,19.00},proc=DAP_PopMenuProc_CAA,title="TTL A"
+	PopupMenu Popup_Settings_Pressure_TTLA,pos={232.00,523.00},size={104.00,19.00},bodyWidth=70,proc=DAP_PopMenuProc_CAA,title="TTL A"
 	PopupMenu Popup_Settings_Pressure_TTLA,help={"Select TTL channel for solenoid command"}
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(ResizeControlsInfo)= A"!!,H$!!#Ch!!#>Z!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_Pressure_TTLA,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_Pressure_TTLA,mode=2,popvalue="0",value= #"\"\\\\M1(\\u200B- none -;0;1;2;3;4;5;6;7\""
 	GroupBox group_Settings_Pressure,pos={23.00,677.00},size={445.00,130.00},disable=1,title="Pressure"
 	GroupBox group_Settings_Pressure,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Pressure,userdata(tabcontrol)=  "ADC"
@@ -2951,14 +2951,14 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_SliceSurfHeight,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_SliceSurfHeight,limits={0,inf,100},value= _NUM:350
-	Button button_Settings_UpdateDACList,pos={276.00,495.00},size={150.00,20.00},proc=ButtonProc_Hrdwr_P_UpdtDAClist,title="Query connected DAC(s)"
+	Button button_Settings_UpdateDACList,pos={271.00,494.00},size={191.00,22.00},proc=ButtonProc_Hrdwr_P_UpdtDAClist,title="Query connected DAC(s)"
 	Button button_Settings_UpdateDACList,help={"Updates the popup menu contents to show the available ITC devices"}
 	Button button_Settings_UpdateDACList,userdata(tabnum)=  "6"
 	Button button_Settings_UpdateDACList,userdata(tabcontrol)=  "ADC"
 	Button button_Settings_UpdateDACList,userdata(ResizeControlsInfo)= A"!!,HE!!#C\\J,hqP!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Settings_UpdateDACList,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Settings_UpdateDACList,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_Hardware_P_Enable,pos={299.00,521.00},size={60.00,46.00},proc=P_ButtonProc_Enable,title="Enable"
+	Button button_Hardware_P_Enable,pos={335.00,521.00},size={60.00,46.00},proc=P_ButtonProc_Enable,title="Enable"
 	Button button_Hardware_P_Enable,help={"Enable ITC devices used for pressure regulation."}
 	Button button_Hardware_P_Enable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Enable,userdata(tabcontrol)=  "ADC"
@@ -2966,7 +2966,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_P_Enable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_P_Enable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	Button button_Hardware_P_Enable,fSize=14
-	Button button_Hardware_P_Disable,pos={366.00,521.00},size={60.00,46.00},disable=2,proc=P_ButtonProc_Disable,title="Disable"
+	Button button_Hardware_P_Disable,pos={402.00,521.00},size={60.00,46.00},disable=2,proc=P_ButtonProc_Disable,title="Disable"
 	Button button_Hardware_P_Disable,help={"Enable ITC devices used for pressure regulation."}
 	Button button_Hardware_P_Disable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Disable,userdata(tabcontrol)=  "ADC"
@@ -2981,6 +2981,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,fSize=14,frame=0,fStyle=0
+	ValDisplay valdisp_DataAcq_P_0,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={153.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3038,13 +3039,13 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Pressure,pos={32.00,272.00},size={425.00,110.00},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Pressure,userdata(tabnum)=  "0"
 	TabControl tab_DataAcq_Pressure,userdata(tabcontrol)=  "ADC"
-	TabControl tab_DataAcq_Pressure,userdata(currenttab)=  "0"
+	TabControl tab_DataAcq_Pressure,userdata(currenttab)=  "1"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo)= A"!!,D'!!#BB!!#C9J,hpkz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TabControl tab_DataAcq_Pressure,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Pressure,tabLabel(0)="Auto",tabLabel(1)="\f01\Z11Manual"
-	TabControl tab_DataAcq_Pressure,tabLabel(2)="User",value= 0
+	TabControl tab_DataAcq_Pressure,tabLabel(2)="User",value= 1
 	Button button_DataAcq_SSSetPressureMan,pos={39.00,302.00},size={84.00,27.00},disable=3,proc=ButtonProc_DataAcq_ManPressSet,title="Apply"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3356,11 +3357,11 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_dDAQOptOvRes,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_dDAQOptOvRes,limits={1,inf,1},value= _NUM:1
-	PopupMenu Popup_Settings_Pressure_TTLB,pos={234.00,549.00},size={61.00,19.00},proc=DAP_PopMenuProc_CAA,title="TTL B"
+	PopupMenu Popup_Settings_Pressure_TTLB,pos={230.00,549.00},size={103.00,19.00},bodyWidth=70,proc=DAP_PopMenuProc_CAA,title="TTL B"
 	PopupMenu Popup_Settings_Pressure_TTLB,help={"Select TTL channel for solenoid command"}
 	PopupMenu Popup_Settings_Pressure_TTLB,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_TTLB,userdata(tabcontrol)=  "ADC"
-	PopupMenu Popup_Settings_Pressure_TTLB,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7\""
+	PopupMenu Popup_Settings_Pressure_TTLB,mode=1,popvalue="- none -",value= #"\"- none -;0;1;2;3;4;5;6;7\""
 	CheckBox check_Settings_UserP_Approach,pos={230.00,321.00},size={67.00,15.00},disable=1,proc=DAP_CheckProc_Settings_PUser,title="Approach"
 	CheckBox check_Settings_UserP_Approach,help={"User applied pressure during approach mode "}
 	CheckBox check_Settings_UserP_Approach,userdata(tabnum)=  "2"
@@ -3853,7 +3854,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_dev", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD", 0)
-	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA", 0)
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA", 1)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB", 0)
 	SetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain", 2)
 	SetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain", 0.5)

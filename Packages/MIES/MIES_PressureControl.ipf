@@ -748,9 +748,14 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 	ttlBitB  = PressureDataWv[headStage][%TTL_B]
 	deviceName = HW_GetDeviceName(hwType, deviceID)
 
+	ASSERT(IsFinite(ttlBitA), "TTL A must be finite")
+
 	if(hwType == HARDWARE_ITC_DAC)
 		HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-		ASSERT(HW_ITC_GetRackForTTLBit(panelTitle, ttlBitA) == HW_ITC_GetRackForTTLBit(panelTitle, ttlBitB), "Both TTLbits have to be on the same rack")
+
+		if(IsFinite(ttlBitB))
+			ASSERT(HW_ITC_GetRackForTTLBit(panelTitle, ttlBitA) == HW_ITC_GetRackForTTLBit(panelTitle, ttlBitB), "Both TTLbits have to be on the same rack")
+		endif
 
 		// HW_ReadDigital/HW_WriteDigital internally uses
 		// HW_ITC_GetRackForTTLBit so it does not matter which ttlBit we are
@@ -762,14 +767,17 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 		WAVE binary = P_DecToBinary(val)
 
 		idxA = HW_ITC_ClipTTLBit(deviceName, ttlBitA)
-		idxB = HW_ITC_ClipTTLBit(deviceName, ttlBitB)
+
+		if(IsFinite(ttlBitB))
+			idxB = HW_ITC_ClipTTLBit(deviceName, ttlBitB)
+		endif
 
 		// update tll associated with headStage only if the desired TTL channel
 		// state is different from the actual/current channel state.
 
-		if(ONorOFFA != binary[idxA] || ONorOFFB != binary[idxB])
+		if(ONorOFFA != binary[idxA] || (IsFinite(ttlBitB) && ONorOFFB != binary[idxB]))
 
-			  outputDecimal = val
+			outputDecimal = val
 
 			if(ONorOFFA)
 				outputDecimal = SetBit(outputDecimal, 2^idxA)
@@ -777,10 +785,12 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 				outputDecimal = ClearBit(outputDecimal, 2^idxA)
 			endif
 
-			if(ONorOFFB)
-				outputDecimal = SetBit(outputDecimal, 2^idxB)
-			else
-				outputDecimal = ClearBit(outputDecimal, 2^idxB)
+			if(IsFinite(ttlBitB))
+				if(ONorOFFB)
+					outputDecimal = SetBit(outputDecimal, 2^idxB)
+				else
+					outputDecimal = ClearBit(outputDecimal, 2^idxB)
+				endif
 			endif
 
 			HW_WriteDigital(hwType, deviceID, channel, outputDecimal)
@@ -795,10 +805,12 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 			HW_WriteDigital(hwType, deviceID, channel, ONorOFFA, line=ttlBitA)
 		endif
 
-		val = HW_ReadDigital(hwType, deviceID, channel, line=ttlBitB)
+		if(IsFinite(ttlBitB))
+			val = HW_ReadDigital(hwType, deviceID, channel, line=ttlBitB)
 
-		if(ONorOFFB != val)
-			HW_WriteDigital(hwType, deviceID, channel, ONorOFFB, line=ttlBitB)
+			if(ONorOFFB != val)
+				HW_WriteDigital(hwType, deviceID, channel, ONorOFFB, line=ttlBitB)
+			endif
 		endif
 	endif
 End
@@ -835,6 +847,7 @@ End
 Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworked for specific controls and allow the value to be directly passed in with an optional parameter
 	string panelTitle
 
+	variable idx
 	variable settingHS 	= GetPopupMenuIndex(panelTitle, "Popup_Settings_HeadStage") // get the active headstage
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable userHS = PressureDataWv[settingHS][%UserSelectedHeadStage]
@@ -844,8 +857,10 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[settingHS][%DAC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain")
 	PressureDataWv[settingHS][%ADC]            = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD")
 	PressureDataWv[settingHS][%ADC_Gain]       = GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain")
-	PressureDataWv[settingHS][%TTL_A]          = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA")
-	PressureDataWv[settingHS][%TTL_B]          = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB")
+	idx = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA")
+	PressureDataWv[settingHS][%TTL_A]          = idx == 0 ? NaN : --idx
+	idx = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB")
+	PressureDataWv[settingHS][%TTL_B]          = idx == 0 ? NaN : --idx
 	PressureDataWv[userHS][%ManSSPressure]     = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                 = GetSetVariable(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]            = GetSetVariable(panelTitle, "setvar_Settings_InBathP")
@@ -873,6 +888,7 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
 
+	variable ttl
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	P_UpdatePopupITCdev(panelTitle, headStageNo)
@@ -880,8 +896,10 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 	SetSetVariable(panelTitle   , "setvar_Settings_Pressure_DAgain", PressureDataWv[headStageNo][%DAC_Gain])
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD"     , PressureDataWv[headStageNo][%ADC])
 	SetSetVariable(panelTitle   , "setvar_Settings_Pressure_ADgain", PressureDataWv[headStageNo][%ADC_Gain])
-	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA"    , PressureDataWv[headStageNo][%TTL_A])
-	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB"    , PressureDataWv[headStageNo][%TTL_B])
+	ttl = PressureDataWv[headStageNo][%TTL_A]
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA"   , !IsFinite(ttl) ? 0 : ++ttl)
+	ttl = PressureDataWv[headStageNo][%TTL_B]
+	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB"   , !IsFinite(ttl) ? 0 : ++ttl)
 	SetSetVariable(panelTitle   , "setvar_Settings_InAirP"         , PressureDataWv[headStageNo][%PSI_Air])
 	SetSetVariable(panelTitle   , "setvar_Settings_InBathP"        , PressureDataWv[headStageNo][%PSI_Solution])
 	SetSetVariable(panelTitle   , "setvar_Settings_InSliceP"       , PressureDataWv[headStageNo][%PSI_Slice])
@@ -1410,6 +1428,8 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 		return 0
 	endif
 
+	ASSERT(IsFinite(TTL), "TTL A must be finite")
+
 	rack = HW_ITC_GetRackForTTLBit(pressureDevice, TTL)
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
@@ -1749,6 +1769,13 @@ Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
 
 	if(!isFinite(PressureDataWv[headStageNo][%DAC_DevID]))
 		sprintf msg, "DAC device ID is not configured for headstage %d"  headStageNo
+		DEBUGPRINT(msg)
+		return 0
+	endif
+
+	// TTL_B is optional
+	if(!isFinite(PressureDataWv[headStageNo][%TTL_A]))
+		sprintf msg, "TTL A is not configured for headstage %d"  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
