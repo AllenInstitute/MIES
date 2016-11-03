@@ -148,4 +148,5 @@ Function CHI_CheckInstallation()
 #endif
 
 	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings
+	ControlWindowToFront()
 End
