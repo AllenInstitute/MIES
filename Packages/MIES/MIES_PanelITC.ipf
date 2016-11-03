@@ -2809,7 +2809,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo)= A"!!,D[!!#C\\J,hr:!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_Settings_Pressure_dev,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_1;ITC1600_Dev_2;ITC1600_Dev_3;ITC18USB_Dev_0;\""
+	PopupMenu popup_Settings_Pressure_dev,mode=1,popvalue="- none -",value= #"\"- none -\""
 	TitleBox Title_settings_Hardware_Pressur,pos={45.00,475.00},size={44.00,15.00},title="Pressure"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabnum)=  "6"
 	TitleBox Title_settings_Hardware_Pressur,userdata(tabcontrol)=  "ADC"
@@ -3849,6 +3849,8 @@ Function DAP_EphysPanelStartUpSettings()
 
 	// defaults are also hardcoded in P_GetPressureDataWaveRef
 	// and P_PressureDataTxtWaveRef
+	SetPopupMenuVal(panelTitle, "popup_Settings_Pressure_dev", NONE)
+	SetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_dev", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLA", 0)
