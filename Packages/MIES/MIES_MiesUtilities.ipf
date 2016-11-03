@@ -2601,7 +2601,7 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	numWaves = ItemsInList(list)
 	for(i = 0; i < numWaves; i += 1)
 		item = StringFromList(i, list)
-		if(FindListItem(item, listInternal) == -1)
+		if(FindListItem(item, listInternal, ";", 0, 0) == -1)
 			listThirdParty = AddListItem(item, listThirdParty, ";", Inf)
 		endif
 	endfor
