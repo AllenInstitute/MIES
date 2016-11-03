@@ -1199,8 +1199,7 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 	string filePath, dataFolder, fileType, device
 	variable sweep
 
-	String sweepFolder, sweeps, msg
-	Variable failure
+	string sweepFolder, sweeps, msg
 
 	ASSERT(!isEmpty(filePath), "Empty file or Folder name on disc")
 	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
