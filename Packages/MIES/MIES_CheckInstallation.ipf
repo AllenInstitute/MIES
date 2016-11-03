@@ -126,7 +126,7 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
 #else
-	CHI_CheckXOP(listOfXOPs, "ITC_X86_V31.xop", "ITC XOP", state)
+	CHI_CheckXOP(listOfXOPs, "itcxop2.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "HDF5.xop", "HDF5 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph.xop", "Axon Telegraph XOP", state)
@@ -141,6 +141,7 @@ Function CHI_CheckInstallation()
 
 #if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "tango_binding-64.xop", "Tango XOP", state)
+	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", state)
 #else
 	CHI_CheckXOP(listOfXOPs, "tango_binding.xop", "Tango XOP", state)
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", state)
