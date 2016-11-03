@@ -1635,10 +1635,13 @@ static Function WBP_LoadSet(setName)
 	string setName
 
 	string funcList, setPrefix
-	variable channelType, setNumber
+	variable channelType, setNumber, preventUpdate
+
+	// prevent update until graph was loaded
+	preventUpdate = GetCheckBoxState(panel, "check_PreventUpdate")
+	SetCheckBoxState(panel, "check_PreventUpdate", 1)
 
 	if(cmpstr(setName, NONE))
-
 		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
 
 		WAVE WP        = WB_GetWaveParamForSet(setName)
@@ -1693,6 +1696,10 @@ static Function WBP_LoadSet(setName)
 
 	WBP_SelectEpoch(0)
 	WBP_UpdateEpochControls()
+
+	// reset old state of checkbox and update panel
+	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
+	WBP_UpdatePanelIfAllowed()
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, funcList, func)
