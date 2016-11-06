@@ -26,6 +26,7 @@ Packages/ITC          export-ignore
 Packages/doc          export-ignore
 Packages/Testing-MIES export-ignore
 Packages/unit-testing export-ignore
+Packages/ZeroMQ       export-ignore
 Guidelines            export-ignore
 NIDAQmx.XOP           export-ignore
 Packages/Arduino/*zip export-ignore

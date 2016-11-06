@@ -49,6 +49,7 @@ echo $version > "$version_file"
 "$zip_exe" -qd $version.zip "Packages/unit-testing/*" > /dev/null
 "$zip_exe" -qd $version.zip "Packages/Arduino/*.zip" > /dev/null
 "$zip_exe" -qd $version.zip "Packages/Arduino/*.exe" > /dev/null
+"$zip_exe" -qd $version.zip "Packages/ZeroMQ/*" > /dev/null
 "$zip_exe" -qd $version.zip "tools/*" > /dev/null
 "$zip_exe" -qd $version.zip "Guidelines/*" > /dev/null
 "$zip_exe" -qd $version.zip "XOPs/NIDAQmx.XOP" > /dev/null
