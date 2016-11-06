@@ -303,6 +303,7 @@ Function NWB_ExportAllData([overrideFilePath])
 
 	string devicesWithContent, panelTitle, list, name, stimsets, stimset
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall
+	string stimsetList = ""
 
 	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
@@ -363,10 +364,12 @@ Function NWB_ExportAllData([overrideFilePath])
 			WAVE/SDFR=dfr sweepWave = $name
 			WAVE configWave = GetConfigWave(sweepWave)
 			sweep = ExtractSweepNumber(name)
-
 			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, chunkedLayout=1)
+			stimsetList += NWB_GetStimsetFromPanel(panelTitle, sweep)
 		endfor
 	endfor
+
+	NWB_AppendStimset(locationID, stimsetList)
 End
 
 /// @brief Export all data into NWB using compression
@@ -408,6 +411,24 @@ Function NWB_ExportWithDialog()
 	CloseNWBFile()
 End
 
+/// @brief Export given stimsets to NWB file
+///
+/// @param locationID	Identifier of open hdf5 group or file
+/// @param stimsets		single stimset as string
+///                     or list of stimsets sparated by ;
+static Function NWB_AppendStimset(locationID, stimsets)
+	variable locationID
+	string stimsets
+
+	variable i, numStimsets
+
+	// process stimsets and dependent stimsets
+	stimsets = WB_StimsetRecursionForList(stimsets)
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		NWB_WriteStimsetTemplateWaves(locationID, StringFromList(i, stimsets), 1)
+	endfor
+End
 
 Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	string panelTitle
@@ -415,6 +436,7 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	variable sweep
 
 	variable locationID, createdNewNWBFile
+	string stimsets
 
 	locationID = NWB_GetFileForExport(createdNewNWBFile=createdNewNWBFile)
 	if(!IsFinite(locationID))
@@ -428,7 +450,89 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 		IPNWB#CreateIntraCellularEphys(locationID)
 		NWB_AddDeviceSpecificData(locationID, panelTitle)
 		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+		stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
+		NWB_AppendStimset(locationID, stimsets)
 	endif
+End
+
+/// @brief Get stimsets by analysing currently loaded sweep
+///
+/// numericalValues and textualValues are generated from panelTitle
+///
+/// @returns list of stimsets
+static Function/S NWB_GetStimsetFromPanel(panelTitle, sweep)
+	string panelTitle
+	variable sweep
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+
+	return NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
+End
+
+/// @brief Get stimsets by analysing dataFolder of loaded sweep
+///
+/// numericalValues and textualValues are generated from previously loaded data.
+/// used in the context of loading from a stored experiment file.
+/// on load a sweep is stored in a device/dataFolder hierarchy.
+///
+/// @returns list of stimsets
+Function/S NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+	string dataFolder, device
+	variable sweep
+
+	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
+	WAVE/SDFR=dfr   numericalValues
+	WAVE/SDFR=dfr/T textualValues
+
+	return NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
+End
+
+/// @brief Get related Stimsets by corresponding sweep
+///
+/// input numerical and textual values storage waves for current sweep
+///
+/// @returns list of stimsets
+static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
+	variable sweep
+	WAVE numericalValues
+	WAVE/T textualValues
+
+	variable i, j, numEntries
+	string ttlList, name
+	string stimsetList = ""
+
+	WAVE/Z/T stimsets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	if(!WaveExists(stimsets))
+		return ""
+	endif
+
+	// handle AD/DA channels
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		name = stimsets[i]
+		if(isEmpty(name))
+			continue
+		endif
+		stimsetList = AddListItem(name, stimsetList)
+	endfor
+
+	// handle TTL channels
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		ttlList = GetTTLstimSets(numericalValues, textualValues, sweep, i)
+		numEntries = ItemsInList(ttlList)
+		for(j = 0; j < numEntries; j += 1)
+			name = StringFromList(j, ttlList)
+
+			// work around empty TTL stim set bug in labnotebook
+			if(isEmpty(name))
+				continue
+			endif
+
+			stimsetList = AddListItem(name, stimsetList)
+		endfor
+	endfor
+
+	return stimsetList
 End
 
 static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep, [chunkedLayout])
@@ -554,11 +658,6 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
-
-		// don't output stimsets for I=0 mode
-		if(params.clampMode != I_EQUAL_ZERO_MODE)
-			NWB_WriteStimsetTemplateWaves(locationID, stimSets[i], chunkedLayout)
-		endif
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -594,18 +693,6 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
-		endfor
-
-		numEntries = ItemsInList(listOfStimsets)
-		for(j = 0; j < numEntries; j += 1)
-			name = StringFromList(j, listOfStimsets)
-
-			// work around empty TTL stim set bug in labnotebook
-			if(isEmpty(name))
-				continue
-			endif
-
-			NWB_WriteStimsetTemplateWaves(locationID, name, chunkedLayout)
 		endfor
 	endfor
 
@@ -656,8 +743,8 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
 		// third party stim sets need to be written as we don't have parameter waves
 		WAVE stimSetWave = WB_CreateAndGetStimSet(stimSet)
-		name = stimSet
-		IPNWB#H5_WriteDataset(groupID, name, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+		stimset = NameOfWave(stimSetWave)
+		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 		// @todo remove once IP7 64bit is mandatory
 		// save memory by deleting the stimset again
 		KillOrMoveToTrash(wv=stimSetWave)
@@ -668,13 +755,14 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType) , "Some stim set parameter waves are missing")
 
-	name = stimSet + "_WP"
+	stimset = RemovePrefix(NameOfWave(WP), startStr = "WP_")
+	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WP, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
-	name = stimSet + "_WPT"
+	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WPT, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
-	name = stimSet + "_SegWvType"
+	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=SegWVType, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
 	HDF5CloseGroup groupID
