@@ -75,3 +75,8 @@ MIES has two primary modes: The Test Pulse (TP) and Data Acquisition.
    :align: center
 
    Ddaq delay
+
+.. figure:: oodDAQ-delays.svg
+   :align: center
+
+   oodDAQ delays
