@@ -420,13 +420,20 @@ static Function NWB_AppendStimset(locationID, stimsets)
 	variable locationID
 	string stimsets
 
-	variable i, numStimsets
+	variable i, numStimsets, numWaves
 
 	// process stimsets and dependent stimsets
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
 		NWB_WriteStimsetTemplateWaves(locationID, StringFromList(i, stimsets), 1)
+	endfor
+
+	// process custom waves
+	WAVE/Z/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
+	numWaves = DimSize(wv, ROWS)
+	for(i = 0; i < numWaves; i += 1)
+		NWB_WriteStimsetCustomWave(locationID, wv[i], 1)
 	endfor
 End
 
@@ -725,6 +732,33 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
+/// @brief Save Custom Wave (from stimset) in NWB file
+///
+/// @param locationID		open HDF5 group or file identifier
+/// @param custom_wave		wave reference to the wave that is to be saved
+/// @param chunkedLayout 	use chunked layout with compression and shuffling
+static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, chunkedLayout)
+	variable locationID, chunkedLayout
+	WAVE custom_wave
+
+	variable groupID
+	string pathInNWB, custom_wave_name
+
+	// build path for NWB file
+	pathInNWB = GetWavesDataFolder(custom_wave, 1)
+	pathInNWB = RemoveEnding(pathInNWB, ":")
+	pathInNWB = RemovePrefix(pathInNWB, startStr = "root")
+	pathInNWB = ReplaceString(":", pathInNWB, "/")
+	pathInNWB = "/general/stimsets/referenced" + pathInNWB
+
+	custom_wave_name = NameOfWave(custom_wave)
+
+	IPNWB#H5_CreateGroupsRecursively(locationID, pathInNWB, groupID = groupID)
+	IPNWB#H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+
+	HDF5CloseGroup groupID
+End
+
 static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout)
 	variable locationID
 	string stimSet
@@ -733,7 +767,7 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 	variable groupID
 	string name
 
-	ASSERT(IPNWB#H5_GroupExists(locationID, "/general/stimsets", groupID=groupID), "Missing group")
+	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets", groupID = groupID)
 
 	// write also the stim set parameter waves if all three exist
 	WAVE/Z WP  = WB_GetWaveParamForSet(stimSet)
