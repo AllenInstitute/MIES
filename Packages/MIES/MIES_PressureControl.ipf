@@ -533,9 +533,13 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 		for(i = 0; i < ItemsInList(ListOfHeadstageUsingITCDevice); i += 1)
 			if(cmpstr("",ListOfHeadstageUsingITCDevice) != 0)
 				headStage = str2num(StringFromList(i, ListOfHeadstageUsingITCDevice))
-				if(IsFinite(PressureDataWv[headStage][%DAC_DevID]) && IsFinite(PressureDataWv[headstage][%HW_DAC_Type]))
+				deviceID = PressureDataWv[headstage][%DAC_DevID]
+				hwType   = pressureDataWv[headstage][%HW_DAC_Type]
+
+				if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 					P_SetAndGetPressure(panelTitle, headstage, 0)
 				endif
+
 				WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 				PressureDataWv[headStage][%DAC_DevID]   = NaN
 				PressureDataWv[headstage][%HW_DAC_Type] = NaN
