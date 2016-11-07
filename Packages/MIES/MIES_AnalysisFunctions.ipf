@@ -165,6 +165,16 @@ Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
 	printf "Number of stimuli remaining is: %d on headstage: %d\r", StimRemaining, headStage
 End
 
+/// @brief Print last Stim Set run and headstage mode and holding potential
+Function LastStimSet(panelTitle, eventType, ITCDataWave, headStage)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage
+	
+	LastStimSetRun(panelTitle)
+
+End
 /// @brief GUI to set initial stimulus parameters using SetStimParam() and begin data acquisition. 
 /// NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! 
 Function StimParamGUI()
@@ -262,21 +272,20 @@ Function switchHolding(panelTitle, Vm2)
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	
 	variable StimRemaining = GuiState[0][findDimLabel(GuiState,1,"valdisp_DataAcq_TrialsCountdown")]-1
-	
-	if (StimRemaining == switchSweep)
-		variable i
-		for (i=0; i<NUM_HEADSTAGES; i+=1)
-			if (statusHS[i] == 1)
-				PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
-				if (GuiState[i][1] == 0)
-					PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm2)
-				elseif (GuiState[i][1] == 1)
-					PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm2)
-				endif
-			endif
-		endfor
-		printf "Half-way through stim set, changing holding potential to: %d\r", Vm2  
-	endif
+    if (StimRemaining == switchSweep)
+        variable i
+        for (i=0; i<NUM_HEADSTAGES; i+=1)
+            if (statusHS[i] == 1)
+                PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
+                if (GuiState[i][1] == 0)
+                    PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm2)
+                elseif (GuiState[i][1] == 1)
+                    PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm2)
+                endif
+            endif
+        endfor
+        printf "Half-way through stim set, changing holding potential to: %d\r", Vm2  
+    endif
 	
 	return StimRemaining
 End
@@ -309,5 +318,40 @@ Function InitoodDAQ(panelTitle)
    	
    	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
    	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = RESOLUTION)
+
+End
+
+/// @brief Print last full stim set aqcuired
+Function LastStimSetRun(panelTitle)
+	string panelTitle
+	
+	WAVE /T textualValues = GetLBTextualValues(panelTitle)
+	
+	WAVE  numericalValues = GetLBNumericalValues(panelTitle)
+	
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+	variable LastSweep = GetSetVariable(panelTitle, "SetVar_Sweep")-1
+	
+	WAVE /T StimSet = GetLastSettingText(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
+	WAVE /T clampHS = GetLastSettingText(textualValues, LastSweep, "OperatingModeString", DATA_ACQUISITION_MODE)
+	WAVE holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
+	WAVE holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
+	
+	variable i
+	for (i=0; i<NUM_HEADSTAGES; i+=1)
+		if (statusHS[i] == 1)
+			string StimSet_i = StimSet[i]
+			string clampHS_i = clampHS[i]
+			variable holding_i
+			if (stringmatch(clampHS[i],"V-Clamp*") == 1)
+				holding_i = holdingVC[i]
+			elseif (stringmatch(clampHS[i],"I-Clamp*") == 1)
+				holding_i = holdingIC[i]
+			endif
+		
+			printf "Stimulus Set %s completed on headstage %d in %s mode holding at %d\r", StimSet_i, i, clampHS_i, holding_i
+		endif
+	endfor
 
 End
