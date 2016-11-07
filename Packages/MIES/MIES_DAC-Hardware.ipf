@@ -650,7 +650,7 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	// we only need the lower 32bits of the error
 	ITCError = ITCError & 0x00000000ffffffff
 
-	if(ITCError != 0)
+	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 
 		do
@@ -664,7 +664,7 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		print "- Is your ITC Device connected to your computer?"
 		print "- Have you tried unlocking/locking the device already?"
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
-	elseif(ITCXOPError != 0)
+	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
