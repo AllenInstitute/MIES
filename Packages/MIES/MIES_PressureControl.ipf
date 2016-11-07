@@ -522,7 +522,7 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 	deviceID = PressureDataWv[refHeadstage][%DAC_DevID]
 	hwType   = pressureDataWv[refHeadstage][%HW_DAC_Type]
 
-	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 		HW_ResetDevice(hwType, deviceID)
 		doDeRegister = 1
 	endif
