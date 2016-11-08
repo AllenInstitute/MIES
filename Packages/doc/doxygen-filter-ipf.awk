@@ -308,6 +308,12 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     code = nicifyWaveType(code)
   }
 
+  # remove menus=0 after an include statement
+  if(match(code,/^#include.*menus[[:space:]]*=[[:space:]]*0$/))
+  {
+    gsub(/menus[[:space:]]*=[[:space:]]*0$/, "", code)
+  }
+
   # code outside of function/macro definitions is "translated" into statements
   if(!insideFunction && !insideMacro && !insideMenu && code != "" && substr(code,1,1) != "#")
   {
