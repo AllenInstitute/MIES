@@ -293,7 +293,7 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 
 	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable first, last, sourceTypeCol, peakResistanceCol, pulseDurationCol
-	variable testpulseBlockLength, blockType
+	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
 
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 	numLayers = DimSize(numericalValues, LAYERS)
@@ -340,9 +340,15 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 
 				blockType = UNKNOWN_MODE
 
-				status[] = numericalValues[i][pulseDurationCol][p]
-				WaveStats/Q/M=1 status
-				if(V_numNaNs != numLayers)
+				if(pulseDurationCol > 0)
+					status[] = numericalValues[i][pulseDurationCol][p]
+					WaveStats/Q/M=1 status
+					hasValidTPPulseDurationEntry = (V_numNaNs != numLayers)
+				else
+					hasValidTPPulseDurationEntry = 0
+				endif
+
+				if(hasValidTPPulseDurationEntry)
 					// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
 					status[] = numericalValues[i - 1][peakResistanceCol][p]
 					WaveStats/Q/M=1 status
