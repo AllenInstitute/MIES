@@ -36,8 +36,9 @@ Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.micr
 		* "Packages\MIES"
 		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-	* In "Igor Extensions" a shortcut pointing to XOPs-IP7-64bit
-	* In "Igor Extensions" a shortcut pointing to XOP-tango-IP7-64bit
+	* In "Igor Extensions (64-bit)" a shortcut pointing to
+		* "XOPs-IP7-64bit"
+		* "XOP-tango-64bit"
 	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
