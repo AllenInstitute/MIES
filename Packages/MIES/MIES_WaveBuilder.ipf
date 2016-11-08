@@ -624,33 +624,9 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2 weight", var=params.TauDecay2Weight)
 				break
 			case EPOCH_TYPE_CUSTOM:
-				WAVE/Z customWave = $""
+				WB_UpgradecustomWaveInWPT(WPT, channelType, i)
 				customWaveName = WPT[0][i]
-
-				// old style entries with only the wave name
-				if(strsearch(customWaveName, ":", 0) == -1)
-					printf "Warning: Legacy format for custom wave epochs detected.\r"
-
-					if(windowExists("Wavebuilder"))
-						DFREF customWaveDFR = WBP_GetFolderPath()
-						Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
-					endif
-
-					if(!WaveExists(customWave))
-						DFREF customWaveDFR = GetSetFolder(channelType)
-						Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
-					endif
-
-					if(WaveExists(customWave))
-						printf "Upgraded custom wave format successfully.\r"
-						WPT[0][i] = GetWavesDataFolder(customWave, 2)
-						customWaveName = WPT[0][i]
-					endif
-				else
-					// try new style entries with full path
-					WAVE/Z customWave = $customWaveName
-				endif
-
+				WAVE/Z customWave = $customWaveName
 				if(WaveExists(customWave))
 					WB_CustomWaveSegment(params, customWave)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"    , var=params.Duration)
@@ -659,6 +635,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				elseif(!isEmpty(customWaveName))
 					printf "Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", i, customWaveName
 				endif
+				WaveClear customWave
 				break
 			case EPOCH_TYPE_COMBINE:
 				WAVE segmentWave = WB_GetSegmentWave(duration=0)
@@ -743,6 +720,39 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	endif
 
 	return WaveBuilderWave
+End
+
+/// @brief Try to recover a custom wave when in the old format
+///        (aka with only a wave name and not a full path)
+///
+/// @param wv          WPT wave reference
+/// @param channelType AD/DA or TTL channel type
+/// @param i           index of epoch containing custom wave
+Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
+	WAVE/T wv
+	variable channelType, i
+
+	string customWaveName = wv[0][i]
+
+	// old style entries with only the wave name
+	if(!isEmpty(customWaveName) && strsearch(customWaveName, ":", 0) == -1)
+		printf "Warning: Legacy format for custom wave epochs detected.\r"
+
+		if(windowExists("Wavebuilder"))
+			DFREF customWaveDFR = WBP_GetFolderPath()
+			Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
+		endif
+
+		if(!WaveExists(customWave))
+			DFREF customWaveDFR = GetSetFolder(channelType)
+			Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
+		endif
+
+		if(WaveExists(customWave))
+			printf "Upgraded custom wave format successfully.\r"
+			wv[0][i] = GetWavesDataFolder(customWave, 2)
+		endif
+	endif
 End
 
 static Function WB_ApplyOffset(pa)
