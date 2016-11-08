@@ -1046,12 +1046,7 @@ end
 Function/WAVE HW_ITC_TransposeAndToDouble(wv)
 	WAVE wv
 
-#if (IgorVersion() >= 7.0)
 	MatrixOp/FREE wv_t = fp64(wv^t)
-#else
-	MatrixOp/FREE wv_t = wv^t
-	Redimension/D wv_t
-#endif
 
 	return wv_t
 End
@@ -1059,12 +1054,7 @@ End
 Function/WAVE HW_ITC_TransposeAndToInt(wv)
 	WAVE wv
 
-#if (IgorVersion() >= 7.0)
 	MatrixOp/FREE wv_t = int32(wv^t)
-#else
-	MatrixOp/FREE wv_t = wv^t
-	Redimension/I wv_t
-#endif
 
 	return wv_t
 End
