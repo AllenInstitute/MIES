@@ -1098,7 +1098,7 @@ Function P_ITC_FIFOMonitorProc(s)
 	deviceID = pressureDataWv[headStage][%DAC_DevID]
 
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	moreData = HW_ITC_MoreData(deviceID, fifoAvailFunc=P_GetITCFIFOAvail, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT)
+	moreData = HW_ITC_MoreData(deviceID, configFunc=P_GetITCFIFOConfig, fifoAvailFunc=P_GetITCFIFOAvail, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT)
 
 	if(!moreData)
 		HW_StopAcq(hwType, deviceID)

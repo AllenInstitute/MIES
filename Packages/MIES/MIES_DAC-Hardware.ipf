@@ -1139,15 +1139,19 @@ End
 /// @param[in] deviceID            device identifier
 /// @param[in] ADChannelToMonitor  [optional, defaults to GetADChannelToMonitor()] first AD channel
 /// @param[in] stopCollectionPoint [optional, defaults to GetStopCollectionPoint()] number of points to acquire
+/// @param[in] config              [optional] ITC config wave
+/// @param[in] configFunc          [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param[in] fifoAvail           [optional] ITC Fifo available wave
 /// @param[in] fifoAvailFunc       [optional, defaults to GetITCFIFOPositionAllConfigWave()] override wave getter for the ITC fifo available wave
 /// @param[out] fifoPos            [optional] allows to query the current fifo position
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done
-Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fifoAvail, fifoAvailFunc, fifoPos, flags])
+Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoAvail, fifoAvailFunc, fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 	WAVE/Z fifoAvail
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE fifoAvailFunc
 	variable &fifoPos
@@ -1170,6 +1174,14 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 		stopCollectionPoint = stopCollectionPoint_NVAR
 	endif
 
+	if(ParamIsDefault(config))
+		if(ParamIsDefault(configFunc))
+			WAVE config = GetITCChanConfigWave(panelTitle)
+		else
+			WAVE config = configFunc(panelTitle)
+		endif
+	endif
+
 	if(ParamIsDefault(fifoAvail))
 		if(ParamIsDefault(fifoAvailFunc))
 			WAVE fifoAvail = GetITCFIFOAvailAllConfigWave(panelTitle)
@@ -1178,7 +1190,6 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 		endif
 	endif
 
-	wave config = GetITCChanConfigWave(panelTitle)
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
 
 	do
