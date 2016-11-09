@@ -5794,6 +5794,8 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	clampMode = GuiState[headStage][%HSmode]
 	if(!enabled)
 		DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
+		P_SetPressureMode(panelTitle, headStage, PRESSURE_METHOD_ATM)
+		P_GetPressureType(panelTitle)
 	else
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	endif
