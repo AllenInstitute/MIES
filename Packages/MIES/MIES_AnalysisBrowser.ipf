@@ -1475,7 +1475,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/T/SDFR=dfr numericalValues
+	WAVE/SDFR=dfr numericalValues
 
 	numRows = DimSize(configSweep, ROWS)
 	for(i = 0; i < numRows; i += 1)
