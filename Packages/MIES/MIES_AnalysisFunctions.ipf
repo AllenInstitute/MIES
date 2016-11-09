@@ -353,5 +353,4 @@ Function LastStimSetRun(panelTitle)
 			printf "Stimulus Set %s completed on headstage %d in %s mode holding at %d\r", StimSet_i, i, clampHS_i, holding_i
 		endif
 	endfor
-
 End
