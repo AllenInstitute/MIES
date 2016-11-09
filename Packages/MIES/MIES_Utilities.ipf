@@ -1506,12 +1506,7 @@ Function/WAVE ConvertListToTextWave(list, [listSepString])
 		listSepString = ";"
 	endif
 
-#if (IgorVersion() >= 7.0)
 	return ListToTextWave(list, listSepString)
-#else
-	MAKE/FREE/T/N=(ItemsInList(list, listSepString)) wv = StringFromList(p, list, listSepString)
-	return wv
-#endif
 End
 
 /// @brief Convert text wave to list

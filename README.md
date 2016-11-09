@@ -8,7 +8,7 @@ package from Wavemetrics.
 
 Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) package.
 
-### Igor Pro 7.0.1 (32bit)
+### Igor Pro 7.0.1 or later (32bit)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -19,12 +19,13 @@ Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.micr
 		* "Packages\MIES"
 		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-	* In "Igor Extensions" a shortcut pointing to XOPs-IP7
-	* In "Igor Extensions" a shortcut pointing to XOP-tango
+	* In "Igor Extensions" a shortcut pointing to
+		* "XOPs-IP7"
+		* "XOP-tango-IP7"
 	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
-### Igor Pro 7.0.1 (64bit)
+### Igor Pro 7.0.1 or later (64bit)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -35,11 +36,11 @@ Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.micr
 		* "Packages\MIES"
 		* "Packages\Tango"
 	* In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-	* In "Igor Extensions" a shortcut pointing to XOPs-IP7-64bit
-	* In "Igor Extensions" a shortcut pointing to XOP-tango-IP7-64bit
+	* In "Igor Extensions (64-bit)" a shortcut pointing to
+		* "XOPs-IP7-64bit"
+		* "XOP-tango-64bit"
 	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
-* Please note that data acquisition is currently not possible with the 64bit version.
 
 ## Partial Installation without hardware dependencies
 * There are currently four packages (Located in: "..\Packages\MIES") which can be installed on demand:

@@ -3249,7 +3249,7 @@ End
 /// - 5: Gain of DA channel used for presssure regulation.
 /// - 6: AD channel used for pressure regulation.
 /// - 7: Gain of AD channel used for pressure regulation.
-/// - 8: TTL chanel used for pressure regulation.
+/// - 8: TTL channel A used for pressure regulation.
 /// - 9: Pipette pressure setting while pipette is positioned in air/outside of bath.
 /// - 10: Pipette pressure setting for pipette positioned in the bath.
 /// - 11: Pipette pressure setting for pipette positioned in the slice.
@@ -3262,32 +3262,34 @@ End
 /// - 18: X position (in the stage frame) of the soma of the target cell.
 /// - 19: Y position (in the stage frame) of the soma of the target cell.
 /// - 20: Place holder for future data.
-/// - 21: Place holder for future data.
+/// - 21: Realtime pressure
 /// - 22: Last steady state resistance value.
 /// - 23: Slope of the peak TP resistance over the last 5 seconds.
 /// - 24: State of the TP (0 = OFF, 1 = ON).
 /// - 25: Slope threshold. Used to determine if pressure should be incremented during sealing.
-/// - 26: Last pressure command.
-/// - 27: State of pressure pulse (0 = OFF, 1 = ON).
-/// - 28: Last amplifier voltage command.
-/// - 29: Manual pressure command amplitude in psi.
-/// - 30: Manual pressure pulse command amplitude in psi.
-/// - 31: Manual pressure pulse duation in ms.
-/// - 32: Peak resistance on previous method cycle.
-/// - 33: Peak resistance on active method cycle.
-/// - 34: Time of last peak resistance check.
-/// - 35: Calibration constant for positive pulse.
-/// - 36: Calibration constant for negative pulse.
-/// - 37: Checkbox state of "Approach Near".
-/// - 38: Checkbox state of "Seal Atmosphere".
-/// - 39: Selected headstage by the slider.
-/// - 40: User pressure offset in psi.
-/// - 41: Total sum of user pressure offsets in psi.
-/// - 42: Total sum of user pressure offsets since last pulse in psi.
+/// - 26: Time of last slope check
+/// - 27: Last pressure command.
+/// - 28: State of pressure pulse (0 = OFF, 1 = ON).
+/// - 29: Last amplifier voltage command.
+/// - 30: Manual pressure command amplitude in psi.
+/// - 31: Manual pressure pulse command amplitude in psi.
+/// - 32: Manual pressure pulse duation in ms.
+/// - 33: Peak resistance on previous method cycle.
+/// - 34: Peak resistance on active method cycle.
+/// - 35: Time of last peak resistance check.
+/// - 36: Calibration constant for positive pulse.
+/// - 37: Calibration constant for negative pulse.
+/// - 38: Checkbox state of "Approach Near".
+/// - 39: Checkbox state of "Seal Atmosphere".
+/// - 40: Selected headstage by the slider.
+/// - 41: User pressure offset in psi.
+/// - 42: Total sum of user pressure offsets in psi.
+/// - 43: Total sum of user pressure offsets since last pulse in psi.
+/// - 44: TTL channel B used for pressure regulation.
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
@@ -3310,7 +3312,7 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 		wv[][%DAC]                       = 0
 		wv[][%ADC]                       = 0
 		wv[][%TTL_A]                     = 0
-		wv[][%TTL_B]                     = 0
+		wv[][%TTL_B]                     = NaN
 		wv[][%ApproachNear]              = 0
 		wv[][%SealAtm]                   = 0
 		wv[][%ManSSPressure]             = 0

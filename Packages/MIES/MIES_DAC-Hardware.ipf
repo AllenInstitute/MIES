@@ -650,7 +650,7 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	// we only need the lower 32bits of the error
 	ITCError = ITCError & 0x00000000ffffffff
 
-	if(ITCError != 0)
+	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 
 		do
@@ -664,7 +664,7 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		print "- Is your ITC Device connected to your computer?"
 		print "- Have you tried unlocking/locking the device already?"
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
-	elseif(ITCXOPError != 0)
+	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
 		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
@@ -996,7 +996,7 @@ Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	do
-		ITCSetDAC2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
+		ITCSetDAC2/C=1/V=1/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) channel, value
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
@@ -1046,12 +1046,7 @@ end
 Function/WAVE HW_ITC_TransposeAndToDouble(wv)
 	WAVE wv
 
-#if (IgorVersion() >= 7.0)
 	MatrixOp/FREE wv_t = fp64(wv^t)
-#else
-	MatrixOp/FREE wv_t = wv^t
-	Redimension/D wv_t
-#endif
 
 	return wv_t
 End
@@ -1059,12 +1054,7 @@ End
 Function/WAVE HW_ITC_TransposeAndToInt(wv)
 	WAVE wv
 
-#if (IgorVersion() >= 7.0)
 	MatrixOp/FREE wv_t = int32(wv^t)
-#else
-	MatrixOp/FREE wv_t = wv^t
-	Redimension/I wv_t
-#endif
 
 	return wv_t
 End
@@ -1149,15 +1139,19 @@ End
 /// @param[in] deviceID            device identifier
 /// @param[in] ADChannelToMonitor  [optional, defaults to GetADChannelToMonitor()] first AD channel
 /// @param[in] stopCollectionPoint [optional, defaults to GetStopCollectionPoint()] number of points to acquire
+/// @param[in] config              [optional] ITC config wave
+/// @param[in] configFunc          [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param[in] fifoAvail           [optional] ITC Fifo available wave
 /// @param[in] fifoAvailFunc       [optional, defaults to GetITCFIFOPositionAllConfigWave()] override wave getter for the ITC fifo available wave
 /// @param[out] fifoPos            [optional] allows to query the current fifo position
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done
-Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fifoAvail, fifoAvailFunc, fifoPos, flags])
+Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoAvail, fifoAvailFunc, fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 	WAVE/Z fifoAvail
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE fifoAvailFunc
 	variable &fifoPos
@@ -1180,6 +1174,14 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 		stopCollectionPoint = stopCollectionPoint_NVAR
 	endif
 
+	if(ParamIsDefault(config))
+		if(ParamIsDefault(configFunc))
+			WAVE config = GetITCChanConfigWave(panelTitle)
+		else
+			WAVE config = configFunc(panelTitle)
+		endif
+	endif
+
 	if(ParamIsDefault(fifoAvail))
 		if(ParamIsDefault(fifoAvailFunc))
 			WAVE fifoAvail = GetITCFIFOAvailAllConfigWave(panelTitle)
@@ -1188,7 +1190,6 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, fif
 		endif
 	endif
 
-	wave config = GetITCChanConfigWave(panelTitle)
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
 
 	do
