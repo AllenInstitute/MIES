@@ -502,3 +502,14 @@ Constant NUM_CONSEC_FIFO_STILLSTANDS = 3
 
 /// Convenience definition for functions interacting with threads
 Constant MAIN_THREAD = 0
+
+/// @name Available pressure modes for P_SetPressureMode()
+/// @anchor PressureModeConstants
+/// @{
+Constant PRESSURE_METHOD_ATM      = -1
+Constant PRESSURE_METHOD_APPROACH = 0
+Constant PRESSURE_METHOD_SEAL     = 1
+Constant PRESSURE_METHOD_BREAKIN  = 2
+Constant PRESSURE_METHOD_CLEAR    = 3
+Constant PRESSURE_METHOD_MANUAL   = 4
+/// @}
