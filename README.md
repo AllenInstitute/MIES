@@ -101,13 +101,19 @@ Execute `tools/build-documentation.sh`.
 If guidelines are not followed, the MIES version will be unknown, and data acquisition is blocked.
 
 ### Cutting a new release
+* Checkout the master branch
 * Check that main MIES and all separate modules compile
-* Check that doxygen returns neither errors nor warnings
+* Check that doxygen/sphinx/breathe returns neither errors nor warnings
+* Adapt the release notes in `Packages\doc\releasenotes.rst`, `tools\create-changelog.sh` allows to generate a changelog as template
 * Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
-* Adapt the release notes, `tools\create-changelog.sh` allows to generate a changelog as template
-* Create a release branch: `git checkout -b release/X.Y`
-* Push everything: `git push --tags --set-upstream origin release/X.Y`
-* Change the bamboo jobs using release branches to use the branch you just created
+* Push the tag: `git push --tags`
+* Create the release branches:
+	* `git checkout -b release/X.Y`
+	* `git push -u origin release/X.Y`
+	* `git checkout -b release/X.Y-IVSCC`
+	* Patch the IVSCC branch using a commit similiar to e0a9df52 (Remove unneeded NIDAQmx.XOP, 2016-11-10)
+	* `git push -u origin release/X.Y-IVSCC`
+* Change the bamboo jobs using release branches to use the branch release/X.Y
 
 ### Creating a release package manually
 * Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
