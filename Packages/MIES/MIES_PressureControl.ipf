@@ -2082,10 +2082,10 @@ Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
 				P_UpdatePressureMode(panelTitle, PressureMode, stringFromList(PressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)	
 			endif
 		else
-				PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
-				if(pressureMode == PRESSURE_METHOD_ATM)
-					P_ResetPressureData(panelTitle, headStageNo = headStage)
-				endif
+			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
+			if(pressureMode == PRESSURE_METHOD_ATM)
+				P_ResetPressureData(panelTitle, headStageNo = headStage)
+			endif
 		endif
 	endif
 	
