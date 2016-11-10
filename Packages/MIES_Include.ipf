@@ -75,3 +75,4 @@
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel" menus=0
 #include "MIES_WaveDataFolderGetters"
+#include "MIES_MPConfig"
