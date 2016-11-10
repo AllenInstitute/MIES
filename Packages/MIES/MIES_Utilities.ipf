@@ -1685,6 +1685,38 @@ Function/S RemoveEndingRegExp(str, endingRegExp)
 	return RemoveEnding(str, endStr)
 End
 
+/// @brief Search for a Word inside a String
+///
+/// @param[in]  str    input text in which word should be searched
+/// @param[in]  word   searchpattern (non-regex-sensitive)
+/// @param[out] prefix (optional) string preceding word. ("" for unmatched pattern)
+/// @param[out] suffix (optional) string succeeding word.
+///
+/// @return 1 if word was found in str and word was not "". 0 if not.
+Function SearchWordInString(str, word, [prefix, suffix])
+	string str, word
+	string &prefix, &suffix
+
+	string regex, str0, str1
+	regex = "(.*)\\b\\Q" + word + "\\E\\b(.*)"
+
+	SplitString/E=regex str, str0, str1
+
+	// store result if ByRef Strings were initialized
+	if(!ParamIsDefault(prefix))
+		prefix = str0
+	endif
+	if(!ParamIsDefault(suffix))
+		suffix = str1
+	Endif
+
+	// two subpatterns (.*) were specified in regex.
+	if((V_flag == 2) && (strlen(word) > 0))
+		return 1
+	endif
+	return 0
+End
+
 /// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
 Function GetRowWithSameContent(refWave, sourceWave, row)
 	Wave/T refWave, sourceWave

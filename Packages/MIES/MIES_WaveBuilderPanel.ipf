@@ -1100,7 +1100,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 			endif
 
 			SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-			if(SVAR_Exists(ITCPanelTitleList))
+			if(SVAR_Exists(ITCPanelTitleList) && cmpstr(ITCPanelTitleList, ""))
 				numPanels = ItemsInList(ITCPanelTitleList)
 				for(i = 0; i < numPanels; i += 1)
 					panelTitle = StringFromList(i, ITCPanelTitleList)
@@ -1108,6 +1108,11 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 						channelType = CHANNEL_TYPE_DAC
 					else
 						channelType = CHANNEL_TYPE_TTL
+					endif
+
+					if(!WindowExists(panelTitle))
+						WBP_DeleteSet()
+						continue
 					endif
 
 					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
@@ -1408,15 +1413,14 @@ static Function WBP_ChangeWaveType(stimulusType)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P3", 0)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P4", 0)
 		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P5", 0)
-		WBP_UpdatePanelIfAllowed()
-
-		WBP_ExecuteAdamsTabcontrol(0)
 	elseif(stimulusType == STIMULUS_TYPE_DA)
 		SetVariable SetVar_WaveBuilder_P2 win =$panel, limits = {-inf,inf,1}
 		EnableControls(panel, list)
 	else
 		ASSERT(0, "Unknown stimulus type")
 	endif
+
+	WBP_UpdatePanelIfAllowed()
 End
 
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
@@ -1521,7 +1525,7 @@ static Function WBP_SplitSetName(setName, setPrefix, channelType, setNumber)
 
 	ASSERT(V_flag == 3, "Invalid setName format")
 
-	channelType = cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
+	channelType = !cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
 	setNumber   = str2num(setNumberString)
 End
 
@@ -1594,14 +1598,18 @@ static Function WBP_LoadSet()
 		return NaN
 	endif
 
-	if(StringMatch(SetName, CHANNEL_TTL_SEARCH_STRING))
+	WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
+
+	if(channelType == CHANNEL_TYPE_TTL)
 		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 2
 		WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
 		dfref dfr = GetWBSvdStimSetParamTTLPath()
-	else
+	elseif(channelType == CHANNEL_TYPE_DAC)
 		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
 		WBP_ChangeWaveType(STIMULUS_TYPE_DA)
 		dfref dfr = GetWBSvdStimSetParamDAPath()
+	else
+		ASSERT(0, "unknown channelType")
 	endif
 
 	Wave/SDFR=dfr WP        = $"WP_"  + setName
@@ -1629,8 +1637,6 @@ static Function WBP_LoadSet()
 	SetSetVariable(panel, "SetVar_WB_NumEpochs_S100", SegWvType[100])
 	SetSetVariable(panel, "SetVar_WB_SweepCount_S101", SegWvType[101])
 	SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", 0)
-
-	WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
 
 	SetSetVariableString(panel, "setvar_WaveBuilder_baseName", setPrefix)
 	SetSetVariable(panel, "setvar_WaveBuilder_SetNumber", setNumber)

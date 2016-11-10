@@ -102,7 +102,7 @@ The following tree describes how MIES creates NWB files
     session_start_time  : UTC timestamp defining when the recording session started
 
     epochs:
-        tags: unuused
+        tags: unused
 
     The following entries are only available if explicitly set by the user:
         data_collection
