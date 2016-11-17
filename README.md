@@ -6,7 +6,8 @@ Pressure control may be implemented with ITC and/or NIDAQ hardware.  For NIDAQ
 hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 package from Wavemetrics.
 
-Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) package.
+Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+packages both for 32bit(x86) and 64bit(x64) in English.
 
 ### Igor Pro 7.0.1 or later (32bit)
 
