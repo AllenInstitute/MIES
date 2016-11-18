@@ -127,7 +127,7 @@ End
 static strCONSTANT STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0"	///< Initial stimulus set
 static CONSTANT VM1_LOCAL = -55										///< Initial holding potential	
 static CONSTANT VM2_LOCAL = -85										///< Second holding potential to switch to
-static CONSTANT SCALE_LOCAL = 70										///< Stimulus amplitude in mV
+static CONSTANT SCALE_LOCAL = 70										///< Stimulus amplitude 
 static CONSTANT NUM_SWEEPS_LOCAL = 6								///< Number of sweeps to acquire
 static CONSTANT ITI_LOCAL = 15										///< Inter-trial-interval
 ///@}
@@ -153,6 +153,19 @@ Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
 	
 End
 
+/// @brief Force active headstages into current clamp
+Function SetStimConfig_Iclamp(panelTitle, eventType, ITCDataWave, headStage)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage
+	
+	setIClampMode(panelTitle)
+	
+	printf "Stimulus set running in I-Clamp on headstage: %d\r", headStage
+	
+End
+
 /// @brief Change holding potential midway through stim set
 Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
@@ -160,9 +173,9 @@ Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
 	Wave ITCDataWave
 	variable headstage
 	
-	variable StimRemaining = switchHolding(panelTitle,VM2_LOCAL)
+	variable SweepsRemaining = switchHolding(panelTitle,VM2_LOCAL)
 	
-	printf "Number of stimuli remaining is: %d on headstage: %d\r", StimRemaining, headStage
+	printf "Number of stimuli remaining is: %d on headstage: %d\r", SweepsRemaining, headStage
 End
 
 /// @brief Print last Stim Set run and headstage mode and holding potential
@@ -173,6 +186,9 @@ Function LastStimSet(panelTitle, eventType, ITCDataWave, headStage)
 	variable headstage
 	
 	LastStimSetRun(panelTitle)
+	if (TP_CheckIfTestPulseIsRunning(panelTitle) == TEST_PULSE_NOT_RUNNING)
+			TP_RestartTestPulse(panelTitle, TEST_PULSE_NOT_RUNNING)
+	endif
 
 End
 /// @brief GUI to set initial stimulus parameters using SetStimParam() and begin data acquisition. 
@@ -191,9 +207,10 @@ Function StimParamGUI()
 	
 	DoPrompt "Choose stimulus set and enter initial parameters", stimSet, Vm1,  Scale, sweeps, ITI
 	
-	SetStimParam(stimSet,Vm1,Scale,Sweeps,ITI)
-	
-	PGC_SetAndActivateControl(panelTitle,"DataAcquireButton")
+	if (V_flag == 0)
+		SetStimParam(stimSet,Vm1,Scale,Sweeps,ITI)
+		PGC_SetAndActivateControl(panelTitle,"DataAcquireButton")
+	endif
 End
 
 /// @brief Called by StimParamGUI to set initial stimulus parameters
@@ -211,12 +228,18 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	
 	variable stimSetIndex = GetStimSet(stimSet)
 	
-	PGC_SetAndActivateControl(panelTitle,"Wave_DA_All", val = stimSetIndex + 1)
-	PGC_SetAndActivateControl(panelTitle,"Scale_DA_All", val = scale)
-	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = sweeps)
-	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = ITI)
+	if (stimSetIndex > 0)
+
+		PGC_SetAndActivateControl(panelTitle,"Wave_DA_All", val = stimSetIndex + 1)
+		PGC_SetAndActivateControl(panelTitle,"Scale_DA_All", val = scale)
+		PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = sweeps)
+		PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = ITI)
 	
-	InitoodDAQ(panelTitle)
+		InitoodDAQ(panelTitle)
+	else
+		printf "Requested non-existent stim set"
+		return stimSetIndex
+	endif
 
 End
 
@@ -251,7 +274,23 @@ Function setVClampMode(panelTitle)
 	for (i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
 			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
-			PGC_SetAndActivateControl(panelTitle,"Radio_ClampMode_0", val = 1)
+			DAP_GetClampModeControl(V_CLAMP_MODE, i)
+		endif
+	endfor
+End
+
+/// @brief Set active headstages into I-clamp
+Function setIClampMode(panelTitle)
+	string panelTitle
+	
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+	variable i
+	
+	for (i=0; i<NUM_HEADSTAGES; i+=1)
+		if (statusHS[i] == 1)
+			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
+			DAP_GetClampModeControl(I_CLAMP_MODE, i)
 		endif
 	endfor
 End
@@ -265,29 +304,40 @@ Function switchHolding(panelTitle, Vm2)
 	variable Vm2
 	
 	variable numSweeps = GetValDisplayAsNum(panelTitle,"valdisp_DataAcq_SweepsInSet")
-	variable switchSweep = floor(numSweeps/2)
-	
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	variable SweepsRemaining = GuiState[0][%valdisp_DataAcq_TrialsCountdown]-1
 	
-	variable StimRemaining = GuiState[0][findDimLabel(GuiState,1,"valdisp_DataAcq_TrialsCountdown")]-1
-    if (StimRemaining == switchSweep)
+	if (numSweeps <= 1)
+		printf "Only 1 sweep was acquired, can not switch holding \r"
+		if (TP_CheckIfTestPulseIsRunning(panelTitle) == TEST_PULSE_NOT_RUNNING)
+			TP_RestartTestPulse(panelTitle, TEST_PULSE_NOT_RUNNING)
+		endif
+		return SweepsRemaining
+	endif
+	
+	variable switchSweep = floor(numSweeps/2)
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+    if (SweepsRemaining == switchSweep)
         variable i
         for (i=0; i<NUM_HEADSTAGES; i+=1)
             if (statusHS[i] == 1)
                 PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
-                if (GuiState[i][1] == 0)
+                if (GuiState[i][%HSMode] == V_CLAMP_MODE)
                     PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm2)
-                elseif (GuiState[i][1] == 1)
+                elseif (GuiState[i][%HSMode] == I_CLAMP_MODE)
                     PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm2)
+                else 
+                		printf "Unsupported clamp mode \r"
+                		return GuiState[i][%HSMode]
                 endif
             endif
         endfor
         printf "Half-way through stim set, changing holding potential to: %d\r", Vm2  
     endif
 	
-	return StimRemaining
+	return SweepsRemaining
 End
 
 /// @brief Get index of stim set from stim set list
@@ -306,13 +356,18 @@ Function InitoodDAQ(panelTitle)
 	
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	
-   variable GuiControl = findDimLabel(GuiState,1,"Check_DataAcq1_dDAQOptOv")				// make sure oodDAQ is enabled
-   if (GuiControl != 1)
-   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+	// disable dDAQ
+	if (GuiState[0][%Check_DataAcq1_DistribDaq] != 0)
+   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 0)
+   	endif
+	
+   // make sure oodDAQ is enabled				
+   if (GuiState[0][%Check_DataAcq1_dDAQOptOv] != 1)
+   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
    	endif
    	
-   	GuiControl = findDimLabel(GuiState,1,"Check_DataAcq_Get_Set_ITI")						// make sure Get/Set ITI is disabled
-   	if (GuiControl != 0)
+   // make sure Get/Set ITI is disabled
+   	if (GuiState[0][%Check_DataAcq_Get_Set_ITI] != 0)
    		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = 0)
    	endif
    	
@@ -331,10 +386,18 @@ Function LastStimSetRun(panelTitle)
 	
 	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	
-	variable LastSweep = GetSetVariable(panelTitle, "SetVar_Sweep")-1
+	variable LastSweep = AFH_GetLastSweepAcquired(panelTitle)
+	
+	if (isInteger(LastSweep) == 0)
+		printf "No sweeps have been acquired"
+		if (TP_CheckIfTestPulseIsRunning(panelTitle) == TEST_PULSE_NOT_RUNNING)
+			TP_RestartTestPulse(panelTitle, TEST_PULSE_NOT_RUNNING)
+		endif
+		return LastSweep
+	endif
 	
 	WAVE /T StimSet = GetLastSettingText(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
-	WAVE /T clampHS = GetLastSettingText(textualValues, LastSweep, "OperatingModeString", DATA_ACQUISITION_MODE)
+	WAVE clampHS = GetLastSetting(numericalValues, LastSweep, "Clamp Mode", DATA_ACQUISITION_MODE)
 	WAVE holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
 	WAVE holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
 	
@@ -342,12 +405,14 @@ Function LastStimSetRun(panelTitle)
 	for (i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
 			string StimSet_i = StimSet[i]
-			string clampHS_i = clampHS[i]
 			variable holding_i
-			if (stringmatch(clampHS[i],"V-Clamp*") == 1)
+			string clampHS_i 
+			if (clampHS[i] == V_CLAMP_MODE )
 				holding_i = holdingVC[i]
-			elseif (stringmatch(clampHS[i],"I-Clamp*") == 1)
+				clampHS_i = "V-Clamp"
+			elseif (clampHS[i] == I_CLAMP_MODE)
 				holding_i = holdingIC[i]
+				clampHS_i = "I-Clamp"
 			endif
 		
 			printf "Stimulus Set %s completed on headstage %d in %s mode holding at %d\r", StimSet_i, i, clampHS_i, holding_i
