@@ -837,7 +837,6 @@ Function DB_OpenChannelSelectionPanel(ba) : ButtonControl
 			panelTitle = GetMainWindow(ba.win)
 			DFREF dfr = DB_GetDataPath(panelTitle)
 			WAVE channelSel = GetChannelSelectionWave(dfr)
-			WAVE channelSel = GetChannelSelectionWave(dfr)
 			ToggleChannelSelectionPanel(panelTitle, channelSel, "DB_CheckProc_ChangedSetting")
 			break
 	endswitch
