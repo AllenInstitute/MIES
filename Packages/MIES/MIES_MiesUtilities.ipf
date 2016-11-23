@@ -648,6 +648,59 @@ Function KillOrMoveToTrashPath(path)
 	endif
 End
 
+/// @brief Return a wave reference wave with all single column waves of the given channel type
+///
+/// Holds invalid wave refs for non-existing entries.
+///
+/// @param sweepDFR    datafolder reference with 1D sweep data
+/// @param channelType One of @ref ITC_XOP_CHANNEL_CONSTANTS
+///
+/// @see GetITCDataSingleColumnWave() or SplitSweepIntoComponents()
+Function/WAVE GetITCDataSingleColumnWaves(sweepDFR, channelType)
+	DFREF sweepDFR
+	variable channelType
+
+	Make/FREE/WAVE/N=(GetNumberFromType(itcVar=channelType)) matches = GetITCDataSingleColumnWave(sweepDFR, channelType, p)
+
+	return matches
+End
+
+/// @brief Return a 1D data wave previously created by SplitSweepIntoComponents()
+///
+/// Returned wave reference can be invalid.
+///
+/// @param sweepDFR      datafolder holding 1D waves
+/// @param channelType   One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelNumber channel number
+/// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
+/// @param ttlBit        [optional] number specifying the TTL bit
+Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
+	DFREF sweepDFR
+	variable channelType, channelNumber
+	variable splitTTLBits, ttlBit
+
+	string wvName
+
+	if(ParamIsDefault(splitTTLBits))
+		splitTTLBits = 0
+	else
+		splitTTLBits = !!splitTTLBits
+	endif
+
+	ASSERT(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
+	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType), "Invalid channel index")
+
+	wvName = StringFromList(channelType, ITC_CHANNEL_NAMES) + "_" + num2str(channelNumber)
+
+	if(channelType == ITC_XOP_CHANNEL_TYPE_TTL && splitTTLBits)
+		wvName += "_" + num2str(ttlBit)
+	endif
+
+	WAVE/Z/SDFR=sweepDFR wv = $wvName
+
+	return wv
+End
+
 /// @brief Check if the given sweep number is valid
 Function IsValidSweepNumber(sweepNo)
 	variable sweepNo
