@@ -488,6 +488,9 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
 End
 
+/// @name DataBrowser
+/// @{
+
 /// @brief Return a datafolder reference to the device data browser folder
 Function/DF GetDeviceDataBrowserPath(panelTitle)
 	string panelTitle
@@ -500,6 +503,7 @@ Function/S GetDeviceDataBrowserPathAS(panelTitle)
 
 	return GetDevicePathAsString(panelTitle) + ":DataBrowser"
 End
+/// @}
 
 /// @brief Return a datafolder reference to the device data folder
 Function/DF GetDeviceDataPath(panelTitle)
