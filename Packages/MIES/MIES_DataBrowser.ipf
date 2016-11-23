@@ -261,7 +261,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.oodDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions")
 
 	WAVE channelSel = GetChannelSelectionWave(dfr)
-	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepWave=sweep, channelSelWave=channelSel)
+	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, channelSelWave=channelSel)
 End
 
 static Function DB_ClearGraph(panelTitle)

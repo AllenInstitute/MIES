@@ -455,6 +455,14 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	STRUCT PostPlotSettings pps
 	SB_InitPostPlotSettings(graph, pps)
 
+	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+
+	dataFolder = sweepMap[newMapIndex][%DataFolder]
+	device     = sweepMap[newMapIndex][%Device]
+	sweep      = str2num(sweepMap[newMapIndex][%Sweep])
+
+	DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
+
 	// With overlay enabled:
 	// if the last plotted sweep is already on the graph remove it and return
 	if(GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay"))
@@ -479,16 +487,10 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 		endif
 	endif
 
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
-
-	dataFolder = sweepMap[newMapIndex][%DataFolder]
-	device    = sweepMap[newMapIndex][%Device]
-	sweep     = str2num(sweepMap[newMapIndex][%Sweep])
-
 	WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweep)
 
 	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
 	STRUCT TiledGraphSettings tgs
 	tgs.displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
@@ -501,7 +503,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	tgs.oodDAQHeadstageRegions = str2num(GetPopupMenuString(panel, "popup_oodDAQ_regions"))
 	WAVE channelSelWave = GetChannelSelectionWave(sweepBrowserDFR)
 
-	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
+	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR, channelSelWave=channelSelWave)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)

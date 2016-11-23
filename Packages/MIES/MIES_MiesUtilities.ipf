@@ -799,16 +799,16 @@ End
 /// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
 /// Passing in sweepDFR assumes the new format of split waves, one wave for each AD, DA, TTL channel, with one dimension
 ///
-/// @param graph                window
-/// @param config               ITC config wave
-/// @param sweepNo              number of the sweep
-/// @param numericalValues      numerical labnotebook wave
-/// @param textualValues        textual labnotebook wave
-/// @param tgs                  settings for tuning the display, see @ref TiledGraphSettings
-/// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
-/// @param sweepWave [optional] sweep wave with multiple columns
-/// @param channelSelWave [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, [sweepDFR, sweepWave, channelSelWave])
+/// @param graph           window
+/// @param config          ITC config wave
+/// @param sweepNo         number of the sweep
+/// @param numericalValues numerical labnotebook wave
+/// @param textualValues   textual labnotebook wave
+/// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
+/// @param sweepDFR        datafolder to either multi-column sweep waves or the topfolder to splitted
+///                        1D sweep waves. Splitted 1D sweep waves are preferred if available.
+/// @param channelSelWave  [optional] channel selection wave
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, [channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -816,10 +816,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/T textualValues
 	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
-	WAVE/Z sweepWave
 	WAVE/Z channelSelWave
 
-	variable red, green, blue, splitSweepMode, axisIndex, numChannels
+	variable red, green, blue, axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks
@@ -828,11 +827,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry, totalXRange
 
 	string trace, traceType, channelID, axisLabel, existingLabel, entry, range
-	string unit, configNote, name, wvName, str, vertAxis, oodDAQRegionsAll, horizAxis
+	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
-	ASSERT(ParamIsDefault(sweepDFR) + ParamIsDefault(sweepWave), "Caller must supply exactly one of sweepDFR and sweepWave")
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -851,10 +849,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	if(!ParamIsDefault(sweepDFR))
-		splitSweepMode = 1
-	endif
-
 	WAVE ranges = GetAxesRanges(graph)
 
 	if(!tgs.overlaySweep)
@@ -868,9 +862,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	if(tgs.splitTTLBits && numTTLs > 0)
 		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
-			tgs.splitTTLBits = 0
-		elseif(!splitSweepMode)
-			print "Turning off tgs.splitTTLBits as it is currently only supported for split sweep mode"
 			tgs.splitTTLBits = 0
 		elseif(tgs.overlayChannels)
 			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
@@ -1079,22 +1070,22 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			for(j = 0; j < numVertWaves; j += 1)
 
 				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
-					name   = channelID + num2str(chan) + "_" + num2str(j)
-					wvName = channelID + "_" + num2str(chan) + "_" + num2str(j)
+					name = channelID + num2str(chan) + "_" + num2str(j)
 				else
-					name   = channelID + num2str(chan)
-					wvName = channelID + "_" + num2str(chan)
+					name = channelID + num2str(chan)
 				endif
 
-				if(splitSweepMode)
-					WAVE/Z/SDFR=sweepDFR wv = $wvName
+				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
+
+				if(DataFolderExistsDFR(singleSweepDFR))
+					WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
 					if(!WaveExists(wv))
 						continue
 					endif
 					idx = 0
 				else
 					idx = AFH_GetITCDataColumn(config, chan, channelTypes[i])
-					WAVE wv = sweepWave
+					WAVE/SDFR=sweepDFR wv = $GetSweepWaveName(sweepNo)
 				endif
 
 				if(!tgs.overlayChannels)
