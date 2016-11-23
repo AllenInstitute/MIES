@@ -648,6 +648,13 @@ Function KillOrMoveToTrashPath(path)
 	endif
 End
 
+/// @brief Check if the given sweep number is valid
+Function IsValidSweepNumber(sweepNo)
+	variable sweepNo
+
+	return IsInteger(sweepNo) && sweepNo >= 0
+End
+
 /// @brief Returns the config wave for a given sweep wave
 Function/Wave GetConfigWave(sweepWave)
 	Wave sweepWave
@@ -663,9 +670,16 @@ Function/Wave GetSweepWave(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
+	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $GetSweepWaveName(sweepNo)
 
 	return wv
+End
+
+/// @brief Return the sweep wave name
+Function/S GetSweepWaveName(sweepNo)
+	variable sweepNo
+
+	return "Sweep_" + num2str(sweepNo)
 End
 
 /// @brief Returns the sampling interval of the sweep

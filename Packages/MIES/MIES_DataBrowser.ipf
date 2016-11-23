@@ -196,8 +196,8 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	// otherwise clear the plot
 	if(GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay"))
 
-		WAVE/Z/SDFR=dfr newSweepWave = $("Sweep_" + num2str(newSweep))
-		WAVE/Z/SDFR=dfr currentSweepWave = $("Sweep_" + num2str(currentSweep))
+		WAVE/Z/SDFR=dfr newSweepWave     = $GetSweepWaveName(newSweep)
+		WAVE/Z/SDFR=dfr currentSweepWave = $GetSweepWaveName(currentSweep)
 
 		newWaveDisplayed     = IsWaveDisplayedOnGraph(graph, wv=newSweepWave)
 		currentWaveDisplayed = IsWaveDisplayedOnGraph(graph, wv=currentSweepWave)
@@ -216,7 +216,7 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	endif
 
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", newSweep)
-	Wave/Z/SDFR=dfr wv = $("Sweep_" + num2str(newSweep))
+	WAVE/Z/SDFR=dfr wv = $GetSweepWaveName(newSweep)
 
 	if(WaveExists(wv))
 		DB_TilePlotForDataBrowser(panelTitle, wv, newSweep)
