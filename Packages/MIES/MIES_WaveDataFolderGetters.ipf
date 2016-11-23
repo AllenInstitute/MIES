@@ -4476,5 +4476,6 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	SetDimLabel COLS, 1, AD       , wv
 	SetDimLabel COLS, 2, HEADSTAGE, wv
 
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
