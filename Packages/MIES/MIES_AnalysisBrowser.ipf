@@ -1464,11 +1464,9 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	variable sweep
 	Wave sweepWave
 
-	variable numRows, i, channelNumber
-	string channelType, str
-
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
-	Wave configSweep = GetAnalysisConfigWave(expFolder, device, sweep)
+	Wave configSweep  = GetAnalysisConfigWave(expFolder, device, sweep)
+
 	if(DimSize(configSweep, ROWS) != DimSize(sweepWave, COLS))
 		printf "The sweep %d of device %s in experiment %s does not match its configuration data. Therefore we ignore it.\r", sweep, device, expFolder
 		return 1
@@ -1477,24 +1475,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/SDFR=dfr numericalValues
 
-	numRows = DimSize(configSweep, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		channelType = StringFromList(configSweep[i][0], ITC_CHANNEL_NAMES)
-		ASSERT(!isEmpty(channelType), "empty channel type")
-		channelNumber = configSweep[i][1]
-		ASSERT(IsFinite(channelNumber), "non-finite channel number")
-		str = channelType + "_" + num2istr(channelNumber)
-
-		WAVE data = ExtractOneDimDataFromSweep(configSweep, sweepWave, i)
-
-		if(!cmpstr(channelType, "TTL"))
-			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), sweepFolder, str + "_")
-		endif
-
-		MoveWave data, sweepFolder:$str
-	endfor
-
-	string/G sweepFolder:note = note(sweepWave)
+	SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configSweep, targetDFR=sweepFolder)
 	KillOrMoveToTrash(wv=sweepWave)
 
 	return 0

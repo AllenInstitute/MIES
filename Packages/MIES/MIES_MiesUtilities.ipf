@@ -3154,3 +3154,46 @@ Function StartZeroMQMessageHandler()
 
 #endif
 End
+
+/// @brief Split an ITCDataWave into one 1D-wave per channel/ttlBit
+///
+/// @param numericalValues numerical labnotebook
+/// @param sweep           sweep number
+/// @param sweepWave       ITCDataWave
+/// @param configWave      ITCChanConfigWave
+/// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
+Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, [targetDFR])
+	WAVE numericalValues, sweepWave, configWave
+	variable sweep
+	DFREF targetDFR
+
+	variable numRows, i, channelNumber
+	string channelType, str
+
+	if(ParamIsDefault(targetDFR))
+		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
+	endif
+
+	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
+	ASSERT(IsFinite(sweep), "Sweep number must be finite")
+	ASSERT(DimSize(configWave, ROWS) == DimSize(sweepWave, COLS), "Sweep and config wave differ in the number of channels")
+
+	numRows = DimSize(configWave, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		channelType = StringFromList(configWave[i][0], ITC_CHANNEL_NAMES)
+		ASSERT(!isEmpty(channelType), "empty channel type")
+		channelNumber = configWave[i][1]
+		ASSERT(IsFinite(channelNumber), "non-finite channel number")
+		str = channelType + "_" + num2istr(channelNumber)
+
+		WAVE data = ExtractOneDimDataFromSweep(configWave, sweepWave, i)
+
+		if(!cmpstr(channelType, "TTL"))
+			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), targetDFR, str + "_")
+		endif
+
+		MoveWave data, targetDFR:$str
+	endfor
+
+	string/G targetDFR:note = note(sweepWave)
+End
