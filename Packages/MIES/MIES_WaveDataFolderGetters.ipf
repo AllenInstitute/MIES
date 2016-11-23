@@ -537,6 +537,26 @@ Function/DF GetManipulatorPath()
 	return createDFWithAllParents(GetManipulatorPathAsString())
 End
 
+/// @brief Return a datafolder reference to a subfolder below `dfr` for splitted sweep specific data, e.g. dfr:X_5
+Function/DF GetSingleSweepFolder(dfr, sweepNo)
+	DFREF dfr
+	variable sweepNo
+
+	return createDFWithAllParents(GetSingleSweepFolderAsString(dfr, sweepNo))
+End
+
+/// @brief Return the path to a subfolder below `dfr` for splitted sweep specific data
+Function/S GetSingleSweepFolderAsString(dfr, sweepNo)
+	DFREF dfr
+	variable sweepNo
+
+	ASSERT(DataFolderExistsDFR(dfr), "dfr must exist")
+	ASSERT(IsValidSweepNumber(sweepNo), "Invalid sweepNo")
+
+	// folder name starts with X as only liberal names are allowed to start with numbers. And we don't want liberal names.
+	return GetDataFolder(1, dfr) + "X_" + num2str(sweepNo)
+End
+
 /// @brief Return the ITC data wave
 Function/Wave GetITCDataWave(panelTitle)
 	string panelTitle
@@ -3641,8 +3661,7 @@ Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	variable sweep
 
 	ASSERT(IsFinite(sweep), "Expected finite sweep number")
-	// folder name starts with X as only liberal names are allowed to start with numbers. And we don't want liberal names.
-	return GetAnalysisSweepPathAsString(expFolder, device) + ":X_" + num2str(sweep)
+	return GetSingleSweepFolderAsString(GetAnalysisSweepPath(expFolder, device), sweep)
 End
 
 /// @brief Return the datafolder reference to the stim set folder
