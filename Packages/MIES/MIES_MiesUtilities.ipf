@@ -1660,11 +1660,16 @@ Function SaveExperimentSpecial(mode)
 End
 
 /// @brief Return the maximum count of the given type
-Function GetNumberFromType([var, str])
+///
+/// @param var    numeric channel types
+/// @param str    string channel types
+/// @param itcVar numeric ITC XOP channel types
+Function GetNumberFromType([var, str, itcVar])
 	variable var
 	string str
+	variable itcVar
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Expected exactly one parameter")
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(itcVar) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)
@@ -1706,6 +1711,19 @@ Function GetNumberFromType([var, str])
 				break
 			default:
 				ASSERT(0, "invalid type")
+				break
+		endswitch
+	elseif(!ParamIsDefault(itcVar))
+		switch(itcVar)
+			case ITC_XOP_CHANNEL_TYPE_ADC:
+				return NUM_AD_CHANNELS
+				break
+			case ITC_XOP_CHANNEL_TYPE_DAC:
+			case ITC_XOP_CHANNEL_TYPE_TTL:
+				return NUM_DA_TTL_CHANNELS
+				break
+			default:
+				ASSERT(0, "Invalid type")
 				break
 		endswitch
 	endif
