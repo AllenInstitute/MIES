@@ -398,7 +398,7 @@ end
 Function IsInteger(var)
 	variable var
 
-	return trunc(var) == var
+	return IsFinite(var) && trunc(var) == var
 End
 
 /// @brief Downsample data
