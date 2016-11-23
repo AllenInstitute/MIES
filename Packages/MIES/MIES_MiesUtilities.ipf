@@ -2764,10 +2764,11 @@ End
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
 ///
 /// @param wv                       wave to replace by its backup
-/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup. Passing a non-zero value
-///                                 will abort if the backup wave does not exist, for zero it will just do nothing.
-/// @returns one if the original wave was successfully replaced, zero otherwise.
-Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
+/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup.
+///                                 Passing a non-zero value will abort if the backup wave does not exist, with
+///                                 zero it will just do nothing.
+/// @returns wave reference to the restored data, in case of no backup an invalid wave reference
+Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Wave wv
 	variable nonExistingBackupIsFatal
 
@@ -2789,12 +2790,14 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 		if(nonExistingBackupIsFatal)
 			Abort "Backup wave does not exist"
 		endif
-		return 0
+
+		return $""
 	endif
 
 	Duplicate/O backup, wv
 	KillOrMoveToTrash(wv=backup)
-	return 1
+
+	return wv
 End
 
 /// @brief Returns 1 if the user cancelled, zero if SaveExperiment was called
