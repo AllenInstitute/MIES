@@ -58,7 +58,7 @@ Function MultiPatchConfig()
 			PGC_SetAndActivateControl(win,"Popup_Settings_VC_AD", val = i)
 		endif
 		
-		CheckDA = "Check_DA_0" + num2str(i)
+		CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 		PGC_SetAndActivateControl(win,CheckDA,val = 1)
 
 		
@@ -68,13 +68,13 @@ Function MultiPatchConfig()
 		string NIDev = HW_NI_ListDevices()
 		variable PressDevVal = WhichListItem(StringFromList(ii,PRESSURE_DEV),NIDev)
 		PGC_SetAndActivateControl(win,"popup_Settings_Pressure_dev", val = PressDevVal+1)
-		
-		if (mod(i,2)==0)
+		 
+		if (!mod(i,2)) // even
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_DA", val = 0)
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_AD", val = 0)
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLA", val = 1)
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLB", val = 2)
-		elseif (mod(i,2)==1)
+		else // odd
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_DA", val = 1)
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_AD", val = 1)
 			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLA", val = 3)
@@ -163,14 +163,14 @@ Function MultiPatchConfig()
 	
 	PGC_SetAndActivateControl(win,"SetVar_DataAcq_TPAmplitude", val = -10)
 	
-	PGC_SetAndActivateControl(win,"StartTestPulseButton")
-	
 	PGC_SetAndActivateControl(win,"ADC", val = 0)										// go to Data Acquisition tab
 	
 	string filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 	NewPath /C SavePath, SAVE_PATH
 	
 	SaveExperiment /P=SavePath as filename
+	
+	PGC_SetAndActivateControl(win,"StartTestPulseButton")
 	
 	print ("Start Sciencing")
 
@@ -189,7 +189,7 @@ Function MCC_InitParams(panelTitle, headStage)
 
 	//Set V-clamp parameters
 
-	MCC_SetMode(0)
+	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 	MCC_SetHoldingEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetFastCompTau(1.8e-6)
@@ -205,7 +205,7 @@ Function MCC_InitParams(panelTitle, headStage)
 
 	//Set I-Clamp Parameters
 
-	MCC_SetMode(1)
+	DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 	MCC_SetHoldingEnable(0)
 	MCC_SetSlowCurrentInjEnable(0)
 	MCC_SetNeutralizationEnable(0)
@@ -217,7 +217,7 @@ Function MCC_InitParams(panelTitle, headStage)
 	MCC_SetSecondarySignalLPF(10e3)
 
 	//Set mode back to V-clamp
-	MCC_SetMode(0)
+	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 
 End
 
@@ -228,7 +228,7 @@ Function Position_MCC_Win(serialNum, winTitle)
 
 string serialNum
 string winTitle
-Make /T winNm
+Make /T /FREE winNm
 string cmd
 variable w
 
@@ -256,7 +256,6 @@ variable w
 	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[3]
 	ExecuteScriptText cmd
 	
-	killwaves winNm
 
 End
 
