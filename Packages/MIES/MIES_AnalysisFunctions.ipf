@@ -21,6 +21,23 @@
 /// Post Set   | After a *full* set has been acquired | Ignored                                   | This event is not always reached as the user might not acquire all steps of a set
 /// Post DAQ   | After all DAQ has been finished      | Ignored                                   | None
 
+/// @name Initial parameters for stimulation
+///@{
+static strCONSTANT DEFAULT_DEVICE = "ITC18USB_Dev_0"			///< panelTitle device	
+static strCONSTANT STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0"	///< Initial stimulus set
+static CONSTANT VM1_LOCAL = -55										///< Initial holding potential	
+static CONSTANT VM2_LOCAL = -85										///< Second holding potential to switch to
+static CONSTANT SCALE_LOCAL = 70										///< Stimulus amplitude 
+static CONSTANT NUM_SWEEPS_LOCAL = 6								///< Number of sweeps to acquire
+static CONSTANT ITI_LOCAL = 15										///< Inter-trial-interval
+///@}
+
+/// @name Initial settings for oodDAQ stimulation
+///@{
+static CONSTANT POST_DELAY = 150										///< Delay after stimulation event in which no other event can occur in ms
+static CONSTANT RESOLUTION = 25										///< Resolution of oodDAQ protocol in ms
+///@}
+
 /// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V2() instead
 ///
 /// @param panelTitle  device
@@ -122,23 +139,6 @@ End
 // Functions which can be assigned to various epochs of a stimulus set
 // Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
 
-/// @name Initial parameters for stimulation
-///@{
-static strCONSTANT STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0"	///< Initial stimulus set
-static CONSTANT VM1_LOCAL = -55										///< Initial holding potential	
-static CONSTANT VM2_LOCAL = -85										///< Second holding potential to switch to
-static CONSTANT SCALE_LOCAL = 70										///< Stimulus amplitude 
-static CONSTANT NUM_SWEEPS_LOCAL = 6								///< Number of sweeps to acquire
-static CONSTANT ITI_LOCAL = 15										///< Inter-trial-interval
-///@}
-
-/// @name Initial settings for oodDAQ stimulation
-///@{
-static CONSTANT POST_DELAY = 150										///< Delay after stimulation event in which no other event can occur in ms
-static CONSTANT RESOLUTION = 25										///< Resolution of oodDAQ protocol in ms
-///@}
-
-static strCONSTANT panelTitle = "ITC18USB_Dev_0"
 
 /// @brief Force active headstages into voltage clamp
 Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
@@ -147,7 +147,7 @@ Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
 	Wave ITCDataWave
 	variable headstage
 	
-	setVClampMode(panelTitle)
+	setVClampMode()
 	
 	printf "Stimulus set running in V-Clamp on headstage: %d\r", headStage
 	
@@ -160,7 +160,7 @@ Function SetStimConfig_Iclamp(panelTitle, eventType, ITCDataWave, headStage)
 	Wave ITCDataWave
 	variable headstage
 	
-	setIClampMode(panelTitle)
+	setIClampMode()
 	
 	printf "Stimulus set running in I-Clamp on headstage: %d\r", headStage
 	
@@ -173,7 +173,7 @@ Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
 	Wave ITCDataWave
 	variable headstage
 	
-	variable SweepsRemaining = switchHolding(panelTitle,VM2_LOCAL)
+	variable SweepsRemaining = switchHolding(VM2_LOCAL)
 	
 	printf "Number of stimuli remaining is: %d on headstage: %d\r", SweepsRemaining, headStage
 End
@@ -185,9 +185,9 @@ Function LastStimSet(panelTitle, eventType, ITCDataWave, headStage)
 	Wave ITCDataWave
 	variable headstage
 	
-	LastStimSetRun(panelTitle)
-	if (TP_CheckIfTestPulseIsRunning(panelTitle) == TEST_PULSE_NOT_RUNNING)
-			TP_RestartTestPulse(panelTitle, TEST_PULSE_NOT_RUNNING)
+	LastStimSetRun()
+	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
+		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton")			
 	endif
 
 End
@@ -207,9 +207,9 @@ Function StimParamGUI()
 	
 	DoPrompt "Choose stimulus set and enter initial parameters", stimSet, Vm1,  Scale, sweeps, ITI
 	
-	if (V_flag == 0)
+	if (!V_flag)
 		SetStimParam(stimSet,Vm1,Scale,Sweeps,ITI)
-		PGC_SetAndActivateControl(panelTitle,"DataAcquireButton")
+		PGC_SetAndActivateControl(DEFAULT_DEVICE,"DataAcquireButton")
 	endif
 End
 
@@ -224,18 +224,18 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	variable Vm1, scale, sweeps, ITI
 	string stimSet
 	
-	setHolding(panelTitle, Vm1)
+	setHolding(Vm1)
 	
 	variable stimSetIndex = GetStimSet(stimSet)
 	
 	if (stimSetIndex > 0)
 
-		PGC_SetAndActivateControl(panelTitle,"Wave_DA_All", val = stimSetIndex + 1)
-		PGC_SetAndActivateControl(panelTitle,"Scale_DA_All", val = scale)
-		PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = sweeps)
-		PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = ITI)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE,"Wave_DA_All", val = stimSetIndex + 1)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE,"Scale_DA_All", val = scale)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE,"SetVar_DataAcq_SetRepeats", val = sweeps)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE,"SetVar_DataAcq_ITI", val = ITI)
 	
-		InitoodDAQ(panelTitle)
+		InitoodDAQ()
 	else
 		printf "Requested non-existent stim set"
 		return stimSetIndex
@@ -245,52 +245,53 @@ End
 
 /// @brief Set holding potential for active headstages
 ///
-/// @param Vm1		Holding potential
-Function setHolding(panelTitle, Vm1)
-	string panelTitle
+/// @param Vm1		   Holding potential
+Function setHolding(Vm1)
 	variable Vm1
 	
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	
 	variable i
 	
 	for (i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
-			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
-			PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm1)
-			PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm1)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = i)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_VC", val = Vm1)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_IC", val = Vm1)
 		endif
 	endfor
 End
 
 /// @brief Set active headstages into V-clamp
-Function setVClampMode(panelTitle)
-	string panelTitle
-	
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+Function setVClampMode()
+
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	
 	variable i
+	string ctrl
 	
 	for (i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
-			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
-			DAP_GetClampModeControl(V_CLAMP_MODE, i)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
+			ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, i)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,ctrl, val = CHECKBOX_SELECTED)
 		endif
 	endfor
 End
 
 /// @brief Set active headstages into I-clamp
-Function setIClampMode(panelTitle)
-	string panelTitle
+Function setIClampMode()
 	
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	
 	variable i
+	string ctrl
 	
 	for (i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
-			PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
-			DAP_GetClampModeControl(I_CLAMP_MODE, i)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
+			ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, i)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE,ctrl, val = CHECKBOX_SELECTED)
 		endif
 	endfor
 End
@@ -299,35 +300,34 @@ End
 /// Switch occurs after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2)
 ///
 /// @param Vm2	Holding potential to switch to
-Function switchHolding(panelTitle, Vm2)
-	string panelTitle
+Function switchHolding(Vm2)
 	variable Vm2
 	
-	variable numSweeps = GetValDisplayAsNum(panelTitle,"valdisp_DataAcq_SweepsInSet")
+	variable numSweeps = GetValDisplayAsNum(DEFAULT_DEVICE,"valdisp_DataAcq_SweepsInSet")
 	
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE GuiState = GetDA_EphysGuiStateNum(DEFAULT_DEVICE)
 	variable SweepsRemaining = GuiState[0][%valdisp_DataAcq_TrialsCountdown]-1
 	
 	if (numSweeps <= 1)
 		printf "Only 1 sweep was acquired, can not switch holding \r"
-		if (TP_CheckIfTestPulseIsRunning(panelTitle) == TEST_PULSE_NOT_RUNNING)
-			TP_RestartTestPulse(panelTitle, TEST_PULSE_NOT_RUNNING)
+		if(!TP_CheckIfTestPulseIsRunning(DEFAULT_DEVICE))
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "StartTestPulseButton")			
 		endif
 		return SweepsRemaining
 	endif
 	
 	variable switchSweep = floor(numSweeps/2)
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	
     if (SweepsRemaining == switchSweep)
         variable i
         for (i=0; i<NUM_HEADSTAGES; i+=1)
             if (statusHS[i] == 1)
-                PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = i)
+                PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = i)
                 if (GuiState[i][%HSMode] == V_CLAMP_MODE)
-                    PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = Vm2)
+                    PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_VC", val = Vm2)
                 elseif (GuiState[i][%HSMode] == I_CLAMP_MODE)
-                    PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_IC", val = Vm2)
+                    PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_IC", val = Vm2)
                 else 
                 		printf "Unsupported clamp mode \r"
                 		return GuiState[i][%HSMode]
@@ -351,47 +351,42 @@ Function GetStimSet(stimSet)
 End
 
 /// @brief Initialize oodDAQ settings
-Function InitoodDAQ(panelTitle)
-	string panelTitle
+Function InitoodDAQ()
 	
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE GuiState = GetDA_EphysGuiStateNum(DEFAULT_DEVICE)
 	
 	// disable dDAQ
-	if (GuiState[0][%Check_DataAcq1_DistribDaq] != 0)
-   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 0)
-   	endif
 	
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
+   
    // make sure oodDAQ is enabled				
-   if (GuiState[0][%Check_DataAcq1_dDAQOptOv] != 1)
-   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
-   	endif
+   
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
    	
    // make sure Get/Set ITI is disabled
-   	if (GuiState[0][%Check_DataAcq_Get_Set_ITI] != 0)
-   		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = 0)
-   	endif
+   
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
    	
-   	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
-   	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = RESOLUTION)
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_dDAQOptOvRes", val = RESOLUTION)
 
 End
 
 /// @brief Print last full stim set aqcuired
-Function LastStimSetRun(panelTitle)
-	string panelTitle
+Function LastStimSetRun()
 	
-	WAVE /T textualValues = GetLBTextualValues(panelTitle)
+	WAVE /T textualValues = GetLBTextualValues(DEFAULT_DEVICE)
 	
-	WAVE  numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE  numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
 	
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	
-	variable LastSweep = AFH_GetLastSweepAcquired(panelTitle)
+	variable LastSweep = AFH_GetLastSweepAcquired(DEFAULT_DEVICE)
 	
 	if (isInteger(LastSweep) == 0)
 		printf "No sweeps have been acquired"
-		if (TP_CheckIfTestPulseIsRunning(panelTitle) == TEST_PULSE_NOT_RUNNING)
-			TP_RestartTestPulse(panelTitle, TEST_PULSE_NOT_RUNNING)
+		if(!TP_CheckIfTestPulseIsRunning(DEFAULT_DEVICE))
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "StartTestPulseButton")			
 		endif
 		return LastSweep
 	endif
