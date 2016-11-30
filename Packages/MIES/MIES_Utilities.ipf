@@ -557,14 +557,17 @@ End
 
 /// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN.
 ///
-/// This is not the best possible implementation but should
-/// suffice for our needs.
+/// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
 Function/Wave GetUniqueEntries(wv)
 	Wave wv
 
-	variable numRows, i, idx
+	variable numRows, i
 
-	numRows = DimSize(wv,ROWS)
+	if(IsTextWave(wv))
+		return GetUniqueTextEntries(wv)
+	endif
+
+	numRows = DimSize(wv, ROWS)
 	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
 	Duplicate/FREE wv, result
@@ -573,20 +576,55 @@ Function/Wave GetUniqueEntries(wv)
 		return result
 	endif
 
-	result  = NaN
-	idx     = numRows - 1
-	for(i=0; i < numRows; i+=1 )
+	FindDuplicates/RN=result wv
+
+	// delete NaN from wave
+	for(i = numRows - 1; i >= 0; i -= 1 )
 		if (!IsFinite(wv[i]))
-			continue
-		endif
-		FindValue/V=(wv[i])/S=(idx) result
-		if(V_Value == -1)
-			result[idx] = wv[i]
-			idx -= 1
+			DeletePoints i, 1, result
 		endif
 	endfor
 
-	DeletePoints 0, idx+1, result
+	return result
+End
+
+/// @brief Search and Remove Duplicates from Text Wave wv
+///
+/// Duplicates are removed from left to right
+///
+/// @param wv             text wave reference
+/// @param caseSensitive  [optional] Indicates whether comparison should be case sensitive. defaults to True
+///
+/// @return free wave with unique entries
+Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
+	Wave/T wv
+	variable caseSensitive
+
+	variable numEntries, numDuplicates, i
+
+	if(ParamIsDefault(caseSensitive))
+		caseSensitive = 1
+	endif
+
+	numEntries = DimSize(wv, ROWS)
+	ASSERT(numEntries == numpnts(wv), "Wave must be 1D.")
+
+	Duplicate/T/FREE wv result
+	if(numEntries <= 1)
+		return result
+	endif
+
+	if(caseSensitive)
+		FindDuplicates/RT=result wv
+	else
+		Make/I/FREE index
+		MAKE/T/FREE/N=(numEntries) duplicates = LowerStr(wv[p])
+		FindDuplicates/INDX=index duplicates
+		numDuplicates = DimSize(index, ROWS)
+		for(i = numDuplicates - 1; i >= 0; i -= 1)
+			DeletePoints index[i], 1, result
+		endfor
+	endif
 
 	return result
 End
