@@ -185,11 +185,10 @@ Function LastStimSet(panelTitle, eventType, ITCDataWave, headStage)
 	Wave ITCDataWave
 	variable headstage
 	
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
+	
 	LastStimSetRun()
-	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
-		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton")			
-	endif
-
+	
 End
 /// @brief GUI to set initial stimulus parameters using SetStimParam() and begin data acquisition. 
 /// NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION! 
@@ -239,6 +238,10 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	else
 		printf "Requested non-existent stim set"
 		return stimSetIndex
+	endif
+	
+	if (sweeps > 1)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_RepeatAcq", val = CHECKBOX_SELECTED)
 	endif
 
 End
@@ -309,10 +312,8 @@ Function switchHolding(Vm2)
 	variable SweepsRemaining = GuiState[0][%valdisp_DataAcq_TrialsCountdown]-1
 	
 	if (numSweeps <= 1)
-		printf "Only 1 sweep was acquired, can not switch holding \r"
-		if(!TP_CheckIfTestPulseIsRunning(DEFAULT_DEVICE))
-			PGC_SetAndActivateControl(DEFAULT_DEVICE, "StartTestPulseButton")			
-		endif
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
+		printf "Not enough sweeps were acquired, can not switch holding \r"
 		return SweepsRemaining
 	endif
 	
@@ -385,16 +386,13 @@ Function LastStimSetRun()
 	
 	if (isInteger(LastSweep) == 0)
 		printf "No sweeps have been acquired"
-		if(!TP_CheckIfTestPulseIsRunning(DEFAULT_DEVICE))
-			PGC_SetAndActivateControl(DEFAULT_DEVICE, "StartTestPulseButton")			
-		endif
 		return LastSweep
 	endif
 	
 	WAVE /T StimSet = GetLastSettingText(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
 	WAVE clampHS = GetLastSetting(numericalValues, LastSweep, "Clamp Mode", DATA_ACQUISITION_MODE)
-	WAVE holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
-	WAVE holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
+	WAVE /Z holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
+	WAVE /Z holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
 	
 	variable i
 	for (i=0; i<NUM_HEADSTAGES; i+=1)
