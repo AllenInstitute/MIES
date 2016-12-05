@@ -1,27 +1,11 @@
 #pragma TextEncoding = "Windows-1252"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
-
-
-static strConstant AMP_SERIAL = "836760;836761;836782;836783" 	// Serial numbers of amps in proper order
-static strConstant AMP_TITLE = "0,1;2,3;4,5;6,7" 					// names you want to give the amps
-static Constant ATTEMPTS = 5 												// number of attempts to open MCC
-static strConstant ITC_DEV = "ITC1600" 								// name of ITC device
-static strConstant PRESSURE_DEV = "Dev6;Dev7;Dev2;Dev1"				// Device numbers of pressure control boxes (2 headstages/device)
-static Constant TEMP_GAIN = 0.01											// Gain for Asynchronous Temperature input
-static Constant TEMP_MAX = 34												// Max limit for Asynchronous Temperature alarm
-static Constant TEMP_MIN = -1												// Min limit for Asynchrounous Temperature alarm
-static strConstant SAVE_PATH = "C:Users:stephanies:Desktop:MiesSave"		// Default path to store MIES experiments
 	
 Function MultiPatchConfig()
-	// Set variables for each rig
-	movewindow /C 1450, 530,-1,-1								// position command window
-	
-	// Configure MIES Start-up
 
-	Assert(AI_OpenMCCs(AMP_SERIAL, ampTitleList = AMP_TITLE, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" ) // open MCC amps
-	
-	Position_MCC_Win(AMP_SERIAL,AMP_TITLE)					// position MCC windows
+	// Set variables for each rig
+//	movewindow /C 1450, 530,-1,-1								// position command window
 
 	if (windowExists("DA_Ephys")==0 && windowExists("ITC1600_Dev_0")==0)	
 		DAP_CreateDAEphysPanel() 									//open DA_Ephys
@@ -34,136 +18,22 @@ Function MultiPatchConfig()
 		variable ITCDevNum = WhichListItem(ITC_DEV,DEVICE_TYPES) 
 		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = ITCDevNum) 
 		PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
-	endif
-
-	// Configure headstage amplifier and pressure associations
-
-	win = GetMainWindow(GetCurrentWindow())
-
-	PGC_SetAndActivateControl(win,"button_Settings_UpdateAmpStatus")
-	PGC_SetAndActivateControl(win,"button_Settings_UpdateDACList")
-	string CheckDA 
-	variable i
-	variable ii=0
+	endif	
 	
-	for (i = 0; i<NUM_HEADSTAGES; i+=1)
+	MPConfig_Amplifiers(win)
+	
+	MPConfig_Pressure(win)
+	
+	MPConfig_ClampModes(win)
+	
+	MPConfig_AsyncTemp(win)
+	
 
-		PGC_SetAndActivateControl(win,"Popup_Settings_HeadStage", val = i)
-		PGC_SetAndActivateControl(win,"popup_Settings_Amplifier", val = i +1)
-		PGC_SetAndActivateControl(win,"Popup_Settings_VC_DA", val = i)
-		
-		if (i>3) 
-			PGC_SetAndActivateControl(win,"Popup_Settings_VC_AD", val = i+4)
-			else
-			PGC_SetAndActivateControl(win,"Popup_Settings_VC_AD", val = i)
-		endif
-		
-		CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(win,CheckDA,val = 1)
-
-		
-		
-		// Pressure regulators 
-		
-		string NIDev = HW_NI_ListDevices()
-		variable PressDevVal = WhichListItem(StringFromList(ii,PRESSURE_DEV),NIDev)
-		PGC_SetAndActivateControl(win,"popup_Settings_Pressure_dev", val = PressDevVal+1)
-		 
-		if (!mod(i,2)) // even
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_DA", val = 0)
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_AD", val = 0)
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLA", val = 1)
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLB", val = 2)
-		else // odd
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_DA", val = 1)
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_AD", val = 1)
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLA", val = 3)
-			PGC_SetAndActivateControl(win,"Popup_Settings_Pressure_TTLB", val = 4)
-			ii+= 1
-		endif		
-
-	MCC_InitParams(win,i)
-
-	endfor
-	
-	PGC_SetAndActivateControl(win,"button_Hardware_AutoGainAndUnit")
-	PGC_SetAndActivateControl(win,"button_Hardware_P_Enable")
-	PGC_SetAndActivateControl(win,"check_Settings_TPAfterDAQ", val = 1)
-	PGC_SetAndActivateControl(win,"check_Settings_TP_SaveTPRecord", val = 1)
-	PGC_SetAndActivateControl(win,"Check_Settings_NwbExport", val = 1)
-	PGC_SetAndActivateControl(win,"Check_Settings_Append", val = 1)
-	PGC_SetAndActivateControl(win,"check_Settings_SyncMiesToMCC", val = 1)	
-	PGC_SetAndActivateControl(win,"check_Settings_AmpIEQZstep", val = 1)
-	PGC_SetAndActivateControl(win,"setvar_Settings_InBathP", val = 0.5)  			// set approach positive pressure to 1 psi
-	PGC_SetAndActivateControl(win,"setvar_Settings_SealStartP", val = -0.1)		// set initial seal pressure to -0.1 psi
-	PGC_SetAndActivateControl(win,"setvar_Settings_SealMaxP", val = -1.4)		// set max seal pressure to -1.4 psi
-	PGC_SetAndActivateControl(win,"Check_DataAcq1_dDAQOptOv", val = 1)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_dDAQOptOvPost", val = 150)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_dDAQOptOvRes", val = 25)
-	PGC_SetAndActivateControl(win,"SetVar_DataAcq_SetRepeats", val = 5)
-	PGC_SetAndActivateControl(win,"SetVar_DataAcq_ITI", val = 15)
-	PGC_SetAndActivateControl(win,"Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(win,"check_DataACq_Pressure_AutoOFF", val = 1)	// User mode WILL NOT follow headstage
-	PGC_SetAndActivateControl(win,"check_Settings_UserP_Seal", val = 1)
-	
-	//Asynchronous Temperature input
-	PGC_SetAndActivateControl(win,"SetVar_AsyncAD_Title_00", str = "Set Temperature")
-	PGC_SetAndActivateControl(win,"Check_AsyncAD_00", val = 1)
-	PGC_SetAndActivateControl(win,"Gain_AsyncAD_00", val = TEMP_GAIN)
-	PGC_SetAndActivateControl(win,"Unit_AsyncAD_00", str = "degC")
-	PGC_SetAndActivateControl(win,"SetVar_AsyncAD_Title_01", str = "Bath Temperature")
-	PGC_SetAndActivateControl(win,"Check_AsyncAD_01", val = 1)
-	PGC_SetAndActivateControl(win,"Gain_AsyncAD_01", val = TEMP_GAIN)
-	PGC_SetAndActivateControl(win,"Unit_AsyncAD_01", str = "degC")
-	PGC_SetAndActivateControl(win,"check_AsyncAlarm_01", val = 1)
-	PGC_SetAndActivateControl(win,"max_AsyncAD_01", val = TEMP_MAX)
-	PGC_SetAndActivateControl(win,"min_AsyncAD_01", val = TEMP_MIN)
-	
-	
-	// Set initial values for V-Clamp and I-Clamp in MIES
-	PGC_SetAndActivateControl(win,"Check_DataAcq_SendToAllAmp", val = 1)
-	PGC_SetAndActivateControl(win,"check_DatAcq_HoldEnableVC", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_Hold_VC", val = -70)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_PipetteOffset_VC", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_WCC", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_WCR", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_RsCorr", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_RsPred", val = 0)
-	PGC_SetAndActivateControl(win,"check_DatAcq_HoldEnable", val = 0)
-	PGC_SetAndActivateControl(win,"check_DatAcq_BBEnable", val = 0)
-	PGC_SetAndActivateControl(win,"check_DatAcq_CNEnable", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_PipetteOffset_IC", val = 0)
-	PGC_SetAndActivateControl(win,"check_DataAcq_AutoBias", val = 0)
-	PGC_SetAndActivateControl(win,"setvar_DataAcq_PipetteOffset_IC", val = -70)
-	PGC_SetAndActivateControl(win,"Check_DataAcq_SendToAllAmp", val = 0)
-	
-	// Set pressure calibration values
-	WAVE pressureDataWv = P_GetPressureDataWaveRef(win)
-
-	pressureDataWv[%headStage_0][%PosCalConst] = 0.04
-	pressureDataWv[%headStage_1][%PosCalConst] = 0.14
-	pressureDataWv[%headStage_2][%PosCalConst] = 0.05
-	pressureDataWv[%headStage_3][%PosCalConst] = 0.14
-	pressureDataWv[%headStage_4][%PosCalConst] = 0.29
-	pressureDataWv[%headStage_5][%PosCalConst] = 0.03
-	pressureDataWv[%headStage_6][%PosCalConst] = 0.05
-	pressureDataWv[%headStage_7][%PosCalConst] = 0.045
-
-	pressureDataWv[%headStage_0][%NegCalConst] = -0.04
-	pressureDataWv[%headStage_1][%NegCalConst] = -0.14
-	pressureDataWv[%headStage_2][%NegCalConst] = -0.05
-	pressureDataWv[%headStage_3][%NegCalConst] = -0.14
-	pressureDataWv[%headStage_4][%NegCalConst] = -0.29
-	pressureDataWv[%headStage_5][%NegCalConst] = -0.03
-	pressureDataWv[%headStage_6][%NegCalConst] = -0.05
-	pressureDataWv[%headStage_7][%NegCalConst] = -0.045
-	
-	
 	HD_LoadReplaceStimSet()
 	
-	PGC_SetAndActivateControl(win,"SetVar_DataAcq_TPAmplitude", val = -10)
-	
-	PGC_SetAndActivateControl(win,"ADC", val = 0)										// go to Data Acquisition tab
+	PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
+	PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
+	PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
 	
 	string filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 	NewPath /C SavePath, SAVE_PATH
@@ -174,10 +44,144 @@ Function MultiPatchConfig()
 	
 	print ("Start Sciencing")
 
+End	
+	
+
+// Amplifiers	
+Function MPConfig_Amplifiers(panelTitle)
+	string panelTitle
+	
+	string ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	
+	string AmpSerialLocal = ReadConfigList_Textual(AMP_SERIAL,ConfigList)
+	string AmpTitleLocal = ReadConfigList_Textual(AMP_TITLE,ConfigList)
+	
+	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" ) // open MCC amps
+	
+	Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)					// position MCC windows
+
+	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
+	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateDACList")
+	
+	string CheckDA
+	variable i
+	
+	for (i = 0; i<NUM_HEADSTAGES; i+=1)
+
+		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
+		PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = i +1)
+		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_DA", val = i)
+		
+		if (i>3) 
+			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i+4)
+			else
+			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i)
+		endif
+		
+		CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
+
+		MCC_InitParams(panelTitle,i)
+	endfor
 End
+		
+// Pressure regulators
+Function MPConfig_Pressure(panelTitle)
+	string panelTitle
+	variable i
+	variable ii=0
 
+	for (i = 0; i<NUM_HEADSTAGES; i+=1)
+		string NIDev = HW_NI_ListDevices()
+			variable PressDevVal = WhichListItem(StringFromList(ii,PRESSURE_DEV),NIDev)
+			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = PressDevVal+1)
+		 
+			if (!mod(i,2)) // even
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 0)
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 0)
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 1)
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 2)
+			else // odd
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 1)
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 1)
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 3)
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 4)
+				ii+= 1
+			endif		
+	endfor
+	
+	// Set pressure calibration values
+	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	
+	string ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	WAVE PressureConstants = ReadConfigList_Numerical(PRESSURE_CONST,ConfigList)
 
+	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
+	pressureDataWv[%headStage_1][%PosCalConst] = PressureConstants[1]
+	pressureDataWv[%headStage_2][%PosCalConst] = PressureConstants[2]
+	pressureDataWv[%headStage_3][%PosCalConst] = PressureConstants[3]
+	pressureDataWv[%headStage_4][%PosCalConst] = PressureConstants[4]
+	pressureDataWv[%headStage_5][%PosCalConst] = PressureConstants[5]
+	pressureDataWv[%headStage_6][%PosCalConst] = PressureConstants[6]
+	pressureDataWv[%headStage_7][%PosCalConst] = PressureConstants[7]
 
+	pressureDataWv[%headStage_0][%NegCalConst] = -PressureConstants[0]
+	pressureDataWv[%headStage_1][%NegCalConst] = -PressureConstants[1]
+	pressureDataWv[%headStage_2][%NegCalConst] = -PressureConstants[2]
+	pressureDataWv[%headStage_3][%NegCalConst] = -PressureConstants[3]
+	pressureDataWv[%headStage_4][%NegCalConst] = -PressureConstants[4]
+	pressureDataWv[%headStage_5][%NegCalConst] = -PressureConstants[5]
+	pressureDataWv[%headStage_6][%NegCalConst] = -PressureConstants[6]
+	pressureDataWv[%headStage_7][%NegCalConst] = -PressureConstants[7]
+	
+End 
+		
+Function MPConfig_AsyncTemp(panelTitle)
+	string panelTitle
+	
+	string ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	WAVE TempGainLocal = ReadConfigList_Numerical(TEMP_GAIN, ConfigList)
+	WAVE TempMaxLocal = ReadConfigList_Numerical(TEMP_MAX, ConfigList)
+	WAVE TempMinLocal = ReadConfigList_Numerical(TEMP_MIN, ConfigList)
+			
+	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_00", str = "Set Temperature")
+	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_00", val = 1)
+	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_00", val = TempGainLocal[0])
+	PGC_SetAndActivateControl(panelTitle,"Unit_AsyncAD_00", str = "degC")
+	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_01", str = "Bath Temperature")
+	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_01", val = 1)
+	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_01", val = TempGainLocal[0])
+	PGC_SetAndActivateControl(panelTitle,"Unit_AsyncAD_01", str = "degC")
+	PGC_SetAndActivateControl(panelTitle,"check_AsyncAlarm_01", val = 1)
+	PGC_SetAndActivateControl(panelTitle,"max_AsyncAD_01", val = TempMaxLocal[0])
+	PGC_SetAndActivateControl(panelTitle,"min_AsyncAD_01", val = TempMinLocal[0])
+
+End
+	
+	
+// Function DAEphysSettings(panelTitle)
+//	PGC_SetAndActivateControl(win,"button_Hardware_AutoGainAndUnit")
+//	PGC_SetAndActivateControl(win,"button_Hardware_P_Enable")
+//	PGC_SetAndActivateControl(win,"check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
+//	PGC_SetAndActivateControl(win,"check_Settings_TP_SaveTPRecord", val = CHECKBOX_SELECTED)
+//	PGC_SetAndActivateControl(win,"Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
+//	PGC_SetAndActivateControl(win,"Check_Settings_Append", val = CHECKBOX_SELECTED)
+//	PGC_SetAndActivateControl(win,"check_Settings_SyncMiesToMCC", val = CHECKBOX_SELECTED)	
+//	PGC_SetAndActivateControl(win,"check_Settings_AmpIEQZstep", val = CHECKBOX_SELECTED)
+//	PGC_SetAndActivateControl(win,"setvar_Settings_InBathP", val = 0.5)  			// set approach positive pressure to 1 psi
+//	PGC_SetAndActivateControl(win,"setvar_Settings_SealStartP", val = -0.1)		// set initial seal pressure to -0.1 psi
+//	PGC_SetAndActivateControl(win,"setvar_Settings_SealMaxP", val = -1.4)		// set max seal pressure to -1.4 psi
+//	PGC_SetAndActivateControl(win,"Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
+//	PGC_SetAndActivateControl(win,"setvar_DataAcq_dDAQOptOvPost", val = 150)
+//	PGC_SetAndActivateControl(win,"setvar_DataAcq_dDAQOptOvRes", val = 25)
+//	PGC_SetAndActivateControl(win,"SetVar_DataAcq_SetRepeats", val = 5)
+//	PGC_SetAndActivateControl(win,"SetVar_DataAcq_ITI", val = 15)
+//	PGC_SetAndActivateControl(win,"Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
+//	PGC_SetAndActivateControl(win,"check_DataACq_Pressure_AutoOFF", val = CHECKBOX_SELECTED)	// User mode WILL NOT follow headstage
+//	PGC_SetAndActivateControl(win,"check_Settings_UserP_Seal", val = CHECKBOX_SELECTED)
+// PGC_SetAndActivateControl(win,"SetVar_DataAcq_TPAmplitude", val = -10)
+// End
+	
 Function MCC_InitParams(panelTitle, headStage)
 
 	string panelTitle
@@ -259,3 +263,111 @@ variable w
 
 End
 
+
+
+Function MPConfig_ClampModes(panelTitle)
+	string panelTitle
+
+	// Set initial values for V-Clamp and I-Clamp in MIES
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = -70)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_VC", val = 0)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCC", val = 0)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCR", val = 0)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsCorr", val = 0)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsPred", val = 0)
+	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_IC", val = 0)
+	PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = -70)
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
+	
+End
+
+/// @brief Read User_Config NoteBook file and extract parameters as a KeyWordList
+///
+/// @param UserConfigNB  Name of User Configuration Notebook as a string
+/// @return ConfigList   KeyWordList string of configuration parameters to be called by ReadConfigList
+Function /S MPConfig_ImportUserSettings(UserConfigNB)
+	string UserConfigNB
+	string ConfigList = "", TempText
+	variable p = 0
+	
+	do
+		Notebook $UserConfigNB selection = {(p,0),(p,0)}
+		if (V_flag)
+			break
+		endif
+		
+		Notebook $UserConfigNB selection = {startOfParagraph, endofChars}
+		
+		GetSelection notebook, $UserConfigNB, 2
+		TempText = ""
+		TempText = S_Selection
+		if (strlen(TempText) > 0)
+			if (strlen(ConfigList) == 0)
+				ConfigList = TrimString(TempText)
+			else
+				ConfigList = ConfigList + "/" + TrimString(TempText)
+			endif
+			
+		endif	
+		
+		p += 1
+	
+	while (stringmatch(TempText, "!---End of Configuration---"))
+	
+	return ConfigList
+	
+End
+
+///@brief Extract parameter values from configuration list that need to be strings
+///
+///@param KeyWord     Key for the value you wish to extract
+///@param ConfigList  KeyWordList generated from ImportUserConfig
+///@return Value      Parameter value requested
+Function /S ReadConfigList_Textual(KeyWord, ConfigList)
+	string KeyWord, ConfigList
+	string Value
+	
+	Value = StringByKey(Keyword, ConfigList, "=","/")
+	
+	if (strlen(Value) == 0)
+		string errorMsg
+		sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", KeyWord 
+		ASSERT(strlen(Value) > 0,errorMsg)
+	endif
+	
+	return Value
+	
+End
+
+///@brief Extract parameter values from configuration list that need to be numerical
+///
+///@param KeyWord     Key for the value you wish to extract
+///@param ConfigList  KeyWordList generated from ImportUserConfig
+///@return Value      Parameter value requested as a wave
+Function /WAVE ReadConfigList_Numerical(KeyWord, ConfigList)
+	string KeyWord, ConfigList
+	string ItemList
+	
+	ItemList = StringByKey(Keyword, ConfigList, "=","/")
+	
+	Make /FREE/N = (ItemsInList(ItemList, ";")), Value
+	
+	variable i
+	for (i=0; i<ItemsInList(ItemList); i+=1)
+			Value[i] = str2num(StringFromList(i,ItemList,";"))
+			if (numType(Value[i]) != 0)
+				string errorMsg
+				sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", KeyWord 
+				ASSERT(numType(Value[i]) == 0,errorMsg)
+			endif
+	endfor
+	
+	return Value
+	
+End

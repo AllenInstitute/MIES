@@ -570,3 +570,18 @@ StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 
 StrConstant NOTE_KEY_ZEROED           = "Zeroed"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
+
+///@name KeyWord constants for User Configuration Notebook
+///@{
+StrConstant USER_CONFIG_NB = "User_Config"
+Constant ATTEMPTS          = 5
+StrConstant SAVE_PATH      = "C:Users:stephanies:Desktop:MiesSave"
+StrConstant ITC_DEV        = "Name of ITC Device"
+StrConstant AMP_TITLE      = "Amplifier Names"
+StrConstant AMP_SERIAL     = "Amplifier Serial Numbers"
+StrConstant PRESSURE_DEV   = "Name of Pressure Devices"
+StrConstant TEMP_GAIN      = "Temperature control gain (in V)"
+StrConstant TEMP_MAX       = "Maximum Temperature Allowed (in degrees C)"
+StrConstant TEMP_MIN       = "Maximum Temperature Allowed (in degrees C)"
+StrConstant PRESSURE_CONST = "Positive Pressure Calibration Constants"
+///@}
