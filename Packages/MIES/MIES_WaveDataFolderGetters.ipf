@@ -4473,6 +4473,55 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 
 	return wv
 End
+
+/// @brief Return the artefact removal listbox wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetArtefactRemovalListWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/T/Z/SDFR=dfr wv = artefactRemovalListBoxWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:artefactRemovalListBoxWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"Begin [ms]", wv
+	SetDimLabel COLS, 1, $"End   [ms]", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
+/// @brief Return the artefact removal wave
+///        databrowser or the sweepbrowser
+Function/WAVE GetArtefactRemovalDataWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/Z/SDFR=dfr wv = artefactRemovalDataWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(MINIMUM_WAVE_SIZE, 4) wv
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"ArtefactPosition", wv
+	SetDimLabel COLS, 1, $"DAC",           wv
+	SetDimLabel COLS, 2, $"ADC",           wv
+	SetDimLabel COLS, 3, $"HS",            wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
 /// @brief Return the channel selection wave for the databrowser or sweep browser
 Function/WAVE GetChannelSelectionWave(dfr)
 	DFREF dfr

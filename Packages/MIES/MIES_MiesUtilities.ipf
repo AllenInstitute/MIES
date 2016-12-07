@@ -1879,16 +1879,7 @@ Function PostPlotTransformations(graph, pps)
 
 	traceList = GetAllSweepTraces(graph)
 
-	if(!pps.timeAlignment)
-		// switch all waves back to their backup so
-		// that we have a clean start again
-		numTraces = ItemsInList(traceList)
-		for(i = 0; i < numTraces; i += 1)
-			trace = StringFromList(i, traceList)
-			WAVE wv = TraceNameToWaveRef(graph, trace)
-			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-		endfor
-	endif
+	AR_UpdateTracesIfReq(graph, pps.artefactRemoval, pps.sweepFolder, pps.numericalValues, pps.sweepNo)
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	if(pps.timeAlignment)
@@ -1900,6 +1891,22 @@ Function PostPlotTransformations(graph, pps)
 	RestoreCursor(graph, crsB)
 
 	pps.finalUpdateHook(graph)
+End
+
+/// @brief Replace all waves from the traces in the graph with their backup
+Function ReplaceAllWavesWithBackup(graph, traceList)
+	string graph
+	string traceList
+
+	variable numTraces, i
+	string trace
+
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
+	endfor
 End
 
 /// @brief Return all traces with real data

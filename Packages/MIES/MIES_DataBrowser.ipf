@@ -47,7 +47,7 @@ static Function/S DB_GetNotebookSubWindow(panelTitle)
 	return panelTitle + "#WaveNoteDisplay"
 End
 
-static Function/S DB_GetMainGraph(panelTitle)
+Function/S DB_GetMainGraph(panelTitle)
 	string panelTitle
 
 	return panelTitle + "#DataBrowserGraph"
@@ -155,7 +155,7 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	string subWindow = DB_GetNotebookSubWindow(panelTitle)
 	string graph = DB_GetMainGraph(panelTitle)
 
-	string traceList, trace, device
+	string traceList, trace, device, artefactRemovalExtPanel
 	variable numTraces, i, sweepNo
 	variable firstSweep, lastSweep
 	variable newWaveDisplayed, currentWaveDisplayed
@@ -165,15 +165,6 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 	if(!DataFolderExistsDFR(dfr))
 		return NaN
 	endif
-
-	Struct PostPlotSettings pps
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
-	pps.averageTraces     = GetCheckboxState(panelTitle, "check_DataBrowser_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
-	pps.timeAlignRefTrace = ""
-	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
 
 	if(ParamIsDefault(currentSweep))
 		currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
@@ -191,6 +182,24 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 
 	newSweep = DB_ClipSweepNumber(panelTitle, newSweep)
 
+	Struct PostPlotSettings pps
+	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
+	pps.averageTraces     = GetCheckboxState(panelTitle, "check_DataBrowser_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
+	pps.timeAlignRefTrace = ""
+	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
+	pps.artefactRemoval   = GetCheckBoxState(panelTitle, "CheckBox_DataBrowser_OpenArtRem")
+	pps.sweepNo           = newSweep
+	pps.sweepFolder       = GetDeviceDataPath(device)
+	WAVE pps.numericalValues = DB_GetNumericalValues(panelTitle)
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
+
+	artefactRemovalExtPanel = AR_GetExtPanel(panelTitle)
+	if(WindowExists(artefactRemovalExtPanel))
+		pps.autoRemove = GetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove")
+	endif
+
 	// With overlay enabled:
 	// if the last plotted sweep is already on the graph remove it and return
 	// otherwise clear the plot
@@ -206,6 +215,7 @@ static Function DB_PlotSweep(panelTitle, [currentSweep, newSweep, direction])
 			RemoveTracesFromGraph(graph, wv=currentSweepWave)
 			sweepNo = DB_ClipSweepNumber(panelTitle, newSweep)
 			SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", sweepNo)
+			pps.sweepNo = sweepNo
 			DB_SetFormerSweepNumber(panelTitle, sweepNo)
 			PostPlotTransformations(graph, pps)
 			return NaN
@@ -259,6 +269,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
 	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
 	tgs.oodDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions")
+
+	DB_SplitSweepsIfReq(panelTitle, sweepNo)
 
 	WAVE channelSel = GetChannelSelectionWave(dfr)
 	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, channelSelWave=channelSel)
@@ -455,15 +467,27 @@ Window DataBrowser() : Panel
 	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
 	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
 	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
+	CheckBox CheckBox_DataBrowser_OpenArtRem,pos={349.00,46.00},size={106.00,15.00},proc=DB_CheckBoxProc_ArtRemoval,title="Artefact Removal"
+	CheckBox CheckBox_DataBrowser_OpenArtRem,help={"Open the artefact removal dialog"}
+	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo)= A"!!,HiJ,hnq!!#@8!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
+	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	CheckBox CheckBox_DataBrowser_OpenArtRem,value= 0
+	Button button_databrowser_restore,pos={483.00,29.00},size={76.00,21.00},proc=DB_ButtonProc_RestoreData,title="Restore data"
+	Button button_databrowser_restore,help={"Restore the data in its pristine state without any modifications"}
+	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,IWJ,hn!!!#?Q!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
+	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERTE%A:zzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERJ,htozzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH1;UGH0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B0eb=</het@7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^0JGQ"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B1bpd<0JGRY<CoSI0fhd'4%E:B6q&jl7RB1778-NR;b9q[:JNr)/i>UF2_m-M"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86EaMC72d\\:$<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B2DI3E0JGRY<CoSI0fi<)8231r<CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0E2DR$A2`h"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<n4&A^O8Q88W:-(*`0et@80KVd)8OQ!%3_!\"/7o`,K75?nc;FO8U:K'ha8P`)B/M]\"63r"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3e0eP.64%E:B6q&gk7T;H><CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0D3&EQL1-5"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(9f3A*!>4%E:B6q&gk<C]S74%E:B6q&jl7RB1778-NR;b9q[:JNr)/iGUC1,(XK"
+	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={909,540,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(18,72,1039,362)/FG=($"",$"",UGV0,UGH1)/HOST=#
 	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
@@ -838,6 +862,68 @@ Function DB_OpenChannelSelectionPanel(ba) : ButtonControl
 			DFREF dfr = DB_GetDataPath(panelTitle)
 			WAVE channelSel = GetChannelSelectionWave(dfr)
 			ToggleChannelSelectionPanel(panelTitle, channelSel, "DB_CheckProc_ChangedSetting")
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_CheckboxProc_ArtRemoval(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	string panelTitle, device
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			panelTitle = GetMainWindow(cba.win)
+
+			device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+			DFREF dfr = GetDeviceDataBrowserPath(device)
+			WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
+			AR_TogglePanel(panelTitle, listBoxWave)
+			DB_PlotSweep(panelTitle)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	string device, singleSweepFolder
+
+	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+
+	if(!cmpstr(device, NONE))
+		return NaN
+	endif
+
+	DFREF deviceDFR = GetDeviceDataPath(device)
+	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+	if(CountObjectsDFR(singleSweepDFR, COUNTOBJECTS_WAVES) > 0)
+		return NaN
+	endif
+
+	WAVE sweepWave  = GetSweepWave(device, sweepNo)
+	WAVE configWave = GetConfigWave(sweepWave)
+	WAVE numericalValues = DB_GetNumericalValues(panelTitle)
+
+	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, targetDFR=singleSweepDFR)
+End
+
+Function DB_ButtonProc_RestoreData(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string graph, traceList
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			graph = DB_GetMainGraph(ba.win)
+			traceList = GetAllSweepTraces(graph)
+			ReplaceAllWavesWithBackup(graph, traceList)
 			break
 	endswitch
 
