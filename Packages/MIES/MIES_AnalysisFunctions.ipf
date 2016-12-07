@@ -23,19 +23,19 @@
 
 /// @name Initial parameters for stimulation
 ///@{
-static strCONSTANT DEFAULT_DEVICE = "ITC18USB_Dev_0"        ///< panelTitle device
-static strCONSTANT STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0" ///< Initial stimulus set
-static CONSTANT VM1_LOCAL         = -55                     ///< Initial holding potential
-static CONSTANT VM2_LOCAL         = -85                     ///< Second holding potential to switch to
-static CONSTANT SCALE_LOCAL       = 70                      ///< Stimulus amplitude
-static CONSTANT NUM_SWEEPS_LOCAL  = 6                       ///< Number of sweeps to acquire
-static CONSTANT ITI_LOCAL         = 15                      ///< Inter-trial-interval
+static StrConstant DEFAULT_DEVICE = "ITC18USB_Dev_0"        ///< panelTitle device
+static StrConstant STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0" ///< Initial stimulus set
+static Constant VM1_LOCAL         = -55                     ///< Initial holding potential
+static Constant VM2_LOCAL         = -85                     ///< Second holding potential to switch to
+static Constant SCALE_LOCAL       = 70                      ///< Stimulus amplitude
+static Constant NUM_SWEEPS_LOCAL  = 6                       ///< Number of sweeps to acquire
+static Constant ITI_LOCAL         = 15                      ///< Inter-trial-interval
 ///@}
 
 /// @name Initial settings for oodDAQ stimulation
 ///@{
-static CONSTANT POST_DELAY = 150										///< Delay after stimulation event in which no other event can occur in ms
-static CONSTANT RESOLUTION = 25										///< Resolution of oodDAQ protocol in ms
+static Constant POST_DELAY = 150									 ///< Delay after stimulation event in which no other event can occur in ms
+static Constant RESOLUTION = 25									 ///< Resolution of oodDAQ protocol in ms
 ///@}
 
 /// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V2() instead
@@ -139,7 +139,6 @@ End
 // Functions which can be assigned to various epochs of a stimulus set
 // Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
 
-
 /// @brief Force active headstages into voltage clamp
 Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
@@ -194,10 +193,16 @@ End
 /// NOTE: DATA ACQUISITION IS INTIATED AT THE END OF FUNCTION!
 Function StimParamGUI()
 
-	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
+	string StimSetList, stimSet
+	variable Vm1, Scale, sweeps, ITI
 
-	variable Vm1 = VM1_LOCAL, Scale = SCALE_LOCAL, sweeps = NUM_SWEEPS_LOCAL, ITI = ITI_LOCAL
-	string stimSet = STIM_SET_LOCAL
+	StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
+	stimSet = STIM_SET_LOCAL
+	Vm1 = VM1_LOCAL
+	Scale = SCALE_LOCAL
+	sweeps = NUM_SWEEPS_LOCAL
+	ITI = ITI_LOCAL
+	
 	Prompt stimSet, "Choose which stimulus set to run:", popup, StimSetList
 	Prompt Vm1, "Enter initial holding potential: "
 	Prompt Scale, "Enter scale of stimulation [mV]: "
@@ -206,7 +211,7 @@ Function StimParamGUI()
 
 	DoPrompt "Choose stimulus set and enter initial parameters", stimSet, Vm1,  Scale, sweeps, ITI
 
-	if (!V_flag)
+	if(!V_flag)
 		SetStimParam(stimSet,Vm1,Scale,Sweeps,ITI)
 		PGC_SetAndActivateControl(DEFAULT_DEVICE,"DataAcquireButton")
 	endif
@@ -223,16 +228,17 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	variable Vm1, scale, sweeps, ITI
 	string stimSet
 
+	variable stimSetIndex
+	
 	setHolding(Vm1)
+	stimSetIndex = GetStimSet(stimSet)
 
-	variable stimSetIndex = GetStimSet(stimSet)
+	if(stimSetIndex > 0)
 
-	if (stimSetIndex > 0)
-
-		PGC_SetAndActivateControl(DEFAULT_DEVICE,"Wave_DA_All", val = stimSetIndex + 1)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE,"Scale_DA_All", val = scale)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE,"SetVar_DataAcq_SetRepeats", val = sweeps)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE,"SetVar_DataAcq_ITI", val = ITI)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Wave_DA_All", val = stimSetIndex + 1)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Scale_DA_All", val = scale)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_SetRepeats", val = sweeps)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_ITI", val = ITI)
 
 		InitoodDAQ()
 	else
@@ -240,7 +246,7 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 		return stimSetIndex
 	endif
 
-	if (sweeps > 1)
+	if(sweeps > 1)
 		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_RepeatAcq", val = CHECKBOX_SELECTED)
 	endif
 
@@ -252,15 +258,14 @@ End
 Function setHolding(Vm1)
 	variable Vm1
 
+	variable i
 	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-	variable i
-
-	for (i=0; i<NUM_HEADSTAGES; i+=1)
+	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = i)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_VC", val = Vm1)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_IC", val = Vm1)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm1)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm1)
 		endif
 	endfor
 End
@@ -268,33 +273,32 @@ End
 /// @brief Set active headstages into V-clamp
 Function setVClampMode()
 
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
-
 	variable i
 	string ctrl
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-	for (i=0; i<NUM_HEADSTAGES; i+=1)
-		if (statusHS[i] == 1)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
+	for(i=0; i<NUM_HEADSTAGES; i+=1)
+		if(statusHS[i])
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
 			ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, i)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,ctrl, val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, ctrl, val = CHECKBOX_SELECTED)
 		endif
 	endfor
 End
 
 /// @brief Set active headstages into I-clamp
 Function setIClampMode()
-
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
-
+	
 	variable i
 	string ctrl
 
-	for (i=0; i<NUM_HEADSTAGES; i+=1)
-		if (statusHS[i] == 1)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
+	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i=0; i<NUM_HEADSTAGES; i+=1)
+		if(statusHS[i])
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
 			ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, i)
-			PGC_SetAndActivateControl(DEFAULT_DEVICE,ctrl, val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, ctrl, val = CHECKBOX_SELECTED)
 		endif
 	endfor
 End
@@ -306,29 +310,29 @@ End
 Function switchHolding(Vm2)
 	variable Vm2
 
-	variable numSweeps = GetValDisplayAsNum(DEFAULT_DEVICE,"valdisp_DataAcq_SweepsInSet")
-
+	variable numSweeps, SweepsRemaining, switchSweep, i
+	
+	numSweeps = GetValDisplayAsNum(DEFAULT_DEVICE, "valdisp_DataAcq_SweepsInSet")
 	WAVE GuiState = GetDA_EphysGuiStateNum(DEFAULT_DEVICE)
-	variable SweepsRemaining = GuiState[0][%valdisp_DataAcq_TrialsCountdown]-1
+	SweepsRemaining = GuiState[0][%valdisp_DataAcq_TrialsCountdown]-1
 
-	if (numSweeps <= 1)
+	if(numSweeps <= 1)
 		PGC_SetAndActivateControl(DEFAULT_DEVICE, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
 		printf "Not enough sweeps were acquired, can not switch holding \r"
 		return SweepsRemaining
 	endif
 
-	variable switchSweep = floor(numSweeps/2)
+	switchSweep = floor(numSweeps/2)
 	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-    if (SweepsRemaining == switchSweep)
-        variable i
-        for (i=0; i<NUM_HEADSTAGES; i+=1)
-            if (statusHS[i] == 1)
-                PGC_SetAndActivateControl(DEFAULT_DEVICE,"slider_DataAcq_ActiveHeadstage", val = i)
-                if (GuiState[i][%HSMode] == V_CLAMP_MODE)
-                    PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_VC", val = Vm2)
-                elseif (GuiState[i][%HSMode] == I_CLAMP_MODE)
-                    PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_Hold_IC", val = Vm2)
+    if(SweepsRemaining == switchSweep)
+        for(i=0; i<NUM_HEADSTAGES; i+=1)
+            if(statusHS[i])
+                PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
+                if(GuiState[i][%HSMode] == V_CLAMP_MODE)
+                    PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm2)
+                elseif(GuiState[i][%HSMode] == I_CLAMP_MODE)
+                    PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
 				else
 						printf "Unsupported clamp mode \r"
 						return GuiState[i][%HSMode]
@@ -358,17 +362,17 @@ Function InitoodDAQ()
 
 	// disable dDAQ
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
 
    // make sure oodDAQ is enabled
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
    
    // make sure Get/Set ITI is disabled
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
+   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
    	PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_dDAQOptOvRes", val = RESOLUTION)
 
 End
@@ -376,15 +380,15 @@ End
 /// @brief Print last full stim set aqcuired
 Function LastStimSetRun()
 
+	variable LastSweep, i, holding_i
+	string StimSet_i, clampHS_i
+	
 	WAVE /T textualValues = GetLBTextualValues(DEFAULT_DEVICE)
-
 	WAVE  numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
-
 	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	LastSweep = AFH_GetLastSweepAcquired(DEFAULT_DEVICE)
 
-	variable LastSweep = AFH_GetLastSweepAcquired(DEFAULT_DEVICE)
-
-	if (isInteger(LastSweep) == 0)
+	if (!isInteger(LastSweep))
 		printf "No sweeps have been acquired"
 		return LastSweep
 	endif
@@ -394,16 +398,12 @@ Function LastStimSetRun()
 	WAVE /Z holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
 	WAVE /Z holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
 
-	variable i
-	for (i=0; i<NUM_HEADSTAGES; i+=1)
-		if (statusHS[i] == 1)
-			string StimSet_i = StimSet[i]
-			variable holding_i
-			string clampHS_i
-			if (clampHS[i] == V_CLAMP_MODE )
+	for(i=0; i<NUM_HEADSTAGES; i+=1)
+		if(statusHS[i])
+			if(clampHS[i] == V_CLAMP_MODE )
 				holding_i = holdingVC[i]
 				clampHS_i = "V-Clamp"
-			elseif (clampHS[i] == I_CLAMP_MODE)
+			elseif(clampHS[i] == I_CLAMP_MODE)
 				holding_i = holdingIC[i]
 				clampHS_i = "I-Clamp"
 			endif
