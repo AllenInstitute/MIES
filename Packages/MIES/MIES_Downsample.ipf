@@ -210,7 +210,7 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 	variable numWaves, i, idx, convrate, samplingInterval
 	dfref deviceDFR = GetDeviceDataPath(BuildDeviceString(deviceType, deviceNumber))
 
-	listOfDataWaves = GetListOfWaves(deviceDFR, DATA_SWEEP_REGEXP)
+	listOfDataWaves = GetListOfObjects(deviceDFR, DATA_SWEEP_REGEXP)
 	numWaves = ItemsInList(listOfDataWaves)
 	idx = startIndex
 

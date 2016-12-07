@@ -1703,11 +1703,11 @@ Function SaveExperimentSpecial(mode)
 			device = StringFromList(i, activeDevices)
 
 			DFREF dfr = GetDevicePath(device)
-			list = GetListOfWaves(dfr, "ChanAmpAssign_Sweep_*", fullPath=1)
+			list = GetListOfObjects(dfr, "ChanAmpAssign_Sweep_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 
 			DFREF dfr = GetDeviceTestPulse(device)
-			list = GetListOfWaves(dfr, "TPStorage_*", fullPath=1)
+			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 		endfor
 	endif
@@ -1936,7 +1936,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	referenceTime = DEBUG_TIMER_START()
 
 	if(!averagingEnabled)
-		listOfWaves = GetListOfWaves(averageDataFolder, "average.*", fullPath=1)
+		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
 		numWaves = ItemsInList(listOfWaves)
 		for(i = 0; i < numWaves; i += 1)
 			WAVE wv = $StringFromList(i, listOfWaves)
@@ -2757,7 +2757,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	endif
 
 	if(!ParamIsDefault(dfr))
-		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
+		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )

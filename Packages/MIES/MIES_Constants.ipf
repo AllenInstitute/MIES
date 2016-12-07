@@ -91,6 +91,7 @@ Constant EVENT_KILL_WINDOW_HOOK = 2
 Constant CONTROL_PANEL_TYPE = 9
 
 /// @name CountObjects and CountObjectsDFR constant
+/// @anchor TypeFlags
 /// @{
 Constant COUNTOBJECTS_WAVES      = 1
 Constant COUNTOBJECTS_VAR        = 2

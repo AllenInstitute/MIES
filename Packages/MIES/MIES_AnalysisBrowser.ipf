@@ -511,7 +511,7 @@ static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 	if(IsFinite(highestSweepNumber))
 		AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
 	endif
-	listSweepConfig = GetListOfWaves(sweepConfigDFR, ".*")
+	listSweepConfig = GetListOfObjects(sweepConfigDFR, ".*")
 
 	// store Sweep Numbers in wave
 	numSweeps = ItemsInList(listSweepConfig)
@@ -615,8 +615,8 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
 
 	if(numWavesLoaded)
-		wanted   = GetListOfWaves(targetDFR, TP_STORAGE_REGEXP, fullPath=1)
-		all      = GetListOfWaves(targetDFR, ".*", fullPath=1)
+		wanted   = GetListOfObjects(targetDFR, TP_STORAGE_REGEXP, fullPath=1)
+		all      = GetListOfObjects(targetDFR, ".*", fullPath=1)
 		unwanted = RemoveFromList(wanted, all)
 
 		CallFunctionForEachListItem(KillOrMoveToTrashPath, unwanted)

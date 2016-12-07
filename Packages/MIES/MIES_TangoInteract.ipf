@@ -461,7 +461,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		
 		// find the stim wave that matches EXTPINBATH...can have date and DA number attached to the end
 		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
@@ -653,7 +653,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		sprintf paaCheck, "headStage%d_postAnalysisActionOn", headstage
 		
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		
 		// find the stim wave that matches EXTPINBATH...can have date and DA number attached to the end
 		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
@@ -793,7 +793,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA")
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		print "ListOfWaves: ", ListOfWavesInFolder
 		
 		// find the stim wave that matches EXTPBREAKN...can have date and DA number attached to the end
@@ -1002,7 +1002,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		sprintf scaleWidgetName, "Scale_DA_%02d", headStage
 		
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		
 		// make sure that the incoming StimWaveName is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
@@ -1106,7 +1106,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		
 		// find the stim wave that matches EXTPCIIATT...can have date and DA number attached to the end
 		foundStimWave = ListMatch(ListOfWavesInFolder, StimWaveName)
@@ -1321,7 +1321,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		sprintf scaleWidgetName, "Scale_DA_0%0d", headStage
 		
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		
 		// make sure that the incoming StimWaveName is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)
@@ -1415,7 +1415,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		sprintf scaleWidgetName, "Scale_DA_%02d", headStage
 		
 		// build up the list of available wave sets
-		ListOfWavesInFolder = GetListOfWaves(GetWBSvdStimSetDAPath(),"DA") 
+		ListOfWavesInFolder = GetListOfObjects(GetWBSvdStimSetDAPath(),"DA")
 		
 		// make sure that the incoming StimWaveName is a valid wave name
 		if(FindListItem(StimWaveName, ListOfWavesInFolder) == -1)

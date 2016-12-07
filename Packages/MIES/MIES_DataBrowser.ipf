@@ -98,7 +98,7 @@ static Function/S DB_GetListOfSweepWaves(panelTitle)
 		return ""
 	endif
 
-	return GetListOfWaves(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 End
 
 static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
