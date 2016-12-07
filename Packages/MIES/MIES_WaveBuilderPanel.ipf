@@ -1559,7 +1559,7 @@ Function/S WBP_ReturnListSavedSets(setType)
 	variable numWaves, i
 	path= GetWBSvdStimSetParamPathAS() + ":" + setType
 
-	list = GetListOfWaves($path, "WP_.*" + setType + ".*")
+	list = GetListOfObjects($path, "WP_.*" + setType + ".*")
 	stimSetList = ""
 
 	numWaves = ItemsInList(list)

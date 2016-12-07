@@ -28,6 +28,7 @@
 #include "MIES_AnalysisFunctionHelpers"
 #include "MIES_AnalysisFunctions"
 #include "MIES_AnalysisMaster"
+#include "MIES_ArtefactRemoval"
 #include "MIES_BackgroundMD"
 #include "MIES_BackgroundTimerMD"
 #include "MIES_BackgroundWatchdog"

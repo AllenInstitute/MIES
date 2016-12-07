@@ -398,7 +398,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	variable err, numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
-	string str
+	string str, list
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
@@ -407,6 +407,8 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	if(ParamIsDefault(typeFlags))
 		typeFlags = 1
+	else
+		ASSERT(typeFlags == COUNTOBJECTS_WAVES || typeFlags == COUNTOBJECTS_VAR || typeFlags == COUNTOBJECTS_STR || typeFlags == COUNTOBJECTS_DATAFOLDER, "Unknown typeFlags, bitmasks are not supported")
 	endif
 
 	fileNameWOExtension = GetBaseName(expFilePath)
@@ -451,7 +453,12 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		RemoveEmptyDataFolder($GetIndexedObjNameDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER, i))
 	endfor
 
-	return V_flag
+	list = GetListOfObjects(tmpDFR, ".*", matchList=listOfNames, recursive=1, typeFlag=typeFlags)
+
+	sprintf str, "V_Flag=%d, numItems=%d, list=%s\r", V_Flag, ItemsInList(list), list
+	DEBUGPRINT(str)
+
+	return ItemsInList(list)
 End
 
 /// @brief Returns a wave containing all present sweep numbers
@@ -511,7 +518,7 @@ static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 	if(IsFinite(highestSweepNumber))
 		AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
 	endif
-	listSweepConfig = GetListOfWaves(sweepConfigDFR, ".*")
+	listSweepConfig = GetListOfObjects(sweepConfigDFR, ".*")
 
 	// store Sweep Numbers in wave
 	numSweeps = ItemsInList(listSweepConfig)
@@ -615,8 +622,8 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
 
 	if(numWavesLoaded)
-		wanted   = GetListOfWaves(targetDFR, TP_STORAGE_REGEXP, fullPath=1)
-		all      = GetListOfWaves(targetDFR, ".*", fullPath=1)
+		wanted   = GetListOfObjects(targetDFR, TP_STORAGE_REGEXP, fullPath=1)
+		all      = GetListOfObjects(targetDFR, ".*", fullPath=1)
 		unwanted = RemoveFromList(wanted, all)
 
 		CallFunctionForEachListItem(KillOrMoveToTrashPath, unwanted)
@@ -1464,37 +1471,18 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	variable sweep
 	Wave sweepWave
 
-	variable numRows, i, channelNumber
-	string channelType, str
-
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
-	Wave configSweep = GetAnalysisConfigWave(expFolder, device, sweep)
+	Wave configSweep  = GetAnalysisConfigWave(expFolder, device, sweep)
+
 	if(DimSize(configSweep, ROWS) != DimSize(sweepWave, COLS))
 		printf "The sweep %d of device %s in experiment %s does not match its configuration data. Therefore we ignore it.\r", sweep, device, expFolder
 		return 1
 	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/T/SDFR=dfr numericalValues
+	WAVE/SDFR=dfr numericalValues
 
-	numRows = DimSize(configSweep, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		channelType = StringFromList(configSweep[i][0], ITC_CHANNEL_NAMES)
-		ASSERT(!isEmpty(channelType), "empty channel type")
-		channelNumber = configSweep[i][1]
-		ASSERT(IsFinite(channelNumber), "non-finite channel number")
-		str = channelType + "_" + num2istr(channelNumber)
-
-		WAVE data = ExtractOneDimDataFromSweep(configSweep, sweepWave, i)
-
-		if(!cmpstr(channelType, "TTL"))
-			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), sweepFolder, str + "_")
-		endif
-
-		MoveWave data, sweepFolder:$str
-	endfor
-
-	string/G sweepFolder:note = note(sweepWave)
+	SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configSweep, targetDFR=sweepFolder)
 	KillOrMoveToTrash(wv=sweepWave)
 
 	return 0

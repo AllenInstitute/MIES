@@ -33,6 +33,15 @@ Structure PostPlotSettings
 	variable timeAlignLevel
 	/// @}
 
+	/// Artefact removal settings
+	/// @{
+	variable artefactRemoval
+	variable autoRemove
+	variable sweepNo
+	DFREF sweepFolder
+	WAVE numericalValues
+	/// @}
+
 	/// Hook function which is called at the very end of #PostPlotTransformations
 	FUNCREF FinalUpdateHookProto finalUpdateHook
 EndStructure

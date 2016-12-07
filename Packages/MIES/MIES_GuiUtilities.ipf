@@ -1223,3 +1223,14 @@ Function/WAVE GetFormattedCtrlNames(win)
 	endfor
 	return controlNames
 End
+
+/// @brief Returns the selected row of the ListBox for some modes
+///        without selection waves
+Function GetListBoxSelRow(win, ctrl)
+	string win, ctrl
+
+	ControlInfo/W=$win $ctrl
+	ASSERT(V_flag == 11, "Not a listbox control")
+
+	return V_Value
+End

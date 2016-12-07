@@ -281,8 +281,8 @@ Function DM_DeleteDataWaves(panelTitle)
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
 	path    = GetDeviceDataPathAsString(panelTitle)
-	list    = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
-	list   += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP, waveProperty="MINCOLS:2")
+	list    = GetListOfObjects(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	list   += GetListOfObjects(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP, waveProperty="MINCOLS:2")
 
 	numItems = ItemsInList(list)
 	for(i = 0; i < numItems; i += 1)

@@ -125,7 +125,8 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
 
-	string	panel = SB_GetSweepBrowserLeftPanel(graph)
+	string panel    = SB_GetSweepBrowserLeftPanel(graph)
+	string extPanel = AR_GetExtPaneL(panel)
 
 	pps.averageDataFolder = $SB_GetSweepBrowserFolder(graph)
 	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
@@ -133,6 +134,11 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
 	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_sweepBrowser_tAlignLevel")
 	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+	pps.artefactRemoval   = GetCheckboxState(panel, "check_SweepBrowser_OpenArtRem")
+
+	if(WindowExists(extPanel))
+		pps.autoRemove = GetCheckboxState(extPanel, "check_auto_remove")
+	endif
 
 	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = SB_PanelUpdate
 End
@@ -386,7 +392,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	for(i = 0; i < numEntries; i += 1)
 		DFREF dfr = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, indizes[i])
 
-		list = GetListOfWaves(dfr, channel + "_.*", fullpath=1)
+		list = GetListOfObjects(dfr, channel + "_.*", fullpath=1)
 		if(IsEmpty(list))
 			continue
 		endif
@@ -455,6 +461,19 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	STRUCT PostPlotSettings pps
 	SB_InitPostPlotSettings(graph, pps)
 
+	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+
+	dataFolder = sweepMap[newMapIndex][%DataFolder]
+	device     = sweepMap[newMapIndex][%Device]
+	sweep      = str2num(sweepMap[newMapIndex][%Sweep])
+
+	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
+
+	pps.sweepNo              = sweep
+	DFREF pps.sweepFolder    = sweepDFR
+	WAVE pps.numericalValues = numericalValues
+
 	// With overlay enabled:
 	// if the last plotted sweep is already on the graph remove it and return
 	if(GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay"))
@@ -479,16 +498,8 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 		endif
 	endif
 
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
-
-	dataFolder = sweepMap[newMapIndex][%DataFolder]
-	device    = sweepMap[newMapIndex][%Device]
-	sweep     = str2num(sweepMap[newMapIndex][%Sweep])
-
 	WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweep)
-
-	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
 	STRUCT TiledGraphSettings tgs
 	tgs.displayDAC      = GetCheckBoxState(panel, "check_SweepBrowser_DisplayDAC")
@@ -501,7 +512,7 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	tgs.oodDAQHeadstageRegions = str2num(GetPopupMenuString(panel, "popup_oodDAQ_regions"))
 	WAVE channelSelWave = GetChannelSelectionWave(sweepBrowserDFR)
 
-	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR=newSweepDFR, channelSelWave=channelSelWave)
+	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR, channelSelWave=channelSelWave)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
 	SB_SetFormerSweepNumber(panel, newMapIndex)
@@ -648,12 +659,17 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckboxChangedSettings,title=""
 	CheckBox check_SweepBrowser_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_SweepBrowser_splitTTL,value= 0
-	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,265.00},size={95.00,15.00},proc=SB_CheckboxChangedSettings,title="Average Traces"
-	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
-	CheckBox check_SweepBrowser_AveragTraces,value= 0
-	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,285.00},size={76.00,15.00},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_OpenArtRem,pos={17.00,295.00},size={103.00,15.00},proc=SB_CheckboxChangedSettings,title="Artefact removal"
+	CheckBox check_SweepBrowser_OpenArtRem,help={"Open the \"Artefact Removal\" panel"}
+	CheckBox check_SweepBrowser_OpenArtRem,value= 0
+	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,278.00},size={76.00,15.00},proc=SB_CheckboxChangedSettings,title="Zero Traces"
 	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
+	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,262.00},size={95.00,15.00},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
+	CheckBox check_SweepBrowser_AveragTraces,value= 0
+	Button button_SweepBrowser_RestData,pos={100.00,277.00},size={51.00,20.00},proc=AR_ButtonProc_RestoreData,title="Restore"
+	Button button_SweepBrowser_RestData,help={"Duplicate the graph and its trace for further processing"}
 	SetVariable setvar_SweepBrowser_SweepStep,pos={46.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
 	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
@@ -1019,7 +1035,7 @@ End
 Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, win, ctrl, channelType
+	string graph, win, ctrl, channelType, device
 	variable idx, checked, channelNum
 	DFREF sweepDFR
 
@@ -1029,6 +1045,7 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 			checked = cba.checked
 			win     = SB_GetSweepBrowserLeftPanel(cba.win)
 			graph   = GetMainWindow(win)
+			idx     = GetPopupMenuIndex(win, "popup_sweep_selector")
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 
 			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
@@ -1047,11 +1064,31 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 				WAVE channelSel = GetChannelSelectionWave(dfr)
 				ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
 				channelSel[channelNum][%$channelType] = checked
-			endif
+			elseif(!cmpstr(ctrl, "check_SweepBrowser_OpenArtRem"))
 
-			idx = GetPopupMenuIndex(win, "popup_sweep_selector")
+				WAVE/T sweepMap = SB_GetSweepBrowserMap(dfr)
+				device = sweepMap[idx][%Device]
+				WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
+				AR_TogglePanel(win, listBoxWave)
+			endif
 
 			SB_PlotSweep(dfr, idx, idx)
 			break
 	endswitch
+End
+
+Function AR_ButtonProc_RestoreData(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string graph, traceList
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
+			traceList = GetAllSweepTraces(graph)
+			ReplaceAllWavesWithBackup(graph, traceList)
+			break
+	endswitch
+
+	return 0
 End

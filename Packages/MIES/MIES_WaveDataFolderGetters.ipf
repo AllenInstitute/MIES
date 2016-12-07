@@ -488,6 +488,9 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
 End
 
+/// @name DataBrowser
+/// @{
+
 /// @brief Return a datafolder reference to the device data browser folder
 Function/DF GetDeviceDataBrowserPath(panelTitle)
 	string panelTitle
@@ -500,6 +503,7 @@ Function/S GetDeviceDataBrowserPathAS(panelTitle)
 
 	return GetDevicePathAsString(panelTitle) + ":DataBrowser"
 End
+/// @}
 
 /// @brief Return a datafolder reference to the device data folder
 Function/DF GetDeviceDataPath(panelTitle)
@@ -531,6 +535,26 @@ End
 /// @brief Return a data folder reference for the Manipulator folder
 Function/DF GetManipulatorPath()
 	return createDFWithAllParents(GetManipulatorPathAsString())
+End
+
+/// @brief Return a datafolder reference to a subfolder below `dfr` for splitted sweep specific data, e.g. dfr:X_5
+Function/DF GetSingleSweepFolder(dfr, sweepNo)
+	DFREF dfr
+	variable sweepNo
+
+	return createDFWithAllParents(GetSingleSweepFolderAsString(dfr, sweepNo))
+End
+
+/// @brief Return the path to a subfolder below `dfr` for splitted sweep specific data
+Function/S GetSingleSweepFolderAsString(dfr, sweepNo)
+	DFREF dfr
+	variable sweepNo
+
+	ASSERT(DataFolderExistsDFR(dfr), "dfr must exist")
+	ASSERT(IsValidSweepNumber(sweepNo), "Invalid sweepNo")
+
+	// folder name starts with X as only liberal names are allowed to start with numbers. And we don't want liberal names.
+	return GetDataFolder(1, dfr) + "X_" + num2str(sweepNo)
 End
 
 /// @brief Return the ITC data wave
@@ -3631,14 +3655,13 @@ Function/DF GetAnalysisSweepDataPath(expFolder, device, sweep)
 	return createDFWithAllParents(GetAnalysisSweepDataPathAS(expFolder, device, sweep))
 End
 
-/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:sweep
+/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:sweep:X_$sweep
 Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
 
 	ASSERT(IsFinite(sweep), "Expected finite sweep number")
-	// folder name starts with X as only liberal names are allowed to start with numbers. And we don't want liberal names.
-	return GetAnalysisSweepPathAsString(expFolder, device) + ":X_" + num2str(sweep)
+	return GetSingleSweepFolderAsString(GetAnalysisSweepPath(expFolder, device), sweep)
 End
 
 /// @brief Return the datafolder reference to the stim set folder
@@ -4450,6 +4473,55 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 
 	return wv
 End
+
+/// @brief Return the artefact removal listbox wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetArtefactRemovalListWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/T/Z/SDFR=dfr wv = artefactRemovalListBoxWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:artefactRemovalListBoxWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"Begin [ms]", wv
+	SetDimLabel COLS, 1, $"End   [ms]", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
+/// @brief Return the artefact removal wave
+///        databrowser or the sweepbrowser
+Function/WAVE GetArtefactRemovalDataWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/Z/SDFR=dfr wv = artefactRemovalDataWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(MINIMUM_WAVE_SIZE, 4) wv
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"ArtefactPosition", wv
+	SetDimLabel COLS, 1, $"DAC",           wv
+	SetDimLabel COLS, 2, $"ADC",           wv
+	SetDimLabel COLS, 3, $"HS",            wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
 /// @brief Return the channel selection wave for the databrowser or sweep browser
 Function/WAVE GetChannelSelectionWave(dfr)
 	DFREF dfr
@@ -4472,5 +4544,6 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	SetDimLabel COLS, 1, AD       , wv
 	SetDimLabel COLS, 2, HEADSTAGE, wv
 
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End

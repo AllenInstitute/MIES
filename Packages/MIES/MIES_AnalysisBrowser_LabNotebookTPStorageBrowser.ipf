@@ -614,7 +614,7 @@ Function/S LBN_GetAllTPStorageForExpDev(graph)
 
 	DFREF dfr = GetAnalysisDeviceTestPulse(expFolder, device)
 
-	list = GetListOfWaves(dfr, ".*")
+	list = GetListOfObjects(dfr, ".*")
 
 	if(isEmpty(list))
 		return NONE

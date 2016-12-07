@@ -648,6 +648,66 @@ Function KillOrMoveToTrashPath(path)
 	endif
 End
 
+/// @brief Return a wave reference wave with all single column waves of the given channel type
+///
+/// Holds invalid wave refs for non-existing entries.
+///
+/// @param sweepDFR    datafolder reference with 1D sweep data
+/// @param channelType One of @ref ITC_XOP_CHANNEL_CONSTANTS
+///
+/// @see GetITCDataSingleColumnWave() or SplitSweepIntoComponents()
+Function/WAVE GetITCDataSingleColumnWaves(sweepDFR, channelType)
+	DFREF sweepDFR
+	variable channelType
+
+	Make/FREE/WAVE/N=(GetNumberFromType(itcVar=channelType)) matches = GetITCDataSingleColumnWave(sweepDFR, channelType, p)
+
+	return matches
+End
+
+/// @brief Return a 1D data wave previously created by SplitSweepIntoComponents()
+///
+/// Returned wave reference can be invalid.
+///
+/// @param sweepDFR      datafolder holding 1D waves
+/// @param channelType   One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelNumber channel number
+/// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
+/// @param ttlBit        [optional] number specifying the TTL bit
+Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
+	DFREF sweepDFR
+	variable channelType, channelNumber
+	variable splitTTLBits, ttlBit
+
+	string wvName
+
+	if(ParamIsDefault(splitTTLBits))
+		splitTTLBits = 0
+	else
+		splitTTLBits = !!splitTTLBits
+	endif
+
+	ASSERT(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
+	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType), "Invalid channel index")
+
+	wvName = StringFromList(channelType, ITC_CHANNEL_NAMES) + "_" + num2str(channelNumber)
+
+	if(channelType == ITC_XOP_CHANNEL_TYPE_TTL && splitTTLBits)
+		wvName += "_" + num2str(ttlBit)
+	endif
+
+	WAVE/Z/SDFR=sweepDFR wv = $wvName
+
+	return wv
+End
+
+/// @brief Check if the given sweep number is valid
+Function IsValidSweepNumber(sweepNo)
+	variable sweepNo
+
+	return IsInteger(sweepNo) && sweepNo >= 0
+End
+
 /// @brief Returns the config wave for a given sweep wave
 Function/Wave GetConfigWave(sweepWave)
 	Wave sweepWave
@@ -663,9 +723,16 @@ Function/Wave GetSweepWave(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $("Sweep_" + num2str(sweepNo))
+	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $GetSweepWaveName(sweepNo)
 
 	return wv
+End
+
+/// @brief Return the sweep wave name
+Function/S GetSweepWaveName(sweepNo)
+	variable sweepNo
+
+	return "Sweep_" + num2str(sweepNo)
 End
 
 /// @brief Returns the sampling interval of the sweep
@@ -732,16 +799,16 @@ End
 /// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
 /// Passing in sweepDFR assumes the new format of split waves, one wave for each AD, DA, TTL channel, with one dimension
 ///
-/// @param graph                window
-/// @param config               ITC config wave
-/// @param sweepNo              number of the sweep
-/// @param numericalValues      numerical labnotebook wave
-/// @param textualValues        textual labnotebook wave
-/// @param tgs                  settings for tuning the display, see @ref TiledGraphSettings
-/// @param sweepDFR [optional]  datafolder with 1D waves extracted from the sweep wave
-/// @param sweepWave [optional] sweep wave with multiple columns
-/// @param channelSelWave [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, [sweepDFR, sweepWave, channelSelWave])
+/// @param graph           window
+/// @param config          ITC config wave
+/// @param sweepNo         number of the sweep
+/// @param numericalValues numerical labnotebook wave
+/// @param textualValues   textual labnotebook wave
+/// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
+/// @param sweepDFR        datafolder to either multi-column sweep waves or the topfolder to splitted
+///                        1D sweep waves. Splitted 1D sweep waves are preferred if available.
+/// @param channelSelWave  [optional] channel selection wave
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, [channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -749,10 +816,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/T textualValues
 	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
-	WAVE/Z sweepWave
 	WAVE/Z channelSelWave
 
-	variable red, green, blue, splitSweepMode, axisIndex, numChannels
+	variable red, green, blue, axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks
@@ -761,11 +827,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry, totalXRange
 
 	string trace, traceType, channelID, axisLabel, existingLabel, entry, range
-	string unit, configNote, name, wvName, str, vertAxis, oodDAQRegionsAll, horizAxis
+	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
-	ASSERT(ParamIsDefault(sweepDFR) + ParamIsDefault(sweepWave), "Caller must supply exactly one of sweepDFR and sweepWave")
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -784,10 +849,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	if(!ParamIsDefault(sweepDFR))
-		splitSweepMode = 1
-	endif
-
 	WAVE ranges = GetAxesRanges(graph)
 
 	if(!tgs.overlaySweep)
@@ -801,9 +862,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	if(tgs.splitTTLBits && numTTLs > 0)
 		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
-			tgs.splitTTLBits = 0
-		elseif(!splitSweepMode)
-			print "Turning off tgs.splitTTLBits as it is currently only supported for split sweep mode"
 			tgs.splitTTLBits = 0
 		elseif(tgs.overlayChannels)
 			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
@@ -1012,22 +1070,22 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			for(j = 0; j < numVertWaves; j += 1)
 
 				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
-					name   = channelID + num2str(chan) + "_" + num2str(j)
-					wvName = channelID + "_" + num2str(chan) + "_" + num2str(j)
+					name = channelID + num2str(chan) + "_" + num2str(j)
 				else
-					name   = channelID + num2str(chan)
-					wvName = channelID + "_" + num2str(chan)
+					name = channelID + num2str(chan)
 				endif
 
-				if(splitSweepMode)
-					WAVE/Z/SDFR=sweepDFR wv = $wvName
+				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
+
+				if(DataFolderExistsDFR(singleSweepDFR))
+					WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
 					if(!WaveExists(wv))
 						continue
 					endif
 					idx = 0
 				else
 					idx = AFH_GetITCDataColumn(config, chan, channelTypes[i])
-					WAVE wv = sweepWave
+					WAVE/SDFR=sweepDFR wv = $GetSweepWaveName(sweepNo)
 				endif
 
 				if(!tgs.overlayChannels)
@@ -1645,11 +1703,11 @@ Function SaveExperimentSpecial(mode)
 			device = StringFromList(i, activeDevices)
 
 			DFREF dfr = GetDevicePath(device)
-			list = GetListOfWaves(dfr, "ChanAmpAssign_Sweep_*", fullPath=1)
+			list = GetListOfObjects(dfr, "ChanAmpAssign_Sweep_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 
 			DFREF dfr = GetDeviceTestPulse(device)
-			list = GetListOfWaves(dfr, "TPStorage_*", fullPath=1)
+			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 		endfor
 	endif
@@ -1660,11 +1718,16 @@ Function SaveExperimentSpecial(mode)
 End
 
 /// @brief Return the maximum count of the given type
-Function GetNumberFromType([var, str])
+///
+/// @param var    numeric channel types
+/// @param str    string channel types
+/// @param itcVar numeric ITC XOP channel types
+Function GetNumberFromType([var, str, itcVar])
 	variable var
 	string str
+	variable itcVar
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Expected exactly one parameter")
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(itcVar) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)
@@ -1706,6 +1769,19 @@ Function GetNumberFromType([var, str])
 				break
 			default:
 				ASSERT(0, "invalid type")
+				break
+		endswitch
+	elseif(!ParamIsDefault(itcVar))
+		switch(itcVar)
+			case ITC_XOP_CHANNEL_TYPE_ADC:
+				return NUM_AD_CHANNELS
+				break
+			case ITC_XOP_CHANNEL_TYPE_DAC:
+			case ITC_XOP_CHANNEL_TYPE_TTL:
+				return NUM_DA_TTL_CHANNELS
+				break
+			default:
+				ASSERT(0, "Invalid type")
 				break
 		endswitch
 	endif
@@ -1803,16 +1879,7 @@ Function PostPlotTransformations(graph, pps)
 
 	traceList = GetAllSweepTraces(graph)
 
-	if(!pps.timeAlignment)
-		// switch all waves back to their backup so
-		// that we have a clean start again
-		numTraces = ItemsInList(traceList)
-		for(i = 0; i < numTraces; i += 1)
-			trace = StringFromList(i, traceList)
-			WAVE wv = TraceNameToWaveRef(graph, trace)
-			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-		endfor
-	endif
+	AR_UpdateTracesIfReq(graph, pps.artefactRemoval, pps.sweepFolder, pps.numericalValues, pps.sweepNo)
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	if(pps.timeAlignment)
@@ -1824,6 +1891,22 @@ Function PostPlotTransformations(graph, pps)
 	RestoreCursor(graph, crsB)
 
 	pps.finalUpdateHook(graph)
+End
+
+/// @brief Replace all waves from the traces in the graph with their backup
+Function ReplaceAllWavesWithBackup(graph, traceList)
+	string graph
+	string traceList
+
+	variable numTraces, i
+	string trace
+
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		WAVE wv = TraceNameToWaveRef(graph, trace)
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
+	endfor
 End
 
 /// @brief Return all traces with real data
@@ -1860,7 +1943,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	referenceTime = DEBUG_TIMER_START()
 
 	if(!averagingEnabled)
-		listOfWaves = GetListOfWaves(averageDataFolder, "average.*", fullPath=1)
+		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
 		numWaves = ItemsInList(listOfWaves)
 		for(i = 0; i < numWaves; i += 1)
 			WAVE wv = $StringFromList(i, listOfWaves)
@@ -2681,7 +2764,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	endif
 
 	if(!ParamIsDefault(dfr))
-		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
+		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
@@ -2764,10 +2847,11 @@ End
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
 ///
 /// @param wv                       wave to replace by its backup
-/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup. Passing a non-zero value
-///                                 will abort if the backup wave does not exist, for zero it will just do nothing.
-/// @returns one if the original wave was successfully replaced, zero otherwise.
-Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
+/// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup.
+///                                 Passing a non-zero value will abort if the backup wave does not exist, with
+///                                 zero it will just do nothing.
+/// @returns wave reference to the restored data, in case of no backup an invalid wave reference
+Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Wave wv
 	variable nonExistingBackupIsFatal
 
@@ -2789,12 +2873,14 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 		if(nonExistingBackupIsFatal)
 			Abort "Backup wave does not exist"
 		endif
-		return 0
+
+		return $""
 	endif
 
 	Duplicate/O backup, wv
 	KillOrMoveToTrash(wv=backup)
-	return 1
+
+	return wv
 End
 
 /// @brief Returns 1 if the user cancelled, zero if SaveExperiment was called
@@ -3150,4 +3236,47 @@ Function StartZeroMQMessageHandler()
 	DEBUGPRINT("ZeroMQ XOP is not present")
 
 #endif
+End
+
+/// @brief Split an ITCDataWave into one 1D-wave per channel/ttlBit
+///
+/// @param numericalValues numerical labnotebook
+/// @param sweep           sweep number
+/// @param sweepWave       ITCDataWave
+/// @param configWave      ITCChanConfigWave
+/// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
+Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, [targetDFR])
+	WAVE numericalValues, sweepWave, configWave
+	variable sweep
+	DFREF targetDFR
+
+	variable numRows, i, channelNumber
+	string channelType, str
+
+	if(ParamIsDefault(targetDFR))
+		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
+	endif
+
+	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
+	ASSERT(IsFinite(sweep), "Sweep number must be finite")
+	ASSERT(DimSize(configWave, ROWS) == DimSize(sweepWave, COLS), "Sweep and config wave differ in the number of channels")
+
+	numRows = DimSize(configWave, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		channelType = StringFromList(configWave[i][0], ITC_CHANNEL_NAMES)
+		ASSERT(!isEmpty(channelType), "empty channel type")
+		channelNumber = configWave[i][1]
+		ASSERT(IsFinite(channelNumber), "non-finite channel number")
+		str = channelType + "_" + num2istr(channelNumber)
+
+		WAVE data = ExtractOneDimDataFromSweep(configWave, sweepWave, i)
+
+		if(!cmpstr(channelType, "TTL"))
+			SplitTTLWaveIntoComponents(data, GetTTLBits(numericalValues, sweep, channelNumber), targetDFR, str + "_")
+		endif
+
+		MoveWave data, targetDFR:$str
+	endfor
+
+	string/G targetDFR:note = note(sweepWave)
 End

@@ -129,22 +129,28 @@ Function windowExists(win)
 	return 1
 End
 
-/// @brief Alternative implementation for WaveList which honours a dfref and thus
+/// @brief Alternative implementation for WaveList/VariableList/etc. which honours a dfref and thus
 /// does not require SetDataFolder calls.
 ///
-/// @param dfr                                 datafolder reference to search for the waves
-/// @param regExpStr                           regular expression matching the waves, see the help of GrepString for an introduction to regular expressions
-/// @param waveProperty [optional, empty]      additional properties of matching waves, inspired by WaveList, currently implemented are `MINCOLS` and `TEXT`
-/// @param fullPath [optional, default: false] should only the wavename or the absolute path of the wave be returned.
+/// @param dfr                                  datafolder reference to search for the waves
+/// @param regExpStr                            regular expression matching the waves, see the help of GrepString
+///                                             for an introduction to regular expressions
+/// @param typeFlag [optional, default: COUNTOBJECTS_WAVES] One of @ref TypeFlags
+/// @param matchList [optional, empty]          additional semicolon delimited list of wave names, allows to further
+///                                             qualify the returned wave names.
+/// @param waveProperty [optional, empty]       additional properties of matching waves, inspired by WaveList,
+///                                             currently implemented are `MINCOLS` and `TEXT`
+/// @param fullPath [optional, default: false]  should only the wavename or the absolute path of the wave be returned.
+/// @param recursive [optional, default: false] descent into all subfolders recursively
 ///
 /// @returns list of wave names matching regExpStr located in dfr
-Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
+Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, fullPath, recursive])
 	dfref dfr
-	string regExpStr, waveProperty
-	variable fullPath
+	string regExpStr, matchList, waveProperty
+	variable fullPath, recursive, typeFlag
 
-	variable i, j, numWaveProperties, numWaves, matches, val
-	string name, str, prop
+	variable i, j, numWaveProperties, numWaves, matches, val, numFolders
+	string name, str, prop, subList, basePath
 	string list = ""
 
 	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
@@ -152,19 +158,59 @@ Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
 
 	if(ParamIsDefault(fullPath))
 		fullPath = 0
+	else
+		fullPath = !!fullPath
 	endif
 
-	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
+
+	if(ParamIsDefault(typeFlag))
+		typeFlag = COUNTOBJECTS_WAVES
+	endif
+
+	if(ParamIsDefault(waveProperty))
+		waveProperty = ""
+	endif
+
+	if(ParamIsDefault(matchList))
+		matchList = ""
+	endif
+
+	basePath = GetDataFolder(1, dfr)
+
+	if(recursive)
+		numFolders = CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
+		for(i = 0; i < numFolders; i+=1)
+			name = basePath + GetIndexedObjNameDFR(dfr, COUNTOBJECTS_DATAFOLDER, i)
+			DFREF subFolder = $name
+			subList = GetListOfObjects(subFolder, regExpStr, matchList=matchList, waveProperty=waveProperty, \
+						               fullPath=fullPath, recursive=recursive)
+			if(!IsEmpty(subList))
+				list = AddListItem(subList, list)
+			endif
+		endfor
+	endif
+
+	numWaves = CountObjectsDFR(dfr, typeFlag)
 	for(i=0; i<numWaves; i+=1)
-		Wave wv = WaveRefIndexedDFR(dfr, i)
-		name = NameOfWave(wv)
+		name = GetIndexedObjNameDFR(dfr, typeFlag, i)
 
 		if(!GrepString(name,regExpStr))
 			continue
 		endif
 
+		if(!IsEmpty(matchList) && WhichListItem(name, matchList, ";", 0, 0) == -1)
+			continue
+		endif
+
 		matches = 1
-		if(!ParamIsDefault(waveProperty) && !isEmpty(waveProperty))
+		if(!isEmpty(waveProperty))
+			ASSERT(typeFlag == COUNTOBJECTS_WAVES, "waveProperty does not make sense for type flags other than COUNTOBJECTS_WAVES")
+			WAVE/SDFR=dfr wv = $name
 			numWaveProperties = ItemsInList(waveProperty)
 			for(j = 0; j < numWaveProperties; j += 1)
 				str  = StringFromList(j, waveProperty)
@@ -193,7 +239,7 @@ Function/S GetListOfWaves(dfr, regExpStr, [waveProperty, fullPath])
 
 		if(matches)
 			if(fullPath)
-				list = AddListItem(GetWavesDataFolder(wv, 2), list, ";", Inf)
+				list = AddListItem(basePath + name, list, ";", Inf)
 			else
 				list = AddListItem(name, list, ";", Inf)
 			endif
@@ -398,7 +444,7 @@ end
 Function IsInteger(var)
 	variable var
 
-	return trunc(var) == var
+	return IsFinite(var) && trunc(var) == var
 End
 
 /// @brief Downsample data
@@ -800,7 +846,7 @@ Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 			return 0
 		endif
 
-		WAVE candidates = ConvertListOfWaves(GetListOfWaves(dfr, ".*", fullpath=1))
+		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
 		numWaves = DimSize(candidates, ROWS)
 	endif
 

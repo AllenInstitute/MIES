@@ -399,7 +399,7 @@ static Function TP_ResetTPStorage(panelTitle)
 			dfref dfr = GetDeviceTestPulse(panelTitle)
 			Redimension/N=(count, -1, -1, -1) TPStorage
 			name = NameOfWave(TPStorage)
-			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfWaves(dfr, "^" + name + "_\d+"))))
+			Duplicate/O TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfObjects(dfr, "^" + name + "_\d+"))))
 		endif
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)

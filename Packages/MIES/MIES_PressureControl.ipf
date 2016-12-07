@@ -1901,7 +1901,7 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 
 	string controlName
 	sprintf controlName, "valdisp_DataAcq_P_LED_%d" pressureDataWv[0][%userSelectedHeadStage]
-	ValDisplay $controlName zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh)
+	ValDisplay $controlName zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh), win=$panelTitle
 	
 	sprintf controlName, "valdisp_DataAcq_P_%d" pressureDataWv[0][%userSelectedHeadStage]
 	ChangeControlValueColor(panelTitle, controlName, RGB, RGB, RGB)
