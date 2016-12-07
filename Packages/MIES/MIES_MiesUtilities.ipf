@@ -13,6 +13,33 @@ static Constant GRAPH_DIV_SPACING   = 0.03
 static Constant ADC_SLOT_MULTIPLIER = 4
 static Constant NUM_CHANNEL_TYPES   = 3
 
+Menu "GraphMarquee"
+	"Horiz Expand (VisX)", HorizExpandWithVisX()
+End
+
+/// @brief Custom graph marquee
+///
+/// Requires an existing marquee and a graph as current top window
+Function HorizExpandWithVisX()
+
+	string graph = GetCurrentWindow()
+
+	GetAxis/Q/W=$graph bottom
+	if(V_flag)
+		return NaN
+	endif
+
+	GetMarquee/Z/K/W=$graph bottom
+	if(!V_flag)
+		return NaN
+	endif
+
+	graph = S_marqueeWin
+
+	SetAxis bottom, V_left, V_right
+	AutoscaleVertAxisVisXRange(graph)
+End
+
 /// @brief Extract the date/time column of the labnotebook values wave
 Function/WAVE ExtractLBColumnTimeStamp(values)
 	WAVE values
