@@ -3655,7 +3655,7 @@ Function/DF GetAnalysisSweepDataPath(expFolder, device, sweep)
 	return createDFWithAllParents(GetAnalysisSweepDataPathAS(expFolder, device, sweep))
 End
 
-/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:sweep
+/// @brief Return the full path to the the per sweep folder, e.g. root:MIES:Analysis:my_experiment:sweep:X_$sweep
 Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
