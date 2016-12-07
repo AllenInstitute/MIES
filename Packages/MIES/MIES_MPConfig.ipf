@@ -7,6 +7,8 @@ Function MultiPatchConfig()
 	// Set variables for each rig
 //	movewindow /C 1450, 530,-1,-1								// position command window
 
+	string UserConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+
 	if (windowExists("DA_Ephys")==0 && windowExists("ITC1600_Dev_0")==0)	
 		DAP_CreateDAEphysPanel() 									//open DA_Ephys
 		movewindow /W = DA_Ephys 1500, -700,-1,-1				//position DA_Ephys window
@@ -20,13 +22,13 @@ Function MultiPatchConfig()
 		PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
 	endif	
 	
-	MPConfig_Amplifiers(win)
+	MPConfig_Amplifiers(win, ConfigList = UserConfigList)
 	
-	MPConfig_Pressure(win)
+	MPConfig_Pressure(win, ConfigList = UserConfigList)
 	
 	MPConfig_ClampModes(win)
 	
-	MPConfig_AsyncTemp(win)
+	MPConfig_AsyncTemp(win, ConfigList = UserConfigList)
 	
 
 	HD_LoadReplaceStimSet()
@@ -48,10 +50,12 @@ End
 	
 
 // Amplifiers	
-Function MPConfig_Amplifiers(panelTitle)
-	string panelTitle
+Function MPConfig_Amplifiers(panelTitle, [ConfigList])
+	string panelTitle, ConfigList
 	
-	string ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	if (ParamIsDefault(ConfigList))
+		ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	endif
 	
 	string AmpSerialLocal = ReadConfigList_Textual(AMP_SERIAL,ConfigList)
 	string AmpTitleLocal = ReadConfigList_Textual(AMP_TITLE,ConfigList)
@@ -83,11 +87,13 @@ Function MPConfig_Amplifiers(panelTitle)
 
 		MCC_InitParams(panelTitle,i)
 	endfor
+	
+	PGC_SetAndActivateControl(panelTitle,"button_Hardware_AutoGainAndUnit")
 End
 		
 // Pressure regulators
-Function MPConfig_Pressure(panelTitle)
-	string panelTitle
+Function MPConfig_Pressure(panelTitle, [ConfigList])
+	string panelTitle, ConfigList
 	variable i
 	variable ii=0
 
@@ -110,10 +116,24 @@ Function MPConfig_Pressure(panelTitle)
 			endif		
 	endfor
 	
+	PGC_SetAndActivateControl(panelTitle,"button_Hardware_P_Enable")
+	
+	if (ParamIsDefault(ConfigList))
+		ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	endif
+	
+	WAVE BathPressure = ReadConfigList_Numerical(PRESSURE_BATH, ConfigList)
+	WAVE StartSealPressure = ReadConfigList_Numerical(PRESSURE_STARTSEAL, ConfigList)
+	WAVE MaxSealPressure = ReadConfigList_Numerical(PRESSURE_MAXSEAL, ConfigList)
+	
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_InBathP", val = BathPressure[0])  			
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealStartP", val = StartSealPressure[0])		
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealMaxP", val = MaxSealPressure[0])		
+	
 	// Set pressure calibration values
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	
-	string ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	
 	WAVE PressureConstants = ReadConfigList_Numerical(PRESSURE_CONST,ConfigList)
 
 	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
@@ -136,10 +156,13 @@ Function MPConfig_Pressure(panelTitle)
 	
 End 
 		
-Function MPConfig_AsyncTemp(panelTitle)
-	string panelTitle
+Function MPConfig_AsyncTemp(panelTitle, [ConfigList])
+	string panelTitle, ConfigList
 	
-	string ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	if (ParamIsDefault(ConfigList))
+		ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+	endif
+	
 	WAVE TempGainLocal = ReadConfigList_Numerical(TEMP_GAIN, ConfigList)
 	WAVE TempMaxLocal = ReadConfigList_Numerical(TEMP_MAX, ConfigList)
 	WAVE TempMinLocal = ReadConfigList_Numerical(TEMP_MIN, ConfigList)
@@ -159,28 +182,35 @@ Function MPConfig_AsyncTemp(panelTitle)
 End
 	
 	
-// Function DAEphysSettings(panelTitle)
-//	PGC_SetAndActivateControl(win,"button_Hardware_AutoGainAndUnit")
-//	PGC_SetAndActivateControl(win,"button_Hardware_P_Enable")
-//	PGC_SetAndActivateControl(win,"check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
-//	PGC_SetAndActivateControl(win,"check_Settings_TP_SaveTPRecord", val = CHECKBOX_SELECTED)
-//	PGC_SetAndActivateControl(win,"Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
-//	PGC_SetAndActivateControl(win,"Check_Settings_Append", val = CHECKBOX_SELECTED)
-//	PGC_SetAndActivateControl(win,"check_Settings_SyncMiesToMCC", val = CHECKBOX_SELECTED)	
-//	PGC_SetAndActivateControl(win,"check_Settings_AmpIEQZstep", val = CHECKBOX_SELECTED)
-//	PGC_SetAndActivateControl(win,"setvar_Settings_InBathP", val = 0.5)  			// set approach positive pressure to 1 psi
-//	PGC_SetAndActivateControl(win,"setvar_Settings_SealStartP", val = -0.1)		// set initial seal pressure to -0.1 psi
-//	PGC_SetAndActivateControl(win,"setvar_Settings_SealMaxP", val = -1.4)		// set max seal pressure to -1.4 psi
-//	PGC_SetAndActivateControl(win,"Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
-//	PGC_SetAndActivateControl(win,"setvar_DataAcq_dDAQOptOvPost", val = 150)
-//	PGC_SetAndActivateControl(win,"setvar_DataAcq_dDAQOptOvRes", val = 25)
-//	PGC_SetAndActivateControl(win,"SetVar_DataAcq_SetRepeats", val = 5)
-//	PGC_SetAndActivateControl(win,"SetVar_DataAcq_ITI", val = 15)
-//	PGC_SetAndActivateControl(win,"Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
-//	PGC_SetAndActivateControl(win,"check_DataACq_Pressure_AutoOFF", val = CHECKBOX_SELECTED)	// User mode WILL NOT follow headstage
-//	PGC_SetAndActivateControl(win,"check_Settings_UserP_Seal", val = CHECKBOX_SELECTED)
-// PGC_SetAndActivateControl(win,"SetVar_DataAcq_TPAmplitude", val = -10)
-// End
+ Function DAEphysSettings(panelTitle, [ConfigList])
+ 	string panelTitle, ConfigList
+ 	
+// 	static Constant Yes = CHECKBOX_SELECTED
+// 	static Constant No = CHECKBOX_UNSELECTED
+ 	
+ 	if (ParamIsDefault(ConfigList))
+ 		ConfigList = MPConfig_ImportUserSettings(USER_CONFIG_NB)
+ 	endif
+ 	
+// 	String TPAfterDAQ = ReadConfigList(
+
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_TP_SaveTPRecord", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(panelTitle,"Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = CHECKBOX_SELECTED)	
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = CHECKBOX_SELECTED)
+	
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = 150)
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = 25)
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = 5)
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = 15)
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_AutoOFF", val = CHECKBOX_SELECTED)	// User mode WILL NOT follow headstage
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_UserP_Seal", val = CHECKBOX_SELECTED)
+ PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = -10)
+ End
 	
 Function MCC_InitParams(panelTitle, headStage)
 

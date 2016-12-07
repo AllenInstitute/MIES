@@ -573,15 +573,25 @@ StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
 
 ///@name KeyWord constants for User Configuration Notebook
 ///@{
-StrConstant USER_CONFIG_NB = "User_Config"
-Constant ATTEMPTS          = 5
-StrConstant SAVE_PATH      = "C:Users:stephanies:Desktop:MiesSave"
-StrConstant ITC_DEV        = "Name of ITC Device"
-StrConstant AMP_TITLE      = "Amplifier Names"
-StrConstant AMP_SERIAL     = "Amplifier Serial Numbers"
-StrConstant PRESSURE_DEV   = "Name of Pressure Devices"
-StrConstant TEMP_GAIN      = "Temperature control gain (in V)"
-StrConstant TEMP_MAX       = "Maximum Temperature Allowed (in degrees C)"
-StrConstant TEMP_MIN       = "Maximum Temperature Allowed (in degrees C)"
-StrConstant PRESSURE_CONST = "Positive Pressure Calibration Constants"
+StrConstant USER_CONFIG_NB      = "User_Config"
+Constant ATTEMPTS               = 5
+StrConstant SAVE_PATH           = "C:Users:stephanies:Desktop:MiesSave"
+StrConstant ITC_DEV             = "Name of ITC Device"
+StrConstant AMP_TITLE           = "Amplifier Names"
+StrConstant AMP_SERIAL          = "Amplifier Serial Numbers"
+StrConstant PRESSURE_DEV        = "Name of Pressure Devices"
+StrConstant TEMP_GAIN           = "Temperature control gain (in V)"
+StrConstant TEMP_MAX            = "Maximum Temperature Allowed (in degrees C)"
+StrConstant TEMP_MIN            = "Minimum Temperature Allowed (in degrees C)"
+StrConstant PRESSURE_CONST      = "Positive Pressure Calibration Constants"
+StrConstant PRESSURE_BATH       = "In bath pressure (psi)"
+StrConstant PRESSURE_STARTSEAL  = "Initial Seal Pressure (psi)"
+StrConstant PRESSURE_MAXSEAL    = "Maximum Seal Pressure (psi)"
+StrConstant TP_AFTER_DAQ        = "Activate TP after DAQ"
+StrConstant SAVE_TP             = "Save TP record"
+StrConstant EXPORT_NWB          = "Export to NWB"
+StrConstant APPEND_ASYNC        = "Append Asynchronous reading to wave note"
+StrConstant SYNC_MIES_MCC       = "Sync MIES to MCC"
+StrConstant ENABLE_I_EQUAL_ZERO = "Switch clamp modes bia I equal zero"
 ///@}
+
