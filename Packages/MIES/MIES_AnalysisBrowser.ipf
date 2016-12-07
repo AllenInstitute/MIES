@@ -407,6 +407,8 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	if(ParamIsDefault(typeFlags))
 		typeFlags = 1
+	else
+		ASSERT(typeFlags == COUNTOBJECTS_WAVES || typeFlags == COUNTOBJECTS_VAR || typeFlags == COUNTOBJECTS_STR || typeFlags == COUNTOBJECTS_DATAFOLDER, "Unknown typeFlags, bitmasks are not supported")
 	endif
 
 	fileNameWOExtension = GetBaseName(expFilePath)
