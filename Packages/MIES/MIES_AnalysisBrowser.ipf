@@ -398,7 +398,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	variable err, numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
-	string str
+	string str, list
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
@@ -453,7 +453,12 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 		RemoveEmptyDataFolder($GetIndexedObjNameDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER, i))
 	endfor
 
-	return V_flag
+	list = GetListOfObjects(tmpDFR, ".*", matchList=listOfNames, recursive=1, typeFlag=typeFlags)
+
+	sprintf str, "V_Flag=%d, numItems=%d, list=%s\r", V_Flag, ItemsInList(list), list
+	DEBUGPRINT(str)
+
+	return ItemsInList(list)
 End
 
 /// @brief Returns a wave containing all present sweep numbers
