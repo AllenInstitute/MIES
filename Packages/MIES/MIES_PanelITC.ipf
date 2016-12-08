@@ -4065,7 +4065,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			SetDataFolder saveDFR
 
 			if(channelIndex == CHANNEL_INDEX_ALL)
-				first = CHANNEL_INDEX_ALL
+				first = 0
 				last  = GetNumberFromType(var=channelType)
 			else
 				first = channelIndex
@@ -4474,7 +4474,7 @@ End
 Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	variable val, channelIndex, channelType, controlType, first, last, i
+	variable val, channelIndex, channelType, controlType, numEntries, i
 	string panelTitle, ctrl
 
 	switch(sva.eventCode)
@@ -4488,10 +4488,9 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Unexpected channel index")
 
-			first = CHANNEL_INDEX_ALL
-			last  = GetNumberFromType(var=channelType)
+			numEntries = GetNumberFromType(var=channelType)
 
-			for(i = first; i < last; i+= 1)
+			for(i = 0; i < numEntries; i+= 1)
 				ctrl = GetPanelControl(i, channelType, controlType)
 				SetSetVariable(panelTitle, ctrl, val)
 			endfor
