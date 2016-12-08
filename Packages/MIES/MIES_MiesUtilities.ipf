@@ -218,6 +218,10 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 
 	if(channelIndex == CHANNEL_INDEX_ALL)
 		ctrl += "_All"
+	elseif(channelIndex == CHANNEL_INDEX_ALL_V_CLAMP)
+		ctrl += "_AllVClamp"
+	elseif(channelIndex == CHANNEL_INDEX_ALL_I_CLAMP)
+		ctrl += "_AllIClamp"
 	else
 		ASSERT(channelIndex >= 0 && channelIndex < 100, "invalid channelIndex")
 		sprintf ctrl, "%s_%02d", ctrl, channelIndex

@@ -3274,12 +3274,7 @@ Window DA_Ephys() : Panel
 	GroupBox Group_AD_all,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox Group_AD_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox Group_AD_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox Group_DA_all,pos={20.00,447.00},size={459.00,4.00},disable=1
-	GroupBox Group_DA_all,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
-	GroupBox Group_DA_all,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	GroupBox Group_DA_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	GroupBox Group_DA_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_ALL,pos={19.00,456.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_DA_ALL,pos={19.00,461.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
 	CheckBox Check_DA_ALL,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_ALL,userdata(ResizeControlsInfo)= A"!!,BY!!#C-!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3395,6 +3390,48 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataACq_Pressure_AutoOFF,userdata(tabnum)=  "2"
 	CheckBox check_DataACq_Pressure_AutoOFF,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
 	CheckBox check_DataACq_Pressure_AutoOFF,value= 0
+	GroupBox group_DA_All,pos={11.00,442.00},size={471.00,74.00},disable=1,title="All"
+	GroupBox group_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DA_AllVClamp,pos={19.00,543.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_DA_AllVClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DA_AllVClamp,value= 0,side= 1
+	PopupMenu Wave_DA_AllVClamp,pos={153.00,545.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu Wave_DA_AllVClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	PopupMenu Wave_DA_AllVClamp,fSize=10
+	PopupMenu Wave_DA_AllVClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	SetVariable Search_DA_AllVClamp,pos={154.00,569.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
+	SetVariable Search_DA_AllVClamp,userdata(tabnum)=  "1"
+	SetVariable Search_DA_AllVClamp,userdata(tabcontrol)=  "ADC",value= _STR:""
+	SetVariable Scale_DA_AllVClamp,pos={288.00,545.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_DA_Scale
+	SetVariable Scale_DA_AllVClamp,userdata(tabnum)=  "1"
+	SetVariable Scale_DA_AllVClamp,userdata(tabcontrol)=  "ADC"
+	SetVariable Scale_DA_AllVClamp,limits={-inf,inf,10},value= _NUM:1
+	PopupMenu IndexEnd_DA_AllVClamp,pos={353.00,545.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_AllVClamp,userdata(tabnum)=  "1"
+	PopupMenu IndexEnd_DA_AllVClamp,userdata(tabcontrol)=  "ADC"
+	PopupMenu IndexEnd_DA_AllVClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	GroupBox group_DA_AllVClamp,pos={11.00,524.00},size={471.00,74.00},disable=1,title="V-Clamp"
+	GroupBox group_DA_AllVClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DA_AllIClamp,pos={19.00,626.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_DA_AllIClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	CheckBox Check_DA_AllIClamp,value= 0,side= 1
+	PopupMenu Wave_DA_AllIClamp,pos={153.00,628.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu Wave_DA_AllIClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
+	PopupMenu Wave_DA_AllIClamp,fSize=10
+	PopupMenu Wave_DA_AllIClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	SetVariable Search_DA_AllIClamp,pos={154.00,652.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
+	SetVariable Search_DA_AllIClamp,userdata(tabnum)=  "1"
+	SetVariable Search_DA_AllIClamp,userdata(tabcontrol)=  "ADC",value= _STR:""
+	SetVariable Scale_DA_AllIClamp,pos={288.00,628.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_DA_Scale
+	SetVariable Scale_DA_AllIClamp,userdata(tabnum)=  "1"
+	SetVariable Scale_DA_AllIClamp,userdata(tabcontrol)=  "ADC"
+	SetVariable Scale_DA_AllIClamp,limits={-inf,inf,10},value= _NUM:1
+	PopupMenu IndexEnd_DA_AllIClamp,pos={354.00,628.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_AllIClamp,userdata(tabnum)=  "1"
+	PopupMenu IndexEnd_DA_AllIClamp,userdata(tabcontrol)=  "ADC"
+	PopupMenu IndexEnd_DA_AllIClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
+	GroupBox group_DA_AllIClamp,pos={12.00,607.00},size={471.00,74.00},disable=1,title="I-Clamp"
+	GroupBox group_DA_AllIClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C[!!#Da!!!!\"zzzzzzzzzzzzzzzzzzzz"
@@ -3462,6 +3499,8 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_DA_06 WIN = $panelTitle,value= 0
 	CheckBox Check_DA_07 WIN = $panelTitle,value= 0
 	CheckBox Check_DA_All WIN = $panelTitle,value= 0
+	CheckBox Check_DA_AllVClamp WIN = $panelTitle,value= 0
+	CheckBox Check_DA_AllIClamp WIN = $panelTitle,value= 0
 
 	CheckBox Check_TTL_00 WIN = $panelTitle,value= 0
 	CheckBox Check_TTL_01 WIN = $panelTitle,value= 0
@@ -3520,6 +3559,8 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 	PopupMenu Wave_DA_All WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_AllVClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+	PopupMenu Wave_DA_AllIClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
 
 	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1
@@ -3530,6 +3571,8 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Scale_DA_06 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_07 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_All WIN = $panelTitle, value = _NUM:1
+	SetVariable Scale_DA_AllVClamp WIN = $panelTitle, value = _NUM:1
+	SetVariable Scale_DA_AllIClamp WIN = $panelTitle, value = _NUM:1
 
 	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,fSize=8,value= _STR:""
 
@@ -3651,6 +3694,8 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Search_DA_06 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_DA_07 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_DA_All WIN = $panelTitle, value= _STR:""
+	SetVariable Search_DA_AllVClamp WIN = $panelTitle, value= _STR:""
+	SetVariable Search_DA_AllIClamp WIN = $panelTitle, value= _STR:""
 
 	SetVariable Search_TTL_00 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_TTL_01 WIN = $panelTitle, value= _STR:""
@@ -3671,6 +3716,8 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu IndexEnd_DA_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_DA_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_DA_All WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu IndexEnd_DA_AllVClamp WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	PopupMenu IndexEnd_DA_AllICLamp WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 
 	PopupMenu IndexEnd_TTL_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
 	PopupMenu IndexEnd_TTL_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
@@ -4064,7 +4111,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			listOfWaves = WaveList(searchString, ";", "")
 			SetDataFolder saveDFR
 
-			if(channelIndex == CHANNEL_INDEX_ALL)
+			if(IsAllControl(channelIndex))
 				first = 0
 				last  = GetNumberFromType(var=channelType)
 			else
@@ -4073,6 +4120,10 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			endif
 
 			for(i = first; i < last; i+= 1)
+
+				if(!DAP_DACHasExpectedClampMode(panelTitle, channelIndex, i, channelType))
+					continue
+				endif
 
 				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 				PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
@@ -4122,7 +4173,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 			allChecked = cba.checked
 			DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
 			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
-			ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Invalid channel index")
+			ASSERT(ISAllControl(channelIndex), "Invalid channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
 
@@ -4134,6 +4185,10 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 					continue
 				endif
 
+				if(!DAP_DACHasExpectedClampMode(panelTitle, channelIndex, i, channelType))
+					continue
+				endif
+
 				PGC_SetAndActivateControl(panelTitle, control, val=allChecked)
 			endfor
 			break
@@ -4141,6 +4196,50 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 
 	return 0
 End
+
+/// @brief Determines if the control refers to an "All" control
+Function IsAllControl(channelIndex)
+	variable channelIndex
+
+	return channelIndex == CHANNEL_INDEX_ALL \
+	       || channelIndex == CHANNEL_INDEX_ALL_V_CLAMP \
+	       || channelIndex == CHANNEL_INDEX_ALL_I_CLAMP
+End
+
+/// @brief Helper for "All" controls in the DA tab
+///
+/// @returns 0 if the given channel is a DA channel and not in the expected
+///          clamp mode as determined by `controlChannelIndex`, 1 otherwise
+Function DAP_DACHasExpectedClampMode(panelTitle, controlChannelIndex, channelNumber, channelType)
+	string panelTitle
+	variable controlChannelIndex, channelNumber, channelType
+
+	variable headstage, clampMode
+
+	ASSERT(IsAllControl(controlChannelIndex), "Invalid controlChannelIndex")
+
+	if(channelType != CHANNEL_TYPE_DAC || controlChannelIndex == CHANNEL_INDEX_ALL)
+		return 1 // don't care
+	endif
+
+	headstage = AFH_GetHeadstageFromDAC(panelTitle, channelNumber)
+
+	if(!IsFinite(headstage)) // unassociated AD/DA channels
+		return 0
+	endif
+
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+
+	if(clampMode == V_CLAMP_MODE && controlChannelIndex == CHANNEL_INDEX_ALL_V_CLAMP)
+		return 1
+	endif
+
+	if(clampMode == I_CLAMP_MODE && controlChannelIndex == CHANNEL_INDEX_ALL_I_CLAMP)
+		return 1
+	endif
+
+	return 0
+end
 
 Function DAP_CheckProc_AD(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
@@ -4454,11 +4553,16 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			DAP_AbortIfUnlocked(panelTitle)
 			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
 
-			if(channelIndex == CHANNEL_INDEX_ALL)
+			if(IsAllControl(channelIndex))
 
 				numEntries = GetNumberFromType(var=channelType)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = GetPanelControl(i, channelType, channelControl)
+
+					if(!DAP_DACHasExpectedClampMode(panelTitle, channelIndex, i, channelType))
+						continue
+					endif
+
 					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
 				endfor
 			endif
@@ -4486,12 +4590,17 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			panelTitle = sva.win
 
 			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
-			ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Unexpected channel index")
+			ASSERT(IsAllControl(channelIndex), "Unexpected channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
 
 			for(i = 0; i < numEntries; i+= 1)
 				ctrl = GetPanelControl(i, channelType, controlType)
+
+				if(!DAP_DACHasExpectedClampMode(panelTitle, channelIndex, i, channelType))
+					continue
+				endif
+
 				SetSetVariable(panelTitle, ctrl, val)
 			endfor
 			break
@@ -5749,6 +5858,50 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage, mccMiesSyncOv
 	if(activeHS)
 		TP_RestartTestPulse(panelTitle, testPulseMode)
 	endif
+
+	DAP_UpdateAllCtrlsPerClampMode(panelTitle)
+End
+
+static Function DAP_UpdateAllCtrlsPerClampMode(panelTitle)
+	string panelTitle
+
+	variable i, numEntries
+	variable clampMode, numVClamp, numIClamp
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		clampMode = GuiState[i][%HSmode]
+
+		numVClamp += (clampMode == V_CLAMP_MODE)
+		numIClamp += (clampMode == I_CLAMP_MODE)
+	endfor
+
+	Make/FREE/T VControls = {"group_DA_AllVClamp",                                                                  \
+							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK),    \
+							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE),     \
+							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE),    \
+							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH),   \
+							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END) }
+
+	Make/FREE/T IControls = {"group_DA_AllIClamp",                                                                  \
+							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK),    \
+							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE),     \
+							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE),    \
+							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH),   \
+							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END) }
+
+	if(numVClamp)
+		EnableControls(panelTitle, TextWaveToList(VControls, ";"))
+	else
+		DisableControls(panelTitle, TextWaveToList(VControls, ";"))
+	endif
+
+	if(numIClamp)
+		EnableControls(panelTitle, TextWaveToList(IControls, ";"))
+	else
+		DisableControls(panelTitle, TextWaveToList(IControls, ";"))
+	endif
 End
 
 /// See @ref MCCSyncOverrides for allowed values of `mccMiesSyncOverride`
@@ -6897,6 +7050,12 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	strswitch(elem2)
 		case "All":
 			channelIndex = CHANNEL_INDEX_ALL
+			break
+		case "AllVClamp":
+			channelIndex = CHANNEL_INDEX_ALL_V_CLAMP
+			break
+		case "AllIClamp":
+			channelIndex = CHANNEL_INDEX_ALL_I_CLAMP
 			break
 		default:
 			channelIndex = str2num(elem2)

@@ -145,7 +145,12 @@ Constant CHANNEL_TYPE_ALARM        = 0x110
 Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
 Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
 Constant CHANNEL_CONTROL_SEARCH    = 0x140
-Constant CHANNEL_INDEX_ALL         = -1    ///< Controls which control groups have this special channel index
+/// @name Controls for multiple channels have negative channel indizes
+/// @{
+Constant CHANNEL_INDEX_ALL         = -1
+Constant CHANNEL_INDEX_ALL_V_CLAMP = -2
+Constant CHANNEL_INDEX_ALL_I_CLAMP = -3
+/// @}
 Constant CHANNEL_TYPE_UNKNOWN      = 0x150
 /// @}
 
@@ -421,7 +426,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION = 12
+Constant DA_EPHYS_PANEL_VERSION = 13
 
 /// Version of the labnotebooks (numerical and textual)
 ///
