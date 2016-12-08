@@ -4118,25 +4118,25 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-				paneltitle = cba.win
-				allChecked = cba.checked
-				DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
-				ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
-				ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Invalid channel index")
+			paneltitle = cba.win
+			allChecked = cba.checked
+			DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
+			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
+			ASSERT(channelIndex == CHANNEL_INDEX_ALL, "Invalid channel index")
 
-				numEntries = GetNumberFromType(var=channelType)
+			numEntries = GetNumberFromType(var=channelType)
 
-				for(i = 0; i < numEntries; i += 1)
-					control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
-					checked = GetCheckBoxState(panelTitle, control)
+			for(i = 0; i < numEntries; i += 1)
+				control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
+				checked = GetCheckBoxState(panelTitle, control)
 
-					if(checked == allChecked)
-						continue
-					endif
+				if(checked == allChecked)
+					continue
+				endif
 
-					PGC_SetAndActivateControl(panelTitle, control, val=allChecked)
-				endfor
-				break
+				PGC_SetAndActivateControl(panelTitle, control, val=allChecked)
+			endfor
+			break
 	endswitch
 
 	return 0
