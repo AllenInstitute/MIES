@@ -1048,6 +1048,94 @@ Function/S GetControlProcedure(win, control)
 	return procedure
 End
 
+/// @returns 1 on error, 0 if everything is fine.
+Function SearchForInvalidControlProcs(win)
+	string win
+
+	string controlList, control, controlProc
+	string subTypeStr
+	variable result, numEntries, i, subType
+	string/G funcList
+
+	if(!windowExists(win))
+		printf "SearchForInvalidControlProcs: Panel \"%s\" does not exist.\r", win
+		ControlWindowToFront()
+		return 1
+	endif
+
+	// we still have old style GUI control procedures so we can not restrict it to one parameter
+	funcList    = FunctionList("*", ";", "KIND:2")
+	controlList = ControlNameList(win)
+	numEntries  = ItemsInList(controlList)
+
+	for(i = 0; i < numEntries; i += 1)
+		control = StringFromList(i, controlList)
+
+		controlProc = GetControlProcedure(win, control)
+
+		if(IsEmpty(controlProc))
+			continue
+		endif
+
+		if(WhichListItem(controlProc, funcList, ";", 0, 0) == -1)
+			printf "SearchForInvalidControlProcedures: Panel \"%s\" has the control \"%s\" which refers to the non-existing GUI procedure \"%s\".\r", win, control, controlProc
+			ControlWindowToFront()
+			result = 1
+			continue
+		endif
+
+		subTypeStr = StringByKey("SUBTYPE", FunctionInfo(controlProc))
+		subType    = GetNumericSubType(subTypeStr)
+		ControlInfo/W=$win $control
+
+		if(abs(V_Flag) != subType)
+			printf "SearchForInvalidControlProcs: Panel \"%s\" has the control \"%s\" which refers to the GUI procedure \"%s\" which is of an incorrect subType \"%s\".\r", win, control, controlProc, subTypeStr
+			ControlWindowToFront()
+			result = 1
+			continue
+		endif
+	endfor
+
+	if(!result)
+		printf "Congratulations! Panel \"%s\" references only valid GUI control procedures.\r", win
+	endif
+
+	return result
+End
+
+/// @brief Convert the function subType names for GUI control procedures
+///        to a numeric value as used by `ControlInfo`
+Function GetNumericSubType(subType)
+	string subType
+
+	strswitch(subType)
+		case "ButtonControl":
+			return CONTROL_TYPE_BUTTON
+			break
+		case "CheckBoxControl":
+			return CONTROL_TYPE_CHECKBOX
+			break
+		case "ListBoxControl":
+			return CONTROL_TYPE_LISTBOX
+			break
+		case "PopupMenuControl":
+			return CONTROL_TYPE_POPUPMENU
+			break
+		case "SetVariableControl":
+			return CONTROL_TYPE_SETVARIABLE
+			break
+		case "SliderControl":
+			return CONTROL_TYPE_SLIDER
+			break
+		case "TabControl":
+			return CONTROL_TYPE_TAB
+			break
+		default:
+			ASSERT(0, "Unsupported control subType")
+			break
+	endswitch
+End
+
 ///@brief Places paired checkboxes in opposite state
 ///
 /// @param win     window name
