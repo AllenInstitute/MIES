@@ -1020,7 +1020,7 @@ Function/S GetControlProcedure(win, control)
 
 	variable last, first
 	variable comma, cr
-	string procedure, list
+	string procedure
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "invalid or non existing control")
@@ -1044,9 +1044,6 @@ Function/S GetControlProcedure(win, control)
 	endif
 
 	procedure = S_recreation[first + strlen(PROCEDURE_START), last - 1]
-	list = FunctionList(procedure, ";", "")
-
-	ASSERT(!isEmpty(procedure) && !isEmpty(list), "no or invalid procedure")
 
 	return procedure
 End
