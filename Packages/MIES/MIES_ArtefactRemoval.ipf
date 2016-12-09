@@ -20,7 +20,7 @@ Function/S AR_GetGraph(win)
 	string graph, mainWindow
 
 	mainWindow = GetMainWindow(win)
-	graph = DB_GetMainGraph(mainWindow)
+	graph = mainWindow + "#DataBrowserGraph"
 
 	ASSERT(WindowExists(mainWindow), "missing window")
 
