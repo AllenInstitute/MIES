@@ -513,7 +513,7 @@ End
 Function ED_TPDocumentation(panelTitle)
 	string panelTitle
 
-	variable sweepNo, RTolerance
+	variable sweepNo, RTolerance, numActiveHS
 	variable i, j, clampMode
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	SVAR clampModeString = $GetClampModeString(panelTitle)
@@ -523,6 +523,13 @@ Function ED_TPDocumentation(panelTitle)
 	WAVE/Z/SDFR=dfr SSResistance
 
 	if(!WaveExists(BaselineSSAvg) || !WaveExists(InstResistance) || !WaveExists(SSResistance))
+		return NaN
+	endif
+
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	numActiveHS = Sum(statusHS)
+
+	if(DimSize(BaselineSSAvg, COLS) != numActiveHS || DimSize(InstResistance, COLS) != numActiveHS || DimSize(SSResistance, COLS) != numActiveHS)
 		return NaN
 	endif
 
@@ -571,7 +578,6 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = "-"
 
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		TPSettingsWave[0][8][i] = statusHS[i]
