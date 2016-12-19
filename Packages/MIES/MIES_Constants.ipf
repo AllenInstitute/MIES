@@ -108,6 +108,7 @@ Constant CONTROL_TYPE_VALDISPLAY  = 4
 Constant CONTROL_TYPE_SETVARIABLE = 5
 Constant CONTROL_TYPE_SLIDER      = 7
 Constant CONTROL_TYPE_TAB         = 8
+Constant CONTROL_TYPE_LISTBOX     = 11
 /// @}
 
 // Conversion factor from ticks to seconds, exact value is 1/60

@@ -559,6 +559,8 @@ Function DB_DataBrowserStartupSettings()
 	SetPopupMenuIndex(panelTitle, "popup_LBTextualKeys", 0)
 	PopupMenu popup_LBNumericalKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
 	PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
+
+	SearchForInvalidControlProcs(panelTitle)
 End
 
 Function DB_ButtonProc_Sweep(ba) : ButtonControl
