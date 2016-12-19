@@ -1513,15 +1513,48 @@ End
 Function/WAVE WB_CustomWavesFromStimSet([stimsetList])
 	string stimsetList
 
-	variable numStimsets, numEpochs, i, j, k
+	variable i, j, numStimsets
+
+	if(ParamIsDefault(stimsetList))
+		WAVE/T cw = WB_CustomWavesPathFromStimSet()
+	else
+		WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsetList)
+	endif
+
+	numStimSets = Dimsize(cw, ROWS)
+	Make/FREE/WAVE/N=(numStimSets) wv
+
+	for(i = 0; i < numStimSets; i += 1)
+		WAVE/Z customwave = $cw[i]
+		if(WaveExists(customwave))
+			wv[j] = customwave
+			j += 1
+		else
+			printf "reference to custom wave \"%s\" failed.\r", cw[i]
+		endif
+		WaveClear customwave
+	endfor
+	Redimension/N=(j) wv
+
+	return wv
+End
+
+/// @brief Get all custom waves that are used by the supplied stimset.
+///
+/// @returns a text wave with paths to custom waves.
+Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
+	string stimsetList
+
 	string stimset
+	variable i, j, k, numEpochs, numStimSets
 
 	if(ParamIsDefault(stimsetList))
 		numStimsets = 1
 	else
 		numStimsets = ItemsInList(stimsetList)
 	endif
-	Make/N=(numStimsets * SEGMENT_TYPE_WAVE_LAST_IDX)/FREE/WAVE customWaves
+
+	Make/N=(numStimsets * SEGMENT_TYPE_WAVE_LAST_IDX)/FREE/T customWaves
 
 	for(i = 0; i < numStimsets; i += 1)
 		if(ParamIsDefault(stimsetList))
@@ -1544,13 +1577,8 @@ Function/WAVE WB_CustomWavesFromStimSet([stimsetList])
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
 			if(SegWvType[j] == 7)
-				WAVE/Z customWave = $(WPT[0][j])
-				if(WaveExists(customWave))
-					customWaves[k] = customWave
-					k += 1
-				else
-					printf "reference to custom wave \"%s\" failed.", WPT[0][j]
-				endif
+				customwaves[k] = WPT[0][j]
+				k += 1
 			endif
 		endfor
 	endfor
@@ -1608,7 +1636,7 @@ End
 /// @param[out] knownNames	unique list of stimsets
 ///
 /// @return number of parents stimsets that were moved to child stimsets
-static Function WB_StimsetFamilyNames(knownNames, [parent])
+Function WB_StimsetFamilyNames(knownNames, [parent])
 	string parent, &knownNames
 
 	string children, familynames
@@ -1698,4 +1726,37 @@ Function/S WB_StimsetRecursionForList(stimsetQueue)
 	endfor
 
 	return stimsetList
+End
+
+/// @brief check if parameter waves exist
+///
+/// @return 1 if parameter waves exist, 0 otherwise
+Function WB_ParameterWavesExist(stimset)
+	string stimset
+
+	WAVE/Z WP        = WB_GetWaveParamForSet(stimset)
+	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimset)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
+
+	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
+		return 1
+	endif
+
+	return 0
+End
+
+/// @brief check if (custom) stimset exists
+///
+/// @return 1 if stimset wave was found, 0 otherwise
+Function WB_StimsetExists(stimset)
+	string stimset
+
+	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+	WAVE/Z/SDFR=setDFR wv = $stimset
+
+	if(WaveExists(wv))
+		return 1
+	endif
+
+	return 0
 End

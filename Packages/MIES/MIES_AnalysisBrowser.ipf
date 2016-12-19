@@ -1199,7 +1199,7 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 	string filePath, dataFolder, fileType, device
 	variable sweep
 
-	string sweepFolder, sweeps, msg
+	string sweepFolder, sweeps, stimsets, msg
 
 	ASSERT(!isEmpty(filePath), "Empty file or Folder name on disc")
 	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
@@ -1224,6 +1224,13 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 			endif
 			Wave sweepsWave = sweepDFR:$sweeps
 			if(AB_SplitSweepIntoComponents(dataFolder, device, sweep, sweepsWave))
+				return 1
+			endif
+			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			if(AB_LoadStimsets(filePath, stimsets))
+				return 1
+			endif
+			if(AB_LoadCustomWaves(filePath, stimsets))
 				return 1
 			endif
 			break
@@ -1427,6 +1434,9 @@ Function AB_SortConfigSweeps(config)
 	Note/K config, ConvertTextWaveToList(units)
 End
 
+/// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
+///
+/// @returns name of loaded sweep
 Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	string expFilePath, device
 	DFREF sweepDFR
@@ -1466,6 +1476,216 @@ Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return sweepWaveName
+End
+
+/// @brief Load specified stimsets from Igor experiment file
+///
+/// recurses into all dependent stimsets as soon as they have been loaded.
+/// the list of stimsets is extended "on the left side": new items are added left.
+/// use numEnd to indicate unto which item the list was already processed.
+/// see StimsetRecursion() for a similar structure
+///
+/// @param expFilePath Path on disc to igor experiment
+/// @param stimsets           ";" separated list of all stimsets of the current sweep.
+/// @param processedStimsets  [optional] input a list of already processed stimsets
+///
+/// @return 1 on error and 0 on success
+Function AB_LoadStimsets(expFilePath, stimsets, [processedStimsets])
+	string expFilePath, stimsets, processedStimsets
+
+	string stimset, totalStimsets, newStimsets, oldStimsets, regex
+	variable numBefore, numMoved, numAfter, numNewStimsets, i
+
+	if(ParamIsDefault(processedStimsets))
+		processedStimsets = ""
+	endif
+
+	totalStimsets = stimsets + processedStimsets
+	numBefore = ItemsInList(totalStimsets)
+
+	// load first order stimsets
+	numNewStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numNewStimsets; i += 1)
+		stimset = StringFromList(i, stimsets)
+		if(AB_LoadStimset(expFilePath, stimset))
+			return 1
+		endif
+		numMoved += WB_StimsetFamilyNames(totalStimsets, parent = stimset)
+	endfor
+	numAfter = ItemsInList(totalStimsets)
+
+	// load next order stimsets
+	numNewStimsets = numAfter - numBefore + numMoved
+	if(numNewStimsets > 0)
+		regex = "((?:[^;]*;){" + num2str(numNewStimsets) + "})((?:[^;]*;)*)"
+		SplitString/E=(regex) totalStimsets, newStimsets, oldStimsets
+		return AB_LoadStimsets(expFilePath, newStimsets, processedStimsets = oldStimsets)
+	endif
+
+	return 0
+End
+
+/// @brief Load specified stimset from Igor experiment file
+///
+/// @return 1 on error and 0 on success
+static Function AB_LoadStimset(expFilePath, stimset)
+	string expFilePath, stimset
+	variable overwrite
+
+	if(WB_ParameterWavesExist(stimset))
+		return 0
+	endif
+	if(WB_StimsetExists(stimset))
+		return 0
+	endif
+
+	if(!AB_LoadStimsetTemplateWaves(expFilePath, stimset))
+		return 0
+	endif
+	if(!AB_LoadStimsetRAW(expFilePath, stimset))
+		return 0
+	endif
+
+	printf "experiment: \t%s \tstimset: \t%s \tfailed to recreate stimset\r", expFilePath, stimset
+	return 1
+End
+
+static Function AB_LoadStimsetRAW(expFilePath, stimset)
+	string expFilePath, stimset
+
+	string dataPath, data
+	variable numWavesLoaded
+
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+	dataPath = GetDataFolder(1, setDFR)
+	data = AddListItem(stimset, "")
+
+	DFREF saveDFR = GetDataFolderDFR()
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data)
+	SetDataFolder saveDFR
+
+	if(numWavesLoaded != 1)
+		KillOrMoveToTrash(dfr=newDFR)
+		return 1
+	endif
+
+	MoveWave newDFR:$stimset setDFR
+	KillOrMoveToTrash(dfr=newDFR)
+
+	return 0
+End
+
+/// @brief Load template waves for a specific stimset from Igor experiment file
+///
+/// @return 1 on error and 0 on success
+static Function AB_LoadStimsetTemplateWaves(expFilePath, stimset)
+	string expFilePath, stimset
+
+	variable channelType, numWavesLoaded, numStimsets, i
+	string dataPath
+	string parameterWaves = ""
+
+	// load parameter waves
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+
+	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP), parameterWaves)
+	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT), parameterWaves)
+	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE), parameterWaves)
+
+	channelType = GetStimSetType(stimset)
+	dataPath = GetSetParamFolderAsString(channelType)
+
+	DFREF saveDFR = GetDataFolderDFR()
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves)
+	SetDataFolder saveDFR
+
+	if(numWavesLoaded != 3)
+		KillOrMoveToTrash(dfr=newDFR)
+		return 1
+	endif
+
+	// move loaded waves to stimset parameter dataFolder
+	WAVE WP        = newDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP))
+	WAVE/T WPT     = newDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT))
+	WAVE SegWvType = newDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE))
+
+	DFREF paramDFR = GetSetParamFolder(channelType)
+
+	MoveWave WP, paramDFR
+	MoveWave WPT, paramDFR
+	MoveWave SegWvType, paramDFR
+
+	KillOrMoveToTrash(dfr=newDFR)
+
+	if(WB_ParameterWavesExist(stimset))
+		return 0
+	endif
+
+	return 1
+End
+
+/// @brief Load custom waves for specified stimset from Igor experiment file
+///
+/// @return 1 on error and 0 on success
+Function AB_LoadCustomWaves(expFilePath, stimsets)
+	string expFilePath, stimsets
+
+	string custom_waves
+	variable numWaves, i
+
+	stimsets = WB_StimsetRecursionForList(stimsets)
+	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsets)
+
+	numWaves = DimSize(cw, ROWS)
+	for(i = 0; i < numWaves; i += 1)
+		if(AB_LoadWave(expFilePath, cw[i]))
+			return 1
+		endif
+	endfor
+
+	return 0
+End
+
+/// @brief Load specified wave from Igor Experiment file.
+///
+/// @return 1 on error and 0 on success
+Function AB_LoadWave(expFilePath, fullPath)
+	string expFilePath, fullPath
+
+	variable numWavesLoaded
+	string dataFolder
+	string loadList = ""
+
+	WAVE/Z wv = $fullPath
+	if(WaveExists(wv))
+		return 0
+	endif
+
+	DFREF saveDFR = GetDataFolderDFR()
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+
+	dataFolder = GetFolder(fullPath)
+	loadList = AddListItem(RemovePrefix(fullPath, startStr = dataFolder), loadList)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataFolder, loadList)
+
+	if(numWavesLoaded != 1)
+		printf "Could not load custom wave %s in %s\r", fullPath, expFilePath
+		SetDataFolder saveDFR
+		KillOrMoveToTrash(dfr=newDFR)
+		KillOrMoveToTrash(dfr=sweepDFR)
+		return 1
+	endif
+
+	WAVE wv = $(GetIndexedObjNameDFR(newDFR, 1, 0))
+	SetDataFolder root:
+	createDFWithAllParents(dataFolder)
+	MoveWave wv, $fullPath
+
+	SetDataFolder saveDFR
+	KillOrMoveToTrash(dfr=newDFR)
+
+	return 0
 End
 
 static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
