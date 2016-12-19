@@ -578,12 +578,8 @@ Function/Wave GetUniqueEntries(wv)
 
 	FindDuplicates/RN=result wv
 
-	// delete NaN from wave
-	for(i = numRows - 1; i >= 0; i -= 1 )
-		if (!IsFinite(wv[i]))
-			DeletePoints i, 1, result
-		endif
-	endfor
+	WaveTransform/O zapNaNs wv
+	WaveTransform/O zapINFs wv
 
 	return result
 End
