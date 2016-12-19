@@ -4,7 +4,7 @@
 /// @file MIES_AnalysisFunctions.ipf
 /// @brief __AF__ Analysis functions to be called during data acquisition
 ///
-/// Function prototypes for analysis functions
+/// @sa MIES_AnalysisFunctionPrototypes.ipf
 ///
 /// Users can implement functions which are called at certain events for each
 /// data acquisition cycle. These functions should *never* abort, error out with a runtime error, or open dialogs!
@@ -37,41 +37,6 @@ static Constant ITI_LOCAL         = 15                      ///< Inter-trial-int
 static Constant POST_DELAY = 150									 ///< Delay after stimulation event in which no other event can occur in ms
 static Constant RESOLUTION = 25									 ///< Resolution of oodDAQ protocol in ms
 ///@}
-
-/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V2() instead
-///
-/// @param panelTitle  device
-/// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
-///                    always compare `eventType` with the constants, never use the current numerical value directly
-/// @param ITCDataWave data wave (locked to prevent changes using `SetWaveLock`)
-/// @param headStage   active headstage index
-///
-/// @return ignored
-Function AF_PROTO_ANALYSIS_FUNC_V1(panelTitle, eventType, ITCDataWave, headStage)
-	string panelTitle
-	variable eventType
-	Wave ITCDataWave
-	variable headstage
-End
-
-/// @param panelTitle     device
-/// @param eventType      eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
-///                       always compare `eventType` with the constants, never use the current numerical value directly
-/// @param ITCDataWave    data wave (locked to prevent changes using `SetWaveLock`)
-/// @param headStage      active headstage index
-/// @param realDataLength number of rows in `ITCDataWave` with data, the total number of rows in `ITCDataWave` might be
-///                       higher due to alignment requirements of the data acquisition hardware
-///
-/// @return see @ref AnalysisFunctionEventDescriptionTable
-Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
-	string panelTitle
-	variable eventType
-	Wave ITCDataWave
-	variable headstage, realDataLength
-
-	// return value currently only honoured for `Pre DAQ` event
-	return 0
-End
 
 Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
