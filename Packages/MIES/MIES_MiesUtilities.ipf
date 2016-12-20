@@ -2345,11 +2345,11 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 	endfor
 End
 
-/// @brief Extract the sweep number from a `Sweep_*` or `Config_Sweep_*` wave
-Function ExtractSweepNumber(sweepOrConfig)
-	string sweepOrConfig
+/// @brief Extract the sweep number from a `$something_*` string
+Function ExtractSweepNumber(str)
+	string str
 
-	return str2num(StringFromList(ItemsInList(sweepOrConfig, "_") - 1, sweepOrConfig, "_"))
+	return str2num(StringFromList(ItemsInList(str, "_") - 1, str, "_"))
 End
 
 /// @brief Return the list of unlocked `DA_Ephys` panels
