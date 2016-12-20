@@ -58,8 +58,6 @@ Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
 Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
-StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
-
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
