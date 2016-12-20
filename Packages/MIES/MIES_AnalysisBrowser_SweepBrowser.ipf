@@ -5,7 +5,6 @@
 /// @brief __SB__  Visualization of sweep data in the analysis browser
 
 static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"
-static StrConstant SWEEP_OVERLAY_DEP_CTRLS = "check_SweepBrowser_DisplayDAC;check_sweepbrowser_OverlayChan;check_SweepBrowser_DisplayTTL;check_SweepBrowser_DisplayADC;check_SweepBrowser_splitTTL"
 static StrConstant WAVE_NOTE_LAYOUT_KEY    = "WAVE_LAYOUT_VERSION"
 
 static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
@@ -79,19 +78,6 @@ static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	endif
 
 	return $GetAnalysisSweepDataPathAS(expFolder, device, sweep)
-End
-
-static Function SB_SetFormerSweepNumber(win, sweepNo)
-	string win
-	variable sweepNo
-
-	SetControlUserData(win, "popup_sweep_selector", LAST_SWEEP_USER_DATA, num2str(sweepNo))
-End
-
-static Function SB_GetFormerSweepNumber(win)
-	string win
-
-	return str2num(GetUserData(win, "popup_sweep_selector", LAST_SWEEP_USER_DATA))
 End
 
 static Function SB_PanelUpdate(graphOrPanel)
@@ -438,11 +424,10 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 End
 
 /// @param sweepBrowserDFR datafolder of the sweep browser
-/// @param currentMapIndex index in the sweep browser map of the currently shown sweep
 /// @param newMapIndex     index in the sweep browser map of the new to-be-shown sweep
-Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
+Function SB_PlotSweep(sweepBrowserDFR, newMapIndex)
 	DFREF sweepBrowserDFR
-	variable currentMapIndex, newMapIndex
+	variable newMapIndex
 
 	string device, dataFolder, panel
 	variable sweep, newWaveDisplayed, currentWaveDisplayed
@@ -474,30 +459,6 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	DFREF pps.sweepFolder    = sweepDFR
 	WAVE pps.numericalValues = numericalValues
 
-	// With overlay enabled:
-	// if the last plotted sweep is already on the graph remove it and return
-	if(GetCheckBoxState(panel, "check_SweepBrowser_SweepOverlay"))
-
-		DFREF currentSweepDFR = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, currentMapIndex)
-		if(!DataFolderExistsDFR(currentSweepDFR))
-			return 0
-		endif
-
-		newWaveDisplayed     = IsWaveDisplayedOnGraph(graph, dfr=newSweepDFR)
-		currentWaveDisplayed = IsWaveDisplayedOnGraph(graph, dfr=currentSweepDFR)
-
-		if(newWaveDisplayed && currentWaveDisplayed && !DataFolderRefsEqual(newSweepDFR, currentSweepDFR))
-			RemoveTracesFromGraph(graph, dfr=currentSweepDFR)
-			SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
-			SB_SetFormerSweepNumber(panel, newMapIndex)
-			PostPlotTransformations(graph, pps)
-			return NaN
-		elseif(newWaveDisplayed)
-			PostPlotTransformations(graph, pps)
-			return NaN
-		endif
-	endif
-
 	WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweep)
 	WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
@@ -515,7 +476,6 @@ Function SB_PlotSweep(sweepBrowserDFR, currentMapIndex, newMapIndex)
 	CreateTiledChannelGraph(graph, configWave, sweep, numericalValues, textualValues, tgs, sweepDFR, channelSelWave=channelSelWave)
 
 	SetPopupMenuIndex(panel, "popup_sweep_selector", newMapIndex)
-	SB_SetFormerSweepNumber(panel, newMapIndex)
 	PostPlotTransformations(graph, pps)
 End
 
@@ -623,7 +583,7 @@ Function SB_SweepBrowserWindowHook(s)
 			currentSweep = GetPopupMenuIndex(panel, "popup_sweep_selector")
 			newSweep = currentSweep + direction * GetSetVariable(panel, "setvar_SweepBrowser_SweepStep")
 
-			SB_PlotSweep($folder, currentSweep, newSweep)
+			SB_PlotSweep($folder, newSweep)
 
 			hookResult = 1
 			break
@@ -776,7 +736,7 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 			graph     = GetMainWindow(pa.win)
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 
-			SB_PlotSweep(dfr, SB_GetFormerSweepNumber(win), pa.popNum - 1)
+			SB_PlotSweep(dfr, pa.popNum - 1)
 			break
 	endswitch
 End
@@ -805,7 +765,7 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 			newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_SweepStep")
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
-			SB_PlotSweep(dfr, currentSweep, newSweep)
+			SB_PlotSweep(dfr, newSweep)
 			break
 	endswitch
 
@@ -1025,7 +985,7 @@ Function SB_PopMenuProc_ChangedSettings(pa) : PopupMenuControl
 			graph = GetMainWindow(win)
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 			idx = GetPopupMenuIndex(win, "popup_sweep_selector")
-			SB_PlotSweep(dfr, idx, idx)
+			SB_PlotSweep(dfr, idx)
 		break
 	endswitch
 
@@ -1048,13 +1008,7 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 			idx     = GetPopupMenuIndex(win, "popup_sweep_selector")
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 
-			if(!cmpstr(ctrl, "check_SweepBrowser_SweepOverlay"))
-				if(checked)
-					DisableControls(win, SWEEP_OVERLAY_DEP_CTRLS)
-				else
-					EnableControls(win, SWEEP_OVERLAY_DEP_CTRLS)
-				endif
-			elseif(!cmpstr(ctrl, "check_sweepbrowser_dDAQ"))
+			if(!cmpstr(ctrl, "check_sweepbrowser_dDAQ"))
 				if(checked)
 					EnableControl(win, "popup_oodDAQ_regions")
 				else
@@ -1072,7 +1026,7 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 				AR_TogglePanel(win, listBoxWave)
 			endif
 
-			SB_PlotSweep(dfr, idx, idx)
+			SB_PlotSweep(dfr, idx)
 			break
 	endswitch
 End

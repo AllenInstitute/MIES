@@ -1709,7 +1709,7 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 			endfor
 
 			if(oneValidSweep)
-				SB_PlotSweep(sweepBrowserDFR, 0, 0)
+				SB_PlotSweep(sweepBrowserDFR, 0)
 			else
 				SVAR/SDFR=sweepBrowserDFR graph
 				KillWindow $graph
