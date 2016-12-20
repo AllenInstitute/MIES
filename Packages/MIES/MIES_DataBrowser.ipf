@@ -42,6 +42,12 @@ static Function/DF DB_GetDataPath(panelTitle)
 	return $GetUserData(panelTitle, "", "DataFolderPath") + ":Data"
 End
 
+static Function/DF DB_GetDataBrowserPath(panelTitle)
+	string panelTitle
+
+	return $GetUserData(panelTitle, "", "DataFolderPath") + ":DataBrowser"
+End
+
 static Function/S DB_GetNotebookSubWindow(panelTitle)
 	string panelTitle
 
@@ -273,7 +279,8 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 
 	DB_SplitSweepsIfReq(panelTitle, sweepNo)
 
-	WAVE channelSel = GetChannelSelectionWave(dfr)
+	DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
+	WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
 	return CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, channelSelWave=channelSel)
 End
 
@@ -814,8 +821,8 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 				break
 				default:
 				if(StringMatch(ctrl, "check_channelSel_*"))
-					DFREF dfr = DB_GetDataPath(panelTitle)
-					WAVE channelSel = GetChannelSelectionWave(dfr)
+					DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
+					WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
 					ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
 					channelSel[channelNum][%$channelType] = checked
 				endif
@@ -862,8 +869,8 @@ Function DB_OpenChannelSelectionPanel(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			panelTitle = GetMainWindow(ba.win)
-			DFREF dfr = DB_GetDataPath(panelTitle)
-			WAVE channelSel = GetChannelSelectionWave(dfr)
+			DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
+			WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
 			ToggleChannelSelectionPanel(panelTitle, channelSel, "DB_CheckProc_ChangedSetting")
 			break
 	endswitch
