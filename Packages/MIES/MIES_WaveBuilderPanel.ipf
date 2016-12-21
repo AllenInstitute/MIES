@@ -1589,40 +1589,38 @@ static Function WBP_SaveSetParam()
 	Duplicate/O WPT       , dfr:$("WPT_" + setName)
 End
 
-static Function WBP_LoadSet()
-	string setName, funcList, setPrefix
+static Function WBP_LoadSet(setName)
+	string setName
+
+	string funcList, setPrefix
 	variable channelType, setNumber
 
-	ControlInfo/W=$panel popup_WaveBuilder_SetList
-	setName = s_value
+	if(cmpstr(setName, NONE))
 
-	if(!CmpStr(SetName, NONE))
-		Print "Select set to load from popup menu."
-		return NaN
+		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
+
+		WAVE WP        = WB_GetWaveParamForSet(setName)
+		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
+		WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
+
+		DFREF dfr = GetWaveBuilderDataPath()
+		Duplicate/O WP, dfr:WP
+		Duplicate/O WPT, dfr:WPT
+		Duplicate/O SegWvType, dfr:SegWvType
+	else
+		setPrefix = DEFAULT_SET_PREFIX
+		channelType = CHANNEL_TYPE_DAC
 	endif
-
-	WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
 
 	if(channelType == CHANNEL_TYPE_TTL)
 		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 2
 		WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
-		dfref dfr = GetWBSvdStimSetParamTTLPath()
 	elseif(channelType == CHANNEL_TYPE_DAC)
 		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
 		WBP_ChangeWaveType(STIMULUS_TYPE_DA)
-		dfref dfr = GetWBSvdStimSetParamDAPath()
 	else
 		ASSERT(0, "unknown channelType")
 	endif
-
-	Wave/SDFR=dfr WP        = $"WP_"  + setName
-	Wave/T/SDFR=dfr WPT     = $"WPT_" + setName
-	Wave/SDFR=dfr SegWvType = $"SegWvType_" + setName
-
-	DFREF dfr = GetWaveBuilderDataPath()
-	Duplicate/O WP, dfr:WP
-	Duplicate/O WPT, dfr:WPT
-	Duplicate/O SegWvType, dfr:SegWvType
 
 	// fetch wave references, possibly updating the wave layout if required
 	WAVE WP        = GetWaveBuilderWaveParam()
@@ -1651,9 +1649,7 @@ static Function WBP_LoadSet()
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSet_S4", funcList, WPT[4][99])
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", funcList, WPT[5][99])
 
-	WBP_ExecuteAdamsTabControl(SegWvType[0])
-	WBP_ParameterWaveToPanel(SegWvType[0])
-	WBP_UpdateEpochControls()
+	WBP_SelectEpoch(SegWvType[0])
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, funcList, func)
@@ -1760,9 +1756,12 @@ End
 Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
+	string setName
+
 	switch(ba.eventCode)
 		case 2: // mouse up
-			WBP_LoadSet()
+			setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
+			WBP_LoadSet(setName)
 			break
 	endswitch
 
