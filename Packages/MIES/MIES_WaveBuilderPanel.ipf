@@ -818,6 +818,33 @@ Window WaveBuilder() : Panel
 	SetActiveSubwindow ##
 EndMacro
 
+Function WBP_StartupSettings()
+
+	if(!WindowExists(panel))
+		printf "The window %s does not exist\r", panel
+		ControlWindowToFront()
+		return 1
+	endif
+
+	WAVE/Z wv
+	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
+
+	if(SearchForInvalidControlProcs(panel))
+		return NaN
+	endif
+
+	KillOrMoveToTrash(wv=GetSegmentTypeWave())
+	KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
+	KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
+
+	SetPopupMenuIndex(panel, "popup_WaveBuilder_SetList", 0)
+	SetCheckBoxState(panel, "check_PreventUpdate", CHECKBOX_UNSELECTED)
+	WBP_LoadSet(NONE)
+
+	Execute/P/Q/Z "DoWindow/R " + panel
+	Execute/P/Q/Z "COMPILEPROCEDURES "
+End
+
 static Constant EPOCH_HL_TYPE_LEFT  = 0x01
 static Constant EPOCH_HL_TYPE_RIGHT = 0x02
 
