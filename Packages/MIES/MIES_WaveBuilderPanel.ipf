@@ -1908,7 +1908,7 @@ static Function/S WBP_PopupMenuWaveNameList(panelTitle, channelType, controlType
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panel, ctrl)
+		stimset = GetPopupMenuString(panelTitle, ctrl)
 		list = AddListItem(stimset, list, ";", Inf)
 	endfor
 
