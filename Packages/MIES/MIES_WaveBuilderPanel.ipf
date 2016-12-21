@@ -886,13 +886,14 @@ static Function WBP_DisplaySetInPanel()
 	string trace
 	variable maxYValue, minYValue
 
+	RemoveTracesFromGraph(waveBuilderGraph)
+
 	WAVE/Z stimSet = WB_GetStimSet()
 	if(!WaveExists(stimSet))
 		return NaN
 	endif
 
 	WAVE ranges = GetAxesRanges(waveBuilderGraph)
-	RemoveTracesFromGraph(waveBuilderGraph)
 
 	WAVE SegWvType = GetSegmentTypeWave()
 
