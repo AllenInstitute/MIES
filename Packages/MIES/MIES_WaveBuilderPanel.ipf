@@ -37,6 +37,7 @@ End
 
 static StrConstant panel                     = "WaveBuilder"
 static StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
+static StrConstant DEFAULT_SET_PREFIX        = "StimulusSetA"
 
 // Equal to the indizes of the Wave Type popup menu
 static Constant  STIMULUS_TYPE_DA            = 1
@@ -1228,7 +1229,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 			WBP_UpdateITCPanelPopUps()
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
-			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", "StimulusSetA")
+			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 
 			SetPopupMenuIndex(panel, "popup_af_preDAQEvent_S1",  0)
