@@ -705,6 +705,22 @@ static Function WB_RampSegment(pa)
 	SegmentWave += pa.offset
 End
 
+/// @brief Check if the given frequency is a valid setting for the noise epoch
+Function WB_IsValidCutoffFrequency(freq)
+	variable freq
+
+	return WB_IsValidScaledCutoffFrequency(freq / HARDWARE_ITC_MIN_SAMPINT_HZ)
+End
+
+/// @brief Check if the given frequency is a valid setting for the noise epoch
+///
+/// Requires a scaled frequency as input, see `DisplayHelpTopic "FilterIIR"`
+Function WB_IsValidScaledCutoffFrequency(freq)
+	variable freq
+
+	return freq > 0 && freq <= 0.5
+End
+
 static Function WB_NoiseSegment(pa)
 	struct SegmentParameters &pa
 

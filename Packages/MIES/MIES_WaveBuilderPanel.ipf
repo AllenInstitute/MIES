@@ -464,7 +464,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P20,userdata(ResizeControlsInfo)= A"!!,J#J,hn9!!#A%!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P20,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P20,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P20,limits={1,100001,100},value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P20,limits={0,100001,100},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P21,pos={741.00,48.00},size={91.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P21,help={"Low pass filter cut off frequency delta."}
 	SetVariable SetVar_WaveBuilder_P21,userdata(tabnum)=  "2"
@@ -480,7 +480,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P22,userdata(ResizeControlsInfo)= A"!!,J#!!#@&!!#A'!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P22,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P22,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P22,limits={0,100000,100},value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P22,limits={0,100001,100},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P23,pos={741.00,130.00},size={91.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P23,help={"High pass filter coefficient delta."}
 	SetVariable SetVar_WaveBuilder_P23,userdata(tabnum)=  "2"
@@ -1801,12 +1801,12 @@ static Function WBP_CutOffCrossOver()
 	LowPassCutOff = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
 	HighPassCutOff = GetSetVariable(panel, "SetVar_WaveBuilder_P22")
 
-	if(HighPassCutOff >= LowPassCutOff)
-		SetSetVariable(panel, "SetVar_WaveBuilder_P20", HighPassCutOff + 1)
+	if(!WB_IsValidCutoffFrequency(HighPassCutOff) || !WB_IsValidCutoffFrequency(LowPassCutOff))
+		return NaN
 	endif
 
-	if(LowPassCutOff <= HighPassCutOff)
-		SetSetVariable(panel, "SetVar_WaveBuilder_P22", LowPassCutOff - 1)
+	if(HighPassCutOff <= LowPassCutOff)
+		SetSetVariable(panel, "SetVar_WaveBuilder_P22", LowPassCutOff + 1)
 	endif
 End
 
