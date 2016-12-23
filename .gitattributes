@@ -20,17 +20,19 @@
 *.tex eol=lf
 *.awk eol=lf
 
-*.sh                  export-ignore
-tools                 export-ignore
-Packages/ITC          export-ignore
-Packages/doc          export-ignore
-Packages/Testing-MIES export-ignore
-Packages/unit-testing export-ignore
-Packages/ZeroMQ       export-ignore
-Guidelines            export-ignore
-NIDAQmx.XOP           export-ignore
-Packages/Arduino/*zip export-ignore
-Packages/Arduino/*exe export-ignore
+*.sh                               export-ignore
+tools                              export-ignore
+Packages/ITC                       export-ignore
+Packages/doc                       export-ignore
+Packages/Testing-MIES              export-ignore
+Packages/unit-testing              export-ignore
+Packages/ZeroMQ/src                export-ignore
+Packages/ZeroMQ/tests              export-ignore
+Packages/ZeroMQ/xop-stub-generator export-ignore
+Guidelines                         export-ignore
+NIDAQmx.XOP                        export-ignore
+Packages/Arduino/*zip              export-ignore
+Packages/Arduino/*exe              export-ignore
 
 .git* export-ignore
 
