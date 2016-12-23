@@ -22,7 +22,7 @@ Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.micr
 	* In "Igor Extensions" a shortcut pointing to
 		* "XOPs-IP7"
 		* "XOP-tango-IP7"
-	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
+	* In "Igor Help Files"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
 ### Igor Pro 7.0.1 or later (64bit)
@@ -39,7 +39,7 @@ Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.micr
 	* In "Igor Extensions (64-bit)" a shortcut pointing to
 		* "XOPs-IP7-64bit"
 		* "XOP-tango-64bit"
-	* In "Igor Help File"  a shortcut pointing to HelpFiles-IP7
+	* In "Igor Help Files"  a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
 ## Partial Installation without hardware dependencies
