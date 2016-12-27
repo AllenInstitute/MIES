@@ -138,13 +138,7 @@ static Function DB_ClipSweepNumber(panelTitle, sweepNo)
 
 	// handles situation where data sweep number starts at a value greater than the controls number
 	// usually occurs after locking when control is set to zero
-	if(sweepNo < firstSweep)
-		sweepNo = firstSweep
-	elseif(sweepNo > lastSweep)
-		sweepNo = lastSweep
-	endif
-
-	return sweepNo
+	return limit(sweepNo, firstSweep, lastSweep)
 End
 
 /// @brief Plot the given sweep in the locked Data Browser
