@@ -812,15 +812,15 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					else
 						DisableControl(panelTitle, "slider_oodDAQ_regions")
 					endif
-				break
+					break
 				default:
-				if(StringMatch(ctrl, "check_channelSel_*"))
-					DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
-					WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
-					ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-					channelSel[channelNum][%$channelType] = checked
-				endif
-				break
+					if(StringMatch(ctrl, "check_channelSel_*"))
+						DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
+						WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
+						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
+						channelSel[channelNum][%$channelType] = checked
+					endif
+					break
 			endswitch
 
 			DB_PlotSweep(panelTitle)
