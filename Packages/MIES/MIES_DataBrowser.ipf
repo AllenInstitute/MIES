@@ -892,7 +892,7 @@ Function DB_CheckboxProc_ArtRemoval(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
+static Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
