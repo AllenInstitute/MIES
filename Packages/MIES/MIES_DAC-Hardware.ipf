@@ -672,11 +672,15 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
 	endif
 
+#ifndef EVIL_KITTEN_EATING_MODE
 	if(ITCXOPError != 0 || ITCError != 0)
 		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
 	endif
 
 	return ITCXOPError != 0 || ITCError != 0
+#else
+	return 0
+#endif
 End
 
 /// @brief Return the error message for the given ITC XOP2 error code
