@@ -35,6 +35,7 @@
 #include ":MIES_GuiUtilities"
 #include ":MIES_IgorHooks"
 #include ":MIES_MiesUtilities"
+#include ":MIES_OverlaySweeps"
 #include ":MIES_Structures"
 #include ":MIES_Utilities"
 #include ":MIES_WaveDataFolderGetters"
@@ -1708,10 +1709,10 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 			endfor
 
+			SVAR/SDFR=sweepBrowserDFR graph
 			if(oneValidSweep)
-				SB_PlotSweep(sweepBrowserDFR, 0)
+				SB_UpdateSweepPlot(graph, newSweep=0)
 			else
-				SVAR/SDFR=sweepBrowserDFR graph
 				KillWindow $graph
 			endif
 			break

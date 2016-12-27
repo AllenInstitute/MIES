@@ -149,16 +149,23 @@ Function/S AR_GetHighlightTraces(graph)
 	return ListMatch(TraceNameList(graph, ";", 1), "AR_*")
 End
 
-Function AR_HighlightArtefactsEntry(graph, row)
+Function AR_HighlightArtefactsEntry(graph)
 	string graph
-	variable row
 
-	string traces, trace
-	variable numEntries, i, index
+	string traces, trace, extPanel
+	variable numEntries, i, index, row
+
+	extPanel = AR_GetExtPanel(graph)
+
+	if(!WindowExists(extPanel))
+		return NaN
+	endif
 
 	DFREF dfr = AR_GetFolder(graph)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
+
+	row = GetListBoxSelRow(extPanel, "list_of_ranges")
 
 	if(!IsInteger(row) || row < 0 || row >= DimSize(listBoxWave, ROWS))
 		return NaN
@@ -323,7 +330,7 @@ Function AR_MainListBoxProc(lba) : ListBoxControl
 		case 4: // cell selection
 		case 5: // cell selection plus shift key
 			graph = GetSweepGraph(lba.win)
-			AR_HighlightArtefactsEntry(graph, lba.row)
+			AR_HighlightArtefactsEntry(graph)
 			break
 	endswitch
 
@@ -352,12 +359,15 @@ End
 Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph
+	string graph, win
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = GetSweepGraph(ba.win)
-			AR_HandleRanges(graph, removeRange=1)
+			win = ba.win
+			graph = GetSweepGraph(win)
+			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_SELECTED)
+			UpdateSweepPlot(graph)
+			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_UNSELECTED)
 			break
 	endswitch
 
@@ -404,24 +414,18 @@ Function AR_TogglePanel(win, listboxWave)
 	return 0
 End
 
-Function AR_UpdateTracesIfReq(graph, doArtefactRemoval, sweepFolder, numericalValues, sweepNo)
+Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	string graph
-	variable doArtefactRemoval, sweepNo
+	variable sweepNo
 	DFREF sweepFolder
 	WAVE numericalValues
 
 	string extPanel, panelTitle
-	variable row
 
 	panelTitle = GetMainWindow(graph)
 	extPanel   = AR_GetExtPanel(graph)
 
 	if(!WindowExists(extPanel))
-		AR_RemoveTraces(graph)
-		return NaN
-	endif
-
-	if(!doArtefactRemoval)
 		return NaN
 	endif
 
@@ -429,20 +433,15 @@ Function AR_UpdateTracesIfReq(graph, doArtefactRemoval, sweepFolder, numericalVa
 	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
 	AR_UpdatePanel(panelTitle, ranges, singleSweepDFR)
 	AR_HandleRanges(graph)
-	row = GetListBoxSelRow(extPanel, "list_of_ranges")
-	AR_HighlightArtefactsEntry(graph, row)
 End
 
 Function CheckProc_AutoRemove(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string graph
-
 	switch(cba.eventCode)
 		case 2: // mouse up
 			if(cba.checked)
-				graph = GetSweepGraph(cba.win)
-				AR_HandleRanges(graph)
+				UpdateSweepPlot(cba.win)
 			endif
 			break
 	endswitch

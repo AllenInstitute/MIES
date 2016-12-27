@@ -827,8 +827,14 @@ End
 
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
-/// Passing in sweepWave assumes the old format of the sweep data (all data in one wave as received by the ITC XOP)
-/// Passing in sweepDFR assumes the new format of split waves, one wave for each AD, DA, TTL channel, with one dimension
+/// For preservering the axis scaling callers should do the following:
+/// @code
+/// WAVE ranges = GetAxesRanges(graph)
+///
+/// CreateTiledChannelGraph()
+///
+///	SetAxesRanges(graph, ranges)
+///	@endcode
 ///
 /// @param graph           window
 /// @param config          ITC config wave
@@ -852,7 +858,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable red, green, blue, axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
-	variable numTTLBits, colorIndex, totalVertBlocks
+	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
@@ -880,12 +886,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
-
-	WAVE ranges = GetAxesRanges(graph)
-
-	if(!tgs.overlaySweep)
-		RemoveTracesFromGraph(graph)
-	endif
 
 	WAVE/Z statusHS           = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
@@ -981,7 +981,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	if(tgs.dDAQDisplayMode)
 		stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
-		DEBUGPRINT("Stim set length (labnotebook)", var=stimSetLength)
+		DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var=stimSetLength)
 
 		samplingInt = GetSamplingInterval(config) * 1e-3
 
@@ -1115,6 +1115,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			chan = channelList[0]
 			DeletePoints/M=(ROWS) 0, 1, channelList
 
+			if(WaveExists(status))
+				headstage = GetRowIndex(status, val=chan)
+			else
+				headstage = NaN
+			endif
+
 			// number of vertically distributed
 			// waves per channel type
 			for(j = 0; j < numVertWaves; j += 1)
@@ -1138,10 +1144,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/SDFR=sweepDFR wv = $GetSweepWaveName(sweepNo)
 				endif
 
-				if(!tgs.overlayChannels)
-					axisIndex += 1
-				endif
-
 				DEBUGPRINT("")
 				first = 0
 
@@ -1149,14 +1151,13 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				// waves per channel type
 				for(k = 0; k < numHorizWaves; k += 1)
 
-					vertAxis = VERT_AXIS_BASE_NAME + num2str(j) + "_" + HORIZ_AXIS_BASE_NAME + num2str(k)
+					vertAxis = VERT_AXIS_BASE_NAME + num2str(j) + "_" + HORIZ_AXIS_BASE_NAME + num2str(k) + "_" + channelID
 
-					if(tgs.overlayChannels)
-						vertAxis   +=  "_" + channelID
-						traceType   = channelID
-					else
-						vertAxis   += "_" + num2str(axisIndex)
+					if(!tgs.overlayChannels)
+						vertAxis   += "_" + num2str(chan)
 						traceType   = name
+					else
+						traceType   = channelID
 					endif
 
 					if(tgs.dDAQDisplayMode && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
@@ -1266,7 +1267,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					// 15:    TTL bits (sum) rack one
 					// 16-19: TTL bits (single) rack one
 					if(WaveExists(status))
-						colorIndex = GetRowIndex(status, val=chan)
+						colorIndex = headstage
 					elseif(!cmpstr(channelID, "TTL"))
 						colorIndex = 10 + activeChanCount[i] * 5 + j
 					else
@@ -1278,9 +1279,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					ModifyGraph/W=$graph userData($trace)={channelType, 0, channelID}
 					ModifyGraph/W=$graph userData($trace)={channelNumber, 0, num2str(chan)}
 					ModifyGraph/W=$graph userData($trace)={sweepNumber, 0, num2str(sweepNo)}
+					ModifyGraph/W=$graph userData($trace)={headstage, 0, num2str(headstage)}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
+
+					if(tgs.highlightSweep == 0)
+						ModifyGraph/W=$graph rgb($trace)=(red, green, blue, 0.05 * 65535)
+					endif
 				endfor
 
 				if(!tgs.OverlayChannels || activeChanCount[i] == 0)
@@ -1297,8 +1303,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	else
 		ModifyGraph/W=$graph margin(left)=0
 	endif
-
-	SetAxesRanges(graph, ranges)
 End
 
 /// @brief Return a sorted list of all keys in the labnotebook key wave
@@ -1880,15 +1884,15 @@ Function PostPlotTransformations(graph, pps)
 	crsA = CsrInfo(A, graph)
 	crsB = CsrInfo(B, graph)
 
-	traceList = GetAllSweepTraces(graph)
-
-	AR_UpdateTracesIfReq(graph, pps.artefactRemoval, pps.sweepFolder, pps.numericalValues, pps.sweepNo)
+traceList = GetAllSweepTraces(graph)
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	if(pps.timeAlignment)
 		TimeAlignmentIfReq(graph, traceList, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
 	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
+
+	AR_HighlightArtefactsEntry(graph)
 
 	RestoreCursor(graph, crsA)
 	RestoreCursor(graph, crsB)
@@ -2110,6 +2114,8 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 
 	ASSERT(windowExists(panel), "Graph must exist")
 	graph = GetMainWindow(panel)
+	
+	return NaN
 
 	if(mode == TIME_ALIGNMENT_NONE) // nothing to do
 		return NaN
@@ -2137,7 +2143,7 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
 
 	numTraces = ItemsInList(traceList)
-	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
+	MAKE/O/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
 	for(i = 0; i < numTraces; i += 1)
 		trace = StringFromList(i, traceList)
 		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
@@ -3346,3 +3352,22 @@ Function HasPanelLatestVersion(win, expectedVersion)
 
 	return version == expectedVersion
 end
+
+Function UPDATESWEEPPLOT_PROTOTYPE(win, [optArg])
+	string win
+	variable optArg
+
+	ASSERT(0, "Calling prototype functions is an error!")
+End
+
+Function UpdateSweepPlot(win)
+	string win
+
+	if(IsDataBrowser(win))
+		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"DB_UpdateSweepPlot"
+	else
+		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"SB_UpdateSweepPlot"
+	endif
+
+	return f(GetMainWindow(win))
+End

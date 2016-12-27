@@ -60,6 +60,7 @@
 #include "MIES_NeuroDataWithoutBorders"
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
+#include "MIES_OverlaySweeps"
 #include "MIES_PanelITC"
 #include "MIES_PressureControl"
 #include "MIES_ProgrammaticGuiControl"
