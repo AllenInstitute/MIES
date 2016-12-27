@@ -3311,3 +3311,37 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 	string/G targetDFR:note = note(sweepWave)
 End
+
+/// @brief Determine if the window/subwindow belongs to our DataBrowser
+///
+/// Useful for databrowser/sweepbrowser code which must know from which panel it is called.
+/// @sa GetSweepGraph()
+Function IsDataBrowser(win)
+	string win
+
+	string graph, mainWindow
+
+	mainWindow = GetMainWindow(win)
+	ASSERT(WindowExists(mainWindow), "missing window")
+
+	graph = mainWindow + "#DataBrowserGraph"
+
+	if(WindowExists(graph))
+		return 1
+	else
+		return 0
+	endif
+End
+
+/// @brief Return the main graph, works with DataBrowser and SweepBrowser
+Function/S GetSweepGraph(win)
+	string win
+
+	string mainWindow = GetMainWindow(win)
+
+	if(IsDataBrowser(win))
+		return  mainWindow + "#DataBrowserGraph"
+	else
+		return mainWindow
+	endif
+End

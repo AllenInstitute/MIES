@@ -13,24 +13,6 @@ Function/S AR_GetExtPanel(win)
 	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
 End
 
-/// @brief Return the main graph, works with DataBrowser and SweepBrowser
-Function/S AR_GetGraph(win)
-	string win
-
-	string graph, mainWindow
-
-	mainWindow = GetMainWindow(win)
-	graph = mainWindow + "#DataBrowserGraph"
-
-	ASSERT(WindowExists(mainWindow), "missing window")
-
-	if(WindowExists(graph))
-		return graph
-	else
-		return mainWindow
-	endif
-End
-
 /// @brief Return a free 2D wave with artefact positions and the corresponding
 ///        DA channel from which it originated.
 ///
@@ -340,7 +322,7 @@ Function AR_MainListBoxProc(lba) : ListBoxControl
 	switch(lba.eventCode)
 		case 4: // cell selection
 		case 5: // cell selection plus shift key
-			graph = AR_GetGraph(lba.win)
+			graph = GetSweepGraph(lba.win)
 			AR_HighlightArtefactsEntry(graph, lba.row)
 			break
 	endswitch
@@ -358,7 +340,7 @@ Function AR_SetVarProcCutoffLength(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			panelTitle = GetMainWindow(sva.win)
-			graph = AR_GetGraph(panelTitle)
+			graph = GetSweepGraph(panelTitle)
 			AR_UpdateListBoxWave(panelTitle)
 			AR_HandleRanges(graph)
 			break
@@ -374,7 +356,7 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = AR_GetGraph(ba.win)
+			graph = GetSweepGraph(ba.win)
 			AR_HandleRanges(graph, removeRange=1)
 			break
 	endswitch
@@ -459,7 +441,7 @@ Function CheckProc_AutoRemove(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			if(cba.checked)
-				graph = AR_GetGraph(cba.win)
+				graph = GetSweepGraph(cba.win)
 				AR_HandleRanges(graph)
 			endif
 			break
