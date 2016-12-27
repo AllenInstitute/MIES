@@ -520,3 +520,5 @@ Constant PRESSURE_METHOD_BREAKIN  = 2
 Constant PRESSURE_METHOD_CLEAR    = 3
 Constant PRESSURE_METHOD_MANUAL   = 4
 /// @}
+
+StrConstant POPUPMENU_DIVIDER = "\\M1(-"
