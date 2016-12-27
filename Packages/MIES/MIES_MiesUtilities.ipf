@@ -1818,48 +1818,6 @@ Function GetNumberFromType([var, str, itcVar])
 	endif
 End
 
-/// @brief Report ITC/ITCXOP errors in a user friendly manner and abort
-Function ReportAndAbortOnITCErrors()
-
-	string cmd
-	NVAR/Z ITCError, ITCXOPError
-	ASSERT(NVAR_EXISTS(ITCError) && NVAR_EXISTS(ITCXOPError), "The global variables ITCError and ITCXOPError must exist in the CDF")
-
-	// we only need the lower 32bits of the error
-	ITCError = ITCError & 0x00000000ffffffff
-
-	if(ITCError != 0)
-		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
-
-		Make/I/O/N=1 errorCode   = 0
-		Make/T/O/N=2 errorString = ""
-		Execute "ITCGetLastError/Z=1 ErrorCode"
-		sprintf cmd, "ITCGetErrorString/Z=1/X=3 %d, ErrorString", ErrorCode[0]
-		Execute cmd
-
-		print errorString[0]
-		print errorString[1]
-		print "Some hints you might want to try!"
-		print "- Is the correct ITC device type selected?"
-		print "- Is your ITC Device connected to a power socket?"
-		print "- Is your ITC Device connected to your computer?"
-		print "- Have you tried unlocking/locking the device already?"
-		print "- Reseating all connections between the DAC and the computer has also helped in the past."
-#ifndef EVIL_KITTEN_EATING_MODE
-		Abort
-#endif
-	elseif(ITCXOPError != 0)
-		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
-		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
-		printf "Call stack: %s\r", GetRTStackInfo(3)
-#ifndef EVIL_KITTEN_EATING_MODE
-		Abort
-#endif
-	endif
-
-	return 0
-End
-
 /// @brief Append the MIES version to the wave's note
 Function AppendMiesVersionToWaveNote(wv)
 	Wave wv
