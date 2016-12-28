@@ -1239,8 +1239,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(tgs.dDAQDisplayMode && oodDAQEnabled)
 						ModifyGraph/W=$graph axRGB($vertAxis)=(65535,65535,65535), tlblRGB($vertAxis)=(65535,65535,65535)
 						ModifyGraph/W=$graph axThick($vertAxis)=0
-						ModifyGraph/W=$graph axRGB($horizAxis)=(65535,65535,65535), tlblRGB($horizAxis)=(65535,65535,65535)
-						ModifyGraph/W=$graph alblRGB($horizAxis)=(65535,65535,65535), axThick($horizAxis)=0
+						if(!IsEmpty(horizAxis))
+							ModifyGraph/W=$graph axRGB($horizAxis)=(65535,65535,65535), tlblRGB($horizAxis)=(65535,65535,65535)
+							ModifyGraph/W=$graph alblRGB($horizAxis)=(65535,65535,65535), axThick($horizAxis)=0
+						endif
 					endif
 
 					// Color scheme:
