@@ -224,7 +224,7 @@ static Function DB_TilePlotForDataBrowser(panelTitle, sweep, sweepNo)
 	tgs.overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
 	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
 	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
-	tgs.oodDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions")
+	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_dDAQ_regions")
 
 	DB_SplitSweepsIfReq(panelTitle, sweepNo)
 
@@ -418,12 +418,12 @@ Window DataBrowser() : Panel
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
-	Slider slider_oodDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
-	Slider slider_oodDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
-	Slider slider_oodDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
-	Slider slider_oodDAQ_regions,limits={-1,7,1},value= -1,vert= 0
+	Slider slider_dDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
+	Slider slider_dDAQ_regions,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
+	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
+	Slider slider_dDAQ_regions,limits={-1,7,1},value= -1,vert= 0
 	CheckBox CheckBox_DataBrowser_OpenArtRem,pos={349.00,46.00},size={106.00,15.00},proc=DB_CheckBoxProc_ArtRemoval,title="Artefact Removal"
 	CheckBox CheckBox_DataBrowser_OpenArtRem,help={"Open the artefact removal dialog"}
 	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo)= A"!!,HiJ,hnq!!#@8!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -506,8 +506,8 @@ Function DB_DataBrowserStartupSettings()
 	SetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
 	EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
 
-	SetSliderPositionIndex(panelTitle, "slider_oodDAQ_regions", -1)
-	DisableControl(panelTitle, "slider_oodDAQ_regions")
+	SetSliderPositionIndex(panelTitle, "slider_dDAQ_regions", -1)
+	DisableControl(panelTitle, "slider_dDAQ_regions")
 
 	DB_ClearGraph(panelTitle)
 	SetPopupMenuIndex(panelTitle, "popup_LBNumericalKeys", 0)
@@ -733,9 +733,9 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			strswitch(ctrl)
 				case "check_databrowser_dDAQMode":
 					if(checked)
-						EnableControl(panelTitle, "slider_oodDAQ_regions")
+						EnableControl(panelTitle, "slider_dDAQ_regions")
 					else
-						DisableControl(panelTitle, "slider_oodDAQ_regions")
+						DisableControl(panelTitle, "slider_dDAQ_regions")
 					endif
 					break
 				default:

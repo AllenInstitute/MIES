@@ -854,11 +854,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, left, first, last
-	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry, totalXRange
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last
+	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
+	variable totalXRange = NaN
 
 	string trace, traceType, channelID, axisLabel, existingLabel, entry, range
-	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, horizAxis
+	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -998,10 +999,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		if(oodDAQEnabled)
 			numEntries = DimSize(oodDAQRegions, ROWS)
 			oodDAQRegionsAll = ""
+			totalXRange = 0
 
 			for(i = 0; i < numEntries; i += 1)
 				// use only the selected region if requested
-				if(tgs.oodDAQHeadstageRegions >= 0 && tgs.oodDAQHeadstageRegions < NUM_HEADSTAGES && tgs.oodDAQHeadstageRegions != i)
+				if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
 					continue
 				endif
 
@@ -1021,7 +1023,24 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", numRegions, oodDAQRegionsAll, totalXRange
 			DEBUGPRINT(str)
 		else
-			numRegions = sum(statusHS, 0, NUM_HEADSTAGES - 1)
+			dDAQActiveHeadstageAll = ""
+
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+				if(!statusHS[i])
+					continue
+				endif
+
+				if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
+					continue
+				endif
+
+				dDAQActiveHeadstageAll = AddListItem(num2str(i), dDAQActiveHeadstageAll, ";", Inf)
+			endfor
+
+			numRegions = ItemsInList(dDAQActiveHeadstageAll)
+			sprintf str, "dDAQRegions (%d) concatenated: _%s_", numRegions, dDAQActiveHeadstageAll
+			DEBUGPRINT(str)
 		endif
 	endif
 
@@ -1150,8 +1169,13 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 								DEBUGPRINT("Stim set length (manually calculated)", var=stimSetLength)
 							endif
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + k * (stimSetLength + delaydDAQ)
+							xRangeStart = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
 							xRangeEnd   = xRangeStart + stimSetLength
+
+							// initial total x range once, the stimsets have all the same length for dDAQ
+							if(!IsFinite(totalXRange))
+								totalXRange = (xRangeEnd - XRangeStart) * numHorizWaves
+							endif
 						elseif(oodDAQEnabled)
 							/// regions list format: $begin1-$end1;$begin2-$end2;...
 							/// the values are in x values of the ITCDataWave but we need points here ignored the onset delays
@@ -1177,26 +1201,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						AppendToGraph/W=$graph/L=$vertAxis wv[][idx]/TN=$trace
 					else
-						if(dDAQEnabled)
-							AppendToGraph/W=$graph/L=$vertAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+						horizAxis = vertAxis + "_b"
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+						first = first
+						last  = first + (xRangeEnd - xRangeStart) / totalXRange
+						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
+						first += (xRangeEnd - xRangeStart) / totalXRange
 
-							left = 1/numHorizWaves * k
-
-							if(left != 0.0)
-								left += GRAPH_DIV_SPACING
-							endif
-
-							ModifyGraph/W=$graph freePos($vertAxis)={left,kwFraction}, axisOnTop($vertAxis) = 1
-						elseif(oodDAQEnabled)
-							horizAxis = vertAxis + "_b"
-							AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
-							first = first
-							last  = first + (xRangeEnd - xRangeStart) / totalXRange
-							ModifyGraph/W=$graph axisEnab($horizAxis)={first, last}
-							first += (xRangeEnd - xRangeStart) / totalXRange
-						endif
-
-						sprintf str, "horiz axis offset=[%g], stimset=[%d, %d] aka (%g, %g)", left, xRangeStart, xRangeEnd, pnt2x(wv,xRangeStart), pnt2x(wv,xRangeEnd)
+						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", xRangeStart, xRangeEnd, pnt2x(wv,xRangeStart), pnt2x(wv,xRangeEnd)
 						DEBUGPRINT(str)
 					endif
 
@@ -1236,7 +1248,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						Label/W=$graph $vertAxis, "\\u#2"
 					endif
 
-					if(tgs.dDAQDisplayMode && oodDAQEnabled)
+					if(tgs.dDAQDisplayMode)
 						ModifyGraph/W=$graph axRGB($vertAxis)=(65535,65535,65535), tlblRGB($vertAxis)=(65535,65535,65535)
 						ModifyGraph/W=$graph axThick($vertAxis)=0
 						if(!IsEmpty(horizAxis))
@@ -1280,7 +1292,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		endfor
 	while(moreData)
 
-	if(tgs.dDAQDisplayMode && oodDAQEnabled)
+	if(tgs.dDAQDisplayMode)
 		ModifyGraph/W=$graph margin(left)=28
 	else
 		ModifyGraph/W=$graph margin(left)=0
