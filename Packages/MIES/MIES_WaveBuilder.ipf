@@ -343,21 +343,19 @@ static Structure SegmentParameters
 	variable deltaLowPassCutOff
 	variable highPassCutOff
 	variable deltaHighPassCutOff
+	variable filterOrder
+	variable deltaFilterOrder
 	variable endFrequency
 	variable deltaEndFrequency
-	variable highPassFiltCoefCount
-	variable deltaHighPassFiltCoefCount
-	variable lowPassFiltCoefCount
-	variable deltaLowPassFiltCoefCount
-	variable fIncrement
 	variable numberOfPulses
 	// checkboxes
 	variable poisson
-	variable brownNoise, pinkNoise
 	variable sinChirp
 	variable randomSeed
 	// popupmenues
 	variable trigFuncType // 0: sin, 1: cos
+	variable noiseType // 0: white, 1: pink, 2:brown
+	variable buildResolution // value, not the popup menu index
 EndStructure
 
 static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave)
@@ -376,43 +374,40 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
 
-		params.duration                   = WP[0][i][type]
-		params.deltaDur                   = WP[1][i][type]
-		params.amplitude                  = WP[2][i][type]
-		params.deltaAmp                   = WP[3][i][type]
-		params.offset                     = WP[4][i][type]
-		params.deltaOffset                = WP[5][i][type]
-		params.frequency                  = WP[6][i][type]
-		params.deltaFreq                  = WP[7][i][type]
-		params.pulseDuration              = WP[8][i][type]
-		params.deltaPulsedur              = WP[9][i][type]
-		params.tauRise                    = WP[10][i][type]
-		params.deltaTauRise               = WP[11][i][type]
-		params.tauDecay1                  = WP[12][i][type]
-		params.deltaTauDecay1             = WP[13][i][type]
-		params.tauDecay2                  = WP[14][i][type]
-		params.deltaTauDecay2             = WP[15][i][type]
-		params.tauDecay2Weight            = WP[16][i][type]
-		params.deltaTauDecay2Weight       = WP[17][i][type]
-		params.customOffset               = WP[18][i][type]
-		params.deltaCustomOffset          = WP[19][i][type]
-		params.lowPassCutOff              = WP[20][i][type]
-		params.deltaLowPassCutOff         = WP[21][i][type]
-		params.highPassCutOff             = WP[22][i][type]
-		params.deltaHighPassCutOff        = WP[23][i][type]
-		params.endFrequency               = WP[24][i][type]
-		params.deltaEndFrequency          = WP[25][i][type]
-		params.highPassFiltCoefCount      = WP[26][i][type]
-		params.deltaHighPassFiltCoefCount = WP[27][i][type]
-		params.lowPassFiltCoefCount       = WP[28][i][type]
-		params.deltaLowPassFiltCoefCount  = WP[29][i][type]
-		params.fIncrement                 = WP[30][i][type]
-		params.pinkNoise                  = WP[41][i][type]
-		params.brownNoise                 = WP[42][i][type]
-		params.sinChirp                   = WP[43][i][type]
-		params.poisson                    = WP[44][i][type]
-		params.numberOfPulses             = WP[45][i][type]
-		params.trigFuncType               = WP[53][i][type]
+		params.duration             = WP[0][i][type]
+		params.deltaDur             = WP[1][i][type]
+		params.amplitude            = WP[2][i][type]
+		params.deltaAmp             = WP[3][i][type]
+		params.offset               = WP[4][i][type]
+		params.deltaOffset          = WP[5][i][type]
+		params.frequency            = WP[6][i][type]
+		params.deltaFreq            = WP[7][i][type]
+		params.pulseDuration        = WP[8][i][type]
+		params.deltaPulsedur        = WP[9][i][type]
+		params.tauRise              = WP[10][i][type]
+		params.deltaTauRise         = WP[11][i][type]
+		params.tauDecay1            = WP[12][i][type]
+		params.deltaTauDecay1       = WP[13][i][type]
+		params.tauDecay2            = WP[14][i][type]
+		params.deltaTauDecay2       = WP[15][i][type]
+		params.tauDecay2Weight      = WP[16][i][type]
+		params.deltaTauDecay2Weight = WP[17][i][type]
+		params.customOffset         = WP[18][i][type]
+		params.deltaCustomOffset    = WP[19][i][type]
+		params.lowPassCutOff        = WP[20][i][type]
+		params.deltaLowPassCutOff   = WP[21][i][type]
+		params.highPassCutOff       = WP[22][i][type]
+		params.deltaHighPassCutOff  = WP[23][i][type]
+		params.endFrequency         = WP[24][i][type]
+		params.deltaEndFrequency    = WP[25][i][type]
+		params.filterOrder          = WP[26][i][type]
+		params.deltaFilterOrder     = WP[27][i][type]
+		params.sinChirp             = WP[43][i][type]
+		params.poisson              = WP[44][i][type]
+		params.numberOfPulses       = WP[45][i][type]
+		params.trigFuncType         = WP[53][i][type]
+		params.noiseType            = WP[54][i][type]
+		params.buildResolution      = str2num(StringFromList(WP[55][i][type], WBP_GetNoiseBuildResolution()))
 
 		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
 		DEBUGPRINT("params", str=debugMsg)
@@ -471,14 +466,22 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 
 				WB_NoiseSegment(params)
+				WAVE segmentWave = WB_GetSegmentWave()
+				WBP_ShowFFTSpectrumIfReq(segmentWave, stepCount)
+
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"                  , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                   , str="G-noise")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "SD"                     , var=params.Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "SD delta"               , var=params.DeltaAmp)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                   , str="Noise")
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Noise Type"             , \
+							               str=StringFromList(params.noiseType, NOISE_TYPES_STRINGS))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"              , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude delta"        , var=params.DeltaAmp)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off"       , var=params.LowPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off delta" , var=params.DeltaLowPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off"      , var=params.HighPassCutOff)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off delta", var=params.DeltaHighPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Filter order"           , var=params.filterOrder)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Filter order delta"     , var=params.DeltaFilterOrder)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Build resolution"       , var=params.buildResolution)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=params.DeltaOffset, appendCR=1)
@@ -724,33 +727,78 @@ Function WB_IsValidScaledCutoffFrequency(freq)
 End
 
 static Function WB_NoiseSegment(pa)
-	struct SegmentParameters &pa
+	STRUCT SegmentParameters &pa
 
-	variable PinkOrBrown
+	variable samples, filterOrder
+	variable lowPassCutoffScaled, highPassCutoffScaled
+	variable referenceTime = DEBUG_TIMER_START()
+
+	ASSERT(IsInteger(pa.buildResolution) && pa.buildResolution > 0, "Invalid build resolution")
+
+	// duration is in ms
+	samples = pa.duration * pa.buildResolution * HARDWARE_ITC_MIN_SAMPINT_HZ * 1e-3
+
+	// even number of points for IFFT
+	samples = 2 * ceil(samples / 2)
+
+	Make/FREE/D/C/N=(samples / 2 + 1) magphase
+	FastOp magphase = 0
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT_HZ/samples, "Hz" magphase
+
+	// we can't use Multithread here as this creates non-reproducible data
+	switch(pa.noiseType)
+		case NOISE_TYPE_WHITE:
+			magphase[1, inf] = cmplx(1, enoise(Pi, NOISE_GEN_MERSENNE_TWISTER))
+			break
+		case NOISE_TYPE_PINK: // drops with 10db per decade
+			magphase[1, inf] = cmplx(1/sqrt(x), enoise(Pi, NOISE_GEN_MERSENNE_TWISTER))
+			break
+		case NOISE_TYPE_BROWN: // drops with 20db per decade
+			magphase[1, inf] = cmplx(1/x, enoise(Pi, NOISE_GEN_MERSENNE_TWISTER))
+			break
+		default:
+			ASSERT(0, "Invalid noise type")
+			break
+	endswitch
 
 	WAVE SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
-	if(!pa.brownNoise && !pa.pinkNoise)
-		SegmentWave = gnoise(pa.amplitude) // MultiThread didn't impact processing time for gnoise
-		if(pa.duration <= 0)
-			print "WB_NoiseSegment: Can not proceed with non-positive duration"
-			return NaN
-		endif
+#ifdef DEBUGGING_ENABLED
+	Duplicate/O magphase, noiseEpochMagnitude
+	Redimension/R noiseEpochMagnitude
+	Duplicate/O magphase, noiseEpochPhase
+	Redimension/R noiseEpochPhase
 
-		if(pa.lowPassCutOff <= 100000 && pa.lowPassCutOff != 0)
-			FilterFIR /DIM = 0 /LO = {(pa.lowPassCutOff / 200000), (pa.lowPassCutOff / 200000), pa.lowPassFiltCoefCount} SegmentWave
-		endif
+	MultiThread noiseEpochPhase = imag(magphase[p]) * 180 / Pi
+	MultiThread noiseEpochMagnitude = 20 * log(real(magphase[p]))
+#endif // DEBUGGING_ENABLED
 
-		if(pa.highPassCutOff > 0 && pa.highPassCutOff < 100000)
-			FilterFIR /DIM = 0 /Hi = {(pa.highPassCutOff/200000), (pa.highPassCutOff/200000), pa.highPassFiltCoefCount} SegmentWave
-		endif
-	elseif(pa.pinkNoise)
-		WB_PinkAndBrownNoise(pa, 0)
-	elseif(pa.brownNoise)
-		WB_PinkAndBrownNoise(pa, 1)
+	MultiThread magphase = p2Rect(magphase)
+	IFFT/R/DEST=SegmentWave magphase
+
+	ASSERT(!cmpstr(WaveUnits(segmentWave, ROWS), "s"), "Unexpect wave unit")
+	ASSERT(DimOffset(segmentWave, ROWS) == 0, "Unexpected wave rows offset")
+	SetScale/P x, 0, DimDelta(segmentWave, ROWS) * 1000, "ms", segmentWave
+
+	Redimension/N=(DimSize(segmentWave, ROWS) / pa.buildResolution) segmentWave
+
+	lowPassCutoffScaled  = pa.lowpasscutoff  / HARDWARE_ITC_MIN_SAMPINT_HZ
+	highPassCutoffScaled = pa.highpasscutoff / HARDWARE_ITC_MIN_SAMPINT_HZ
+
+	if(WB_IsValidScaledCutoffFrequency(lowPassCutoffScaled) && WB_IsValidScaledCutoffFrequency(highPassCutoffScaled))
+		FilterIIR/CASC/LO=(lowPassCutoffScaled)/HI=(highPassCutoffScaled)/ORD=(pa.filterOrder) segmentWave
+	elseif(WB_IsValidScaledCutoffFrequency(lowPassCutoffScaled))
+		FilterIIR/CASC/LO=(lowPassCutoffScaled)/ORD=(pa.filterOrder) segmentWave
+	elseif(WB_IsValidScaledCutoffFrequency(highPassCutoffScaled))
+		FilterIIR/CASC/HI=(highPassCutoffScaled)/ORD=(pa.filterOrder) segmentWave
+	else
+		// do nothing
 	endif
 
-	SegmentWave += pa.offset
+	MatrixOp/FREE scaleFactor = pa.amplitude / (maxVal(segmentWave) - minVal(segmentWave)))
+	MultiThread segmentWave[] = segmentWave[p] * scaleFactor[0] + pa.offset // ScaleFactor is a 1x1 matrix
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 static Function WB_TrigSegment(pa)
@@ -907,48 +955,6 @@ static Function WB_CustomWaveSegment(CustomOffset, wv)
 
 	Duplicate/O wv, dfr:SegmentWave/Wave=SegmentWave
 	SegmentWave += CustomOffSet
-End
-
-/// @brief Create a pink or brown noise segment
-///
-/// @param pa Segment parameters
-/// @param pinkOrBrown Pink = 0, Brown = 1
-static Function WB_PinkAndBrownNoise(pa, pinkOrBrown)
-	struct SegmentParameters &pa
-	variable pinkOrBrown
-
-	variable i, localAmplitude
-	variable phase, frequency, numberOfBuildWaves
-
-	frequency = pa.highPassCutOff
-	numberOfBuildWaves = floor((pa.lowPassCutOff - pa.highPassCutOff) / pa.fIncrement)
-
-	if(!IsFinite(pa.duration) || !IsFinite(numberOfBuildWaves) || pa.highPassCutOff == 0)
-		print "Could not create a new pink/brown noise Wave as the input values were non-finite or zero."
-		return NaN
-	endif
-
-	Make/FREE/n=(pa.duration / HARDWARE_ITC_MIN_SAMPINT, NumberOfBuildWaves) BuildWave
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", BuildWave
-
-	for(i = 0; i < numberOfBuildWaves; i += 1)
-		phase = abs(enoise(2)) * Pi // random phase generator
-		if(PinkOrBrown == 0)
-			localAmplitude = 1 / frequency
-		else
-			localAmplitude = 1 / (frequency ^ 0.5)
-		endif
-
-		// factoring out Pi * 1e-05 actually makes it a tiny bit slower
-		MultiThread BuildWave[][i] = localAmplitude * sin( Pi * pa.frequency * 1e-05 * p + phase)
-		frequency += pa.fIncrement
-	endfor
-
-	MatrixOp/O/NTHR=0   SegmentWave = sumRows(BuildWave)
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", SegmentWave
-
-	WaveStats/Q SegmentWave
-	SegmentWave *= pa.amplitude / V_sdev
 End
 
 /// @brief Create a wave segment as combination of existing stim sets

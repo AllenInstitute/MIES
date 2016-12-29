@@ -554,3 +554,15 @@ Constant EPOCH_TYPE_COMBINE            = 8
 Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
 Constant NOISE_GEN_MERSENNE_TWISTER    = 2
 ///@}
+
+StrConstant SEGMENTWAVE_SPECTRUM_PREFIX = "segmentWaveSpectrum"
+
+/// @name Different types of noise epochs
+/// @anchor EpochNoiseTypes
+///@{
+Constant NOISE_TYPE_WHITE = 0
+Constant NOISE_TYPE_PINK  = 1
+Constant NOISE_TYPE_BROWN = 2
+///@}
+
+StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"

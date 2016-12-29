@@ -2162,7 +2162,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 4
+static Constant WP_WAVE_LAYOUT_VERSION = 5
 
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
@@ -2175,6 +2175,14 @@ Function UpgradeWaveParam(wv)
 
 	Redimension/N=(61, -1, 9) wv
 	AddDimLabelsToWP(wv)
+
+	// upgrade to wave version 5
+	// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
+	wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : ( wv[41][q][EPOCH_TYPE_NOISE] == 1 ? 1 : 2)
+	// adapt to changed filter order definition
+	wv[26][][EPOCH_TYPE_NOISE] = 6
+	wv[27][][EPOCH_TYPE_NOISE] = 0
+
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
 
@@ -2182,6 +2190,8 @@ static Function AddDimLabelsToWP(wv)
 	WAVE wv
 
 	variable i
+
+	RemoveAllDimLabels(wv)
 
 	SetDimLabel COLS,   -1, $("Epoch number"), wv
 
@@ -2227,14 +2237,11 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 23, $("High pass filter cut off delta") , wv
 	SetDimLabel ROWS, 24, $("Chirp end frequency")            , wv
 	SetDimLabel ROWS, 25, $("Chirp end frequency delta")      , wv
-	SetDimLabel ROWS, 26, $("High pass filter coef num")      , wv
-	SetDimLabel ROWS, 27, $("High pass filter coef num delta"), wv
-	SetDimLabel ROWS, 28, $("Low pass filter coef")           , wv
-	SetDimLabel ROWS, 29, $("Low pass filter coef delta")     , wv
+	SetDimLabel ROWS, 26, $("Noise filter order")             , wv
+	SetDimLabel ROWS, 27, $("Noise filter order delta")       , wv
 	// unused entries are not labeled
 	SetDimLabel ROWS, 40, $("Delta type")                     , wv
-	SetDimLabel ROWS, 41, $("Pink noise amplitude")           , wv
-	SetDimLabel ROWS, 42, $("Brown noise amplitude")          , wv
+	// unused entries are not labeled
 	SetDimLabel ROWS, 43, $("Chirp type: Log or sin")         , wv
 	SetDimLabel ROWS, 44, $("Poisson distribution true/false"), wv
 	SetDimLabel ROWS, 45, $("Number of pulses")               , wv
@@ -2246,6 +2253,8 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 51, $("Offset delta mult/exp")          , wv
 	SetDimLabel ROWS, 52, $("Duration delta mult/exp")        , wv
 	SetDimLabel ROWS, 53, $("Trigonometric function Sin/Cos") , wv
+	SetDimLabel ROWS, 54, $("Noise Type: White, Pink, Brown") , wv
+	SetDimLabel ROWS, 55, $("Build resolution (index)")       , wv
 End
 
 /// @brief Return the parameter wave for the wave builder panel
@@ -2276,12 +2285,15 @@ Function/WAVE GetWaveBuilderWaveParam()
 	else
 		Make/N=(61, 100, 9) dfr:WP/Wave=wv
 
-		// sets low pass filter to off (off value is related to sampling frequency)
-		wv[20][][2] = 10001
-		// sets coefficent count for low pass filter to a reasonable and legal Number
-		wv[26][][2] = 500
-		// sets coefficent count for high pass filter to a reasonable and legal Number
-		wv[28][][2] = 500
+		// noise low/high pass filter to off
+		wv[20][][2] = 0
+		wv[22][][2] = 0
+
+		// noise filter order
+		wv[26][][2] = 6
+
+		// noise type
+		wv[54][][2] = 0
 
 		AddDimLabelsToWP(wv)
 		SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
@@ -2290,7 +2302,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 4
+static Constant WPT_WAVE_LAYOUT_VERSION = 5
 
 /// @brief Upgrade the wave layout of `WPT` to the most recent one
 ///        as defined in `WPT_WAVE_LAYOUT_VERSION`
@@ -2311,6 +2323,8 @@ static Function AddDimLabelsToWPT(wv)
 	WAVE wv
 
 	variable i
+
+	RemoveAllDimLabels(wv)
 
 	SetDimLabel ROWS, 0, $("Custom epoch wave name")       , wv
 	SetDimLabel ROWS, 1, $("Analysis pre DAQ function")    , wv
