@@ -544,3 +544,9 @@ Constant EPOCH_TYPE_PSC                = 6
 Constant EPOCH_TYPE_CUSTOM             = 7
 Constant EPOCH_TYPE_COMBINE            = 8
 /// @}
+
+/// @name Parameters for gnoise and enoise
+///@{
+Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
+Constant NOISE_GEN_MERSENNE_TWISTER    = 2
+///@}

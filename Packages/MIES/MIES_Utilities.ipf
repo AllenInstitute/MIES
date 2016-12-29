@@ -1972,7 +1972,7 @@ Function GetReproducibleRandom()
 	variable randomSeed
 
 	do
-		randomSeed = abs(enoise(1, 2))
+		randomSeed = abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))
 	while(randomSeed == 0)
 
 	return randomSeed
