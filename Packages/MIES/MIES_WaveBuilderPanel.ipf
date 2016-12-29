@@ -2214,6 +2214,11 @@ Function WBP_MainWindowHook(s)
 		numEntries = DimSize(epochID, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			if(epochID[i][%timeBegin] < loc && epochID[i][%timeEnd] > loc)
+
+				if(GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch") == i)
+					return 0
+				endif
+
 				SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", i)
 				WBP_SelectEpoch(i)
 				return 1
