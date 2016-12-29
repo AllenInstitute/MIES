@@ -2300,15 +2300,15 @@ End
 /// relative order of the entries
 static Function/WAVE DeleteDuplicatesNum(numWave)
 	WAVE numWave
-	
+
 	variable i, numRows
 	numRows = DimSize(numWave, ROWS)
-	
+
 	Duplicate/FREE numWave, dest
 	if(numRows <= 1)
 		return dest
 	endif
-	
+
 	FindDuplicates/RN=dest numWave
 
 	return dest
