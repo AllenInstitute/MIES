@@ -2744,3 +2744,21 @@ Function GetAlignment(val)
 		endif
 	endfor
 End
+
+/// @brief Remove the dimlabels of all dimensions with data
+///
+/// Due to no better solutions the dim labels are actually overwritten with an empty string
+Function RemoveAllDimLabels(wv)
+	WAVE/Z wv
+
+	variable dims, i, j, numEntries
+
+	dims = WaveDims(wv)
+
+	for(i = 0; i < dims; i += 1)
+		numEntries = DimSize(wv, i)
+		for(j = -1; j < numEntries; j += 1)
+			SetDimLabel i, j, $"", wv
+		endfor
+	endfor
+End
