@@ -316,6 +316,41 @@ Function H5_DatasetExists(locationID, name)
 	return !HDF5DatasetInfo(locationID, name, 2^0, di)
 End
 
+/// @brief Load a specified dataset as wave
+///
+/// @param[in] locationID           HDF5 identifier, can be a file or group
+/// @param[in] name                 path on top of `locationID` which identifies
+///                                 the dataset
+/// @param[in] renameTo [optional]  rename the loaded Data set to the specified string
+/// @return                         reference to wave containing loaded data
+Function/WAVE H5_LoadDataset(locationID, name, [renameTo])
+	variable locationID
+	string name, renameTo
+
+	if(!H5_DatasetExists(locationID, name))
+		return $""
+	endif
+
+	DFREF saveDFR = GetDataFolderDFR()
+	DFREF dfr = NewFreeDataFolder()
+
+	SetDataFolder dfr
+	HDF5LoadData/Q/IGOR=(-1) locationID, name
+	SetDataFolder saveDFR
+
+	ASSERT(!V_flag, "could not load data wave from specified path")
+	ASSERT(ItemsInList(S_waveNames) == 1, "unspecified data format")
+
+	WAVE/Z wv = dfr:$StringFromList(0, S_waveNames)
+	ASSERT(WaveExists(wv), "loaded wave not found")
+
+	if(!ParamIsDefault(renameTo))
+		Rename wv $renameTo
+	endif
+
+	return wv
+End
+
 /// @brief Return 1 if the given HDF5 group exists, 0 otherwise.
 ///
 /// @param[in] locationID           HDF5 identifier, can be a file or group

@@ -287,15 +287,9 @@ Function/Wave LoadDataWave(locationID, channel, [path])
 	Assert(IPNWB#H5_GroupExists(locationID, path), "Path is not in nwb file")
 
 	path += channel + "/data"
-	HDF5LoadData/Q/IGOR=(-1) locationID, path
+	WAVE wv = H5_LoadDataset(locationID, path, renameTo = channel)
 
-	Assert(!V_flag, "could not load data wave from specified path")
-	Assert(ItemsInList(S_waveNames) == 1, "unspecified data format")
-
-	wave data = $StringFromList(0, S_waveNames)
-	MoveWave data $channel
-
-	return MakeWaveFree(data)
+	return MakeWaveFree(wv)
 End
 
 /// @brief Load single channel data as a wave from /acquisition/timeseries
