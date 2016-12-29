@@ -825,7 +825,9 @@ Function WBP_StartupSettings()
 		return 1
 	endif
 
-	WAVE/Z wv
+	HideTools/A/W=$panel
+
+	WAVE/Z wv = $""
 	ListBox listbox_combineEpochMap, listWave=wv, win=$panel
 
 	if(SearchForInvalidControlProcs(panel))
