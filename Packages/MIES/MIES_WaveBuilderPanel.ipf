@@ -87,7 +87,7 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
-	TabControl WBP_WaveType,tabLabel(2)="GPB-Noise",tabLabel(3)="Sin"
+	TabControl WBP_WaveType,tabLabel(2)="Noise",tabLabel(3)="Sin"
 	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
 	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load"
 	TabControl WBP_WaveType,tabLabel(8)="Combine",value= 0
@@ -194,7 +194,7 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_WaveBuilder_P11,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable setvar_WaveBuilder_P11,limits={-inf,inf,0.1},value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P2,pos={194.00,57.00},size={100.00,18.00},proc=WBP_SetVarProc_UpdateParam,title="Amplitude"
-	SetVariable SetVar_WaveBuilder_P2,help={"Amplitude of the epoch being edited. The unit depends on the DA channel configuration. For GPB-Noise epochs, amplitude = Standard deviation"}
+	SetVariable SetVar_WaveBuilder_P2,help={"Amplitude of the epoch being edited. The unit depends on the DA channel configuration. For Noise epochs, amplitude = peak to peak."}
 	SetVariable SetVar_WaveBuilder_P2,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo)= A"!!,GR!!#>r!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_WaveBuilder_P2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -354,7 +354,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P7_DD01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P7_DD01,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P4_OD00,pos={194.00,80.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Offset"
-	SetVariable SetVar_WaveBuilder_P4_OD00,help={"GPB noise offset."}
+	SetVariable SetVar_WaveBuilder_P4_OD00,help={"Noise offset."}
 	SetVariable SetVar_WaveBuilder_P4_OD00,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P4_OD00,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P4_OD00,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -362,7 +362,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P4_OD00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P4_OD00,value= _NUM:0
 	SetVariable SetVar_WaveBuilder_P5_DD02,pos={300.00,80.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
-	SetVariable SetVar_WaveBuilder_P5_DD02,help={"GPB noise offset delta."}
+	SetVariable SetVar_WaveBuilder_P5_DD02,help={"Noise offset delta."}
 	SetVariable SetVar_WaveBuilder_P5_DD02,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P5_DD02,userdata(tabcontrol)=  "WBP_WaveType"
 	SetVariable SetVar_WaveBuilder_P5_DD02,userdata(ResizeControlsInfo)= A"!!,HQJ,hp1!!#@,!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"

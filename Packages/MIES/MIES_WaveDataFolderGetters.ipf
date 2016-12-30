@@ -2193,7 +2193,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel LAYERS, -1, $("Epoch type")        , wv
 	SetDimLabel LAYERS,  0, $("Square pulse")      , wv
 	SetDimLabel LAYERS,  1, $("Ramp")              , wv
-	SetDimLabel LAYERS,  2, $("GPB-Noise")         , wv
+	SetDimLabel LAYERS,  2, $("Noise")             , wv
 	SetDimLabel LAYERS,  3, $("Sin")               , wv
 	SetDimLabel LAYERS,  4, $("Saw tooth")         , wv
 	SetDimLabel LAYERS,  5, $("Square pulse train"), wv
@@ -2260,7 +2260,7 @@ End
 /// Layers hold different stimulus wave form types:
 /// - Square pulse
 /// - Ramp
-/// - GPB-Noise
+/// - Noise
 /// - Sin
 /// - Saw tooth
 /// - Square pulse train
