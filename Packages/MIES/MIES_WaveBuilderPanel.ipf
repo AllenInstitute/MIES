@@ -968,6 +968,7 @@ End
 static Function WBP_UpdatePanelIfAllowed()
 
 	string controls, deltaMode
+	variable maxDuration
 
 	if(!GetCheckBoxState(panel, "check_PreventUpdate"))
 		WBP_DisplaySetInPanel()
@@ -996,6 +997,10 @@ static Function WBP_UpdatePanelIfAllowed()
 				EnableControls(panel, "SetVar_WaveBuilder_P23;SetVar_WaveBuilder_P26;SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29")
 				DisableControl(panel, "SetVar_WaveBuilder_P30")
 			endif
+
+			WBP_LowPassDeltaLimits()
+			WBP_HighPassDeltaLimits()
+			WBP_CutOffCrossOver()
 			break
 		case EPOCH_TYPE_SIN_COS:
 			if(GetCheckBoxState(panel,"check_Sin_Chirp_P43"))
@@ -1011,6 +1016,12 @@ static Function WBP_UpdatePanelIfAllowed()
 			else
 				EnableControl(panel, "SetVar_WaveBuilder_P0")
 				DisableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
+			endif
+
+			maxDuration = WBP_ReturnPulseDurationMax()
+			SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDuration, 0.1}
+			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
+				SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 			endif
 			break
 		case EPOCH_TYPE_COMBINE:
@@ -1173,8 +1184,6 @@ Function WBP_SetVarProc_SweepCount(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_LowPassDeltaLimits()
-			WBP_HighPassDeltaLimits()
 			WAVE SegWvType = GetSegmentTypeWave()
 			SegWvType[101] = sva.dval
 			WBP_UpdatePanelIfAllowed()
@@ -1301,7 +1310,7 @@ Function WBP_UpdateControlAndWP(control, value)
 	string control
 	variable value
 
-	variable maxDuration, stimulusType, epoch, paramRow
+	variable stimulusType, epoch, paramRow
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
@@ -1311,18 +1320,6 @@ Function WBP_UpdateControlAndWP(control, value)
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
 	paramRow     = WBP_ExtractRowNumberFromControl(control, "P")
 	WP[paramRow][epoch][stimulusType] = value
-
-	if(stimulusType == EPOCH_TYPE_NOISE)
-		WBP_LowPassDeltaLimits()
-		WBP_HighPassDeltaLimits()
-		WBP_CutOffCrossOver()
-	elseif(tabID == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
-		maxDuration = WBP_ReturnPulseDurationMax()
-		SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDuration, 0.1}
-		if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
-			SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
-		endif
-	endif
 End
 
 Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
@@ -1969,25 +1966,9 @@ End
 Function WBP_CheckProc_PreventUpdate(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable tabID, maxDur
-
 	switch(cba.eventCode)
 		case 2: // mouse up
-			if(!cba.checked)
-				tabID = GetTabID(panel, "WBP_WaveType")
-				if(tabID == EPOCH_TYPE_NOISE)
-					WBP_LowPassDeltaLimits()
-					WBP_HighPassDeltaLimits()
-					WBP_CutOffCrossOver()
-				elseif(tabID == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
-					maxDur = WBP_ReturnPulseDurationMax()
-					SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDur, 0.1}
-					if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDur)
-						SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDur)
-					endif
-				endif
-				WBP_UpdatePanelIfAllowed()
-			endif
+			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
 End
