@@ -70,6 +70,7 @@ Function WBP_CreateWaveBuilderPanel()
 
 	Execute "WaveBuilder()"
 	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList()
+	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
 End
 
 Window WaveBuilder() : Panel
@@ -913,6 +914,10 @@ static Function WBP_DisplaySetInPanel()
 	variable red, green, blue
 	string trace
 	variable maxYValue, minYValue
+
+	if(!HasPanelLatestVersion(panel, WAVEBUILDER_PANEL_VERSION))
+		Abort "Wavebuilder panel is out of date. Please close and reopen it."
+	endif
 
 	RemoveTracesFromGraph(waveBuilderGraph)
 
