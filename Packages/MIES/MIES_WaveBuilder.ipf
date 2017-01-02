@@ -656,9 +656,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
 
 	SetScale /P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", WaveBuilderWave
-	// although we are not creating these globals anymore, we still try to kill them
-	KillVariables/Z ParameterHolder
-	KillStrings/Z StringHolder
 
 	return WaveBuilderWave
 End
