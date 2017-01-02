@@ -972,7 +972,7 @@ static Function WBP_UpdatePanelIfAllowed()
 	endif
 
 	switch(GetTabID(panel, "WBP_WaveType"))
-		case 2:
+		case EPOCH_TYPE_NOISE:
 			if(GetCheckBoxState(panel,"check_Noise_Pink_P41"))
 				SetCheckBoxState(panel,"Check_Noise_Brown_P42", 0)
 				DisableControl(panel, "Check_Noise_Brown_P42")
@@ -995,14 +995,14 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableControl(panel, "SetVar_WaveBuilder_P30")
 			endif
 			break
-		case 3:
+		case EPOCH_TYPE_SIN_COS:
 			if(GetCheckBoxState(panel,"check_Sin_Chirp_P43"))
 				EnableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			else
 				DisableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			endif
 			break
-		case 5:
+		case EPOCH_TYPE_SQUARE_PULSE:
 			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
 				DisableControl(panel, "SetVar_WaveBuilder_P0")
 				EnableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
@@ -1011,7 +1011,7 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
 			endif
 			break
-		case 8:
+		case EPOCH_TYPE_COMBINE:
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 			break
 		default:
@@ -1062,7 +1062,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		SetSetVariableString(panel, control, data)
 	endfor
 
-	if(stimulusType == 7)
+	if(stimulusType == EPOCH_TYPE_CUSTOM)
 		customWaveName = WPT[0][segment]
 		WAVE/Z customWave = $customWaveName
 		if(WaveExists(customWave))
@@ -1234,11 +1234,11 @@ Function WBP_FinalTabHook(tca)
 
 	variable tabID = GetTabID(panel, "WBP_WaveType")
 
-	if(tabID != 5)
+	if(tabID != EPOCH_TYPE_SQUARE_PULSE_TRAIN)
 		EnableControl(panel, "SetVar_WaveBuilder_P0")
 	endif
 
-	if(tabID == 7 || tabID == 8)
+	if(tabID == EPOCH_TYPE_CUSTOM || tabID == EPOCH_TYPE_COMBINE)
 		HideControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_exp_P40")
 	endif
 
@@ -1310,11 +1310,11 @@ Function WBP_UpdateControlAndWP(control, value)
 	paramRow     = WBP_ExtractRowNumberFromControl(control, "P")
 	WP[paramRow][epoch][stimulusType] = value
 
-	if(stimulusType == 2)
+	if(stimulusType == EPOCH_TYPE_NOISE)
 		WBP_LowPassDeltaLimits()
 		WBP_HighPassDeltaLimits()
 		WBP_CutOffCrossOver()
-	elseif(stimulusType == 5)
+	elseif(tabID == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
 		maxDuration = WBP_ReturnPulseDurationMax()
 		SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDuration, 0.1}
 		if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
@@ -1972,11 +1972,11 @@ Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
 
 	if(!checked)
 		tabID = GetTabID(panel, "WBP_WaveType")
-		if(tabID == 2)
+		if(tabID == EPOCH_TYPE_NOISE)
 			WBP_LowPassDeltaLimits()
 			WBP_HighPassDeltaLimits()
 			WBP_CutOffCrossOver()
-		elseif(tabID == 5)
+		elseif(tabID == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
 			maxDur = WBP_ReturnPulseDurationMax()
 			SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDur, 0.1}
 			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDur)

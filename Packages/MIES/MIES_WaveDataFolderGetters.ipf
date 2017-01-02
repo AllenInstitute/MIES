@@ -2396,7 +2396,7 @@ End
 /// @brief Returns the segment type wave used by the wave builder panel
 /// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
 /// - Rows
-///   - 0 - 97: epoch types using the tabcontrol indizes
+///   - 0 - 97: epoch types using one of @ref WaveBuilderEpochTypes
 ///   - 98: Data flipping (1 or 0)
 ///   - 99: set ITI (s)
 ///   - 100: total number of segments/epochs
