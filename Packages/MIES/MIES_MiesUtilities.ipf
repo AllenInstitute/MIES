@@ -3303,3 +3303,24 @@ Function/S GetSweepGraph(win)
 		return mainWindow
 	endif
 End
+
+/// @brief Add user data "panelVersion" to the panel
+Function AddVersionToPanel(win, version)
+	string win
+	variable version
+
+	SetWindow $win, userData(panelVersion) = num2str(version)
+End
+
+/// @brief Return 1 if the panel is up to date, zero otherwise
+Function HasPanelLatestVersion(win, expectedVersion)
+	string win
+	variable expectedVersion
+
+	variable version
+
+	ASSERT(windowExists(win), "Non existent window")
+	version = str2num(GetUserData(win, "", "panelVersion"))
+
+	return version == expectedVersion
+end
