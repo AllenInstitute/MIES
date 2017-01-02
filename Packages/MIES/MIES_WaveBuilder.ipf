@@ -222,7 +222,7 @@ Function/Wave WB_GetStimSet([setName])
 		endif
 
 		last = length - 1
-		stimSet[0, last][i] = wv[p]
+		Multithread stimSet[0, last][i] = wv[p]
 
 		if(i == 0)
 			Note stimSet, note(wv)
