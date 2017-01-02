@@ -1966,27 +1966,30 @@ static Function WBP_RestorePopupMenuSelection(panelTitle, channelType, controlTy
 	endfor
 End
 
-Function WBP_CheckProc_PreventUpdate(ctrlName,checked) : CheckBoxControl
-	String ctrlName
-	Variable checked
+Function WBP_CheckProc_PreventUpdate(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
 
 	variable tabID, maxDur
 
-	if(!checked)
-		tabID = GetTabID(panel, "WBP_WaveType")
-		if(tabID == EPOCH_TYPE_NOISE)
-			WBP_LowPassDeltaLimits()
-			WBP_HighPassDeltaLimits()
-			WBP_CutOffCrossOver()
-		elseif(tabID == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
-			maxDur = WBP_ReturnPulseDurationMax()
-			SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDur, 0.1}
-			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDur)
-				SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDur)
+	switch(cba.eventCode)
+		case 2: // mouse up
+			if(!cba.checked)
+				tabID = GetTabID(panel, "WBP_WaveType")
+				if(tabID == EPOCH_TYPE_NOISE)
+					WBP_LowPassDeltaLimits()
+					WBP_HighPassDeltaLimits()
+					WBP_CutOffCrossOver()
+				elseif(tabID == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+					maxDur = WBP_ReturnPulseDurationMax()
+					SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDur, 0.1}
+					if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDur)
+						SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDur)
+					endif
+				endif
+				WBP_UpdatePanelIfAllowed()
 			endif
-		endif
-		WBP_UpdatePanelIfAllowed()
-	endif
+			break
+	endswitch
 End
 
 Function WBP_PopupMenu(pa) : PopupMenuControl
