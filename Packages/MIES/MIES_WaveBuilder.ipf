@@ -422,6 +422,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		if(params.duration < 0 || !IsFinite(params.duration))
 			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
 			params.duration = 1
+		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE)
+			continue
 		endif
 
 		switch(type)
