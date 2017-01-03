@@ -33,7 +33,12 @@ Menu "Mies Panels", dynamic
 End
 
 Function DB_OpenDataBrowser()
+
+	string win
+
 	Execute "DataBrowser()"
+	win = GetCurrentWindow()
+	AddVersionToPanel(win, DATABROWSER_PANEL_VERSION)
 End
 
 static Function/DF DB_GetDataPath(panelTitle)
@@ -154,6 +159,10 @@ static Function DB_PlotSweep(panelTitle, [sweepNo])
 	string graph = DB_GetMainGraph(panelTitle)
 
 	string artefactRemovalExtPanel, device
+
+	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
+		Abort "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
+	endif
 
 	DFREF dfr = DB_GetDataPath(panelTitle)
 
