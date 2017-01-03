@@ -150,6 +150,10 @@ Function DEBUGPRINT(msg, [var, str, format])
 
 	FindFirstOutsideCaller(func, line, file)
 
+	if(!IsEmpty(file) && !DebuggingEnabledForFile(file))
+		return NaN
+	endif
+
 	if(!ParamIsDefault(var))
 		if(ParamIsDefault(format))
 			format = "%g"
@@ -241,6 +245,12 @@ Function DEBUGPRINTSTACKINFO()
 
 	if(numCallers < 2)
 		// we were called directly
+		return NaN
+	endif
+
+	FindFirstOutsideCaller(func, line, file)
+
+	if(!IsEmpty(file) && !DebuggingEnabledForFile(file))
 		return NaN
 	endif
 

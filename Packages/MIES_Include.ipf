@@ -42,6 +42,7 @@
 #include "MIES_DataConfiguratorITC"
 #include "MIES_DataManagementNew"
 #include "MIES_Debugging"
+#include "MIES_DebugPanel"
 #include "MIES_Downsample" menus=0
 #include "MIES_EnhancedWMRoutines"
 #include "MIES_EventDetectionCode"
