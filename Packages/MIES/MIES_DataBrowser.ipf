@@ -784,7 +784,7 @@ Function DB_SliderProc_ChangedSetting(spa) : SliderControl
 
 	string panelTitle
 
-	if(spa.eventCode & 0x1)
+	if(spa.eventCode > 0 && spa.eventCode & 0x1)
 		panelTitle = spa.win
 		DB_PlotSweep(panelTitle)
 	endif
