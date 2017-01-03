@@ -366,8 +366,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Wave SegWvType
 	variable stepCount, numEpochs, channelType, updateEpochIDWave
 
-	DFREF dfr = GetWaveBuilderDataPath()
-
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
@@ -582,7 +580,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 				break
 			case EPOCH_TYPE_COMBINE:
-				WAVE segmentWave = WB_GetSegmentWave(0)
+				WAVE segmentWave = WB_GetSegmentWave(duration=0)
 
 				formula_for_note = WPT[6][i]
 				formula          = WB_FormulaSwitchToShorthand(formula_for_note)
@@ -634,7 +632,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			endif
 		endif
 
-		WAVE/SDFR=dfr segmentWave
+		WAVE segmentWave = WB_GetSegmentWave()
 		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
@@ -663,12 +661,16 @@ End
 
 /// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
 /// @param duration time of the stimulus in ms
-static Function/Wave WB_GetSegmentWave(duration)
+static Function/Wave WB_GetSegmentWave([duration])
 	variable duration
 
 	DFREF dfr = GetWaveBuilderDataPath()
 	variable numPoints = duration / HARDWARE_ITC_MIN_SAMPINT
 	Wave/Z/SDFR=dfr SegmentWave
+
+	if(ParamIsDefault(duration))
+		return segmentWave
+	endif
 
 	if(duration > MAX_SWEEP_DURATION_IN_MS)
 		Abort "Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!"
@@ -691,7 +693,7 @@ End
 static Function WB_SquareSegment(pa)
 	struct SegmentParameters &pa
 
-	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 	SegmentWave = pa.amplitude
 End
 
@@ -700,7 +702,7 @@ static Function WB_RampSegment(pa)
 
 	variable amplitudeIncrement = pa.amplitude * HARDWARE_ITC_MIN_SAMPINT / pa.duration
 
-	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 	MultiThread SegmentWave = amplitudeIncrement * p
 	SegmentWave += pa.offset
 End
@@ -726,7 +728,7 @@ static Function WB_NoiseSegment(pa)
 
 	variable PinkOrBrown
 
-	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	WAVE SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
 	if(!pa.brownNoise && !pa.pinkNoise)
 		SegmentWave = gnoise(pa.amplitude) // MultiThread didn't impact processing time for gnoise
@@ -758,11 +760,11 @@ static Function WB_TrigSegment(pa)
 
 	if(pa.trigFuncType != 0 && pa.trigFuncType != 1)
 		printf "Ignoring unknown trigonometric function"
-		Wave SegmentWave = WB_GetSegmentWave(0)
+		Wave SegmentWave = WB_GetSegmentWave(duration=0)
 		return NaN
 	endif
 
-	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
 	if(!pa.sinChirp)
 		if(pa.trigFuncType == 0)
@@ -788,7 +790,7 @@ End
 static Function WB_SawToothSegment(pa)
 	struct SegmentParameters &pa
 
-	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
 	SegmentWave = 1 * pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 	SegmentWave += pa.offset
@@ -825,7 +827,7 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 	// independent of the duration
 	interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
 
-	WAVE segmentWave = WB_GetSegmentWave(pa.duration)
+	WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
 	segmentWave = 0
 	numRows = DimSize(segmentWave, ROWS)
 
@@ -877,7 +879,7 @@ static Function WB_PSCSegment(pa)
 
 	variable baseline, peak
 
-	Wave SegmentWave = WB_GetSegmentWave(pa.duration)
+	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
 	pa.TauRise = 1 / pa.TauRise
 	pa.TauRise *= HARDWARE_ITC_MIN_SAMPINT
