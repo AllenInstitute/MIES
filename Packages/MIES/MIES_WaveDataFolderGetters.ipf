@@ -2181,12 +2181,11 @@ End
 static Function AddDimLabelsToWP(wv)
 	WAVE wv
 
-	variable i, numCols
+	variable i
 
 	SetDimLabel COLS,   -1, $("Epoch number"), wv
 
-	numCols = DimSize(wv, COLS)
-	for(i = 0; i < numCols; i += 1)
+	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
@@ -2311,7 +2310,7 @@ End
 static Function AddDimLabelsToWPT(wv)
 	WAVE wv
 
-	variable i, numEpochs
+	variable i
 
 	SetDimLabel ROWS, 0, $("Custom epoch wave name")       , wv
 	SetDimLabel ROWS, 1, $("Analysis pre DAQ function")    , wv
@@ -2322,12 +2321,11 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 6, $("Combine epoch formula")        , wv
 	SetDimLabel ROWS, 7, $("Combine epoch formula version"), wv
 
-	numEpochs = DimSize(wv, COLS) - 1
-	for(i = 0; i < numEpochs; i += 1)
+	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
-	SetDimLabel COLS, numEpochs, $("Set"), wv
+	SetDimLabel COLS, DimSize(wv, COLS) - 1, $("Set"), wv
 End
 
 /// @brief Return the parameter text wave for the wave builder panel
