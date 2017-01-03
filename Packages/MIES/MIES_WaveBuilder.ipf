@@ -163,8 +163,7 @@ Function/Wave WB_GetStimSet([setName])
 
 	variable i, numEpochs, numSteps, updateEpochIDWave
 	variable last, lengthOf1DWaves, length, channelType
-	string wvName
-	variable start = stopmstimer(-2)
+	variable referenceTime = DEBUG_TIMER_START()
 
 	if(ParamIsDefault(setName))
 		updateEpochIDWave = 1
@@ -235,7 +234,7 @@ Function/Wave WB_GetStimSet([setName])
 		WaveTransForm/O flip stimset
 	endif
 
-	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
+	DEBUGPRINT_ELAPSED(referenceTime)
 
 	return stimSet
 End
