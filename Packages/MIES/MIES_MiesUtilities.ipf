@@ -2304,7 +2304,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 End
 
 /// @brief Extract the sweep number from a `$something_*` string
-Function ExtractSweepNumber(str)
+threadsafe Function ExtractSweepNumber(str)
 	string str
 
 	return str2num(StringFromList(ItemsInList(str, "_") - 1, str, "_"))
