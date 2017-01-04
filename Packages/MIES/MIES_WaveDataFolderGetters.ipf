@@ -1533,9 +1533,9 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 10, TimeStampSinceIgorEpochUTC, wv
 	SetDimLabel LAYERS, 11, PressureChange            , wv
 
-	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
-	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
-	Note/NOCR wv, DIMENSION_SCALING_LAST_INVOC + ":0;"
+	SetNumberInWaveNote(wv, TP_CYLCE_COUNT_KEY, 0)
+	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
