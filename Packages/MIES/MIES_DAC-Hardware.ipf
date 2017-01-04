@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 
 /// @file MIES_DAC-Hardware.ipf
 /// @brief __HW__ Low level hardware configuration and querying functions
