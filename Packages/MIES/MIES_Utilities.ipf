@@ -1634,6 +1634,15 @@ Function/S GetFolder(filePathWithSuffix)
 	return ParseFilePath(1, filePathWithSuffix, ":", 1, 0)
 End
 
+/// @brief Return the filename with extension
+///
+/// Given `path/file.suffix` this gives `file.suffix`.
+Function/S GetFile(filePathWithSuffix)
+	string filePathWithSuffix
+
+	return ParseFilePath(0, filePathWithSuffix, ":", 1, 0)
+End
+
 /// @brief Set the given bit mask in var
 Function SetBit(var, bit)
 	variable var, bit

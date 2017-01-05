@@ -5,6 +5,34 @@
 ///
 /// @brief Holds functions for handling debugging information
 
+/// @brief Return the first function from the stack trace
+///         not located in this file.
+static Function FindFirstOutsideCaller(func, line, file)
+	string &func, &line, &file
+
+	string stacktrace, caller, debugFile
+	variable numCallers, i
+
+	debugFile = GetFile(FunctionPath(""))
+	stacktrace = GetRTStackInfo(3)
+	numCallers = ItemsInList(stacktrace)
+
+	for(i = numCallers - 2; i >= 0; i -= 1)
+		caller = StringFromList(i, stacktrace)
+		func   = StringFromList(0, caller, ",")
+		file   = StringFromList(1, caller, ",")
+		line   = StringFromList(2, caller, ",")
+
+		if(cmpstr(debugFile, file))
+			return NaN
+		endif
+	endfor
+
+	func = ""
+	file = ""
+	line = ""
+End
+
 #if defined(DEBUGGING_ENABLED)
 
 static StrConstant functionReturnMessage = "return value"
@@ -120,18 +148,10 @@ Function DEBUGPRINT(msg, [var, str, format])
 		ASSERT(0, "Invalid parameter combination")
 	endif
 
-	stacktrace = GetRTStackInfo(3)
-	numCallers = ItemsInList(stacktrace)
+	FindFirstOutsideCaller(func, line, file)
 
-	if(numCallers >= 2)
-		caller = StringFromList(numCallers - 2, stacktrace)
-		func   = StringFromList(0, caller, ",")
-		file   = StringFromList(1, caller, ",")
-		line   = StringFromList(2, caller, ",")
-	else
-		func   = ""
-		file   = ""
-		line   = ""
+	if(!IsEmpty(file) && !DebuggingEnabledForFile(file))
+		return NaN
 	endif
 
 	if(!ParamIsDefault(var))
@@ -225,6 +245,12 @@ Function DEBUGPRINTSTACKINFO()
 
 	if(numCallers < 2)
 		// we were called directly
+		return NaN
+	endif
+
+	FindFirstOutsideCaller(func, line, file)
+
+	if(!IsEmpty(file) && !DebuggingEnabledForFile(file))
 		return NaN
 	endif
 

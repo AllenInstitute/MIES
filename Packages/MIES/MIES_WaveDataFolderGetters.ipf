@@ -4547,3 +4547,52 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
+
+/// @name Getters related to debugging
+/// @{
+/// @brief Return the datafolder reference to the debug folder
+Function/DF GetDebugPanelFolder()
+	return createDFWithAllParents(GetDebugPanelFolderAS())
+End
+
+/// @brief Return the full path to the debug datafolder, e.g. root:MIES:Debug
+Function/S GetDebugPanelFolderAS()
+	return GetMiesPathAsString() + ":Debug"
+End
+
+/// @brief Return the list wave for the debug panel
+Function/WAVE GetDebugPanelListWave()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDebugPanelFolder()
+	WAVE/T/Z/SDFR=dfr wv = fileSelectionListWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE) dfr:fileSelectionListWave/WAVE=wv
+	endif
+
+	return wv
+End
+
+/// @brief Return the list selection wave for the debugging panel
+Function/WAVE GetDebugPanelListSelWave()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDebugPanelFolder()
+	WAVE/B/Z/SDFR=dfr wv = fileSelectionListSelWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/B/N=(MINIMUM_WAVE_SIZE) dfr:fileSelectionListSelWave/WAVE=wv
+	endif
+
+	return wv
+End
+/// @}
