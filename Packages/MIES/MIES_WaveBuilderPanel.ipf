@@ -1675,7 +1675,7 @@ static Function WBP_LoadSet(setName)
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSet_S4", funcList, WPT[4][99])
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", funcList, WPT[5][99])
 
-	WBP_SelectEpoch(SegWvType[0])
+	WBP_SelectEpoch(0)
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, funcList, func)
@@ -2214,6 +2214,11 @@ Function WBP_MainWindowHook(s)
 		numEntries = DimSize(epochID, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			if(epochID[i][%timeBegin] < loc && epochID[i][%timeEnd] > loc)
+
+				if(GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch") == i)
+					return 0
+				endif
+
 				SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", i)
 				WBP_SelectEpoch(i)
 				return 1
