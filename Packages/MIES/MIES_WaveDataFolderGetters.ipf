@@ -2247,7 +2247,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 45, $("Number of pulses")               , wv
 	SetDimLabel ROWS, 46, $("Duration type: User/Automatic")  , wv
 	SetDimLabel ROWS, 47, $("Number of pulses delta")         , wv
-	// P48 is a button
+	SetDimLabel ROWS, 48, $("Random Seed")                    , wv
 	SetDimLabel ROWS, 49, $("Reseed RNG for each step")       , wv
 	SetDimLabel ROWS, 50, $("Amplitude delta mult/exp")       , wv
 	SetDimLabel ROWS, 51, $("Offset delta mult/exp")          , wv
