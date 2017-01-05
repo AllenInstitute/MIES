@@ -712,14 +712,14 @@ Window WaveBuilder() : Panel
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo)= A"!!,Hd!!#@d!!#?-!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_NewSeedForEachStep_P49,pos={413.00,145.00},size={74.00,15.00},disable=1,proc=WBP_CheckProc,title="Seed / Step"
-	CheckBox check_NewSeedForEachStep_P49,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
-	CheckBox check_NewSeedForEachStep_P49,userdata(tabnum)=  "2"
-	CheckBox check_NewSeedForEachStep_P49,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_NewSeedForEachStep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_NewSeedForEachStep_P49,value= 0
+	CheckBox check_NewSeedForEachSweep_P49,pos={413.00,145.00},size={74.00,15.00},disable=1,proc=WBP_CheckProc,title="Seed / Sweep"
+	CheckBox check_NewSeedForEachSweep_P49,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
+	CheckBox check_NewSeedForEachSweep_P49,userdata(tabnum)=  "2"
+	CheckBox check_NewSeedForEachSweep_P49,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_NewSeedForEachSweep_P49,value= 0
 	ListBox listbox_combineEpochMap,pos={194.00,25.00},size={228.00,178.00},disable=1
 	ListBox listbox_combineEpochMap,help={"Shorthand <-> Stimset mapping for use with the formula"}
 	ListBox listbox_combineEpochMap,userdata(tabnum)=  "8"
@@ -910,7 +910,7 @@ End
 
 static Function WBP_DisplaySetInPanel()
 
-	variable i, epoch, numEpochs, numSteps
+	variable i, epoch, numEpochs, numSweeps
 	variable red, green, blue
 	string trace
 	variable maxYValue, minYValue
@@ -944,13 +944,13 @@ static Function WBP_DisplaySetInPanel()
 	Duplicate/O stimSet, displayData
 	WaveClear stimSet
 
-	numSteps = DimSize(displayData, COLS)
+	numSweeps = DimSize(displayData, COLS)
 
-	if(numSteps == 0)
+	if(numSweeps == 0)
 		return NaN
 	endif
 
-	for(i = 0; i < numSteps; i += 1)
+	for(i = 0; i < numSweeps; i += 1)
 		trace = NameOfWave(displayData) + "_S" + num2str(i)
 		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
 		GetTraceColor(i, red, green, blue)
@@ -1362,16 +1362,16 @@ End
 
 static Function WBP_LowPassDeltaLimits()
 
-	variable LowPassCutOff, StepCount, LowPassDelta, DeltaLimit
+	variable LowPassCutOff, numSweeps, LowPassDelta, DeltaLimit
 
 	WAVE SegWvType = GetSegmentTypeWave()
-	StepCount = SegWvType[101]
+	numSweeps = SegWvType[101]
 
 	LowPassCutoff = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
 	LowPassDelta = GetSetVariable(panel, "SetVar_WaveBuilder_P21")
 
 	if(LowPassDelta > 0)
-		DeltaLimit = trunc(100000 / StepCount)
+		DeltaLimit = trunc(100000 / numSweeps)
 		SetVariable SetVar_WaveBuilder_P21 win=$panel, limits = {-inf, DeltaLimit, 1}
 		if(LowPassDelta > DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
@@ -1379,7 +1379,7 @@ static Function WBP_LowPassDeltaLimits()
 	endif
 
 	if(LowPassDelta < 0)
-		DeltaLimit = trunc(-((LowPassCutOff/StepCount) -1))
+		DeltaLimit = trunc(-((LowPassCutOff/numSweeps) -1))
 		SetVariable SetVar_WaveBuilder_P21 win=$panel, limits = {DeltaLimit, 99999, 1}
 		if(LowPassDelta < DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
@@ -1389,16 +1389,16 @@ End
 
 static Function WBP_HighPassDeltaLimits()
 
-	variable HighPassCutOff, StepCount, HighPassDelta, DeltaLimit
+	variable HighPassCutOff, numSweeps, HighPassDelta, DeltaLimit
 
 	WAVE SegWvType = GetSegmentTypeWave()
-	StepCount = SegWvType[101]
+	numSweeps = SegWvType[101]
 
 	HighPassCutoff = GetSetVariable(panel, "SetVar_WaveBuilder_P22")
 	HighPassDelta = GetSetVariable(panel, "SetVar_WaveBuilder_P23")
 
 	if(HighPassDelta > 0)
-		DeltaLimit = trunc((100000 - HighPassCutOff) / StepCount) - 1
+		DeltaLimit = trunc((100000 - HighPassCutOff) / numSweeps) - 1
 		SetVariable SetVar_WaveBuilder_P23 win=$panel, limits = { -inf, DeltaLimit, 1}
 		if(HighPassDelta > DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
@@ -1406,7 +1406,7 @@ static Function WBP_HighPassDeltaLimits()
 	endif
 
 	if(HighPassDelta < 0)
-		DeltaLimit = trunc(HighPassCutOff / StepCount) + 1
+		DeltaLimit = trunc(HighPassCutOff / numSweeps) + 1
 		SetVariable SetVar_WaveBuilder_P23 win=$panel, limits = {DeltaLimit, 99999, 1}
 		if(HighPassDelta < DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)

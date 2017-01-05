@@ -161,7 +161,7 @@ End
 Function/Wave WB_GetStimSet([setName])
 	string setName
 
-	variable i, numEpochs, numSteps, updateEpochIDWave
+	variable i, numEpochs, numSweeps, updateEpochIDWave
 	variable last, lengthOf1DWaves, length, channelType
 	variable referenceTime = DEBUG_TIMER_START()
 
@@ -190,16 +190,16 @@ Function/Wave WB_GetStimSet([setName])
 	// WB_AddDelta modifies WP so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
 
-	numSteps   = SegWvType[101]
+	numSweeps  = SegWvType[101]
 	numEpochs  = SegWvType[100]
 
-	ASSERT(numSteps > 0, "Invalid number of steps")
+	ASSERT(numSweeps > 0, "Invalid number of sweeps")
 
-	MAKE/WAVE/FREE/N=(numSteps) stepData
+	MAKE/WAVE/FREE/N=(numSweeps) data
 
-	for(i=0; i < numSteps; i+=1)
-		stepData[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave)
-		lengthOf1DWaves = max(DimSize(stepData[i], ROWS), lengthOf1DWaves)
+	for(i=0; i < numSweeps; i+=1)
+		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave)
+		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
 		WB_AddDelta(WPCopy, numEpochs)
 	endfor
 
@@ -210,11 +210,11 @@ Function/Wave WB_GetStimSet([setName])
 		return $""
 	endif
 
-	Make/FREE/O/N=(lengthOf1DWaves, numSteps) stimSet
+	Make/FREE/O/N=(lengthOf1DWaves, numSweeps) stimSet
 	FastOp stimSet = 0
 
-	for(i = 0; i < numSteps; i += 1)
-		WAVE wv = stepData[i]
+	for(i = 0; i < numSweeps; i += 1)
+		WAVE wv = data[i]
 
 		length = DimSize(wv, ROWS)
 		if(length == 0)
