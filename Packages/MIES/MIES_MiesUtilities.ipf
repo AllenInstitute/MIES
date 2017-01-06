@@ -1968,10 +1968,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 
 	variable referenceTime
 	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
-	string xRange, listOfXRanges
+	string xRange, listOfXRanges, firstXAxis
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
-	variable red, green, blue, column, first, last
+	variable red, green, blue, column, first, last, orientation
 	string axis, trace, axList, baseName
 	string channelType, channelNumber, fullPath, panel
 
@@ -1990,7 +1990,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 	endif
 
 	axList = AxisList(graph)
-	axList = RemoveFromList("bottom", axList)
 	numAxes = ItemsInList(axList)
 	numTraces = ItemsInList(traceList)
 
@@ -2003,6 +2002,13 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		listOfChannelTypes   = ""
 		listOfChannelNumbers = ""
 		listOfXRanges        = ""
+		firstXAxis           = ""
+
+		orientation = GetAxisOrientation(graph, axis)
+		if(orientation == AXIS_ORIENTATION_BOTTOM || orientation == AXIS_ORIENTATION_TOP)
+			continue
+		endif
+
 		for(j = 0; j < numTraces; j += 1)
 			trace = StringFromList(j, traceList)
 			if(!cmpstr(axis, StringByKey("YAXIS", allTraceInfo[j])))
@@ -2015,6 +2021,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 				listOfChannelTypes   = AddListItem(channelType, listOfChannelTypes, ";", Inf)
 				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
 				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
+
+				if(IsEmpty(firstXAxis))
+					firstXAxis = StringByKey("XAXIS", allTraceInfo[j])
+				endif
 			endif
 		endfor
 
@@ -2087,9 +2097,9 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		RemoveTracesFromGraph(graph, wv=averageWave)
 
 		if(IsFinite(first) && IsFinite(last))
-			AppendToGraph/Q/W=$graph/L=$axis averageWave[first, last]
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
 		else
-			AppendToGraph/Q/W=$graph/L=$axis averageWave
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave
 		endif
 
 		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
