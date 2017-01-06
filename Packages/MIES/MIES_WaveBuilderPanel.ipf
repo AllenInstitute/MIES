@@ -1822,28 +1822,34 @@ Function/S WBP_ReturnFoldersList()
 	return NONE + ";root:;" + folderNameList
 End
 
-Function WBP_PopMenuProc_FolderSelect(ctrlName,popNum,popStr) : PopupMenuControl
-	String ctrlName
-	Variable popNum
-	String popStr
+Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
 
-	string path, list
+	string popStr, path, list
 
-	if(!CmpStr(popStr, NONE))
-		return 0
-	elseif(!CmpStr(popStr, "root:"))
-		path = "root:"
-	else
-		ControlInfo group_WaveBuilder_FolderPath
-		path = s_value + popStr + ":"
-	endif
+	switch(pa.eventCode)
+		case 2: // mouse up
+			popStr = pa.popStr
 
-	GroupBox group_WaveBuilder_FolderPath win=$panel, title = path
-	ControlUpdate/A/W=$panel
-	PopupMenu popup_WaveBuilder_FolderList win=$panel, mode = 1
-	PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, mode = 1
-	WBP_UpdateListOfWaves()
-	ControlUpdate/A/W=$panel
+			if(!CmpStr(popStr, NONE))
+				return 0
+			elseif(!CmpStr(popStr, "root:"))
+				path = "root:"
+			else
+				ControlInfo group_WaveBuilder_FolderPath
+				path = s_value + popStr + ":"
+			endif
+
+			GroupBox group_WaveBuilder_FolderPath win=$panel, title = path
+			ControlUpdate/A/W=$panel
+			PopupMenu popup_WaveBuilder_FolderList win=$panel, mode = 1
+			PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, mode = 1
+			WBP_UpdateListOfWaves()
+			ControlUpdate/A/W=$panel
+			break
+	endswitch
+
+	return 0
 End
 
 /// @brief Update the popup menus and its `MenuExp` user data after stim set changes
