@@ -25,6 +25,7 @@
 #include ":MIES_GuiUtilities"
 #include ":MIES_MiesUtilities"
 #include ":MIES_OverlaySweeps"
+#include ":MIES_ProgrammaticGuiControl"
 #include ":MIES_Utilities"
 #include ":MIES_Structures"
 #include ":MIES_WaveDataFolderGetters"
@@ -35,11 +36,19 @@ End
 
 Function DB_OpenDataBrowser()
 
-	string win
+	string win, device, devicesWithData
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
 	AddVersionToPanel(win, DATABROWSER_PANEL_VERSION)
+
+	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
+
+	// immediately lock if we have only data from one device
+	if(ItemsInList(devicesWithData) == 1)
+		device = StringFromList(0, devicesWithData)
+		PGC_SetAndActivateControl(win, "popup_DB_lockedDevices", val=1, str=device)
+	endif
 End
 
 static Function/DF DB_GetDataPath(panelTitle)
@@ -72,13 +81,12 @@ static Function/S DB_GetLabNoteBookGraph(panelTitle)
 	return panelTitle + "#Labnotebook"
 End
 
-static Function DB_LockDBPanel(panelTitle)
-	string panelTitle
+static Function DB_LockDBPanel(panelTitle, device)
+	string panelTitle, device
 
-	string panelTitleNew, device
+	string panelTitleNew
 	variable first, last
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
 	if(!CmpStr(device,NONE))
 		panelTitleNew = "DataBrowser"
 
@@ -634,7 +642,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	switch(pa.eventcode)
 		case 2: // mouse up
-			DB_LockDBPanel(pa.win)
+			DB_LockDBPanel(pa.win, pa.popStr)
 			break
 	endswitch
 
