@@ -504,9 +504,9 @@ Window DataBrowser() : Panel
 	CheckBox CheckBox_DataBrowser_OpenArtRem,value= 0
 	Button button_databrowser_restore,pos={483.00,29.00},size={76.00,21.00},proc=DB_ButtonProc_RestoreData,title="Restore data"
 	Button button_databrowser_restore,help={"Restore the data in its pristine state without any modifications"}
-	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,IWJ,hn!!!#?Q!!#<`z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
-	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
+	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,IWJ,hn!!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
+	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERJ,htozzzzzzzzzzzzzzzzzzzzz"
