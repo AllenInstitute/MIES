@@ -457,7 +457,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_ListOfWaves,userdata(ResizeControlsInfo)= A"!!,Iu!!#?i!!#Af!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_ListOfWaves,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_ListOfWaves,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_ListOfWaves,mode=1,popvalue="- none - ",value= #"\"- none - ;W_coef;W_sigma;W_fitConstants;W_Hist1;\""
+	PopupMenu popup_WaveBuilder_ListOfWaves,mode=1,popvalue="- none - ",value= #"WBP_GetListOfWaves()"
 	SetVariable SetVar_WaveBuilder_P20,pos={601.00,39.00},size={135.00,33.00},bodyWidth=60,disable=1,proc=WBP_SetVarProc_UpdateParam,title="Low pass cut \roff frequency"
 	SetVariable SetVar_WaveBuilder_P20,help={"Set to zero turn off low pass filter"}
 	SetVariable SetVar_WaveBuilder_P20,userdata(tabnum)=  "2"
@@ -1044,7 +1044,6 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		WAVE/Z customWave = $customWaveName
 		if(WaveExists(customWave))
 			GroupBox group_WaveBuilder_FolderPath win=$panel, title=GetWavesDataFolder(customWave, 1)
-			WBP_UpdateListOfWaves()
 			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, popMatch=NameOfWave(customWave)
 		endif
 	endif
@@ -1437,23 +1436,23 @@ Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
 	return 0
 End
 
-static Function WBP_UpdateListOfWaves()
+Function/S WBP_GetListOfWaves()
 
+	string listOfWaves
 	string searchPattern = "*"
-
-	dfref dfr = WBP_GetFolderPath()
 
 	ControlInfo/W=$panel setvar_WaveBuilder_SearchString
 	if(!IsEmpty(s_value))
 		searchPattern = S_Value
 	endif
 
-	dfref saveDFR = GetDataFolderDFR()
+	DFREF dfr = WBP_GetFolderPath()
+	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder dfr
-	string ListOfWavesInFolder = "\"" + NONE + ";" + Wavelist(searchPattern, ";", "TEXT:0,MAXCOLS:1") + "\""
+	listOfWaves = NONE + ";" + Wavelist(searchPattern, ";", "TEXT:0,MAXCOLS:1")
 	SetDataFolder saveDFR
 
-	PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, value = #ListOfWavesInFolder
+	return listOfWaves
 End
 
 Function WBP_SetVarProc_SetSearchString(sva) : SetVariableControl
@@ -1463,7 +1462,6 @@ Function WBP_SetVarProc_SetSearchString(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_UpdateListOfWaves()
 			break
 	endswitch
 
@@ -1831,7 +1829,7 @@ End
 Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string popStr, path, list
+	string popStr, path
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -1842,16 +1840,14 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 			elseif(!CmpStr(popStr, "root:"))
 				path = "root:"
 			else
-				ControlInfo group_WaveBuilder_FolderPath
+				ControlInfo/W=$panel group_WaveBuilder_FolderPath
 				path = s_value + popStr + ":"
 			endif
 
 			GroupBox group_WaveBuilder_FolderPath win=$panel, title = path
-			ControlUpdate/A/W=$panel
 			PopupMenu popup_WaveBuilder_FolderList win=$panel, mode = 1
 			PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, mode = 1
-			WBP_UpdateListOfWaves()
-			ControlUpdate/A/W=$panel
+			ControlUpdate/W=$panel popup_WaveBuilder_ListOfWaves
 			break
 	endswitch
 
