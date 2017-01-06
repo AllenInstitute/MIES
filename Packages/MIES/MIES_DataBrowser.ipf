@@ -970,13 +970,30 @@ End
 Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, traceList
+	string win, graph, traceList, artefactRemovalExtPanel
+	variable autoRemoveOldState, zeroTracesOldState
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = DB_GetMainGraph(ba.win)
+			win   = ba.win
+			graph = DB_GetMainGraph(win)
 			traceList = GetAllSweepTraces(graph)
 			ReplaceAllWavesWithBackup(graph, traceList)
+
+			zeroTracesOldState = GetCheckBoxState(win, "check_DataBrowser_ZeroTraces")
+			SetCheckBoxState(win, "check_DataBrowser_ZeroTraces", CHECKBOX_UNSELECTED)
+
+			artefactRemovalExtPanel = AR_GetExtPanel(win)
+			if(!WindowExists(artefactRemovalExtPanel))
+				DB_UpdateSweepPlot(win)
+			else
+				autoRemoveOldState = GetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove")
+				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+				DB_UpdateSweepPlot(win)
+				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", autoRemoveOldState)
+			endif
+
+			SetCheckBoxState(win, "check_DataBrowser_ZeroTraces", zeroTracesOldState)
 			break
 	endswitch
 

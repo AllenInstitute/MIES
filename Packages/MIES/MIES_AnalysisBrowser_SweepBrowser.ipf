@@ -1115,13 +1115,25 @@ End
 Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, traceList
+	string win, graph, traceList, artefactRemovalExtPanel
+	variable autoRemoveOldState
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			win   = ba.win
 			graph = GetMainWindow(ba.win)
 			traceList = GetAllSweepTraces(graph)
 			ReplaceAllWavesWithBackup(graph, traceList)
+
+			artefactRemovalExtPanel = AR_GetExtPanel(win)
+			if(!WindowExists(artefactRemovalExtPanel))
+				SB_UpdateSweepPlot(win)
+			else
+				autoRemoveOldState = GetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove")
+				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+				SB_UpdateSweepPlot(win)
+				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", autoRemoveOldState)
+			endif
 			break
 	endswitch
 
