@@ -22,22 +22,50 @@ End
 /// Requires an existing marquee and a graph as current top window
 Function HorizExpandWithVisX()
 
-	string graph = GetCurrentWindow()
+	string graph, list, axis, str
+	variable numEntries, i, orientation
 
-	GetAxis/Q/W=$graph bottom
-	if(V_flag)
-		return NaN
-	endif
+	graph = GetCurrentWindow()
 
-	GetMarquee/Z/K/W=$graph bottom
-	if(!V_flag)
-		return NaN
-	endif
+	list = AxisList(graph)
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
 
-	graph = S_marqueeWin
+		axis = StringFromList(i, list)
 
-	SetAxis bottom, V_left, V_right
-	AutoscaleVertAxisVisXRange(graph)
+		GetAxis/Q/W=$graph $axis
+		if(V_flag)
+			// axis does not exist
+			continue
+		endif
+
+		orientation = GetAxisOrientation(graph, axis)
+		if(orientation == AXIS_ORIENTATION_LEFT || orientation == AXIS_ORIENTATION_RIGHT)
+			// no horizontal axis
+			continue
+		endif
+
+		GetMarquee/Z/W=$graph $axis
+		if(!V_flag)
+			// no marquee on axis
+			continue
+		endif
+
+		if(V_left < V_min || V_right > V_max)
+			// marquee does not lie completely in the axis
+			continue
+		endif
+
+		graph = S_marqueeWin
+
+		sprintf str, "graph=%s, axis=%s, left=%d, right=%d", graph, axis, V_left, V_right
+		DEBUGPRINT(str)
+
+		SetAxis/W=$graph $axis, V_left, V_right
+		AutoscaleVertAxisVisXRange(graph)
+	endfor
+
+	GetMarquee/K/W=$graph
 End
 
 /// @brief Extract the date/time column of the labnotebook values wave
