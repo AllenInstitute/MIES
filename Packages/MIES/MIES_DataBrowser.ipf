@@ -96,6 +96,8 @@ static Function DB_LockDBPanel(panelTitle, device)
 
 		print "Please choose a device assignment for the data browser"
 		DoWindow/W=$panelTitle/C $panelTitleNew
+		SetWindow $panelTitleNew, userdata($MIES_PANEL_TYPE_USER_DATA) = ""
+		SetWindow $panelTitleNew, userdata(DataFolderPath) = ""
 		PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
 		PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
 		return NaN
