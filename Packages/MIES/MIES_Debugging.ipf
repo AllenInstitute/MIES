@@ -150,7 +150,7 @@ Function DEBUGPRINT(msg, [var, str, format])
 
 	FindFirstOutsideCaller(func, line, file)
 
-	if(!IsEmpty(file) && !DebuggingEnabledForFile(file))
+	if(!IsEmpty(file) && !DP_DebuggingEnabledForFile(file))
 		return NaN
 	endif
 
@@ -250,7 +250,7 @@ Function DEBUGPRINTSTACKINFO()
 
 	FindFirstOutsideCaller(func, line, file)
 
-	if(!IsEmpty(file) && !DebuggingEnabledForFile(file))
+	if(!IsEmpty(file) && !DP_DebuggingEnabledForFile(file))
 		return NaN
 	endif
 
