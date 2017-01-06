@@ -1157,10 +1157,16 @@ Function WBP_SetVarProc_SweepCount(sva) : SetVariableControl
 	return 0
 End
 
-Function WBP_ButtonProc_AutoScale(ctrlName) : ButtonControl
-	String ctrlName
+Function WBP_ButtonProc_AutoScale(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	SetAxis/A/W=$WaveBuilderGraph
+	switch(ba.eventCode)
+		case 2: // mouse up
+			SetAxis/A/W=$WaveBuilderGraph
+			break
+	endswitch
+
+	return 0
 End
 
 Function WBP_CheckProc(cba) : CheckBoxControl
