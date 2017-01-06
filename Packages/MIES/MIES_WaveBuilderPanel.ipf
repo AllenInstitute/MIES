@@ -1823,7 +1823,7 @@ Function/S WBP_ReturnFoldersList()
 		i += 1
 	while(1)
 
-	return NONE + ";root:;" + folderNameList
+	return NONE + ";root:;..;" + folderNameList
 End
 
 Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
@@ -1841,7 +1841,17 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 				path = "root:"
 			else
 				ControlInfo/W=$panel group_WaveBuilder_FolderPath
-				path = s_value + popStr + ":"
+
+				if(!cmpstr(popStr, ".."))
+					path = S_Value + ":"
+				else
+					path = s_value + popStr + ":"
+				endif
+
+				// canonicalize path
+				if(DataFolderExists(path))
+					path = GetDataFolder(1, $path)
+				endif
 			endif
 
 			GroupBox group_WaveBuilder_FolderPath win=$panel, title = path
