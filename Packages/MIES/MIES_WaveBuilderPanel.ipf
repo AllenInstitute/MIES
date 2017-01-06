@@ -1450,13 +1450,18 @@ static Function WBP_UpdateListOfWaves()
 	PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, value = #ListOfWavesInFolder
 End
 
-Function WBP_SetVarProc_SetSearchString(ctrlName,varNum,varStr,varName) : SetVariableControl
-	String ctrlName
-	Variable varNum
-	String varStr
-	String varName
+Function WBP_SetVarProc_SetSearchString(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
 
-	WBP_UpdateListOfWaves()
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			WBP_UpdateListOfWaves()
+			break
+	endswitch
+
+	return 0
 End
 
 Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
