@@ -4328,7 +4328,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 			continue
 		endif
 
-		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
+		DisableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
