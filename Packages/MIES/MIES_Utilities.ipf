@@ -2762,3 +2762,17 @@ Function RemoveAllDimLabels(wv)
 		endfor
 	endfor
 End
+
+/// @brief Calculate the value for `mskip` of `ModifyGraph`
+///
+/// @param numPoints  number of points shown
+/// @param numMarkers desired number of markers
+Function GetMarkerSkip(numPoints, numMarkers)
+	variable numPoints, numMarkers
+
+	if(!IsFinite(numPoints) || !IsFinite(numMarkers))
+		return 1
+	endif
+
+	return trunc(limit(numPoints / numMarkers, 1, 2^15 - 1))
+End
