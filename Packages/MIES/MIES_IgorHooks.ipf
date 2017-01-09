@@ -10,7 +10,7 @@
 /// Mainly useful for temporaries which you want to recreate on initialization
 static Function IH_KillTemporaries()
 
-	string trashFolders, path, allFolders
+	string trashFolders, path, allFolders, list
 	variable numFolders, i
 
 	DFREF dfr = GetMiesPath()
@@ -30,6 +30,10 @@ static Function IH_KillTemporaries()
 
 	RemoveEmptyDataFolder(dfr)
 	IH_KillStimSets()
+
+	DFREF dfr = GetWaveBuilderDataPath()
+	list = GetListOfObjects(dfr, SEGMENTWAVE_SPECTRUM_PREFIX + ".*", fullPath=1)
+	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
 End
 
 /// @brief Remove the amplifier connection waves

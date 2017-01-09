@@ -434,7 +434,9 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION = 13
+Constant DA_EPHYS_PANEL_VERSION    = 13
+
+Constant WAVEBUILDER_PANEL_VERSION = 1
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -477,6 +479,8 @@ Constant HARDWARE_MAX_DEVICES = 10
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 /// @}
+
+Constant HARDWARE_ITC_MIN_SAMPINT_HZ  = 200e3 ///< ITC DACs
 
 StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
 StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
@@ -529,3 +533,36 @@ Constant PRESSURE_METHOD_MANUAL   = 4
 /// @}
 
 StrConstant POPUPMENU_DIVIDER = "\\M1(-"
+
+/// @name Constants for different WaveBuilder epochs
+/// Numbers are stored in the SegWvType waves, so they are part of our "API".
+/// @anchor WaveBuilderEpochTypes
+/// @{
+Constant EPOCH_TYPE_SQUARE_PULSE       = 0
+Constant EPOCH_TYPE_RAMP               = 1
+Constant EPOCH_TYPE_NOISE              = 2
+Constant EPOCH_TYPE_SIN_COS            = 3
+Constant EPOCH_TYPE_SAW_TOOTH          = 4
+Constant EPOCH_TYPE_SQUARE_PULSE_TRAIN = 5
+Constant EPOCH_TYPE_PSC                = 6
+Constant EPOCH_TYPE_CUSTOM             = 7
+Constant EPOCH_TYPE_COMBINE            = 8
+/// @}
+
+/// @name Parameters for gnoise and enoise
+///@{
+Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
+Constant NOISE_GEN_MERSENNE_TWISTER    = 2
+///@}
+
+StrConstant SEGMENTWAVE_SPECTRUM_PREFIX = "segmentWaveSpectrum"
+
+/// @name Different types of noise epochs
+/// @anchor EpochNoiseTypes
+///@{
+Constant NOISE_TYPE_WHITE = 0
+Constant NOISE_TYPE_PINK  = 1
+Constant NOISE_TYPE_BROWN = 2
+///@}
+
+StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"

@@ -51,3 +51,9 @@ Constant V_CLAMP_MODE      = 0
 Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 /// @}
+
+/// @name Parameters for gnoise and enoise
+///@{
+Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
+Constant NOISE_GEN_MERSENNE_TWISTER    = 2
+///@}
