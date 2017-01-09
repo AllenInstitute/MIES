@@ -253,7 +253,7 @@ Function AR_HandleRanges(graph, [removeRange])
 				endif
 			endfor
 
-			if(IsEmpty(leftAxis))
+			if(IsEmpty(leftAxis) && !removeRange)
 				// axis is not shown, can happen with oodDAQ region slider
 				continue
 			endif
