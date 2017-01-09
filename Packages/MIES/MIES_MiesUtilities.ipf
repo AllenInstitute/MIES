@@ -1818,48 +1818,6 @@ Function GetNumberFromType([var, str, itcVar])
 	endif
 End
 
-/// @brief Report ITC/ITCXOP errors in a user friendly manner and abort
-Function ReportAndAbortOnITCErrors()
-
-	string cmd
-	NVAR/Z ITCError, ITCXOPError
-	ASSERT(NVAR_EXISTS(ITCError) && NVAR_EXISTS(ITCXOPError), "The global variables ITCError and ITCXOPError must exist in the CDF")
-
-	// we only need the lower 32bits of the error
-	ITCError = ITCError & 0x00000000ffffffff
-
-	if(ITCError != 0)
-		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
-
-		Make/I/O/N=1 errorCode   = 0
-		Make/T/O/N=2 errorString = ""
-		Execute "ITCGetLastError/Z=1 ErrorCode"
-		sprintf cmd, "ITCGetErrorString/Z=1/X=3 %d, ErrorString", ErrorCode[0]
-		Execute cmd
-
-		print errorString[0]
-		print errorString[1]
-		print "Some hints you might want to try!"
-		print "- Is the correct ITC device type selected?"
-		print "- Is your ITC Device connected to a power socket?"
-		print "- Is your ITC Device connected to your computer?"
-		print "- Have you tried unlocking/locking the device already?"
-		print "- Reseating all connections between the DAC and the computer has also helped in the past."
-#ifndef EVIL_KITTEN_EATING_MODE
-		Abort
-#endif
-	elseif(ITCXOPError != 0)
-		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%#x\r", ITCError, ITCXOPError
-		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
-		printf "Call stack: %s\r", GetRTStackInfo(3)
-#ifndef EVIL_KITTEN_EATING_MODE
-		Abort
-#endif
-	endif
-
-	return 0
-End
-
 /// @brief Append the MIES version to the wave's note
 Function AppendMiesVersionToWaveNote(wv)
 	Wave wv
@@ -2346,7 +2304,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 End
 
 /// @brief Extract the sweep number from a `$something_*` string
-Function ExtractSweepNumber(str)
+threadsafe Function ExtractSweepNumber(str)
 	string str
 
 	return str2num(StringFromList(ItemsInList(str, "_") - 1, str, "_"))
@@ -3311,3 +3269,58 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 	string/G targetDFR:note = note(sweepWave)
 End
+
+/// @brief Determine if the window/subwindow belongs to our DataBrowser
+///
+/// Useful for databrowser/sweepbrowser code which must know from which panel it is called.
+/// @sa GetSweepGraph()
+Function IsDataBrowser(win)
+	string win
+
+	string graph, mainWindow
+
+	mainWindow = GetMainWindow(win)
+	ASSERT(WindowExists(mainWindow), "missing window")
+
+	graph = mainWindow + "#DataBrowserGraph"
+
+	if(WindowExists(graph))
+		return 1
+	else
+		return 0
+	endif
+End
+
+/// @brief Return the main graph, works with DataBrowser and SweepBrowser
+Function/S GetSweepGraph(win)
+	string win
+
+	string mainWindow = GetMainWindow(win)
+
+	if(IsDataBrowser(win))
+		return  mainWindow + "#DataBrowserGraph"
+	else
+		return mainWindow
+	endif
+End
+
+/// @brief Add user data "panelVersion" to the panel
+Function AddVersionToPanel(win, version)
+	string win
+	variable version
+
+	SetWindow $win, userData(panelVersion) = num2str(version)
+End
+
+/// @brief Return 1 if the panel is up to date, zero otherwise
+Function HasPanelLatestVersion(win, expectedVersion)
+	string win
+	variable expectedVersion
+
+	variable version
+
+	ASSERT(windowExists(win), "Non existent window")
+	version = str2num(GetUserData(win, "", "panelVersion"))
+
+	return version == expectedVersion
+end

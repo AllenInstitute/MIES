@@ -155,11 +155,18 @@ Constant CHANNEL_INDEX_ALL_I_CLAMP = -3
 Constant CHANNEL_TYPE_UNKNOWN      = 0x150
 /// @}
 
-/// @name Constants for the selection wave of a ListBox
+/// @name Constants for the bitmask entries stored in the selection wave
+///       of a ListBox
+/// @anchor ListBoxSelectionWaveFlags
 /// @{
-Constant LISTBOX_SELECTED          = 0x01
-Constant LISTBOX_TREEVIEW_EXPANDED = 0x10
-Constant LISTBOX_TREEVIEW          = 0x40
+Constant LISTBOX_SELECTED              = 0x01
+Constant LISTBOX_CELL_EDITABLE         = 0x02
+Constant LISTBOX_CELL_DOUBLECLICK_EDIT = 0x04
+Constant LISTBOX_SHIFT_SELECTION       = 0x08
+Constant LISTBOX_CHECKBOX_SELECTED     = 0x10
+Constant LISTBOX_CHECKBOX              = 0x20
+Constant LISTBOX_TREEVIEW_EXPANDED     = 0x10 ///< Convenience definition, equal to #LISTBOX_CHECKBOX_SELECTED
+Constant LISTBOX_TREEVIEW              = 0x40
 /// @}
 
 Constant INITIAL_KEY_WAVE_COL_COUNT = 4
@@ -520,3 +527,5 @@ Constant PRESSURE_METHOD_BREAKIN  = 2
 Constant PRESSURE_METHOD_CLEAR    = 3
 Constant PRESSURE_METHOD_MANUAL   = 4
 /// @}
+
+StrConstant POPUPMENU_DIVIDER = "\\M1(-"

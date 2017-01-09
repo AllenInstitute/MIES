@@ -5080,7 +5080,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 #endif
 
-		if(!DAP_PanelIsUpToDate(panelTitle))
+		if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
 			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", panelTitle
 			ControlWindowToFront()
 			return 1
@@ -6938,7 +6938,7 @@ Function/S DAP_CreateDAEphysPanel()
 	Execute "DA_Ephys()"
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
-	SetWindow $panel, userData(panelVersion) = num2str(DA_EPHYS_PANEL_VERSION)
+	AddVersionToPanel(panel, DA_EPHYS_PANEL_VERSION)
 
 	return panel
 End
@@ -7080,18 +7080,6 @@ Function DAP_UpdateListOfPressureDevices()
 		PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
 	endfor
 End
-
-/// @brief Return 1 if the DA_Ephys panel is up to date, zero otherwise
-Function DAP_PanelIsUpToDate(panelTitle)
-	string panelTitle
-
-	variable version
-
-	ASSERT(windowExists(panelTitle), "Non existent window")
-	version = str2num(GetUserData(panelTitle, "", "panelVersion"))
-
-	return version == DA_EPHYS_PANEL_VERSION
-end
 
 /// @brief Query the device lock status
 ///

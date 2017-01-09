@@ -8,7 +8,6 @@
 static StrConstant LAB_NOTEBOOK_BROWSER = "LabnotebookBrowser"
 static StrConstant TPSTORAGE_BROWSER    = "TPStorageBrowser"
 static StrConstant USERDATA_AD_COLUMNS = "ADColumns"
-static StrConstant POPUPMENU_DIVIDER = "\\M1(-"
 
 static Function/S LBN_GetLeftPanel(win)
 	string win

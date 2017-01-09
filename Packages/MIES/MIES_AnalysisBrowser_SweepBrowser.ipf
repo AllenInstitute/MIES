@@ -668,7 +668,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,262.00},size={95.00,15.00},proc=SB_CheckboxChangedSettings,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
-	Button button_SweepBrowser_RestData,pos={100.00,277.00},size={51.00,20.00},proc=AR_ButtonProc_RestoreData,title="Restore"
+	Button button_SweepBrowser_RestData,pos={100.00,277.00},size={51.00,20.00},proc=SB_ButtonProc_RestoreData,title="Restore"
 	Button button_SweepBrowser_RestData,help={"Duplicate the graph and its trace for further processing"}
 	SetVariable setvar_SweepBrowser_SweepStep,pos={46.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
@@ -1077,7 +1077,7 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 	endswitch
 End
 
-Function AR_ButtonProc_RestoreData(ba) : ButtonControl
+Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string graph, traceList

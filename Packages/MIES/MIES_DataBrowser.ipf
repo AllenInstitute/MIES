@@ -138,13 +138,7 @@ static Function DB_ClipSweepNumber(panelTitle, sweepNo)
 
 	// handles situation where data sweep number starts at a value greater than the controls number
 	// usually occurs after locking when control is set to zero
-	if(sweepNo < firstSweep)
-		sweepNo = firstSweep
-	elseif(sweepNo > lastSweep)
-		sweepNo = lastSweep
-	endif
-
-	return sweepNo
+	return limit(sweepNo, firstSweep, lastSweep)
 End
 
 /// @brief Plot the given sweep in the locked Data Browser
@@ -784,7 +778,7 @@ Function DB_SliderProc_ChangedSetting(spa) : SliderControl
 
 	string panelTitle
 
-	if(spa.eventCode & 0x1)
+	if(spa.eventCode > 0 && spa.eventCode & 0x1)
 		panelTitle = spa.win
 		DB_PlotSweep(panelTitle)
 	endif
@@ -818,15 +812,15 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					else
 						DisableControl(panelTitle, "slider_oodDAQ_regions")
 					endif
-				break
+					break
 				default:
-				if(StringMatch(ctrl, "check_channelSel_*"))
-					DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
-					WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
-					ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-					channelSel[channelNum][%$channelType] = checked
-				endif
-				break
+					if(StringMatch(ctrl, "check_channelSel_*"))
+						DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
+						WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
+						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
+						channelSel[channelNum][%$channelType] = checked
+					endif
+					break
 			endswitch
 
 			DB_PlotSweep(panelTitle)
@@ -898,7 +892,7 @@ Function DB_CheckboxProc_ArtRemoval(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
+static Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
