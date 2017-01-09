@@ -235,8 +235,8 @@ Function AR_HandleRanges(graph, [removeRange])
 				continue
 			endif
 
-			first = ScaleToIndex(AD, str2num(listBoxWave[i][0]), ROWS)
-			last  = ScaleToIndex(AD, str2num(listBoxWave[i][1]), ROWS)
+			first = limit(ScaleToIndex(AD, str2num(listBoxWave[i][0]), ROWS), 0, DimSize(AD, ROWS) - 1)
+			last  = limit(ScaleToIndex(AD, str2num(listBoxWave[i][1]), ROWS), 0, DimSize(AD, ROWS) - 1)
 
 			leftAxis = ""
 			for(k = 0; k < NUM_HEADSTAGES; k += 1)
