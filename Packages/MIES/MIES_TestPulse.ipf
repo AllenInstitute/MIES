@@ -534,8 +534,6 @@ End
 Function TP_Teardown(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetDevicePath(panelTitle)
-
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
 
 	ED_TPDocumentation(panelTitle)
