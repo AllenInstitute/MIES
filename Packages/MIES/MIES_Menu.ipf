@@ -25,7 +25,7 @@ Menu "Mies Panels", dynamic
 	"About MIES"                 , /Q, OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
-		"Open debug panel"                          , /Q, OpenDebugPanel()
+		"Open debug panel"                          , /Q, DP_OpenDebugPanel()
 		"Check Installation"                        , /Q, CHI_CheckInstallation()
 		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
 		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1
