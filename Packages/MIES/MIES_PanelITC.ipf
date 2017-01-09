@@ -4308,10 +4308,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 
 	variable numHS, i
 
-	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	if(NVAR_Exists(count))
-		KillVariables count
-	endif
+	NVAR count = $GetCount(panelTitle)
+	count = NaN
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
@@ -4371,9 +4369,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	NVAR DataAcqState = $GetDataAcqState(panelTitle)
 	DataAcqState = 0
-
-	NVAR count = $GetCount(panelTitle)
-	KillVariables count
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
