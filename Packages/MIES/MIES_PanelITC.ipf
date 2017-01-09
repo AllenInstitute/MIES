@@ -6012,9 +6012,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
-		NVAR count = $GetCount(panelTitle)
-
-		if(IsFinite(count))
+		if(!RA_IsFirstSweep(panelTitle))
+			NVAR count = $GetCount(panelTitle)
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
 			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		endif

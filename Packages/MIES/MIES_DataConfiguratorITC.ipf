@@ -1151,14 +1151,14 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	string sequenceWaveName
 
 	DFREF devicePath = GetDevicePath(panelTitle)
-	NVAR count = $GetCount(panelTitle)
 
 	// wave exists only if random set sequence is selected
 	sequenceWaveName = SetName + num2str(channelType) + num2str(channelNo) + "_S"
 	WAVE/Z/SDFR=devicePath WorkingSequenceWave = $sequenceWaveName
 
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
-	if(IsFinite(count))
+	if(!RA_IsFirstSweep(panelTitle))
+		NVAR count = $GetCount(panelTitle)
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		ControlInfo/W=$panelTitle Check_DataAcq_Indexing // check indexing status
 		if(v_value == 0)// if indexing is off...
@@ -1202,7 +1202,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 				cycleCount = 1
 			endif
 		endif
-	else
+	else // first sweep
 		ControlInfo/W=$panelTitle check_DataAcq_RepAcqRandom
 		if(v_value == 0) // set step sequence is not random
 			column = 0

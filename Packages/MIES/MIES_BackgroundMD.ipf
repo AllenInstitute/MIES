@@ -130,13 +130,11 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
-	NVAR count = $GetCount(panelTitle)
-
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitle)
-	if(!IsFinite(count))
+	if(RA_IsFirstSweep(panelTitle))
 		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			RA_YokedRAStartMD(panelTitle)
 		else

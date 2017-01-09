@@ -395,3 +395,13 @@ Function RA_YokedRABckgTPCallRACounter(panelTitle)
 		RA_BckgTPwithCallToRACounterMD(ITC1600_FIRST_DEVICE)
 	endif
 End
+
+/// @brief Return one if we are acquiring currently the very first sweep of a
+///        possible repeated acquisition cycle. Zero means that we acquire a later
+///        sweep than the first one in a repeated acquisition cycle.
+Function RA_IsFirstSweep(panelTitle)
+	string panelTitle
+
+	NVAR count = $GetCount(panelTitle)
+	return !IsFinite(count)
+End

@@ -59,8 +59,7 @@ Function ITC_StopDataAcq()
 
 	DM_SaveAndScaleITCData(panelTitleG)
 
-	NVAR count = $GetCount(panelTitleG)
-	if(!IsFinite(count))
+	if(RA_IsFirstSweep(panelTitleG))
 		if(GetCheckboxState(panelTitleG, "Check_DataAcq1_RepeatAcq"))
 			RA_Start(PanelTitleG)
 		else
@@ -201,8 +200,7 @@ Function ITC_TestPulseFunc(s)
 		SCOPE_UpdateGraph(panelTitle)
 	endif
 
-	NVAR count = $GetCount(panelTitle)
-	if(!IsFinite(count))
+	if(RA_IsFirstSweep(panelTitle))
 		if(GetKeyState(0) & ESCAPE_KEY)
 			beep
 			ITC_StopTestPulseSingleDevice(panelTitle)

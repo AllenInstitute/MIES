@@ -190,8 +190,8 @@ End
 /// @brief Returns the absolute path to the global variable `count` storing the
 ///        number of data acquisition still left to perform.
 ///
-///        The initial value of NaN has the same semantics as the previous non existence
-///        of this variable. Both meaning that no data acquisition is done right now.
+/// If the return value is NaN it means either that this is the very
+/// first sweep or that no DAQ is ongoing.
 Function/S GetCount(panelTitle)
 	string panelTitle
 
