@@ -4,6 +4,11 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
+static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
+static Constant TP_TPSTORAGE_WRITE_INTERVAL   = 0.18
+static Constant TP_FIT_POINTS                 = 5
+static Constant TP_DIMENSION_SCALING_INTERVAL = 100  ///< Interval in steps of #TP_TPSTORAGE_WRITE_INTERVAL for recalculating the time axis
+
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -245,18 +250,6 @@ static Function TP_CalculateAverage(buffer, dest)
 	endif
 End
 
-/// Sampling interval in seconds
-static Constant samplingInterval = 0.18
-
-/// Fitting range in seconds
-static Constant fittingRange = 5
-
-/// Interval in steps of samplingInterval for recalculating the time axis
-static Constant dimensionRescalingInterval = 100
-
-/// Units MOhm
-static Constant MAX_VALID_RESISTANCE = 3000
-
 /// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
@@ -283,9 +276,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		// time of the first sweep
 		TPStorage[0][][%TimeInSeconds] = now
 		needsUpdate = 1
-		// % is used here to index the wave using dimension labels, see also
-		// DisplayHelpTopic "Example: Wave Assignment and Indexing Using Labels"
-	elseif((now - TPStorage[count - 1][0][%TimeInSeconds]) > samplingInterval)
+	elseif((now - TPStorage[count - 1][0][%TimeInSeconds]) > TP_TPSTORAGE_WRITE_INTERVAL)
 		needsUpdate = 1
 	endif
 
@@ -293,8 +284,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
 		TPStorage[count][][%Vm]                         = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]             = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%SteadyStateResistance]      = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
+		TPStorage[count][][%PeakResistance]             = min(InstResistance[0][q][0], TP_MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance]      = min(SSResistance[0][q][0], TP_MAX_VALID_RESISTANCE)
 		TPStorage[count][][%TimeInSeconds]              = now
 		TPStorage[count][][%TimeStamp]                  = DateTime
 		TPStorage[count][][%TimeStampSinceIgorEpochUTC] = DateTimeInUTC()
@@ -303,16 +294,16 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 		P_PressureControl(panelTitle) // Call pressure functions
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
-		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
+		TP_AnalyzeTP(panelTitle, TPStorage, count)
 
 		// not all rows have the unit seconds, but with
 		// setting up a seconds scale, commands like
 		// Display TPStorage[][0][%PeakResistance]
 		// show the correct units for the bottom axis
-		if((now - lastRescaling) > dimensionRescalingInterval * samplingInterval)
+		if((now - lastRescaling) > TP_DIMENSION_SCALING_INTERVAL * TP_TPSTORAGE_WRITE_INTERVAL)
 
 			if(!count) // initial estimate
-				delta = samplingInterval
+				delta = TP_TPSTORAGE_WRITE_INTERVAL
 			else
 				delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
 			endif
@@ -332,16 +323,14 @@ End
 /// @param panelTitle       locked device string
 /// @param TPStorage        test pulse storage wave
 /// @param endRow           last valid row index in TPStorage
-/// @param samplingInterval approximate time duration in seconds between data points
-/// @param fittingRange     time duration to use for fitting
-static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
+static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 	string panelTitle
 	Wave/Z TPStorage
-	variable endRow, samplingInterval, fittingRange
+	variable endRow
 
 	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode, numADCs
 
-	startRow = endRow - ceil(fittingRange / samplingInterval)
+	startRow = endRow - ceil(TP_FIT_POINTS / TP_TPSTORAGE_WRITE_INTERVAL)
 
 	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS))
 		return NaN
