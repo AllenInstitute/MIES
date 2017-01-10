@@ -1,3 +1,82 @@
+Release 1.1
+===========
+
+General
+-------
+-  Add more user analysis functions
+
+DA\_Ephys
+---------
+-  DA Tab: Add controls for changing all channels in a given clamp mode
+-  Bugfix: Use existing GUI procedures for DA1-7 search controls
+
+WaveBuilder
+-----------
+-  Add panel versioning
+-  WP/WPT waves received a wave version upgrade and changed dimensions labels
+-  Custom epoch: Enhance GUI usability for wave selection
+-  Bugfix: Use existing GUI procedure for delta type controls
+-  Avoid useless stimset recreation on epoch selection by mouse
+-  Fix minor GUI layout issues
+-  GPB-Noise: Complete rewrite epoch generation
+   The old approach had the user-visible drawback that it was very very slow
+   for durations larger than 1000ms.
+
+   The new approach has the following properties:
+
+   - Fast creation, at least a magnitude faster, by using IFFT and FilterIIR
+   - Unified approach for white, pink and brown noise
+   - Fix interchanged definitions for pink and brown noise
+   - Only one filter coefficient, ranging from 1 to 100, with delta remains
+   - ``1/f increment`` was replaced by the experimental build resolution option
+   - The amplitude is now peak-to-peak and not standard deviation
+   - The phase is now uniform distributed between [-pi, pi) using the
+     Mersenne-Twister as pseudo random number generator
+   - epoch noise tab cleanup
+   - FFT phase and spectrum is displayed for each sweep
+
+   Keeping the old method for compatibility with existing parameter stimset waves was deemed
+   not worth the effort.
+
+DataBrowser
+-----------
+- Bugfix: Use correct location for channel selection wave
+
+DataBrowser/SweepBrowser
+------------------------
+- Add Artefact removal panel
+
+Pressure Control
+----------------
+- Set pressure to atmosphere on disabling the headstage
+- Bugfix: Avoid spurious control on unrelated windows
+
+Labnotebook
+-----------
+- Enhance ``EntrySourceType`` heuristics for very old labnotebooks
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+None
+
+New textual keys
+~~~~~~~~~~~~~~~~
+None
+
+NWB/IPNWB
+---------
+None
+
+File format
+~~~~~~~~~~~
+None
+
+Internal
+--------
+- Add script to build documentation on Linux using docker
+- Bugfix: Add missing files to the release package
+- Add panel for tuning debug mode on a per-file level
+
 Release 1.0
 ===========
 
