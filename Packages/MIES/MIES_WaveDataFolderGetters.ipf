@@ -413,7 +413,7 @@ Function/Wave GetChannelClampMode(panelTitle)
 		return wv
 	endif
 
-	Make/N=(16,2) dfr:ChannelClampMode/Wave=wv
+	Make/N=(NUM_AD_CHANNELS, 2) dfr:ChannelClampMode/Wave=wv
 
 	SetDimLabel COLS, 0, DAC, wv
 	SetDimLabel COLS, 1, ADC, wv
