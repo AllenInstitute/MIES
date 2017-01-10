@@ -106,8 +106,8 @@ Function TP_Delta(panelTitle)
 	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
 	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
 	NVAR/SDFR=dfr baselineFrac
-	SVAR/SDFR=dfr clampModeString
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
+	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
@@ -160,14 +160,11 @@ Function TP_Delta(panelTitle)
 	Make/FREE/N=(1, columnsInWave) InstAvg
 	variable 	OndDBaseline
 	
-	// store the clamp mode in a free wave
-	Make/FREE/N=(ItemsInList(clampModeString)) clampMode = str2num(StringFromList(p, clampModeString))
-	
 	do
 		matrixOp /Free Instantaneous1d = col(Instantaneous, i + ADChannelToMonitor)
 		WaveStats/Q/M=1 Instantaneous1d
 		OndDBaseline = AvgBaselineSS[0][i + ADChannelToMonitor]
-		if((ClampMode[i] == V_CLAMP_MODE ? sign(amplitudeVCGlobal) : sign(amplitudeICGlobal)) == 1) // handles positive or negative TPs
+		if((activeHSProp[i][%ClampMode] == V_CLAMP_MODE ? sign(amplitudeVCGlobal) : sign(amplitudeICGlobal)) == 1) // handles positive or negative TPs
 			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
 		else
 			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
@@ -186,7 +183,7 @@ Function TP_Delta(panelTitle)
 
 	i = 0
 	do
-		if(ClampMode[i] == I_CLAMP_MODE)
+		if(activeHSProp[i][%ClampMode] == I_CLAMP_MODE)
 			// R = V / I
 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
 			Multithread InstResistance[0][i] =  (InstAvg[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000

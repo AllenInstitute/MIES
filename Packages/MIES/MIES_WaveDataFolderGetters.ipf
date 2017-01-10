@@ -421,6 +421,40 @@ Function/Wave GetChannelClampMode(panelTitle)
 	return wv
 End
 
+/// @brief Return properties for the active headstages *during* TP/DAQ
+///
+/// The order is the same as in ITCChanConfigWave and there does, by principle,
+/// not include unassociated ADCs.
+///
+/// @sa DC_UpdateActiveClampModeWave()
+Function/WAVE GetActiveHSProperties(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
+
+	Wave/Z/SDFR=dfr wv = ChannelClampModeActive
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/N=(NUM_AD_CHANNELS, 4) dfr:ChannelClampModeActive/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetDimLabel COLS, 0, ADC      , wv
+	SetDimLabel COLS, 1, DAC      , wv
+	SetDimLabel COLS, 2, ClampMode, wv
+	SetDimLabel COLS, 3, Headstage, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
 /// @brief Return the ITC devices folder "root:mies:ITCDevices"
 threadsafe Function/DF GetITCDevicesFolder()
 

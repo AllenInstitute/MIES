@@ -369,14 +369,13 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	Make/FREE/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
 	numSettings[0][0][0,7] = statusHS[r]
 
-	// clamp mode string only holds entries for active headstages
-	SVAR clampModeString = $GetClampModeString(panelTitle)
+	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
 			continue
 		endif
 
-		numSettings[0][1][i] = str2num(StringFromList(j, clampModeString))
+		numSettings[0][1][i] = activeHSProp[j][%ClampMode]
 		j += 1
 	endfor
 
@@ -514,9 +513,9 @@ Function ED_TPDocumentation(panelTitle)
 	string panelTitle
 
 	variable sweepNo, RTolerance, numActiveHS
-	variable i, j, clampMode
+	variable i, j
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	SVAR clampModeString = $GetClampModeString(panelTitle)
+	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
 	WAVE/Z/SDFR=dfr BaselineSSAvg
 	WAVE/Z/SDFR=dfr InstResistance
@@ -586,8 +585,7 @@ Function ED_TPDocumentation(panelTitle)
 			continue
 		endif
 
-		clampMode = str2num(StringFromList(j, clampModeString))
-		if(clampMode == V_CLAMP_MODE)
+		if(activeHSProp[j][%ClampMode] == V_CLAMP_MODE)
 			TPSettingsWave[0][4][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN)
 			TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN)
 			TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN)
@@ -599,9 +597,9 @@ Function ED_TPDocumentation(panelTitle)
 
 		TPSettingsWave[0][2][i]  = InstResistance[0][j]
 		TPSettingsWave[0][3][i]  = SSResistance[0][j]
-		TPSettingsWave[0][9][i]  = AFH_GetDACFromHeadstage(panelTitle, i)
-		TPSettingsWave[0][10][i] = AFH_GetADCFromHeadstage(panelTitle, i)
-		TPSettingsWave[0][11][i] = clampMode
+		TPSettingsWave[0][9][i]  = activeHSProp[j][%DAC]
+		TPSettingsWave[0][10][i] = activeHSProp[j][%ADC]
+		TPSettingsWave[0][11][i] = activeHSProp[j][%ClampMode]
 		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active
 			   // headstage (no place holder columns), j only increments for active headstages.
 	endfor

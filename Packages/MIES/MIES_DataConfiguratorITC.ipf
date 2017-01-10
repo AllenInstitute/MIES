@@ -92,15 +92,15 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 	DC_PDInITCFIFOAvailAllCW(panelTitle)
 
-	DC_UpdateClampModeString(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	DC_UpdateActiveHSProperties(panelTitle, ADCs)
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
-		numADCs = DimSize(GetADCListFromConfig(ITCChanConfigWave), ROWS)
+		numADCs = DimSize(ADCs, ROWS)
 
 		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 		DFREF dfr = GetDeviceTestPulse(panelTitle)
@@ -151,26 +151,31 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	endfor
 End
 
-/// @brief Updates the global string of clamp modes based on the AD channel associated with the headstage
-///
-/// In the order of the ADchannels in ITCDataWave - i.e. numerical order
-static Function DC_UpdateClampModeString(panelTitle)
+static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
 	string panelTitle
+	WAVE ADCs
 
-	variable i, numChannels, headstage
+	variable i, idx, numChannels, headStage
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
-	SVAR clampModeString = $GetClampModeString(panelTitle)
-	clampModeString = ""
+	activeHSProp = NaN
 
 	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
-		if(IsFinite(headstage))
-			clampModeString = AddListItem(num2str(DAP_MIESHeadstageMode(panelTitle, headstage)), clampModeString, ";", inf)
+
+		if(!IsFinite(headstage))
+			continue
 		endif
+
+		activeHSProp[idx][%HeadStage] = headStage
+		activeHSProp[idx][%ADC]       = ADCs[i]
+		activeHSProp[idx][%DAC]       = AFH_GetDACFromHeadstage(panelTitle, headstage)
+		activeHSProp[idx][%ClampMode] = GUIState[headStage][%HSMode]
+
+		idx += 1
 	endfor
 End
 
