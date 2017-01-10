@@ -738,10 +738,12 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 			case "setvar_DataAcq_Hold_VC":
 				AmpStorageWave[0][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite)
+				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
 				break
 			case "check_DatAcq_HoldEnableVC":
 				AmpStorageWave[1][0][i] = value
 				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite)
+				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
 				break
 			case "setvar_DataAcq_WCC":
 				AmpStorageWave[2][0][i] = value
@@ -856,10 +858,12 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 			case "setvar_DataAcq_Hold_IC":
 				AmpStorageWave[16][0][i] = value
 				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite)
+				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
 				break
 			case "check_DatAcq_HoldEnable":
 				AmpStorageWave[17][0][i] = value
 				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite)
+				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
 				break
 			case "setvar_DataAcq_BB":
 				AmpStorageWave[18][0][i] = value
@@ -1670,4 +1674,16 @@ static Function/S AI_GetMCCWinFilePath()
 #else
 	return "Molecular Devices\MultiClamp 700B Commander\MC700B.exe"
 #endif
+End
+
+///@brief Returns the holding command of the amplifier
+Function GetHoldingCommand(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	return MCC_GetHoldingEnable() ? MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_GETHOLDING_FUNC) : 0
 End

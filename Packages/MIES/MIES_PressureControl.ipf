@@ -137,6 +137,8 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 	endif
 
 	TPStorage[count][column][%PressureChange] = (TPStorage[count - 1][column][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE)
+
+	TPStorage[count][column][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
 End
 
 /// @brief Sets the pressure to atmospheric
@@ -242,7 +244,7 @@ static Function P_MethodSeal(panelTitle, headStage)
 			// print ElapsedTimeInSeconds
 
 			if(ElapsedTimeInSeconds > 20) // Allows 10 seconds to elapse before pressure would be changed again. The R slope is over the last 5 seconds.
-				RSlope = PressureDataWv[headStage][%PeakResistanceSlope]
+				RSlope = PressureDataWv[headStage][%SSResistanceSlope]
 				print "slope:", rslope, "thres:", RSlopeThreshold
 				if(RSlope < RSlopeThreshold) // if the resistance is not going up quickly enough increase the negative pressure
 					if(pressure > (0.98 *PressureDataWv[headStage][%PSI_SealMax])) // is the pressure beign applied less than the maximum allowed?
@@ -836,8 +838,8 @@ static Function P_UpdateSSRSlopeAndSSR(panelTitle)
 		Row = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
 		ASSERT(TPCycleCount >= 0, "Expecting a strictly positive TPCycleCount")
 		PressureDataWv[Row][%PeakR] = TPStorageWave[TPCycleCount][i][1] // update the peak resistance value
-		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[TPCycleCount][i][2]	// update the steady state resistance value
-		PressureDataWv[Row][%PeakResistanceSlope] = TPStorageWave[0][i][5] 	// Layer 5 of the TP storage wave contains the slope of the steady state resistance values of the TP
+		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[TPCycleCount][i][%SteadyStateResistance]	// update the steady state resistance value
+		PressureDataWv[Row][%SSResistanceSlope] = TPStorageWave[0][i][%Rss_Slope]
 	endfor																					// Column 22 of the PressureDataWv stores the steady state resistance slope
 End
 
