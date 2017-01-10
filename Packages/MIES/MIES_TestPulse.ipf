@@ -96,7 +96,9 @@ End
 Function TP_Delta(panelTitle)
 	string 	panelTitle
 
-	variable amplitudeIC, amplitudeVC
+	variable amplitudeIC, amplitudeVC, referenceTime
+
+	referenceTime = DEBUG_TIMER_START()
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	
@@ -214,6 +216,8 @@ Function TP_Delta(panelTitle)
 	variable numADCs = columns
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 static Function TP_CalculateAverage(buffer, dest)
