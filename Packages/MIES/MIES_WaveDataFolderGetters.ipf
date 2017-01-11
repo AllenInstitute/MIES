@@ -2162,7 +2162,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 5
+static Constant WP_WAVE_LAYOUT_VERSION = 6
 
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
@@ -2175,6 +2175,12 @@ Function UpgradeWaveParam(wv)
 
 	Redimension/N=(61, -1, 9) wv
 	AddDimLabelsToWP(wv)
+
+	// upgrade to wave version 6
+	if(ExistsWithCorrectLayoutVersion(wv, 5))
+		// only dim labels
+		return NaN
+	endif
 
 	// upgrade to wave version 5
 	// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
@@ -2255,6 +2261,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 53, $("Trigonometric function Sin/Cos") , wv
 	SetDimLabel ROWS, 54, $("Noise Type: White, Pink, Brown") , wv
 	SetDimLabel ROWS, 55, $("Build resolution (index)")       , wv
+	SetDimLabel ROWS, 56, $("Pulse train type (index)")       , wv
 End
 
 /// @brief Return the parameter wave for the wave builder panel

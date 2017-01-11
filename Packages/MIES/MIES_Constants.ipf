@@ -566,3 +566,4 @@ Constant NOISE_TYPE_BROWN = 2
 ///@}
 
 StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"
+StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
