@@ -448,27 +448,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case EPOCH_TYPE_NOISE:
-				// initialize the random seed value if not already done
-				if(WP[48][i][type] == 0)
-					WP[48][i][type] = GetNonReproducibleRandom()
-				endif
-				params.randomSeed = WP[48][i][type]
-				SetRandomSeed/BETR=1 params.randomSeed
-
-				if(WP[49][i][type])
-					// the stored seed value is the seed value for the *generation*
-					// of the individual seed values for each step
-					// Procedure:
-					// - Initialize RNG with stored seed
-					// - Query as many random numbers as current step count
-					// - Use the *last* random number as seed value for the new epoch
-					// In this way we get a different seed value for each step, but all are reproducibly
-					// derived from one seed value. And we still have different values for different epochs.
-					for(j = 1; j <= stepCount; j += 1)
-						params.randomSeed = GetReproducibleRandom()
-					endfor
-					SetRandomSeed/BETR=1 params.randomSeed
-				endif
+				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
 
 				WB_NoiseSegment(params)
 				WAVE segmentWave = WB_GetSegmentWave()
@@ -667,6 +647,40 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	SetScale /P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", WaveBuilderWave
 
 	return WaveBuilderWave
+End
+
+/// @brief Initialize the seed value of the pseudo random number generator
+static Function WB_InitializeSeed(WP, epoch, type, stepCount)
+	WAVE WP
+	variable epoch, type, stepCount
+
+	variable j, randomSeed
+
+	// initialize the random seed value if not already done
+	if(WP[48][epoch][type] == 0)
+		WP[48][epoch][type] = GetNonReproducibleRandom()
+	endif
+
+	randomSeed = WP[48][epoch][type]
+	SetRandomSeed/BETR=1 randomSeed
+
+	if(WP[49][epoch][type])
+		// the stored seed value is the seed value for the *generation*
+		// of the individual seed values for each step
+		// Procedure:
+		// - Initialize RNG with stored seed
+		// - Query as many random numbers as current step count
+		// - Use the *last* random number as seed value for the new epoch
+		// In this way we get a different seed value for each step, but all are reproducibly
+		// derived from one seed value. And we still have different values for different epochs.
+		for(j = 1; j <= stepCount; j += 1)
+			randomSeed = GetReproducibleRandom()
+		endfor
+
+		SetRandomSeed/BETR=1 randomSeed
+	endif
+
+	return randomSeed
 End
 
 /// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
