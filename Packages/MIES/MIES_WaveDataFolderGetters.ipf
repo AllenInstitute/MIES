@@ -2205,7 +2205,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel LAYERS,  2, $("Noise")             , wv
 	SetDimLabel LAYERS,  3, $("Sin")               , wv
 	SetDimLabel LAYERS,  4, $("Saw tooth")         , wv
-	SetDimLabel LAYERS,  5, $("Square pulse train"), wv
+	SetDimLabel LAYERS,  5, $("Pulse train")       , wv
 	SetDimLabel LAYERS,  6, $("PSC")               , wv
 	SetDimLabel LAYERS,  7, $("Load custom wave")  , wv
 	SetDimLabel LAYERS,  8, $("Combine")           , wv
@@ -2219,8 +2219,8 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 5 , $("Offset delta")                   , wv
 	SetDimLabel ROWS, 6 , $("Sin/chirp/saw tooth frequency")  , wv
 	SetDimLabel ROWS, 7 , $("Sin/chirp/saw frequency delta")  , wv
-	SetDimLabel ROWS, 8 , $("Square pulse duration")          , wv
-	SetDimLabel ROWS, 9 , $("Square pulse duration delta")    , wv
+	SetDimLabel ROWS, 8 , $("Train pulse duration")           , wv
+	SetDimLabel ROWS, 9 , $("Train pulse duration delta")     , wv
 	SetDimLabel ROWS, 10, $("PSC exp rise time")              , wv
 	SetDimLabel ROWS, 11, $("PSC exp rise time delta")        , wv
 	SetDimLabel ROWS, 12, $("PSC exp decay time 1/2")         , wv
@@ -2271,7 +2271,7 @@ End
 /// - Noise
 /// - Sin
 /// - Saw tooth
-/// - Square pulse train
+/// - Pulse train
 /// - PSC
 /// - Load custom wave
 /// - Combine

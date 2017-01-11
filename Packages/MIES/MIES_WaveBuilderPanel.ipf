@@ -75,7 +75,7 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(155,863,1162,1501)
+	NewPanel /K=1 /W=(110,417,1117,1055)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
@@ -89,7 +89,7 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
 	TabControl WBP_WaveType,tabLabel(2)="Noise",tabLabel(3)="Sin"
-	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
+	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Pulse train"
 	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load"
 	TabControl WBP_WaveType,tabLabel(8)="Combine",value= 0
 	TabControl WBP_Set_Parameters,pos={3.00,29.00},size={182.00,174.00},proc=ACL_DisplayTab
@@ -973,7 +973,7 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			endif
 			break
-		case EPOCH_TYPE_SQUARE_PULSE_TRAIN:
+		case EPOCH_TYPE_PULSE_TRAIN:
 			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
 				DisableControl(panel, "SetVar_WaveBuilder_P0")
 				EnableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
@@ -1214,7 +1214,7 @@ Function WBP_FinalTabHook(tca)
 
 	variable tabID = GetTabID(panel, "WBP_WaveType")
 
-	if(tabID != EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+	if(tabID != EPOCH_TYPE_PULSE_TRAIN)
 		EnableControl(panel, "SetVar_WaveBuilder_P0")
 	endif
 

@@ -6,8 +6,8 @@
 
 static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
-static Constant SQUARE_PULSE_TRAIN_MODE_DUR   = 0x01
-static Constant SQUARE_PULSE_TRAIN_MODE_PULSE = 0x02
+static Constant PULSE_TRAIN_MODE_DUR   = 0x01
+static Constant PULSE_TRAIN_MODE_PULSE = 0x02
 
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
@@ -415,7 +415,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		if(params.duration < 0 || !IsFinite(params.duration))
 			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
 			params.duration = 1
-		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_PULSE_TRAIN)
 			continue
 		endif
 
@@ -504,16 +504,16 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
-			case EPOCH_TYPE_SQUARE_PULSE_TRAIN:
+			case EPOCH_TYPE_PULSE_TRAIN:
 				if(WP[46][i][type]) // "Number of pulses" checkbox
-					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_PULSE)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
-					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_DUR)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
@@ -844,7 +844,7 @@ static Function WB_SawToothSegment(pa)
 	SegmentWave += pa.offset
 End
 
-static Function WB_SquarePulseTrainSegment(pa, mode)
+static Function WB_PulseTrainSegment(pa, mode)
 	struct SegmentParameters &pa
 	variable mode
 
@@ -856,10 +856,10 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		pa.frequency = 1.0
 	endif
 
-	if(mode == SQUARE_PULSE_TRAIN_MODE_PULSE)
+	if(mode == PULSE_TRAIN_MODE_PULSE)
 		// user defined number of pulses
 		pa.duration = pa.numberOfPulses / pa.frequency * 1000
-	elseif(mode == SQUARE_PULSE_TRAIN_MODE_DUR)
+	elseif(mode == PULSE_TRAIN_MODE_DUR)
 		// user defined duration
 		pa.numberOfPulses = pa.frequency * pa.duration / 1000
 	else
