@@ -508,6 +508,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                , str="PT")
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse Type"          , \
 							               str=StringFromList(params.pulseType, PULSE_TYPES_STRINGS))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"           , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude delta"     , var=params.DeltaAmp)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"           , var=params.Frequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"     , var=params.DeltaFreq)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"      , var=params.PulseDuration)
