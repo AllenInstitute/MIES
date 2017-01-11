@@ -914,6 +914,11 @@ static Function WB_PulseTrainSegment(pa, mode)
 		endfor
 	else
 		for(;;)
+			/// @todo
+			/// not reproducible (see solution for noise segment)
+			/// number of pulses is not followed
+			/// pulses may overlap
+			/// checkout why cba52ae0 (corrected error in how poisson trains were generated, 2013-10-22) did not work
 			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
 
