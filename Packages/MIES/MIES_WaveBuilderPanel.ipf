@@ -75,7 +75,7 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(110,417,1117,1055)
+	NewPanel /K=1 /W=(106,687,1113,1325)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
@@ -490,9 +490,9 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P23,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P23,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P23,limits={-inf,99749,1},value= _NUM:0
-	CheckBox check_SPT_Poisson_P44,pos={418.00,103.00},size={76.00,30.00},disable=1,proc=WBP_CheckProc,title="Poisson\rdistribution"
+	CheckBox check_SPT_Poisson_P44,pos={494.00,99.00},size={76.00,30.00},disable=1,proc=WBP_CheckProc,title="Poisson\rdistribution"
 	CheckBox check_SPT_Poisson_P44,help={"Poisson distribution of square pulses at the average frequency specified by the user."}
-	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo)= A"!!,I7!!#@2!!#?Q!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo)= A"!!,I]!!#@*!!#?Q!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_Poisson_P44,userdata(tabnum)=  "5"
@@ -772,10 +772,25 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_exp_P56,help={"Pulse train type"}
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(tabnum)=  "5"
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(tabcontrol)=  "WBP_WaveType"
-	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo)= A"!!,I6J,hqS!!#?;!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo)= A"!!,I6J,hqS!!#?!!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_exp_P56,mode=1,popvalue="Square",value= #"\"Square;Triangle\""
+	CheckBox check_NewSeedForEachSweep_P49_0,pos={494.00,133.00},size={85.00,15.00},disable=3,proc=WBP_CheckProc,title="Seed / Sweep"
+	CheckBox check_NewSeedForEachSweep_P49_0,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
+	CheckBox check_NewSeedForEachSweep_P49_0,userdata(tabnum)=  "5"
+	CheckBox check_NewSeedForEachSweep_P49_0,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo)= A"!!,I]!!#@i!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_NewSeedForEachSweep_P49_0,value= 0
+	Button button_NewSeed_P48_0,pos={494.00,153.00},size={72.00,20.00},disable=3,proc=WBP_ButtonProc_NewSeed,title="New Seed"
+	Button button_NewSeed_P48_0,help={"Create a different epoch by changing the seed value of the PRNG "}
+	Button button_NewSeed_P48_0,userdata(tabnum)=  "5"
+	Button button_NewSeed_P48_0,userdata(tabcontrol)=  "WBP_WaveType"
+	Button button_NewSeed_P48_0,userdata(ResizeControlsInfo)= A"!!,I]!!#A(!!#?I!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_NewSeed_P48_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_NewSeed_P48_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -989,6 +1004,12 @@ static Function WBP_UpdatePanelIfAllowed()
 			else
 				EnableControl(panel, "SetVar_WaveBuilder_P0")
 				DisableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
+			endif
+
+			if(GetCheckBoxState(panel,"check_SPT_Poisson_P44"))
+				EnableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0")
+			else
+				DisableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0")
 			endif
 
 			maxDuration = WBP_ReturnPulseDurationMax()

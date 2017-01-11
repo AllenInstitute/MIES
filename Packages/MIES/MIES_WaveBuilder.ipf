@@ -490,6 +490,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
 			case EPOCH_TYPE_PULSE_TRAIN:
+				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
+
 				if(WP[46][i][type]) // "Number of pulses" checkbox
 					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE)
 					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
@@ -517,6 +519,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"              , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"        , var=params.DeltaOffset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"    , var=params.NumberOfPulses)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution", str=SelectString(params.poisson, "False", "True"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"         , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"     , str=defMode, appendCR=1)
 				break
 			case EPOCH_TYPE_PSC:
@@ -930,12 +934,7 @@ static Function WB_PulseTrainSegment(pa, mode)
 		endfor
 	else
 		for(;;)
-			/// @todo
-			/// not reproducible (see solution for noise segment)
-			/// number of pulses is not followed
-			/// pulses may overlap
-			/// checkout why cba52ae0 (corrected error in how poisson trains were generated, 2013-10-22) did not work
-			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
+			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
