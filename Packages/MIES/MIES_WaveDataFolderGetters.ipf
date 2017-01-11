@@ -2162,7 +2162,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 5
+static Constant WP_WAVE_LAYOUT_VERSION = 6
 
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
@@ -2175,6 +2175,12 @@ Function UpgradeWaveParam(wv)
 
 	Redimension/N=(61, -1, 9) wv
 	AddDimLabelsToWP(wv)
+
+	// upgrade to wave version 6
+	if(ExistsWithCorrectLayoutVersion(wv, 5))
+		// only dim labels
+		return NaN
+	endif
 
 	// upgrade to wave version 5
 	// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
@@ -2205,7 +2211,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel LAYERS,  2, $("Noise")             , wv
 	SetDimLabel LAYERS,  3, $("Sin")               , wv
 	SetDimLabel LAYERS,  4, $("Saw tooth")         , wv
-	SetDimLabel LAYERS,  5, $("Square pulse train"), wv
+	SetDimLabel LAYERS,  5, $("Pulse train")       , wv
 	SetDimLabel LAYERS,  6, $("PSC")               , wv
 	SetDimLabel LAYERS,  7, $("Load custom wave")  , wv
 	SetDimLabel LAYERS,  8, $("Combine")           , wv
@@ -2219,8 +2225,8 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 5 , $("Offset delta")                   , wv
 	SetDimLabel ROWS, 6 , $("Sin/chirp/saw tooth frequency")  , wv
 	SetDimLabel ROWS, 7 , $("Sin/chirp/saw frequency delta")  , wv
-	SetDimLabel ROWS, 8 , $("Square pulse duration")          , wv
-	SetDimLabel ROWS, 9 , $("Square pulse duration delta")    , wv
+	SetDimLabel ROWS, 8 , $("Train pulse duration")           , wv
+	SetDimLabel ROWS, 9 , $("Train pulse duration delta")     , wv
 	SetDimLabel ROWS, 10, $("PSC exp rise time")              , wv
 	SetDimLabel ROWS, 11, $("PSC exp rise time delta")        , wv
 	SetDimLabel ROWS, 12, $("PSC exp decay time 1/2")         , wv
@@ -2255,6 +2261,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 53, $("Trigonometric function Sin/Cos") , wv
 	SetDimLabel ROWS, 54, $("Noise Type: White, Pink, Brown") , wv
 	SetDimLabel ROWS, 55, $("Build resolution (index)")       , wv
+	SetDimLabel ROWS, 56, $("Pulse train type (index)")       , wv
 End
 
 /// @brief Return the parameter wave for the wave builder panel
@@ -2271,7 +2278,7 @@ End
 /// - Noise
 /// - Sin
 /// - Saw tooth
-/// - Square pulse train
+/// - Pulse train
 /// - PSC
 /// - Load custom wave
 /// - Combine

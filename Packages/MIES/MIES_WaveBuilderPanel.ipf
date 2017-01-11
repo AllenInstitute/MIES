@@ -75,7 +75,7 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(155,863,1162,1501)
+	NewPanel /K=1 /W=(110,417,1117,1055)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
@@ -89,7 +89,7 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
 	TabControl WBP_WaveType,tabLabel(2)="Noise",tabLabel(3)="Sin"
-	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Square pulse train"
+	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Pulse train"
 	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load"
 	TabControl WBP_WaveType,tabLabel(8)="Combine",value= 0
 	TabControl WBP_Set_Parameters,pos={3.00,29.00},size={182.00,174.00},proc=ACL_DisplayTab
@@ -490,9 +490,9 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P23,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P23,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P23,limits={-inf,99749,1},value= _NUM:0
-	CheckBox check_SPT_Poisson_P44,pos={413.00,103.00},size={76.00,30.00},disable=1,proc=WBP_CheckProc,title="Poisson\rdistribution"
+	CheckBox check_SPT_Poisson_P44,pos={418.00,103.00},size={76.00,30.00},disable=1,proc=WBP_CheckProc,title="Poisson\rdistribution"
 	CheckBox check_SPT_Poisson_P44,help={"Poisson distribution of square pulses at the average frequency specified by the user."}
-	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo)= A"!!,I4J,hp]!!#?Q!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo)= A"!!,I7!!#@2!!#?Q!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SPT_Poisson_P44,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_Poisson_P44,userdata(tabnum)=  "5"
@@ -517,7 +517,7 @@ Window WaveBuilder() : Panel
 	CheckBox check_Sin_Chirp_P43,help={"A chirp is a signal in which the frequency increases or decreases with time."}
 	CheckBox check_Sin_Chirp_P43,userdata(tabnum)=  "3"
 	CheckBox check_Sin_Chirp_P43,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo)= A"!!,I4J,hpY!!#>6!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo)= A"!!,I5J,hpc!!#?1!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Sin_Chirp_P43,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Sin_Chirp_P43,value= 0
@@ -643,11 +643,11 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P47,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P47,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P47,value= _NUM:0
-	CheckBox check_SPT_NumPulses_P46,pos={413.00,133.00},size={70.00,15.00},disable=1,proc=WBP_CheckProc,title="Use Pulses"
+	CheckBox check_SPT_NumPulses_P46,pos={418.00,133.00},size={70.00,15.00},disable=1,proc=WBP_CheckProc,title="Use Pulses"
 	CheckBox check_SPT_NumPulses_P46,help={"Checked: epoch duration is determined by the user specified pulse number and frequency. Unchecked: epoch duration is set by the user."}
 	CheckBox check_SPT_NumPulses_P46,userdata(tabnum)=  "5"
 	CheckBox check_SPT_NumPulses_P46,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo)= A"!!,I4J,hq?!!#?E!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo)= A"!!,I7!!#@i!!#?E!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_NumPulses_P46,value= 0
@@ -658,11 +658,11 @@ Window WaveBuilder() : Panel
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo)= A"!!,H\\!!#@D!!#?I!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_NewSeedForEachSweep_P49,pos={324.00,139.00},size={74.00,15.00},disable=1,proc=WBP_CheckProc,title="Seed / Sweep"
+	CheckBox check_NewSeedForEachSweep_P49,pos={324.00,139.00},size={85.00,15.00},disable=1,proc=WBP_CheckProc,title="Seed / Sweep"
 	CheckBox check_NewSeedForEachSweep_P49,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
 	CheckBox check_NewSeedForEachSweep_P49,userdata(tabnum)=  "2"
 	CheckBox check_NewSeedForEachSweep_P49,userdata(tabcontrol)=  "WBP_WaveType"
-	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo)= A"!!,I4J,hqK!!#>B!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo)= A"!!,H]!!#@o!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_NewSeedForEachSweep_P49,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_NewSeedForEachSweep_P49,value= 0
@@ -739,18 +739,19 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_trig_type_P53,pos={413.00,127.00},size={38.00,19.00},disable=1,proc=WBP_PopupMenu
 	PopupMenu popup_WaveBuilder_trig_type_P53,help={"Type of trigonometric function"}
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(tabcontrol)=  "WBP_WaveType"
-	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo)= A"!!,I3!!#@b!!#>&!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo)= A"!!,I4J,hq8!!#>&!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(tabnum)=  "3"
 	PopupMenu popup_WaveBuilder_trig_type_P53,mode=1,popvalue="Sin",value= #"\"Sin;Cos\""
-	PopupMenu popup_WaveBuilder_build_res_P55,pos={193.00,138.00},size={124.00,19.00},bodyWidth=40,disable=1,proc=WBP_PopupMenu,title="Build Resolution"
-	PopupMenu popup_WaveBuilder_build_res_P55,help={"*Experimental*: Changes the resolution of the frequency spectra serving as input for the time-domain output. Requires a lot of RAM!"},userdata(tabnum)=  "2"
+	PopupMenu popup_WaveBuilder_build_res_P55,pos={188.00,138.00},size={129.00,19.00},bodyWidth=40,disable=1,proc=WBP_PopupMenu,title="Build Resolution"
+	PopupMenu popup_WaveBuilder_build_res_P55,help={"*Experimental*: Changes the resolution of the frequency spectra serving as input for the time-domain output. Requires a lot of RAM!"}
+	PopupMenu popup_WaveBuilder_build_res_P55,userdata(tabnum)=  "2"
 	PopupMenu popup_WaveBuilder_build_res_P55,userdata(tabcontrol)=  "WBP_WaveType"
-	PopupMenu popup_WaveBuilder_build_res_P55,userdata(ResizeControlsInfo)= A"!!,GQ!!#@n!!#@\\!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_WaveBuilder_build_res_P55,userdata(ResizeControlsInfo)= A"!!,GL!!#@n!!#@e!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_build_res_P55,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_build_res_P55,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_build_res_P55,mode=1,popvalue="0.1",value= #"WBP_GetNoiseBuildResolution()"
+	PopupMenu popup_WaveBuilder_build_res_P55,mode=1,popvalue="1",value= #"WBP_GetNoiseBuildResolution()"
 	SetVariable SetVar_WaveBuilder_P26,pos={613.00,117.00},size={123.00,18.00},bodyWidth=60,disable=3,proc=WBP_SetVarProc_UpdateParam,title="Filter Order"
 	SetVariable SetVar_WaveBuilder_P26,help={"Order of the Butterworth filter, see also DisplayHelpTopic `FilterIIR`"}
 	SetVariable SetVar_WaveBuilder_P26,userdata(tabnum)=  "2"
@@ -767,6 +768,14 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P27,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P27,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P27,limits={-inf,99999,1},value= _NUM:0
+	PopupMenu popup_WaveBuilder_exp_P56,pos={417.00,153.00},size={58.00,19.00},disable=1,proc=WBP_PopupMenu
+	PopupMenu popup_WaveBuilder_exp_P56,help={"Pulse train type"}
+	PopupMenu popup_WaveBuilder_exp_P56,userdata(tabnum)=  "5"
+	PopupMenu popup_WaveBuilder_exp_P56,userdata(tabcontrol)=  "WBP_WaveType"
+	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo)= A"!!,I6J,hqS!!#?;!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_WaveBuilder_exp_P56,mode=1,popvalue="Square",value= #"\"Square;Triangle\""
 	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -973,7 +982,7 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25")
 			endif
 			break
-		case EPOCH_TYPE_SQUARE_PULSE_TRAIN:
+		case EPOCH_TYPE_PULSE_TRAIN:
 			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
 				DisableControl(panel, "SetVar_WaveBuilder_P0")
 				EnableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47")
@@ -1214,7 +1223,7 @@ Function WBP_FinalTabHook(tca)
 
 	variable tabID = GetTabID(panel, "WBP_WaveType")
 
-	if(tabID != EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+	if(tabID != EPOCH_TYPE_PULSE_TRAIN)
 		EnableControl(panel, "SetVar_WaveBuilder_P0")
 	endif
 

@@ -6,8 +6,11 @@
 
 static Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
-static Constant SQUARE_PULSE_TRAIN_MODE_DUR   = 0x01
-static Constant SQUARE_PULSE_TRAIN_MODE_PULSE = 0x02
+static Constant PULSE_TRAIN_MODE_DUR   = 0x01
+static Constant PULSE_TRAIN_MODE_PULSE = 0x02
+
+static Constant WB_PULSE_TRAIN_TYPE_SQUARE   = 0
+static Constant WB_PULSE_TRAIN_TYPE_TRIANGLE = 1
 
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
@@ -356,6 +359,7 @@ static Structure SegmentParameters
 	variable trigFuncType // 0: sin, 1: cos
 	variable noiseType // 0: white, 1: pink, 2:brown
 	variable buildResolution // value, not the popup menu index
+	variable pulseType // 0: square, 1: triangle
 EndStructure
 
 static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave)
@@ -408,6 +412,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		params.trigFuncType         = WP[53][i][type]
 		params.noiseType            = WP[54][i][type]
 		params.buildResolution      = str2num(StringFromList(WP[55][i][type], WBP_GetNoiseBuildResolution()))
+		params.pulseType            = WP[56][i][type]
 
 		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
 		DEBUGPRINT("params", str=debugMsg)
@@ -415,7 +420,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		if(params.duration < 0 || !IsFinite(params.duration))
 			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
 			params.duration = 1
-		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_PULSE_TRAIN)
 			continue
 		endif
 
@@ -504,23 +509,25 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
 				break
-			case EPOCH_TYPE_SQUARE_PULSE_TRAIN:
+			case EPOCH_TYPE_PULSE_TRAIN:
 				if(WP[46][i][type]) // "Number of pulses" checkbox
-					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_PULSE)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
-					WB_SquarePulseTrainSegment(params, SQUARE_PULSE_TRAIN_MODE_DUR)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_SQUARE_PULSE_TRAIN)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR)
+					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
 				endif
 
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"               , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                , str="SPT")
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                , str="PT")
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse Type"          , \
+							               str=StringFromList(params.pulseType, PULSE_TYPES_STRINGS))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"           , var=params.Frequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"     , var=params.DeltaFreq)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"      , var=params.PulseDuration)
@@ -844,7 +851,20 @@ static Function WB_SawToothSegment(pa)
 	SegmentWave += pa.offset
 End
 
-static Function WB_SquarePulseTrainSegment(pa, mode)
+static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
+	WAVE wv
+	variable pulseType, amplitude, first, last
+
+	if(pulseType == WB_PULSE_TRAIN_TYPE_SQUARE)
+		wv[first, last] = amplitude
+	elseif(pulseType == WB_PULSE_TRAIN_TYPE_TRIANGLE)
+		wv[first, last] = amplitude * (p - first) / (last - first)
+	else
+		ASSERT(0, "unknown pulse type")
+	endif
+End
+
+static Function WB_PulseTrainSegment(pa, mode)
 	struct SegmentParameters &pa
 	variable mode
 
@@ -856,10 +876,10 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 		pa.frequency = 1.0
 	endif
 
-	if(mode == SQUARE_PULSE_TRAIN_MODE_PULSE)
+	if(mode == PULSE_TRAIN_MODE_PULSE)
 		// user defined number of pulses
 		pa.duration = pa.numberOfPulses / pa.frequency * 1000
-	elseif(mode == SQUARE_PULSE_TRAIN_MODE_DUR)
+	elseif(mode == PULSE_TRAIN_MODE_DUR)
 		// user defined duration
 		pa.numberOfPulses = pa.frequency * pa.duration / 1000
 	else
@@ -888,11 +908,17 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 			endif
 
 			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
-			segmentWave[startIndex, endIndex] = pa.amplitude
+			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
+
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	else
 		for(;;)
+			/// @todo
+			/// not reproducible (see solution for noise segment)
+			/// number of pulses is not followed
+			/// pulses may overlap
+			/// checkout why cba52ae0 (corrected error in how poisson trains were generated, 2013-10-22) did not work
 			pulseStartTime += -ln(abs(enoise(1))) / pa.frequency * 1000
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
 
@@ -901,12 +927,12 @@ static Function WB_SquarePulseTrainSegment(pa, mode)
 			endif
 
 			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
-			segmentWave[startIndex, endIndex] = pa.amplitude
+			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 		endfor
 	endif
 
 	// remove the zero part at the end
-	FindValue/V=(0)/S=(startIndex) segmentWave
+	FindValue/V=(0)/S=(pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? startIndex : startIndex + 1) segmentWave
 	if(V_Value != -1)
 		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
 		Redimension/N=(V_Value) segmentWave
