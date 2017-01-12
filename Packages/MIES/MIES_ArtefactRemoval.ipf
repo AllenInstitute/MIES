@@ -415,7 +415,7 @@ Function AR_TogglePanel(win, listboxWave)
 	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.2
 	CheckBox check_auto_remove,pos={69.00,43.00},size={84.00,15.00},title="Auto remove"
 	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
-	CheckBox check_auto_remove,value= 0,proc=CheckProc_AutoRemove
+	CheckBox check_auto_remove,value= 0,proc=AR_CheckProc_Update
 	RenameWindow #,ArtefactRemoval
 	SetActiveSubwindow ##
 
@@ -445,7 +445,7 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	AR_HandleRanges(graph)
 End
 
-Function CheckProc_AutoRemove(cba) : CheckBoxControl
+Function AR_CheckProc_Update(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
