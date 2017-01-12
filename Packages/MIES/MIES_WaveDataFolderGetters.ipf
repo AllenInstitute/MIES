@@ -4705,6 +4705,19 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	return wv
 End
 
+/// @brief Return a *free* wave used for the axis label cache
+Function/WAVE GetAxisLabelCacheWave()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 2) wv
+
+	SetDimLabel COLS, 0, Axis, wv
+	SetDimLabel COLS, 1, Lbl, wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @name Getters related to debugging
 /// @{
 /// @brief Return the datafolder reference to the debug folder

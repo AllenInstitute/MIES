@@ -872,8 +872,9 @@ End
 /// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
 /// @param sweepDFR        datafolder to either multi-column sweep waves or the topfolder to splitted
 ///                        1D sweep waves. Splitted 1D sweep waves are preferred if available.
+/// @param axisLabelCache  store existing vertical axis labels
 /// @param channelSelWave  [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, [channelSelWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, [channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -881,6 +882,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/T textualValues
 	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
+	WAVE/T axisLabelCache
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels
@@ -888,11 +890,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
 
-	string trace, traceType, channelID, axisLabel, existingLabel, entry, range
+	string trace, traceType, channelID, axisLabel, entry, range
 	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
@@ -1262,16 +1264,23 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 						axisLabel = traceType + "\r(" + unit + ")"
 
-						existingLabel = AxisLabelText(graph, vertAxis, SuppressEscaping=1)
-						// AxisLabelText's SuppressEscaping does only work for Igor commands
-						// and not for standard escape sequences
-						existingLabel = ReplaceString("\\r", existingLabel, "\r")
-
-						if(!isEmpty(existingLabel) && cmpstr(existingLabel, axisLabel))
+						FindValue/TXOP=4/TEXT=(vertAxis) axisLabelCache
+						axisIndex = V_Value
+						if(axisIndex != -1 && cmpstr(axisLabelCache[axisIndex][%Lbl], axisLabel))
 							axisLabel =  channelID + "?\r(a. u.)"
+							axisLabelCache[axisIndex][1] = axisLabel
 						endif
 
 						Label/W=$graph $vertAxis, axisLabel
+
+						if(axisIndex == -1) // create new entry
+							count = GetNumberFromWaveNote(axisLabelCache, NOTE_INDEX)
+							EnsureLargeEnoughWave(axisLabelCache, minimumSize=count)
+							axisLabelCache[count][%Axis] = vertAxis
+							axisLabelCache[count][%Lbl]  = axisLabel
+							SetNumberInWaveNote(axisLabelCache, NOTE_INDEX, count + 1)
+						endif
+
 						ModifyGraph/W=$graph lblPosMode = 1, standoff($vertAxis) = 0, freePos($vertAxis) = 0
 					else
 						Label/W=$graph $vertAxis, "\\u#2"

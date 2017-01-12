@@ -496,6 +496,8 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 		Make/FREE/N=1 sweepsToOverlay = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 	endif
 
+	WAVE axisLabelCache = GetAxisLabelCacheWave()
+
 	numEntries = DimSize(sweepsToOverlay, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		mapIndex = sweepsToOverlay[i]
@@ -520,7 +522,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
-		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
 

@@ -226,6 +226,8 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
 	endif
 
+	WAVE axisLabelCache = GetAxisLabelCacheWave()
+
 	numEntries = DimSize(sweepsToOverlay, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweepsToOverlay[i]
@@ -249,7 +251,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 		DB_SplitSweepsIfReq(panelTitle, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
-		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
 
