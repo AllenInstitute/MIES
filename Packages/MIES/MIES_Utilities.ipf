@@ -1093,30 +1093,30 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	if(!ParamIsDefault(wv))
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
-				matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
+				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
 			elseif(prop == PROP_NON_EMPTY)
-				matches[startRow, endRow] = (numtype(wv[p][col]) != 2 ? p : NaN)
+				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) != 2 ? p : NaN)
 			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (wv[p][col] & var ? p : NaN)
+				MultiThread matches[startRow, endRow] = (wv[p][col] & var ? p : NaN)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
+				MultiThread matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
 			endif
 		else
-			matches[startRow, endRow] = (wv[p][col] == var ? p : NaN)
+			MultiThread matches[startRow, endRow] = ((wv[p][col] == var) ? p : NaN)
 		endif
 	else
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
-				matches[startRow, endRow] = (!cmpstr(wvText[p][col], "") ? p : NaN)
+				MultiThread matches[startRow, endRow] = (!cmpstr(wvText[p][col], "") ? p : NaN)
 			elseif(prop == PROP_NON_EMPTY)
-				matches[startRow, endRow] = (cmpstr(wvText[p][col], "") ? p : NaN)
+				MultiThread matches[startRow, endRow] = (cmpstr(wvText[p][col], "") ? p : NaN)
 			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (str2num(wvText[p][col]) & var ? p : NaN)
+				MultiThread matches[startRow, endRow] = (str2num(wvText[p][col]) & var ? p : NaN)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (!(str2num(wvText[p][col]) & var) ? p : NaN)
+				MultiThread matches[startRow, endRow] = (!(str2num(wvText[p][col]) & var) ? p : NaN)
 			endif
 		else
-			matches[startRow, endRow] = (!cmpstr(wvText[p][col], str) ? p : NaN)
+			MultiThread matches[startRow, endRow] = (!cmpstr(wvText[p][col], str) ? p : NaN)
 		endif
 	endif
 
