@@ -382,6 +382,7 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 	win = GetMainWindow(win)
 	SetActiveSubWindow $win
 	NewPanel/HOST=#/EXT=1/W=(200,0,0,407)
+	SetWindow kwTopWin, hook(main)=OVS_MainWindowHook
 	ListBox list_of_ranges,pos={7.00,70.00},size={186.00,330},proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,mode=0,widths={50,50},listWave=listboxWave,selWave=listboxSelWave
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
@@ -511,6 +512,30 @@ Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
 			endif
 
 			UpdateSweepPlot(win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function OVS_MainWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win, mainWindow, ctrl
+
+	switch(s.eventCode)
+		case 2: // kill
+			mainWindow = GetMainWindow(s.winName)
+
+			if(IsDataBrowser(mainWindow))
+				ctrl = "check_DataBrowser_SweepOverlay"
+				win  = mainWindow
+			else
+				ctrl = "check_SweepBrowser_SweepOverlay"
+				win  = mainWindow + "#P0"
+			endif
+
+			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
 			break
 	endswitch
 
