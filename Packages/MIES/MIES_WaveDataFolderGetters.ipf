@@ -413,10 +413,44 @@ Function/Wave GetChannelClampMode(panelTitle)
 		return wv
 	endif
 
-	Make/N=(16,2) dfr:ChannelClampMode/Wave=wv
+	Make/N=(NUM_AD_CHANNELS, 2) dfr:ChannelClampMode/Wave=wv
 
 	SetDimLabel COLS, 0, DAC, wv
 	SetDimLabel COLS, 1, ADC, wv
+
+	return wv
+End
+
+/// @brief Return properties for the active headstages *during* TP/DAQ
+///
+/// The order is the same as in ITCChanConfigWave and there does, by principle,
+/// not include unassociated ADCs.
+///
+/// @sa DC_UpdateActiveClampModeWave()
+Function/WAVE GetActiveHSProperties(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
+
+	Wave/Z/SDFR=dfr wv = ChannelClampModeActive
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/N=(NUM_AD_CHANNELS, 4) dfr:ChannelClampModeActive/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetDimLabel COLS, 0, ADC      , wv
+	SetDimLabel COLS, 1, DAC      , wv
+	SetDimLabel COLS, 2, ClampMode, wv
+	SetDimLabel COLS, 3, Headstage, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -1498,44 +1532,77 @@ End
 
 /// @brief Return a wave reference for TPStorage
 ///
-/// The wave stores TP resistance and Vm data as
-/// function of time while the TP is running.
+/// Stores properties of the testpulse during TP
+///
+/// ROWS:
+/// - One entry per step
+///
+/// COLS:
+/// - One for each *active* and associated ADC
+///
+/// LAYERS:
+/// -  0: Amplifier holding command (Voltage Clamp)
+/// -  1: Amplifier bias current (Current Clamp)
+/// -  2: (Peak/Instantaneous) Resistance
+/// -  3: (Steady State) Resistance
+/// -  4: Time in s (arbitrary zero)
+/// -  5: Delta time in s relative to the entry in the first row of layer 3
+/// -  6: (Steady State) Resistance slope
+/// -  7: Pressure in psi
+/// -  8: Timestamp since igor epoch (*with* timezone offsets)
+/// -  9: Timestamp in UTC since igor epoch
+/// - 10: Pressure changed
+/// - 11: Holding current (pA, Voltage Clamp)
+/// - 12: Vrest (mV, Current Clamp)
+/// - 13: AD channel
+/// - 14: DA channel
+/// - 15: Headstage
+/// - 16: ClampMode
+/// - 17: UserPressure (place holder)
+/// - 18: PressureMethod (see PressureModeConstants)
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
-	Wave/Z/SDFR=dfr/D wv = TPStorage
+	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 12)/D wv
+		Redimension/N=(-1, -1, 19)/D wv
 	else
-		Make/N=(128, NUM_AD_CHANNELS, 12)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE, NUM_AD_CHANNELS, 19)/D dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
 
 	SetDimLabel COLS,  -1,  ADChannel                 , wv
 
-	SetDimLabel LAYERS, 0,  Vm                        , wv
-	SetDimLabel LAYERS, 1,  PeakResistance            , wv
-	SetDimLabel LAYERS, 2,  SteadyStateResistance     , wv
-	SetDimLabel LAYERS, 3,  TimeInSeconds             , wv
-	SetDimLabel LAYERS, 4,  DeltaTimeInSeconds        , wv
-	SetDimLabel LAYERS, 5,  Vm_Slope                  , wv
-	SetDimLabel LAYERS, 6,  Rpeak_Slope               , wv
-	SetDimLabel LAYERS, 7,  Rss_Slope                 , wv
-	SetDimLabel LAYERS, 8,  Pressure                  , wv
-	SetDimLabel LAYERS, 9,  TimeStamp                 , wv
-	SetDimLabel LAYERS, 10, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel LAYERS, 11, PressureChange            , wv
+	SetDimLabel LAYERS,  0, HoldingCmd_VC             , wv
+	SetDimLabel LAYERS,  1, HoldingCmd_IC             , wv
+	SetDimLabel LAYERS,  2, PeakResistance            , wv
+	SetDimLabel LAYERS,  3, SteadyStateResistance     , wv
+	SetDimLabel LAYERS,  4, TimeInSeconds             , wv
+	SetDimLabel LAYERS,  5, DeltaTimeInSeconds        , wv
+	SetDimLabel LAYERS,  6, Rss_Slope                 , wv
+	SetDimLabel LAYERS,  7, Pressure                  , wv
+	SetDimLabel LAYERS,  8, TimeStamp                 , wv
+	SetDimLabel LAYERS,  9, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel LAYERS, 10, PressureChange            , wv
+	SetDimLabel LAYERS, 11, Baseline_VC               , wv
+	SetDimLabel LAYERS, 12, Baseline_IC               , wv
+	SetDimLabel LAYERS, 13, ADC                       , wv
+	SetDimLabel LAYERS, 14, DAC                       , wv
+	SetDimLabel LAYERS, 15, Headstage                 , wv
+	SetDimLabel LAYERS, 16, ClampMode                 , wv
+	SetDimLabel LAYERS, 17, UserPressure              , wv
+	SetDimLabel LAYERS, 18, PressureMethod            , wv
 
-	Note wv, TP_CYLCE_COUNT_KEY + ":0;"
-	Note/NOCR wv, AUTOBIAS_LAST_INVOCATION_KEY + ":0;"
-	Note/NOCR wv, DIMENSION_SCALING_LAST_INVOC + ":0;"
+	SetNumberInWaveNote(wv, TP_CYLCE_COUNT_KEY, 0)
+	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -3235,16 +3302,15 @@ static Function SetPressureWaveDimLabels(wv)
 	SetDimLabel COLS, 20, PlaceHolderZero          , wv
 	SetDimLabel COLS, 21, RealTimePressure         , wv
 	SetDimLabel COLS, 22, LastResistanceValue      , wv
-	SetDimLabel COLS, 23, PeakResistanceSlope      , wv
-	/// @todo Dim label for  col 23 needs to be changed to steadStateResistanceSlope
+	SetDimLabel COLS, 23, SSResistanceSlope        , wv
 	SetDimLabel COLS, 24, ActiveTP				   , wv
 	/// @todo If user switched headStage mode while pressure regulation is
 	/// ongoing, pressure reg either needs to be turned off, or steady state
 	/// slope values need to be used
 	/// @todo Enable mode switching with TP running (auto stop TP, switch mode, auto startTP)
 	/// @todo Enable headstate switching with TP running (auto stop TP, change headStage state, auto start TP)
-	SetDimLabel COLS, 25, PeakResistanceSlopeThreshold, wv
-	// If the PeakResistance slope is greater than the PeakResistanceSlope
+	SetDimLabel COLS, 25, SSResistanceSlopeThreshold, wv
+	// If the PeakResistance slope is greater than the SSResistanceSlope
 	// thershold pressure method does not need to update i.e. the pressure is
 	// "good" as it is
 	SetDimLabel COLS, 26, TimeOfLastRSlopeCheck   , wv
@@ -3332,7 +3398,7 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 5
+	variable versionOfNewWave = 6
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 

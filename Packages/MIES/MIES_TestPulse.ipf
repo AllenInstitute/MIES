@@ -4,6 +4,11 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
+static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
+static Constant TP_TPSTORAGE_WRITE_INTERVAL   = 0.18
+static Constant TP_FIT_POINTS                 = 5
+static Constant TP_DIMENSION_SCALING_INTERVAL = 100  ///< Interval in steps of #TP_TPSTORAGE_WRITE_INTERVAL for recalculating the time axis
+
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -91,7 +96,9 @@ End
 Function TP_Delta(panelTitle)
 	string 	panelTitle
 
-	variable amplitudeIC, amplitudeVC
+	variable amplitudeIC, amplitudeVC, referenceTime
+
+	referenceTime = DEBUG_TIMER_START()
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	
@@ -99,8 +106,8 @@ Function TP_Delta(panelTitle)
 	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
 	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
 	NVAR/SDFR=dfr baselineFrac
-	SVAR/SDFR=dfr clampModeString
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
+	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
@@ -153,14 +160,11 @@ Function TP_Delta(panelTitle)
 	Make/FREE/N=(1, columnsInWave) InstAvg
 	variable 	OndDBaseline
 	
-	// store the clamp mode in a free wave
-	Make/FREE/N=(ItemsInList(clampModeString)) clampMode = str2num(StringFromList(p, clampModeString))
-	
 	do
 		matrixOp /Free Instantaneous1d = col(Instantaneous, i + ADChannelToMonitor)
 		WaveStats/Q/M=1 Instantaneous1d
 		OndDBaseline = AvgBaselineSS[0][i + ADChannelToMonitor]
-		if((ClampMode[i] == V_CLAMP_MODE ? sign(amplitudeVCGlobal) : sign(amplitudeICGlobal)) == 1) // handles positive or negative TPs
+		if((activeHSProp[i][%ClampMode] == V_CLAMP_MODE ? sign(amplitudeVCGlobal) : sign(amplitudeICGlobal)) == 1) // handles positive or negative TPs
 			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_maxRowLoc - 1), pnt2x(Instantaneous1d, V_maxRowLoc + 1))
 		else
 			Multithread InstAvg[0][i + ADChannelToMonitor] = mean(Instantaneous1d, pnt2x(Instantaneous1d, V_minRowLoc - 1), pnt2x(Instantaneous1d, V_minRowLoc + 1))
@@ -179,7 +183,7 @@ Function TP_Delta(panelTitle)
 
 	i = 0
 	do
-		if(ClampMode[i] == I_CLAMP_MODE)
+		if(activeHSProp[i][%ClampMode] == I_CLAMP_MODE)
 			// R = V / I
 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
 			Multithread InstResistance[0][i] =  (InstAvg[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
@@ -209,6 +213,8 @@ Function TP_Delta(panelTitle)
 	variable numADCs = columns
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
 	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 static Function TP_CalculateAverage(buffer, dest)
@@ -245,18 +251,6 @@ static Function TP_CalculateAverage(buffer, dest)
 	endif
 End
 
-/// Sampling interval in seconds
-static Constant samplingInterval = 0.18
-
-/// Fitting range in seconds
-static Constant fittingRange = 5
-
-/// Interval in steps of samplingInterval for recalculating the time axis
-static Constant dimensionRescalingInterval = 100
-
-/// Units MOhm
-static Constant MAX_VALID_RESISTANCE = 3000
-
 /// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
@@ -268,9 +262,10 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	wave 	BaselineSSAvg, InstResistance, SSResistance
 	variable numADCs
 
-	variable needsUpdate, delta, numCols
-
+	variable needsUpdate, delta, i
 	Wave TPStorage = GetTPStorage(panelTitle)
+	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
 	variable now   = ticks * TICKS_TO_SECONDS
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
@@ -282,37 +277,59 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		TPStorage = NaN
 		// time of the first sweep
 		TPStorage[0][][%TimeInSeconds] = now
+
+		for(i = 0 ; i < NUM_HEADSTAGES; i += 1)
+			if(GUIState[i][%HSState])
+				TP_UpdateHoldCmdInTPStorage(panelTitle, i)
+			endif
+		endfor
+
 		needsUpdate = 1
-		// % is used here to index the wave using dimension labels, see also
-		// DisplayHelpTopic "Example: Wave Assignment and Indexing Using Labels"
-	elseif((now - TPStorage[count - 1][0][%TimeInSeconds]) > samplingInterval)
+	elseif((now - TPStorage[count - 1][0][%TimeInSeconds]) > TP_TPSTORAGE_WRITE_INTERVAL)
 		needsUpdate = 1
 	endif
 
 	if(needsUpdate)
 		EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
-		TPStorage[count][][%Vm]                         = BaselineSSAvg[0][q][0]
-		TPStorage[count][][%PeakResistance]             = min(InstResistance[0][q][0], MAX_VALID_RESISTANCE)
-		TPStorage[count][][%SteadyStateResistance]      = min(SSResistance[0][q][0], MAX_VALID_RESISTANCE)
+		// use the last value if we don't have a current one
+		if(count > 0)
+			TPStorage[count][][%HoldingCmd_VC] = !IsFinite(TPStorage[count][q][%HoldingCmd_VC]) \
+			                                     ? TPStorage[count - 1][q][%HoldingCmd_VC]      \
+			                                     : TPStorage[count][q][%HoldingCmd_VC]
+
+			TPStorage[count][][%HoldingCmd_IC] = !IsFinite(TPStorage[count][q][%HoldingCmd_IC]) \
+			                                     ? TPStorage[count - 1][q][%HoldingCmd_IC]      \
+			                                     : TPStorage[count][q][%HoldingCmd_IC]
+		endif
+
+		TPStorage[count][][%PeakResistance]             = min(InstResistance[0][q][0], TP_MAX_VALID_RESISTANCE)
+		TPStorage[count][][%SteadyStateResistance]      = min(SSResistance[0][q][0], TP_MAX_VALID_RESISTANCE)
 		TPStorage[count][][%TimeInSeconds]              = now
 		TPStorage[count][][%TimeStamp]                  = DateTime
 		TPStorage[count][][%TimeStampSinceIgorEpochUTC] = DateTimeInUTC()
 
-		// ? : is the ternary/conditional operator, see DisplayHelpTopic "? :"
+		TPStorage[count][][%ADC]       = activeHSProp[q][%ADC]
+		TPStorage[count][][%DAC]       = activeHSProp[q][%DAC]
+		TPStorage[count][][%Headstage] = activeHSProp[q][%HeadStage]
+		TPStorage[count][][%ClampMode] = activeHSProp[q][%ClampMode]
+
+		TPStorage[count][][%Baseline_VC] = activeHSProp[q][%ClampMode] == V_CLAMP_MODE ? baselineSSAvg[0][q] : NaN
+		TPStorage[count][][%Baseline_IC] = activeHSProp[q][%ClampMode] != V_CLAMP_MODE ? baselineSSAvg[0][q] : NaN
+
 		TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-		P_PressureControl(panelTitle) // Call pressure functions
+		P_PressureControl(panelTitle)
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
-		TP_AnalyzeTP(panelTitle, TPStorage, count, samplingInterval, fittingRange)
+		TP_AnalyzeTP(panelTitle, TPStorage, count)
 
 		// not all rows have the unit seconds, but with
 		// setting up a seconds scale, commands like
 		// Display TPStorage[][0][%PeakResistance]
 		// show the correct units for the bottom axis
-		if((now - lastRescaling) > dimensionRescalingInterval * samplingInterval)
+		if((now - lastRescaling) > TP_DIMENSION_SCALING_INTERVAL * TP_TPSTORAGE_WRITE_INTERVAL)
 
 			if(!count) // initial estimate
-				delta = samplingInterval
+				delta = TP_TPSTORAGE_WRITE_INTERVAL
 			else
 				delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
 			endif
@@ -326,22 +343,20 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	endif
 End
 
-/// @brief Determines the slope of the BaselineSSAvg, InstResistance, SSResistance
+/// @brief Determine the slope of the steady state resistance
 /// over a user defined window (in seconds)
 ///
 /// @param panelTitle       locked device string
 /// @param TPStorage        test pulse storage wave
 /// @param endRow           last valid row index in TPStorage
-/// @param samplingInterval approximate time duration in seconds between data points
-/// @param fittingRange     time duration to use for fitting
-static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fittingRange)
+static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 	string panelTitle
 	Wave/Z TPStorage
-	variable endRow, samplingInterval, fittingRange
+	variable endRow
 
 	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode, numADCs
 
-	startRow = endRow - ceil(fittingRange / samplingInterval)
+	startRow = endRow - ceil(TP_FIT_POINTS / TP_TPSTORAGE_WRITE_INTERVAL)
 
 	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS))
 		return NaN
@@ -355,22 +370,10 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow, samplingInterval, fi
 		try
 			V_FitError  = 0
 			V_AbortCode = 0
-			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][i][%Vm]/X=TPStorage[startRow,endRow][0][3]/AD=0/AR=0; AbortOnRTE
-			TPStorage[0][i][%Vm_Slope] = coefWave[1]
-
-			V_FitError  = 0
-			V_AbortCode = 0
-			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][i][%PeakResistance]/X=TPStorage[startRow,endRow][0][3]/AD=0/AR=0; AbortOnRTE
-			TPStorage[0][i][%Rpeak_Slope] = coefWave[1]
-
-			V_FitError  = 0
-			V_AbortCode = 0
 			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][i][%SteadyStateResistance]/X=TPStorage[startRow,endRow][0][3]/AD=0/AR=0; AbortOnRTE
 			TPStorage[0][i][%Rss_Slope] = coefWave[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
-			TPStorage[startRow,endRow][i][%Vm_Slope]    = NaN
-			TPStorage[startRow,endRow][i][%Rpeak_Slope] = NaN
 			TPStorage[startRow,endRow][i][%Rss_Slope]   = NaN
 			DEBUGPRINT("Fit was not successfull")
 			DEBUGPRINT("V_FitError=", var=V_FitError)
@@ -567,4 +570,32 @@ Function TP_TestPulseHasCycled(panelTitle, cycles)
 	Wave TPStorage = GetTPStorage(panelTitle)
 
 	return GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY) > cycles
+End
+
+/// @brief Save the amplifier holding command in the TPStorage wave
+Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	variable col, count, clampMode
+
+	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
+		return NaN
+	endif
+
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+
+	WAVE TPStorage = GetTPStorage(panelTitle)
+	count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+
+	col = TP_GetTPResultsColOfHS(panelTitle, headStage)
+	ASSERT(col >= 0, "Invalid TP column")
+
+	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
+
+	if(clampMode == V_CLAMP_MODE)
+		TPStorage[count][col][%HoldingCmd_VC] = GetHoldingCommand(panelTitle, headStage)
+	else
+		TPStorage[count][col][%HoldingCmd_IC] = GetHoldingCommand(panelTitle, headStage)
+	endif
 End
