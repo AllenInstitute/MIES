@@ -400,6 +400,7 @@ Function AR_TogglePanel(win, listboxWave)
 
 	SetActiveSubWindow $win
 	NewPanel/HOST=#/EXT=1/W=(200,0,0,407)
+	SetWindow kwTopWin, hook(main)=AR_MainWindowHook
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "Segoe UI"
 	DrawText 2,25,"Cutoff length [ms]:"
@@ -452,6 +453,30 @@ Function CheckProc_AutoRemove(cba) : CheckBoxControl
 			if(cba.checked)
 				UpdateSweepPlot(cba.win)
 			endif
+			break
+	endswitch
+
+	return 0
+End
+
+Function AR_MainWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win, mainWindow, ctrl
+
+	switch(s.eventCode)
+		case 2: // kill
+			mainWindow = GetMainWindow(s.winName)
+
+			if(IsDataBrowser(mainWindow))
+				ctrl = "CheckBox_DataBrowser_OpenArtRem"
+				win  = mainWindow
+			else
+				ctrl = "Check_SweepBrowser_OpenArtRem"
+				win  = mainWindow + "#P0"
+			endif
+
+			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
 			break
 	endswitch
 

@@ -7,7 +7,7 @@
 static StrConstant AXES_SCALING_CHECKBOXES = "check_SB_visibleXRange;check_SB_equalYRanges;check_SB_equalYIgnLevelCross"
 static StrConstant WAVE_NOTE_LAYOUT_KEY    = "WAVE_LAYOUT_VERSION"
 
-static Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
+Function/S SB_GetSweepBrowserLeftPanel(graphOrPanel)
 	string graphOrPanel
 
 	return GetMainWindow(graphOrPanel) + "#P0"
