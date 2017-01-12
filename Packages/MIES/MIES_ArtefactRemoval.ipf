@@ -28,6 +28,13 @@ Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 	variable i, dac, adc
 	variable level, index, total
+	string key
+
+	key = CA_ArtefactRemovalRangesKey(sweepDFR, sweepNo)
+	WAVE/Z cachedRanges = CA_TryFetchingEntryFromCache(key)
+	if(WaveExists(cachedRanges))
+		return cachedRanges
+	endif
 
 	WAVE statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
@@ -87,6 +94,8 @@ Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 	Redimension/N=(GetNumberFromWaveNote(ranges, NOTE_INDEX), -1) ranges
 	Note/K ranges
+
+	CA_StoreEntryIntoCache(key, ranges)
 
 	return ranges
 End

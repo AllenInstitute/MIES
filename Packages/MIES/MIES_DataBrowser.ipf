@@ -18,6 +18,7 @@
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_ArtefactRemoval"
+#include ":MIES_Cache"
 #include ":MIES_Constants"
 #include ":MIES_Debugging"
 #include ":MIES_EnhancedWMRoutines"
@@ -28,6 +29,7 @@
 #include ":MIES_ProgrammaticGuiControl"
 #include ":MIES_Utilities"
 #include ":MIES_Structures"
+#include ":MIES_Cache"
 #include ":MIES_WaveDataFolderGetters"
 
 Menu "Mies Panels", dynamic

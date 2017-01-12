@@ -80,6 +80,19 @@ Function/S CA_DistDAQCreateCacheKey(params)
 	return num2istr(crc) + "Version 1"
 End
 
+/// @brief Cache key generator for artefact removal ranges
+Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
+	DFREF singleSweepDFR
+	variable sweepNo
+
+	variable crc
+
+	crc = StringCRC(crc, GetDataFolder(1, singleSweepDFR))
+	crc = StringCRC(crc, num2str(sweepNo))
+
+	return num2istr(crc) + "Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves

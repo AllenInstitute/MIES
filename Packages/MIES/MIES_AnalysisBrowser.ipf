@@ -27,6 +27,7 @@
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_ArtefactRemoval"
+#include ":MIES_Cache"
 #include ":MIES_Constants"
 #include ":MIES_Debugging"
 #include ":MIES_EnhancedWMRoutines"
