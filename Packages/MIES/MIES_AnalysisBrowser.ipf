@@ -458,9 +458,6 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	list = GetListOfObjects(tmpDFR, ".*", matchList=listOfNames, recursive=1, typeFlag=typeFlags)
 
-	sprintf str, "V_Flag=%d, numItems=%d, list=%s\r", V_Flag, ItemsInList(list), list
-	DEBUGPRINT(str)
-
 	return ItemsInList(list)
 End
 
