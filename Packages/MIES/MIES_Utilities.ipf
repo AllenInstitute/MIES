@@ -1079,12 +1079,12 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	endif
 
 	if(ParamIsDefault(endRow))
-		endRow  = ParamIsDefault(wv) ? DimSize(wvText, ROWS) : DimSize(wv, ROWS)
-		endRow -= 1
+		endRow  = inf
+	else
+		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
 
 	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
-	ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
 
