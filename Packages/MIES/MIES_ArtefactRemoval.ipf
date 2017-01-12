@@ -166,7 +166,7 @@ Function AR_HighlightArtefactsEntry(graph)
 
 	extPanel = AR_GetExtPanel(graph)
 
-	if(!WindowExists(extPanel))
+	if(!WindowExists(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
 		return NaN
 	endif
 
@@ -217,6 +217,10 @@ Function AR_HandleRanges(graph, [removeRange])
 	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
 
 	AR_RemoveTraces(graph)
+
+	if(!removeRange && !GetCheckBoxState(extPanel, "check_highlightRanges"))
+		return NaN
+	endif
 
 	DFREF sweepDFR = AR_GetSweepFolder(graph)
 	WAVE/WAVE ADCs = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
@@ -416,6 +420,9 @@ Function AR_TogglePanel(win, listboxWave)
 	CheckBox check_auto_remove,pos={69.00,43.00},size={84.00,15.00},title="Auto remove"
 	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
 	CheckBox check_auto_remove,value= 0,proc=AR_CheckProc_Update
+	CheckBox check_highlightRanges,pos={158.00,43.00},size={30.00,15.00},proc=AR_CheckProc_Update,title="HL"
+	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
+	CheckBox check_highlightRanges,value= 0
 	RenameWindow #,ArtefactRemoval
 	SetActiveSubwindow ##
 
@@ -450,9 +457,7 @@ Function AR_CheckProc_Update(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			if(cba.checked)
-				UpdateSweepPlot(cba.win)
-			endif
+			UpdateSweepPlot(cba.win)
 			break
 	endswitch
 
