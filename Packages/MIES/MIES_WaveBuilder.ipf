@@ -740,7 +740,7 @@ static Function WB_SquareSegment(pa)
 	struct SegmentParameters &pa
 
 	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
-	SegmentWave = pa.amplitude
+	MultiThread SegmentWave = pa.amplitude
 End
 
 static Function WB_RampSegment(pa)
@@ -933,7 +933,7 @@ static Function WB_PulseTrainSegment(pa, mode)
 	interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
 
 	WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
-	segmentWave = 0
+	FastOp segmentWave = 0
 	numRows = DimSize(segmentWave, ROWS)
 
 	if(!pa.poisson)
@@ -996,10 +996,10 @@ static Function WB_PSCSegment(pa)
 
 	baseline = WaveMin(SegmentWave)
 	peak = WaveMax(SegmentWave)
-	SegmentWave *= abs(pa.amplitude)/(peak - baseline)
+	MultiThread SegmentWave *= abs(pa.amplitude)/(peak - baseline)
 
 	baseline = WaveMin(SegmentWave)
-	SegmentWave -= baseline
+	MultiThread SegmentWave -= baseline
 End
 
 static Function WB_CustomWaveSegment(pa, customWave)
