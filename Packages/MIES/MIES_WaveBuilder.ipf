@@ -565,7 +565,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 
 				if(WaveExists(customWave))
-					WB_CustomWaveSegment(params.offset, customWave)
+					WB_CustomWaveSegment(customWave)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"       , var=i)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"        , str="Custom Wave")
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
@@ -617,6 +617,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				continue
 		endswitch
 
+		if(type != EPOCH_TYPE_COMBINE)
+			WB_ApplyOffset(params)
+		endif
+
 		if(updateEpochIDWave)
 			if(stepCount == 0)
 				WAVE epochID = GetEpochID()
@@ -655,6 +659,18 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	SetScale /P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", WaveBuilderWave
 
 	return WaveBuilderWave
+End
+
+static Function WB_ApplyOffset(pa)
+	struct SegmentParameters &pa
+
+	if(pa.offset == 0)
+		return NaN
+	endif
+
+	WAVE SegmentWave = WB_GetSegmentWave()
+
+	MultiThread segmentWave[] += pa.offset
 End
 
 /// @brief Initialize the seed value of the pseudo random number generator
@@ -736,7 +752,6 @@ static Function WB_RampSegment(pa)
 
 	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 	MultiThread SegmentWave = amplitudeIncrement * p
-	SegmentWave += pa.offset
 End
 
 /// @brief Check if the given frequency is a valid setting for the noise epoch
@@ -825,7 +840,7 @@ static Function WB_NoiseSegment(pa)
 	endif
 
 	MatrixOp/FREE scaleFactor = pa.amplitude / (maxVal(segmentWave) - minVal(segmentWave)))
-	MultiThread segmentWave[] = segmentWave[p] * scaleFactor[0] + pa.offset // ScaleFactor is a 1x1 matrix
+	MultiThread segmentWave[] = segmentWave[p] * scaleFactor[0] // ScaleFactor is a 1x1 matrix
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
@@ -860,8 +875,6 @@ static Function WB_TrigSegment(pa)
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
 		endif
 	endif
-
-	SegmentWave += pa.offset
 End
 
 static Function WB_SawToothSegment(pa)
@@ -875,7 +888,6 @@ static Function WB_SawToothSegment(pa)
 	SegmentWave = 1 * pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 #endif
 
-	SegmentWave += pa.offset
 End
 
 static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
@@ -963,8 +975,6 @@ static Function WB_PulseTrainSegment(pa, mode)
 		DEBUGPRINT("No removal of points")
 	endif
 
-	segmentWave += pa.offset
-
 	DEBUGPRINT("interPulseInterval", var=interPulseInterval)
 	DEBUGPRINT("numberOfPulses", var=pa.numberOfPulses)
 	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT, format="%.6f")
@@ -992,17 +1002,14 @@ static Function WB_PSCSegment(pa)
 
 	baseline = WaveMin(SegmentWave)
 	SegmentWave -= baseline
-	SegmentWave += pa.offset
 End
 
-static Function WB_CustomWaveSegment(offset, wv)
-	variable offset
+static Function WB_CustomWaveSegment(wv)
 	Wave wv
 
 	DFREF dfr = GetWaveBuilderDataPath()
 
 	Duplicate/O wv, dfr:SegmentWave/Wave=SegmentWave
-	SegmentWave += offset
 End
 
 /// @brief Create a wave segment as combination of existing stim sets
