@@ -565,14 +565,12 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 
 				if(WaveExists(customWave))
-					WB_CustomWaveSegment(customWave)
+					WB_CustomWaveSegment(params, customWave)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"       , var=i)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"        , str="Custom Wave")
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.offset)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.deltaOffset, appendCR=1)
-
-					params.Duration = DimSize(customWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 				elseif(!isEmpty(customWaveName))
 					printf "Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", i, customWaveName
 				endif
@@ -1004,12 +1002,13 @@ static Function WB_PSCSegment(pa)
 	SegmentWave -= baseline
 End
 
-static Function WB_CustomWaveSegment(wv)
-	Wave wv
+static Function WB_CustomWaveSegment(pa, customWave)
+	struct SegmentParameters &pa
+	WAVE customWave
 
-	DFREF dfr = GetWaveBuilderDataPath()
-
-	Duplicate/O wv, dfr:SegmentWave/Wave=SegmentWave
+	pa.duration = DimSize(customWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
+	WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
+	MultiThread segmentWave[] = customWave[p]
 End
 
 /// @brief Create a wave segment as combination of existing stim sets
