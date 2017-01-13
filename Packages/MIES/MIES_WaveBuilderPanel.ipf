@@ -949,7 +949,7 @@ static Function WBP_DisplaySetInPanel()
 	for(i = 0; i < numSweeps; i += 1)
 		trace = NameOfWave(displayData) + "_S" + num2str(i)
 		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
-		GetTraceColor(i, red, green, blue)
+		GetSweepColor(i, red, green, blue)
 		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (red, green, blue)
 	endfor
 
@@ -2339,7 +2339,7 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	ModifyGraph/W=$graphPhase log(bottom)=1
 	ModifyGraph/W=$graphPhase mode=4
 
-	GetTraceColor(sweep, red, green, blue)
+	GetSweepColor(sweep, red, green, blue)
 	ModifyGraph/W=$graphMag rgb($trace)   = (red, green, blue)
 	ModifyGraph/W=$graphPhase rgb($trace) = (red, green, blue)
 
@@ -2351,4 +2351,13 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 
 	RestoreCursor(graphPhase, cursorInfoPhaseA)
 	RestoreCursor(graphPhase, cursorInfoPhaseB)
+End
+
+/// @brief Return distinct colors the sweeps of the wavebuilder
+///
+/// These are backwards compared to the trace colors
+static Function GetSweepColor(sweep, red, green, blue)
+	variable sweep, &red, &green, &blue
+
+	return GetTraceColor(20 - sweep, red, green, blue)
 End
