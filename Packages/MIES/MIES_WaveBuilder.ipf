@@ -346,8 +346,6 @@ static Structure SegmentParameters
 	variable deltaTauDecay2
 	variable tauDecay2Weight
 	variable deltaTauDecay2Weight
-	variable customOffset
-	variable deltaCustomOffset
 	variable lowPassCutOff
 	variable deltaLowPassCutOff
 	variable highPassCutOff
@@ -402,8 +400,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		params.deltaTauDecay2       = WP[15][i][type]
 		params.tauDecay2Weight      = WP[16][i][type]
 		params.deltaTauDecay2Weight = WP[17][i][type]
-		params.customOffset         = WP[18][i][type]
-		params.deltaCustomOffset    = WP[19][i][type]
 		params.lowPassCutOff        = WP[20][i][type]
 		params.deltaLowPassCutOff   = WP[21][i][type]
 		params.highPassCutOff       = WP[22][i][type]
@@ -569,12 +565,12 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 
 				if(WaveExists(customWave))
-					WB_CustomWaveSegment(params.customOffset, customWave)
+					WB_CustomWaveSegment(params.offset, customWave)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"       , var=i)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"        , str="Custom Wave")
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.Offset)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.DeltaOffset, appendCR=1)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.offset)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.deltaOffset, appendCR=1)
 
 					params.Duration = DimSize(customWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 				elseif(!isEmpty(customWaveName))
@@ -999,14 +995,14 @@ static Function WB_PSCSegment(pa)
 	SegmentWave += pa.offset
 End
 
-static Function WB_CustomWaveSegment(CustomOffset, wv)
-	variable CustomOffset
+static Function WB_CustomWaveSegment(offset, wv)
+	variable offset
 	Wave wv
 
 	DFREF dfr = GetWaveBuilderDataPath()
 
 	Duplicate/O wv, dfr:SegmentWave/Wave=SegmentWave
-	SegmentWave += CustomOffSet
+	SegmentWave += offset
 End
 
 /// @brief Create a wave segment as combination of existing stim sets

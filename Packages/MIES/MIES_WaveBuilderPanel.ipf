@@ -428,20 +428,20 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P4_OD04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P4_OD04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P4_OD04,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P18,pos={194.00,81.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Offset"
-	SetVariable SetVar_WaveBuilder_P18,userdata(tabnum)=  "7"
-	SetVariable SetVar_WaveBuilder_P18,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_P18,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_P18,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_P18,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P18,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P19,pos={300.00,81.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
-	SetVariable SetVar_WaveBuilder_P19,userdata(tabnum)=  "7"
-	SetVariable SetVar_WaveBuilder_P19,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable SetVar_WaveBuilder_P19,userdata(ResizeControlsInfo)= A"!!,HQ!!#?[!!#@,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_WaveBuilder_P19,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_WaveBuilder_P19,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_WaveBuilder_P19,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P4_OD05,pos={194.00,81.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Offset"
+	SetVariable SetVar_WaveBuilder_P4_OD05,userdata(tabnum)=  "7"
+	SetVariable SetVar_WaveBuilder_P4_OD05,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WaveBuilder_P4_OD05,userdata(ResizeControlsInfo)= A"!!,GR!!#?[!!#@,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P4_OD05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WaveBuilder_P4_OD05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WaveBuilder_P4_OD05,value= _NUM:0
+	SetVariable SetVar_WaveBuilder_P5_DD07,pos={300.00,81.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
+	SetVariable SetVar_WaveBuilder_P5_DD07,userdata(tabnum)=  "7"
+	SetVariable SetVar_WaveBuilder_P5_DD07,userdata(tabcontrol)=  "WBP_WaveType"
+	SetVariable SetVar_WaveBuilder_P5_DD07,userdata(ResizeControlsInfo)= A"!!,HQ!!#?[!!#@,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable SetVar_WaveBuilder_P5_DD07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable SetVar_WaveBuilder_P5_DD07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable SetVar_WaveBuilder_P5_DD07,value= _NUM:0
 	SetVariable setvar_WaveBuilder_SearchString,pos={574.00,118.00},size={212.00,33.00},disable=1,proc=WBP_SetVarProc_SetSearchString,title="Search\rstring"
 	SetVariable setvar_WaveBuilder_SearchString,help={"Refines list of waves based on search string. Include asterisk \"wildcard\" where appropriate."}
 	SetVariable setvar_WaveBuilder_SearchString,userdata(tabnum)=  "7"
