@@ -232,7 +232,13 @@ Function/Wave WB_GetStimSet([setName])
 	endfor
 
 	if(SegWvType[98])
-		WaveTransForm/O flip stimset
+		Duplicate/FREE stimset, stimsetFlipped
+		for(i=0; i < numSteps; i+=1)
+			Duplicate/FREE/R=[][i] stimset, singleSweep
+			WaveTransForm/O flip singleSweep
+			Multithread stimSetFlipped[][i] = singleSweep[p]
+		endfor
+		WAVE stimset = stimsetFlipped
 	endif
 
 	DEBUGPRINT("copying took (ms):", var=(stopmstimer(-2) - start) / 1000)
