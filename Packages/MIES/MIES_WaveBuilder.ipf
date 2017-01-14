@@ -64,6 +64,33 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 	return stimSet
 End
 
+/// @brief Return the name of one of the three stimset parameter waves
+///
+/// @param stimset   name of stimset
+/// @param type      indicate parameter wave (WP, WPT, or SegWvType), see @ref ParameterWaveTypes
+/// @param nwbFormat [optional, defaults to false] nwbFormat has type as suffix
+/// @return name as string
+Function/S WB_GetParameterWaveName(stimset, type, [nwbFormat])
+	string stimset
+	variable type, nwbFormat
+
+	string shortname, fullname
+
+	if(ParamIsDefault(nwbFormat))
+		nwbFormat = 0
+	endif
+
+	shortname = GetWaveBuilderParameterTypeName(type)
+
+	if(nwbFormat)
+		sprintf fullname, "%s_%s", stimset, shortname
+	else
+		sprintf fullname, "%s_%s", shortname, stimset
+	endif
+
+	return fullname
+End
+
 /// @brief Return the wave `WP` for a stim set
 ///
 /// @return valid/invalid wave reference
@@ -80,7 +107,7 @@ Function/Wave WB_GetWaveParamForSet(setName)
 
 	DFREF dfr = GetSetParamFolder(type)
 
-	WAVE/Z/SDFR=dfr wv = $("WP" + "_" + setName)
+	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
 
 	return wv
 End
@@ -101,7 +128,7 @@ Function/Wave WB_GetWaveTextParamForSet(setName)
 
 	DFREF dfr = GetSetParamFolder(type)
 
-	WAVE/Z/T/SDFR=dfr wv = $("WPT" + "_" + setName)
+	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 
 	return wv
 End
@@ -122,7 +149,7 @@ Function/Wave WB_GetSegWvTypeForSet(setName)
 
 	DFREF dfr = GetSetParamFolder(type)
 
-	WAVE/Z/SDFR=dfr wv = $("SegWvType" + "_" + setName)
+	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
 
 	return wv
 End

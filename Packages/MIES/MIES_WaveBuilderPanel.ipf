@@ -1626,9 +1626,9 @@ static Function WBP_SaveSetParam()
 	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
 	setName = WBP_AssembleSetName()
 
-	Duplicate/O SegWvType , dfr:$("SegWvType_" + setName)
-	Duplicate/O WP	       , dfr:$("WP_" + setName)
-	Duplicate/O WPT       , dfr:$("WPT_" + setName)
+	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	Duplicate/O WPT       , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 End
 
 static Function WBP_LoadSet(setName)
@@ -1722,9 +1722,9 @@ static Function WBP_DeleteSet()
 
 	setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
 
-	WPName = "WP_" + setName
-	WPTName = "WPT_" + setName
-	SegWvTypeName = "SegWvType_" + setName
+	WPName        = WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	WPTName       = WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+	SegWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
 
 	// makes sure that a set is selected
 	if(!CmpStr(setName, NONE))

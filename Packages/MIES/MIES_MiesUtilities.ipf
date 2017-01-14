@@ -2619,6 +2619,33 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	return SortList(listInternal + listThirdParty, ";", 16)
 End
 
+/// @brief Return the name short String of the Parameter Wave used in the WaveBuilder
+///
+/// @param type One of @ref ParameterWaveTypes
+///
+/// @return name as string
+Function/S GetWaveBuilderParameterTypeName(type)
+	variable type
+
+	string shortname
+
+	switch(type)
+		case STIMSET_PARAM_WP:
+			shortname = "WP"
+			break
+		case STIMSET_PARAM_WPT:
+			shortname = "WPT"
+			break
+		case STIMSET_PARAM_SEGWVTYPE:
+			shortname = "SegWvType"
+			break
+		default:
+			break
+	endswitch
+
+	return shortname
+End
+
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
 Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
 	string panelTitle

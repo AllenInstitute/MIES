@@ -663,3 +663,12 @@ Constant CONTENT_TYPE_SWEEP     = 0x01
 Constant CONTENT_TYPE_TPSTORAGE = 0x02
 Constant CONTENT_TYPE_ALL       = 0xFF
 /// @}
+
+/// @name Parameter type flags for WB_GetParameterWaveName
+///
+/// @anchor ParameterWaveTypes
+/// @{
+Constant STIMSET_PARAM_WP        = 0
+Constant STIMSET_PARAM_WPT       = 1
+Constant STIMSET_PARAM_SEGWVTYPE = 2
+/// @}
