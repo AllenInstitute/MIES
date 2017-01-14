@@ -284,3 +284,71 @@ End
 Function ControlWindowToFront()
 	DoWindow/H
 End
+
+/// @brief Return the base name of the file
+///
+/// Given `path/file.suffix` this gives `file`.
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetBaseName(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
+
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(3, filePathWithSuffix, sep, 1, 0)
+End
+
+/// @brief Return the file extension (suffix)
+///
+/// Given `path/file.suffix` this gives `suffix`.
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetFileSuffix(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
+
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(4, filePathWithSuffix, sep, 0, 0)
+End
+
+/// @brief Return the folder of the file
+///
+/// Given `path/file.suffix` this gives `path`.
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetFolder(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
+
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(1, filePathWithSuffix, sep, 1, 0)
+End
+
+/// @brief Return the filename with extension
+///
+/// Given `path/file.suffix` this gives `file.suffix`.
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetFile(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
+
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(0, filePathWithSuffix, sep, 1, 0)
+End
