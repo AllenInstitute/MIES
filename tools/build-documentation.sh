@@ -31,6 +31,7 @@ if hash pandoc 2>/dev/null; then
   echo "Start converting markdown files to rst"
 
   pandoc -f markdown_strict "$top_level/README.md" -o readme.rst
+  pandoc -f markdown_strict "$top_level/ReportingBugs.md" -o reportingbugs.rst
 
 else
   echo "Errors building the documentation" 1>&2
