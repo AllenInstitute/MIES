@@ -561,10 +561,16 @@ Function ButtonRestoreBackup(ba) : ButtonControl
 
 			numWaves = DimSize(dataRef, ROWS)
 			for(i=0;i<numWaves;i+=1)
-				WAVE/Z wv1 = ReplaceWaveWithBackup(dataRef[i], nonExistingBackupIsFatal=0)
-				WAVE/Z wv2 = ReplaceWaveWithBackup(GetConfigWave(dataRef[i]), nonExistingBackupIsFatal=0)
 
-				success = success && WaveExists(wv1) && WaveExists(wv2)
+				WAVE sweep  = dataRef[i]
+				WAVE config = GetConfigWave(sweep)
+
+				if(WaveExists(GetBackupWave(sweep)) && WaveExists(GetBackupWave(config)))
+					ReplaceWaveWithBackup(sweep, nonExistingBackupIsFatal=0)
+					ReplaceWaveWithBackup(config, nonExistingBackupIsFatal=0)
+				else
+					success = 0
+				endif
 			endfor
 
 			if(!success)
