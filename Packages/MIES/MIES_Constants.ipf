@@ -575,6 +575,7 @@ StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
 ///@{
 StrConstant USER_CONFIG_PATH        = "C:Users:stephanies:Documents:mies-igor:UserConfig.ift"
 Constant ATTEMPTS                   = 5
+StrConstant CONFIG_VERSION = "Version"
 StrConstant SAVE_PATH               = "D:MiesSave"
 StrConstant ITC_DEV                 = "Name of ITC Device"
 StrConstant AMP_TITLE               = "Amplifier Names"

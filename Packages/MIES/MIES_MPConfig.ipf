@@ -4,7 +4,7 @@
 /// @brief Configure MIES for Multi-patch experiments	
 Function MultiPatchConfig()
 	
-	string UserConfigList, win, filename, ITCDev, UserConfigNB
+	string UserConfigNB, win, filename, ITCDev
 	variable ITCDevNum
 	
 	movewindow /C 1450, 530,-1,-1								// position command window
@@ -18,8 +18,9 @@ Function MultiPatchConfig()
 	endif
 	
 	UserConfigNB = winname(0,16)
-	UserConfigList = MPConfig_ImportUserSettings(UserConfigNB)
-	ITCDev = ReadConfigList_Textual(ITC_DEV, UserConfigList)
+	Wave /T UserSettings = MPConfig_ImportUserSettings(UserConfigNB)
+	FindValue /TEXT = ITC_DEV UserSettings
+	ITCDev = UserSettings[V_value][%SettingValue]
 
 	if(WindowExists(ITCDev +"_Dev_0"))
 		win = ITCDev + "_Dev_0"
@@ -38,15 +39,15 @@ Function MultiPatchConfig()
 		win = ITCDev + "_Dev_0"
 	endif	
 	
-	MPConfig_Amplifiers(win, ConfigList = UserConfigList)
+	MPConfig_Amplifiers(win, UserSettings)
 	
-	MPConfig_Pressure(win, ConfigList = UserConfigList)
+	MPConfig_Pressure(win, UserSettings)
 	
 	MPConfig_ClampModes(win)
 	
-	MPConfig_AsyncTemp(win, ConfigList = UserConfigList)
+	MPConfig_AsyncTemp(win, UserSettings)
 	
-	MPConfig_DAEphysSettings(win, ConfigList = UserConfigList)
+	MPConfig_DAEphysSettings(win, UserSettings)
 	
 
 	HD_LoadReplaceStimSet()
@@ -72,21 +73,17 @@ End
 /// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
 /// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
 ///	 One or the other ConfigList or ConfigNB need to be defined
-Function MPConfig_Amplifiers(panelTitle, [ConfigList, ConfigNB])
-	string panelTitle, ConfigList, ConfigNB
+Function MPConfig_Amplifiers(panelTitle, UserSettings)
+	string panelTitle
+	Wave /T UserSettings
 	
 	string AmpSerialLocal, AmpTitleLocal, CheckDA, ConnectedAmps
 	variable i, ii = 0
 	
-	if(ParamIsDefault(ConfigList))
-		if(ParamIsDefault(ConfigNB))
-			ASSERT(0, "Need to provide User Configuration Notebook in order to initialize amplifiers")
-		endif
-		ConfigList = MPConfig_ImportUserSettings(ConfigNB)
-	endif
-	
-	AmpSerialLocal = ReadConfigList_Textual(AMP_SERIAL,ConfigList)
-	AmpTitleLocal = ReadConfigList_Textual(AMP_TITLE,ConfigList)
+	FindValue /TEXT = AMP_SERIAL UserSettings
+	AmpSerialLocal = UserSettings[V_value][%SettingValue]
+	FindValue /TEXT = AMP_TITLE UserSettings
+	AmpTitleLocal = UserSettings[V_value][%SettingValue]
 	
 	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" ) 
 	
@@ -132,22 +129,16 @@ End
 /// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
 /// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
 ///	 One or the other ConfigList or ConfigNB need to be defined
-Function MPConfig_Pressure(panelTitle, [ConfigList, ConfigNB])
-	string panelTitle, ConfigList, ConfigNB
+Function MPConfig_Pressure(panelTitle, UserSettings)
+	string panelTitle
+	Wave /T UserSettings
 	
 	variable i, ii=0, PressDevVal
-	string NIDev, PressureDevLocal
-	
-		
-	if(ParamIsDefault(ConfigList))
-		if(ParamIsDefault(ConfigNB))
-			ASSERT(0, "Need to provide User Configuration Notebook in order to initialize pressure devices")
-		endif
-		ConfigList = MPConfig_ImportUserSettings(ConfigNB)
-	endif
+	string NIDev, PressureDevLocal, PressureDataList
 	
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateDACList")
-	PressureDevLocal = ReadConfigList_Textual(PRESSURE_DEV, ConfigList)
+	FindValue /TEXT = PRESSURE_DEV UserSettings
+	PressureDevLocal = UserSettings[V_value][%SettingValue]
 	NIDev = HW_NI_ListDevices()
 	
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
@@ -171,18 +162,20 @@ Function MPConfig_Pressure(panelTitle, [ConfigList, ConfigNB])
 	
 	PGC_SetAndActivateControl(panelTitle,"button_Hardware_P_Enable")
 	
-	WAVE BathPressure = ReadConfigList_Numerical(PRESSURE_BATH, ConfigList)
-	WAVE StartSealPressure = ReadConfigList_Numerical(PRESSURE_STARTSEAL, ConfigList)
-	WAVE MaxSealPressure = ReadConfigList_Numerical(PRESSURE_MAXSEAL, ConfigList)
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
-	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_InBathP", val = BathPressure[0])  			
-	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealStartP", val = StartSealPressure[0])		
-	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealMaxP", val = MaxSealPressure[0])		
+	FindValue /TEXT = PRESSURE_BATH UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_InBathP", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TEXT = PRESSURE_STARTSEAL UserSettings  			
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealStartP", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TEXT = PRESSURE_MAXSEAL UserSettings		
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealMaxP", val = str2num(UserSettings[V_value][%SettingValue]))		
 	
 	// Set pressure calibration values
+	FindValue /TEXT = PRESSURE_CONST UserSettings
+	Wave /T PressureConstantTextWv = ListToTextWave(UserSettings[V_value][%SettingValue], ";")
+	Make /D/FREE PressureConstants = str2num(PressureConstantTextWv)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	WAVE PressureConstants = ReadConfigList_Numerical(PRESSURE_CONST,ConfigList)
-
+	
 	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
 	pressureDataWv[%headStage_1][%PosCalConst] = PressureConstants[1]
 	pressureDataWv[%headStage_2][%PosCalConst] = PressureConstants[2]
@@ -209,31 +202,26 @@ End
 /// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
 /// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
 ///	 One or the other ConfigList or ConfigNB need to be defined		
-Function MPConfig_AsyncTemp(panelTitle, [ConfigList, ConfigNB])
-	string panelTitle, ConfigList, ConfigNB
-	
-	if(ParamIsDefault(ConfigList))
-		if(ParamIsDefault(ConfigNB))
-			ASSERT(0, "Need to provide User Configuration Notebook in order to set asynchronous temperature monitoring")
-		endif
-		ConfigList = MPConfig_ImportUserSettings(ConfigNB)
-	endif
-	
-	WAVE TempGainLocal = ReadConfigList_Numerical(TEMP_GAIN, ConfigList)
-	WAVE TempMaxLocal = ReadConfigList_Numerical(TEMP_MAX, ConfigList)
-	WAVE TempMinLocal = ReadConfigList_Numerical(TEMP_MIN, ConfigList)
+Function MPConfig_AsyncTemp(panelTitle, UserSettings)
+	string panelTitle
+	Wave /T UserSettings
+
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)		
 	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_00", str = "Set Temperature")
 	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_00", val = 1)
-	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_00", val = TempGainLocal[0])
+	FindValue /TEXT = TEMP_GAIN UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_00", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"Unit_AsyncAD_00", str = "degC")
 	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_01", str = "Bath Temperature")
 	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_01", val = 1)
-	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_01", val = TempGainLocal[0])
+	FindValue /TEXT = TEMP_GAIN UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_01", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"Unit_AsyncAD_01", str = "degC")
 	PGC_SetAndActivateControl(panelTitle,"check_AsyncAlarm_01", val = 1)
-	PGC_SetAndActivateControl(panelTitle,"max_AsyncAD_01", val = TempMaxLocal[0])
-	PGC_SetAndActivateControl(panelTitle,"min_AsyncAD_01", val = TempMinLocal[0])
+	FindValue /TEXT = TEMP_MAX UserSettings
+	PGC_SetAndActivateControl(panelTitle,"max_AsyncAD_01", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TEXT = TEMP_MIN UserSettings
+	PGC_SetAndActivateControl(panelTitle,"min_AsyncAD_01", val = str2num(UserSettings[V_value][%SettingValue]))
 
 End
 
@@ -243,37 +231,42 @@ End
 /// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
 /// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
 ///	 One or the other ConfigList or ConfigNB need to be defined		
-Function MPConfig_DAEphysSettings(panelTitle, [ConfigList, ConfigNB])
-	string panelTitle, ConfigList, ConfigNB
+Function MPConfig_DAEphysSettings(panelTitle, UserSettings)
+	string panelTitle
+	Wave /T UserSettings
  	
- 	if(ParamIsDefault(ConfigList))
- 		if(ParamIsDefault(ConfigNB))
-			ASSERT(0, "Need to provide User Configuration Notebook in order to set experimental parameters")
-		endif
- 		ConfigList = MPConfig_ImportUserSettings(ConfigNB)
- 	endif
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_TPAfterDAQ", val = ReadConfigList_CheckBox(TP_AFTER_DAQ, ConfigList))
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_TP_SaveTPRecord", val = ReadConfigList_CheckBox(SAVE_TP, ConfigList))
-	PGC_SetAndActivateControl(panelTitle,"Check_Settings_NwbExport", val = ReadConfigList_CheckBox(EXPORT_NWB, ConfigList))
-	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = ReadConfigList_CheckBox(APPEND_ASYNC, ConfigList))
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = ReadConfigList_CheckBox(SYNC_MIES_MCC, ConfigList))	
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = ReadConfigList_CheckBox(ENABLE_I_EQUAL_ZERO, ConfigList))
+	FindValue /TEXT = TP_AFTER_DAQ UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_TPAfterDAQ", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = SAVE_TP UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_TP_SaveTPRecord", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = EXPORT_NWB UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Check_Settings_NwbExport", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = APPEND_ASYNC UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = SYNC_MIES_MCC UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = ENABLE_I_EQUAL_ZERO UserSettings	
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = str2num(UserSettings[V_value][%CheckBoxValue]))
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = ReadConfigList_CheckBox(ENABLE_OODAQ, ConfigList))
-	Wave ooDAQPostDelay = ReadConfigList_Numerical(OODAQ_POST_DELAY, ConfigList)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = ooDAQPostDelay[0])
-	Wave ooDAQResolution = ReadConfigList_Numerical(OODAQ_RESOLUTION, ConfigList)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = ooDAQResolution[0])
-	Wave StimSetRepeats = ReadConfigList_Numerical(NUM_STIM_SETS, ConfigList)
-	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = StimSetRepeats[0])
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = ReadConfigList_CheckBox(GET_SET_ITI, ConfigList))
-	Wave DefaultITI = ReadConfigList_Numerical(DEFAULT_ITI, ConfigList)
-	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = DefaultITI[0])
-	PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_AutoOFF", val = ReadConfigList_CheckBox(PRESSURE_USER_FOLLOW_HS, ConfigList))	
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_UserP_Seal", val = ReadConfigList_CheckBox(PRESSURE_USER_ON_SEAL, ConfigList))
-	Wave TPAmp = ReadConfigList_Numerical(TP_AMP_VC, ConfigList)
- 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = TPAmp[0])
+	FindValue /TEXT = ENABLE_OODAQ UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = OODAQ_POST_DELAY UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TEXT = OODAQ_RESOLUTION UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TEXT = NUM_STIM_SETS UserSettings
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TEXT = GET_SET_ITI UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_Get_Set_ITI", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = DEFAULT_ITI UserSettings
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT  = PRESSURE_USER_FOLLOW_HS UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_AutoOFF", val = str2num(UserSettings[V_value][%CheckBoxValue]))	
+	FindValue /TEXT = PRESSURE_USER_ON_SEAL UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_UserP_Seal", val = str2num(UserSettings[V_value][%CheckBoxValue]))
+	FindValue /TEXT = TP_AMP_VC UserSettings
+ 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = str2num(UserSettings[V_value][%SettingValue]))
 End
 
 /// @brief Intiate MCC parameters for active headstages
@@ -385,10 +378,24 @@ End
 ///
 /// @param UserConfigNB  Name of User Configuration Notebook as a string
 /// @return ConfigList   KeyWordList string of configuration parameters to be called by ReadConfigList
-Function /S MPConfig_ImportUserSettings(ConfigNB)
+Function /WAVE MPConfig_ImportUserSettings(ConfigNB)
 	string ConfigNB
-	string ConfigList = "", TempText
-	variable p = 0
+	
+	string SelectedText, CurrentKey, CurrentValue, errorMsg, CurrentKeyType
+	variable p = 0, i = 0, delimiter, NumValue
+	Make /FREE/T/N=(100,3) UserSettings
+	Make /FREE/T/N=(100,3) KeyTypes
+	
+	SetDimLabel 1, 0, SettingKey, UserSettings
+	SetDimLabel 1, 1, SettingValue, UserSettings
+	SetDimLabel 1, 2, CheckBoxValue, UserSettings
+	SetDimLabel 1, 0, StringKeys, KeyTypes
+	SetDimLabel 1, 1, NumKeys, KeyTypes
+	SetDimLabel 1, 2, CheckBoxKeys, KeyTypes
+	
+	KeyTypes[][%StringKeys] = {ITC_DEV, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
+	KeyTypes[][%NumKeys] = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN, PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION}
+	KeyTypes[][%CheckBoxKeys] = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC, SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS, REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ}
 	
 	do
 		Notebook $ConfigNB selection = {(p,0),(p,0)}
@@ -399,22 +406,71 @@ Function /S MPConfig_ImportUserSettings(ConfigNB)
 		Notebook $ConfigNB selection = {startOfParagraph, endofChars}
 		
 		GetSelection notebook, $ConfigNB, 2
-		TempText = ""
-		TempText = S_Selection
-		if(strlen(TempText) > 0)
-			if(strlen(ConfigList) == 0)
-				ConfigList = TrimString(TempText)
+		SelectedText = ""
+		SelectedText = S_Selection
+		if(strlen(SelectedText) == 0)
+			p += 1
+		else
+			if(stringmatch(SelectedText, "#*"))
+				p += 1
 			else
-				ConfigList = ConfigList + "/" + TrimString(TempText)
+				delimiter = strsearch(SelectedText, "=", 0)
+				CurrentKey = TrimString(SelectedText[0, delimiter - 1])
+				CurrentValue = TrimString(SelectedText[delimiter + 1, strlen(SelectedText)])
+				FindValue /TEXT = CurrentKey KeyTypes
+				sprintf errorMsg, "Parameter key %s does not exist", CurrentKey
+				ASSERT(V_value >= 0, errorMsg)
+				CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
+				if(strlen(CurrentValue) == 0)
+					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey  
+					ASSERT(strlen(CurrentValue) == 0, errorMsg)
+				elseif(stringmatch(CurrentKey, "Version"))
+					ASSERT(str2num(CurrentValue) > 0, "Invalid version, please update Configuration NoteBook")
+					UserSettings[i][%SettingKey] = CurrentKey
+					UserSettings[i][%SettingValue] = CurrentValue
+					p += 1
+					i += 1
+				elseif(stringmatch(CurrentKeyType, "StringKeys"))
+					UserSettings[i][%SettingKey] = CurrentKey
+					UserSettings[i][%SettingValue] = CurrentValue
+					p += 1
+					i += 1
+				elseif(stringmatch(CurrentKeyType, "NumKeys"))
+					if(itemsinlist(CurrentValue) != 1)
+						sprintf errorMsg, "%s requires a single numerical entry, please check the Configuration NoteBook", CurrentKey
+						ASSERT(0, errorMsg)
+					else
+						NumValue = str2num(CurrentValue)
+						UserSettings[i][%SettingKey] = CurrentKey
+						UserSettings[i][%SettingValue] = CurrentValue
+						p += 1
+						i += 1
+					endif
+				elseif(stringmatch(CurrentKeyType, "CheckBoxKeys"))
+					if(stringmatch(CurrentValue, "Yes"))
+						UserSettings[i][%SettingKey] = CurrentKey
+						UserSettings[i][%SettingValue] = CurrentValue
+						UserSettings[i][%CheckBoxValue] = num2str(CHECKBOX_SELECTED)
+						p += 1
+						i += 1
+					elseif(stringmatch(CurrentValue, "No"))
+						UserSettings[i][%SettingKey] = CurrentKey
+						UserSettings[i][%SettingValue] = CurrentValue
+						UserSettings[i][%CheckBoxValue] = num2str(CHECKBOX_UNSELECTED)
+						p += 1
+						i += 1
+					else
+						sprintf errorMsg, "%s is not in the correct format, must be 'Yes' or 'No'", CurrentKey
+						ASSERT(0, errorMsg)
+					endif
+				endif
 			endif
 			
 		endif	
-		
-		p += 1
 	
-	while(stringmatch(TempText, "!---End of Configuration---"))
+	while(stringmatch(SelectedText, "!#End of Configuration"))
 	
-	return ConfigList
+	return UserSettings
 	
 End
 
