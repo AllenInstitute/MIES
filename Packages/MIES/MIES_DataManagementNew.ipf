@@ -283,6 +283,8 @@ Function DM_DeleteDataWaves(panelTitle)
 	path    = GetDeviceDataPathAsString(panelTitle)
 	list    = GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 	list   += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP, waveProperty="MINCOLS:2")
+	list   += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP_BAK, waveProperty="MINCOLS:2")
+	list   += GetListOfWaves(GetDeviceDataPath(panelTitle), DATA_CONFIG_REGEXP_BAK, waveProperty="MINCOLS:2")
 
 	numItems = ItemsInList(list)
 	for(i = 0; i < numItems; i += 1)
