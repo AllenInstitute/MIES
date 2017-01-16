@@ -2833,6 +2833,22 @@ Function/Wave CreateBackupWave(wv, [forceCreation])
 	return backup
 End
 
+/// @brief Return a wave reference to the possibly not existing backup wave
+Function/WAVE GetBackupWave(wv)
+	WAVE wv
+
+	string backupname
+
+	ASSERT(WaveExists(wv), "Found no original wave")
+
+	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
+	DFREF dfr  = GetWavesDataFolderDFR(wv)
+
+	WAVE/Z/SDFR=dfr backup = $backupname
+
+	return backup
+End
+
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
 ///
 /// @param wv                       wave to replace by its backup
@@ -2844,19 +2860,11 @@ Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	Wave wv
 	variable nonExistingBackupIsFatal
 
-	string backupname
-	dfref dfr
-
 	if(ParamIsDefault(nonExistingBackupIsFatal))
 		nonExistingBackupIsFatal = 1
 	endif
 
-	ASSERT(WaveExists(wv), "Found no original wave")
-
-	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
-	dfr        = GetWavesDataFolderDFR(wv)
-
-	Wave/Z/SDFR=dfr backup = $backupname
+	WAVE backup = GetBackupWave(wv)
 
 	if(!WaveExists(backup))
 		if(nonExistingBackupIsFatal)
