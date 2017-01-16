@@ -3395,6 +3395,10 @@ Function HasPanelLatestVersion(win, expectedVersion)
 
 	variable version
 
+#ifdef EVIL_KITTEN_EATING_MODE
+	return 1
+#endif
+
 	ASSERT(windowExists(win), "Non existent window")
 	version = str2num(GetUserData(win, "", "panelVersion"))
 
