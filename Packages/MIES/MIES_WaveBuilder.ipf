@@ -234,7 +234,13 @@ Function/Wave WB_GetStimSet([setName])
 	endfor
 
 	if(SegWvType[98])
-		WaveTransForm/O flip stimset
+		Duplicate/FREE stimset, stimsetFlipped
+		for(i=0; i < numSweeps; i+=1)
+			Duplicate/FREE/R=[][i] stimset, singleSweep
+			WaveTransForm/O flip singleSweep
+			Multithread stimSetFlipped[][i] = singleSweep[p]
+		endfor
+		WAVE stimset = stimsetFlipped
 	endif
 
 	DEBUGPRINT_ELAPSED(referenceTime)
