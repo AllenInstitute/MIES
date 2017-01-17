@@ -1678,6 +1678,7 @@ static Function WBP_LoadSet(setName)
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", funcList, WPT[5][99])
 
 	WBP_SelectEpoch(0)
+	WBP_UpdateEpochControls()
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, funcList, func)
