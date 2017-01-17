@@ -896,7 +896,8 @@ static Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	string device, singleSweepFolder
+	string device
+	variable sweepModTime, numWaves, requireNewSplit, i
 
 	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
 
@@ -907,12 +908,28 @@ static Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
 	DFREF deviceDFR = GetDeviceDataPath(device)
 	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-	if(CountObjectsDFR(singleSweepDFR, COUNTOBJECTS_WAVES) > 0)
+	WAVE sweepWave  = GetSweepWave(device, sweepNo)
+	WAVE configWave = GetConfigWave(sweepWave)
+
+	sweepModTime = max(ModDate(sweepWave), ModDate(configWave))
+	numWaves = CountObjectsDFR(singleSweepDFR, COUNTOBJECTS_WAVES)	
+	requireNewSplit = (numWaves == 0)
+
+	for(i = 0; i < numWaves; i += 1)
+		WAVE/SDFR=singleSweepDFR wv = $GetIndexedObjNameDFR(singleSweepDFR, COUNTOBJECTS_WAVES, i)
+		if(sweepModTime > ModDate(wv))
+			// original sweep was modified, regenerate single sweep waves
+			KillOrMoveToTrash(dfr=singleSweepDFR)
+			DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+			requireNewSplit = 1
+			break
+		endif
+	endfor
+
+	if(!requireNewSplit)
 		return NaN
 	endif
 
-	WAVE sweepWave  = GetSweepWave(device, sweepNo)
-	WAVE configWave = GetConfigWave(sweepWave)
 	WAVE numericalValues = DB_GetNumericalValues(panelTitle)
 
 	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, targetDFR=singleSweepDFR)
