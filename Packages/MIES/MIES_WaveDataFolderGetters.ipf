@@ -4182,6 +4182,12 @@ Function/Wave GetDACIndexingStorageWave(panelTitle)
 	return wv
 End
 
+/// @brief Return the temporary folder below the MIES hierarchy, e.g. root:mies:trash.
+Function/DF GetTempPath()
+
+	return createDFWithAllParents(GetMiesPathAsString() + ":" + TRASH_FOLDER_PREFIX)
+End
+
 /// @brief Return a unique temporary folder below the MIES hierarchy, e.g. root:mies:trash_$digit.
 ///
 /// As soon as you discard the latest reference to the folder it will
