@@ -2791,7 +2791,7 @@ Function ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 		nonExistingBackupIsFatal = 1
 	endif
 
-	WAVE backup = GetBackupWave(wv)
+	WAVE/Z backup = GetBackupWave(wv)
 
 	if(!WaveExists(backup))
 		if(nonExistingBackupIsFatal)
