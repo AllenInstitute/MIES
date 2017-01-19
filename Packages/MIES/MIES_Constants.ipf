@@ -571,6 +571,21 @@ StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 StrConstant NOTE_KEY_ZEROED           = "Zeroed"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
 
+/// DA_Ephys Panel Tabs
+Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
+Constant DA_EPHYS_PANEL_DA = 1
+Constant DA_EPHYS_PANEL_AD = 2
+Constant DA_EPHYS_PANEL_TTL = 3
+Constant DA_EPHYS_PANEL_ASYNCHRONOUS = 4
+Constant DA_EPHYS_PANEL_SETTINGS = 5
+Constant DA_EPHYS_PANEL_HARDWARE = 6
+Constant DA_EPHYS_PANEL_VCLAMP = 0
+Constant DA_EPHYS_PANEL_ICLAMP = 1
+Constant DA_EPHYS_PANEL_IEQUALZERO = 2
+Constant DA_EPHYS_PANEL_PRESSURE_AUTO = 0
+Constant DA_EPHYS_PANEL_PRESSURE_MANUAL = 1
+Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
+
 ///@name KeyWord constants for User Configuration Notebook
 ///@{
 StrConstant USER_CONFIG_PATH        = "C:Users:stephanies:Documents:mies-igor:UserConfig.ift"
