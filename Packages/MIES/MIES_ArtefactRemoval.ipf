@@ -200,7 +200,7 @@ Function AR_HandleRanges(graph, [removeRange])
 	string graph
 	variable removeRange
 
-	variable first, last
+	variable first, last, substituteValue
 	variable i, j, k, l, numEntries
 	string traceName, leftAxis, bottomAxis, extPanel, yRangeStr
 
@@ -285,7 +285,8 @@ Function AR_HandleRanges(graph, [removeRange])
 			endif
 
 			if(removeRange)
-				AD[first, last] = NaN
+				substituteValue = AD[first]
+				AD[first, last] = substituteValue
 			else
 				sprintf traceName, "AR_%d_AD_%d_HS_%d", l, j, i
 				AppendToGraph/W=$graph/L=$leftAxis/B=$bottomAxis AD[first, last]/TN=$traceName
