@@ -4,6 +4,50 @@
 /// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
 
+/// @brief Return the popupmenu list entries
+///
+/// Parses the recreation macro and possibly executes
+/// the function referenced therein.
+///
+/// Does not work with builtin popup menu lists like `*COLORPOP*`.
+static Function/S PGC_GetPopupMenuList(win, control)
+	string win, control
+
+	string listOrFunc, path, cmd
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "invalid or non existing control")
+
+	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" S_recreation, listOrFunc
+	if(V_Flag != 1)
+		Bug("Could not find popupmenu \"value\" entry")
+		return ""
+	endif
+
+	listOrFunc = trimstring(listOrFunc, 1)
+
+	// unescape quotes
+	listOrFunc = ReplaceString("\\\"", listOrFunc, "\"")
+
+	// misc cleanup
+	listOrFunc = RemovePrefix(listOrFunc, startStr="#")
+	listOrFunc = RemovePrefix(listOrFunc, startStr="\"")
+	listOrFunc = RemoveEnding(listOrFunc, "\"")
+
+	path = GetTemporaryString()
+
+	sprintf cmd, "%s = %s", path, listOrFunc
+	Execute/Z/Q cmd
+
+	if(V_Flag)
+		Bug("Execute returned an error :(")
+		return ""
+	endif
+
+	SVAR str = $path
+	return str
+End
+
 static Function/S PGC_GetProcAndCheckParamType(win, control)
 	string win, control
 
@@ -133,7 +177,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			pa.popNum    = val + 1
 
 			if(ParamIsDefault(str))
-				pa.popStr = StringFromList(val, GetPopupMenuList(win, control))
+				pa.popStr = StringFromList(val, PGC_GetPopupMenuList(win, control))
 			else
 				pa.popStr = str
 			endif
