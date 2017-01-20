@@ -310,3 +310,11 @@ threadsafe Function/S GetThreadGroupIDFIFO(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "threadGroupIDFifo", initialValue=NaN)
 End
+
+/// @brief Return the absolute path to the temporary global string
+///
+/// Callers should always assume that this string contains garbage.
+Function/S GetTemporaryString()
+
+	return GetSVARAsString(GetTempPath(), "tempString")
+End

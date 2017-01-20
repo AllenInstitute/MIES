@@ -4786,7 +4786,7 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
 		print "Activate Multiclamp Commander software to populate list of available amplifiers"
-		list = AddListItem("\\M1(MC not available;", list, ";", inf)
+		list = AddListItem("\\M1(MC not available", list, ";", inf)
 		return list
 	endif
 

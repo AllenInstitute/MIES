@@ -451,3 +451,21 @@ Function DebuggingEnabledForFileWrapper(file)
 
 	return f(file)
 End
+
+/// @brief Complain and ask the user to report the error
+///
+/// In nearly all cases ASSERT() is the more appropriate method to use.
+Function Bug(msg)
+	string msg
+
+	string func, line, file
+	FindFirstOutsideCaller(func, line, file)
+
+	if(!isEmpty(func))
+		printf "BUG %s(...)#L%s: %s\r", func, line, msg
+	else
+		printf "BUG: %s\r", msg
+	endif
+
+	ControlWindowToFront()
+End

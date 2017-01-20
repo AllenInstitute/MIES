@@ -132,7 +132,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			pa.eventCode = 2
 			pa.popNum    = val + 1
 
-			if(!ParamIsDefault(str))
+			if(ParamIsDefault(str))
+				pa.popStr = StringFromList(val, GetPopupMenuList(win, control))
+			else
 				pa.popStr = str
 			endif
 
