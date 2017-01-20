@@ -786,26 +786,32 @@ End
 /// @param appendCR      0 (default) or 1, should a carriage return ("\r") be appended to the note
 /// @param replaceEntry  0 (default) or 1, should existing keys named `key` be replaced (does only work reliable
 ///                      in wave note lists without carriage returns).
-Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR, replaceEntry])
+/// @param format        [optional, defaults to `%g`] format string used for converting `var` to `str`
+Function AddEntryIntoWaveNoteAsList(wv, key, [var, str, appendCR, replaceEntry, format])
 	Wave wv
 	string key
 	variable var
 	string str
 	variable appendCR, replaceEntry
+	string format
 
-	variable numOptParams
-	string formattedString
+	string formattedString, formatString
 
 	ASSERT(WaveExists(wv), "missing wave")
 	ASSERT(!IsEmpty(key), "empty key")
 
-	numOptParams = !ParamIsDefault(var) + !ParamIsDefault(str)
-	ASSERT(numOptParams == 1, "invalid optional parameter combination")
+	if(ParamIsDefault(format))
+		formatString = "%s = %g;"
+	else
+		formatString = "%s = " + format + ";"
+	endif
 
 	if(!ParamIsDefault(var))
-		sprintf formattedString, "%s = %g;", key, var
+		sprintf formattedString, formatString, key, var
 	elseif(!ParamIsDefault(str))
 		formattedString = key + " = " + str + ";"
+	else
+		formattedString = key + ";"
 	endif
 
 	appendCR     = ParamIsDefault(appendCR)     ? 0 : appendCR
