@@ -2406,6 +2406,57 @@ Function/S TextWaveToList(txtWave, sep)
 	return list
 End
 
+/// @brief Convert a numeric wave to string list
+///
+/// @param wv     numeric wave
+/// @param sep    separator
+/// @param format [optional, defaults to `%g`] sprintf conversion specifier
+Function/S NumericWaveToList(wv, sep, [format])
+	WAVE wv
+	string sep, format
+
+	string list = ""
+	string str
+	variable i, numRows
+
+	if(ParamIsDefault(format))
+		format = "%g"
+	endif
+
+	ASSERT(WaveType(wv, 1) == 1, "Expected a numeric wave")
+	ASSERT(DimSize(wv, COLS) == 0, "Expected a 1D wave")
+
+	numRows = DimSize(wv, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		sprintf str, format, wv[i]
+		list = AddListItem(str, list, sep, Inf)
+	endfor
+
+	return list
+End
+
+/// @brief Convert a list to a numeric wave
+///
+/// Counterpart of NumericWaveToList().
+///
+/// @param list list with numeric entries
+/// @param sep  separator
+/// @param type [optional, defaults to double precision float (`IGOR_TYPE_64BIT_FLOAT`)] type of the created numeric wave
+Function/WAVE ListToNumericWave(list, sep, [type])
+	string list, sep
+	variable type
+
+	if(ParamIsDefault(type))
+		type = IGOR_TYPE_64BIT_FLOAT
+	endif
+
+	list = RemoveEnding(list, sep)
+
+	Make/FREE/Y=(type)/N=(ItemsInList(list, sep)) wv = str2num(StringFromList(p, list, sep))
+
+	return wv
+End
+
 /// @brief Returns the column from a multidimensional wave using the dimlabel
 Function/WAVE GetColfromWavewithDimLabel(waveRef, dimLabel)
 	WAVE waveRef
