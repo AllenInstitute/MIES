@@ -237,6 +237,7 @@ Function AR_HandleRanges(graph, [removeRange])
 
 			if(removeRange && i == 0 && WaveExists(AD))
 				CreateBackupWave(AD)
+				AddEntryIntoWaveNoteAsList(AD, NOTE_KEY_ARTEFACT_REMOVAL, str="true", replaceEntry=1)
 			endif
 
 			if(!WaveExists(AD))

@@ -569,3 +569,4 @@ StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"
 StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 
 StrConstant NOTE_KEY_ZEROED           = "Zeroed"
+StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
