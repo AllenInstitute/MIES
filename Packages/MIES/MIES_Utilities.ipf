@@ -822,6 +822,18 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR, replaceEntry])
 	endif
 End
 
+/// @brief Checks if `key = value;` can be found in the wave note
+///
+/// Ignores spaces around the equal ("=") sign.
+///
+/// @sa AddEntryIntoWaveNoteAsList()
+Function HasEntryInWaveNoteList(wv, key, value)
+	WAVE wv
+	string key, value
+
+	return GrepString(note(wv), "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
+End
+
 /// @brief Check if a given wave, or at least one wave from the dfr, is displayed on a graph
 ///
 /// @return one if one is displayed, zero otherwise

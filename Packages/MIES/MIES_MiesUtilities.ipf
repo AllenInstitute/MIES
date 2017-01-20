@@ -2137,10 +2137,15 @@ static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
 		trace = StringFromList(i, traceList)
 
 		WAVE wv = TraceNameToWaveRef(graph, trace)
+
+		if(HasEntryInWaveNoteList(wv, NOTE_KEY_ZEROED, "true"))
+			continue
+		endif
+
 		WAVE backup = CreateBackupWave(wv)
 		ZeroWave(wv)
 		Note wv, note(backup) + "\r"
-		AddEntryIntoWaveNoteAsList(wv, "Zeroed", str="true", replaceEntry=1)
+		AddEntryIntoWaveNoteAsList(wv, NOTE_KEY_ZEROED, str="true", replaceEntry=1)
 	endfor
 End
 
