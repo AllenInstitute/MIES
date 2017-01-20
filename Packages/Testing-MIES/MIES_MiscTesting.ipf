@@ -93,5 +93,5 @@ Function createDummySettingsWave(panelTitle, SweepCount)
 	endfor
 
 	// now call the function that will create the wave notes
-	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle)
+	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle, UNKNOWN_MODE)
 End
