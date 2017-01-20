@@ -1207,7 +1207,7 @@ End
 
 /// @brief Add wave ranges to every stimset (location marked by `?`) and
 ///        add a left hand side to the formula
-Function WB_PrepareFormulaForExecute(fp, sweep)
+static Function WB_PrepareFormulaForExecute(fp, sweep)
 	struct FormulaProperties &fp
 	variable sweep
 
