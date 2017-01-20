@@ -213,7 +213,7 @@ Function/Wave WB_GetStimSet([setName])
 		return $""
 	endif
 
-	Make/FREE/O/N=(lengthOf1DWaves, numSweeps) stimSet
+	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
 	FastOp stimSet = 0
 
 	for(i = 0; i < numSweeps; i += 1)

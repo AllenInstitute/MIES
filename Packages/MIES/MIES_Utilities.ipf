@@ -562,7 +562,7 @@ Function/Wave GetUniqueEntries(wv)
 	numRows = DimSize(wv,ROWS)
 	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
-	Duplicate/O/FREE wv, result
+	Duplicate/FREE wv, result
 
 	if(numRows == 0)
 		return result

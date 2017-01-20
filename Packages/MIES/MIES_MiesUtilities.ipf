@@ -3222,7 +3222,7 @@ Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo
 		return NaN
 	endif
 
-	Duplicate/O/FREE channelSel, channelSelMod
+	Duplicate/FREE channelSel, channelSelMod
 
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
