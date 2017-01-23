@@ -873,7 +873,12 @@ static Function WB_SawToothSegment(pa)
 
 	Wave SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
+#if (IgorVersion() >= 7.02)
+	MultiThread SegmentWave = 1 * pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+#else
 	SegmentWave = 1 * pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+#endif
+
 	SegmentWave += pa.offset
 End
 
