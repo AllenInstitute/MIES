@@ -837,6 +837,10 @@ Function WBP_StartupSettings()
 
 	SetPopupMenuIndex(panel, "popup_WaveBuilder_SetList", 0)
 	SetCheckBoxState(panel, "check_PreventUpdate", CHECKBOX_UNSELECTED)
+
+	SetPopupMenuIndex(panel, "popup_WaveBuilder_FolderList", 0)
+	SetPopupMenuIndex(panel, "popup_WaveBuilder_ListOfWaves", 0)
+
 	WBP_LoadSet(NONE)
 
 	Execute/P/Q/Z "DoWindow/R " + panel
