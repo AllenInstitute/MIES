@@ -182,6 +182,7 @@ End
 ///
 /// Only outside callers are generic external panels which must update the graph.
 /// @param panelTitle locked databrowser
+/// @param dummyArg   [unnused] required to be compatible to UpdateSweepPlot()
 Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	string panelTitle
 	variable dummyArg
