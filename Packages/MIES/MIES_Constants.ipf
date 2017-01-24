@@ -588,9 +588,10 @@ Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
 
 ///@name KeyWord constants for User Configuration Notebook
 ///@{
+Constant		MPCONFIG_VERSION_NUM    = 1
 StrConstant USER_CONFIG_PATH        = "C:Users:stephanies:Documents:mies-igor:UserConfig.ift"
-Constant ATTEMPTS                   = 5
-StrConstant CONFIG_VERSION = "Version"
+Constant    ATTEMPTS                = 5
+StrConstant CONFIG_VERSION 			   = "Version"
 StrConstant SAVE_PATH               = "D:MiesSave"
 StrConstant ITC_DEV                 = "Name of ITC Device"
 StrConstant AMP_TITLE               = "Amplifier Names"

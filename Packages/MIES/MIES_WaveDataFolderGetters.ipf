@@ -4793,3 +4793,115 @@ Function/WAVE GetDebugPanelListSelWave()
 	return wv
 End
 /// @}
+
+/// @brief Set Key:Value types for User_Config Notebook
+Function /WAVE MPConfig_KeyTypes()
+	
+	variable maxRows, i
+	string colLabel
+	
+	Make /FREE/T/N=(MINIMUM_WAVE_SIZE,3) KeyTypes
+	SetWaveDimLabel(KeyTypes, "StringKeys;NumKeys;CheckBoxKeys", COLS)
+	
+	KeyTypes[][%StringKeys] = {ITC_DEV, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
+	KeyTypes[][%NumKeys] = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN, PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION}
+	KeyTypes[][%CheckBoxKeys] = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC, SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS, REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ}	
+	
+	Make /FREE/N = (DimSize(KeyTypes, COLS)) numRows
+	for(i = 0; i < DimSize(KeyTypes, COLS); i+=1)
+		colLabel = GetDimLabeL(KeyTypes, COLS, i)
+		numRows[i] = FindIndizes(colLabel = colLabel, str = GetLastNonEmptyEntry(KeyTypes, colLabel, MINIMUM_WAVE_SIZE-1), wvText = KeyTypes)[0]
+	endfor
+	
+	WaveStats /Q numRows
+	maxRows = V_max + 1
+	Redimension /N = (maxRows, DimSize(KeyTypes, COLS)) KeyTypes
+	
+	return KeyTypes
+End
+
+/// @brief Read User_Config NoteBook file and extract parameters as a KeyWordList
+///
+/// @param UserConfigNB  Name of User Configuration Notebook as a string
+/// @return ConfigList   KeyWordList string of configuration parameters to be called by ReadConfigList
+Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
+	string ConfigNB
+	Wave KeyTypes
+	
+	string Content, CurrentKey, CurrentValue, errorMsg, CurrentKeyType, line
+	variable i, ii = 0, delimiter, NumValue, minimumSize, numRows, numCols, numLines
+	Make /FREE/T/N=(MINIMUM_WAVE_SIZE,2) UserSettings
+	
+	SetWaveDimLabel(UserSettings, "SettingKey;SettingValue", COLs)
+	
+	
+		Notebook $ConfigNB selection = {startOfFile, endOfFile}
+		GetSelection notebook, $ConfigNB, 2
+		Content = S_Selection
+		
+		numLines = ItemsInList(Content, "\r")
+		for(i = 0; i < numLines; i += 1)
+			line = StringFromList(i, Content, "\r")
+		
+		if(!isEmpty(line))
+			if(cmpstr(line[0], "#"))
+				delimiter = strsearch(line, "=", 0)
+				CurrentKey = TrimString(line[0, delimiter - 1])
+				CurrentValue = TrimString(line[delimiter + 1, inf])
+				FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
+				sprintf errorMsg, "Parameter key %s does not exist", CurrentKey
+				ASSERT(V_value >= 0, errorMsg)
+				CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
+				if(isEmpty(CurrentValue))
+					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey  
+					ASSERT(isEmpty(CurrentValue), errorMsg)
+				elseif(!cmpstr(CurrentKey, "Version"))
+					ASSERT(str2num(CurrentValue) == MPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
+					ASSERT(ii == 0, "Configuration Notebook version must be specified first")
+					EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+					UserSettings[ii][%SettingKey] = CurrentKey
+					UserSettings[ii][%SettingValue] = CurrentValue
+					ii += 1
+				elseif(!cmpstr(CurrentKeyType, "StringKeys"))
+					EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+					UserSettings[ii][%SettingKey] = CurrentKey
+					UserSettings[ii][%SettingValue] = CurrentValue
+					ii += 1
+				elseif(!cmpstr(CurrentKeyType, "NumKeys"))
+					if(itemsinlist(CurrentValue) != 1)
+						sprintf errorMsg, "%s requires a single numerical entry, please check the Configuration NoteBook", CurrentKey
+						ASSERT(0, errorMsg)
+					else
+						NumValue = str2num(CurrentValue)
+						EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+						UserSettings[ii][%SettingKey] = CurrentKey
+						UserSettings[ii][%SettingValue] = CurrentValue
+						ii += 1
+					endif
+				elseif(!cmpstr(CurrentKeyType, "CheckBoxKeys"))
+					if(!cmpstr(CurrentValue, "Yes"))
+						EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+						UserSettings[ii][%SettingKey] = CurrentKey
+						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_SELECTED)
+						ii += 1
+					elseif(!cmpstr(CurrentValue, "No"))
+						EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+						UserSettings[ii][%SettingKey] = CurrentKey
+						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_UNSELECTED)
+						ii += 1
+					else
+						sprintf errorMsg, "%s is not in the correct format, must be 'Yes' or 'No'", CurrentKey
+						ASSERT(0, errorMsg)
+					endif
+				endif
+			endif
+			
+		endif	
+	
+	endfor
+	
+	Redimension /N = (ii, DimSize(UserSettings, COLS)) UserSettings
+	
+	return UserSettings
+	
+End
