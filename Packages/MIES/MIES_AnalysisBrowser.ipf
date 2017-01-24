@@ -27,6 +27,7 @@
 // our includes
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_ArtefactRemoval"
+#include ":MIES_Cache"
 #include ":MIES_Constants"
 #include ":MIES_Debugging"
 #include ":MIES_EnhancedWMRoutines"
@@ -35,6 +36,8 @@
 #include ":MIES_GuiUtilities"
 #include ":MIES_IgorHooks"
 #include ":MIES_MiesUtilities"
+#include ":MIES_OverlaySweeps"
+#include ":MIES_ProgrammaticGuiControl"
 #include ":MIES_Structures"
 #include ":MIES_Utilities"
 #include ":MIES_WaveDataFolderGetters"
@@ -455,9 +458,6 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	endfor
 
 	list = GetListOfObjects(tmpDFR, ".*", matchList=listOfNames, recursive=1, typeFlag=typeFlags)
-
-	sprintf str, "V_Flag=%d, numItems=%d, list=%s\r", V_Flag, ItemsInList(list), list
-	DEBUGPRINT(str)
 
 	return ItemsInList(list)
 End
@@ -1708,10 +1708,10 @@ Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
 				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 			endfor
 
+			SVAR/SDFR=sweepBrowserDFR graph
 			if(oneValidSweep)
-				SB_PlotSweep(sweepBrowserDFR, 0, 0)
+				SB_UpdateSweepPlot(graph, newSweep=0)
 			else
-				SVAR/SDFR=sweepBrowserDFR graph
 				KillWindow $graph
 			endif
 			break

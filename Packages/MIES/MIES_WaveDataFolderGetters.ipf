@@ -4613,6 +4613,72 @@ Function/WAVE GetArtefactRemovalDataWave(dfr)
 	return wv
 End
 
+/// @brief Return the overlay sweeps listbox wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetOverlaySweepsListWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/T/Z/SDFR=dfr wv = overlaySweepsListBoxWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"Sweep", wv
+	SetDimLabel COLS, 1, $"Headstages", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
+/// @brief Return the overlay sweeps listbox selection wave
+/// for the databrowser or the sweepbrowser
+Function/WAVE GetOverlaySweepsListSelWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/B/Z/SDFR=dfr wv = overlaySweepsListBoxSelWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/B/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxSelWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"Sweep", wv
+	SetDimLabel COLS, 1, $"Headstages", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
+/// @brief Return the overlay sweeps wave with all stimsets from all sweeps
+/// for the databrowser or the sweepbrowser
+Function/WAVE GetOverlaySweepsStimsetListWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+	WAVE/T/Z/SDFR=dfr wv = overlaySweepsStimSetListWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsStimSetListWave/Wave=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
 /// @brief Return the channel selection wave for the databrowser or sweep browser
 Function/WAVE GetChannelSelectionWave(dfr)
 	DFREF dfr
@@ -4636,6 +4702,19 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	SetDimLabel COLS, 2, HEADSTAGE, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
+/// @brief Return a *free* wave used for the axis label cache
+Function/WAVE GetAxisLabelCacheWave()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 2) wv
+
+	SetDimLabel COLS, 0, Axis, wv
+	SetDimLabel COLS, 1, Lbl, wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
 	return wv
 End
 

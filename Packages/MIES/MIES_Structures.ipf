@@ -33,15 +33,6 @@ Structure PostPlotSettings
 	variable timeAlignLevel
 	/// @}
 
-	/// Artefact removal settings
-	/// @{
-	variable artefactRemoval
-	variable autoRemove
-	variable sweepNo
-	DFREF sweepFolder
-	WAVE numericalValues
-	/// @}
-
 	/// Hook function which is called at the very end of #PostPlotTransformations
 	FUNCREF FinalUpdateHookProto finalUpdateHook
 EndStructure
@@ -55,7 +46,8 @@ Structure TiledGraphSettings
 	int16 overlaySweep
 	int16 overlayChannels
 	int16 dDAQDisplayMode
-	int16 oodDAQHeadstageRegions
+	int16 dDAQHeadstageRegions
+	int16 highlightSweep
 EndStructure
 
 /// @brief Helper structure for formula parsing of the Wavebuilder combine epoch

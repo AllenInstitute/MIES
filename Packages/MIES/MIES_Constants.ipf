@@ -58,8 +58,6 @@ Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
 Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
-StrConstant LAST_SWEEP_USER_DATA = "lastSweep"
-
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
@@ -437,7 +435,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION    = 13
-
+Constant DATABROWSER_PANEL_VERSION = 1
 Constant WAVEBUILDER_PANEL_VERSION = 1
 
 /// Version of the labnotebooks (numerical and textual)
@@ -569,3 +567,6 @@ Constant NOISE_TYPE_BROWN = 2
 
 StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"
 StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
+
+StrConstant NOTE_KEY_ZEROED           = "Zeroed"
+StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"

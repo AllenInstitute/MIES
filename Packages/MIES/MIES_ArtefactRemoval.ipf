@@ -28,6 +28,13 @@ Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 	variable i, dac, adc
 	variable level, index, total
+	string key
+
+	key = CA_ArtefactRemovalRangesKey(sweepDFR, sweepNo)
+	WAVE/Z cachedRanges = CA_TryFetchingEntryFromCache(key)
+	if(WaveExists(cachedRanges))
+		return cachedRanges
+	endif
 
 	WAVE statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
@@ -87,6 +94,8 @@ Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 	Redimension/N=(GetNumberFromWaveNote(ranges, NOTE_INDEX), -1) ranges
 	Note/K ranges
+
+	CA_StoreEntryIntoCache(key, ranges)
 
 	return ranges
 End
@@ -149,16 +158,23 @@ Function/S AR_GetHighlightTraces(graph)
 	return ListMatch(TraceNameList(graph, ";", 1), "AR_*")
 End
 
-Function AR_HighlightArtefactsEntry(graph, row)
+Function AR_HighlightArtefactsEntry(graph)
 	string graph
-	variable row
 
-	string traces, trace
-	variable numEntries, i, index
+	string traces, trace, extPanel
+	variable numEntries, i, index, row
+
+	extPanel = AR_GetExtPanel(graph)
+
+	if(!WindowExists(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
+		return NaN
+	endif
 
 	DFREF dfr = AR_GetFolder(graph)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
+
+	row = GetListBoxSelRow(extPanel, "list_of_ranges")
 
 	if(!IsInteger(row) || row < 0 || row >= DimSize(listBoxWave, ROWS))
 		return NaN
@@ -184,7 +200,7 @@ Function AR_HandleRanges(graph, [removeRange])
 	string graph
 	variable removeRange
 
-	variable first, last
+	variable first, last, substituteValue
 	variable i, j, k, l, numEntries
 	string traceName, leftAxis, bottomAxis, extPanel, yRangeStr
 
@@ -202,6 +218,10 @@ Function AR_HandleRanges(graph, [removeRange])
 
 	AR_RemoveTraces(graph)
 
+	if(!removeRange && !GetCheckBoxState(extPanel, "check_highlightRanges"))
+		return NaN
+	endif
+
 	DFREF sweepDFR = AR_GetSweepFolder(graph)
 	WAVE/WAVE ADCs = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
 
@@ -217,6 +237,7 @@ Function AR_HandleRanges(graph, [removeRange])
 
 			if(removeRange && i == 0 && WaveExists(AD))
 				CreateBackupWave(AD)
+				AddEntryIntoWaveNoteAsList(AD, NOTE_KEY_ARTEFACT_REMOVAL, str="true", replaceEntry=1)
 			endif
 
 			if(!WaveExists(AD))
@@ -228,8 +249,8 @@ Function AR_HandleRanges(graph, [removeRange])
 				continue
 			endif
 
-			first = ScaleToIndex(AD, str2num(listBoxWave[i][0]), ROWS)
-			last  = ScaleToIndex(AD, str2num(listBoxWave[i][1]), ROWS)
+			first = limit(ScaleToIndex(AD, str2num(listBoxWave[i][0]), ROWS), 0, DimSize(AD, ROWS) - 1)
+			last  = limit(ScaleToIndex(AD, str2num(listBoxWave[i][1]), ROWS), 0, DimSize(AD, ROWS) - 1)
 
 			leftAxis = ""
 			for(k = 0; k < NUM_HEADSTAGES; k += 1)
@@ -246,7 +267,7 @@ Function AR_HandleRanges(graph, [removeRange])
 				endif
 			endfor
 
-			if(IsEmpty(leftAxis))
+			if(IsEmpty(leftAxis) && !removeRange)
 				// axis is not shown, can happen with oodDAQ region slider
 				continue
 			endif
@@ -265,7 +286,8 @@ Function AR_HandleRanges(graph, [removeRange])
 			endif
 
 			if(removeRange)
-				AD[first, last] = NaN
+				substituteValue = AD[first]
+				AD[first, last] = substituteValue
 			else
 				sprintf traceName, "AR_%d_AD_%d_HS_%d", l, j, i
 				AppendToGraph/W=$graph/L=$leftAxis/B=$bottomAxis AD[first, last]/TN=$traceName
@@ -323,7 +345,7 @@ Function AR_MainListBoxProc(lba) : ListBoxControl
 		case 4: // cell selection
 		case 5: // cell selection plus shift key
 			graph = GetSweepGraph(lba.win)
-			AR_HighlightArtefactsEntry(graph, lba.row)
+			AR_HighlightArtefactsEntry(graph)
 			break
 	endswitch
 
@@ -352,12 +374,15 @@ End
 Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph
+	string graph, win
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = GetSweepGraph(ba.win)
-			AR_HandleRanges(graph, removeRange=1)
+			win = ba.win
+			graph = GetSweepGraph(win)
+			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_SELECTED)
+			UpdateSweepPlot(graph)
+			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_UNSELECTED)
 			break
 	endswitch
 
@@ -381,6 +406,7 @@ Function AR_TogglePanel(win, listboxWave)
 
 	SetActiveSubWindow $win
 	NewPanel/HOST=#/EXT=1/W=(200,0,0,407)
+	SetWindow kwTopWin, hook(main)=AR_MainWindowHook
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "Segoe UI"
 	DrawText 2,25,"Cutoff length [ms]:"
@@ -395,7 +421,10 @@ Function AR_TogglePanel(win, listboxWave)
 	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.2
 	CheckBox check_auto_remove,pos={69.00,43.00},size={84.00,15.00},title="Auto remove"
 	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
-	CheckBox check_auto_remove,value= 0,proc=CheckProc_AutoRemove
+	CheckBox check_auto_remove,value= 0,proc=AR_CheckProc_Update
+	CheckBox check_highlightRanges,pos={158.00,43.00},size={30.00,15.00},proc=AR_CheckProc_Update,title="HL"
+	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
+	CheckBox check_highlightRanges,value= 0
 	RenameWindow #,ArtefactRemoval
 	SetActiveSubwindow ##
 
@@ -404,24 +433,18 @@ Function AR_TogglePanel(win, listboxWave)
 	return 0
 End
 
-Function AR_UpdateTracesIfReq(graph, doArtefactRemoval, sweepFolder, numericalValues, sweepNo)
+Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	string graph
-	variable doArtefactRemoval, sweepNo
+	variable sweepNo
 	DFREF sweepFolder
 	WAVE numericalValues
 
 	string extPanel, panelTitle
-	variable row
 
 	panelTitle = GetMainWindow(graph)
 	extPanel   = AR_GetExtPanel(graph)
 
 	if(!WindowExists(extPanel))
-		AR_RemoveTraces(graph)
-		return NaN
-	endif
-
-	if(!doArtefactRemoval)
 		return NaN
 	endif
 
@@ -429,21 +452,38 @@ Function AR_UpdateTracesIfReq(graph, doArtefactRemoval, sweepFolder, numericalVa
 	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
 	AR_UpdatePanel(panelTitle, ranges, singleSweepDFR)
 	AR_HandleRanges(graph)
-	row = GetListBoxSelRow(extPanel, "list_of_ranges")
-	AR_HighlightArtefactsEntry(graph, row)
 End
 
-Function CheckProc_AutoRemove(cba) : CheckBoxControl
+Function AR_CheckProc_Update(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
-
-	string graph
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			if(cba.checked)
-				graph = GetSweepGraph(cba.win)
-				AR_HandleRanges(graph)
+			UpdateSweepPlot(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function AR_MainWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win, mainWindow, ctrl
+
+	switch(s.eventCode)
+		case 2: // kill
+			mainWindow = GetMainWindow(s.winName)
+
+			if(IsDataBrowser(mainWindow))
+				ctrl = "CheckBox_DataBrowser_OpenArtRem"
+				win  = mainWindow
+			else
+				ctrl = "Check_SweepBrowser_OpenArtRem"
+				win  = mainWindow + "#P0"
 			endif
+
+			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
 			break
 	endswitch
 

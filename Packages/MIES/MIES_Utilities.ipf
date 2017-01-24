@@ -822,6 +822,18 @@ Function AddEntryIntoWaveNoteAsList(wv ,key, [var, str, appendCR, replaceEntry])
 	endif
 End
 
+/// @brief Checks if `key = value;` can be found in the wave note
+///
+/// Ignores spaces around the equal ("=") sign.
+///
+/// @sa AddEntryIntoWaveNoteAsList()
+Function HasEntryInWaveNoteList(wv, key, value)
+	WAVE wv
+	string key, value
+
+	return GrepString(note(wv), "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
+End
+
 /// @brief Check if a given wave, or at least one wave from the dfr, is displayed on a graph
 ///
 /// @return one if one is displayed, zero otherwise
@@ -1079,12 +1091,12 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	endif
 
 	if(ParamIsDefault(endRow))
-		endRow  = ParamIsDefault(wv) ? DimSize(wvText, ROWS) : DimSize(wv, ROWS)
-		endRow -= 1
+		endRow  = inf
+	else
+		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
 
 	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
-	ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
 
@@ -1093,30 +1105,30 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	if(!ParamIsDefault(wv))
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
-				matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
+				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
 			elseif(prop == PROP_NON_EMPTY)
-				matches[startRow, endRow] = (numtype(wv[p][col]) != 2 ? p : NaN)
+				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) != 2 ? p : NaN)
 			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (wv[p][col] & var ? p : NaN)
+				MultiThread matches[startRow, endRow] = (wv[p][col] & var ? p : NaN)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
+				MultiThread matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
 			endif
 		else
-			matches[startRow, endRow] = (wv[p][col] == var ? p : NaN)
+			MultiThread matches[startRow, endRow] = ((wv[p][col] == var) ? p : NaN)
 		endif
 	else
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
-				matches[startRow, endRow] = (!cmpstr(wvText[p][col], "") ? p : NaN)
+				MultiThread matches[startRow, endRow] = (!cmpstr(wvText[p][col], "") ? p : NaN)
 			elseif(prop == PROP_NON_EMPTY)
-				matches[startRow, endRow] = (cmpstr(wvText[p][col], "") ? p : NaN)
+				MultiThread matches[startRow, endRow] = (cmpstr(wvText[p][col], "") ? p : NaN)
 			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (str2num(wvText[p][col]) & var ? p : NaN)
+				MultiThread matches[startRow, endRow] = (str2num(wvText[p][col]) & var ? p : NaN)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				matches[startRow, endRow] = (!(str2num(wvText[p][col]) & var) ? p : NaN)
+				MultiThread matches[startRow, endRow] = (!(str2num(wvText[p][col]) & var) ? p : NaN)
 			endif
 		else
-			matches[startRow, endRow] = (!cmpstr(wvText[p][col], str) ? p : NaN)
+			MultiThread matches[startRow, endRow] = (!cmpstr(wvText[p][col], str) ? p : NaN)
 		endif
 	endif
 
@@ -2761,4 +2773,18 @@ Function RemoveAllDimLabels(wv)
 			SetDimLabel i, j, $"", wv
 		endfor
 	endfor
+End
+
+/// @brief Calculate the value for `mskip` of `ModifyGraph`
+///
+/// @param numPoints  number of points shown
+/// @param numMarkers desired number of markers
+Function GetMarkerSkip(numPoints, numMarkers)
+	variable numPoints, numMarkers
+
+	if(!IsFinite(numPoints) || !IsFinite(numMarkers))
+		return 1
+	endif
+
+	return trunc(limit(numPoints / numMarkers, 1, 2^15 - 1))
 End
