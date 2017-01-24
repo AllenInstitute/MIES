@@ -37,6 +37,7 @@
 #include ":MIES_IgorHooks"
 #include ":MIES_MiesUtilities"
 #include ":MIES_OverlaySweeps"
+#include ":MIES_ProgrammaticGuiControl"
 #include ":MIES_Structures"
 #include ":MIES_Utilities"
 #include ":MIES_WaveDataFolderGetters"

@@ -606,8 +606,8 @@ End
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	variable hookResult, direction, currentSweep, newSweep
-	string folder, graph, panel
+	string folder, graph, extPanel, ctrl
+	variable hookResult
 
 	switch(s.eventCode)
 		case 2:	 // Kill
@@ -627,15 +627,14 @@ Function SB_SweepBrowserWindowHook(s)
 				break
 			endif
 
-			direction =  sign(s.wheelDy)
-			folder = SB_GetSweepBrowserFolder(graph)
+			if(sign(s.wheelDy) == 1) // positive
+				ctrl = "button_SweepBrowser_PrevSweep"
+			else //negative
+				ctrl = "button_SweepBrowser_NextSweep"
+			endif
 
-			panel = SB_GetSweepBrowserLeftPanel(graph)
-			currentSweep = GetPopupMenuIndex(panel, "popup_sweep_selector")
-			newSweep = currentSweep + direction * GetSetVariable(panel, "setvar_SweepBrowser_SweepStep")
-			SetPopupMenuIndex(panel, "popup_sweep_selector", newSweep)
-
-			SB_UpdateSweepPlot(graph)
+			extPanel = SB_GetSweepBrowserLeftPanel(graph)
+			PGC_SetAndActivateControl(extPanel, ctrl)
 
 			hookResult = 1
 			break
