@@ -282,6 +282,28 @@ static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	return WaveExists(wv) && GetWaveVersion(wv) == versionOfNewWave
 End
 
+/// @brief Check if the given wave's version is equal or larger than the given version
+static Function WaveVersionIsAtLeast(wv, existingVersion)
+	WAVE/Z wv
+	variable existingVersion
+
+	ASSERT(WaveExists(wv), "Wave does not exist")
+	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+
+	return GetWaveVersion(wv) >= existingVersion
+End
+
+/// @brief Check if the given wave's version is smaller than the given version
+static Function WaveVersionIsSmaller(wv, existingVersion)
+	WAVE/Z wv
+	variable existingVersion
+
+	ASSERT(WaveExists(wv), "Wave does not exist")
+	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+
+	return GetWaveVersion(wv) < existingVersion
+End
+
 /// @brief return the Version of the Wave
 static Function GetWaveVersion(wv)
 	Wave/Z wv
@@ -2229,7 +2251,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 6
+static Constant WP_WAVE_LAYOUT_VERSION = 7
 
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
@@ -2243,18 +2265,24 @@ Function UpgradeWaveParam(wv)
 	Redimension/N=(61, -1, 9) wv
 	AddDimLabelsToWP(wv)
 
-	// upgrade to wave version 6
-	if(ExistsWithCorrectLayoutVersion(wv, 5))
-		// only dim labels
-		return NaN
+	// custom wave offsets special location removed
+	// and replaced with the default location
+	if(WaveVersionIsSmaller(wv, 7))
+		wv[4][][EPOCH_TYPE_CUSTOM] = wv[18][q][EPOCH_TYPE_CUSTOM]
+		wv[5][][EPOCH_TYPE_CUSTOM] = wv[19][q][EPOCH_TYPE_CUSTOM]
 	endif
 
+	// upgrade to wave version 6
+	// only dim labels
+
 	// upgrade to wave version 5
-	// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
-	wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : ( wv[41][q][EPOCH_TYPE_NOISE] == 1 ? 1 : 2)
-	// adapt to changed filter order definition
-	wv[26][][EPOCH_TYPE_NOISE] = 6
-	wv[27][][EPOCH_TYPE_NOISE] = 0
+	if(WaveVersionIsSmaller(wv, 5))
+		// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
+		wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : ( wv[41][q][EPOCH_TYPE_NOISE] == 1 ? 1 : 2)
+		// adapt to changed filter order definition
+		wv[26][][EPOCH_TYPE_NOISE] = 6
+		wv[27][][EPOCH_TYPE_NOISE] = 0
+	endif
 
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
@@ -2302,8 +2330,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 15, $("PSC exp decay time 2/2 delta")   , wv
 	SetDimLabel ROWS, 16, $("PSC ratio decay times")          , wv
 	SetDimLabel ROWS, 17, $("PSC ratio decay times delta")    , wv
-	SetDimLabel ROWS, 18, $("Custom epoch offset")            , wv
-	SetDimLabel ROWS, 19, $("Custom epoch offset delta")      , wv
+	// unused entries are not labeled
 	SetDimLabel ROWS, 20, $("Low pass filter cut off")        , wv
 	SetDimLabel ROWS, 21, $("Low pass filter cut off delta")  , wv
 	SetDimLabel ROWS, 22, $("High pass filter cut off")       , wv
