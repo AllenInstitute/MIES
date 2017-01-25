@@ -45,7 +45,7 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 	String firstXWavePath = StringFromList(0,ListOfXWaves)
 	Variable XWavesAreSame=1	// assume they are until proven differently. Irrelevant if	numXWaves!=numWaves
 	Variable i
-	Make/O/N=(numWaves,2)/FREE xRange	// [i][0] is xMin, [i][1] is xMax
+	Make/D/N=(numWaves,2)/FREE xRange	// [i][0] is xMin, [i][1] is xMax
 
 	for (i = 0; i < numWaves; i += 1)
 		String theWaveName=StringFromList(i,ListOfWaves)
