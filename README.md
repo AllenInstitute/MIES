@@ -10,6 +10,10 @@
 
 * Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) below "Shared artifacts"
 
+## Bug reporting
+
+Please have a look at ReportingBugs.md.
+
 ## Full Installation
 
 Pressure control may be implemented with ITC and/or NIDAQ hardware.  For NIDAQ
