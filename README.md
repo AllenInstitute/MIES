@@ -1,5 +1,15 @@
 # General
 
+## Getting MIES
+
+### Latest development version
+
+* `git clone http://stash.corp.alleninstitute.org/scm/eng/mies-igor.git`
+
+### Latest released version
+
+* Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) below "Shared artifacts"
+
 ## Full Installation
 
 Pressure control may be implemented with ITC and/or NIDAQ hardware.  For NIDAQ
