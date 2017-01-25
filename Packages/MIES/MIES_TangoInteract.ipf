@@ -351,7 +351,7 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 				numErrors += 1
 			endif
 
-			initResult = AI_SendToAmp(currentPanel, headstage, I_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
+			initResult = AI_SendToAmp(currentPanel, headstage, V_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
 			if(!IsFinite(initResult))
 				print "Error setting OscKillerEnable to on"
 				numErrors += 1
