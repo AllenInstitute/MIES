@@ -4829,7 +4829,7 @@ Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
 	Wave KeyTypes
 	
 	string Content, CurrentKey, CurrentValue, errorMsg, CurrentKeyType, line
-	variable i, ii = 0, delimiter, NumValue, minimumSize, numRows, numCols, numLines
+	variable i, ii, delimiter, NumValue, minimumSize, numRows, numCols, numLines
 	Make /FREE/T/N=(MINIMUM_WAVE_SIZE,2) UserSettings
 	
 	SetWaveDimLabel(UserSettings, "SettingKey;SettingValue", COLs)
@@ -4846,6 +4846,8 @@ Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
 		if(!isEmpty(line))
 			if(cmpstr(line[0], "#"))
 				delimiter = strsearch(line, "=", 0)
+				sprintf errorMsg, "Please insert a '=' on line %d of the Configuration Notebook between the parameter and setting value" line
+				ASSERT(isInteger(delimiter), errorMsg)
 				CurrentKey = TrimString(line[0, delimiter - 1])
 				CurrentValue = TrimString(line[delimiter + 1, inf])
 				FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
@@ -4858,12 +4860,12 @@ Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
 				elseif(!cmpstr(CurrentKey, "Version"))
 					ASSERT(str2num(CurrentValue) == MPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
 					ASSERT(ii == 0, "Configuration Notebook version must be specified first")
-					EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
 					UserSettings[ii][%SettingKey] = CurrentKey
 					UserSettings[ii][%SettingValue] = CurrentValue
 					ii += 1
 				elseif(!cmpstr(CurrentKeyType, "StringKeys"))
-					EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
 					UserSettings[ii][%SettingKey] = CurrentKey
 					UserSettings[ii][%SettingValue] = CurrentValue
 					ii += 1
@@ -4873,19 +4875,19 @@ Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
 						ASSERT(0, errorMsg)
 					else
 						NumValue = str2num(CurrentValue)
-						EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
 						UserSettings[ii][%SettingKey] = CurrentKey
 						UserSettings[ii][%SettingValue] = CurrentValue
 						ii += 1
 					endif
 				elseif(!cmpstr(CurrentKeyType, "CheckBoxKeys"))
 					if(!cmpstr(CurrentValue, "Yes"))
-						EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
 						UserSettings[ii][%SettingKey] = CurrentKey
 						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_SELECTED)
 						ii += 1
 					elseif(!cmpstr(CurrentValue, "No"))
-						EnsureLargeEnoughWave(UserSettings, minimumSize = i)
+						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
 						UserSettings[ii][%SettingKey] = CurrentKey
 						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_UNSELECTED)
 						ii += 1
@@ -4900,6 +4902,7 @@ Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
 	
 	endfor
 	
+	ASSERT(ii > 0, "No User Settings were found")
 	Redimension /N = (ii, DimSize(UserSettings, COLS)) UserSettings
 	
 	return UserSettings
