@@ -44,7 +44,7 @@ Function MultiPatchConfig()
 	
 	MPConfig_Pressure(win, UserSettings)
 	
-	MPConfig_ClampModes(win)
+	MPConfig_ClampModes(win, UserSettings)
 	
 	MPConfig_AsyncTemp(win, UserSettings)
 	
@@ -353,13 +353,15 @@ variable w
 End
 
 ///@brief Set intial values for headstage clamp modes
-Function MPConfig_ClampModes(panelTitle)
+Function MPConfig_ClampModes(panelTitle, UserSettings)
 	string panelTitle
+	Wave /T UserSettings
 
 	// Set initial values for V-Clamp and I-Clamp in MIES
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = -70)
+	FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_VC", val = 0)
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCC", val = 0)
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCR", val = 0)
@@ -369,8 +371,13 @@ Function MPConfig_ClampModes(panelTitle)
 	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_IC", val = 0)
-	PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = -70)
+	FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = AUTOBIAS_RANGE UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasVrange", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = AUTOBIAS_MAXI UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2num(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
 	
 End

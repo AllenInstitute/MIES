@@ -620,5 +620,8 @@ StrConstant DEFAULT_ITI             = "Default ITI (ms)"
 StrConstant ENABLE_OODAQ            = "Enable ooDAQ"
 StrConstant OODAQ_POST_DELAY        = "ooDAQ post sweep delay (ms)"
 StrConstant OODAQ_RESOLUTION        = "ooDAQ resolution (ms)"
+StrConstant HOLDING						= "Initial Holding Potential"
+StrConstant AUTOBIAS_RANGE				= "I-clamp Autobias range (mV)"
+StrConstant AUTOBIAS_MAXI				= "I-clamp Max bias current (pA)"
 ///@}
 

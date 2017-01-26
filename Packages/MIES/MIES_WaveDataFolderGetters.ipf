@@ -4802,8 +4802,9 @@ Function/WAVE GetMultiPatchConfigKeyTypes()
 	Make/FREE/T stringKeys = {ITC_DEV, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
 	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                  \
                               PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, \
-                              NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION}
-	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                      \
+                              NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION,  \
+                              HOLDING, AUTOBIAS_RANGE, AUTOBIAS_MAXI}
+	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                     	\
 								SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS,  \
 								REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ}
 
