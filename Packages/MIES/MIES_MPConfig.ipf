@@ -78,8 +78,8 @@ Function MPConfig_Amplifiers(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 	
-	string AmpSerialLocal, AmpTitleLocal, CheckDA, ConnectedAmps
-	variable i, ii = 0
+	string AmpSerialLocal, AmpTitleLocal, CheckDA
+	variable i, ii, ampSerial
 	
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
@@ -88,21 +88,20 @@ Function MPConfig_Amplifiers(panelTitle, UserSettings)
 	
 	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" ) 
 	
-	Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)					
-
+	Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)
+	
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
-	ConnectedAmps = DAP_GetNiceAmplifierChannelList()
 	
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 		
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
 		
 		if(!mod(i,2)) // even 
-			Wave AmpListIndex = FindAmpInList(StringFromList(ii, AmpSerialLocal))
-			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = AmpListIndex[0])
+			ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
+			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = FindAmpInList(ampSerial, 1))
 		else //odd
-			Wave AmpListIndex = FindAmpInList(StringFromList(ii, AmpSerialLocal))
-			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = AmpListIndex[1])
+			ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
+			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = FindAmpInList(ampSerial, 2))
 			ii+=1
 		endif 
 		
@@ -384,25 +383,24 @@ End
 
 /// @brief Find the list index of a connected amplifier serial number
 ///
-/// @param AmpSerialNum		Amplifier Serial Number to search for
-/// @param AmpListIndex		Return a wave of headstage indeces where that serial number is found
-Function /WAVE FindAmpInList(AmpSerialNum)
-	string AmpSerialNum
-	
-	string ConnectedAmps, AmpListEntry
-	variable AmpSerialIndex, i, ii = 0
-	
-	ConnectedAmps = DAP_GetNiceAmplifierChannelList()
-	Make /FREE/N = 2, AmpListIndex
-	
-	for(i = 0; i < ItemsInList(ConnectedAmps); i+=1)
-		AmpListEntry = StringFromList(i, ConnectedAmps)[6,11]
-		if(stringmatch(AmpSerialNum, AmpListEntry))
-			AmpListIndex[ii] = i
-			ii+=1
+/// @param ampSerialRef		Amplifier Serial Number to search for
+/// @param ampChannelIDRef	Headstage reference number
+Function FindAmpInList(ampSerialRef, ampChannelIDRef)
+	variable ampSerialRef, ampChannelIDRef
+
+	string listOfAmps, ampDef
+	variable numAmps, i, ampSerial, ampChannelID
+
+	listOfAmps = DAP_GetNiceAmplifierChannelList()
+	numAmps = ItemsInList(listOfAmps)
+
+	for(i = 0; i < numAmps; i += 1)
+		ampDef = StringFromList(i, listOfAmps)
+		DAP_ParseAmplifierDef(ampDef, ampSerial, ampChannelID)
+		if(ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
+			return i
 		endif
 	endfor
-		
-	return AmpListIndex
 	
+		ASSERT(0, "Could not find amplifier")
 End
