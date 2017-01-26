@@ -4,27 +4,28 @@
 /// @brief Configure MIES for Multi-patch experiments	
 Function MultiPatchConfig()
 	
-	string UserConfigNB, win, filename, ITCDev
-	variable ITCDevNum
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType
 	
-	movewindow /C 1450, 530,-1,-1								// position command window
+//	movewindow /C 1450, 530,-1,-1								// position command window
 	
 	DoWindow UserConfigNB
 	if(!V_flag)
 		OpenNotebook /R/Z/N=UserConfigNB/V=0/T="WMTO" USER_CONFIG_PATH
 		if(V_flag)
-			ASSERT(V_flag == 1, "Configuration Notebook not loaded")
+			ASSERT(V_flag > 0, "Configuration Notebook not loaded")
 		endif		
 	endif
 	
 	UserConfigNB = winname(0,16)
 	Wave /T KeyTypes = GetMultiPatchConfigKeyTypes()
 	Wave /T UserSettings = MPConfig_ImportUserSettings(UserConfigNB, KeyTypes)
-	FindValue /TXOP = 4 /TEXT = ITC_DEV UserSettings
-	ITCDev = UserSettings[V_value][%SettingValue]
+	FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
+	ITCDevType = UserSettings[V_value][%SettingValue]
+	FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
+	ITCDevNum = UserSettings[V_value][%SettingValue]
 
-	if(WindowExists(BuildDeviceString(ITCDev, "0")))
-		win = BuildDeviceString(ITCDev, "0")
+	if(WindowExists(BuildDeviceString(ITCDevType, ITCDevNum)))
+		win = BuildDeviceString(ITCDevType, ITCDevNum)
 	else
 		if(WindowExists("DA_Ephys"))
 			win = BASE_WINDOW_TITLE
@@ -33,11 +34,11 @@ Function MultiPatchConfig()
 			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
 		endif
 		
-		ITCDevNum = WhichListItem(ITCDev,DEVICE_TYPES) 
-		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = ITCDevNum) 
+		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
+		PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_TYPES)) 
 		PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
 		
-		win = ITCDev + "_Dev_0"
+		win = BuildDeviceString(ITCDevType, ITCDevNum)
 	endif	
 	
 	MPConfig_Amplifiers(win, UserSettings)

@@ -4799,7 +4799,7 @@ Function/WAVE GetMultiPatchConfigKeyTypes()
 
     variable numRows
 
-	Make/FREE/T stringKeys = {ITC_DEV, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
+	Make/FREE/T stringKeys = {ITC_DEV_TYPE, ITC_DEV_NUM, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
 	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                  \
                               PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, \
                               NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION,  \
