@@ -4795,29 +4795,29 @@ End
 /// @}
 
 /// @brief Set Key:Value types for User_Config Notebook
-Function /WAVE MPConfig_KeyTypes()
-	
-	variable maxRows, i
-	string colLabel
-	
-	Make /FREE/T/N=(MINIMUM_WAVE_SIZE,3) KeyTypes
-	SetWaveDimLabel(KeyTypes, "StringKeys;NumKeys;CheckBoxKeys", COLS)
-	
-	KeyTypes[][%StringKeys] = {ITC_DEV, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
-	KeyTypes[][%NumKeys] = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN, PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION}
-	KeyTypes[][%CheckBoxKeys] = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC, SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS, REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ}	
-	
-	Make /FREE/N = (DimSize(KeyTypes, COLS)) numRows
-	for(i = 0; i < DimSize(KeyTypes, COLS); i+=1)
-		colLabel = GetDimLabeL(KeyTypes, COLS, i)
-		numRows[i] = FindIndizes(colLabel = colLabel, str = GetLastNonEmptyEntry(KeyTypes, colLabel, MINIMUM_WAVE_SIZE-1), wvText = KeyTypes)[0]
-	endfor
-	
-	WaveStats /Q numRows
-	maxRows = V_max + 1
-	Redimension /N = (maxRows, DimSize(KeyTypes, COLS)) KeyTypes
-	
-	return KeyTypes
+Function/WAVE GetMultiPatchConfigKeyTypes()
+
+    variable numRows
+
+	Make/FREE/T stringKeys = {ITC_DEV, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
+	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                  \
+                              PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, \
+                              NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION}
+	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                      \
+								SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS,  \
+								REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ}
+
+    numRows = max(DimSize(stringKeys, ROWS), DimSize(numKeys, ROWS), DimSize(checkBoxKeys, ROWS))
+	Make/FREE/T/N=(numRows, 3) keyTypes
+	SetWaveDimLabel(keyTypes, "StringKeys;NumKeys;CheckBoxKeys", COLS)
+
+	Redimension/N=(numRows) stringKeys, numKeys, checkBoxKeys
+
+    keyTypes[][%StringKeys]       = stringKeys[p]
+    keyTypes[][%NumKeys]         = numKeys[p]
+    keyTypes[][%CheckBoxKeys] = checkBoxKeys[p]
+
+	return keyTypes
 End
 
 /// @brief Read User_Config NoteBook file and extract parameters as a KeyWordList

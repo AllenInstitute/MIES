@@ -18,7 +18,7 @@ Function MultiPatchConfig()
 	endif
 	
 	UserConfigNB = winname(0,16)
-	Wave /T KeyTypes = MPConfig_KeyTypes()
+	Wave /T KeyTypes = GetMultiPatchConfigKeyTypes()
 	Wave /T UserSettings = MPConfig_ImportUserSettings(UserConfigNB, KeyTypes)
 	FindValue /TXOP = 4 /TEXT = ITC_DEV UserSettings
 	ITCDev = UserSettings[V_value][%SettingValue]
