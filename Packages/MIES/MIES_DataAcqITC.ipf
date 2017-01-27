@@ -222,7 +222,7 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 	TP_Teardown(panelTitle)
 End
 
-static Constant DEFAULT_MAXAUTOBIASCURRENT = 500e-12 /// Unit: Amps
+static Constant DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
 static Constant AUTOBIAS_INTERVALL_SECONDS = 1
 
 /// @brief Handle automatic bias current injection
