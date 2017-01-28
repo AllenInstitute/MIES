@@ -1678,6 +1678,50 @@ Function/S ConvertTextWaveToList(wv, [listSepString])
 	return list
 End
 
+/// @brief return a subset of the input list
+///
+/// @param list       input list
+/// @param itemBegin  first item
+/// @param itemEnd    last item
+/// @param listSep    [optional] list Separation character. default is ";"
+///
+/// @return a list with elements ranging from itemBegin to itemEnd of the input list
+Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
+	string list, listSep
+	variable itemBegin, itemEnd
+
+	variable i,  numItems, start, stop
+
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
+
+	ASSERT(itemBegin <= itemEnd, "SubSet missmatch")
+
+	numItems = ItemsInList(list, listSep)
+	if(itemBegin >= numItems)
+		return ""
+	endif
+	if(itemEnd >= numItems)
+		itemEnd = numItems - 1
+	endif
+
+	if(itemBegin == itemEnd)
+		return StringFromList(itemBegin, list, listSep) + listSep
+	endif
+
+	for(i = 0; i < itemBegin; i += 1)
+		start = strsearch(list, listSep, start) + 1
+	endfor
+
+	stop = start
+	for(i = itemBegin; i < itemEnd + 1; i += 1)
+		stop = strsearch(list, listSep, stop) + 1
+	endfor
+
+	return list[start, stop - 1]
+End
+
 /// @brief Return a list of datafolders located in `dfr`
 ///
 /// @param dfr base folder

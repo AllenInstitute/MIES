@@ -1535,7 +1535,7 @@ End
 Function AB_LoadStimsets(expFilePath, stimsets, [processedStimsets])
 	string expFilePath, stimsets, processedStimsets
 
-	string stimset, totalStimsets, newStimsets, oldStimsets, regex
+	string stimset, totalStimsets, newStimsets, oldStimsets
 	variable numBefore, numMoved, numAfter, numNewStimsets, i
 
 	if(ParamIsDefault(processedStimsets))
@@ -1566,8 +1566,8 @@ Function AB_LoadStimsets(expFilePath, stimsets, [processedStimsets])
 	// load next order stimsets
 	numNewStimsets = numAfter - numBefore + numMoved
 	if(numNewStimsets > 0)
-		regex = "((?:[^;]*;){" + num2str(numNewStimsets) + "})((?:[^;]*;)*)"
-		SplitString/E=(regex) totalStimsets, newStimsets, oldStimsets
+		newStimsets = ListFromList(totalStimsets, 0, numNewStimsets - 1)
+		oldStimsets = ListFromList(totalStimsets, numNewStimsets, inf)
 		return AB_LoadStimsets(expFilePath, newStimsets, processedStimsets = oldStimsets)
 	endif
 
