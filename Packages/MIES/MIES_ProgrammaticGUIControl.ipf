@@ -133,10 +133,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 	variable val
 	string str
 
-	string procedure, errorMessage, ctrlTitle
+	string procedure
 	variable paramType, controlType, variableType
-	variable minVal, maxVal, incVal
-	
+
 	if(IsControlDisabled(win, control))
 		DEBUGPRINT("Can't click a disabled control (or better should not)")
 		return NaN
@@ -231,18 +230,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			if(ParamIsDefault(str))
 				str = num2str(val)
 			endif
-			
-			ctrlTitle = GetTitle(S_recreation, control, supress=1)
-			ExtractLimits(win, control, minVal, maxVal, incVal)
-			sprintf errorMessage, "%s must be %g or more. Failed to set control %s", ctrlTitle, minVal, control
-		   ASSERT(val > minVal, errorMessage)
-		   sprintf errorMessage, "%s must be %g or less. Failed to set control %s", ctrlTitle, maxVal, control
-		   ASSERT(val < maxVal, errorMessage)
-		   if(isInteger(incVal))
-		       sprintf errorMessage, "%s must be an integer. Failed to set control %s", ctrlTitle, control
-		       ASSERT (IsInteger(val), errorMessage)
-		   endif
-			
+
 			if(variableType == SET_VARIABLE_BUILTIN_NUM)
 				SetSetVariable(win, control, val)
 			elseif(variableType == SET_VARIABLE_BUILTIN_STR)
