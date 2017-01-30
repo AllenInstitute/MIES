@@ -945,32 +945,6 @@ Function GetInternalSetVariableType(recMacro)
 	return SET_VARIABLE_GLOBAL
 End
 
-/// @brief Return the title of a control
-///
-/// @param recMacro 	recreation macro for ctrl
-/// @param ctrl			ctrl who's title is to be queried
-/// @param supress		supress assertion that ctrl must have a title
-/// @return Returns 	the title or an empty string
-Function/S GetTitle(recMacro, ctrl, [supress])
-	string recMacro
-	string ctrl
-	variable supress
-
-	string title, errorMessage
-	if(!supress)
-		sprintf errorMessage, "recreation macro for %s does not contain a title", ctrl 
-		ASSERT(strsearch(recMacro, "title=", 0) != -1, errorMessage)
-	else
-		if(strsearch(recMacro, "title=", 0) == -1)
-		return ""
-		endif
-	endif
-	
-	SplitString/E="(?i).*title=\"([^ ]+)\"" recMacro, title
-	
-	return title
-End
-
 /// @brief Extract the limits specification of the control and return it in `minVal`, `maxVal` and `incVal`
 ///
 /// @return 0 on success, 1 if no specification could be found
