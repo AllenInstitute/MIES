@@ -573,10 +573,10 @@ Static Function/S HD_GetConfigList(panelTitle)
 	return list
 End
 
-///@brief Routine for saving all gui settings/switches/check boxes 
+///@brief Routine for saving all gui settings/switches/check boxes
 Function HD_SaveConfiguration([cmdID])
 	string cmdID
-	
+
 	// define variables
 	string lockedDevList
 	variable noLockedDevs
@@ -595,20 +595,20 @@ Function HD_SaveConfiguration([cmdID])
 	string controlState
 	variable configWaveSize
 	string fileLocationResponseString
-	
+
 	// get the da_ephys panel names
 	lockedDevList = GetListOfLockedDevices()
 	noLockedDevs = ItemsInList(lockedDevList)
-    
+
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
-    	
-	// build up the filename using the time and date functions    	
+
+	// build up the filename using the time and date functions
 	fileLocation = "c:\\MiesHDF5Files\\SavedConfigFiles\\"
-	
+
 	// Call this new function to insure that the folder actually exists on the disk
 	CreateFolderOnDisk(fileLocation)
-	
+
 	dateTimeStamp = GetTimeStamp()
 	sprintf filename, "%ssavedConfig_%s.h5", fileLocation, dateTimeStamp
 
@@ -616,10 +616,10 @@ Function HD_SaveConfiguration([cmdID])
 	// if no locked devices are found, don't save the configuration
 	if (noLockedDevs == 0)
 		print "No Locked Devices found...configuration settings not saved"
-		
+
 		// restore the data folder
-		SetDataFolder savedDataFolder 
-		
+		SetDataFolder savedDataFolder
+
 		// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 		if(!ParamIsDefault(cmdID))
 			HD_WriteAckWrapper(cmdID, TI_WRITEACK_FAILURE)
@@ -630,30 +630,30 @@ Function HD_SaveConfiguration([cmdID])
 		if (V_Flag != 0 ) // HDF5CreateFile failed
 			print "HDF5Create File failed for ", filename
 			print "Check file name format..."
-		
+
 			// restore the data folder
-			SetDataFolder savedDataFolder 
-			
+			SetDataFolder savedDataFolder
+
 			// determine if the cmdID was provided.  If so, return the -1 error code to the WSE
 			if(!ParamIsDefault(cmdID))
 				HD_WriteAckWrapper(cmdID,TI_WRITEACK_FAILURE)
 			endif
 			return 0
 		endif
-		
+
 		for (n = 0; n<noLockedDevs; n+= 1)
 			currentPanel = StringFromList(n, lockedDevList)
-			
+
 			wave/T configWave = GetConfigSettingsWaveRef(currentPanel)
-			
+
 			print "Saving Configuration for ", currentPanel
-			
+
 			//Put the version string in the first column of the configWave
 			// Version #
 			SVAR versionString = $GetMiesVersion()
 			configWave[0][0] = "Version #"
 			configWave[1][0] = versionString
-			
+
 			// Now get the list of the control names for the current panel
 			panelControlsList = HD_GetConfigList(currentPanel)
 			numControls = ItemsInList(panelControlsList)
@@ -665,46 +665,46 @@ Function HD_SaveConfiguration([cmdID])
 					if (!IsEmpty(value))
 						// get the current configWaveSize
 						configWaveSize = DimSize(configWave, 1)
-						
+
 						// now extend the wave by 1 to accomodate
 						Redimension/N = (-1, configWaveSize + 1) configWave
-						
+
 						// and now stuff the info in the right place
 						configWave[%settingName][configWaveSize] = currentControl
 						configWave[%settingValue][configWaveSize] = value
 						configWave[%controlState][configWaveSize] = controlState
-					endif					
-				endif								
+					endif
+				endif
 			endfor
-			
+
 			// Set the data folder for saving the config settings stuff
 			SetDataFolder GetDevSpecConfigSttngsWavePath(currentPanel)
 			sprintf groupString "/%s", currentPanel
 			HDF5CreateGroup /Z h5_id, groupString, root_id
 			HDF5SaveGroup /O /R  :, root_id, groupString
 			HDF5CloseGroup root_id
-		
+
 			print "Configuration saved for ", currentPanel
-			
+
 			// Now kill the configWave....since its only used for saving the configuration settings to hdf5, don't need it floating around anymore
 			KillWaves ConfigWave
-		endfor	
-		
+		endfor
+
 		HDF5CloseFile h5_id
 		print "HDF5 configuration saved to: ", filename
 	endif
-    	
+
 	// restore the data folder
 	SetDataFolder savedDataFolder
-	
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		// build up the response string containing the file location for passing back to the WSE
 		sprintf fileLocationResponseString "configFile:%s", filename
 		HD_WriteAsyncResponseWrapper(cmdID, fileLocationResponseString)
-	endif	
-End	
-		
+	endif
+End
+
 /// @brief Load config settings from HDF5 file
 Function HD_LoadConfigSet([incomingFileName, cmdID])
 	string incomingFileName
