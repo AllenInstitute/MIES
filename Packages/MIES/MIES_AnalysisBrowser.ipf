@@ -1228,6 +1228,7 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 			endif
 			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
 			if(AB_LoadStimsets(filePath, stimsets))
+				AB_LoadStimsetsRAW(filePath, stimsets)
 				return 1
 			endif
 			if(AB_LoadCustomWaves(filePath, stimsets))
@@ -1478,6 +1479,47 @@ Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	return sweepWaveName
 End
 
+/// @brief a failsave alternative for AB_LoadStimsets() to load RAW stimsets
+///
+/// If a stimset could not get loaded using AB_LoadStimsets()
+/// this function is used in addition to try to load the
+/// stimset without its corresponding Parameter Waves.
+/// overwrite is not supported
+///
+/// @param expFilePath    Path on disc to igor experiment
+/// @param stimsets       ";" separated list of all stimsets
+///
+/// @return 1 on error and 0 on success
+static Function AB_LoadStimsetsRAW(expFilePath, stimsets)
+	string expFilePath, stimsets
+
+	string stimset
+	variable numStimsets, i
+	variable error = 0
+
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		stimset = StringFromList(i, stimsets)
+		WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
+		if(!WaveExists(wv))
+			if(AB_LoadStimsetRAW(expFilePath, stimset))
+				// RAW stimset has no need for parameter waves.
+				WAVE/Z WP        = WB_GetWaveParamForSet(stimset)
+				WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimset)
+				WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
+				KillOrMoveToTrash(wv=WP)
+				KillOrMoveToTrash(wv=WPT)
+				KillOrMoveToTrash(wv=SegWvType)
+			else
+				error = 1
+				continue
+			endif
+		endif
+	endfor
+
+	return error
+End
+
 /// @brief Load specified stimsets from Igor experiment file
 ///
 /// recurses into all dependent stimsets as soon as they have been loaded.
@@ -1508,7 +1550,14 @@ Function AB_LoadStimsets(expFilePath, stimsets, [processedStimsets])
 	for(i = 0; i < numNewStimsets; i += 1)
 		stimset = StringFromList(i, stimsets)
 		if(AB_LoadStimset(expFilePath, stimset))
-			return 1
+			if(ItemsInList(processedStimsets) == 0)
+				// if a parent is corrupt, load other parents.
+				continue
+			else
+				// if a (dependent) stimset is missing
+				// the corresponding parent can not be created with Parameter Waves
+				return 1
+			endif
 		endif
 		numMoved += WB_StimsetFamilyNames(totalStimsets, parent = stimset)
 	endfor
