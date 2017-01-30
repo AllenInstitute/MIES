@@ -288,7 +288,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 	string incomingFileName
 	string cmdID
 	string incomingFileDirectory
-	    
+
 	variable fileID, waveCounter
 	string dataSet
 	string dataFolderString
@@ -297,10 +297,10 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 	string savedDataFolder
 	string groupList
 	variable groupItems
-    	
+
 	// save the present data folder
 	savedDataFolder = GetDataFolder(1)
-	
+
 	if(ParamIsDefault(incomingFileName))
 		if(ParamIsDefault(incomingFileDirectory))
 			NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
@@ -332,12 +332,12 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 			return 0
 		else
 			HDF5OpenFile /R /Z fileID as incomingFileName // reads the incoming filename
-			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"	
+			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		endif
 	endif
-    	
+
 	groupList =  S_HDF5ListGroup
-	
+
 	// Need to clear out the previously loaded wave sets
 	SetDataFolder GetWBSvdStimSetParamDAPath()
 	KillWaves/A/Z
@@ -347,7 +347,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 	KillWaves/A/Z
 	SetDataFolder GetWBSvdStimSetTTLPath()
 	KillWaves/A/Z
-	
+
 	groupItems = ItemsInList(groupList)
 	for(waveCounter = 0; waveCounter < groupItems; waveCounter += 1)
 		dataSet = StringFromList(waveCounter, groupList)
@@ -366,20 +366,20 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 		elseif(StringMatch(dataSet,"SavedStimulusSets/TTL/*"))
 			// loading into the TTL folder
 			SetDataFolder GetWBSvdStimSetTTLPath()
-			HDF5LoadData /O /IGOR=-1 fileID, dataSet			
+			HDF5LoadData /O /IGOR=-1 fileID, dataSet
 		endif
 	endfor
 
 	HDF5CloseFile fileID
 	print "Stimulus Set Loaded..."
-	
+
 	// restore the data folder
 	SetDataFolder savedDataFolder
-	
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		HD_WriteAckWrapper(cmdID, TI_WRITEACK_SUCCESS)  // send a 0 for success
-	endif   	
+	endif
 End
 
 /// @brief Load stim sets from HDF5 file and add to the current stimulus waves.  If there is a wave with a matching name already present, it will be overwritten and replaced
