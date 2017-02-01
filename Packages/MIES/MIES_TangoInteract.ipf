@@ -171,6 +171,26 @@ Function TI_autoFillAmps(headstage, [cmdID])
 	endif
 End
 
+/// @brief function for selecting the headstage
+/// @param headstage -- headstage to be used in pipeline experiments and selected via the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+Function TI_selectHeadStage(headstage, [cmdID])
+	variable headstage
+	string cmdID
+
+	string panelTitle = "ITC18USB_Dev_0"
+	string headStageCheckBox
+	
+	headStageCheckBox = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)	
+
+	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=1)
+	
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 0)
+	endif
+End
+
 /// @brief function for saving data space in the nwb format, to be invoked from the WSE
 /// @param nwbFileLocation			file path for nwb file location
 /// @param cmdID					optional parameter...if being called from WSE, this will be present.
