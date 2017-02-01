@@ -278,3 +278,9 @@ Function DataFolderExistsDFR(dfr)
 			return 0
 	endswitch
 End
+
+/// @brief Bring the control window (the window with the command line) to the
+///        front of the desktop
+Function ControlWindowToFront()
+	DoWindow/H
+End
