@@ -3,6 +3,8 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.15
 
+static Constant H5_ATTRIBUTE_SIZE_LIMIT = 60e3
+
 /// @cond DOXYGEN_IGNORES_THIS
 #include "HDF5 Browser", version=1.20
 /// @endcond
@@ -107,6 +109,18 @@ static Function H5_WriteDatasetLowLevel(locationID, name, wv, overwrite, chunked
 
 	if(chunkedLayout)
 		WAVE chunkSizes = H5_GetChunkSizes(wv)
+	endif
+
+	if(attrFlag & 16) // saving wave note as attribute
+		if(strlen(note(wv)) >= H5_ATTRIBUTE_SIZE_LIMIT)
+			// by default HDF5 attributes are stored in the object header and thus attributes are limited to 64k size
+			printf "The wave note of the wave \"%s\" (stored name: \"%s\") will be shortend to enable HDF5/NWB storage\r", NameOfWave(wv), name
+			ControlWindowToFront()
+
+			Duplicate/FREE wv, wvCopy
+			Note/K wvCopy, note(wv)[0, H5_ATTRIBUTE_SIZE_LIMIT]
+			WAVE wv = wvCopy
+		endif
 	endif
 
 	if(overwrite)
