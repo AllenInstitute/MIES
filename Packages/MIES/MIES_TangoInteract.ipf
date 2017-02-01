@@ -173,7 +173,7 @@ End
 
 /// @brief function for selecting the headstage
 /// @param headstage -- headstage to be used in pipeline experiments and selected via the WSE
-/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+/// @param cmdID		[optional, defaults to blank] if function is called from WSE, this will be present.
 Function TI_selectHeadStage(headstage, [cmdID])
 	variable headstage
 	string cmdID
