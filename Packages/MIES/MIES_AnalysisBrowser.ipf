@@ -1504,12 +1504,7 @@ static Function AB_LoadStimsetsRAW(expFilePath, stimsets)
 		if(!WaveExists(wv))
 			if(AB_LoadStimsetRAW(expFilePath, stimset))
 				// RAW stimset has no need for parameter waves.
-				WAVE/Z WP        = WB_GetWaveParamForSet(stimset)
-				WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimset)
-				WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
-				KillOrMoveToTrash(wv=WP)
-				KillOrMoveToTrash(wv=WPT)
-				KillOrMoveToTrash(wv=SegWvType)
+				WB_KillParameterWaves(stimset)
 			else
 				error = 1
 				continue

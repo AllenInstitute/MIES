@@ -1760,3 +1760,22 @@ Function WB_StimsetExists(stimset)
 
 	return 0
 End
+
+/// @brief Kill Parameter waves for stimset
+Function WB_KillParameterWaves(stimset)
+	string stimset
+
+	WAVE/Z WP        = WB_GetWaveParamForSet(stimset)
+	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimset)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
+
+	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
+		return 1
+	endif
+
+	KillOrMoveToTrash(wv=WP)
+	KillOrMoveToTrash(wv=WPT)
+	KillOrMoveToTrash(wv=SegWvType)
+
+	return 1
+End
