@@ -1312,7 +1312,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}
+					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
