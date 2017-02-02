@@ -209,7 +209,7 @@ End
 /// @brief  Monitor set and bath temperature during experiments
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param @param UserSettings	User settings wave from configuration Notebook		
+/// @param UserSettings	User settings wave from configuration Notebook		
 Function MPConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
@@ -236,7 +236,7 @@ End
 /// @brief  Set user defined experimental parameters
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param @param UserSettings	User settings wave from configuration Notebook		
+/// @param UserSettings	User settings wave from configuration Notebook		
 Function MPConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
